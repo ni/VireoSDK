@@ -101,7 +101,10 @@ VIREO_FUNCTION_SIGNATURE0(Done)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(Stop, Boolean)
 {
-    return _Param(0) ? THREAD_EXEC()->Stop() : _NextInstruction();
+    if (_ParamPointer(0) && !_Param(0))
+        return _NextInstruction();
+    else
+        return THREAD_EXEC()->Stop();
 }
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::Stop()
