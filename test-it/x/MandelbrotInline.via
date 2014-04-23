@@ -1,0 +1,114 @@
+define (MandelbrotMain v(.VirtualInstrument (
+    // Dataspace
+    c(
+        e(.StdOut file)
+        e(.Int32 err)
+
+        e(v(.Utf8Char '.')    char1)
+        e(v(.Utf8Char '#')    char2)
+        e(v(.Utf8Char @'
+')   charLineFeed)
+
+        e(v(.String '.')    str1)
+        e(v(.String '#')    str2)
+        e(v(.String '\n')   strLineFeed)
+
+        e(v(.Double 1.0)    y)
+        e(v(.Double 1.0)    yFirst)
+        e(v(.Double -1.0)   yLast)
+        e(v(.Double -0.05)  yDelta)
+
+        e(.Double   x)
+        e(v(.Double -2.0)   xFirst)
+        e(v(.Double 0.5)    xLast)
+        e(v(.Double 0.0315) xDelta)
+
+        e(v(.Double 2)      two)
+        e(.ComplexDouble    cmplxIn)
+        e(.ComplexDouble    cmplxOut)
+        e(.Double           abs)
+
+        e(.ComplexDouble cmplxZero)
+        e(.Int32 i)
+        e(v(.Int32 0) c0)
+        e(v(.Int32 1) c1)
+        e(v(.Int32 50) c50)
+        e(.ComplexDouble    z)
+
+//        e(a(.Utf8Char *)  buffer)  
+        e(a(.Utf8Char -4000)  buffer)  
+
+        //e(.String           buffer)
+        e(.Int32            bufferLen)
+
+        e(.Int64            tStart)
+        e(.Int64            tDone)
+        )
+    1
+    clump (1
+        ArrayResize(buffer c0)
+        GetMicrosecondTickCount(tStart)
+        Copy(yFirst y)
+        Perch(0)
+            Copy(xFirst x)
+            Perch(1)
+                // Explicit constructor for simple cluster types is not needed
+                // fields can be set directly
+                Copy(x cmplxIn.real)
+                Copy(y cmplxIn.imaginary)
+
+                // Mandelbrot(cmplxIn cmplxOut)
+                // inline the code instead
+                Copy(c0 i)
+                Copy(cmplxZero z)  // alternately Init(z)
+                Perch(4)
+                    MulComplexDouble(z z z)
+                    AddComplexDouble(z cmplxIn z)
+                ForLoopTail(4 i c50)
+
+                AbsoluteComplexDouble(z abs)
+
+                BranchIfLTDouble(2 abs two)
+                    ArrayAppendElt(buffer char1)
+                    Branch(3)
+                Perch(2)
+                   ArrayAppendElt(buffer char2)
+                Perch(3)
+
+                AddDouble(x, xDelta, x)
+            BranchIfLEDouble(1 x xLast)
+
+        ArrayAppendElt(buffer charLineFeed)
+        AddDouble(y yDelta, y)
+        BranchIfGEDouble(0 y yLast)
+
+        GetMicrosecondTickCount(tDone)
+        StreamWrite(file buffer err)
+
+        SubInt64(tDone tStart tDone)
+        DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
+    )
+) ) )
+
+define (Mandelbrot10 v(.VirtualInstrument (
+    // Dataspace
+    c()
+    1
+    clump (1
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+/*  MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    MandelbrotMain()
+    */
+    )
+)))
+
+//enqueue (MandelbrotMain)
+enqueue (Mandelbrot10)

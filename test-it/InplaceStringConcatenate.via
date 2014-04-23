@@ -1,0 +1,90 @@
+define (c0 dv(a(.Int32 *) () ) )
+define (c1 dv(.Int32 1) )
+define (c2 dv(.Int32 0) )
+//---------------------------------------------------
+//VI Definition: Untitled 1
+define (videf1 dv(.VirtualInstrument (
+  c(
+    e(dv(.Int32 9) local1) // i
+    e(.Int32 local2)
+    e(.Int32 local3)
+    e(a(.String *) local4)
+    e(a(.String *) local5)
+    e(.Boolean local6)
+    e(dv(a(.String *) ('abc') ) local7) // input array
+    e(.String local8)
+    e(v(.String 'def') local9)
+  )
+  1
+  clump(1
+    Sub(local1 c1 local2)
+    Copy(c0 local5 ) // Pre-Loop copy into LSR
+    Copy(c2 local3 ) // initialize i
+
+    //--- begin while loop
+    Perch(0)
+    Copy(local5 local4 ) // LSR copy into inner wire
+    IsGE(local3 local2 local6)
+    ToString(local3 * local8)
+    ArrayConcatenate( local4 local4 local8)
+    Copy(local4 local5 )
+    BranchIfTrue(1 local6) // Loop condition terminal
+    Add(local3 c1 local3) // increment i
+    Branch(0) // loop again
+    //--- end while loop
+
+    Perch(1)
+    Copy(local5 local7 ) // FP Term
+    Print(local7)
+
+    StringConcatenate(local9 local9 local7 )
+    Print(local9)
+    //--- end of vi
+  )
+)))
+enqueue (videf1)
+
+//---------------------------------------------------
+//VI Definition: Untitled 2
+// Inplace string concatenation is allowed if only the first input is the same as the output.
+// This VI swaps the order of the concatenation from videf1 which should give an error.
+define (videf2 dv(.VirtualInstrument (
+  c(
+    e(dv(.Int32 9) local1) // i
+    e(.Int32 local2)
+    e(.Int32 local3)
+    e(a(.String *) local4)
+    e(a(.String *) local5)
+    e(.Boolean local6)
+    e(dv(a(.String *) ('abc') ) local7) // input array
+    e(.String local8)
+    e(v(.String 'def') local9)
+  )
+  1
+  clump(1
+    Sub(local1 c1 local2)
+    Copy(c0 local5 ) // Pre-Loop copy into LSR
+    Copy(c2 local3 ) // initialize i
+
+    //--- begin while loop
+    Perch(0)
+    Copy(local5 local4 ) // LSR copy into inner wire
+    IsGE(local3 local2 local6)
+    ToString(local3 * local8)
+    ArrayConcatenate( local4 local4 local8)
+    Copy(local4 local5 )
+    BranchIfTrue(1 local6) // Loop condition terminal
+    Add(local3 c1 local3) // increment i
+    Branch(0) // loop again
+    //--- end while loop
+
+    Perch(1)
+    Copy(local5 local7 ) // FP Term
+    Print(local7)
+
+    StringConcatenate(local9 local7 local9 )
+    Print(local9)
+    //--- end of vi
+  )
+)))
+enqueue (videf2)

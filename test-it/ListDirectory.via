@@ -1,0 +1,14 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "./TestDataFolder") path)
+        e(a(.String *) fileList)
+        e(a(.String *) folderList)
+    )
+    1
+    clump (1
+        ListDirectory(path fileList)
+        Print(fileList)
+    )
+) ) )
+
+enqueue (HelloWorld)

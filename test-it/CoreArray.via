@@ -1,0 +1,160 @@
+
+define (Test, v(.VirtualInstrument, (
+ c(
+    e(v(.Int32,0), c0),
+    e(v(.Int32,1), c1),
+    e(v(.Int32,2), c2),
+    e(v(.Int32,3), c3),
+    e(v(.Int32,4), c4),
+    e(v(.Int32,5), c5),
+    e(v(.Int32,6), c6),
+    e(v(.Int32,7), c7),
+    e(v(.Int32,8), c8),
+    e(v(.Int32,16), c16),
+
+   // e(a(e(.Double),-5),   arrayOfDoubleBounded1d),
+
+    e(a(e(.Double),5),   arrayOfDoubleFixed1d),
+    e(a(e(.Double),5,5),   arrayOfDoubleFixed2d),
+    e(a(e(.Double),5,5,5),   arrayOfDoubleFixed3d),
+
+    e(a(e(.Double),*),   arrayOfDouble1d_1),
+    e(a(e(.Double),*),   arrayOfDouble1d_2),
+    e(a(e(.Double),*),   arrayOfDouble1d_3),
+
+    e(a(e(.Double),*,*), arrayOfDouble2d),
+    e(a(e(.Double),*,*,*), arrayOfDouble3d),
+    e(a(e(.Double),*,*,*,*), arrayOfDouble4d),
+    e(a(e(.Double),*,*,*,*,*), arrayOfDouble5d),
+    e(a(e(.Double),*,*,*,*,*,*), arrayOfDouble6d),
+    e(a(e(.Double),*,*,*,*,*,*,*), arrayOfDouble7d),
+    e(a(e(.Double),*,*,*,*,*,*,*,*), arrayOfDouble8d),
+    
+ 
+    e(v(a(e(.Double),*), (1,2,3)), arrayWithDefaultValues3),
+    e(v(a(e(.Double),*), (4 ,5)), arrayWithDefaultValues2),
+    e(v(a(e(.Double),*), (0)), arrayWithDefaultValues1),
+e(v(a(e(.Double),*), ()), arrayWithDefaultValues0),
+
+    e(.Boolean, vBool),
+    e(.Type,  vType),
+    e(.Int32, vSize),
+    e(.Int8,  vInt8),
+    e(.Int16, vInt16),
+    e(.Int32, vInt32),
+    e(.Int64, vInt64),
+    e(.UInt8,  vUInt8),
+    e(.UInt16, vUInt16),
+    e(.UInt32, vUInt32),
+    e(.UInt64, vUInt64),  ),
+  1,
+  clump(1,
+    // Test initial sizes
+    //------
+    Print(c3)
+    ArrayLength(arrayOfDouble1d_1, vSize)
+    IsEQInt32(vSize, c0, vBool)
+    Print(vBool)
+    ArrayRank(arrayOfDouble1d_1, vSize)
+    IsEQInt32(vSize, c1, vBool)
+    Print(vBool)
+    //------
+    ArrayLength(arrayOfDouble2d, vSize)
+    IsEQInt32(vSize, c0, vBool)
+    Print(vSize)
+    Print(vBool)
+    //------
+    ArrayLength(arrayWithDefaultValues3, vSize)
+    IsEQInt32(vSize, c3, vBool)
+    DPrintf("3 default elt array has size %d" vSize),
+    Print(vBool)
+    //------
+    ArrayLength(arrayWithDefaultValues2, vSize),
+    IsEQInt32(vSize, c2, vBool),
+    DPrintf("2 default elt array has size %d" vSize),
+    Print(vBool),
+    //------
+    ArrayLength(arrayWithDefaultValues1, vSize),
+    IsEQInt32(vSize, c1, vBool),
+    DPrintf("1 default elt array has size %d" vSize),
+    Print(vBool),
+    //------
+    ArrayLength(arrayWithDefaultValues0, vSize),
+    IsEQInt32(vSize, c0, vBool),
+    DPrintf("0 default elt array has size %d" vSize),
+    Print(vBool),
+
+    //-------------------------------------
+    // Various ranks fixed arrays
+        Print(c3),
+    ArrayRank(arrayOfDoubleFixed1d, vSize),
+    IsEQInt32(vSize, c1, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDoubleFixed2d, vSize),
+    IsEQInt32(vSize, c2, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDoubleFixed3d, vSize),
+    IsEQInt32(vSize, c3, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+
+    //-------------------------------------
+    ArrayLength(arrayOfDoubleFixed1d, vSize),
+    IsEQInt32(vSize, c5, vBool),
+    Print(vSize),
+    Print(vBool),
+
+    //-------------------------------------
+    // Various ranks
+    //------
+    ArrayRank(arrayOfDouble2d, vSize),
+    IsEQInt32(vSize, c2, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble2d, vSize),
+    IsEQInt32(vSize, c2, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble3d, vSize),
+    IsEQInt32(vSize, c3, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble4d, vSize),
+    IsEQInt32(vSize, c4, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble5d, vSize),
+    IsEQInt32(vSize, c5, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble6d, vSize),
+    IsEQInt32(vSize, c6, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble7d, vSize),
+    IsEQInt32(vSize, c7, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+    ArrayRank(arrayOfDouble8d, vSize),
+    IsEQInt32(vSize, c8, vBool),
+    Print(vSize),
+    Print(vBool),
+    //------
+   )
+ ) ) )
+enqueue (Test)
+
+
+

@@ -1,0 +1,79 @@
+
+define (Cluster0 c(e(.Int8)) )                  // none
+define (Cluster1 c(e(.Int32)) )                 // none
+define (Cluster2 c(e(.Int32) e(.Int8)) )
+define (Cluster3 c(e(.Cluster2) e(.Cluster2)) )
+define (Cluster4 c(e(.Double) e(.Cluster2)) )
+define (Cluster5 c(e(.Double) e(.Single)) )
+define (Cluster6 c(e(.Single) e(.Double)) )
+define (Cluster7 c(e(.Single) e(.Single)) )     // none
+define (Cluster8 c(e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
+define (Cluster9 c(e(.Int64) e(.Int8) e(.Int8) e(.Int16) e(.Int32)  ) )
+define (Cluster10 c(e(.Int8) e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
+
+define (HelloWorld v(.VirtualInstrument (
+  c(
+    e(v(.String "Hello world.") variable1)
+    e(.Cluster0 v0)
+    e(.Cluster1 v1)
+    e(.Cluster2 v2)
+    e(.Cluster3 v3)
+    e(.Cluster4 v4)
+    e(.Cluster5 v5)
+    e(.Cluster6 v6)
+    e(.Cluster7 v7)
+    e(.Cluster8 v8)
+    e(.Cluster9 v9)
+    e(.Cluster10 v10)
+    e(.Type     t)
+    e(.Boolean  b)
+  )
+    1
+    clump (1
+    TypeOf(v0 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b)
+
+    TypeOf(v1 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v2 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v3 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v4 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v5 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v6 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v7 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v8 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+    
+    TypeOf(v9 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    TypeOf(v10 t)
+    TypeHasPadding(t b)
+    DPrintf("type %s has padding %s" t b) 
+
+    )
+) ) )
+enqueue (HelloWorld)

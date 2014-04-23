@@ -1,0 +1,57 @@
+define (PrintArrayInfo v(.VirtualInstrument (
+ c(
+    i(.String           message)
+    io(a(.Int32 *)      param1)
+ )
+ c(
+    e(dv(.Int32 0)      c0)
+    e(dv(.Int32 5)    c5)
+    e(dv(.Int32 10)    c10)
+    e(dv(.Int32 50)   c50)
+    e(.Int32 length_i)  // init
+    e(.Int32 length_s)  // smaller
+    e(.Int32 length_b)  // bigger
+    e(.Int32 length_z)  // zero
+    e(.Int32 length_r)  // just right
+ )
+ 1
+ clump(1
+    DPrintf("------------------------------")
+    Print (message)
+    Print (param1)
+    ArrayLength(param1 length_i)
+    ArrayResize(param1 c5)
+    Print (param1)
+    ArrayLength(param1 length_s)
+    ArrayResize(param1 c50)
+    Print (param1)
+    ArrayLength(param1 length_b)
+    ArrayResize(param1 c0)
+    Print (param1)
+    ArrayLength(param1 length_z)
+    ArrayResize(param1 c10)
+    Print (param1)
+    ArrayLength(param1 length_r)
+ )
+)))
+define (ArrayDemo v(.VirtualInstrument (
+ c(  
+    e(dv(.String "Variable") strVariable)
+    e(dv(.String "Fixed") strFixed)
+    e(dv(.String "Bounded") strBounded)
+    e(dv(a(.Int32 *)  (1 1 2 3 5 8))   variableArray1d)
+    e(dv(a(.Int32 10) (1 1 2 3 5 8))   fixedArray1d)
+    e(dv(a(.Int32 -10) (1 1 2 3 5 8))  boundedArray1d)
+  )
+  1
+    clump(1
+        PrintArrayInfo(strVariable variableArray1d)
+        PrintArrayInfo(strFixed fixedArray1d)
+        PrintArrayInfo(strBounded boundedArray1d)
+        
+        PrintArrayInfo(strVariable variableArray1d)
+        PrintArrayInfo(strFixed fixedArray1d)
+        PrintArrayInfo(strBounded boundedArray1d)
+   )
+ ) ) )
+enqueue (ArrayDemo)

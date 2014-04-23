@@ -1,0 +1,19 @@
+define (HelloSdl v(.VirtualInstrument (
+    c(
+     e(dv(.String "Hello world. I can fly.") variable1)
+      e(dv(.UInt32 100) framePause)
+    )
+
+    1
+    clump (1
+        Print(variable1)
+
+        SdlInit(framePause)
+        Perch(0)
+        SdlRender(framePause)
+        WaitMilliseconds(framePause)
+        DPrintf("In  Loop")
+        Branch(0)
+    )
+) ) )
+enqueue (HelloSdl)

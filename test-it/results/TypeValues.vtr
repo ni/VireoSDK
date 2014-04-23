@@ -1,0 +1,18 @@
+Boolean  f 
+Int8  0 
+Int16  0 
+Int32  0 
+Int64  0 
+UInt8  0 
+UInt16  0 
+UInt32  0 
+UInt64  0 
+Double  0 
+Single  0 
+ComplexDouble  (0 0) 
+ComplexSingle  (0 0) 
+Pi 3.14159
+Code Pointer ^CodePointer_null
+Data Pointer ^DataPointer_null
+Clump ^Clump_null
+Virtual Instrument (^ExecutionContext_null * * () 0 ^DataPointer_null ^DataPointer_null)

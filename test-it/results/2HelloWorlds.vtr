@@ -1,0 +1,5 @@
+v1 = <Hello World>
+v2 = <Hello World>
+ ArrayResize(variable1, c0)
+v1 = <> should be empty
+v2 = <Hello World> should not be empty

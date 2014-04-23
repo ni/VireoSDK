@@ -1,0 +1,19 @@
+Hello World The value is 42 and 42
+All values can be printed as a string 42
+Arrays can be printed as a string (7)
+percent can be printed as <%>
+Array(-5) length 0
+Array(-5) capacity 5
+Array(-5 -4) length 0
+Array(-5 -4) capacity 20
+Array(-5 4) length 0
+Array(-5 4) capacity 20
+Array(5 -4) length 0
+Array(5 -4) capacity 20
+Array(5) default length 5
+Array(5) (7 8 9) length 5
+0
+25
+125
+1
+5

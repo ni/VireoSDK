@@ -1,0 +1,60 @@
+The Vireo reference implementation is in C++. These are some of the coding guidelines
+the source code follows
+
+
+1. Use C++ as little as little as possible. Many issues can be avoided following
+this one step.  The following is a bit of the reasoning behind this guideline.
+
+The runtime is a framework to build larger work on top of using the parallel MoC of G, the
+language of Virtual Instruments. As a reference implementation it is a pattern that can
+be used when writing implementations for platforms with with languages that capture the
+core objectives and complexities of the underlying hardware or software platforms. For 
+example VHDL or Verilog for FPGAs  JavaScript for browsers.  Code  written as VIs rarely
+needs to be rewritten.  In short, Vireo is not a C++ library to base C++ projects on. 
+It a runtime for VI based projects.
+
+2. When C++ is used It is mainly C.  C++ is used for simple class hierarchies, templates,
+better inline notation. When templates (or Macros) are used they should be thin so that
+different instances don’t bloat code.  As a note, most of the classes the runtime will
+see are defined dynamically at runtime anyway. C++’s more advanced features like RTTI
+and Exceptions are not used.
+
+3. Memory management is tracked per ExecutionContext, so Malloc and Free methods on the
+Context are used for allocation, not malloc() or new(). The new placement operator is used.
+
+4. The C++ reference parameter notation is not used. 
+
+void Foo (Int& num);      // This format is not used
+
+
+5. For code formatting guidelines for parentheses and braces the Linux  kernel coding style
+is followed. With one notable exception. indentation is in steps of 4 spaces, not 8.  
+If it helps, you can consider these “retina tabs”.  Linus clearly has a good point on
+not nesting the code too deeply, none the less, 4 characters leaves additional room
+for comments and its our tradition, It allows more room for parallel windows, especially
+during comparisons.
+
+  https://www.kernel.org/doc/Documentation/CodingStyle
+  
+Since Vireo is C++ the “//” form of comments is more commonly used. Its common for 
+this form to be avoided in C since it was not officially a standard for plain C 
+until the C99 spec.
+
+6. Files are encoded in UTF-8, though mostly only simple 7 bit Ascii with no 
+byte order marks. Each line is terminated with a Ascii line feed character. 
+The Ascii horizontal tab character is not used. This reduces dependency on platform
+or tool settings.
+
+7. If you modify code in a file, adhere to the pattern of the code you modify.
+Don’t let your addition look like a bad paint job on a fender bender.
+Don’t repaint the whole car to match you new style either.
+
+8. These are guidelines. As a run-time engine the top goal is to provide the best 
+performance possible. Platform specific language extensions or C programing techniques
+are used with ample comments where the benefit is of merit. 
+
+9. Some C was used to bootstrap Vireo before LabVIEW could directly target it. 
+When possible covert that C to G. See Rule 1.
+
+PFA
+

@@ -1,0 +1,4 @@
+beforeWait
+inside 1
+inside 2 2
+inside 0 2 (should be last line)

@@ -1,0 +1,32 @@
+-------------
+ And (f f) => f
+ Or (f f) => f
+ Nor (f f) => t
+ Nand (f f) => t
+ Xor (f f) => f
+ Not (f) => t
+ Not (f) => t
+-------------
+ And (t f) => f
+ Or (t f) => t
+ Nor (t f) => f
+ Nand (t f) => t
+ Xor (t f) => t
+ Not (t) => f
+ Not (f) => t
+-------------
+ And (f t) => f
+ Or (f t) => t
+ Nor (f t) => f
+ Nand (f t) => t
+ Xor (f t) => t
+ Not (f) => t
+ Not (t) => f
+-------------
+ And (t t) => t
+ Or (t t) => t
+ Nor (t t) => f
+ Nand (t t) => f
+ Xor (t t) => f
+ Not (t) => f
+ Not (t) => f

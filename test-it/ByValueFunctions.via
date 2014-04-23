@@ -1,0 +1,93 @@
+define (HelloWorld dv(.VirtualInstrument (
+  c(
+//    e(obj(e(.Int32))        v0)
+    e(a(.* )                v0DGeneric)
+    e(a(.* 5)               v1DFGeneric)
+    e(a(.* -5)              v1DBGeneric)
+    e(a(.* *)               v1DVGeneric)
+    e(a(.Int32 )            v0DInt32)
+    e(a(.Int32 5)           v1DFInt32)
+    e(a(.Int32 -5)          v1DBInt32)
+    e(a(.Int32 *)           v1DVInt32)
+
+    e(a(.* 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000)         v10DFGeneric)
+    e(a(.Int32 2 3)         v2DFInt32)
+    e(dv(a(.Int32) 1776)    dvZeroRankInt32)
+
+/*
+    e(dv(a(.Int32) 1776) dvZeroRankInt32)
+    e(a(.Int8  -2 -2)  vBoundedSquare)
+    e(a(.Int8  5 5)  vSquare)
+    e(a(.*     100000 100000 100000 100000 100000) vBigEmpty)      // It does not take much space to store nothing
+  //  e(a(.Int8  100000 100000 100000 100000 100000) vBig)            // but even on byte is infintly larger
+*/
+
+    e(.VirtualInstrument v2)
+    e(.Int32 c0)
+    e(.Int32 t0)
+    e(.Int32 t1)
+    e(.Int32 t2)
+    e(.Int32 t3)
+
+/*    e(dv(.VirtualInstrument
+        (c() 1 clump(1 DPrintf("Hello")))
+      ) v3)
+*/
+  )
+  1
+  clump (1
+    Print(v0DGeneric)
+    Print(v1DFGeneric)
+    Print(v1DBGeneric)
+    Print(v1DVGeneric)
+    Print(v0DInt32)
+    Print(v1DFInt32)
+    Print(v1DBInt32)
+    Print(v1DVInt32)
+
+
+    ArrayRank(v0DGeneric, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DFGeneric, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DBGeneric, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DVGeneric, t0)
+    DPrintf("Rank = %s" t0)
+
+    ArrayRank(v0DInt32, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DFInt32, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DBInt32, t0)
+    DPrintf("Rank = %s" t0)
+    ArrayRank(v1DVInt32, t0)
+    DPrintf("Rank = %s" t0)
+
+    ArrayRank(v10DFGeneric, t0)
+    ArrayLength(v10DFGeneric, t1)
+    DPrintf("Rank = %s" t0)
+
+/*
+    ArrayRank(vZeroRankInt32, t0)
+    ArrayLength(vZeroRankInt32, t1)
+    ArrayIndexElt(vZeroRankInt32, c0, t2)
+    DPrintf(" ZeroRank Int32 array Rank=%s Length=%s Elt[0]=%s Value=%s" t0 t1 t2 vZeroRankInt32)
+    
+    Print(vBoundedSquare)
+    Print(vSquare)
+    Print(vBigEmpty)
+  //  Print(vBig)
+    // EnqueueRunQueue(v2)     // crash
+*/
+ //    EnqueueRunQueue(v3)     // does this look....
+
+  )
+) ) )
+enqueue (HelloWorld)        // ... close to this? They need to merge.
+
+
+
+
+
+

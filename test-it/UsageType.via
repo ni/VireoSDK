@@ -1,0 +1,48 @@
+define (VIParamClusterFlat c(
+    e(.Int32 p_e)
+    i(.Int32 p_i)
+    o(.Int32 p_o)
+    io(.Int32 p_io)
+    s(.Int32 p_s)
+    t(.Int32 p_t)
+))
+
+define (HelloWorld v(.VirtualInstrument (
+    .VIParamClusterFlat
+    c(
+     e(dv(.Type .VIParamClusterFlat) tvar)
+     e(.Type telt)
+     e(.String str1)
+     e(.String str2)
+     e(.Int32 usage)
+
+     e(dv(.String "Hello world. I can fly.") variable1)
+     e(dv(.Int32 1) one)
+     e(.Int32 i)
+     e(.Int32 n)
+    )
+    2
+    clump (1
+        Print(variable1)
+        TypeSubElementCount(tvar, n)
+        Perch(0)
+        BranchIfGEInt32(1 i n)
+            TypeGetSubElement(tvar i telt)
+            TypeGetName(telt str1)
+            TypeGetElementName(telt str2)
+            TypeUsageType(telt usage)
+            DPrintf(" e( .%s %s)  //%d " str1 str2 usage)
+            Add(i one i)
+        Branch(0)
+        Perch(1)
+    )
+    clump(1
+        Print(n)
+    )
+    
+      //  While()
+      //  Unitl()
+      //  For(i n 1)  // for arg0 goes from initial value to arg1 execute clump arg2. This can be done by a sub vi!
+
+) ) )
+enqueue (HelloWorld)

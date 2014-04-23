@@ -1,0 +1,19 @@
+// A fast clock 100ms tics so the unit test is quicker
+define (TicTock, v(.VirtualInstrument, (
+ c(
+   e(v(.UInt32,100), oneHundred)
+   e(v(.UInt32,100000), oneHundredThousand)
+   e(v(.String,'Tic'), sTic)
+   e(v(.String,'Tock'), sTock)
+   ),
+ 1,
+ clump(1,
+   Perch(0)
+   Print(sTic)
+   WaitMilliseconds(oneHundred)
+   Print(sTock)
+   WaitMicroseconds(oneHundredThousand)
+  // Branch(0),    // In the unit test dir don't loop.
+   )
+)))
+enqueue (TicTock)

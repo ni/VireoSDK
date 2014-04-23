@@ -1,0 +1,7 @@
+ e( .Int32 p_e)  //0 
+ e( .Int32 p_i)  //1 
+ e( .Int32 p_o)  //2 
+ e( .Int32 p_io)  //3 
+ e( .Int32 p_s)  //4 
+ e( .Int32 p_t)  //5 
+Hello world. I can fly.

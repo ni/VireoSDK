@@ -1,0 +1,48 @@
+String with default justify   -----------
+String no field width          -abc-
+String to samll field width    -abc-
+String matching field width    -abc-
+String larger   field width    - abc-
+String xlarge   field width    -                                               abc-
+String with left justify set  -----------
+String no field width          -abc-
+String to samll field width    -abc-
+String matching field width    -abc-
+String larger   field width    -abc -
+String xlarge   field width    -abc                                               -
+Int with default justify      -----------
+Int no field width          -427-
+Int to samll field width    -427-
+Int matching field width    -427-
+Int larger   field width    - 427-
+Int xlarge   field width    -                                               427-
+Int with left justify set     -----------
+Int no field width          -427-
+Int to samll field width    -427-
+Int matching field width    -427-
+Int larger   field width    -427 -
+Int xlarge   field width    -427                                               -
+Real with default justify      -----------
+Real no field width          -42-
+Real to samll field width    -42-
+Real matching field width    - 42-
+Real larger   field width    -  42-
+Real xlarge   field width    -                                                42-
+Real with left justify set     -----------
+Real no field width          -42-
+Real to samll field width    -42-
+Real matching field width    -42 -
+Real larger   field width    -42  -
+Real xlarge   field width    -42                                                -
+Real with default justify      -----------
+Real no field width          -42.4-
+Real to samll field width    -42.4-
+Real matching field width    -42.4-
+Real larger   field width    - 42.4-
+Real xlarge   field width    -                                              42.4-
+Real with left justify set     -----------
+Real no field width          -42.4-
+Real to samll field width    -42.4-
+Real matching field width    -42.4-
+Real larger   field width    -42.4 -
+Real xlarge   field width    -42.4                                              -

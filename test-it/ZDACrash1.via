@@ -1,0 +1,30 @@
+//---------------------------------------------------
+//VI Definition: Untitled 1.vi
+define (videf1 dv(.VirtualInstrument (
+    c(
+        o(dv(a(.Int32 *) (1 2 3 ) ) local1)   // Array
+    )
+    c(
+    )
+    1
+    clump(1
+        Print(local1)
+    )
+)))
+//---------------------------------------------------
+//VI Definition: Untitled 2.vi
+define (videf2 dv(.VirtualInstrument (
+    c(
+        e(dv(a(.Int32 *) (4 5 6) ) local7)   // Array
+        e(a(.Int32 *) local8)   // Array
+    )
+    1
+    clump(1
+        Print(local7)
+        videf1(local7)
+        Print(local7)
+        videf1(*)
+        videf1(local8)
+    )
+)))
+enqueue (videf2)

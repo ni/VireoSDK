@@ -1,0 +1,108 @@
+define (HelloWorld0 dv (.VirtualInstrument (
+ c( e(v(.String 'Could this be a simple reentrant VI?, Hello world.') variable1) )
+            1
+            clump (1
+                Print(variable1)
+            )
+)))
+
+define (HelloWorld dv(.VirtualInstrument (
+    c( 
+        //----------------------------------------------
+        e(dv(.String
+        "(
+            c( e(v(.String 'Somewhat of a lambda, Hello world.') variable1) )
+            1
+            clump (1
+                Print(variable1)
+            )
+        )"
+        ) goodProgram1)
+        //----------------------------------------------
+        e(dv(.String
+        "(
+            c( e(v(.MyVeryOwnString 'Hello world using dynamically defined string type.') variable1) )
+            1
+            clump (1
+                Print(variable1)
+            )
+        )"
+        ) goodProgram2)
+        //----------------------------------------------
+        e(dv(.String
+        "(
+            c( e(v(.String 'Scripted Hello world.') variable1) )
+            1
+            clump (1
+                PrintZZZX(variable1)
+                Print(variable1 variable1)
+                Print()
+                AddInt32(variable1 variable1 variable1)
+            )
+        )"
+        ) badProgram)
+        //----------------------------------------------
+
+
+        e(.TypeManager  tm)
+        e(dv(.String "HelloWorld1")             hw1str)
+        e(dv(.String "MyVeryOwnString")         myVeryOwnStringName)
+
+        e(dv(.String "HelloWorld2")             hw2str)
+        
+        // VirtualInstrument is the VI's type, not an instance of that type.
+        // To Make an instance of the type a variable of that type must be initialized.
+        // Somthing is a bit odd about all of this  
+        e(.VirtualInstrument                    vi1)
+        e(.VirtualInstrument                    vi2)
+        e(.VirtualInstrument                    vi3)
+        e(.VirtualInstrument                    viBad)
+/*         e(dv(.VirtualInstrument (
+        
+            c(
+             //   following line causes seg fault
+             //   e(dv(.String 'a by-value hello world') variable1)
+            )
+            1
+            clump (1
+                DPrintf("a by-value hello world")
+            // Print(variable1)
+            )
+            ))
+            byValueVI)
+*/
+        e(.String                               errorLog)
+        e(dv(.Type .String)                     stringType)
+    )
+    1
+    clump (1
+        DPrintf("-------")
+        Print (goodProgram1)
+        FromString(goodProgram1 vi1 errorLog)   // FromString() will create the instance in the current TypeManager
+        Print (errorLog)
+        DPrintf("-------")
+        Print (badProgram)
+        FromString(badProgram viBad errorLog)
+        Print (errorLog)
+        DPrintf("-------")
+
+
+        EnqueueRunQueue(vi1)
+        
+        HelloWorld0()                   // Call as a shared VI
+        EnqueueRunQueue(HelloWorld0)    // Press the run button
+        
+        //-------------------------------------------------
+        // Now define some types then load code that needs them
+        TypeManagerCurrentTypeManager(tm)
+        TypeManagerDefineType(tm myVeryOwnStringName stringType)
+        FromString(goodProgram2 vi2 errorLog)   // FromString() will create the instance in the current TypeManager
+        Print (errorLog)
+        EnqueueRunQueue(vi2)    // Press the run button
+        DPrintf("-------")
+     //   EnqueueRunQueue(byValueVI)
+        // Copy(byValueVI vi3)  // not quite ready yet
+        // EnqueueRunQueue(vi3) // not quite ready yet
+    )
+) ) )
+enqueue (HelloWorld)

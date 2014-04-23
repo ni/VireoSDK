@@ -1,0 +1,20 @@
+//define (g1 dv(.Int32 0))
+//define (g2 dv(.Int32 0))
+define (g1 .Int32)
+define (g2 .Int32)
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(v(.Int32 45) v1)
+    )
+    clump (1
+        DPrintf("Hello")
+        Print(g1)
+        Print(g2)
+        Copy(v1 g1)
+        Print(g1)
+        Print(g2)
+    )
+) ) )
+
+enqueue (HelloWorld)

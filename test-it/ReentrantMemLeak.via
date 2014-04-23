@@ -1,0 +1,26 @@
+define (SubVI0 dv(.ReentrantVirtualInstrument, (
+ c()
+  clump(1
+    DPrintf("In reentrant  SubVI ")
+   )
+ )))
+
+define (TopVI, v(.VirtualInstrument, (
+ c(
+  )
+clump(1
+    // Should end up waiting one second, not three
+    Trigger(1)
+    Trigger(2)
+    Wait(1)
+    Wait(2)
+   )
+    clump(1
+    SubVI0()
+    )
+    clump(1
+    SubVI0()
+    )
+ )))
+
+enqueue (TopVI)

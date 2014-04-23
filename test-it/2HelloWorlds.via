@@ -1,0 +1,23 @@
+define (HelloWorldString v(.String "Hello World"))
+
+// At on point non flat custom values were not properly cloned,
+// so changing one value changed them all. Once fixed
+// this test worked. SDG
+
+define (HelloWorld v(.VirtualInstrument (
+    c(
+    e(.HelloWorldString variable1) 
+    e(.HelloWorldString variable2) 
+    e(.Int32 c0) 
+    )
+    1
+    clump (1
+        DPrintf("v1 = <%s>", variable1)
+        DPrintf("v2 = <%s>", variable2)
+        DPrintf(" ArrayResize(variable1, c0)")
+        ArrayResize(variable1, c0)
+        DPrintf("v1 = <%s> should be empty", variable1)
+        DPrintf("v2 = <%s> should not be empty", variable2)        
+    )
+) ) )
+enqueue (HelloWorld)

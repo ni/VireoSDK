@@ -1,0 +1,77 @@
+define (TypesToCheck dv(a(.Type *) (
+    .Boolean
+    .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64
+    .Single .Double .ComplexSingle .ComplexDouble
+    .String .Utf8Char .AsciiChar
+    .Time
+    .Type .TypeManager
+    .VI .Clump
+    .CodePointer .DataPointer .BranchTarget .InstructionFunction .InstructionSnippet
+    .Array .Object
+    )
+))
+
+define (HelloWorld v(.VirtualInstrument (
+    .VIParamClusterFlat
+    c(
+     e(.TypeManager tm)
+     e(a(.Type *) allTypes)
+     e(.Type telt)
+     e(.String str1)
+     e(.String str2)
+     e(.Int32 usage)
+
+     e(dv(.String "Hello world. I can fly.") variable1)
+     e(dv(.Int32 1) one)
+     e(.Int32 i)
+     e(.Int32 n)
+     e(.Int32 aqSize)
+     e(.Int32 alignment)
+     e(.Type baseType)
+     e(.Boolean hasCustomDefault)
+     e(.Boolean hasGeneric)
+
+     e(.Int32 encoding)
+     e(.String generatedString)
+    )
+    2
+    clump (1
+        TypeManagerCurrentTypeManager(tm)
+        TypeManagerGetTypes(tm allTypes)
+        ArrayLength(allTypes, n)
+        DPrintf(" Total number of types %d" n)
+
+        Print(TypesToCheck)
+        ArrayLength(TypesToCheck, n)
+
+        Perch(0)
+        BranchIfGEInt32(1 i n)
+            ArrayIndexElt(TypesToCheck i telt)
+            TypeGetName(telt str1)
+            TypeGetElementName(telt str2)
+            TypeTopAQSize(telt aqSize)
+            TypeAlignment(telt alignment)
+            TypeBaseType(telt baseType)
+            TypeHasCustomDefault(telt hasCustomDefault)
+            TypeHasGenericType(telt hasGeneric)
+
+            TypeEncoding(telt encoding)
+            TypeUsageType(telt usage)
+            DPrintf(" e(.%s)  //topAqSize:%2d encoding:%2d usage:%d baseType:%s dv:%s generic:%s"
+                    str1 aqSize encoding usage baseType hasCustomDefault hasGeneric)
+            ToTypeAndDataString(telt generatedString)
+            //DPrintf(" generated strgin <%s>" generatedString)
+            Add(i one i)
+        Branch(0)
+        Perch(1)
+    )
+    clump(1
+        Print(n)
+    )
+    
+      //  While()
+      //  Unitl()
+      //  For(i n 1)  // for arg0 goes from initial value to arg1 execute clump arg2. This can be done by a sub vi!
+
+) ) )
+enqueue (HelloWorld)

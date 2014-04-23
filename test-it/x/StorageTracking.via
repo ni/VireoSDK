@@ -1,0 +1,20 @@
+define (ShowStats v(.VirtualInstrument (
+    c(
+    e(.TypeManager      vTypeManager)
+    e(.TypeManager      vRootTypeManager)
+    e(.Int32            vCount)
+    e(.TypeArray1D      typeArray)  
+    e(.AllocationStatistics stats)
+    )
+    1
+    clump (1
+        TypeManagerCurrentTypeManager(vTypeManager)
+        TypeManagerAllocationStatistics(vTypeManager stats)
+        Print(stats)
+        
+        TypeManagerRootTypeManager(vTypeManager vTypeManager)
+        TypeManagerAllocationStatistics(vTypeManager stats)
+        Print(stats)
+    )
+) ) )
+enqueue (ShowStats)

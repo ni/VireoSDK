@@ -1,0 +1,39 @@
+define (MultiClump dv(.VirtualInstrument (
+ c(
+    e(v(.String 'Clump 0 - Start') s0Start)
+    e(v(.String 'Clump 1') s1)
+    e(v(.String 'Clump 2') s2)
+    e(v(.String 'Clump 3') s3)
+    e(v(.String 'Clump 0 - 1Done') s0_1Done)
+    e(v(.String 'Clump 0 - 2Done') s0_2Done)
+    e(v(.UInt32 100) oneHundred)
+  ) 
+  4
+  	clump(1         // Clump 0
+    	Print(s0Start)
+        Trigger(1)       // Fork
+        Trigger(2)
+        Wait(1)          // Join
+        Print(s0_1Done)
+        Wait(2)
+        Print(s0_2Done)
+        )
+  	clump(1         // Clump 1
+    	Print(s1)
+    	WaitMilliseconds(oneHundred)
+    	WaitMilliseconds(oneHundred)
+        Trigger(3)
+        ) 
+  	clump(1         // Clump 2
+    	Print(s2)
+    	WaitMilliseconds(oneHundred)
+        Trigger(3)
+        ) 
+  	clump(2         // Clump 3
+    	Print(s3)
+        )        
+  )))
+enqueue (MultiClump)
+
+
+

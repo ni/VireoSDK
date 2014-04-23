@@ -1,0 +1,145 @@
+
+// SubVI parameter list needs
+// 1. The paameter list  should be self contained so it can defined as a type and reused in its intirety as a predefined type
+// 2. It can be defined on the fly in a VI wiht out any prototype
+// 3. It needs to identify data direction,
+// 4. [q] doe it need to capture editor elements like thrall the thrall bit, pehaps no
+// since there is no smanic decisions to be made at the assembly level.
+/*
+
+
+So where functions are currently listed like this
+
+    DEFINE_VIREO_FUNCTION(AddDouble, "p(e(.Double),e(.Double),e(.Double))")
+    DEFINE_VIREO_FUNCTION(SubDouble, "p(e(.Double),e(.Double),e(.Double))")
+    DEFINE_VIREO_FUNCTION(MulDouble, "p(e(.Double),e(.Double),e(.Double))")
+    DEFINE_VIREO_FUNCTION(DivDouble, "p(e(.Double),e(.Double),e(.Double))")
+
+Instead the prototye can be defined, and then reused.
+
+    DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double),e(.Double),e(.Double))");
+
+    DEFINE_VIREO_FUNCTION(AddDouble, ".BinOpDouble")
+    DEFINE_VIREO_FUNCTION(SubDouble, ".BinOpDouble")
+    DEFINE_VIREO_FUNCTION(MulDouble, ".BinOpDouble")
+    DEFINE_VIREO_FUNCTION(DivDouble, ".BinOpDouble")
+    
+    
+This is a bit like a function pointer declarations, though it is a step short of that
+its jsut the type for the parameter block, or if we are using the stact, it is the definition of the stack frame upon entry
+to the called code.
+
+
+So applying this to a SubVI there will be an additional type; making a well formed VI look like the following
+
+define (SubVI, v(.VirtualInstrument, (param-block-type, internal-dataspace-type, clump-count, clumps)))
+
+Thus an actual example might look like this
+
+define (AddAndSquare, v(.VirtualInstrument, (
+    p(e(.Double,x),e(.Double,y),e(.Double,value))       // param list with names
+    c()                                                 // no locals
+    1,
+    clump(1,
+        AddDouble(x,y,value)
+        MulDouble(value,value,value)
+    )
+ )))
+
+So where internal types have not yet had the optional parameter type names in the Vireo type, that is more important now.
+
+DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double,x),e(.Double,y),e(.Double,value))");
+
+
+define (AddAndSquare, v(.VirtualInstrument, (
+    p(i(.Double,x),i(.Double,y),o(.Double,value))       // param list with names
+
+
+*/
+define (SubVINoParams, v(.VirtualInstrument, (
+ c(
+ e(v(.String 'Inside call: SubVINoParams') sInside)
+  )
+    clump(1
+    Print(sInside)
+   )
+ )))
+ 
+define (SubVIWithOneInputParam, v(.VirtualInstrument (
+ c(i(.Int32 x))
+ c(
+  e(v(.Int32 1) c1)
+  e(v(.String 'Inside call: SubVIWithOneInputParam')  sInside)
+  )
+  clump(1 
+  //  AddInt32(c1 x x)
+ //   Print(x)
+    Print(sInside)
+   )
+ )))
+
+define (SubVIWithOneOutputParam, v(.VirtualInstrument (
+ c(o(.Int32 result))
+ c( 
+ e(v(.String,'Inside call: SubVIWithOneOutputParam'), sInside)
+  ) 
+  clump(1 
+    Print(sInside)
+   )
+ )))
+
+define (SubVIWithOneOneInAndOneOutputParam, v(.VirtualInstrument (
+ c(i(.Int32 x) o(.Int32 result))
+ c( 
+ e(v(.String,'Inside call: SubVIWithOneOneInAndOneOutputParam'), sInside)
+  )
+  clump(1
+  DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is <%s> result is <%s>" x result)
+    Print(sInside)
+   )
+ )))
+
+define (SubVIWithOneOneInputOutputParam, v(.VirtualInstrument, (
+ c(io(.Int32 x))
+ c( 
+ e(v(.String,'Inside call: SubVIWithOneOneInputOutputParam'), sInside)
+  )
+  clump(1
+  DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is %s", x)
+    Print(sInside)
+   )
+ )))
+ 
+ define (SubVIWithOneInputStringParamWithDefaultOneOutputString v(.VirtualInstrument (
+ c(
+    i(dv(.String 'Hello world.') stringParam)
+    o(.String result))
+ c( 
+  )
+  clump(1
+    DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is <%s> result is <%s>" stringParam result)
+    Copy(stringParam result)
+    DPrintf(" After assignment <%s> result is <%s>" stringParam result)
+   )
+ )))
+
+define (TopVI, v(.VirtualInstrument, (
+ c(
+  e(v(.Int32 47) c47)
+  e(v(.Int32 47) c47)
+    e(v(.String 'Before call') sBefore)
+    e(v(.String 'After call') sAfter)
+  )
+  clump(1
+    Print(sBefore)
+    SubVINoParams()
+    SubVIWithOneInputParam()
+    SubVIWithOneOutputParam()
+    SubVIWithOneOneInAndOneOutputParam()
+    SubVIWithOneOneInputOutputParam() 
+    SubVIWithOneInputStringParamWithDefaultOneOutputString(* *)
+    Print(sAfter)
+   )
+ )))
+
+enqueue (TopVI)

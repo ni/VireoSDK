@@ -1,0 +1,88 @@
+/**
+ 
+ Copyright (c) 2014 National Instruments Corp.
+ 
+ This software is subject to the terms described in the LICENSE.TXT file
+ 
+ SDG
+ */
+
+/*! \file
+    \brief Macros for type casting used by Math.cpp
+ */
+
+#if (TYPE_CODE != TC_UINT8)
+#ifdef Y
+Y(UInt8)
+#else
+X(UInt8)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_UINT16)
+#ifdef Y
+Y(UInt16)
+#else
+X(UInt16)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_UINT32)
+#ifdef Y
+Y(UInt32)
+#else
+X(UInt32)
+#endif
+#endif
+
+#if (TYPE_CODE  != TC_UINT64)
+#ifdef Y
+Y(UInt64)
+#else
+X(UInt64)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_INT8)
+#ifdef Y
+Y(Int8)
+#else
+X(Int8)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_INT16)
+#ifdef Y
+Y(Int16)
+#else
+X(Int16)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_INT32)
+#ifdef Y
+Y(Int32)
+#else
+X(Int32)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_INT64)
+#ifdef Y
+Y(Int64)
+#else
+X(Int64)
+#endif
+#endif
+
+#if (TYPE_CODE != TC_SINGLE)
+X(Single)
+#endif
+
+#if (TYPE_CODE != TC_DOUBLE)
+X(Double)
+#endif
+
+#undef X
+#undef Y
+#undef TYPE_CODE

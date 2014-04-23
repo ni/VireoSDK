@@ -1,0 +1,125 @@
+//trace
+define (SubVI0, v(.VirtualInstrument, (
+ c(
+    e(v(.String 'Inside call') sInside)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+   )
+ )))
+
+define (SubVI1, v(.VirtualInstrument, (
+ c(i(.Int32 x))
+ c(
+    e(v(.String 'Inside call') sInside)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+  Print (x)
+   )
+ )))
+
+define (SubVI2, v(.VirtualInstrument, (
+ c(i(.Int32 x) o(.Int32 x_out))
+ c(
+    e(v(.String 'Inside call') sInside)
+    e(v(.Int32 1) c1)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+    DPrintf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+    AddInt32(x,c1,x_out)
+    DPrintf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+    Print (x)
+   )
+ )))
+
+define (SubVI3, v(.VirtualInstrument, (
+ c(io(.Int32 x))
+ c(
+    e(v(.String 'Inside call') sInside)
+    e(v(.Int32 1) c1)
+  ),
+  1,
+  clump(1,
+  DPrintf("In SubVI3 with in/out parameter initially <%s>, one is <%s>", x, c1)
+    AddInt32(x,c1,x)
+  DPrintf("In SubVI3 with in/out parameter after add <%s>, one is <%s>", x, c1)
+   )
+ )))
+ 
+ 
+define (SubVI1d, v(.VirtualInstrument, (
+ c(i(.Double x))
+ c(
+    e(v(.String 'Inside call') sInside)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+  Print (x)
+   )
+ )))
+
+define (SubVI2d, v(.VirtualInstrument, (
+ c(i(.Double x) o(.Double x_out))
+ c(
+    e(v(.String 'Inside call') sInside)
+    e(v(.Double 1) c1)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+    DPrintf("In SubVI2d with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+    AddDouble(x,c1,x_out)
+    DPrintf("In SubVI2d with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+    Print (x)
+   )
+ )))
+
+define (SubVI3d, v(.VirtualInstrument, (
+ c(io(.Double x))
+ c(
+    e(v(.String 'Inside call') sInside)
+    e(v(.Double 1) c1)
+  ),
+  1,
+  clump(1,
+  DPrintf("In SubVI3d with in/out parameter initially <%s>, one is <%s>", x, c1)
+    AddDouble(x,c1,x)
+  DPrintf("In SubVI3d with in/out parameter after add <%s>, one is <%s>", x, c1)
+   )
+ )))
+
+
+define (TopVI, v(.VirtualInstrument, (
+ c(
+   e(v(.Int32 42) value)
+   e(v(.Double 42.1) dValue)
+    e(v(.String 'Before call') sBefore)
+    e(v(.String 'After call')  sAfter)
+  ),
+  1,
+    clump(1,
+    SubVI0()
+    Print(sBefore)
+    SubVI1(value)
+    Print(value)
+    SubVI2(value value)
+    Print(value)
+    SubVI3(value) // in-out parameter
+    Print(value)
+    Print(sAfter)
+    
+    SubVI1d(dValue)
+    SubVI2d(dValue dValue)
+    SubVI3d(dValue)
+
+
+   )
+ )))
+
+enqueue (TopVI)

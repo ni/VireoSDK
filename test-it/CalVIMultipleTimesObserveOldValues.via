@@ -1,0 +1,34 @@
+define (SubVI2, dv(.VirtualInstrument, (
+c(
+    i(.Int32 x)
+    o(.Int32 x_out)
+)
+c(
+    e(dv(.String 'Inside call') sInside)
+    e(dv(.Int32 1) c1)
+)
+1
+clump(1,
+Print(sInside)
+DPrintf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+AddInt32(x,c1,x_out)
+DPrintf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+Print (x)
+)
+)))
+
+define (HelloWorld v(.VirtualInstrument (
+c(
+     e(dv(.Int32 42) value)
+)
+    1
+    clump (1
+        SubVI2(value value)
+        SubVI2(value value)
+        SubVI2(value value)
+        SubVI2(value value)
+        SubVI2(value value)
+        SubVI2(value value)
+    )
+) ) )
+enqueue (HelloWorld)

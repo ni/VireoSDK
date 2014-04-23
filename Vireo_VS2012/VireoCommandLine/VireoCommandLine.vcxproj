@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>VireoCommandLine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\CommandLine\main.cpp" />
+    <ClCompile Include="..\..\source\core\Array.cpp" />
+    <ClCompile Include="..\..\source\core\CEntryPoints.cpp" />
+    <ClCompile Include="..\..\source\core\DataObserver.cpp" />
+    <ClCompile Include="..\..\source\core\DataQueue.cpp" />
+    <ClCompile Include="..\..\source\core\EggShell.cpp" />
+    <ClCompile Include="..\..\source\core\EventLog.cpp" />
+    <ClCompile Include="..\..\source\core\ExecutionContext.cpp" />
+    <ClCompile Include="..\..\source\core\GenericFunctions.cpp" />
+    <ClCompile Include="..\..\source\core\Iterators.cpp" />
+    <ClCompile Include="..\..\source\core\Math.cpp" />
+    <ClCompile Include="..\..\source\core\Platform.cpp" />
+    <ClCompile Include="..\..\source\core\Queue.cpp" />
+    <ClCompile Include="..\..\source\core\String.cpp" />
+    <ClCompile Include="..\..\source\core\StringUtilities.cpp" />
+    <ClCompile Include="..\..\source\core\TDCodecLVFlat.cpp" />
+    <ClCompile Include="..\..\source\core\TDCodecVia.cpp" />
+    <ClCompile Include="..\..\source\core\TDCodecVib.cpp" />
+    <ClCompile Include="..\..\source\core\Time128.cpp" />
+    <ClCompile Include="..\..\source\core\TypeAndDataManager.cpp" />
+    <ClCompile Include="..\..\source\core\TypeDefiner.cpp" />
+    <ClCompile Include="..\..\source\core\VirtualInstrument.cpp" />
+    <ClCompile Include="..\..\source\io\FileIO.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\include\BuildConfig.h" />
+    <ClInclude Include="..\..\source\include\CharConversionsUTF16.h" />
+    <ClInclude Include="..\..\source\include\DataObserver.h" />
+    <ClInclude Include="..\..\source\include\DataTypes.h" />
+    <ClInclude Include="..\..\source\include\EggShell.h" />
+    <ClInclude Include="..\..\source\include\ExecutionContext.h" />
+    <ClInclude Include="..\..\source\include\Instruction.h" />
+    <ClInclude Include="..\..\source\include\Loader.h" />
+    <ClInclude Include="..\..\source\include\Platform.h" />
+    <ClInclude Include="..\..\source\include\StringUtilities.h" />
+    <ClInclude Include="..\..\source\include\TypeAndDataManager.h" />
+    <ClInclude Include="..\..\source\include\Vireo.h" />
+    <ClInclude Include="..\..\source\include\VirtualInstrument.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,137 @@
+define (default20 dv(.Single 20) )
+define (stringa373 dv(.String 'a373') )
+
+define (Test, v(.VirtualInstrument, (
+ c(
+    e(.Int32 x)
+    e(.Int32 y)
+    e(v(.Int32,0) c0)
+    e(v(.Int32,1) c1)
+    e(v(.Int32,2) c2)
+    e(v(.Int32,3) c3)
+    e(v(.Int32,4) c4)
+    e(v(.Int32,5) c5)
+    e(v(.Int32,6) c6)
+    e(v(.Int32,7) c7)
+    e(v(.Int32,8) c8)
+    e(v(.Int32,16) c16)
+    e(v(.Int32,1234) c1234)
+    //--
+    e(v(.Int32,-2) cn2)
+    e(v(.Int32,-3) cn3)
+    //--
+    e(.Int32 value)
+    e(.Int32 value2)
+    e(v(.Int16,4) width)
+    e(v(.Int32,12) defaultVal)
+    e(v(.Double,1.2) dDefaultVal)
+    e(v(.Int32,0) offset)
+    e(v(.Int32,0) endoffset)
+    //-------------------
+    e(v(.Double,1.5) d1_5)
+    e(v(.Double,1.76) d1_76)
+
+    e(.Double dx)
+    e(.Double dy)
+    e(.Double dvalue)
+    e(.Double dvalue2)
+    e(.String outString)
+    e(v(.String,'123 456 abc'), cString)
+    e(v(.String,'1.23 4.56 6.78'), dString)
+    e(v(.Int16,4) width)
+    e(v(.ComplexDouble (1.2 2.3)) cDouble)
+
+    e(.Single local1)
+    e(.Int32 local2)
+ ),
+  1,
+  clump(1,
+    // Int32 to String
+    Print(cn2)
+    ToString(cn2,width,outString)
+    Print(outString)
+
+    Print(c3)
+    ToString(c3,width,outString)
+    Print(outString)
+
+    //---------------------------------------------------------
+
+    // Double to String
+    Print(d1_5)
+    ToString(d1_5,width,outString)
+    Print(outString)
+
+    Print(d1_76)
+    ToString(d1_76,width,outString)
+    Print(outString)
+
+    //---------------------------------------------------------
+
+    // String to Int32
+    Print(cString)
+    Copy(c0 offset)
+
+    DecimalStringToNumber(cString offset defaultVal endoffset value)
+    Print(offset)
+    Print(endoffset)
+    Print(value)
+
+    Copy(endoffset, offset)
+    DecimalStringToNumber(cString offset defaultVal endoffset value)
+    Print(offset)
+    Print(endoffset)
+    Print(value)
+
+    Copy(endoffset, offset)
+    DecimalStringToNumber(cString offset defaultVal endoffset value)
+    Print(offset)
+    Print(endoffset)
+    Print(value)
+
+    Copy(endoffset, offset)
+    DecimalStringToNumber(cString,offset,*,*,value)
+    Print(offset)
+    Print(endoffset)
+    Print(value)
+
+    //---------------------------------------------------------
+
+    // String to Double
+    Print(dString)
+    Copy(c0 offset)
+
+    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,*)
+    Print(offset)
+    Print(endoffset)
+    Print(dvalue)
+
+    Copy(endoffset, offset)
+    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    Print(offset)
+    Print(endoffset)
+    Print(dvalue)
+
+    Copy(endoffset, offset)
+    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    Print(offset)
+    Print(endoffset)
+    Print(dvalue)
+
+    Copy(endoffset, offset)
+    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    Print(offset)
+    Print(endoffset)
+    Print(dvalue)
+
+    //---------------------------------------------------------
+
+    DecimalStringToNumber(stringa373 * default20 local2 local1)
+    Print(local1)
+
+   )
+ ) ) )
+enqueue (Test)
+
+
+

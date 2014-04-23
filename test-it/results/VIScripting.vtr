@@ -1,0 +1,38 @@
+-------
+-------
+-------
+-------
+(
+            c( e(v(.String 'Somewhat of a lambda, Hello world.') variable1) )
+            1
+            clump (1
+                Print(variable1)
+            )
+        )
+
+(
+            c( e(v(.String 'Scripted Hello world.') variable1) )
+            1
+            clump (1
+                PrintZZZX(variable1)
+                Print(variable1 variable1)
+                Print()
+                AddInt32(variable1 variable1 variable1)
+            )
+        )
+(Line 5 Error "Function not found 'PrintZZZX'.")
+(Line 6 Error "Too many arguments 'variable1'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+
+Somewhat of a lambda, Hello world.
+Could this be a simple reentrant VI?, Hello world.
+(Line 5 Error "Function not found 'PrintZZZX'.")
+(Line 6 Error "Too many arguments 'variable1'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+(Line 8 Error "Type mismatch, argument should be 'Int32'.")
+
+Could this be a simple reentrant VI?, Hello world.
+Hello world using dynamically defined string type.

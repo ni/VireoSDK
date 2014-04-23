@@ -1,0 +1,11 @@
+ Inside SubVIWithOneOneInputOutputParam input value is <0> result is <0>
+ Inside SubVIWithOneOneInputOutputParam input value is 0
+ Inside SubVIWithOneOneInputOutputParam input value is <Hello world.> result is <>
+ After assignment <Hello world.> result is <Hello world.>
+Before call
+Inside call: SubVINoParams
+Inside call: SubVIWithOneInputParam
+Inside call: SubVIWithOneOutputParam
+Inside call: SubVIWithOneOneInAndOneOutputParam
+Inside call: SubVIWithOneOneInputOutputParam
+After call

@@ -1,0 +1,208 @@
+/**
+ 
+Copyright (c) 2014 National Instruments Corp.
+ 
+This software is subject to the terms described in the LICENSE.TXT file
+ 
+SDG
+*/
+
+/*! \file
+ */
+
+#include "DataTypes.h"
+#include "TypeAndDataManager.h"
+#include "TDCodecVia.h"
+#include "TypeDefiner.h"
+
+namespace Vireo {
+
+//------------------------------------------------------------
+// TypeDefiner - class for modules to register types
+//------------------------------------------------------------
+// The constructor for each TypeDefiner global will link itself
+// into the gpTypeDefinerList. The order can not be guaranteed.
+// but all global constructors will be called before the apps
+// main entry point is called.
+TypeDefiner* gpTypeDefinerList = null;
+
+void TypeDefiner::DefineTypes(TypeManager& tm)
+{
+    TypeDefiner* pItem = gpTypeDefinerList;
+    while (pItem) {
+        pItem->_pCallback(tm);
+        pItem = pItem->_pNext;
+    }
+}
+//------------------------------------------------------------
+TypeDefiner::TypeDefiner(TypeDefinerCallback callback, const char* pNameSapce, Int32 version)
+{
+    VIREO_ASSERT(version == kVireoABIVersion)
+    _pNext = gpTypeDefinerList;
+    _pCallback = callback;
+    _pNameSpace = pNameSapce;
+    gpTypeDefinerList = this;
+}
+
+//------------------------------------------------------------
+TypeRef TypeDefiner::Define(TypeManager& tm, const char* name, const char* typeString)
+{
+    SubString typeName(name);
+    SubString wrappedTypeString(typeString);
+    return Define(tm, &typeName, &wrappedTypeString);
+}
+//------------------------------------------------------------
+TypeRef TypeDefiner::ParseAndBuidType(TypeManager& tm, SubString* typeString)
+{
+    TypeManagerScope scope(&tm);
+    
+    // TODO could save map of already parsed types in this type manager.
+    // still undetermined how often duplicate definitions will happen.
+    // they are most common for primitive function declarations
+    // but even if there are textual differences it may be identical.
+    TDViaParser parser(&tm, typeString, null, 1);
+    return parser.ParseType();
+}
+//------------------------------------------------------------
+TypeRef TypeDefiner::Define(TypeManager& tm, SubString* typeName, SubString* typeString)
+{
+    TypeManagerScope scope(&tm);
+    TypeRef type = null;
+    
+    type = ParseAndBuidType(tm, typeString);
+    // If a name is supplied, add it to name to type dictionary as well
+    if (typeName->Length()) {
+        type = tm.Define(typeName, type);
+    }
+    return type;
+}
+//------------------------------------------------------------
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManager& tm, const char* name, void* instruction, const char* typeCStr, PointerTypeEnum pointerType)
+{
+    SubString typeString(typeCStr);
+    TypeRef type = ParseAndBuidType(tm, &typeString);
+    
+    tm.DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
+}
+//------------------------------------------------------------
+void TypeDefiner::DefineCustomDataProcs(TypeManager& tm, const char* name, IDataProcs* pDataProcs, const char* typeCStr)
+{
+    SubString typeString(typeCStr);
+    TypeRef type = ParseAndBuidType(tm, &typeString);
+    
+    tm.DefineCustomDataProcs(name, pDataProcs, type);
+}
+//------------------------------------------------------------
+void TypeDefiner::DefineCustomValue(TypeManager& tm, const char* name, Int32 value, const char* typeString)
+{
+    SubString string(typeString);
+    
+    TDViaParser parser(&tm, &string, null, 1);
+    TypeRef t = parser.ParseType();
+
+    DefaultValueType *cdt = DefaultValueType::New(&tm, t);
+    
+    if (cdt->BitEncoding() == kEncoding_SInt && cdt->TopAQSize() == 4) {
+        *(Int32*)cdt->Begin(kPAInit) = value;
+    
+        string.AliasAssignCStr(name);
+        tm.Define(&string, cdt);
+    }
+}
+//------------------------------------------------------------
+void TypeDefiner::DefineStandardTypes(TypeManager& tm)
+{
+    // Numeric types and Boolean
+    Define(tm, "Boolean",       "c(e(bb(1 Boolean)))");
+    Define(tm, "*",             "c(e(bb(* Generic)))");
+    // Integer
+    Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
+    Define(tm, "Int8",          "c(e(bb(8 SInt)))");
+    Define(tm, "UInt16",        "c(e(bb(16 UInt)))");
+    Define(tm, "Int16",         "c(e(bb(16 SInt)))");
+    // UInt32
+    Define(tm, "UInt32Atomic",  "c(e(bb(32 UInt)))");
+    Define(tm, "UInt32Cluster", "c(e(.UInt16 HiWord),e(.UInt16 LoWord))");
+    Define(tm, "UInt32",        "eq(e(.UInt32Atomic),e(.UInt32Cluster))");
+    // Integer Int32
+    Define(tm, "Int32",         "c(e(bb(32 SInt)))");
+    Define(tm, "UInt64",        "c(e(bb(64 UInt)))");
+    Define(tm, "Int64",         "c(e(bb(64 SInt)))");
+    Define(tm, "Block128",      "c(e(bb(128 Bits)))");
+    Define(tm, "Block256",      "c(e(bb(256 Bits)))");
+#if 1
+    // TODO These could be moved out of the core once there is a way to order
+    // module initialization
+    
+    // Floating-point Single
+    Define(tm, "SingleAtomic",  "c(e(bb(32 IEEE754B)))");
+    Define(tm, "SingleCluster", "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
+    Define(tm, "Single",        "eq(e(.SingleAtomic), e(.SingleCluster))");
+    // Floating-point Double
+    Define(tm, "DoubleAtomic",  "c(e(bb(64 IEEE754B)))");
+    Define(tm, "DoubleCluster", "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52,Q1)  fraction))))");
+    Define(tm, "Double",        "eq(e(.DoubleAtomic) e(.DoubleCluster))");
+    // ComplexNumbers
+    Define(tm, "ComplexSingle", "c(e(.Single real) e(.Single imaginary))");
+    Define(tm, "ComplexDouble", "c(e(.Double real) e(.Double imaginary))");
+#endif
+    // Time
+    Define(tm, "Time",          "c(e(.Int64 seconds) e(.UInt64 fractions))");
+    // String and character types
+    Define(tm, "AsciiChar", "c(e(bb(8 Ascii)))");
+    Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");
+    
+    Define(tm, "AsciiArray1D", "a(.AsciiChar *)");   // beware multibyte encodings
+    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");     // beware multibyte encodings
+    
+    Define(tm, "String", ".Utf8Array1D");
+    Define(tm, "AsciiString", ".AsciiArray1D");
+    
+    Define(tm, "StringArray1D", "a(.String *)");
+    
+    // Special types for the execution system.
+    Define(tm, "CodePointer", "c(e(bb(HostPointerSize Pointer)))");
+    Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
+    Define(tm, "BranchTarget", ".DataPointer");
+    Define(tm, "InstructionFunction", ".CodePointer");
+    Define(tm, "InstructionSnippet", ".DataPointer");
+    
+    // Pointer to root clump of a VI
+    Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
+    Define(tm, "EmptyParameterList", "c()");  // Parameter is name, it gets resolved to first clump for SubVI
+    
+    // Clump - 0 based index into VIs array of clumps
+    Define(tm, "Clump", ".DataPointer");  // Parameter is index
+    
+    // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
+    Define(tm, "Type", ".DataPointer");
+    Define(tm, "TypeManager", ".DataPointer");
+    
+    // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
+    Define(tm, "StaticType", ".DataPointer");
+    
+    Define(tm, "Object", ".DataPointer");
+    Define(tm, "Array", ".DataPointer");   // Object with Rank > 0
+    Define(tm, "Array1D", ".DataPointer");
+    Define(tm, "Variant", ".DataPointer"); // TODO is this any different from the Type type if the type has a default value?
+    
+    // VarArgCount - Used in prototypes for vararg functions.
+    // This parameter will be constant number, not a pointer to a number
+    Define(tm, "VarArgCount", ".DataPointer");
+    
+    // StaticTypeAndData - Used in prototypes for polymorphic functions.
+    // Static type paired with a pointer to runtime data.
+    // The Compiler/Assembler will pass both a TypeRef and a DataPointer
+    // for each parameter of this type.
+    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
+    
+    // A Debugging type that allows static data to be directly accessed from the loaded image
+    // or perhaps copied to separately malloced blocks (For DPrinf)
+    // Initially this points to data in its raw format not after processing,
+    // so no escape sequences will have been processed.
+    Define(tm, "StaticString", "c(e(.DataPointer begin) e(.DataPointer end))");
+}
+
+}
+
+ 

@@ -1,0 +1,40 @@
+define (AFewMillisecods   dv(.UInt32 200))
+define (SubVI0 dv(.ReentrantVirtualInstrument, (
+ c(
+    e(v(.String 'Hello, World.') sInside)
+  ),
+  1,
+  clump(1,
+    Print(sInside)
+    WaitMilliseconds(AFewMillisecods)
+   )
+ )))
+
+//define (SubVI1 dv(.ReentrantVirtualInstrument .SubVI0))
+
+define (TopVI, v(.VirtualInstrument, (
+ c(
+  ),
+  4
+    clump(1,
+    // Should end up waiting one second, not three
+    Trigger(1)
+    Trigger(2)
+    Trigger(3)
+    Wait(1)
+    Wait(2)
+    Wait(3)
+   )
+    clump(1
+        SubVI0()
+    )
+    clump(1
+        SubVI0()
+   )
+    clump(1
+        SubVI0()
+   )
+
+ )))
+
+enqueue (TopVI)

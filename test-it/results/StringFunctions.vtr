@@ -1,0 +1,19 @@
+ ArraySubset ('abc' 0 1) <a>
+ ArraySubset ('abc' -1 1) <a>
+ ArraySubset ('abc' 0 5) <abcde>
+ ArraySubset ('abc' -1 5) <abcde>
+ ArraySubset ('abc' 0 100) <abcdefghijklmnopqrstuvwzyz12345678890>
+ ArraySubset ('abc' -1 100) <abcdefghijklmnopqrstuvwzyz12345678890>
+ ArraySubset ('abc' 5 100) <fghijklmnopqrstuvwzyz12345678890>
+ ArraySubset ('abc' 100 5) <>
+ ReplaceSubstring (abc hello -1 5) <abcdefghijklmnopqrstuvwzyz12345678890> <>
+ ReplaceSubstring (abc hello 1 0) <aHellobcdefghijklmnopqrstuvwzyz12345678890> <>
+ ReplaceSubstring (abc hello 1 1) <aHellocdefghijklmnopqrstuvwzyz12345678890> <b>
+ ReplaceSubstring (abc hello 1 5) <aHelloghijklmnopqrstuvwzyz12345678890> <bcdef>
+ ReplaceSubstring (abc hello 5 8) <abcdeHellonopqrstuvwzyz12345678890> <fghijklm>
+ ReplaceSubstring (abc hello 1 5) <aHelloghijklmnopqrstuvwzyz12345678890> <bcdef>
+ ReplaceSubstring (abc hello 5 5) <abcdeHelloklmnopqrstuvwzyz12345678890> <fghij>
+ ReplaceSubstring (abc hello 5 5) <abcdefghijklmnopqrstuvwzyz12345678890> <>
+ ReplaceSubstring (abc hello 100 110) <abcdefghijklmnopqrstuvwzyz12345678890> <>
+ ReplaceSubstring (abc hello 8 5) <abcdefghHellonopqrstuvwzyz12345678890> <ijklm>
+Hello world. I can fly.

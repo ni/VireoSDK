@@ -1,0 +1,28 @@
+define (ArrayDemo dv(.VirtualInstrument (
+ c(   
+    e(a(.Int32 *)     variableArray1d)
+    e(a(.Int32 5)     fixedArray1d)
+    e(a(.Int32 -5)    boundedArray1d)
+
+    e(dv(a(.Int32 *) (1 2 3 4))     variableArray1dwithDefaults)
+    e(dv(a(.Int32 5) (1 2 3 4))     fixedArray1dwithDefaults)
+    e(dv(a(.Int32 -5) (1 2 3 4))    boundedArray1dwithDefaults)
+
+    e(a(.Int32 2 3)   fixedArray2d)
+    e(a(.Int32 1 2 3) fixedArray3d)
+  )
+  1
+    clump(1
+        Print(variableArray1d)
+        Print(fixedArray1d)
+        Print(boundedArray1d)
+        
+        Print(variableArray1dwithDefaults)
+        Print(fixedArray1dwithDefaults)
+        Print(boundedArray1dwithDefaults)
+        
+        Print(fixedArray2d)
+        Print(fixedArray3d)
+   )
+ ) ) )
+enqueue (ArrayDemo)

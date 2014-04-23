@@ -1,0 +1,53 @@
+define (SubVI0 dv(.ReentrantVirtualInstrument, (
+c(
+    // Leak #3 was caused by code top top copy in 
+    // arrays but not clusters that contained arrays.
+    // for the fix non flat parameters are always topCopied 
+    // This moves top values and top pointers
+    // at call exit  they are zeroed out
+    i(c( e(a(.Int8 0) n0) ) local14)
+)
+ c()
+  clump(1
+    DPrintf("In reentrant  SubVI0 ")
+   )
+ )))
+
+define (SubVI1 dv(.ReentrantVirtualInstrument, (
+c(
+    // Leak #3 was caused by code top top copy in 
+    // arrays but not clusters that contained arrays.
+    // for the fix non flat parameters are always topCopied 
+    // This moves top values and top pointers
+    // at call exit  they are zeroed out
+      i(c( e(a(.Int8 0)) e(a(.Int8 0)) e(a(.Int8 0)) ) local2)
+)
+ c()
+  clump(1
+    DPrintf("In reentrant  SubVI1 ")
+   )
+ )))
+ 
+define (TopVI, v(.VirtualInstrument, (
+c(
+    // Leak #2 was caused by the Cluster init method 
+    // skipping allocation of parameter there were arrays
+    // not not parameters that contained arrays. The test was converted 
+    // from IsArray() to !IsFlat()
+    o(c( e(a(.Int8 0) n0) ) local14)
+)
+c(
+  // If in/out parameters are used in the data space no one will clean them
+  // up. The loader should generate errors for I/O parameters in the DS.  
+  //  o(c( e(a(.Int8 0) n0) ) local12)
+  e(c( e(a(.Int8 0) n0) ) local0)
+  e(c( e(a(.Int8 0)) e(a(.Int8 0)) e(a(.Int8 0)) ) local1)
+)
+clump(1
+    DPrintf("There should be no leaks")
+    SubVI0(local0)
+    SubVI1(local1)
+   )
+ )))
+
+enqueue (TopVI)

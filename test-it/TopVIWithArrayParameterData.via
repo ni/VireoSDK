@@ -1,0 +1,24 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        i(dv(.String "Hello, world. I can fly.") param1)
+        i(.Int32 param2)
+        i(a(.Int32 *) param3)
+        o(dv(.String "Adios.") param4)
+        o(.Int32 param5)
+        o(dv(a(.Int32 *) (6 7 8)) param6)
+    )
+    c(
+        e(v(.String "Hello, world. I can fly.") variable1)
+    )
+    clump (1
+        Print(param1)
+        Print(param2)
+        Print(param3)
+        Print(param4)
+        Print(param5)
+        Print(param6)
+        Print(variable1)
+    )
+) ) )
+
+enqueue (HelloWorld)

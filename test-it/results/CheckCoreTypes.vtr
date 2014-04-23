@@ -1,0 +1,30 @@
+ Total number of types 2
+ e(.Boolean)  //topAqSize: 1 encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:f generic:f
+ e(.Int8)  //topAqSize: 1 encoding:10 usage:0 baseType:c(e(bb(8 SInt))) dv:f generic:f
+ e(.Int16)  //topAqSize: 2 encoding:10 usage:0 baseType:c(e(bb(16 SInt))) dv:f generic:f
+ e(.Int32)  //topAqSize: 4 encoding:10 usage:0 baseType:c(e(bb(32 SInt))) dv:f generic:f
+ e(.Int64)  //topAqSize: 8 encoding:10 usage:0 baseType:c(e(bb(64 SInt))) dv:f generic:f
+ e(.UInt8)  //topAqSize: 1 encoding: 9 usage:0 baseType:c(e(bb(8 UInt))) dv:f generic:f
+ e(.UInt16)  //topAqSize: 2 encoding: 9 usage:0 baseType:c(e(bb(16 UInt))) dv:f generic:f
+ e(.UInt32)  //topAqSize: 4 encoding: 9 usage:0 baseType:eq(e(.UInt32Atomic)e(.UInt32Cluster)) dv:f generic:f
+ e(.UInt64)  //topAqSize: 8 encoding: 9 usage:0 baseType:c(e(bb(64 UInt))) dv:f generic:f
+ e(.Single)  //topAqSize: 4 encoding:12 usage:0 baseType:eq(e(.SingleAtomic)e(.SingleCluster)) dv:f generic:f
+ e(.Double)  //topAqSize: 8 encoding:12 usage:0 baseType:eq(e(.DoubleAtomic)e(.DoubleCluster)) dv:f generic:f
+ e(.ComplexSingle)  //topAqSize: 8 encoding: 1 usage:0 baseType:c(e(.Single real)e(.Single imaginary)) dv:f generic:f
+ e(.ComplexDouble)  //topAqSize:16 encoding: 1 usage:0 baseType:c(e(.Double real)e(.Double imaginary)) dv:f generic:f
+ e(.String)  //topAqSize: 8 encoding: 3 usage:0 baseType:.Utf8Array1D dv:f generic:f
+ e(.Utf8Char)  //topAqSize: 1 encoding:14 usage:0 baseType:c(e(bb(8 <TODO>))) dv:f generic:f
+ e(.AsciiChar)  //topAqSize: 1 encoding:13 usage:0 baseType:c(e(bb(8 Ascii))) dv:f generic:f
+ e(.Time)  //topAqSize:16 encoding: 1 usage:0 baseType:c(e(.Int64 seconds)e(.UInt64 fractions)) dv:f generic:f
+ e(.Type)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.TypeManager)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.VI)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.Clump)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.CodePointer)  //topAqSize: 8 encoding:15 usage:0 baseType:c(e(bb(64 Pointer))) dv:f generic:f
+ e(.DataPointer)  //topAqSize: 8 encoding:15 usage:0 baseType:c(e(bb(64 Pointer))) dv:f generic:f
+ e(.BranchTarget)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.InstructionFunction)  //topAqSize: 8 encoding:15 usage:0 baseType:.CodePointer dv:f generic:f
+ e(.InstructionSnippet)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.Array)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+ e(.Object)  //topAqSize: 8 encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
+(.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .AsciiChar .Time .Type .TypeManager .VI .Clump .CodePointer .DataPointer .BranchTarget .InstructionFunction .InstructionSnippet .Array .Object)

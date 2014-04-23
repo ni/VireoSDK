@@ -1,0 +1,4006 @@
+// Via file for LabVIEWs EggShell
+define (HelloWorld0, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World0.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld1, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World1.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld2, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World2.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld3, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World3.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld4, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World4.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld5, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World5.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld6, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World6.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld7, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World7.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld8, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World8.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld9, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World9.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld10, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World10.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld11, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World11.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld12, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World12.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld13, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World13.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld14, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World14.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld15, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World15.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld16, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World16.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld17, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World17.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld18, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World18.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld19, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World19.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld20, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World20.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld21, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World21.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld22, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World22.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld23, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World23.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld24, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World24.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld25, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World25.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld26, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World26.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld27, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World27.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld28, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World28.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld29, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World29.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld30, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World30.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld31, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World31.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld32, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World32.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld33, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World33.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld34, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World34.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld35, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World35.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld36, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World36.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld37, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World37.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld38, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World38.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld39, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World39.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld40, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World40.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld41, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World41.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld42, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World42.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld43, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World43.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld44, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World44.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld45, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World45.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld46, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World46.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld47, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World47.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld48, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World48.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld49, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World49.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld50, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World50.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld51, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World51.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld52, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World52.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld53, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World53.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld54, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World54.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld55, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World55.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld56, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World56.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld57, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World57.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld58, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World58.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld59, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World59.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld60, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World60.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld61, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World61.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld62, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World62.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld63, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World63.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld64, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World64.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld65, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World65.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld66, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World66.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld67, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World67.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld68, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World68.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld69, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World69.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld70, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World70.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld71, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World71.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld72, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World72.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld73, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World73.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld74, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World74.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld75, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World75.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld76, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World76.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld77, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World77.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld78, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World78.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld79, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World79.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld80, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World80.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld81, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World81.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld82, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World82.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld83, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World83.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld84, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World84.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld85, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World85.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld86, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World86.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld87, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World87.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld88, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World88.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld89, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World89.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld90, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World90.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld91, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World91.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld92, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World92.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld93, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World93.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld94, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World94.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld95, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World95.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld96, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World96.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld97, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World97.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld98, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World98.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld99, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World99.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld100, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World100.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld101, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World101.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld102, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World102.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld103, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World103.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld104, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World104.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld105, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World105.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld106, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World106.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld107, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World107.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld108, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World108.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld109, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World109.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld110, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World110.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld111, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World111.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld112, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World112.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld113, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World113.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld114, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World114.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld115, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World115.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld116, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World116.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld117, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World117.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld118, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World118.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld119, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World119.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld120, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World120.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld121, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World121.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld122, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World122.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld123, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World123.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld124, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World124.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld125, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World125.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld126, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World126.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld127, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World127.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld128, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World128.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld129, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World129.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld130, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World130.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld131, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World131.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld132, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World132.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld133, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World133.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld134, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World134.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld135, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World135.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld136, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World136.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld137, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World137.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld138, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World138.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld139, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World139.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld140, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World140.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld141, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World141.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld142, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World142.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld143, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World143.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld144, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World144.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld145, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World145.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld146, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World146.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld147, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World147.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld148, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World148.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld149, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World149.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld150, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World150.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld151, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World151.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld152, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World152.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld153, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World153.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld154, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World154.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld155, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World155.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld156, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World156.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld157, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World157.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld158, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World158.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld159, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World159.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld160, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World160.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld161, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World161.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld162, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World162.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld163, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World163.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld164, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World164.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld165, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World165.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld166, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World166.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld167, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World167.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld168, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World168.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld169, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World169.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld170, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World170.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld171, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World171.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld172, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World172.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld173, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World173.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld174, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World174.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld175, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World175.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld176, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World176.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld177, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World177.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld178, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World178.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld179, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World179.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld180, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World180.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld181, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World181.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld182, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World182.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld183, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World183.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld184, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World184.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld185, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World185.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld186, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World186.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld187, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World187.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld188, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World188.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld189, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World189.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld190, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World190.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld191, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World191.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld192, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World192.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld193, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World193.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld194, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World194.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld195, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World195.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld196, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World196.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld197, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World197.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld198, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World198.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld199, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World199.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld200, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World200.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld201, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World201.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld202, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World202.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld203, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World203.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld204, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World204.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld205, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World205.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld206, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World206.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld207, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World207.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld208, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World208.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld209, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World209.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld210, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World210.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld211, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World211.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld212, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World212.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld213, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World213.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld214, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World214.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld215, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World215.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld216, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World216.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld217, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World217.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld218, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World218.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld219, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World219.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld220, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World220.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld221, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World221.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld222, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World222.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld223, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World223.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld224, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World224.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld225, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World225.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld226, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World226.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld227, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World227.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld228, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World228.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld229, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World229.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld230, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World230.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld231, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World231.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld232, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World232.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld233, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World233.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld234, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World234.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld235, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World235.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld236, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World236.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld237, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World237.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld238, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World238.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld239, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World239.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld240, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World240.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld241, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World241.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld242, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World242.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld243, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World243.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld244, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World244.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld245, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World245.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld246, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World246.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld247, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World247.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld248, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World248.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld249, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World249.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld250, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World250.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld251, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World251.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld252, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World252.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld253, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World253.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld254, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World254.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld255, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World255.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld256, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World256.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld257, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World257.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld258, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World258.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld259, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World259.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld260, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World260.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld261, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World261.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld262, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World262.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld263, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World263.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld264, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World264.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld265, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World265.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld266, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World266.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld267, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World267.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld268, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World268.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld269, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World269.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld270, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World270.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld271, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World271.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld272, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World272.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld273, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World273.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld274, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World274.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld275, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World275.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld276, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World276.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld277, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World277.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld278, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World278.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld279, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World279.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld280, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World280.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld281, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World281.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld282, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World282.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld283, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World283.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld284, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World284.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld285, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World285.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld286, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World286.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld287, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World287.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld288, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World288.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld289, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World289.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld290, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World290.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld291, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World291.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld292, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World292.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld293, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World293.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld294, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World294.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld295, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World295.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld296, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World296.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld297, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World297.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld298, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World298.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld299, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World299.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld300, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World300.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld301, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World301.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld302, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World302.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld303, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World303.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld304, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World304.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld305, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World305.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld306, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World306.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld307, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World307.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld308, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World308.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld309, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World309.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld310, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World310.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld311, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World311.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld312, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World312.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld313, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World313.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld314, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World314.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld315, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World315.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld316, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World316.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld317, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World317.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld318, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World318.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld319, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World319.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld320, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World320.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld321, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World321.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld322, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World322.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld323, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World323.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld324, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World324.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld325, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World325.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld326, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World326.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld327, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World327.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld328, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World328.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld329, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World329.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld330, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World330.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld331, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World331.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld332, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World332.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld333, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World333.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld334, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World334.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld335, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World335.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld336, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World336.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld337, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World337.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld338, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World338.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld339, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World339.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld340, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World340.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld341, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World341.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld342, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World342.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld343, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World343.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld344, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World344.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld345, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World345.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld346, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World346.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld347, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World347.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld348, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World348.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld349, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World349.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld350, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World350.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld351, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World351.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld352, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World352.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld353, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World353.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld354, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World354.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld355, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World355.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld356, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World356.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld357, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World357.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld358, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World358.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld359, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World359.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld360, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World360.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld361, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World361.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld362, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World362.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld363, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World363.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld364, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World364.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld365, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World365.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld366, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World366.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld367, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World367.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld368, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World368.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld369, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World369.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld370, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World370.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld371, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World371.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld372, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World372.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld373, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World373.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld374, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World374.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld375, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World375.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld376, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World376.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld377, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World377.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld378, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World378.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld379, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World379.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld380, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World380.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld381, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World381.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld382, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World382.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld383, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World383.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld384, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World384.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld385, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World385.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld386, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World386.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld387, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World387.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld388, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World388.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld389, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World389.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld390, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World390.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld391, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World391.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld392, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World392.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld393, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World393.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld394, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World394.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld395, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World395.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld396, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World396.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld397, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World397.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld398, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World398.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld399, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World399.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld400, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World400.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld401, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World401.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld402, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World402.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld403, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World403.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld404, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World404.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld405, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World405.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld406, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World406.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld407, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World407.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld408, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World408.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld409, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World409.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld410, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World410.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld411, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World411.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld412, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World412.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld413, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World413.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld414, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World414.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld415, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World415.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld416, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World416.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld417, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World417.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld418, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World418.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld419, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World419.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld420, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World420.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld421, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World421.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld422, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World422.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld423, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World423.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld424, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World424.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld425, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World425.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld426, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World426.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld427, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World427.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld428, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World428.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld429, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World429.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld430, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World430.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld431, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World431.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld432, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World432.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld433, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World433.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld434, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World434.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld435, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World435.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld436, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World436.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld437, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World437.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld438, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World438.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld439, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World439.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld440, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World440.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld441, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World441.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld442, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World442.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld443, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World443.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld444, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World444.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld445, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World445.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld446, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World446.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld447, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World447.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld448, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World448.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld449, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World449.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld450, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World450.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld451, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World451.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld452, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World452.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld453, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World453.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld454, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World454.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld455, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World455.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld456, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World456.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld457, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World457.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld458, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World458.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld459, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World459.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld460, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World460.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld461, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World461.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld462, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World462.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld463, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World463.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld464, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World464.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld465, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World465.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld466, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World466.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld467, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World467.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld468, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World468.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld469, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World469.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld470, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World470.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld471, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World471.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld472, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World472.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld473, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World473.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld474, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World474.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld475, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World475.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld476, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World476.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld477, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World477.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld478, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World478.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld479, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World479.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld480, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World480.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld481, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World481.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld482, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World482.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld483, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World483.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld484, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World484.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld485, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World485.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld486, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World486.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld487, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World487.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld488, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World488.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld489, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World489.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld490, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World490.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld491, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World491.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld492, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World492.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld493, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World493.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld494, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World494.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld495, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World495.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld496, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World496.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld497, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World497.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld498, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World498.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld499, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World499.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld500, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World500.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld501, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World501.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld502, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World502.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld503, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World503.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld504, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World504.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld505, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World505.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld506, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World506.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld507, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World507.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld508, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World508.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld509, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World509.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld510, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World510.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld511, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World511.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld512, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World512.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld513, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World513.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld514, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World514.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld515, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World515.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld516, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World516.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld517, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World517.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld518, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World518.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld519, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World519.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld520, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World520.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld521, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World521.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld522, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World522.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld523, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World523.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld524, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World524.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld525, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World525.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld526, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World526.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld527, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World527.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld528, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World528.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld529, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World529.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld530, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World530.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld531, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World531.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld532, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World532.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld533, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World533.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld534, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World534.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld535, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World535.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld536, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World536.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld537, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World537.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld538, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World538.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld539, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World539.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld540, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World540.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld541, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World541.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld542, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World542.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld543, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World543.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld544, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World544.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld545, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World545.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld546, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World546.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld547, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World547.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld548, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World548.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld549, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World549.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld550, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World550.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld551, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World551.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld552, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World552.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld553, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World553.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld554, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World554.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld555, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World555.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld556, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World556.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld557, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World557.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld558, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World558.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld559, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World559.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld560, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World560.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld561, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World561.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld562, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World562.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld563, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World563.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld564, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World564.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld565, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World565.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld566, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World566.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld567, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World567.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld568, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World568.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld569, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World569.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld570, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World570.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld571, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World571.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld572, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World572.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld573, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World573.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld574, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World574.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld575, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World575.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld576, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World576.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld577, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World577.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld578, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World578.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld579, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World579.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld580, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World580.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld581, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World581.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld582, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World582.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld583, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World583.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld584, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World584.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld585, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World585.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld586, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World586.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld587, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World587.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld588, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World588.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld589, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World589.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld590, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World590.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld591, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World591.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld592, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World592.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld593, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World593.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld594, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World594.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld595, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World595.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld596, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World596.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld597, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World597.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld598, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World598.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld599, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World599.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld600, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World600.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld601, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World601.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld602, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World602.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld603, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World603.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld604, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World604.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld605, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World605.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld606, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World606.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld607, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World607.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld608, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World608.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld609, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World609.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld610, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World610.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld611, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World611.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld612, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World612.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld613, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World613.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld614, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World614.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld615, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World615.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld616, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World616.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld617, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World617.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld618, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World618.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld619, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World619.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld620, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World620.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld621, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World621.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld622, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World622.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld623, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World623.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld624, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World624.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld625, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World625.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld626, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World626.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld627, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World627.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld628, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World628.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld629, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World629.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld630, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World630.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld631, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World631.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld632, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World632.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld633, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World633.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld634, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World634.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld635, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World635.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld636, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World636.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld637, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World637.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld638, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World638.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld639, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World639.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld640, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World640.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld641, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World641.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld642, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World642.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld643, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World643.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld644, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World644.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld645, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World645.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld646, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World646.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld647, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World647.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld648, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World648.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld649, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World649.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld650, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World650.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld651, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World651.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld652, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World652.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld653, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World653.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld654, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World654.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld655, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World655.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld656, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World656.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld657, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World657.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld658, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World658.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld659, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World659.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld660, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World660.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld661, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World661.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld662, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World662.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld663, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World663.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld664, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World664.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld665, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World665.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld666, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World666.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld667, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World667.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld668, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World668.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld669, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World669.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld670, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World670.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld671, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World671.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld672, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World672.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld673, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World673.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld674, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World674.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld675, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World675.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld676, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World676.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld677, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World677.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld678, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World678.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld679, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World679.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld680, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World680.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld681, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World681.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld682, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World682.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld683, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World683.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld684, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World684.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld685, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World685.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld686, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World686.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld687, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World687.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld688, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World688.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld689, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World689.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld690, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World690.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld691, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World691.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld692, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World692.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld693, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World693.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld694, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World694.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld695, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World695.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld696, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World696.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld697, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World697.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld698, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World698.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld699, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World699.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld700, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World700.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld701, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World701.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld702, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World702.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld703, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World703.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld704, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World704.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld705, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World705.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld706, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World706.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld707, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World707.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld708, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World708.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld709, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World709.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld710, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World710.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld711, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World711.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld712, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World712.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld713, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World713.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld714, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World714.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld715, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World715.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld716, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World716.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld717, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World717.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld718, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World718.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld719, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World719.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld720, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World720.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld721, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World721.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld722, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World722.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld723, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World723.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld724, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World724.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld725, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World725.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld726, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World726.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld727, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World727.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld728, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World728.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld729, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World729.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld730, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World730.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld731, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World731.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld732, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World732.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld733, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World733.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld734, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World734.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld735, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World735.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld736, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World736.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld737, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World737.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld738, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World738.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld739, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World739.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld740, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World740.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld741, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World741.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld742, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World742.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld743, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World743.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld744, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World744.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld745, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World745.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld746, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World746.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld747, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World747.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld748, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World748.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld749, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World749.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld750, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World750.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld751, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World751.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld752, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World752.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld753, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World753.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld754, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World754.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld755, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World755.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld756, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World756.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld757, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World757.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld758, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World758.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld759, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World759.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld760, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World760.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld761, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World761.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld762, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World762.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld763, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World763.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld764, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World764.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld765, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World765.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld766, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World766.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld767, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World767.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld768, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World768.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld769, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World769.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld770, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World770.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld771, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World771.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld772, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World772.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld773, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World773.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld774, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World774.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld775, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World775.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld776, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World776.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld777, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World777.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld778, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World778.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld779, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World779.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld780, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World780.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld781, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World781.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld782, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World782.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld783, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World783.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld784, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World784.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld785, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World785.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld786, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World786.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld787, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World787.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld788, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World788.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld789, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World789.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld790, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World790.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld791, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World791.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld792, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World792.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld793, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World793.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld794, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World794.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld795, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World795.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld796, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World796.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld797, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World797.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld798, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World798.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld799, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World799.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld800, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World800.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld801, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World801.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld802, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World802.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld803, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World803.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld804, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World804.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld805, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World805.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld806, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World806.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld807, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World807.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld808, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World808.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld809, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World809.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld810, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World810.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld811, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World811.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld812, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World812.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld813, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World813.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld814, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World814.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld815, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World815.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld816, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World816.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld817, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World817.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld818, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World818.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld819, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World819.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld820, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World820.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld821, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World821.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld822, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World822.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld823, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World823.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld824, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World824.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld825, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World825.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld826, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World826.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld827, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World827.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld828, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World828.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld829, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World829.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld830, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World830.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld831, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World831.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld832, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World832.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld833, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World833.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld834, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World834.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld835, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World835.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld836, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World836.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld837, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World837.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld838, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World838.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld839, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World839.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld840, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World840.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld841, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World841.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld842, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World842.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld843, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World843.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld844, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World844.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld845, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World845.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld846, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World846.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld847, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World847.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld848, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World848.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld849, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World849.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld850, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World850.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld851, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World851.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld852, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World852.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld853, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World853.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld854, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World854.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld855, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World855.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld856, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World856.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld857, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World857.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld858, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World858.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld859, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World859.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld860, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World860.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld861, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World861.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld862, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World862.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld863, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World863.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld864, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World864.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld865, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World865.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld866, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World866.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld867, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World867.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld868, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World868.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld869, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World869.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld870, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World870.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld871, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World871.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld872, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World872.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld873, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World873.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld874, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World874.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld875, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World875.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld876, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World876.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld877, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World877.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld878, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World878.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld879, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World879.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld880, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World880.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld881, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World881.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld882, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World882.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld883, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World883.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld884, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World884.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld885, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World885.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld886, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World886.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld887, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World887.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld888, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World888.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld889, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World889.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld890, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World890.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld891, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World891.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld892, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World892.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld893, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World893.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld894, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World894.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld895, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World895.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld896, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World896.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld897, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World897.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld898, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World898.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld899, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World899.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld900, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World900.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld901, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World901.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld902, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World902.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld903, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World903.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld904, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World904.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld905, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World905.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld906, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World906.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld907, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World907.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld908, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World908.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld909, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World909.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld910, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World910.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld911, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World911.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld912, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World912.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld913, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World913.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld914, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World914.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld915, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World915.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld916, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World916.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld917, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World917.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld918, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World918.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld919, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World919.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld920, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World920.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld921, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World921.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld922, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World922.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld923, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World923.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld924, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World924.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld925, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World925.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld926, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World926.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld927, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World927.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld928, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World928.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld929, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World929.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld930, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World930.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld931, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World931.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld932, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World932.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld933, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World933.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld934, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World934.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld935, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World935.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld936, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World936.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld937, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World937.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld938, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World938.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld939, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World939.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld940, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World940.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld941, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World941.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld942, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World942.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld943, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World943.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld944, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World944.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld945, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World945.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld946, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World946.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld947, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World947.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld948, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World948.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld949, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World949.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld950, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World950.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld951, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World951.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld952, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World952.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld953, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World953.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld954, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World954.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld955, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World955.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld956, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World956.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld957, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World957.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld958, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World958.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld959, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World959.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld960, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World960.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld961, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World961.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld962, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World962.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld963, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World963.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld964, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World964.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld965, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World965.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld966, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World966.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld967, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World967.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld968, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World968.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld969, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World969.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld970, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World970.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld971, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World971.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld972, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World972.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld973, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World973.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld974, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World974.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld975, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World975.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld976, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World976.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld977, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World977.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld978, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World978.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld979, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World979.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld980, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World980.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld981, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World981.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld982, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World982.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld983, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World983.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld984, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World984.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld985, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World985.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld986, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World986.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld987, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World987.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld988, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World988.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld989, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World989.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld990, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World990.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld991, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World991.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld992, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World992.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld993, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World993.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld994, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World994.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld995, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World995.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld996, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World996.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld997, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World997.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld998, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World998.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld999, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World999.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+define (HelloWorld1000, v(.VirtualInstrument, (
+c( e(v(.String,'Hello World1000.'), variable1) ),
+1, clump(1, Print(variable1) )) ) )
+ 
+enqueue (HelloWorld1000)

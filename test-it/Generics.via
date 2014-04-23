@@ -1,0 +1,83 @@
+define (arrayOfPoints, v(.VirtualInstrument, (
+    c(
+        e(v(.Int32 5) dimSize)   // dimension size
+        e(c(
+            e(v(.Double 1) n1)
+            e(v(.Double 2) n2)
+        ) samplePoint)
+        e(a(e(c(
+            e(.Double n1)
+            e(.Double n2)
+        )),*) Array)
+		e(v(a(e(.Double) *) (1,2,3,4,5)) arrayOfDoubles)
+    )
+    1,
+    clump(1,
+        ArrayFill(Array dimSize samplePoint)
+		Mul(Array, arrayOfDoubles, Array)
+		Add(Array, samplePoint, Array)
+		Add(Array, samplePoint.n1, Array)
+        Print(Array)
+    )
+)))
+enqueue (arrayOfPoints)
+
+define (ArrayMath, v(.VirtualInstrument, (
+c(
+    e(v(a(e(.Double) *) (0,1,2,3,4,5,6,7,8,9,10)) array1)
+    e(v(a(e(.Double) *) (0)) array2)
+    e(v(.Double 1) scalar1)
+),
+1,
+clump(1,
+    Add( array1 scalar1 array2)
+    Print(array2)
+    )
+)))
+enqueue(ArrayMath)
+
+define (ClusterMath, v(.VirtualInstrument, (
+ c(
+        e(v(c(
+            e(.UInt8 n1)
+            e(.UInt8 n2)
+            e(.UInt8 n3)
+            e(.UInt8 n4)
+         )(1 2 3 4))x)
+
+         e(v(c(
+            e(.UInt8 n1)
+            e(.UInt8 n2)
+            e(.UInt8 n3)
+            e(.UInt8 n4)
+         )(5 6 7 8))y)
+
+        e(v(c(
+            e(.UInt8 n1)
+            e(.UInt8 n2)
+            e(.UInt8 n3)
+            e(.UInt8 n4)
+         )(0 0 0 0))z)
+  ),
+  1,
+  clump(1,
+    Add(x y.n4 z)
+    Print(z)
+	
+    Add(x.n1 y z)
+    Print(z)
+    
+    Add(x y z)
+    Print(z)
+
+    Mul(x y z)
+    Print(z)
+	
+    Mul(x.n4 y z)
+    Print(z)
+	
+    Mul(x y.n2 z)
+    Print(z)
+   )
+ ) ) )
+enqueue (ClusterMath)

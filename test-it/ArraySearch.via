@@ -1,0 +1,49 @@
+define (c0 dv(.Int32 1) )
+define (c1 dv(a(.Int32 *) (1 2 3 4) ) )
+define (c2 dv(a(.Int32 *) (11 22 33 44) ) )
+//---------------------------------------------------
+//VI Definition: Untitled 1
+define (videf1 dv(.VirtualInstrument (
+  c(
+    e(a(.Int32 *) local1)
+    e(a(.Int32 *) local2)
+    e(v(.Int32 2) elt)
+    e(v(.Int32 0) idxIn)
+    e(v(.Int32 9) idxOut)
+    e(v(a(e(c(
+        e(.UInt8 n0)
+        e(.UInt8 n1)
+        e(.UInt8 n2)
+    )),*) ((65 114 114 ) (97 121 32 ) ) ) AoC)   // Array Of a Cluster Of Three Bytes
+    e(v(c(
+        e(.UInt8 n0)
+        e(.UInt8 n1)
+        e(.UInt8 n2)
+    ) (97 121 32 ) ) eltAoC)   // Array Of a Cluster Of Three Bytes
+  )
+  1
+  clump(1
+    Copy(c1 local1)
+    Search1DArray(local1 elt idxIn idxOut)
+    Print(local1)
+    Print(elt)
+    Print(idxIn)
+    Print(idxOut)
+
+    Copy(c2 local2)
+    Search1DArray(local2 elt idxIn idxOut)
+    Print(local2)
+    Print(elt)
+    Print(idxIn)
+    Print(idxOut)
+
+    Search1DArray(AoC eltAoC idxIn idxOut)
+    Print(AoC)
+    Print(eltAoC)
+    Print(idxIn)
+    Print(idxOut)
+    //--- end of vi
+  )
+)))
+enqueue (videf1)
+

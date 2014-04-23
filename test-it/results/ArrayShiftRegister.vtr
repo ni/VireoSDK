@@ -1,0 +1,12 @@
+Remaining part 01234567890123456789abcdefghijjlmnopqrstuvwxyz => abcdefghijjlmnopqrstuvwxyz
+first  part 01234567890123456789abcdefghijjlmnopqrstuvwxyz => 01234567890123456789
+Remaining part copy abcdefghijjlmnopqrstuvwxyz abcdefghijjlmnopqrstuvwxyz
+----
+Remaining part abcdefghijjlmnopqrstuvwxyz => uvwxyz
+first  part abcdefghijjlmnopqrstuvwxyz => abcdefghijjlmnopqrst
+Remaining part copy uvwxyz uvwxyz
+----
+Remaining part uvwxyz => 
+first  part uvwxyz => uvwxyz
+Remaining part copy  
+----

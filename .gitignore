@@ -1,0 +1,45 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.vntr
+Vireo_SimpleMake/asm/
+Vireo_VS2012/VireoCommandLine/Debug/Queue.obj
+Vireo_VS2012/VireoCommandLine/Debug/
+*.ipch
+hw10000.via
+hw100000.via
+Vireo_SimpleMake/objs/
+*.opensdf
+Vireo_VS2012/VireoCommandLine/VireoCommandLine.sdf
+make-it/asm/
+make-it/objs/
+Vireo_VS2012/VireoCommandLine/VireoCommandLine.vcxproj.user
+Vireo_XCode/Instruments_hw100000.trace/shared_data
+Vireo_XCode/Instruments_hw100000.trace/instrument_data
+Vireo_XCode/Instruments_hw100000.trace/Trace*.run
+bin/
+Private
+Vireo_XCode/VireoCanvas/DerivedData
+Vireo_XCode/VireoCanvas/VireoCanvas.xcodeproj/xcuserdata
+Vireo_XCode/VireoCanvas/VireoCanvas.xcodeproj/project.xcworkspace/xcuserdata
+Vireo_XCode/build
+GeneratedDox
+Documents/dox/latex
+Documents/dox/html
+PrivateDocSource
+*.pbxuser
+*.xccheckout
+sample-vis copy
+widget_and_html
+runlog.txt
+*.mode1v3

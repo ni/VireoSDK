@@ -1,0 +1,18 @@
+define (ToStringForTypes v(.VirtualInstrument (
+    c( 
+        e(.String string)
+        e(c(e(.Int32) e(.Int32))   v)
+        e(.Type   t)
+        e(dv(.Int16 10) width)
+    )
+    1
+    clump (1
+        ToString(t width string)
+        DPrintf(" The type as a string is %s" string)
+        TypeOf(v t)
+        ToString(t width string)
+        DPrintf(" The type as a string is %s" string)
+
+    )
+) ) )
+enqueue (ToStringForTypes)

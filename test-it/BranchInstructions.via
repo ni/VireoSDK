@@ -1,0 +1,28 @@
+define (BranchBackAndForth, v(.VirtualInstrument, (
+ c(
+   e(v(.Int32,1), c1)
+   e(v(.Int32,2), c2)
+   e(v(.Int32,3), c3)
+   e(v(.Int32,4), c4)
+   ),
+ 1,
+ clump(1,
+   // A program that hops back and forth
+   Print(c1)  //Start Here
+   Branch(1)
+   
+   Perch(0)   //<<----- 0
+   Print(c3)   
+   Branch(2)
+   
+   Perch(1)   //<<----- 1
+   Print(c2)
+   Branch(0)
+   
+   Perch(2)   //<<----- 2
+   Print(c4)   
+   Branch(3)
+   Perch(3)   //<<- 3 Perchs at the end once caused a problem
+   )
+)))
+enqueue (BranchBackAndForth)

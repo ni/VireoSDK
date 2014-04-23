@@ -1,0 +1,14 @@
+initial rectangles<((0 0 0 0) (0 0 0 0))> <((0 0 0 0) (0 0 0 0))>
+after setting one cooordinate <((42 0 0 0) (0 0 42 0))> <((0 0 0 0) (0 0 0 0))>
+after copying rectangles <((42 0 0 0) (0 0 42 0))> <((42 0 0 0) (0 0 0 0))>
+second field set <((42 43 0 0) (0 0 42 0))> <((42 0 0 0) (0 0 0 0))>
+nodes copied again <((42 43 0 0) (0 0 42 0))> <((42 43 0 0) (0 0 42 0))>
+copied inside one var <((42 43 0 0) (42 43 0 0))> <((42 43 0 0) (0 0 42 0))>
+nodes copied again <((42 43 0 0) (42 43 0 0))> <((42 43 0 0) (42 43 0 0))>
+rwn nodes copied <((42 43 0 0) 'Hello world.')> <((42 43 0 0) 'Hello world.')>
+((42 43 0 0) (42 43 0 0))
+((42 43 0 0) (42 43 0 0))
+((0 0 0 0) '')
+((42 43 0 0) '')
+((42 43 0 0) 'Hello world.')
+Hello world.

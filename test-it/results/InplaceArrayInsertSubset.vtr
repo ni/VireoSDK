@@ -1,0 +1,6 @@
+(1 2 3 4 5)
+(1 2 3 4 11 22 33 44)
+(11 22 33 44 11 22 33 44)
+(1 11 22 33 44 2 3 4)
+(11 11 22 33 44 22 33 44)
+assert arrayOut != subArray failed in Array.cpp, line 155

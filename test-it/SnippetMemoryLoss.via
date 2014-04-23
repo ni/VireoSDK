@@ -1,0 +1,41 @@
+
+define (Point c(e(.Int32 x) e(.Int32 y)))
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(a(.Int32 *) ( 1 2 3)) v1)
+        e(dv(a(.Int32 *) ( 4 5 6)) v2)
+        e(a(.Int32 *)  v3)
+        e(dv(a(.Int32 *) ( 5 7 9)) v4)
+
+        e(dv(a(.Point *) ((0 0) (1 1))) vc1)
+        e(dv(a(.Point *) ((3 3) (4 5))) vc2)
+        e(a(.Point *)  vc3)
+
+        e(dv(.Point (1 1)) c1)
+        e(dv(.Point (4 5)) c2)
+        e(.Point  c3)
+
+        e(.Boolean boolVar)
+    )
+    1
+    clump (1
+        // Generic Cluster Ops
+        Add(c1 c2 c3)
+        Print(c3)
+
+        // Generic Vector Ops
+        Add(v1 v2 v3)
+        Print(v3)
+        IsEQ(v1 v3 boolVar)
+        Print(boolVar)
+        IsEQ(v3 v4 boolVar)
+        Print(boolVar)
+    
+        // Vector of Clusters
+        Add(vc1 vc2 vc3)
+        Print(vc3)
+
+    )
+) ) )
+
+enqueue (HelloWorld)

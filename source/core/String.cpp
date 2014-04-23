@@ -1,0 +1,389 @@
+/**
+ 
+Copyright (c) 2014 National Instruments Corp.
+ 
+This software is subject to the terms described in the LICENSE.TXT file
+ 
+SDG
+*/
+
+/*! \file
+    \brief Native Vireo string functions.
+ */
+
+#if _WIN32
+    #define _CRT_SECURE_NO_WARNINGS
+    #define snprintf _snprintf
+#endif
+
+#ifdef __APPLE__
+#include <xlocale.h>
+#endif
+
+// LabVIEW has string iterators wrapper for its strings handle
+// those could be used, or the wstring could be used.
+// in memory strings are to be 16 bit wide. serialized are to be UTF8
+#include "ExecutionContext.h"
+#include "TypeDefiner.h"
+#include "StringUtilities.h"
+#include "TDCodecVia.h" 
+
+using namespace Vireo;
+
+//------------------------------------------------------------
+struct ReplaceSubstringStruct : public InstructionCore
+{
+    _ParamDef(StringRef, StringIn);
+    _ParamDef(StringRef, ReplacementString);
+    _ParamDef(Int32, Offset);
+    _ParamDef(Int32, Length);
+    _ParamDef(StringRef, ResultString); // TODO cannot be in-place , might need to allow for this
+    _ParamDef(StringRef, ReplacedSubString);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
+{
+    StringRef stringIn = _Param(StringIn);
+    StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : 0;
+    IntIndex replacementStringLength = replacementString ? replacementString->Length() : 0;
+    StringRef resultString = _ParamPointer(ResultString) ? _Param(ResultString) : null;
+    StringRef replacedSubString = _ParamPointer(ReplacedSubString) ? _Param(ReplacedSubString) : null;
+    IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
+    IntIndex length =  _ParamPointer(Length) ? _Param(Length) : replacementStringLength;
+    IntIndex stringInLength =  stringIn->Length();
+
+    TypeRef eltType = stringIn->ElementType();
+    length = Max(0, Min(length, stringInLength - offset));
+    
+    // Replace substring only if the offset is not past the end of the string
+    if ((offset >= 0) && (offset <= stringInLength)) {
+        VIREO_ASSERT(stringIn != resultString && stringIn != replacedSubString);
+        VIREO_ASSERT(replacementString == null || (replacementString != resultString && replacementString != replacedSubString));
+
+        Int32 resultLength = stringInLength + (replacementStringLength - length);
+
+        if (replacedSubString) {
+            replacedSubString->Resize1D(length);
+            // Copy out the substring to be replaced
+            eltType->CopyData(stringIn->BeginAt(offset), replacedSubString->Begin(), length);
+        }
+
+        if (resultString) {
+            resultString->Resize1D(resultLength);
+            // Copy the original string up to the offset point
+            eltType->CopyData(stringIn->Begin(), resultString->Begin(), offset);
+            // Copy in the replacement
+            if (replacementString)
+                eltType->CopyData(replacementString->Begin(), resultString->BeginAt(offset), replacementStringLength);
+            // Copy the original tail
+            Int32 tailLength = (stringInLength - (offset + length));
+            eltType->CopyData(stringIn->BeginAt(offset + length), resultString->BeginAt(offset + replacementStringLength), tailLength);            
+        }
+    } else {
+        if (resultString && (stringIn != resultString))
+            stringIn->Type()->CopyData(&stringIn, &resultString);
+        if (replacedSubString)
+            replacedSubString->Resize1D(0);
+    }
+    return _NextInstruction();
+}
+
+struct SearchAndReplaceStringStruct : public InstructionCore
+{
+    _ParamDef(StringRef, StringOut);
+    _ParamDef(StringRef, StringIn);
+    _ParamDef(StringRef, SearchString);
+    _ParamDef(StringRef, ReplacementString);
+    _ParamDef(Int32, Offset);
+    _ParamDef(Int32, NumOfReplacements);
+    _ParamDef(Int32, OffsetPastReplacement);
+    _ParamDef(Boolean, ReplaceAll);
+    _ParamDef(Boolean, IgnoreCase);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
+{
+    StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : null;
+    StringRef stringIn = _Param(StringIn);
+    StringRef searchString = _Param(SearchString);
+    StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : null;
+    IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
+    IntIndex numOfReplacements = 0;
+    Boolean replaceAll = _ParamPointer(ReplaceAll) ? _Param(ReplaceAll) : false;
+    Boolean ignoreCase = _ParamPointer(IgnoreCase) ? _Param(IgnoreCase) : false;
+
+    VIREO_ASSERT(stringIn != stringOut);
+    VIREO_ASSERT(searchString != stringOut);
+    VIREO_ASSERT(replacementString == null || replacementString != stringOut);
+
+    SubString stringInSubString = stringIn->MakeSubStringAlias();
+    SubString searchStringSubString = searchString->MakeSubStringAlias();
+    IntIndex stringInLength = stringIn->Length();
+    IntIndex searchStringLength = searchString->Length();
+    IntIndex replacementStringLength = replacementString ? replacementString->Length() : 0;
+    TypeRef eltType = stringIn->ElementType();
+    
+    offset = Max(0, Min(offset, stringInLength));
+
+    IntIndex matchOffset;
+    IntIndex stringOutOffset = offset;
+
+    // Copy up to the offset
+    if (stringOut) {
+        stringOut->Resize1D(stringInLength);
+        eltType->CopyData(stringIn->Begin(), stringOut->Begin(), offset);
+    }
+
+    // Search for matches and copy up to the end of the replacement
+    while ((matchOffset = stringInSubString.FindFirstMatch(&searchStringSubString, offset, ignoreCase)) != -1) {
+        if (stringOut) {
+            stringOut->Resize1D(stringOut->Length() + replacementStringLength - searchStringLength);
+            // Copy up to the match
+            eltType->CopyData(stringIn->BeginAt(offset), stringOut->BeginAt(stringOutOffset), matchOffset - offset);
+            // Copy in the replacement
+            if (replacementString)
+                eltType->CopyData(replacementString->Begin(), stringOut->BeginAt(stringOutOffset + matchOffset - offset), replacementStringLength);
+        }
+
+        stringOutOffset += matchOffset - offset + replacementStringLength;
+        offset = matchOffset + searchStringLength;
+        numOfReplacements++;
+
+        // If the search string is empty, copy a character and increment the offsets so that we don't insert indefinitely
+        if (searchStringLength == 0) {
+            if (stringOut)
+                *stringOut->BeginAt(stringOutOffset) = *stringIn->BeginAt(offset);
+            stringOutOffset++;
+            offset++;
+        }
+
+        if (!replaceAll)
+            break;
+    }
+
+    // Copy the rest of the string following the last match
+    if (stringOut && (offset < stringInLength))
+        eltType->CopyData(stringIn->BeginAt(offset), stringOut->BeginAt(stringOutOffset), stringInLength - offset);
+
+    if _ParamPointer(NumOfReplacements)
+        _Param(NumOfReplacements) = numOfReplacements;
+    if _ParamPointer(OffsetPastReplacement)
+        _Param(OffsetPastReplacement) = numOfReplacements ? stringOutOffset : -1;
+
+    return _NextInstruction();
+}
+
+struct SearchSplitStringStruct : public InstructionCore
+{
+    _ParamDef(StringRef, StringIn);
+    _ParamDef(StringRef, SearchString);
+    _ParamDef(Int32, Offset);
+    _ParamDef(StringRef, BeforeMatchString);
+    _ParamDef(StringRef, MatchPlusRestString);
+    _ParamDef(Int32, MatchOffset);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
+{
+    StringRef stringIn = _Param(StringIn);
+    StringRef searchString = _Param(SearchString);
+    IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
+    StringRef beforeMatchString = _ParamPointer(BeforeMatchString) ? _Param(BeforeMatchString) : null;
+    StringRef matchPlusRestString = _ParamPointer(MatchPlusRestString) ? _Param(MatchPlusRestString) : null;
+    IntIndex matchOffset;
+
+    VIREO_ASSERT(stringIn != matchPlusRestString);
+
+    SubString stringInSubString = stringIn->MakeSubStringAlias();
+    SubString searchStringSubString = searchString->MakeSubStringAlias();
+    IntIndex stringInLength = stringIn->Length();
+    TypeRef eltType = stringIn->ElementType();
+
+    offset = Max(0, Min(offset, stringInLength));
+    matchOffset = stringInSubString.FindFirstMatch(&searchStringSubString, offset, false);
+
+    if (matchOffset != -1) { // A match is found
+        if (matchPlusRestString) {
+            // Copy stringIn starting at the match to matchPlusRestString
+            // This copy is done first since the other copy may modify stringIn (when stringIn == beforeMatchString)
+            matchPlusRestString->Resize1D(stringInLength - matchOffset);
+            eltType->CopyData(stringIn->BeginAt(matchOffset), matchPlusRestString->Begin(), stringInLength - matchOffset);
+        }
+        if (beforeMatchString) {
+            // Copy inString up to the match to beforeMatchString
+            beforeMatchString->Resize1D(matchOffset);
+            if (stringIn != beforeMatchString)
+                eltType->CopyData(stringIn->Begin(), beforeMatchString->Begin(), matchOffset);
+        }
+    } else { // No match is found
+        if (matchPlusRestString)
+            // Copy inString to beforeMatchString
+            matchPlusRestString->Resize1D(0);
+        if (beforeMatchString && (stringIn != beforeMatchString)) {
+            // Clear out matchPlusRestString
+            beforeMatchString->Resize1D(stringInLength);
+            eltType->CopyData(stringIn->Begin(), beforeMatchString->Begin(), stringInLength);
+        }
+    }
+
+    if _ParamPointer(MatchOffset)
+        _Param(MatchOffset) = matchOffset;
+
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
+{
+    IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
+    
+    _Param(1)->Resize1D(targetLength);
+
+    Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
+    Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
+    Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
+    while (pSourceChar < pSourceCharEnd)
+    {
+        char c = *pSourceChar++;
+        if ('a' <= c && c <= 'z') {
+            c =  (c - 0x20);
+        }
+        *pDestChar++ = c;
+    }    
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
+{
+    IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
+    
+    _Param(1)->Resize1D(targetLength);
+    
+    Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
+    Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
+    Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
+    while (pSourceChar < pSourceCharEnd)
+    {
+        char c = *pSourceChar++;
+        if ('A' <= c && c <= 'Z') {
+            c =  (c + 0x20);
+        }
+        *pDestChar++ = c;
+    }
+    return _NextInstruction();
+}
+#if 0
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
+{
+    StringRef buffer = _Param(0);
+    StringRef format = _Param(1);
+    SubString formatString(format->Begin(), format->End());
+
+    Int32 count = _ParamVarArgCount();
+    StaticTypeAndData* pArguments = (StaticTypeAndData*) &_ParamPointer(3);
+    
+    Format(&formatString, count, pArguments, buffer);
+    return _NextInstruction();
+}
+#endif
+
+//------------------------------------------------------------
+struct StringConcatenateParamBlock : public VarArgInstruction
+{
+    _ParamDef(StringRef, StringOut);
+    _ParamImmediateDef(TypedArrayCoreRef*, Element[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
+{
+    //Ignore begin
+    Int32 numInputs = ((_ParamVarArgCount() - 1));
+    
+    StringRef pDest = _Param(StringOut);
+    Int32 originalLength = pDest->Length();
+    Int32 totalLength = 0;
+    TypedArrayCoreRef** inputs =  (_ParamImmediate(Element)); 
+    for (Int32 i = 0; i < numInputs; i++) {
+        TypedArrayCoreRef arrayInput = *(inputs[i]);
+        if(arrayInput->ElementType()->IsArray()) {
+            // TODO this needs to support N-Dim string arrays
+            for(Int32 j = 0; j < arrayInput->Length(); j++) {
+                StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
+                totalLength += stringInput->Length();
+            }
+        } else {
+            totalLength += arrayInput->Length();
+        }
+    } 
+    pDest->Resize1D(totalLength);
+    // TODO error check
+    AQBlock1* pInsert = pDest->BeginAt(0);
+
+    TypeRef elementType = pDest->ElementType(); //flat char type
+
+    for (Int32 i = 0; i < numInputs; i++) {
+        TypedArrayCoreRef arrayInput = *(inputs[i]);
+        if(arrayInput->ElementType()->IsArray())  { // TODO this needs to support N-Dim string arrays
+            for(Int32 j = 0; j < arrayInput->Length(); j++) {
+                StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
+                VIREO_ASSERT(stringInput != pDest);
+                IntIndex length = stringInput->Length();
+                elementType->CopyData(stringInput->BeginAt(0), pInsert, length);
+                pInsert += length;
+            }
+        } else if(arrayInput != pDest) { // String input that is not the same as dest
+            IntIndex length = arrayInput->Length();
+            elementType->CopyData(arrayInput->BeginAt(0), pInsert, length);
+            pInsert += length;
+        } else { // String input that is the same as dest
+            VIREO_ASSERT(i == 0); // Only allowed for the first input
+            pInsert += originalLength;
+        }
+    } 
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef, (_Param(1)->Length() == _Param(2)->Length() && ( memcmp(_Param(1)->Begin(), _Param(2)->Begin(), _Param(1)->Length()) == 0) ) )
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRef)
+{
+    int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    if (cmp < 0) 
+        return _this->_p0;
+    else if (cmp > 0) 
+        return  VIVM_TAIL(_NextInstruction());
+    else if (_Param(1)->Length() < _Param(2)->Length())
+        return _this->_p0;
+    else
+        return VIVM_TAIL(_NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRef)
+{
+    int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    if (cmp > 0) 
+        return _this->_p0;
+    else if (cmp < 0) 
+        return  VIVM_TAIL(_NextInstruction());
+    else if (_Param(1)->Length() > _Param(2)->Length())
+        return _this->_p0;
+    else
+        return VIVM_TAIL(_NextInstruction());
+}
+
+DEFINE_VIREO_BEGIN(LabVIEW_String)
+    DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
+    DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(.VarArgCount) i(.String) o(.Array))" )
+    DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(.BranchTarget) i(.String) i(.String))");
+    DEFINE_VIREO_FUNCTION(BranchIfLTString, "p(i(.BranchTarget) i(.String) i(.String))")
+    DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(.BranchTarget) i(.String) i(.String))")
+DEFINE_VIREO_END()

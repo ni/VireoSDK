@@ -1,0 +1,12 @@
+trace
+define (videf1, v(.VirtualInstrument, (
+    c(
+        e(v(.Boolean, false), fp1)   // stop 3
+        e(v(.Boolean, false), fp2)   // stop 2
+    ),
+    1,
+    clump(1,
+       Perch(0)
+    )
+)))
+enqueue (videf1)

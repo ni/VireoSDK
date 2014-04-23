@@ -1,0 +1,25 @@
+//test cluster intializers.
+
+//---------------------------------------------------
+//VI Definition: Untitled 1
+define (videf1, v(.VirtualInstrument, (
+    c(
+        e(v(c(
+            e(.UInt8 n1)
+            e(.UInt16 n2)
+			e(.String n3)
+            e(.UInt32 n4)
+        ) (1 5 "stringvalue" 15))c5)
+		e(v(.ComplexDouble (0 1)) i)
+		e(.ComplexDouble cmplx)
+    )
+    1,
+    clump(1,
+		MulComplexDouble(i i cmplx)
+		MulComplexDouble(cmplx cmplx cmplx)
+        Print(c5)
+		Print(cmplx)
+//--- end of vi
+    )
+)))
+enqueue (videf1)

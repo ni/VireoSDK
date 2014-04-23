@@ -1,0 +1,46 @@
+define (MyInt32, v(.Int32,3))
+
+define (TypeChecking, v(.VirtualInstrument, (
+ c(
+   e(v(.Int32,5), cInt32)
+   e(.MyInt32, cMyInt32)
+   e(v(.Int32,10), c10)
+   e(.Int32, value)
+   e(.Double, cDouble)
+   e(.Single, cSingle)
+   e(.Boolean, cBoolean)
+   e(.Int8, cInt8)
+   e(v(.String,'Tic'), cString)
+    e(a(e(.Double),5),   arrayOfDoubleFixed1d),
+    e(a(e(.Double),5,5),   arrayOfDoubleFixed2d),
+    e(a(e(.Double),5,5,5),   arrayOfDoubleFixed3d),
+
+   ),
+ 1,
+ clump(1,
+    Print(cInt32)
+    Print(cDouble)
+    Print(cString)
+    Copy(c10, cDouble)
+    Copy(cDouble, c10)
+    Copy(cDouble, cSingle)
+    Copy(cSingle, cDouble)
+    Copy(cSingle, cSingle)
+    Copy(cSingle, c10)
+    Copy(cMyInt32, cInt32)
+    Copy(c10, cInt32)
+	AddInt32(cInt32,cMyInt32,value)
+    Print(value)
+	AddDouble(cDouble,cMyInt32,cDouble) // Error
+	AddInt32(cDouble,c10,cInt32)        // Error
+	AddDouble(cDouble,c10,cInt32)       // Error
+	ArrayLength(cString, value)   // formal type is "Array", which means type info is present, is that all
+    Print(value)
+	ArrayLength(arrayOfDoubleFixed2d, cInt32)
+    ArrayLength(cInt32, cInt32)         // Error
+    ArrayLength(cString, cDouble)       // Error
+    ArrayLength(cDouble, cString)       // Error
+   )
+)))
+//If it loads it will crash.
+//enqueue (TypeChecking)

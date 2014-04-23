@@ -1,0 +1,32 @@
+ @string hello world <Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar >
+ ToString on @string hello world <Hello
+World cr 		 tabbed test with a slash \. no dollar >
+@string multiline hello world <Hello World
+Line2
+Line3
+Line4           tabbed field>
+0
+----
+0
+----
+0
+----
+0
+----
+0
+----
+0
+----
+f
+----
+Hello
+----
+Hello
+World cr 		 tabbed test with a slash \. no dollar 
+----
+bad escape\
+bad es\cape
+HELLO
+----
+hello
+----

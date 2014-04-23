@@ -1,0 +1,38 @@
+
+define (TestTypeManager, v(.VirtualInstrument, (
+ c(
+    e(.TypeManager      vTypeManager)
+    e(.TypeManager      vRootTypeManager)
+    e(.Int32            vCount)
+    e(a(.Type *)        typeArray)
+   ),
+ 1,
+ clump(1,
+    // Try getting types on a null type manager
+    TypeManagerGetTypes(vTypeManager typeArray)
+    TypeManagerRootTypeManager(vTypeManager vRootTypeManager)
+    ArrayLength(typeArray vCount)
+    DPrintf("GetTypes on null TypeManager is %s", typeArray)
+    DPrintf("RootTypeManager on  null TypeManager is %s", vRootTypeManager)
+    DPrintf("The list of types has %s elements." vCount)
+
+    // Now try it on a real TM
+    TypeManagerCurrentTypeManager(vTypeManager)
+    TypeManagerGetTypes(vTypeManager typeArray)
+    TypeManagerRootTypeManager(vTypeManager vRootTypeManager)
+    ArrayLength(typeArray vCount)
+    DPrintf("")
+    DPrintf("GetTypes on Current TypeManager is %s", typeArray)
+    DPrintf("RootTypeManager on  Current TypeManager is %s", vRootTypeManager)
+    DPrintf("The list of types has %s elements." vCount)
+
+    TypeManagerGetTypes(vRootTypeManager typeArray)
+    TypeManagerRootTypeManager(vRootTypeManager vRootTypeManager)
+    ArrayLength(typeArray vCount)
+    DPrintf("")
+    DPrintf("GetTypes on RootTypeManager TypeManager is %s", typeArray)
+    DPrintf("RootTypeManager on  RootTypeManager TypeManager is %s", vRootTypeManager)
+    DPrintf("The list of types has %s elements." vCount)
+   )
+)))
+enqueue (TestTypeManager)

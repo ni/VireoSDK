@@ -1,0 +1,28 @@
+
+define (c0 dv(c(
+  e(.String n0)
+  e(.Double n1)
+) ('zxc' 45.8 )) )
+//---------------------------------------------------
+//VI Definition: Untitled 1
+define (videf1 dv(.VirtualInstrument (
+  c(
+    e(c(
+        e(.String n0)
+        e(.Single n1)
+      ) local1) // Cluster
+      e(dv(c(
+        e(.String n0)
+        e(.Single n1)
+      ) ('' 0 )) local2) // Cluster
+  )
+  1
+  clump(1
+    Convert(c0 local1)
+    Copy(local1 local2 ) // FP Term
+    Print(local2)
+    //--- end of vi
+  )
+)))
+enqueue (videf1)
+

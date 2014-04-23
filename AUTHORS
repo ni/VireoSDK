@@ -1,0 +1,10 @@
+# Below is a list of people that have contributed
+# to the Vireo project.  Names should be added to the list like so:
+#
+#   Name <email address> area(s)
+
+Paul Austin <paul@ni.com> SDG, TypeManager, Execution, VirtualInstrument, Primitives
+James Levitt <james.levitt@ni.com> Generic-Un/BinOp, Bug fixes, Valgrind
+Milan Raj <milan.raj@ni.com> Emscripten projects
+Ethan Searl <ethan.searl@ni.com> Generic-Un/BinOp, Math, String, Testing,
+Brandon Vaughan <brandon.vaughan@ni.com> Initial string and FileIO
