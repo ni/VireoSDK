@@ -78,6 +78,9 @@
 		472D7ACC18C683A10023C688 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = "<group>"; };
 		4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleCountMain.cpp; path = ../source/CommandLine/SimpleCountMain.cpp; sourceTree = "<group>"; };
 		4737987517D0EBBB00C3BC2A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/CommandLine/main.cpp; sourceTree = "<group>"; };
+		4744496F19098ED8002A9A96 /* IntroTypeExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroTypeExamples.md; path = ../source/dox/IntroTypeExamples.md; sourceTree = "<group>"; };
+		4744497019099FD1002A9A96 /* IntroParallelClumpExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroParallelClumpExamples.md; path = ../source/dox/IntroParallelClumpExamples.md; sourceTree = "<group>"; };
+		4744497119099FE3002A9A96 /* IntroArrayExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroArrayExamples.md; path = ../source/dox/IntroArrayExamples.md; sourceTree = "<group>"; };
 		4744A9DA1818486000E1F7D9 /* VireoMerged.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VireoMerged.cpp; path = ../source/core/VireoMerged.cpp; sourceTree = "<group>"; };
 		4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TypeDefiner.cpp; path = ../source/core/TypeDefiner.cpp; sourceTree = "<group>"; };
 		4744A9DE1818599100E1F7D9 /* TypeDefiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TypeDefiner.h; path = ../source/include/TypeDefiner.h; sourceTree = "<group>"; };
@@ -209,6 +212,9 @@
 			isa = PBXGroup;
 			children = (
 				470C345218FC485400E1E148 /* Intro.md */,
+				4744496F19098ED8002A9A96 /* IntroTypeExamples.md */,
+				4744497119099FE3002A9A96 /* IntroArrayExamples.md */,
+				4744497019099FD1002A9A96 /* IntroParallelClumpExamples.md */,
 				470C345118F883BE00E1E148 /* ViaEBNF.md */,
 			);
 			name = Dox;
