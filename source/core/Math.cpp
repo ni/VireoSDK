@@ -41,10 +41,14 @@ inline Int16 IntAbs(Int16 value) { return abs(value); }
 inline Int32 IntAbs(Int32 value) { return abs(value); }
 inline Int64 IntAbs(Int64 value) { return llabs(value); }
 
-#ifdef VIVM_SUPPORTS_COMPLEX_NUMBERS
+#if defined(VIREO_TYPE_ComplexSingle) || defined(VIREO_TYPE_ComplexDouble)
     #include <complex>
-    typedef std::complex<Double> ComplexDouble;
-    typedef std::complex<float> ComplexSingle;
+    #if defined(VIREO_TYPE_ComplexSingle)
+        typedef std::complex<float> ComplexSingle;
+    #endif
+    #if defined(VIREO_TYPE_ComplexDouble)
+        typedef std::complex<Double> ComplexDouble;
+    #endif
 #endif
 
 extern "C" {
@@ -403,6 +407,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int64)
 //--------------------------
 
 // Single
+#if defined(VIREO_TYPE_Single)
 DECLARE_VIREO_MATH_PRIMITIVES(Single)
 DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(Single)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Single)
@@ -411,9 +416,12 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Single)
 #define Y(TYPE) DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(TYPE, Single)
 #define TYPE_CODE TC_SINGLE
 #include "ConversionTable.def"
+#endif
+
 //------------------------------------------------------------
 
 // IEEE754 Double
+#if defined(VIREO_TYPE_Double)
 DECLARE_VIREO_MATH_PRIMITIVES(Double)
 DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(Double)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Double)
@@ -436,6 +444,7 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
     }
     return _NextInstruction();
 }
+#endif
 //------------------------------------------------------------
 
 // Utf8Char
@@ -619,11 +628,14 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     //--------------------------
 
     //Single
+#if defined(VIREO_TYPE_Single)
 #if 0
+    // TODO, once type dpendecy sequencing works these definitions can be moved here.
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bc(e(bb(32 IEEE754B)))))")
     DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))")
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")
 #endif
+
     DEFINE_VIREO_TYPE(UnOpSingle, "p(i(.Single,x),o(.Single,result))")
     DEFINE_VIREO_TYPE(BinOpSingle, "p(i(.Single,x),i(.Single,y),o(.Single,result))")
     DEFINE_VIREO_MATH_FUNCTIONS(Single)
@@ -635,9 +647,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define Y(TYPE) DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(TYPE, Single)
     #define TYPE_CODE TC_SINGLE
     #include "ConversionTable.def"
+#endif
     //--------------------------
 
     // Double
+#if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_TYPE(UnOpDouble, "p(i(.Double,x),o(.Double,result))")
     DEFINE_VIREO_TYPE(BinOpDouble, "p(i(.Double,x),i(.Double,y),o(.Double,result))")
     DEFINE_VIREO_TYPE(E, "dv(.Double  2.7182818284590451)")
@@ -652,6 +666,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define TYPE_CODE TC_DOUBLE
     #include "ConversionTable.def"
     DEFINE_VIREO_FUNCTION(Random, "p(o(.Double))" );
+#endif
     //--------------------------
 
     // Utf8Char
@@ -659,8 +674,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     //--------------------------
 DEFINE_VIREO_END()
 
-
-#ifdef VIVM_SUPPORTS_COMPLEX_NUMBERS
+//------------------------------------------------------------
+#if defined(VIREO_TYPE_ComplexSingle)
 
 #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexSingleConvert##TYPE, ComplexSingle, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
 #include "ConversionTable.def"
@@ -689,34 +704,6 @@ DECLARE_VIREO_PRIMITIVE2( LogComplexSingle, ComplexSingle, ComplexSingle, (_Para
 DECLARE_VIREO_PRIMITIVE2( Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
 DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
-
-#define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexDoubleConvert##TYPE, ComplexDouble, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
-#include "ConversionTable.def"
-
-#define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexDouble, TYPE, ComplexDouble, (_Param(1) = (ComplexDouble) _Param(0)))
-#include "ConversionTable.def"
-
-DECLARE_VIREO_PRIMITIVE3( AddComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) + _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( SubComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) - _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( MulComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) * _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( DivComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) / _Param(1)) )
-DECLARE_VIREO_PRIMITIVE2( SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexDouble, ComplexDouble, Double, (_Param(1) = abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( PhaseComplexDouble, ComplexDouble, Double, (_Param(1) = arg(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ConjugateComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = conj(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SquareRootComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sqrt(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( CosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( TanComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = tan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( CosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0) ) )
-DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
-//TODO - DECLARE_VIREO_PRIMITIVE3( CxPolar, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle,x) o(.ComplexSingle,result))")
@@ -748,6 +735,41 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_FUNCTION(ExpComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
     DEFINE_VIREO_FUNCTION(PowComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
 
+DEFINE_VIREO_END()
+#endif
+
+//------------------------------------------------------------
+#if defined(VIREO_TYPE_ComplexDouble)
+
+#define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexDoubleConvert##TYPE, ComplexDouble, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
+#include "ConversionTable.def"
+
+#define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexDouble, TYPE, ComplexDouble, (_Param(1) = (ComplexDouble) _Param(0)))
+#include "ConversionTable.def"
+
+DECLARE_VIREO_PRIMITIVE3( AddComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) + _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3( SubComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) - _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3( MulComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) * _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3( DivComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) / _Param(1)) )
+DECLARE_VIREO_PRIMITIVE2( SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexDouble, ComplexDouble, Double, (_Param(1) = abs(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( PhaseComplexDouble, ComplexDouble, Double, (_Param(1) = arg(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( ConjugateComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = conj(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( SquareRootComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sqrt(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( SineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sin(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( CosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = cos(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( TanComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = tan(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( SecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/cos(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( CosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/sin(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2( Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0) ) )
+DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
+//TODO - DECLARE_VIREO_PRIMITIVE3( CxPolar, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
+
+DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble,x) o(.ComplexDouble,result))")
     DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(.ComplexDouble,x) i(.ComplexDouble,y) o(.ComplexDouble,result))")
 
@@ -777,5 +799,6 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_FUNCTION(ExpComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
     DEFINE_VIREO_FUNCTION(PowComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
 DEFINE_VIREO_END()
+
 #endif
 

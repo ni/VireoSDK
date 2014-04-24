@@ -54,7 +54,10 @@ SDG
 
 #define VIVM_INSTRUCTION_LINKAGE static
 
-#define VIVM_SUPPORTS_COMPLEX_NUMBERS 1
+#define VIREO_TYPE_Single 1
+#define VIREO_TYPE_Double 1
+#define VIREO_TYPE_ComplexSingle 1
+#define VIREO_TYPE_ComplexDouble 1
 
 #define VIREO_ARRAY_INDEX_TYPE Int32
 #define VIREO_ARRAY_VARIABLE_SENTINEL INT32_MIN

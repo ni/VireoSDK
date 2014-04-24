@@ -135,16 +135,24 @@ void TypeDefiner::DefineStandardTypes(TypeManager& tm)
     // module initialization
     
     // Floating-point Single
+#if defined(VIREO_TYPE_Single)
     Define(tm, "SingleAtomic",  "c(e(bb(32 IEEE754B)))");
     Define(tm, "SingleCluster", "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
     Define(tm, "Single",        "eq(e(.SingleAtomic), e(.SingleCluster))");
+#endif
     // Floating-point Double
+#if defined(VIREO_TYPE_Double)
     Define(tm, "DoubleAtomic",  "c(e(bb(64 IEEE754B)))");
     Define(tm, "DoubleCluster", "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52,Q1)  fraction))))");
     Define(tm, "Double",        "eq(e(.DoubleAtomic) e(.DoubleCluster))");
+#endif
     // ComplexNumbers
+#if defined(VIREO_TYPE_ComplexSingle)
     Define(tm, "ComplexSingle", "c(e(.Single real) e(.Single imaginary))");
+#endif
+#if defined(VIREO_TYPE_ComplexDouble)
     Define(tm, "ComplexDouble", "c(e(.Double real) e(.Double imaginary))");
+#endif
 #endif
     // Time
     Define(tm, "Time",          "c(e(.Int64 seconds) e(.UInt64 fractions))");

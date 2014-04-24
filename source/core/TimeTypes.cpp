@@ -239,11 +239,25 @@ VIREO_FUNCTION_SIGNATURE1(ATimeGetCurrent, ATime128)
     return _NextInstruction();
 }
 
+#if defined(VIREO_TYPE_Double)
 VIREO_FUNCTION_SIGNATURE3(ATimeFromDoubleDouble, Double, Double, ATime128)
 {
     _Param(2) = ATime128(_Param(0), _Param(1));
     return _NextInstruction();
 }
+
+VIREO_FUNCTION_SIGNATURE2(ATimeGetSecondsDouble, ATime128, Double)
+{
+    _Param(1) = _Param(0).Seconds();
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(ATimeGetFractionDouble, ATime128, Double)
+{
+    _Param(1) = _Param(0).FractionOfSecond();
+    return _NextInstruction();
+}
+#endif
 
 VIREO_FUNCTION_SIGNATURE3(ATimeFromInt64UInt64, Int64, UInt64, ATime128)
 {
@@ -258,23 +272,12 @@ VIREO_FUNCTION_SIGNATURE1(ATimeIncrementLSB, ATime128)
 }
 #endif
     
-VIREO_FUNCTION_SIGNATURE2(ATimeGetSecondsDouble, ATime128, Double)
-{
-    _Param(1) = _Param(0).Seconds();
-    return _NextInstruction();
-}
-
 VIREO_FUNCTION_SIGNATURE2(ATimeGetSecondsInt64, ATime128, Int64)
 {
     _Param(1) = _Param(0).SecondsInt64();
     return _NextInstruction();
 }
 
-VIREO_FUNCTION_SIGNATURE2(ATimeGetFractionDouble, ATime128, Double)
-{
-    _Param(1) = _Param(0).FractionOfSecond();
-    return _NextInstruction();
-}
 
 VIREO_FUNCTION_SIGNATURE2(ATimeGetFractionUInt64, ATime128, UInt64)
 {
@@ -308,13 +311,16 @@ DEFINE_VIREO_BEGIN(Time)
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
+#if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION(ATimeFromDoubleDouble, "p(i(.Double) i(.Double) o(.Time))")
+    DEFINE_VIREO_FUNCTION(ATimeGetSecondsDouble, "p(i(.Time) o(.Double))")
+    DEFINE_VIREO_FUNCTION(ATimeGetFractionDouble, "p(i(.Time) o(.Double))")
+#endif
+
     DEFINE_VIREO_FUNCTION(ATimeFromInt64UInt64, "p(i(.Int64) i(.UInt64) o(.Time))")
     DEFINE_VIREO_FUNCTION(ATimeGetCurrent, "p(o(.Time))")
  // DEFINE_VIREO_FUNCTION(ATimeIncrementLSB, "p(e(.Time))")  //TODO input instead of inplace
-    DEFINE_VIREO_FUNCTION(ATimeGetSecondsDouble, "p(i(.Time) o(.Double))")
     DEFINE_VIREO_FUNCTION(ATimeGetSecondsInt64, "p(i(.Time) o(.Int64))")
-    DEFINE_VIREO_FUNCTION(ATimeGetFractionDouble, "p(i(.Time) o(.Double))")
     DEFINE_VIREO_FUNCTION(ATimeGetFractionUInt64, "p(i(.Time) o(.UInt64))")
     DEFINE_VIREO_FUNCTION(ATimeSetSecondsInt64, "p(i(.Time) o(.Int64))")
     DEFINE_VIREO_FUNCTION(ATimeSetFractionUInt64, "p(i(.Time) o(.UInt64))")

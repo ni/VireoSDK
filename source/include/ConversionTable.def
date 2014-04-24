@@ -75,12 +75,16 @@ X(Int64)
 #endif
 #endif
 
+#if defined(VIREO_TYPE_Single)
 #if (TYPE_CODE != TC_SINGLE)
 X(Single)
 #endif
+#endif
 
+#if defined(VIREO_TYPE_Double)
 #if (TYPE_CODE != TC_DOUBLE)
 X(Double)
+#endif
 #endif
 
 #undef X
