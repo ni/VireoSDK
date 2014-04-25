@@ -492,6 +492,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(UnOpUInt32, "p(i(.UInt32 x) o(.UInt32 result))")
     DEFINE_VIREO_TYPE(BinOpUInt32, "p(i(.UInt32 x) i(.UInt32 y) o(.UInt32 result))")
 
+    DEFINE_VIREO_TYPE(UnOpUInt64, "p(i(.UInt64 x) o(.UInt64 result))")
+    DEFINE_VIREO_TYPE(BinOpUInt64, "p(i(.UInt64 x) i(.UInt64 y) o(.UInt64 result))")
+
     DEFINE_VIREO_TYPE(UnOpInt8, "p(i(.Int8 x)o(.Int8 result))")
     DEFINE_VIREO_TYPE(BinOpInt8, "p(i(.Int8 x)i(.Int8,y)o(.Int8 result))")
 
