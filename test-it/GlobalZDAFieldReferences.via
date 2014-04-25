@@ -1,0 +1,45 @@
+define (HelloWorldSub dv(.VirtualInstrument (
+c(
+e(v(.String "Hello") variable1)
+)
+clump (1
+    Print(variable1)
+)
+clump (1
+    Print(variable1)
+)
+clump (1
+    Print(variable1)
+)
+clump (1
+    Print(variable1)
+)
+) ) )
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(v(.String "TopVI") variable1)
+        e(.Int32 x)
+        e(a(.Int32 10)   FixedArray)
+    )
+    clump (1
+        Print(variable1)
+        
+        // A VI is a ZDA (zero dimensioned array), or object
+        // Dig into one of the VIs fields 
+        ArrayLength(HelloWorldSub.Clumps x)
+        DPrintf("Clump count %s" x)
+        
+        // Array length of an object is one
+        ArrayLength(HelloWorldSub.ParamBlock x)
+        DPrintf("ParamBlock count %s" x)
+        ArrayLength(HelloWorldSub.DataSpace x)
+        DPrintf("DataSpace count %s" x)
+        
+        // This is not legal yet
+        // ArrayLength(HelloWorldSub.DataSpace.FixedArray x)
+        // DPrintf("DataSpace count %s" x)
+    )
+) ) )
+
+enqueue (HelloWorld)

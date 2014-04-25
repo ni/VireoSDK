@@ -327,6 +327,12 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
         enc = kEncoding_UInt;
     } else if (string->CompareCStr(tsSInt)) {
         enc = kEncoding_SInt;
+    } else if (string->CompareCStr(tsFixedPoint)) {
+        enc = kEncoding_Q;
+    } else if (string->CompareCStr(ts1plusFractional)) {
+        enc = kEncoding_Q1;
+    } else if (string->CompareCStr(tsIntBiased)) {
+        enc = kEncoding_IntBiased;
     } else if (string->CompareCStr(tsInt1sCompliment)) {
         enc = kEncoding_Int1sCompliment;
     } else if (string->CompareCStr(tsAscii)) {

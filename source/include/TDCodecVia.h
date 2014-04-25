@@ -136,7 +136,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsUnusedBits      "XBits"
 #define tsAscii           "Ascii"       //!< always single byte  ISO-8859-1
 #define tsUnicode         "Unicode"     //!< Utf8, Utf16, Utf32    (Basic Multilingual Plane 0 only right now TODO support more?)
-#define tsBiased          "IntBiased"   //!< example, for 4 bits : -max=0000,  0 = 1xxx, max = 1111
+#define tsIntBiased       "IntBiased"   //!< example, for 4 bits : -max=0000,  0 = 1xxx, max = 1111
 #define tsZigZag          "IntZigZag"   //!< used in Google's protocol buffers.
 #define tsIEEE754Binary   "IEEE754B"    //!< Formats defined for 16,32,64 and 128 bit floating-point numbers
 

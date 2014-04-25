@@ -675,6 +675,7 @@ TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *
         if (subType && subType->IsValid()) {
             *end = (AQBlock1*)start + offset;
         } else {
+            subType = null;
             *end = null;
         }
     } else if (Rank() == 0) {
@@ -871,7 +872,7 @@ AggrigateAlignmentCalculator::AggrigateAlignmentCalculator(TypeManager* tm)
     AggrigateSize = 0;
     IncludesPadding = false;
     IsFlat = true;
-    IsValid = false;
+    IsValid = true;
 }
 //------------------------------------------------------------
 Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)

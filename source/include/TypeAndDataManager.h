@@ -79,6 +79,9 @@ enum EncodingEnum {
     kEncoding_Ascii,
     kEncoding_Unicode,
     kEncoding_Pointer,              // Some systems may have more than one pointer type cdoe/data
+    kEncoding_Q,
+    kEncoding_Q1,
+    kEncoding_IntBiased,
     
     kEncodingBitFieldSize = 5,   //Room for up to 32 primitive encoding types
 };
