@@ -119,8 +119,8 @@ void TypeDefiner::DefineStandardTypes(TypeManager& tm)
     Define(tm, "Int16",         "c(e(bb(16 SInt)))");
     // UInt32
     Define(tm, "UInt32Atomic",  "c(e(bb(32 UInt)))");
-    Define(tm, "UInt32Cluster", "c(e(.UInt16 HiWord),e(.UInt16 LoWord))");
-    Define(tm, "UInt32",        "eq(e(.UInt32Atomic),e(.UInt32Cluster))");
+    Define(tm, "UInt32Cluster", "c(e(.UInt16 HiWord) e(.UInt16 LoWord))");
+    Define(tm, "UInt32",        "eq(e(.UInt32Atomic) e(.UInt32Cluster))");
     // Integer Int32
     Define(tm, "Int32",         "c(e(bb(32 SInt)))");
     Define(tm, "UInt64",        "c(e(bb(64 UInt)))");
@@ -135,12 +135,12 @@ void TypeDefiner::DefineStandardTypes(TypeManager& tm)
 #if defined(VIREO_TYPE_Single)
     Define(tm, "SingleAtomic",  "c(e(bb(32 IEEE754B)))");
     Define(tm, "SingleCluster", "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
-    Define(tm, "Single",        "eq(e(.SingleAtomic), e(.SingleCluster))");
+    Define(tm, "Single",        "eq(e(.SingleAtomic) e(.SingleCluster))");
 #endif
     // Floating-point Double
 #if defined(VIREO_TYPE_Double)
     Define(tm, "DoubleAtomic",  "c(e(bb(64 IEEE754B)))");
-    Define(tm, "DoubleCluster", "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52,Q1)  fraction))))");
+    Define(tm, "DoubleCluster", "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52 Q1)  fraction))))");
     Define(tm, "Double",        "eq(e(.DoubleAtomic) e(.DoubleCluster))");
 #endif
     // ComplexNumbers

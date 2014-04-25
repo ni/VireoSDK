@@ -629,7 +629,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 //------------------------------------------------------------
 // Dig throught nested type names to see if one of the names
 // matches the one provided.
-Boolean TypeCommon::IsA(const SubString *otherTypeName)
+Boolean TypeCommon::IsA(const SubString* otherTypeName)
 {
     TypeRef t = this;
     while (t) {
@@ -694,13 +694,13 @@ TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *
 //------------------------------------------------------------
 // WrappedType
 //------------------------------------------------------------
-WrappedType::WrappedType(TypeManager *typeManager, TypeRef type)
+WrappedType::WrappedType(TypeManager* typeManager, TypeRef type)
     : TypeCommon(typeManager)
 {
     _wrapped = type;
     
     _topAQSize      = _wrapped->TopAQSize();
-    _aqAlignment      = _wrapped->AQAlignment();
+    _aqAlignment    = _wrapped->AQAlignment();
     _rank           = _wrapped->Rank();
     _isFlat         = _wrapped->IsFlat();
     _isValid        = _wrapped->IsValid();
@@ -843,28 +843,21 @@ BitClusterType::BitClusterType(TypeManager* typeManager, TypeRef elements[], Int
         encoding = element->BitEncoding();
     }
     
-    _topAQSize  = 0;
-    _aqAlignment  = 0;
-    _rank       = 0;
-    _bitSize    = bitCount;
-    _isFlat     = isFlat;
-    _isValid    = isValid;
+    _topAQSize = 0;
+    _aqAlignment = 0;
+    _rank = 0;
+    _bitSize = bitCount;
+    _isFlat = isFlat;
+    _isValid = isValid;
     _isBitLevel = true;
     _hasCustomDefault = hasCustomValue;
     _hasGenericType = hasGenericType;
     if (_elements.Length() > 1)
         encoding = kEncoding_Cluster;
-    _encoding   = encoding;
-    _pointerType    = kPTNotAPointer;
+    _encoding = encoding;
+    _pointerType = kPTNotAPointer;
     
-    // TODO size/count/length
-    // count is obviously discrete
-    // and indices how many there are
-    // length and size amy indicate how big something is
-    // (one liter jug, or a 4mx6m room)
-    // but not what is in it.
-    // http://stackoverflow.com/questions/300522/count-vs-length-vs-size-in-a-collection
-    //TODO figure out total bit size and bit offsets
+    // TODO figure out total bit size and bit offsets
 }
 //------------------------------------------------------------
 // ClusterElementAlignmentCalculator
@@ -1000,15 +993,15 @@ ClusterType::ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 cou
     }
     alignmentCalculator.Finish();
     
-    _isValid    = alignmentCalculator.IsValid;
-    _aqAlignment  = alignmentCalculator.AggrigateAlignment;
-    _topAQSize  = alignmentCalculator.AggrigateSize;
-    _isFlat     = alignmentCalculator.IsFlat;
+    _isValid = alignmentCalculator.IsValid;
+    _aqAlignment = alignmentCalculator.AggrigateAlignment;
+    _topAQSize = alignmentCalculator.AggrigateSize;
+    _isFlat = alignmentCalculator.IsFlat;
     _hasCustomDefault = hasCustomValue;
     _hasPadding = alignmentCalculator.IncludesPadding;
     _hasGenericType = hasGenericType;
     if (_elements.Length() == 1 && isBitLevel) {
-        _encoding   = encoding;
+        _encoding = encoding;
     } else {
         _encoding = kEncoding_Cluster;
     }
