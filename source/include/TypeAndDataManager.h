@@ -419,7 +419,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
 
     //! Parse through a path digging through aggrigate element names. Calculates the cumulative offset.
-    TypeRef GetSubElementFromPath(SubString* name, Int32 *offset);
+    TypeRef GetSubElementOffsetFromPath(SubString* name, Int32 *offset);
     
     //! Set the SubString to the name if the type is not anonymous.
     virtual void GetName(SubString* name)               { name->AliasAssign(null, null); }

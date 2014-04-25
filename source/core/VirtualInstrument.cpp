@@ -395,13 +395,13 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     // the path parser is used so nested fields can be used such as "circle1.x"
     AQBlock1* pData = null;
     Int32 offset = 0;
-    TypeRef actualType = _dataSpaceType->GetSubElementFromPath(argument, &offset);
+    TypeRef actualType = _dataSpaceType->GetSubElementOffsetFromPath(argument, &offset);
     
     if (actualType != null) {
         pData = _dataSpaceBase + offset;
         _argumentState = kArgumentResolvedToLocal;
     } else if (_paramBlock) {
-        actualType = _paramBlockType->GetSubElementFromPath(argument, &offset);
+        actualType = _paramBlockType->GetSubElementOffsetFromPath(argument, &offset);
         if (actualType != null) {
             pData = _paramBlockBase + offset;
             _argumentState = kArgumentResolvedToParameter;
@@ -425,8 +425,17 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
                 }
             } else { 
                 pData = (AQBlock1*)actualType->Begin(kPARead);   // TODO based on parameter direction
-                if(pathTail.ReadChar('.')) { //If we have a dot after the head then we have more to parse.
-                    actualType = actualType->GetSubElementFromPath(&pathTail, &offset);
+                if(pathTail.ReadChar('.')) {
+                    // If thre is a dot after the head then we have more to parse. If the top type
+                    // is a cluster then this should be a simple field index.
+                    
+                    // TODO: For arrays it is them as wel "a.0" or a.0.0.0" etc.
+                    // however the pointer to the element needs to have a life time at least as long the instruction
+                    // being created. This means variable sized arrays cannot be indexed.
+                    // Fixed sized arrays (that includes non generic ZDAs) all elements are allocated up front
+                    // so indexing is OK.
+                    
+                    actualType = actualType->GetSubElementOffsetFromPath(&pathTail, &offset);
                     pData += offset;
                 } 
             }

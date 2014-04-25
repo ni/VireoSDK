@@ -653,7 +653,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 // can be found at a a sub level. If so then look for dupicates should the
 // be allowed ( e.g. first match or no ambiguities allowed. I lean to no ambiguities allowed
 // but that could be determined when the type is created.
-TypeRef TypeCommon::GetSubElementFromPath(SubString* name, Int32 *offset)
+TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32 *offset)
 {
     SubString pathElement;
     TypeRef currentRef = this;

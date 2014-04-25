@@ -77,11 +77,11 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
     TypedBlock *paramBlock = VI->ParamBlock();
 
     // Search the dataSpace and paramBlock for the desired element
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementFromPath(&eltNameString, &offset);
+    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
     if (actualType != null) {
         pData = dataSpace->RawBegin() + offset;
     } else if (paramBlock) {
-        actualType = paramBlock->ElementType()->GetSubElementFromPath(&eltNameString, &offset);
+        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
         if (actualType != null) {
             pData = paramBlock->RawBegin() + offset;
         }
@@ -120,12 +120,12 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     TypedBlock *paramBlock = VI->ParamBlock();
 
     // Search the dataSpace and paramBlock for the desired element
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementFromPath(&eltNameString, &offset);
+    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
     if (actualType != null)
         pData = dataSpace->RawBegin() + offset;
     else if (paramBlock)
     {
-        actualType = paramBlock->ElementType()->GetSubElementFromPath(&eltNameString, &offset);
+        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
         if (actualType != null)
             pData = paramBlock->RawBegin() + offset;
     }
@@ -231,7 +231,7 @@ VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef)
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByPath(TypeRef typeRef, char* buffer, Int32 *offset)
 {
     SubString string(buffer);
-    return typeRef->GetSubElementFromPath(&string, offset);
+    return typeRef->GetSubElementOffsetFromPath(&string, offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByName(TypeRef typeRef, char* buffer)
