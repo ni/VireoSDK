@@ -55,12 +55,9 @@ TypeRef TypeDefiner::Define(TypeManager& tm, const char* name, const char* typeS
 TypeRef TypeDefiner::ParseAndBuidType(TypeManager& tm, SubString* typeString)
 {
     TypeManagerScope scope(&tm);
-    
-    // TODO could save map of already parsed types in this type manager.
-    // still undetermined how often duplicate definitions will happen.
-    // they are most common for primitive function declarations
-    // but even if there are textual differences it may be identical.
-    TDViaParser parser(&tm, typeString, null, 1);
+
+    EventLog log(EventLog::StdOut);
+    TDViaParser parser(&tm, typeString, &log, 1);
     return parser.ParseType();
 }
 //------------------------------------------------------------

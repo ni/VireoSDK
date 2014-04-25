@@ -1,0 +1,3 @@
+(Line 3 Error "Unrecognized data type 'ZZString'.")
+(Line 3 Error "Unrecognized element type 'variable1'.")
+(Line 3 HardError "VI Clump count missing.")

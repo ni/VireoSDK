@@ -51,6 +51,12 @@ public:
     Boolean TraceEnabled()                  { return _traceEnabled; }
     void SetTraceEnabled(Boolean value)     { _traceEnabled = value; }
     void LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra = null);
+    
+    // TODO: change to use streams
+    //! Special string instance for constructor to skip all messages (counts still tallied)
+    static StringRef DevNull;
+    //! Special string instance for constructor to direct messages to stdout
+    static StringRef StdOut;
 };
 
 } // namespace Vireo

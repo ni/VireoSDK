@@ -288,6 +288,9 @@ TypeRef TDViaParser::ParseNamedType()
     _string.ReadToken(&token);
     TypeRef t = _typeManager->FindTypeInternal(&token);
     
+    if(!t)
+        LOG_EVENTV(kSoftDataError,"Unrecognized data type", &token);
+
     if (t == null)
         t = BadType();
     
@@ -1566,7 +1569,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
     Boolean success;
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
-        EventLog log(null);
+        EventLog log(EventLog::DevNull);
         TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
         Int64 parsedValue;
 
@@ -1621,7 +1624,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
     Boolean success;
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
-        EventLog log(null);
+        EventLog log(EventLog::DevNull);
         TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
         Double parsedValue;
 
