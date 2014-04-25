@@ -1,4 +1,4 @@
- Total number of types 2
+ Total number of types 3
  e(.Boolean)  //topAqSize: 1 encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:f generic:f
  e(.Int8)  //topAqSize: 1 encoding:10 usage:0 baseType:c(e(bb(8 SInt))) dv:f generic:f
  e(.Int16)  //topAqSize: 2 encoding:10 usage:0 baseType:c(e(bb(16 SInt))) dv:f generic:f
