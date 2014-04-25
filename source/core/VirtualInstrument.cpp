@@ -941,9 +941,8 @@ void ClumpParseState::CommitClump()
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObject*)
 {
-    // a bit of a hop  skip and a jump
-    VirtualInstrumentObject **pVI = _ParamPointer(0);
-    (*pVI)->Obj()->PressGo();
+    VirtualInstrumentObject *pVI = _Param(0);
+    pVI->Obj()->PressGo();
     return _NextInstruction();
 }
 //------------------------------------------------------------
