@@ -434,12 +434,13 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
                     // being created. This means variable sized arrays cannot be indexed.
                     // Fixed sized arrays (that includes non generic ZDAs) all elements are allocated up front
                     // so indexing is OK.
-                    
-                    actualType = actualType->GetSubElementOffsetFromPath(&pathTail, &offset);
-                    pData += offset;
-                } 
+                    void* pDataStart = pData;
+                    actualType = actualType->GetSubElementInstancePointerFromPath(&pathTail, pDataStart, (void**) &pData, false);
+                }
             }
-            _argumentState = kArgumentResolvedToGlobal;
+            if (actualType) {
+                _argumentState = kArgumentResolvedToGlobal;
+            }
         }
     }
     *ppData = pData;

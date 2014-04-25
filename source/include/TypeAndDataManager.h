@@ -415,8 +415,10 @@ public:
     //! Get an element of an aggrigate using it index.
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
 
-    //! Parse through a path digging through aggrigate element names. Calculates the cumulative offset.
+    //! Parse through a path, digging through aggrigate element names. Calculates the cumulative offset.
     TypeRef GetSubElementOffsetFromPath(SubString* name, Int32 *offset);
+    //! Parse through a path, digging through aggrigate element names, references and array indexes.
+    TypeRef GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     
     //! Set the SubString to the name if the type is not anonymous.
     virtual void GetName(SubString* name)               { name->AliasAssign(null, null); }

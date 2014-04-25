@@ -646,13 +646,8 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
     return false;
 }
 //------------------------------------------------------------
-// Walk down a dotted path
-// TODO some layers may have anonymous elements.
-// In that case drilling needs to skip down a layer to see if the field
-// can be found at a a sub level. If so then look for dupicates should the
-// be allowed ( e.g. first match or no ambiguities allowed. I lean to no ambiguities allowed
-// but that could be determined when the type is created.
-TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32 *offset)
+//! Walk down a dotted cluster field path
+TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32* offset)
 {
     SubString pathElement;
     TypeRef currentRef = this;
@@ -669,6 +664,33 @@ TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32 *offset)
     }
     return currentRef;
 }
+//------------------------------------------------------------
+//! Walk down a dotted path inlcuding hops through arrays
+TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+{
+    TypeRef subType;
+    if (!IsArray()) {
+        Int32 offset = 0;
+        subType = GetSubElementOffsetFromPath(name, &offset);
+        if (subType && subType->IsValid()) {
+            *end = (AQBlock1*)start + offset;
+        } else {
+            *end = null;
+        }
+    } else if (Rank() == 0) {
+        TypedArrayCore *array = *(TypedArrayCore**)start;
+        subType = array->ElementType();
+        void* newStart = array->RawObj();
+        subType = subType->GetSubElementInstancePointerFromPath(name, newStart, end, allowDynamic);
+    } else {
+        // TODO parse indexes.
+        // Variable sized arrays can only be indexed if allowDynamic is true.
+        subType = null;
+        *end = null;
+    }
+    return subType;
+}
+
 //------------------------------------------------------------
 // WrappedType
 //------------------------------------------------------------
