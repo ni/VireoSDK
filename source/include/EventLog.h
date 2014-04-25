@@ -18,6 +18,8 @@ SDG
 
 namespace Vireo {
 
+//------------------------------------------------------------
+//! A Class to collect trace, warning and error events when processing a data set.
 class EventLog {
 private:
     StringRef       _errorLog;
@@ -27,20 +29,19 @@ private:
     Boolean         _traceEnabled;
 public:
     enum EventSeverity {
-        // Diagnostic trace notice, these are only recorded is tracing is turned on.
+        //! Diagnostic trace notice, these are only recorded if tracing is turned on.
         kTrace = 0,
         
-        // The data being processed is outside the range expected, but a default interpretation
-        // has been defined for the giving situation.
+        //! An unexpected input was detected and ignored.
         kWarning = 1,
         
-        // Some of the inputs do not make sense but this does not prevent processing remaining data
+        //! An error in the input was detected but the operation can continue in order to dermine if other errors exist.
         kSoftDataError = 2,
         
-        // Some of the inputs do not make sense and the function cannot proceed
+        //! An error in the input was detected and the operation cannot continue.
         kHardDataError = 3,
         
-        // Internal state of the system has been compromised
+        //! Internal state of the system has been compromised.
         kAssetFailure = 4,
     };
     

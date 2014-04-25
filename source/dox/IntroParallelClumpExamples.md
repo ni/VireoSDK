@@ -14,7 +14,6 @@ define (Parallel dv(.VirtualInstrument (
         e(v(.String 'Pat you head.') sHead)
         e(v(.String 'Rub your tummy.') sTummy)
     ) 
-    3               // Three clumps in this VI
     clump(1         // Clump 0 (the root clump)
          Trigger(1)    // Trigger Clump #1        
          WaitMilliseconds(fiveHundred)

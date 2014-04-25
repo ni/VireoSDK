@@ -14,7 +14,6 @@ define (ArrayDemo, dv(.VirtualInstrument, (
     e(dv(a(.Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)  	// extra defaults added
     e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)
   )
-  1
     clump(1
         Print(variableArray1d)
         Print(fixedArray1d)

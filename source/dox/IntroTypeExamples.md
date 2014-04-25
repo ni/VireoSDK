@@ -11,8 +11,7 @@ define (CalcUsingIntegers  dv(.VirtualInstrument  (
     e(dv(.Int32 7)  j)
     e(.Int32  k)
   )
-  1
-  clump(1 
+  clump(1
     MulInt32(i j k)
     Print(k)
    )
@@ -24,7 +23,6 @@ define (CalcUsingDoubles  dv(.VirtualInstrument  (
     e(dv(.Double 7)  y)
     e(.Double  z)
   )
-  1
   clump(1
     MulDouble(x y z)
     Print(z)

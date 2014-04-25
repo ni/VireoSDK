@@ -10,8 +10,8 @@ There are plenty of tips on the web for git. I am using SourceTree which I am pr
 git clone https://github.com/PaulAustin/Vireo.git
 cd vireo
 ls
-Documents        Vireo_BeagleBone       make-it                 Vireo_VS2012   bin
-test-it          Vireo_MacCommadLine	Vireo_UbuntuCommandLine	Vireo_XCode    source
+AUTHORS		    LICENSE.txt	    Vireo_VS2012    bin		    sample-vis	    test-it
+Documents	    README.md	    Vireo_XCode	    make-it		source
 ```
 
 ### Building Vireo
@@ -54,7 +54,8 @@ esh HelloWorld.via
 
 Hello World, I can fly.
 ```
-### Run unit tests ###
+
+### Runing unit tests
 Now see if all is well for your platform. The run-tests script will load and run all via files in the directory.
 Each run is compared with expected results that can be found in the results directory. If you add a via file it the initial results will be saved the first time you run run-tests. Note on windows, run-test, is a batch file the output is slightly different.
 
@@ -74,7 +75,19 @@ SDG (paulaustin)$ ./run-tests.sh
 --------------------------------
 All results matched expected.
 Number of outputs validated
-     228 total
+     1423 total
 ```
 
 It's best to write tests before working on a feature. With the tests in place, you can use them to prove that it works the way you want. Remember to add the test AND the expected results to your submission or pull request.
+
+### Building documentation
+If you have doxygen installed the make tool can build that as well on Unix/Linux platforms
+
+```
+# From the root of the repo
+cd make-it
+make dox
+cd ../Documents
+open index.html
+```
+
