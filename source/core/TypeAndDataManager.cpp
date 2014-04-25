@@ -80,7 +80,6 @@ TypeManager::TypeManager(TypeManager* rootTypeManager)
     _lookUpsFound = 0;
     _lookUpsRoutedToOwner = 0;
     _lookUpsNotResolved = 0;
-    _pathsParsed = 0;
     _typesShared = 0;
 #endif
     _totalAllocations = 0;
@@ -658,7 +657,6 @@ TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32 *offset)
     SubString pathElement;
     TypeRef currentRef = this;
     SubString path(name); // local copy we can edit
-    TheTypeManager()->PathParsed();
     *offset = 0;
     while(path.Length() > 0 )
     {

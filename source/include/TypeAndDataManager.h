@@ -241,15 +241,12 @@ private:
     Int64 _lookUpsFound;
     Int64 _lookUpsRoutedToOwner;
     Int64 _lookUpsNotResolved;
-    Int64 _pathsParsed;
 public:
     Int32 _typesShared;
 
     Int64 LookUpsFound()            { return _lookUpsFound;}
     Int64 LookUpsRoutedToOwner()    { return _lookUpsRoutedToOwner;}
     Int64 LookUpsNotResolved()      { return _lookUpsNotResolved;}
-    Int64 PathsParshed()            { return _pathsParsed;}
-    void  PathParsed()              { _pathsParsed++;}
 #endif
 };
 
