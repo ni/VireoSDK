@@ -46,7 +46,10 @@ public:
     Boolean         _loadVIsImmediatly;
     EventLog*       _pLog;
 
-    Int32   ErrorCount()     { return _pLog->TotalErrorCount(); }
+    void    LogEvent(EventLog::EventSeverity severity, const char* message, SubString *extra = null)
+        { _pLog->LogEvent(severity, CalcCurrentLine(), message, extra); }
+    Int32   ErrorCount()
+        { return _pLog->TotalErrorCount(); }
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 

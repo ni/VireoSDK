@@ -1,0 +1,33 @@
+define (HelloWorld0 dv(.VirtualInstrument (
+c(
+e(v(.String "Hello, world. I can fly.") variable1)
+)
+clump (1
+//Print(variable1)
+)
+clump (1
+//Print(variable1)
+)
+clump (1
+//Print(variable1)
+)
+clump (1
+//Print(variable1)
+)
+) ) )
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(v(.String "Hello, world. I can fly.") variable1)
+        e(.Int32 x)
+    )
+    clump (1
+        Print(variable1)
+        ArrayLength(HelloWorld0.Clumps x)
+        Print(x)
+    )
+) ) 
+// Error at end of define statement
+;
+
+enqueue (HelloWorld)

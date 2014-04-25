@@ -26,11 +26,10 @@ public:
     static EggShell* Create(EggShell* parent);
 
 private:
-    TypeManager          *_typeManger;
-    ExecutionContext    *_execContext;
-    char*          _mallocBuffer;
-    Int64          _commandCount;
-    SubString*     _pString;
+    TypeManager* _typeManger;
+    ExecutionContext* _execContext;
+    char*   _mallocBuffer;
+    Int64   _commandCount;
     
 public:
     NIError REPL(SubString *commandBuffer);
@@ -43,8 +42,8 @@ public:
     ExecutionContext* TheExecutionContext() { return _execContext; }
 private:
     EggShell(TypeManager *typeManger, ExecutionContext *execContext);
-    NIError ParseEnqueueVI();
-    NIError ParseDefine(TDViaParser* parser);
+    void ParseEnqueueVI(TDViaParser* parser);
+    void ParseDefine(TDViaParser* parser);
 };
 
 } // namespace Vireo

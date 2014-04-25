@@ -78,7 +78,6 @@ NIError EggShell::Delete()
         pTADM->PrintMemoryStat("ES Delete begin", false);
     }
 
-    // Nothing should be running when its deleted.
     if (_mallocBuffer) {
         _typeManger->Free(_mallocBuffer);
         _mallocBuffer = null;
@@ -94,51 +93,44 @@ NIError EggShell::Delete()
     return kNIError_Success;
 }
 //------------------------------------------------------------
-NIError EggShell::ParseDefine(TDViaParser *parser)
+void EggShell::ParseDefine(TDViaParser *parser)
 {
-    NIError err = kNIError_Success;
     SubString symbolName;
     
     if (!parser->TheString()->ReadChar('('))
-        return kNIError_kCantDecode;
+        return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
     
     parser->TheString()->ReadToken(&symbolName);
     parser->TheString()->EatOptionalComma();
     
     TypeRef t = parser->ParseType();
 
-    if (parser->ErrorCount() > 0)
-        err = kNIError_kCantDecode;
-    
     if (!parser->TheString()->ReadChar(')'))
-        return kNIError_kCantDecode;
+        return parser->LogEvent(EventLog::kHardDataError,  "')' missing");
     
     _execContext->TheTypeManager()->Define(&symbolName, t);
     
-    return err;
 }
 //------------------------------------------------------------
-NIError EggShell::ParseEnqueueVI()
+void EggShell::ParseEnqueueVI(TDViaParser* parser)
 {
     SubString viName;
     
-    if (!_pString->ReadChar('('))
-        return kNIError_kCantDecode;
+    if (! parser->TheString()->ReadChar('('))
+        return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
     
-    _pString->ReadToken(&viName);
+     parser->TheString()->ReadToken(&viName);
     
-    if (!_pString->ReadChar(')'))
-        return kNIError_kCantDecode;
+    if (! parser->TheString()->ReadChar(')'))
+        return parser->LogEvent(EventLog::kHardDataError, "')' missing");
 
     VirtualInstrument *vi = (VirtualInstrument*) _execContext->TheTypeManager()->FindNamedObject(&viName);
     
     if (vi != null) {
         vi->PressGo();
     } else {
-        printf("(Error \"VI %.*s not found.\")\n", FMT_LEN_BEGIN(&viName));
+        return parser->LogEvent(EventLog::kHardDataError, "VI not found", &viName);
     }
-    
-    return kNIError_Success;
 }
 //------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
@@ -149,18 +141,17 @@ NIError EggShell::REPL(SubString *commandBuffer)
     EventLog log(errorLog.Value);
     
     TDViaParser parser(_execContext->TheTypeManager(), commandBuffer, &log, 1);
-    _pString = parser.TheString();
     SubString command;
-    NIError err = kNIError_Success;
-    while((_pString->Length() > 0) && (err == kNIError_Success)) {
-        _pString->ReadToken(&command);
+    
+    while((parser.TheString()->Length() > 0) && (log.TotalErrorCount() == 0)) {
+        parser.TheString()->ReadToken(&command);
         _commandCount++;
         if (command.CompareCStr("define")) {
-            err = ParseDefine(&parser);
+            ParseDefine(&parser);
         } else if (command.CompareCStr("trace")) {
             log.SetTraceEnabled(true);  // No way to turn it off right now
         } else if (command.CompareCStr("enqueue")) {
-            err = ParseEnqueueVI();
+            ParseEnqueueVI(&parser);
         } else if (command.CompareCStr("clear")) {
             _typeManger->DeleteTypes(false);
         } else if (command.CompareCStr("exit")) {
@@ -170,16 +161,17 @@ NIError EggShell::REPL(SubString *commandBuffer)
             printf("bad egg\n");
             break;
         }
-        _pString->EatLeadingSpaces();
+        parser.TheString()->EatLeadingSpaces();
         parser.RepinLineNumberBase();
     }
+    
     TDViaParser::FinalizeModuleLoad(_execContext->TheTypeManager(), &log);
     
-    if (errorLog.Value->Length() > 0)
+    if (errorLog.Value->Length() > 0) {
         printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
-
-    _pString = null;
-    return err;
+    }
+    
+    return log.TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
 //------------------------------------------------------------
 #include <fcntl.h>
