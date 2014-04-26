@@ -15,6 +15,7 @@ SDG
 #define DataTypes_h
 
 #include <stddef.h>
+#include <string.h>     // memcpy()
 
 #include "BuildConfig.h"
 
