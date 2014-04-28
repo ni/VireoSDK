@@ -339,6 +339,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt32)
 //------------------------------------------------------------
 
 //UInt64
+#if defined (VIREO_TYPE_UInt64)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt64)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt64)
 DECLARE_VIREO_INTEGER_SPLIT(UInt32,UInt64)
@@ -348,6 +349,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt64)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt64)
 #define TYPE_CODE TC_UINT64
 #include "ConversionTable.def"
+#endif
 //------------------------------------------------------------
 
 // Int8
@@ -394,6 +396,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int32)
 //------------------------------------------------------------
 
 // Int64
+#if defined (VIREO_TYPE_Int64)
 DECLARE_VIREO_MATH_PRIMITIVES(Int64)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int64)
 DECLARE_VIREO_INTEGER_SPLIT(UInt32,Int64)
@@ -404,6 +407,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int64)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int64)
 #define TYPE_CODE TC_INT64
 #include "ConversionTable.def"
+#endif
 //--------------------------
 
 // Single
@@ -559,6 +563,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     //--------------------------
 
     // UInt64
+#if defined (VIREO_TYPE_UInt64)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt64)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt64)
     DEFINE_VIREO_INTEGER_SPLIT(UInt32,UInt64)
@@ -568,6 +573,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt64)
     #define TYPE_CODE TC_UINT64
     #include "ConversionTable.def"
+#endif
     //--------------------------
 
     // Int8
@@ -616,6 +622,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     //--------------------------
 
     // Int64
+#if defined (VIREO_TYPE_Int64)
     DEFINE_VIREO_MATH_FUNCTIONS(Int64)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int64)
     DEFINE_VIREO_INTEGER_SPLIT(UInt32,Int64)
@@ -628,6 +635,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int64)
     #define TYPE_CODE TC_INT64
     #include "ConversionTable.def"
+#endif
     //--------------------------
 
     //Single

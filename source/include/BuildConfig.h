@@ -54,6 +54,9 @@ SDG
 
 #define VIVM_INSTRUCTION_LINKAGE static
 
+// Options for turning off primitives for some types.
+#define VIREO_TYPE_UInt64 1
+#define VIREO_TYPE_Int64  1
 #define VIREO_TYPE_Single 1
 #define VIREO_TYPE_Double 1
 #define VIREO_TYPE_ComplexSingle 1
