@@ -19,5 +19,5 @@ var searchData=
   ['executioncontext_2eh',['ExecutionContext.h',['../_execution_context_8h.html',1,'']]],
   ['executioncontextscope',['ExecutionContextScope',['../class_vireo_1_1_execution_context_scope.html',1,'Vireo']]],
   ['executioncontextscope',['ExecutionContextScope',['../class_vireo_1_1_execution_context_scope.html#aae7e902995f9ccefc6fcfe47fda67e11',1,'Vireo::ExecutionContextScope']]],
-  ['ebnf_20grammar_20for_20vi_20assembly_20_28via_29',['EBNF grammar for VI assembly (VIA)',['../md_dox__via_e_b_n_f.html',1,'']]]
+  ['ebnf_20grammar_20for_20via_20assembly',['EBNF grammar for VIA assembly',['../md_dox__via_e_b_n_f.html',1,'']]]
 ];

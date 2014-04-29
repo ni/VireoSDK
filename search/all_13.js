@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['the_20type_20manager',['The Type Manager',['../md_dox__type_manager.html',1,'']]],
   ['tdcodeclvflat_2ecpp',['TDCodecLVFlat.cpp',['../_t_d_codec_l_v_flat_8cpp.html',1,'']]],
   ['tdcodeclvflat_2eh',['TDCodecLVFlat.h',['../_t_d_codec_l_v_flat_8h.html',1,'']]],
   ['tdcodecvia_2ecpp',['TDCodecVia.cpp',['../_t_d_codec_via_8cpp.html',1,'']]],

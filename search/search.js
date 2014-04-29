@@ -15,7 +15,7 @@ var indexSectionsWithContent =
   5: "e",
   6: "k",
   7: "fstv",
-  8: "eiv"
+  8: "eitv"
 };
 
 var indexSectionNames =

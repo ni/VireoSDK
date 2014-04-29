@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['vireo_20reference_20runtime_2e',['Vireo reference runtime.',['../index.html',1,'']]]
+  ['the_20type_20manager',['The Type Manager',['../md_dox__type_manager.html',1,'']]]
 ];
