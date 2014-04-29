@@ -28,3 +28,11 @@ enqueue (ArrayDemo)
 
 // TODO adde results of running program.
 This is simple introductions to arrays. It will take a few more to cover details passing arrays, and working with multi dimension arrays. Those will be covered later.
+
+## Next Steps
+* [Introduction](index.html)
+* [Some more simple type examples](md_dox__intro_type_examples.html)
+* [Some array type examples](md_dox__intro_array_examples.html)
+* [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)
+* [The TypeManager](md_dox__type_manager.html)
+

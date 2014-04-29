@@ -1,4 +1,4 @@
-## EBNF grammar for VI assembly (VIA)
+## EBNF grammar for VIA assembly
 
 The via grammar is fundamentally that of an s-expression. For clarity, the following EBNF grammar goes a bit further and defines the core elements for type, data and VI definitions. Note that terminal expressions for core types such as Int32 are not included since they are typically defined using lower level primitives.
 
@@ -6,7 +6,7 @@ The via grammar is fundamentally that of an s-expression. For clarity, the follo
 
 ~~~{.ebnf}
 type                    := named_type | array | cluster | default_value_type
-							 | bit_cluster | equivalence | param_block
+					     | bit_cluster | equivalence | param_block
 
 named_type              := '.'  type_in_dictionary
 
@@ -42,12 +42,12 @@ bit_block               := 'bb' '(' bit_count encoding ')'
 
   bit_count             := natural_number_token
 
-  encoding              := 'Boolean' | 'Bits' | 'Enum'
-                         | 'UInt' | 'SInt' | 'Unicode' | 'Ascii'
+  encoding              := 'Cluster' | 'ParamBlock' | 'Array' | 'Generic' |
+                         | 'Boolean' | 'Bits' | 'UInt' | 'SInt' | 'Unicode' | 'Ascii'
                          | 'IntBiased' | 'IEEE754B' | 'Pointer'
-                         | 'Generic'
+                         | 'Q' | 'Q1' |
 
-default_value_type       := 'dv' '(' type data_element ')'
+default_value_type      := 'dv' '(' type data_element ')'
 ~~~
 
 ### Grammar for data values
@@ -58,7 +58,7 @@ data_element             := token | data_collection | data_vi
 data_collection          := '(' data_element* ')'
 ~~~
 
-### Grammar for a VI expressed as a value.
+### Grammar for a VI expressed as a value
 
 ~~~{.ebnf}
 data_vi	                 := '('

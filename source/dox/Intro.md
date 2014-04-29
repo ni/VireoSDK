@@ -8,17 +8,17 @@ Vireo is a runtime engine. That means it works behind the scenes when a  program
 
 The  Vireo runtime consists of subsystems to load user programs, connect them to functions provided by the host and the execute them. Functionality  is partitioned in to the following primary parts:
 
-__Type and Data Manager(TADM)__ - manages types, and instances of data including default values for each type. It has a dictionary to map names to defined types. Since types are a form of data the the concept of type and data along with the underlying allocation mechanism are tightly interwoven.
+__Type Manager__ - The type manager types, and instances of data including default values for each type. It has a dictionary to map names to defined types. Since types are a form of data the the concept of type and data along with the underlying allocation mechanism are tightly interwoven.
 
-__Functions__ - for math, IO, array etc., implemented in C++ or VI-assembly. The set of functions provided by the host can be statically linked or dynamically loaded by the runtime. Many of the core functions that make up the TADM and scheduler subsystems are registered with the TADM.
+__Functions__ - The set of functions for math, IO, array etc. they can be implemented in C++ or VI-assembly. The set of functions provided by the host can be statically linked or dynamically loaded by the runtime. Many of the core functions that make up the TADM and scheduler subsystems are registered as functions.
 
-__Scheduler__ - Runs code according to LabVIEW’s parallel data-flow model of execution.
+__Scheduler__ - The schedulare runs code according to LabVIEW’s parallel data-flow model of execution.
 
 __Dynamic Optimization__ - The reference runtime is designed to be a good foundation for experimentation with dynamic optimization. programs are execute using a technique called threaded code, which efficiently links native functions into threads of code. Its fast, but VI made of small operations will be slower than VI compiled to native code since parameters are used in individual operations are passed through memory not registers.  Vireo is designed to make it easy for a specific platform to instrument the code it loads and to subsequently compile select portions of code when metrics indicate there is sufficient merit to do so.
 
 
 ##Example 1: Hello World
-LabVIEW is a graphical language, so one could argue that the LabVIEW Hello World program is simply a Panel with Label that says "Hello World". That's a plausible solution and would make it the simplest version on Wikipedia's list of Hello World programs. However, the spirit of the task is to generate output when executed that can then be used as input to a second program. For Linux/Unix/Windows this is done by writing to the output stream of the process. Thus, when the program is run, it gets to say hello to the machine as well as the to the human. Like those examples, these use simple stdio.
+LabVIEW is a graphical language, so one could suggest that the LabVIEW Hello World program is simply a Panel with Label that says "Hello World". That's a plausible solution and would make it the simplest version on Wikipedia's list of Hello World programs. However, the spirit of the task is to generate output when executed that can then be used as input to a second program. For Linux/Unix/Windows this is done by writing to the output stream of the process. Thus, when the program is run, it gets to say hello to the machine as well as the to the human. Like those examples, these use simple stdio.
 ###VI Assembly (*.via) files and regular VI files (*.vi)
 When a user develops a program (e.g. a diagram) with LabVIEW, the work is saved as a VirtualInstrument (.vi) file. These files are centered around the elements drawn by the user.  When a VI is run using  the traditional desktop workflow LabVIEW analyzes the high-level diagram and partitions it into sections of code that can be run by the host processor and it determines what memory will be needed for variables. The result of this analysis is directly turned into native code using LLVM for standard CPUs, or turned in to VHDL for targeting FPGAs. Since the VI file describes high-level graphical objects it cannot be directly loaded by Vireo. Instead, to target the Vireo runtime, the result of LabVIEW analysis is captured in a VI assembly file (.via).
 As an assembly file, VIA source is low-level. It has no graphical description elements and it is not commonly written by hand. It includes primitive operations like branching not directly accessible at the graphical diagram level.  Here is a sample program:
@@ -55,3 +55,10 @@ real	0m0.005s
 user	0m0.003s
 sys	0m0.002s
 ~~~
+
+## Next Steps
+* [Introduction](index.html)
+* [Some more simple type examples](md_dox__intro_type_examples.html)
+* [Some array type examples](md_dox__intro_array_examples.html)
+* [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)
+* [The TypeManager](md_dox__type_manager.html)

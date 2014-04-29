@@ -66,7 +66,7 @@ enum EncodingEnum {
     kEncoding_ParameterBlock,
     kEncoding_Array,
     kEncoding_Generic,
-    kEncoding_Stream,       //Like array but can't assume random acess.
+    kEncoding_Stream,           // Like array but can't assume random acess.
     
     //Bitblock
     kEncoding_Boolean,
@@ -78,12 +78,13 @@ enum EncodingEnum {
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
     kEncoding_Unicode,
-    kEncoding_Pointer,              // Some systems may have more than one pointer type cdoe/data
+    kEncoding_Pointer,          // Some systems may have more than one pointer type cdoe/data
     kEncoding_Q,
     kEncoding_Q1,
     kEncoding_IntBiased,
+    kEncoding_ZigZag,           // For future use
     
-    kEncodingBitFieldSize = 5,   //Room for up to 32 primitive encoding types
+    kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
 
 // UsageTypeEnum defines how parameters in a native function of VIs ParamBlock will be used.
