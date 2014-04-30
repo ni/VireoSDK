@@ -8,6 +8,13 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -21,11 +28,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="Vireo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">Vireo
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">Lightweight runtime for Virtual Instruments</div>
+   <div id="projectbrief">Compact runtime for Virtual Instruments</div>
   </td>
  </tr>
  </tbody>
@@ -60,6 +68,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('md_dox__intro_array_examples.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,7 +97,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="headertitle">
 <div class="title">Introduction to arrays </div>  </div>
@@ -82,17 +104,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 <div class="textblock"><h3>Example 5: Arrays</h3>
 <p>Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined any of the forms can be used. Input to functions are generally always typed as variable.</p>
-<div class="fragment"><div class="line">{(.via)}</div>
-<div class="line">define (ArrayDemo, dv(.VirtualInstrument, (</div>
-<div class="line"> c(   </div>
-<div class="line">    e(a(.Int32 *)     variableArray1d)</div>
-<div class="line">    e(a(.Int32 5)     fixedArray1d)</div>
-<div class="line">    e(a(.Int32 -5)    boundedArray1d)</div>
+<div class="fragment"><div class="line">define (ArrayDemo, dv(.VirtualInstrument, (</div>
+<div class="line">    c(</div>
+<div class="line">        e(a(.Int32 *)     variableArray1d)</div>
+<div class="line">        e(a(.Int32 5)     fixedArray1d)</div>
+<div class="line">        e(a(.Int32 -5)    boundedArray1d)</div>
 <div class="line"></div>
-<div class="line">    e(dv(a(.Int32 *) (1 2 3 4))  variableArray1dwithDefaults)</div>
-<div class="line">    e(dv(a(.Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)      <span class="comment">// extra defaults added</span></div>
-<div class="line">    e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)</div>
-<div class="line">  )</div>
+<div class="line">        <span class="comment">// Variable size arrays size to fit initializier list</span></div>
+<div class="line">        e(dv(a(.Int32 *) (1 2 3 4))  variableArray1dwithDefaults)</div>
+<div class="line"></div>
+<div class="line">        <span class="comment">// Extra initializers added as needed</span></div>
+<div class="line">        e(dv(a(.Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)</div>
+<div class="line"></div>
+<div class="line">        <span class="comment">// Size set by number of initializers</span></div>
+<div class="line">        e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)</div>
+<div class="line">    )</div>
 <div class="line">    clump(1</div>
 <div class="line">        Print(variableArray1d)</div>
 <div class="line">        Print(fixedArray1d)</div>
@@ -103,7 +129,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">   )</div>
 <div class="line">) ) )</div>
 <div class="line">enqueue (ArrayDemo)</div>
-</div><!-- fragment --><p>// TODO adde results of running program. This is simple introductions to arrays. It will take a few more to cover details passing arrays, and working with multi dimension arrays. Those will be covered later.</p>
+</div><!-- fragment --><h3>The IntIndex type</h3>
+<p>Internally Vireo defines a C++ typedef <em>IntIndex</em> for use in array indexing calculations. This is not directly tied to size_t defined by the C++ compiler. Currently it is set to Int32, so the number of elements in any one array are limited to 2^31 though the total size of the elements may require more the 2^31 bytes. When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contigious array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LaBVIEW) so there is still work to be done before Int64 indexes can be used.</p>
+<h3>Variable sizd arrays</h3>
+<p>The most common array type is the variable sized arrays. In VIA variable dimensions are identified by an asterisk '*' internally this is encoded as IntIndex.Min meaing the most negative number for the IntIndex type. This means a variable sized array can be considered an array whose dimension can be up to the maximum</p>
+<h3>Fixed Sizd Arrays</h3>
+<p>Resizing a Fixed Size array has no effect.</p>
+<h3>Bounded Arrays</h3>
+<p>Bounded arays specify an maximum sise up when defined. In the refernce runtime their storage is allocation at data initialiation time so no allocation occurs when the logical size of the array is changed. Resizing an array to a size beween 0 and its bounded size will change it to that size. Attempting to size it larger that then maximum will leave it un affected. Note that whie storage reallocation ins not necessary for bounded arrays. REallocation can still occur if the size of the elements are them selves dynamic in size. For example an Bounded array of strings.</p>
+<h3>Zero Dimensional Arrays</h3>
+<p>Zero dimensional arrays are arrays that have no dimensions, not arrays that have a dimension of zero. ZDAs are a bit unique methematically in that they always contain one element while in comparison arrays with 1 or more dimensions can be empty if one of the dimension sizes is set to 0. ZDAs types are not directly used from LabVIEW diagrams, but are used internaly. A key characteristice of ZDAs is that it possible to detect if the single container has an element in it. This makes ZDAs the internal basis for nullable types, LabVIEW variants and objects. For this reason the IsArray() test is slightly different checking for Rank() greater than 0.</p>
+<div class="fragment"><div class="line">c(</div>
+<div class="line">    e(a(.Int32 *)       1DArray)            <span class="comment">// IsArray = true;  Rank = 1</span></div>
+<div class="line">    e(a(.Int32 * *)     2DArray)            <span class="comment">// IsArray = true;  Rank = 2</span></div>
+<div class="line">    e(a(.Int32 * * *)   3DAdday)            <span class="comment">// IsArray = true;  Rank = 3</span></div>
+<div class="line"></div>
+<div class="line">    e(.Int32            SimpleScalar)       <span class="comment">// IsArray = false; Rank = 0</span></div>
+<div class="line">    e(a(.Int32)         0DArrayOfInt32)     <span class="comment">// IsArray = true;  Rank = 0</span></div>
+<div class="line">    e(a(.*)             0DArrayOfGeneric)   <span class="comment">// IsArray = true;  Rank = 0</span></div>
+<div class="line">)</div>
+</div><!-- fragment --><h3>Runing out of memory</h3>
+<p>Each TypeManger and its coresponding ExecutionContext has a memory threshold, if an allocation will take the total above that limit the allcaiton will fail.</p>
 <h2>Next Steps</h2>
 <ul>
 <li><a href="index.html">Introduction</a></li>
@@ -113,11 +159,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a href="md_dox__type_manager.html">The TypeManager</a> </li>
 </ul>
 </div></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 29 2014 13:53:42 for Vireo by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.6
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
+  </ul>
+</div>
 </body>
 </html>

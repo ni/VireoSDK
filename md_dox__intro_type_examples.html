@@ -8,6 +8,13 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -21,11 +28,12 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="Vireo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">Vireo
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">Lightweight runtime for Virtual Instruments</div>
+   <div id="projectbrief">Compact runtime for Virtual Instruments</div>
   </td>
  </tr>
  </tbody>
@@ -60,6 +68,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('md_dox__intro_type_examples.html','');});
+</script>
+<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -74,7 +97,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-</div><!-- top -->
 <div class="header">
   <div class="headertitle">
 <div class="title">Introduction to types and functions </div>  </div>
@@ -84,28 +106,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>LabVIEW's VIs are written using a language called G; a language that is primarily strictly typed. As a result, the VI assembly can be strictly typed as well. The following VIA file has two VIs; one does a 32 bit integer multiplication, and the other uses IEEE754 double precision.</p>
 <div class="fragment"><div class="line"><span class="comment">// Calculate.via</span></div>
 <div class="line">define (CalcUsingIntegers  dv(.VirtualInstrument  (</div>
-<div class="line"> c(</div>
-<div class="line">    e(dv(.Int32 6)  i)</div>
-<div class="line">    e(dv(.Int32 7)  j)</div>
-<div class="line">    e(.Int32  k)</div>
-<div class="line">  )</div>
-<div class="line">  clump(1</div>
-<div class="line">    MulInt32(i j k)</div>
-<div class="line">    Print(k)</div>
-<div class="line">   )</div>
-<div class="line"> ) ) )</div>
+<div class="line">    c(</div>
+<div class="line">        e(dv(.Int32 6)  i)</div>
+<div class="line">        e(dv(.Int32 7)  j)</div>
+<div class="line">        e(.Int32  k)</div>
+<div class="line">    )</div>
+<div class="line">    clump(1</div>
+<div class="line">        MulInt32(i j k)</div>
+<div class="line">        Print(k)</div>
+<div class="line">    )</div>
+<div class="line">) ) )</div>
 <div class="line"></div>
 <div class="line">define (CalcUsingDoubles  dv(.VirtualInstrument  (</div>
-<div class="line"> c(</div>
-<div class="line">    e(dv(.Double 6)  x)</div>
-<div class="line">    e(dv(.Double 7)  y)</div>
-<div class="line">    e(.Double  z)</div>
-<div class="line">  )</div>
-<div class="line">  clump(1</div>
-<div class="line">    MulDouble(x y z)</div>
-<div class="line">    Print(z)</div>
+<div class="line">    c(</div>
+<div class="line">        e(dv(.Double 6)  x)</div>
+<div class="line">        e(dv(.Double 7)  y)</div>
+<div class="line">        e(.Double  z)</div>
+<div class="line">    )</div>
+<div class="line">    clump(1</div>
+<div class="line">        MulDouble(x y z)</div>
+<div class="line">        Print(z)</div>
 <div class="line">   )</div>
-<div class="line"> ) ) )</div>
+<div class="line">) ) )</div>
 <div class="line"></div>
 <div class="line">enqueue (CalcUsingIntegers)</div>
 <div class="line">enqueue (CalcUsingDoubles)</div>
@@ -117,22 +139,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>The type specific functions in the previous example allow vireo to execute programs efficiently with out runtime type checking. The TADM system also supports generic function definitions that can evaluate to a type specific function at code load time. In simple cases, like the one below, the generic function evaluates to a type specific (non generic) function ( Mull(x y z) =&gt; MulDouble(x y z)). However, the system is more general than C++ style function over loading. For example a generic function can evaluate to more complex patterns such as a vector operation that applies the primitive to every element in an array.</p>
 <div class="fragment"><div class="line"><span class="comment">// CalculateGeneric.via</span></div>
 <div class="line">define (Calc  dv(.VirtualInstrument  (</div>
-<div class="line"> c(</div>
-<div class="line">    e(dv(.Int32 6)  i)</div>
-<div class="line">    e(dv(.Int32 7)  j)</div>
-<div class="line">    e(.Int32  k)</div>
-<div class="line">    e(dv(.Double 6.0)  x)</div>
-<div class="line">    e(dv(.Double 7.0)  y)</div>
-<div class="line">    e(.Double  z)</div>
-<div class="line">  )</div>
-<div class="line">  1</div>
-<div class="line">  clump(1 </div>
-<div class="line">    Mul(i j k)   <span class="comment">// Will resolve to MulInt32 at load time</span></div>
-<div class="line">    Print(k)</div>
-<div class="line">    Mul(x y z)    <span class="comment">// Will resolve to MulDouble at load time</span></div>
-<div class="line">    Print(k)</div>
+<div class="line">    c(</div>
+<div class="line">        e(dv(.Int32 6)  i)</div>
+<div class="line">        e(dv(.Int32 7)  j)</div>
+<div class="line">        e(.Int32  k)</div>
+<div class="line">        e(dv(.Double 6.0)  x)</div>
+<div class="line">        e(dv(.Double 7.0)  y)</div>
+<div class="line">        e(.Double  z)</div>
+<div class="line">    )</div>
+<div class="line">    clump(1</div>
+<div class="line">        Mul(i j k)   <span class="comment">// Will resolve to MulInt32 at load time</span></div>
+<div class="line">        Print(k)</div>
+<div class="line">        Mul(x y z)    <span class="comment">// Will resolve to MulDouble at load time</span></div>
+<div class="line">        Print(k)</div>
 <div class="line">   )</div>
-<div class="line"> ) ) )</div>
+<div class="line">) ) )</div>
 <div class="line"></div>
 <div class="line"></div>
 <div class="line">$esh Calculate.via</div>
@@ -147,11 +168,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a href="md_dox__type_manager.html">The TypeManager</a> </li>
 </ul>
 </div></div><!-- contents -->
+</div><!-- doc-content -->
 <!-- start footer part -->
-<hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 29 2014 13:53:42 for Vireo by &#160;<a href="http://www.doxygen.org/index.html">
-<img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.8.6
-</small></address>
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="footer">Generated by
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
+  </ul>
+</div>
 </body>
 </html>

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['vireo_20reference_20runtime_2e',['Vireo reference runtime.',['../index.html',1,'']]],
   ['validatehandle',['ValidateHandle',['../class_vireo_1_1_typed_array_core.html#a838293cbbbcbabfda4e793f6088d7ea4',1,'Vireo::TypedArrayCore']]],
   ['vararginstruction',['VarArgInstruction',['../struct_vireo_1_1_var_arg_instruction.html',1,'Vireo']]],
   ['vectoropinstruction',['VectorOpInstruction',['../struct_vireo_1_1_vector_op_instruction.html',1,'Vireo']]],
