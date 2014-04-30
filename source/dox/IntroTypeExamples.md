@@ -1,7 +1,7 @@
 ## Introduction to types and functions
 
 ###Example 2: Basic types and functions
-LabVIEW's VIs are written using a language called G; a language that is primarily strictly typed. As a result, the VI assembly can be strictly typed as well.  The following VIA file has two VIs; one does a 32 bit integer multiplication, and the other uses IEEE754 double precision.
+LabVIEW's VIs are written using a language called G; a language that is primarily strictly typed. As a result, the VI assembly can be strictly typed, as well.  The following VIA file has two VIs; one does 32 bit integer multiplication, and the other uses IEEE754 double precision.
 
 ~~~{.via}
 // Calculate.via
@@ -42,7 +42,7 @@ $esh Calculate.via
 ~~~
 
 ###Example 3: Generic functions
-The type specific functions in the previous example allow vireo to execute programs efficiently with out runtime type checking. The TADM system also supports generic function definitions that can evaluate to a type specific function at code load time.  In simple cases, like the one below, the generic function evaluates to a type specific (non generic)  function  ( Mull(x y z) => MulDouble(x y z)). However, the system is more general than C++ style function over loading. For example a generic function can evaluate to more complex patterns  such as a vector operation that applies the primitive to every element in an array. 
+The type specific functions in the previous example allow vireo to execute programs efficiently without runtime type checking. The TADM system also supports generic function definitions that can evaluate to a type specific function at code load time.  In simple cases, like the one below, the generic function evaluates to a type specific (non generic)  function  ( Mull(x y z) => MulDouble(x y z)). However, the system is more general than C++ style function overloading. For example, a generic function can evaluate to more complex patterns  such as a vector operation that applies the primitive to every element in an array.
 
 ~~~{.via}
 // CalculateGeneric.via
