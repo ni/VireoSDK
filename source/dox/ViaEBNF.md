@@ -1,6 +1,11 @@
 ## EBNF grammar for VIA assembly
 
-The via grammar is fundamentally that of an s-expression. For clarity, the following EBNF grammar goes a bit further and defines the core elements for type, data and VI definitions. Note that terminal expressions for core types such as Int32 are not included since they are typically defined using lower level primitives.
+The VIA grammar is based on simple parentesized lists and are closely related to
+[s-expressions](http://en.wikipedia.org/wiki/S-expressions) used in the LISP programming
+language and many of its derivatives.  The similarity is strongest for [data sets](#DataValue_EBNF) since they can nest arbitrarily deep.
+[VIs](@ref VI_EBNF)  are distictly different though using a common format makes it easier to treat them as data as well
+
+For clarity, the following EBNF grammar goes a bit further and defines the core elements for type, data and VI definitions. Note that terminal expressions for core types such as Int32 are not included since they are typically defined using lower level primitives.
 
 ### Grammar for types
 
@@ -50,7 +55,7 @@ bit_block               := 'bb' '(' bit_count encoding ')'
 default_value_type      := 'dv' '(' type data_element ')'
 ~~~
 
-### Grammar for data values
+### Grammar for data values {#DataValue_EBNF}
 
 ~~~{.ebnf}
 data_element             := token | data_collection | data_vi
@@ -58,7 +63,7 @@ data_element             := token | data_collection | data_vi
 data_collection          := '(' data_element* ')'
 ~~~
 
-### Grammar for a VI expressed as a value
+### Grammar for a VI expressed as a value {#VI_EBNF}
 
 ~~~{.ebnf}
 data_vi	                 := '('
@@ -100,7 +105,8 @@ token                   := quoted_string | non_white_sp_string
 
   literal_quoted_string := '@' ('”' | '’') raw_characters ('”' | '’')
                           // Surrounding quotes must match, raw characters cannot
-                          // contain the encompassing quote character
+                          // contain the encompassing quote character. escape sequences 
+                          // are ignored and are left as the raw characters.
 
 non_white_sp_string     := { letter_char | number_char | symbol_char }
 

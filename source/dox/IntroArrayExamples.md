@@ -1,19 +1,25 @@
 ## Introduction to arrays
 
 ### Example 5: Arrays
-Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined any of the forms can be used. Input to functions are generally always typed as variable. 
+Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined any of the forms can be used. 
+Input to functions are generally always typed as variable.
 
-~~~(.via)
+~~~{.via}
 define (ArrayDemo, dv(.VirtualInstrument, (
- c(   
-    e(a(.Int32 *)     variableArray1d)
-    e(a(.Int32 5)     fixedArray1d)
-    e(a(.Int32 -5)    boundedArray1d)
-
-    e(dv(a(.Int32 *) (1 2 3 4))  variableArray1dwithDefaults)
-    e(dv(a(.Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)  	// extra defaults added
-    e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)
-  )
+    c(
+        e(a(.Int32 *)     variableArray1d)
+        e(a(.Int32 5)     fixedArray1d)
+        e(a(.Int32 -5)    boundedArray1d)
+    
+        // Variable size arrays size to fit initializier list
+        e(dv(a(.Int32 *) (1 2 3 4))  variableArray1dwithDefaults)
+    
+        // Extra initializers added as needed
+        e(dv(a(.Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)
+    
+        // Size set by number of initializers
+        e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)
+    )
     clump(1
         Print(variableArray1d)
         Print(fixedArray1d)
@@ -26,8 +32,35 @@ define (ArrayDemo, dv(.VirtualInstrument, (
 enqueue (ArrayDemo)
 ~~~
 
-// TODO adde results of running program.
-This is simple introductions to arrays. It will take a few more to cover details passing arrays, and working with multi dimension arrays. Those will be covered later.
+### The IntIndex type
+Internally Vireo defines a C++ typedef _IntIndex_ for use in array indexing calculations. This is not directly tied to size_t defined by the C++ compiler. Currently it is set to Int32, so the number of elements in any one array are limited to 2^31 though the total size of the elements may require more the 2^31 bytes.  When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contigious array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LaBVIEW) so there is still work to be done before Int64 indexes can be used.
+
+### Variable sizd arrays
+The most common array type is the variable sized arrays.  In VIA variable dimensions are identified by an asterisk '*' internally this is encoded as IntIndex.Min meaing the most negative number for the IntIndex type. This means a variable sized array can be considered an array whose dimension can be up to the maximum
+
+### Fixed Sizd Arrays
+Resizing a Fixed Size array has no effect.
+
+### Bounded Arrays
+Bounded arays specify an maximum sise up when defined. In the refernce runtime their storage is allocation at data initialiation time so no allocation occurs when the logical size of the array is changed. Resizing an array to a size beween 0 and its bounded size will change it to that size. Attempting to size it larger that then maximum will leave it un affected.  Note that whie storage reallocation ins not necessary for bounded arrays. REallocation can still occur if the size of the elements are them selves dynamic in size.  For example an Bounded array of strings.
+
+### Zero Dimensional Arrays
+Zero dimensional arrays are arrays that have no dimensions, not arrays that have a dimension of zero. ZDAs are a bit unique methematically in that they always contain one element while in comparison arrays with 1 or more dimensions can be empty if one of the dimension sizes is set to 0.  ZDAs types are not directly used from LabVIEW diagrams, but are used internaly. A key characteristice of ZDAs is that it possible to detect if the single container has an element in it. This makes ZDAs the internal basis for nullable types, LabVIEW variants and objects.  For this reason the IsArray() test is slightly different checking for Rank() greater than 0.
+
+~~~{.via}
+c(
+    e(a(.Int32 *)       1DArray)            // IsArray = true;  Rank = 1
+    e(a(.Int32 * *)     2DArray)            // IsArray = true;  Rank = 2
+    e(a(.Int32 * * *)   3DAdday)            // IsArray = true;  Rank = 3
+
+    e(.Int32            SimpleScalar)       // IsArray = false; Rank = 0
+    e(a(.Int32)         0DArrayOfInt32)     // IsArray = true;  Rank = 0
+    e(a(.*)             0DArrayOfGeneric)   // IsArray = true;  Rank = 0
+)
+~~~
+
+### Runing out of memory
+Each TypeManger and its coresponding ExecutionContext has a memory threshold, if an allocation will take the total above that limit the allcaiton will fail.
 
 ## Next Steps
 * [Introduction](index.html)

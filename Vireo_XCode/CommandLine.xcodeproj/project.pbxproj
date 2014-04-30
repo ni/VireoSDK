@@ -88,6 +88,7 @@
 		4744A9E3182049D500E1F7D9 /* PID.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PID.via; path = "../test-it/x/PID.via"; sourceTree = "<group>"; };
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
+		47937177191049BE00DF942B /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Doxyfile; path = ../source/Doxyfile; sourceTree = "<group>"; };
 		4797A38E1862265B00E643D7 /* CEntryPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CEntryPoints.h; path = ../source/include/CEntryPoints.h; sourceTree = "<group>"; };
 		4797A38F1862265B00E643D7 /* TDCodecLVFlat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TDCodecLVFlat.h; path = ../source/include/TDCodecLVFlat.h; sourceTree = "<group>"; };
 		4799F8AE18C78F060019E214 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
@@ -211,6 +212,7 @@
 		470C345018F8831600E1E148 /* Dox */ = {
 			isa = PBXGroup;
 			children = (
+				47937177191049BE00DF942B /* Doxyfile */,
 				470C345218FC485400E1E148 /* Intro.md */,
 				4744496F19098ED8002A9A96 /* IntroTypeExamples.md */,
 				4744497119099FE3002A9A96 /* IntroArrayExamples.md */,
