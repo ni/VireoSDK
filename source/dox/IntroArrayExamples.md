@@ -1,7 +1,7 @@
 ## Introduction to arrays
 
 ### Example 5: Arrays
-Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined any of the forms can be used. 
+Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined, any of the forms can be used.
 Input to functions are generally always typed as variable.
 
 ~~~{.via}
@@ -33,16 +33,16 @@ enqueue (ArrayDemo)
 ~~~
 
 ### The IntIndex type
-Internally Vireo defines a C++ typedef _IntIndex_ for use in array indexing calculations. This is not directly tied to size_t defined by the C++ compiler. Currently it is set to Int32, so the number of elements in any one array are limited to 2^31 though the total size of the elements may require more the 2^31 bytes.  When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contigious array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LaBVIEW) so there is still work to be done before Int64 indexes can be used.
+Internally Vireo defines a C++ typedef _IntIndex_ for use in array indexing calculations. The type is not directly tied to the size_t defined by the C++ compiler. Currently, it is set to Int32, so the number of elements in any one array are limited to 2^31 though the total size of the elements may require more the 2^31 bytes.  When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contiguous array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LaBVIEW) so there is still work to be done before Int64 indexes can be used.
 
-### Variable sizd arrays
-The most common array type is the variable sized arrays.  In VIA variable dimensions are identified by an asterisk '*' internally this is encoded as IntIndex.Min meaing the most negative number for the IntIndex type. This means a variable sized array can be considered an array whose dimension can be up to the maximum
+### Variable sized arrays
+The most common array type is the variable sized arrays.  In VIA variable dimensions are identified by an asterisk '*' internally this is encoded as IntIndex.Min meaning the most negative number for the IntIndex type. This means a variable sized array can be considered an array whose dimension can be up to the maximum
 
-### Fixed Sizd Arrays
+### Fixed Sized Arrays
 Resizing a Fixed Size array has no effect.
 
 ### Bounded Arrays
-Bounded arays specify an maximum sise up when defined. In the refernce runtime their storage is allocation at data initialiation time so no allocation occurs when the logical size of the array is changed. Resizing an array to a size beween 0 and its bounded size will change it to that size. Attempting to size it larger that then maximum will leave it un affected.  Note that whie storage reallocation ins not necessary for bounded arrays. REallocation can still occur if the size of the elements are them selves dynamic in size.  For example an Bounded array of strings.
+Bounded arrays specify an maximum size up when defined. In the reference runtime their storage is allocation at data initialization time so no allocation occurs when the logical size of the array is changed. Resizing an array to a size beween 0 and its bounded size will change it to that size. Attempting to size it larger that then maximum will leave it un affected.  Note that whie storage reallocation ins not necessary for bounded arrays. Reallocation can still occur if the size of the elements are them selves dynamic in size.  For example a bounded array of strings.
 
 ### Zero Dimensional Arrays
 Zero dimensional arrays are arrays that have no dimensions, not arrays that have a dimension of zero. ZDAs are a bit unique methematically in that they always contain one element while in comparison arrays with 1 or more dimensions can be empty if one of the dimension sizes is set to 0.  ZDAs types are not directly used from LabVIEW diagrams, but are used internaly. A key characteristice of ZDAs is that it possible to detect if the single container has an element in it. This makes ZDAs the internal basis for nullable types, LabVIEW variants and objects.  For this reason the IsArray() test is slightly different checking for Rank() greater than 0.
