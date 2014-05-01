@@ -118,14 +118,14 @@ Vireo workflow</div></div>
 <p>When a user develops a program (e.g. a diagram) with LabVIEW, the work is saved as a VirtualInstrument (.vi) file. These files are centered around the elements drawn by the user. When a VI is run using the traditional desktop workflow LabVIEW analyzes the high-level diagram and partitions it into sections of code that can be run by the host processor and it determines what memory will be needed for variables. The result of this analysis is directly turned into native code using LLVM for standard CPUs, or turned into VHDL for targeting FPGAs. Since the VI file describes high-level graphical objects, it cannot be directly loaded by Vireo. Instead, to target the Vireo runtime, the result of LabVIEW analysis is captured in a VI assembly file (.via). As an assembly file, VIA source is low-level. It has no graphical description elements and it is not commonly written by hand. It includes primitive operations like branching not directly accessible at the graphical diagram level. Here is a sample program:</p>
 <div class="fragment"><div class="line">define (HelloWorld dv(.VirtualInstrument (</div>
 <div class="line">    c(</div>
-<div class="line">        e(dv(.String,<span class="stringliteral">&#39;hello, world&#39;</span>) variable1)</div>
+<div class="line">        e(dv(.String,<span class="stringliteral">&#39;Hello, world&#39;</span>) variable1)</div>
 <div class="line">    )</div>
 <div class="line">    clump(1</div>
 <div class="line">        Print(variable1)</div>
 <div class="line">    )</div>
 <div class="line">) ) )</div>
 <div class="line">enqueue (HelloWorld)</div>
-</div><!-- fragment --><p> The HelloWorld.via file is a script made up of commands. In this case there are two commands. The first command defines a VI, and the second one enqueues the VI onto the Vireo run queue. The VI is made of the following basic parts.</p>
+</div><!-- fragment --><p>The HelloWorld.via file is a script made up of commands. In this case there are two commands. The first command defines a VI, and the second one enqueues the VI onto the Vireo run queue. The VI is made of the following basic parts.</p>
 <ul>
 <li>A Name ‘HelloWorld’</li>
 <li>A Data-space (its a cluster) with one variable named variable1. The variable has the default value 'hello, world'</li>
