@@ -6,7 +6,8 @@ define (TypesToCheck dv(a(.Type *) (
     .Time
     .Type .TypeManager
     .VI .Clump
-    .CodePointer .DataPointer .BranchTarget .InstructionFunction .InstructionSnippet
+    //.CodePointer .DataPointer -- omitted to avoid diffs between 32 and 64 bit builds.
+    .BranchTarget .InstructionFunction .InstructionSnippet
     .Array .Object
     )
 ))
@@ -59,8 +60,10 @@ define (HelloWorld v(.VirtualInstrument (
 
             TypeEncoding(telt encoding)
             TypeUsageType(telt usage)
-            DPrintf(" e(.%s)  //topAqSize:%2d encoding:%2d usage:%d baseType:%s dv:%s generic:%s"
-                    str1 aqSize encoding usage baseType hasCustomDefault hasGeneric)
+            
+            // TopAQ size omitted to avoid differences between 32 and 64 bit builds.
+            DPrintf(" e(.%s)  // encoding:%2d usage:%d baseType:%s dv:%s generic:%s"
+                    str1 encoding usage baseType hasCustomDefault hasGeneric)
             ToTypeAndDataString(telt generatedString)
             //DPrintf(" generated strgin <%s>" generatedString)
             Add(i one i)
