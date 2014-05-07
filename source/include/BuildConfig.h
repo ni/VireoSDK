@@ -22,23 +22,6 @@ SDG
 	#define kVireoOS_win32U 1
 #endif
 
-#define INT8_MAX         127
-#define INT16_MAX        32767
-#ifndef INT32_MAX
-#define INT32_MAX        2147483647
-#endif
-#define INT64_MAX        9223372036854775807LL
-#define INT8_MIN         -128
-#define INT16_MIN        -32768
-
-#ifndef INT32_MIN
-    #define INT32_MIN        (-INT32_MAX-1)
-#endif
-
-#ifndef INT64_MIN
-    #define INT64_MIN        (-INT64_MAX-1)
-#endif
-
 // Definitions common for most platforms
 // Platform specific overrides are found in the sections below
 #define VIVM_UNROLL_EXEC
@@ -168,7 +151,7 @@ SDG
 
 #elif defined (kVireoOS_emscripten)
     #define VIREO_DATE_TIME_STDLIB
-
+    #undef VIREO_FILESYSTEM_DIRLIST
 #elif kVireoOS_vxworks
     #undef VIREO_POSIX_FILEIO
     #define VIREO_DATE_TIME_VXWORKS

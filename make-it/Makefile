@@ -117,8 +117,8 @@ $(IOOBJS): $(OBJDIR)/%.o: ../source/io/%.cpp
 
 # Instead of trying fake out make for emscripten just build it explicitly
 # To install the Emscripten SDK https://github.com/kripken/emscripten/wiki
-EM_OPT= -O2
-EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT) -s LEGACY_GL_EMULATION=1
+EM_OPT= -Os
+EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 
 EM_BC_FILES = objs/EggShell.bc\
     objs/VireoMerged.bc\
