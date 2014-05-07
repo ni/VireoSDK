@@ -1855,7 +1855,11 @@ NIError ReadRealFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Dou
     if (aqSize == 4) {
         value = *(Single*) pData;
     } else if (aqSize == 8) {
+#if kVireoOS_emscripten
+        memcpy(&value, pData, sizeof(double));
+#else
         value = *(Double*) pData;
+#endif
     } else {
         err = kNIError_kCantEncode;
     }
@@ -1872,7 +1876,11 @@ NIError WriteRealToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Doub
     if (aqSize == 4) {
         *(Single*)pData = (Single)value;
     } else if (aqSize == 8) {
+#if kVireoOS_emscripten
+        memcpy(pData, &value, sizeof(double));
+#else
         *(Double*)pData = value;
+#endif
     } else {
         err = kNIError_kCantDecode;
     }
