@@ -108,6 +108,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 }
 
 void RunExec() {
+
     gState = ((EggShell*)gpShell)->TheExecutionContext()->ExecuteSlices(400);
     
 #if kVireoOS_emscripten

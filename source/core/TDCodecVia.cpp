@@ -780,8 +780,8 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
 #ifdef VIREO_USING_ASSERTS
             // The frist pass should just calculate the size needed. If any allocations occured then
             // there is a problem.
-       //     Int32 endingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
-       //     VIREO_ASSERT(startingAllocations == endingAllocations)
+            // Int32 endingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
+            // VIREO_ASSERT(startingAllocations == endingAllocations)
 #endif
         }
 #endif
@@ -955,36 +955,37 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
 void TDViaParser::FinalizeModuleLoad(TypeManager* tm, EventLog* pLog)
 {
     static SubString strVIType("VirtualInstrument");
-    
     // Once a module has been loaded sweep through all VIs and
     // And load the clumps. The two pass load is a simple way to allow for forward definitions.
     // The clumps will have been allocated, but the threaded code will not have been created.
     
     // When VIs are loaded additional types may be created. If so, the
     // new types will be added to the front of the list. The loop will repeat until
-    // no types have been added. In a worse csae this happens when the context runs out of memory
-    // and can't allocate any more types.
+    // no types have been added. In the worse case this happens when the context runs
+    // out of memory and can't allocate any more types.
     
     TypeRef typeEnd = null;
     TypeRef typeList = tm->_typeList;
+
     while (true) {
         TypeRef type = typeList;
         while (type != typeEnd) {
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
                 TypedArrayCore  **pObj = (TypedArrayCore**) type->Begin(kPARead);
                 VirtualInstrument *vi  = (VirtualInstrument*) (*pObj)->RawObj();
-
                 TDViaParser::FinalizeVILoad(vi, pLog);
             }
             type = type->Next();
         }
+        
         if (tm->_typeList == typeList)
             break;
+        
         // Loop again and process new definitions.
         // Initial case it reentrant VIs
         typeEnd = typeList;
         typeList = tm->_typeList;
-    };
+    }
 }
 //------------------------------------------------------------
 //------------------------------------------------------------
