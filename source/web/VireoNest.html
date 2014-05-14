@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <meta name="description" content="">
+                        <meta name="author" content="">
+                            <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+                                
+                                <title>Starter Template for Bootstrap</title>
+                                
+                                <!-- Bootstrap core CSS -->
+                                <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                                    
+                                    </head>
+    
+    <body>
+        <div class="container-fluid" style="padding:9px" >
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="btn-toolbar" role="toolbar" style="padding-bottom:9px">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" onclick="VireoOpen()"><span class="glyphicon glyphicon-floppy-open"></span></button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                                <span class="caret"></span>
+                            </button>
+                            
+                            <ul class="dropdown-menu">
+                                <li><a id="HelowWorld" href="#">HelloWorld</a></li>
+                                <li><a id="Mandelbrot" href="#">Mandelbrot</a></li>
+                                <li><a id="Pi" href="#">Pi</a></li>
+                                <li><a id="Types" href="#">Types</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" onclick="VireoRun()"><span class="glyphicon glyphicon-play"></span></button>
+                            <button type="button" class="btn btn-default" onclick="VireoPause()"><span class="glyphicon glyphicon-pause"></span></button>
+                            <button type="button" class="btn btn-default" onclick="VireoStep(-1)"><span class="glyphicon glyphicon-step-backward"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-forward"></span></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-eye-open"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-pause"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-backward"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-forward"></span></button>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="running_state_btn"><span class="glyphicon glyphicon-repeat"></span></button>
+                        </div>
+                    </div>
+                    
+                    <pre id="VireoSource" style="height:500px">
+                        define (HelloWorld dv(.VirtualInstrument (
+                        c(
+                        e(v(.Int32 42) theAnswer)
+                        )
+                        clump (1
+                        Print(theAnswer)
+                        )
+                        ) ) )
+                        enqueue (HelloWorld)
+                    </pre>
+                    <input  id="rstate" value="*"></input>
+                </div>
+                <div class="col-xs-6">
+                    
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#StdOut" data-toggle="tab">Console</a></li>
+                        <li><a href="#Canvas" data-toggle="tab">Canvas</a></li>
+                        <li><a href="#Explore" data-toggle="tab">Explore</a></li>
+                    </ul>
+                    
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="StdOut">
+                            <pre id="VireoOutput"  style="height:500px"> Hello </pre>
+                        </div>
+                        <div class="tab-pane" id="Canvas">
+                            <div id="slider2"></div>
+                        </div>
+                        <div class="tab-pane" id="Explore">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+        
+        <!-- JavaScript ================================================== -->
+        <script src="jquery/jquery.min.js"></script>
+        <!-- <script src="jquery.mobile/jquery.mobile-1.4.2.min.js"></script> -->
+        <script src="jquery-ui/js/jquery-ui-1.10.4.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script>
+            var editor2;
+            
+            // Add call back for stdio
+            var Module = { 'print': function(text) { editor2.insert(text + "\n") } };
+            </script>
+        
+        <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script>
+            $("#Mandelbrot").click(function(e){ alert("MandelBrot"); e.preventDefault(); });
+            
+            $("#Pi").click(function(e){alert("Pi");e.preventDefault();});
+            
+            $(function() { $( "#slider2" ).slider();});
+            </script>
+        <script>
+            
+            var run_state = document.getElementById("rstate")
+            // Define global Vireo functions
+            EggShell_Version = Module.cwrap('Vireo_Version', 'number', []);
+            EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
+            EggShell_REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
+            EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
+            EggShell_GetValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
+            
+            var editor1 = ace.edit("VireoSource");
+            editor1.setTheme("ace/theme/XCode");
+            editor1.getSession().setMode("ace/mode/LISP");
+            
+            editor2 = ace.edit("VireoOutput");
+            editor2.setTheme("ace/theme/XCode");
+            editor2.getSession().setMode("ace/mode/LISP");
+            
+            var startTime;
+            var esh
+            function VireoRun()
+            {
+                esh = EggShell_Create(0);
+                EggShell_REPL(esh, editor1.getValue(), -1);
+                ExecCount = 0
+                startTime = Date.now();
+                run_state.value = "running " + startTime;
+                setTimeout(VireoRunProc,50);
+            }
+        var ExecCount = 0;
+        function VireoRunProc()
+        {
+            // Run a chunk of code. if there is more pending
+            // Then restart soon, else restart when it makes sense.
+            var x = EggShell_ExecuteSlices(esh, 1000);
+            ExecCount += 1;
+            if (x>0) {
+                // periodically sleep for 50 ms or so.
+                setTimeout(VireoRunProc,0);
+            } else {
+                run_state.value = "done " + ExecCount + " time " + (Date.now() - startTime);
+            }
+        }
+        function VireoPause()
+        {
+            $.get("Pi.via", function(data) { editor1.setValue(data); }, "text")  .fail(function() { alert( "error" );})
+        }
+        </script>
+    </body>
+</html>
