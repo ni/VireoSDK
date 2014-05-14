@@ -44,6 +44,11 @@ VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value)
 {
 }
 
+VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
+{
+    return eggShell->TheTypeManager()->GetTypeList();
+}
+
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
 {
     if(pShell != null)
@@ -221,6 +226,21 @@ VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)
 VIREO_EXPORT Int32 TypeRef_Rank(TypeRef typeRef)
 {
     return typeRef->Rank();
+}
+//------------------------------------------------------------
+VIREO_EXPORT PointerTypeEnum TypeRef_PointerType(TypeRef typeRef)
+{
+    return typeRef->PointerType();
+}
+//------------------------------------------------------------
+VIREO_EXPORT TypeRef TypeRef_Next(TypeRef typeRef)
+{
+    return typeRef->Next();
+}
+//------------------------------------------------------------
+VIREO_EXPORT UsageTypeEnum TypeRef_ElementUsageType(TypeRef typeRef)
+{
+    return typeRef->ElementUsageType();
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef)

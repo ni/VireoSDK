@@ -194,6 +194,7 @@ public:
 
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
+    TypeRef GetTypeList();
     void    PrintMemoryStat(const char*, Boolean last);
     
     TypeManager *RootTypeManager() { return _rootTypeManager; }
