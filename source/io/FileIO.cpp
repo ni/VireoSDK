@@ -345,7 +345,7 @@ VIREO_FUNCTION_SIGNATUREV(DPrintf, DPrintfParamBlock)
     
     Format(&format, count, arguments, tempString.Value);
     tempString.Value->Append('\n'); // DPrintfs always have line feeds
-    write(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
+    POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
     return _NextInstruction();
 }
 //------------------------------------------------------------
