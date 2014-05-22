@@ -48,7 +48,7 @@ else
         # CC=g++
         # clang settings (has been about 33% smaller)
         CC=clang++
-        CFLAGS+=-Os $(TARGETARCH)
+        CFLAGS+=-O3 $(TARGETARCH)
         PROGRAM_DIR=/Applications/Vireo
     endif
 endif
