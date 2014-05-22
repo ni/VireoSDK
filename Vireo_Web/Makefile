@@ -3,16 +3,24 @@
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
+SITEDIR=../Documents/dox/online
 
-
-.PHONY: clean help v-js
+.PHONY: clean install help vjs
 .DEFAULT_GOAL=help
 
 clean:
 	rm -f objs/*
+	
+install: 
+	cp objs/vireo.js $(SITEDIR)/vireo.js
+	cp SiteSource/VireoNest.html $(SITEDIR)/
+	cp SiteSource/*.via $(SITEDIR)/
+	@echo '==> website files copied to  $(SITEDIR)'
 
 help:
-	@echo 'Execute "make v-js"    to build vireo.js'
+	@echo 'Execute "make vjs"     to build vireo.js'
+	@echo '        "make clean"   to remove intermediate files'
+	@echo '        "make install" to copy files to web directory'
 	@echo '        "make"         to print this help dialogue'
 	@echo ''
 
@@ -28,8 +36,7 @@ help:
 # yielded the following sizes:
 #  -O3 833k / -Os 760k / -Oz 719k
 
-
-EM_OPT= -Oz -s NO_EXIT_RUNTIME=1
+EM_OPT= -O3 -s NO_EXIT_RUNTIME=1
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
@@ -45,45 +52,21 @@ EM_BC_FILES = objs/VireoMerged.bc\
     objs/EggShell.bc\
     objs/Thread.bc\
     objs/TimeTypes.bc\
+    objs/Canvas2D.bc\
     objs/FileIO.bc\
     objs/CEntryPoints.bc
 
-v-js:
+vjs:
 	make clean
 	mkdir -p objs
 	emcc $(EMFLAGS) ../source/core/VireoMerged.cpp -o objs/VireoMerged.bc
 	emcc $(EMFLAGS) ../source/core/EggShell.cpp -o objs/EggShell.bc
 	emcc $(EMFLAGS) ../source/core/Thread.cpp -o objs/Thread.bc
 	emcc $(EMFLAGS) ../source/core/TimeTypes.cpp -o objs/TimeTypes.bc
+	emcc $(EMFLAGS) ../source/io/Canvas2D.cpp -o objs/Canvas2D.bc
 	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
 	emcc $(EMFLAGS) ../source/core/CEntryPoints.cpp -o objs/CEntryPoints.bc
 	emcc $(EM_OPT)  $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
-	cp objs/vireo.js ../Documents/dox/online/vireo.js
-
-v-jscounter:
-	make clean
-	mkdir -p objs
-	emcc $(EMFLAGS) ../source/core/VireoMerged.cpp -o objs/VireoMerged.bc
-	emcc $(EMFLAGS) ../source/core/EggShell.cpp -o objs/EggShell.bc
-	emcc $(EMFLAGS) ../source/core/Thread.cpp -o objs/Thread.bc
-	emcc $(EMFLAGS) ../source/core/TimeTypes.cpp -o objs/TimeTypes.bc
-	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
-	emcc $(EMFLAGS) ../source/CommandLine/SimpleCountMain.cpp -o objs/SimpleCountMain.bc
-	emcc $(EM_OPT)  objs/SimpleCountMain.bc $(EM_BC_FILES) -o objs/Counter.html
-
-v-jssdl:
-	make clean
-	mkdir -p objs
-	emcc $(EMFLAGS) ../source/core/VireoMerged.cpp -o objs/VireoMerged.bc
-	emcc $(EMFLAGS) ../source/core/EggShell.cpp -o objs/EggShell.bc
-	emcc $(EMFLAGS) ../source/core/Thread.cpp -o objs/Thread.bc
-	emcc $(EMFLAGS) ../source/core/TimeTypes.cpp -o objs/TimeTypes.bc
-	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
-	emcc $(EMFLAGS) ../source/io/Sdl3d.cpp -o objs/Sdl3d.bc
-	emcc $(EMFLAGS) ../source/core/CEntryPoints.cpp -o objs/CEntryPoints.bc
-	emcc $(EMFLAGS) ../source/CommandLine/SimpleCountMain.cpp -o objs/SimpleCountMain.bc
-	emcc $(EM_OPT)  objs/SimpleCountMain.bc $(EM_BC_FILES) objs/Sdl3d.bc -s LEGACY_GL_EMULATION=1 -o vireo_sdl.html
-
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically

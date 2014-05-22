@@ -23,17 +23,15 @@
                     <div class="btn-toolbar" role="toolbar" style="padding-bottom:9px">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default" id="OpenFile"><span class="glyphicon glyphicon-floppy-open"></span></button>
-                            <button type="button" class="btn btn-default" id="Pi">π</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                 <span class="glyphicon glyphicon-th-list"></span>
                                 <span class="caret"></span>
                             </button>
                             
                             <ul class="dropdown-menu">
-                                <li><a id="HellowWorld" href="#">HelloWorld</a></li>
-                                <li><a id="Mandelbrot" href="#">Mandelbrot</a></li>
-                                <li><a id="Pi" href="#">Pi</a></li>
-                                <li><a id="Types" href="#">Types</a></li>
+                                <li><a id="MandelbrotSample">Mandelbrot</a></li>
+                                <li><a id="PiSample">π calculator</a></li>
+                                <li><a id="TicTockSample">TicTock</a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -42,7 +40,6 @@
                             <button type="button" class="btn btn-default" onclick="VRunRun()"><span class="glyphicon glyphicon-retweet"></span></button>
                             <button type="button" class="btn btn-default" id="VRun"><span class="glyphicon glyphicon-play"></span></button>
                             <button type="button" class="btn btn-default" id="VPause"><span class="glyphicon glyphicon-pause"></span></button>
-
                             <!--
                             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-backward"></span></button>
                             <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-forward"></span></button>
@@ -164,11 +161,12 @@ enqueue (HelloWorld)
         $("#VPause").click(function(){VPause();} );
         $("#VRun").click(function(){VRun();} );
         $("#VRunRun").click(function(){VRunRun();} );
-        $("#Pi").click(function(){LoadSample("Pi.via");} );
+        $("#PiSample").click(function(){LoadSample("Pi.via");} );
+        $("#TicTockSample").click(function(){LoadSample("TicTock.via");} );
+        $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
         $("#LVLink").click(function(){LVLink();} );
 
         $("#Mandelbrot").bind(function(e){ alert("MandelBrot"); e.preventDefault(); });
-        $("#Pi").bind(function(e){LoadSample("Pi.via");e.preventDefault();});
         $(function() { $( "#slider2" ).slider();});
 
         function LVLink()
@@ -248,7 +246,7 @@ var ctx;
         }
         function LoadSample(sampleName)
         {
-            $.get(sampleName, function(data) { editor1.setValue(data); gotoLine(0,0,false); }, "text")  .fail(function() { alert( "error" );})
+            $.get(sampleName, function(data) { editor1.setValue(data); editor1.gotoLine(0,0,false); }, "text")  .fail(function() { alert( "error" );})
         }
         </script>
     </body>
