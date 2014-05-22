@@ -20,9 +20,9 @@ namespace Vireo
 {
 //------------------------------------------------------------
 #if defined (__ARDUINO__)
-	typedef UInt32 PlatformTicType;
+	typedef UInt32 PlatformTickType;
 #else
-	typedef Int64 PlatformTicType;
+	typedef Int64 PlatformTickType;
 #endif
 
 //------------------------------------------------------------
@@ -30,9 +30,10 @@ namespace Vireo
 class PlatformTime
 {
 public:
-	static PlatformTicType TicCount();
-    static UInt32 TicCountToMilliseconds(PlatformTicType);
-    static Int64 TicCountToMicroseconds(PlatformTicType);
+	static PlatformTickType TickCount();
+    static PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
+    static Int64 TickCountToMilliseconds(PlatformTickType);
+    static Int64 TickCountToMicroseconds(PlatformTickType);
 };
 
 //------------------------------------------------------------

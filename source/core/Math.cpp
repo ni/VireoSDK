@@ -441,7 +441,7 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
     {
         if (!seeded)
         {
-            srand((unsigned int)PlatformTime::TicCount());
+            srand((unsigned int)PlatformTime::TickCount());
             seeded = true;
         }
         _Param(0) = rand() / ((Double) RAND_MAX + 1);

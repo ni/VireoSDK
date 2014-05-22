@@ -53,46 +53,39 @@ using namespace Vireo;
 namespace Vireo
 {
 //------------------------------------------------------------
-PlatformTicType PlatformTime::TicCount()
+PlatformTickType PlatformTime::TickCount()
 {
 #if defined(_WIN32) || defined(_WIN64)
+
+    // System returns 100ns count.
 	FILETIME now;
-    
-	// System returns 100ns count.
 	GetSystemTimeAsFileTime(&now);
-	return now.dwLowDateTime / 10;
+	return now.dwLowDateTime;
+
 #elif (kVireoOS_macosxU)
-    Int64 now;
-    static mach_timebase_info_data_t    sTimebaseInfo;
+
+    return mach_absolute_time();
     
-    now = mach_absolute_time();
-    
-    // If this is the first time we've run, get the timebase.
-    // We can use denom == 0 to indicate that sTimebaseInfo is
-    // uninitialized because it makes no sense to have a zero
-    // denominator as a fraction.
-    
-    if ( sTimebaseInfo.denom == 0 )
-    {
-        (void) mach_timebase_info(&sTimebaseInfo);
-    }
-    
-    //Convert nanoseconds to milliseconds using the system timebase.
-    now = now * sTimebaseInfo.numer / sTimebaseInfo.denom / 1000;
-    return now;
 #elif (kVireoOS_wiring)
+
     return micros();
+
 #elif (kVireoOS_linuxU)
+
     timespec time;
-    clock_gettime(CLOCK_MONOTONIC, &time);
-    Int64 t =  (time.tv_sec*1000000) + (time.tv_nsec / 1000);
-    return t;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+    return ((Int64)time.tv_sec * 1000000000) + (Int64)time.tv_nsec;
+
 #elif (kVireoOS_emscripten)
-    // Scale milliseconds to microseconds
-    Int64 t = (Int64) (emscripten_get_now() * 1000.0);
-    return t;
+
+    // milliseconds
+    return (Int64) emscripten_get_now();
+
 #elif (kVireoOS_ZynqARM)
+
     // Hard coded to the max Zynq7000 clock rate for now.
+    // the clock register is only 32 bits so it can wrap around
+    // pretty quick, depending on the prescalar.
 	static Int64 TickCount;
     XScuTimer_Config*   pConfig;
     volatile UInt64     scuTickCount;
@@ -114,10 +107,10 @@ PlatformTicType PlatformTime::TicCount()
         XScuTimer_LoadTimer(pTimer, 0xFFFFFFFF);
         XScuTimer_EnableAutoReload(pTimer);
         XScuTimer_Start(pTimer);
-        lastScuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer)) * 10000 / 333333;
+        lastScuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer));
     }
     
-    scuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer)) * 10000 / 333333;
+    scuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer));
     
     if (scuTickCount > lastScuTickCount) {
     	// Wrapped around, the last one should be close to 0
@@ -128,34 +121,120 @@ PlatformTicType PlatformTime::TicCount()
     }
     lastScuTickCount = scuTickCount;
     return TickCount;
+    
+#else
+#error MicroSecondCount not defined
+    return 0;
+#endif
+}
+
+//------------------------------------------------------------
+Int64 PlatformTime::MicrosecondsToTickCount(PlatformTickType microseconds)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    
+	// Windows filetime base tick count is 100ns
+    return microseconds * 10;
+    
+#elif (kVireoOS_macosxU)
+    
+    // Scaling according to the kernel parameters.
+    static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
+    if (sTimebaseInfo.denom == 0) {
+        (void) mach_timebase_info(&sTimebaseInfo);
+    }
+    return (microseconds * 1000) * sTimebaseInfo.denom / sTimebaseInfo.numer;
+    
+#elif (kVireoOS_wiring)
+    
+    // tick count is microseconds for arduino's wiring
+    return ticks;
+    
+#elif (kVireoOS_linuxU)
+    
+    // tick count is nanoseconds for linux
+    return microseconds * 1000;
+    
+#elif (kVireoOS_emscripten)
+    
+    // Scale milliseconds to microseconds
+    return microseconds / 1000;
+    
+#elif (kVireoOS_ZynqARM)
+    
+    // Still experimental.
+    return microseconds * 333333 / 10000;
+    
 #else
 #error MicroSecondCount not defined
     return 0;
 #endif
 }
 //------------------------------------------------------------
-UInt32 PlatformTime::TicCountToMilliseconds(PlatformTicType tics)
+Int64 PlatformTime::TickCountToMilliseconds(PlatformTickType ticks)
 {
-    return (UInt32) (PlatformTime::TicCount() / 1000);
+    return (TickCountToMicroseconds(ticks) / 1000);
 }
 //------------------------------------------------------------
-Int64 PlatformTime::TicCountToMicroseconds(PlatformTicType tics)
+Int64 PlatformTime::TickCountToMicroseconds(PlatformTickType ticks)
 {
-    return PlatformTime::TicCount();
+#if defined(_WIN32) || defined(_WIN64)
+
+	// Windows filetime base tick count is 100ns
+    return ticks / 10;
+    
+#elif (kVireoOS_macosxU)
+
+    // Get scale factor used to convert to nanoseconds
+    static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
+    if (sTimebaseInfo.denom == 0) {
+        (void) mach_timebase_info(&sTimebaseInfo);
+    }
+    return (ticks * sTimebaseInfo.numer / sTimebaseInfo.denom) / 1000;
+    
+#elif (kVireoOS_wiring)
+
+    // tick count is microseconds for arduino's wiring
+    return ticks;
+    
+#elif (kVireoOS_linuxU)
+
+    // tick count is nanoseconds for linux
+    return ticks / 1000;
+    
+#elif (kVireoOS_emscripten)
+
+    // Scale milliseconds to microseconds
+    return ticks * 1000;
+    
+#elif (kVireoOS_ZynqARM)
+
+    // Still experimental.
+    return ticks * 10000 / 333333;
+
+#else
+#error MicroSecondCount not defined
+    return 0;
+#endif
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
+{
+    _Param(0) = PlatformTime::TickCount();
+    return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64)
 {
-    _Param(0) = PlatformTime::TicCountToMicroseconds(PlatformTime::TicCount());
+    _Param(0) = PlatformTime::TickCountToMicroseconds(PlatformTime::TickCount());
     return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
 {
-    _Param(0) = PlatformTime::TicCountToMilliseconds(PlatformTime::TicCount());
+    _Param(0) = (UInt32) PlatformTime::TickCountToMilliseconds(PlatformTime::TickCount());
     return _NextInstruction();
 }
-
 
 /* Localize the warnings for float comparison to one place
  see http://www.codeguru.com/forum/showthread.php?t=323835 */

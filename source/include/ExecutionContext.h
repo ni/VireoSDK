@@ -92,13 +92,13 @@ private:
 
 public:
 	ExecutionContext(TypeManager* typeManager);
-    ECONTEXT    PlatformTicType PlatformTickCount();
+    ECONTEXT    PlatformTickType PlatformTickCount();
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
 	ECONTEXT    VIClump*        RunngQueueElt() {return _runningQueueElt;}
-    ECONTEXT    void            CheckOccurrences(PlatformTicType t);		// Will put items on the run queue if it is time. or ready bit is set.
+    ECONTEXT    void            CheckOccurrences(PlatformTickType t);		// Will put items on the run queue if it is time. or ready bit is set.
 
     // Run a string of instructions to completion, no concurrency. 
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
@@ -108,9 +108,7 @@ public:
 	ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
 	InstructionCore*            Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-
-	InstructionCore*            WaitMicroseconds(Int64 count, InstructionCore* next);
-	InstructionCore*            WaitUntilMicroseconds(Int64 count, InstructionCore* next);
+	InstructionCore*            WaitUntilTickCount(Int64 count, InstructionCore* next);
 	ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
 	ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
     

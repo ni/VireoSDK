@@ -99,7 +99,7 @@ public:
 	VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
 	VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
 	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
-	PlatformTicType     _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
+	PlatformTickType    _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
 	IntSmall            _fireCount;         //! What to reset _shortCount to when the clump is done.
 	IntSmall            _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
     

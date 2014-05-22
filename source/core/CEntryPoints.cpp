@@ -19,51 +19,56 @@ SDG
 
 using namespace Vireo;
 
+//------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
     return 0x00010003; // TODO
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT void* EggShell_Create(EggShell* parent)
 {
     return EggShell::Create(parent);
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const Utf8Char* commands, Int32 length)
 {
+    if (length == -1) {
+        length = (Int32)strlen((const char*)commands);
+    }
     SubString  comandBuffer(commands, commands + length);
     pShell->REPL(&comandBuffer);
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
 {
     return pShell->TheExecutionContext()->ExecuteSlices(numSlices);
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value)
 {
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
 {
     return eggShell->TheTypeManager()->GetTypeList();
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
 {
     if(pShell != null)
         pShell->Delete();
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT void ExecutionContext_EnqueRunQueue(ExecutionContext* pContext, VIClump* pClump)
 {
     pContext->EnqueueRunQueue(pClump);
 }
+//------------------------------------------------------------
 VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContext* pContext, Int32 numSlices)
 {
     return pContext->ExecuteSlices(numSlices);
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     SubString viNameString(viName);
@@ -108,7 +113,7 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
 
     return flatDataSize;
 }
-
+//------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     SubString viNameString(viName);
@@ -160,7 +165,6 @@ VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
 {
     clump->Trigger();
 }
-//------------------------------------------------------------
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManager* typeManager, const char* typeName, const char* typeString)
 {
