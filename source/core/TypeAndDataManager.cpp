@@ -318,6 +318,11 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
     }
 }
 //------------------------------------------------------------
+TypeRef TypeManager::GetTypeList()
+{
+    return _typeList;
+}
+//------------------------------------------------------------
 TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
 {
     MutexedScope m(&_mutex);
