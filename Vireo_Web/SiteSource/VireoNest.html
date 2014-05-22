@@ -103,7 +103,7 @@ enqueue (HelloWorld)
             
             // Add call back for stdio
             var Module = { 'print': function(text) { editor2.insert(text + "\n") } };
-            </script>
+        </script>
         
         <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
         
@@ -122,9 +122,10 @@ enqueue (HelloWorld)
             esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
             esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
             esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
-            esh.getValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
+            //esh.getValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
             esh._delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
             esh.repeat = false;
+            esh.pause = false;
             esh.h = 0;
 
             var editor1 = ace.edit("VireoSource");
@@ -147,13 +148,20 @@ enqueue (HelloWorld)
                 v_state.value = "started";
                 setTimeout(VireoRunProc,50);
             }
-
             function VRunRun()
             {
                 esh.repeat = !esh.repeat;
                 VRun();
             }
+            function VPause()
+            {
+                esh.pause = !esh.pause;
+                if (!esh.pause) {
+                    setTimeout(VireoRunProc,0);
+                }
+            }
 
+        $("#VPause").click(function(){VPause();} );
         $("#VRun").click(function(){VRun();} );
         $("#VRunRun").click(function(){VRunRun();} );
         $("#Pi").click(function(){LoadSample("Pi.via");} );
@@ -225,9 +233,10 @@ var ctx;
         {
             // Run a chunk of code. if there is more pending
             // Then restart soon, else restart when it makes sense.
+        
             var x = esh.executeSlices(esh.h, 1000);
             esh.execCount += 1;
-            if (x>0) {
+            if (x>0 && !esh.pause) {
                 // periodically sleep for 50 ms or so.
                 setTimeout(VireoRunProc,0);
             } else {
@@ -241,7 +250,6 @@ var ctx;
         {
             $.get(sampleName, function(data) { editor1.setValue(data); gotoLine(0,0,false); }, "text")  .fail(function() { alert( "error" );})
         }
-
         </script>
     </body>
 </html>
