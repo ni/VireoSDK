@@ -40,7 +40,7 @@ else
             CFLAGS+=-O3 $(TARGETARCH)
         endif
         PROGRAM_DIR = /usr/local/bin
-        LIBS = -lrt
+        LIBS = -lrt -lpthread
     endif
     ifeq ($(UNAME_S),Darwin)
         # gcc settings
@@ -95,6 +95,7 @@ dox:
 help:
 	@echo 'Execute "make v32"     to build a 32-bit esh executable'
 	@echo '        "make v64"     to build a 64-bit esh executable'
+	@echo '        "make simple"  to build the default esh executable'
 	@echo '        "make lARMv5"  to build the libvireo.so library for an ARMv5 target'
 	@echo
 	@echo '        "make install" to install esh to $(PROGRAM_DIR), uses sudo'
