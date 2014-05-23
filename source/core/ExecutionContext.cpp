@@ -117,20 +117,22 @@ InstructionCore* ExecutionContext::Stop()
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
-    return THREAD_EXEC()->WaitMicroseconds(_Param(0), _NextInstruction());
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
-{
-    return THREAD_EXEC()->WaitUntilMicroseconds(_Param(0), _NextInstruction());
+    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(_Param(0));
+    return THREAD_EXEC()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    return THREAD_EXEC()->WaitMicroseconds(_Param(0) * 1000, _NextInstruction());
+    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(_Param(0) * 1000);
+    return THREAD_EXEC()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
-InstructionCore* ExecutionContext::WaitUntilMicroseconds(Int64 count, InstructionCore* nextInClump)
+VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
+{
+    return THREAD_EXEC()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
+}
+//------------------------------------------------------------
+InstructionCore* ExecutionContext::WaitUntilTickCount(Int64 count, InstructionCore* nextInClump)
 {
 	VIClump* current = _runningQueueElt;
 	InstructionCore* next = SuspendRunningQueueElt(nextInClump);
@@ -139,19 +141,6 @@ InstructionCore* ExecutionContext::WaitUntilMicroseconds(Int64 count, Instructio
 	VIREO_ASSERT( (current->_shortCount == 0) )
 
 	current->_wakeUpInfo =  count;
-	current->_next = _sleepingList;
-	_sleepingList = current;
-    return next;
-}//------------------------------------------------------------
-InstructionCore* ExecutionContext::WaitMicroseconds(Int64 count, InstructionCore* nextInClump)
-{
-	VIClump* current = _runningQueueElt;
-	InstructionCore* next = SuspendRunningQueueElt(nextInClump);
-    
-	VIREO_ASSERT( (current->_next == null) )
-	VIREO_ASSERT( (current->_shortCount == 0) )
-    
-	current->_wakeUpInfo =  PlatformTime::TicCount() +  count;
 	current->_next = _sleepingList;
 	_sleepingList = current;
     return next;
@@ -294,7 +283,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices)
     VIREO_ASSERT( (_runningQueueElt == null) )
     if (_sleepingList != null) {
         // Are any sleeping clumps ready to wake up.
-        CheckOccurrences(PlatformTime::TicCount());
+        CheckOccurrences(PlatformTime::TickCount());
     }
 
     _runningQueueElt = _runQueue.Dequeue();
@@ -373,7 +362,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 
 // ??? not safe for UInt32 rollover ( the 39.7 day rollover problem)
 // CheckOccurrences
-void ExecutionContext::CheckOccurrences(PlatformTicType t)
+void ExecutionContext::CheckOccurrences(PlatformTickType t)
 {
 	VIClump* pClump;
 	VIClump* elt = _sleepingList;

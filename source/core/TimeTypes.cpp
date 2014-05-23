@@ -387,6 +387,7 @@ DEFINE_VIREO_BEGIN(Time)
     DEFINE_VIREO_FUNCTION(GTEQTime, "p(i(.Time) i(.Time) o(.Boolean))")
 */
 
+    DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
