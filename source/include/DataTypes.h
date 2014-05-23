@@ -47,6 +47,7 @@ typedef double              Double;
 typedef Int64               IntMax;
 typedef UInt64              UIntMax;
 
+#define __STDC_LIMIT_MACROS
 #include <stdint.h>
 
 namespace Vireo

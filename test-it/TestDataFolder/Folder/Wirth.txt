@@ -1,0 +1,5 @@
+Our ultimate goal is extensible programming (EP). By this, we mean the construction
+of hierarchies of modules, each module adding new functionality to the system.
+
+- Niklaus Wirth
+

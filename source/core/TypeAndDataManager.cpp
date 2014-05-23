@@ -11,7 +11,6 @@ SDG
  */
 
 #include <stdlib.h>
-#include <stdint.h>
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
 

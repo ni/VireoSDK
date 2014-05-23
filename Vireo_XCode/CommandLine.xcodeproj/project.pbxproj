@@ -392,7 +392,7 @@
 				472D7ACC18C683A10023C688 /* LICENSE.txt */,
 				4799F8AE18C78F060019E214 /* AUTHORS */,
 				47B3D49A17304C4400944D32 /* Wraps */,
-				479AFEBE170DDA76002C0FF0 /* Headers */,
+				479AFEBE170DDA76002C0FF0 /* include */,
 				479AFE8C170DCFB2002C0FF0 /* core */,
 				475F6F0117C3E70900285242 /* IO */,
 				470C345018F8831600E1E148 /* Dox */,
@@ -425,7 +425,7 @@
 			name = core;
 			sourceTree = "<group>";
 		};
-		479AFEBE170DDA76002C0FF0 /* Headers */ = {
+		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
 				475DCFA918654336003810C0 /* ConversionTable.def */,
@@ -446,7 +446,7 @@
 				47D84DCE17C2A258009053DB /* Thread.h */,
 				47D84DCF17C2A258009053DB /* StringUtilities.h */,
 			);
-			name = Headers;
+			name = include;
 			sourceTree = "<group>";
 		};
 		479AFEC3170E04D3002C0FF0 /* Frameworks */ = {

@@ -17,7 +17,6 @@ SDG
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
 #include <stdlib.h>
-#include <stdint.h>
 
 namespace Vireo
 {
