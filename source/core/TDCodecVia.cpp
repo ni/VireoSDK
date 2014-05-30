@@ -66,7 +66,16 @@ TypeRef TDViaParser::ParseType()
     SubString  typeFunction;
     _string.ReadToken(&typeFunction);
     
-    if (typeFunction.CompareCStr(tsBitClusterTypeToken)) {
+    if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
+        char dot;
+        typeFunction.ReadRawChar(&dot);
+        
+        pType = _typeManager->FindTypeInternal(&typeFunction);
+        if(!pType) {
+            LOG_EVENTV(kSoftDataError,"Unrecognized data type", &typeFunction);
+            pType = BadType();
+        }
+    } else if (typeFunction.CompareCStr(tsBitClusterTypeToken)) {
         pType = ParseBitCluster();
     } else if (typeFunction.CompareCStr(tsClusterTypeToken)) {
         pType = ParseCluster();
@@ -74,8 +83,6 @@ TypeRef TDViaParser::ParseType()
         pType = ParseParamBlock();
     } else if (typeFunction.CompareCStr(tsBitBlockTypeToken)) {
         pType = ParseBitBlock();
-    } else if (typeFunction.CompareCStr(tsNamedTypeToken)) {
-        pType = ParseNamedType();
     } else if (typeFunction.CompareCStr(tsArrayToken)) {
         pType = ParseArray();
     } else if (typeFunction.CompareCStr(tsValueToken) || typeFunction.CompareCStr(tsDefaultValueToken)) {
@@ -84,7 +91,7 @@ TypeRef TDViaParser::ParseType()
         pType = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         pType = ParsePointerType(false);
-    } else if (typeFunction.CompareCStr("*")) {  //short hand for PointerType{
+    } else if (typeFunction.CompareCStr("*")) {  //short hand for PointerType
         pType = ParsePointerType(true);
     } else {
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive", &typeFunction);
@@ -280,21 +287,6 @@ TypeRef TDViaParser::ParseBitBlock()
     EncodingEnum enc = ParseEncoding(&encoding);
     BitBlockType *type = BitBlockType::New(_typeManager, (Int32)bitCount, enc);
     return type;
-}
-//------------------------------------------------------------
-TypeRef TDViaParser::ParseNamedType()
-{
-    SubString token;
-    _string.ReadToken(&token);
-    TypeRef t = _typeManager->FindTypeInternal(&token);
-    
-    if(!t)
-        LOG_EVENTV(kSoftDataError,"Unrecognized data type", &token);
-
-    if (t == null)
-        t = BadType();
-    
-    return t;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
@@ -669,13 +661,17 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     IntMax clumpCount;
     SubString token;
     
-    _string.ReadToken(&token);
-    
-    if (token.CompareCStr(tsNamedTypeToken)) {
-        // printf("***************Referring to an already existing type\n");
-        TypeRef pType = ParseNamedType();
+    if (_string.ComparePrefixCStr(tsNamedTypeToken)) {
+        // This is a VI that inherits from an existing VI type./
+        // This may be used for explicit clones of VIs
+        printf("***************Referring to an already existing type\n");
+        TypeRef pType = ParseType();
         viType->CopyData(pType->Begin(kPARead), pData);
-    } else if (!token.CompareCStr("(")) {
+    }
+    
+    // Read the VIs value
+    _string.ReadToken(&token);
+    if (!token.CompareCStr("(")) {
         return LOG_EVENT(kHardDataError, "'(' missing");
     }
         

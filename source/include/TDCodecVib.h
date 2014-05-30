@@ -64,7 +64,6 @@ private :
     TypeRef ParseCluster();
     TypeRef ParseDefaultValue();
     TypeRef ParseEquivalence();
-    TypeRef ParseNamedType();
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     EncodingEnum ParseEncoding(SubString* string);

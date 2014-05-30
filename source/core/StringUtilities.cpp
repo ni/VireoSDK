@@ -349,7 +349,7 @@ Boolean SubString::ReadToken(SubString* token)
         token->AliasAssign(initialBegin, _begin);
     } else {
         // Alpha-numeric and underscore tokens
-        while (_begin < _end && ((IsIdentifierChar(*_begin) || (*_begin == '.')))) {
+        while (_begin < _end && (IsIdentifierChar(*_begin))) {
             _begin++;
         }
         if (_begin > initialBegin) {

@@ -41,11 +41,14 @@ enum TokenTraits
 };
 
 //------------------------------------------------------------
+// The VIA grammar considers many specail characters
+// such as '.'and '*'to be identifier characters
+
 enum AsciiCharTraitsEnum {
-    kACT_Id          = 0x01,
+    kACT_Id          = 0x01,    // Valid part of an identier
     kACT_Symbol      = 0x02,
-    kACT_Number      = 0x04,
-    kACT_Letter      = 0x08,
+    kACT_Number      = 0x04,    // 0-9
+    kACT_Letter      = 0x08,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x10,
     kACT_Eol         = 0x20,
 };
@@ -94,11 +97,11 @@ const UInt8 AsciiCharTraits[] =
     /* 27 '  */   0,
     /* 28 (  */   kACT_Symbol,
     /* 29 )  */   kACT_Symbol,
-    /* 2A *  */   kACT_Symbol,
+    /* 2A *  */   kACT_Id,
     /* 2B +  */   kACT_Id,
     /* 2C ,  */   kACT_Symbol,
     /* 2D -  */   kACT_Id,
-    /* 2E .  */   kACT_Symbol,
+    /* 2E .  */   kACT_Id,
     /* 2F /  */   kACT_Symbol,
     /* 30 0  */   kACT_Id,      //48
     /* 31 1  */   kACT_Id,
