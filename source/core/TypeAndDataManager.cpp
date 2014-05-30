@@ -1936,21 +1936,23 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, Alloc
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManager*, TypedArray1D<TypeRef>*)
+VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<TypeRef>*)
 {
-    if (_Param(0)) {
-        _Param(0)->GetTypes(_Param(1));
+    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    if (tm) {
+        tm->GetTypes(_Param(1));
     } else {
         _Param(1)->Resize1D(0);
     }
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManager*, StringRef, TypeRef)
+VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, TypeRef)
 {
+    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
     SubString typeName = _Param(1)->MakeSubStringAlias();
-    if (_Param(0)) {
-        _Param(0)->Define(&typeName, _Param(2));
+    if (tm) {
+        tm->Define(&typeName, _Param(2));
     }
     return _NextInstruction();
 }

@@ -1,0 +1,29 @@
+define (DefaultTM v(.VirtualInstrument (
+    c(
+     e(.TypeManager tm)
+     e(.Int32 n)
+     e(a(.Type *) allTypes)
+     
+     e(dv(.Type .String)               stringType)
+     e(dv(.String "MyVeryOwnString")   myVeryOwnStringTypeName)
+    )
+    clump (1
+        // With the default param support it is not necessary to 
+        // call TypeManagerCurrentTypeManager(tm)
+        
+        // The default value for a type manager is the current ExecutionContexts TM
+        TypeManagerGetTypes(* allTypes)
+        ArrayLength(allTypes, n)
+        DPrintf(" Total number of types %d" n)
+        // Answere should be 1 (and its the VI that is running)
+        
+        
+        // Now add a type to the current TM
+        TypeManagerDefineType(* myVeryOwnStringTypeName stringType)
+        TypeManagerGetTypes(* allTypes)
+        ArrayLength(allTypes, n)
+        DPrintf(" Total number of types %d" n)
+       
+    )
+) ) )
+enqueue (DefaultTM)
