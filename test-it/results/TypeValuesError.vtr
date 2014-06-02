@@ -1,0 +1,4 @@
+(Line 11 Error "Argument not resolved '.Int33'.")
+(Line 13 Error "Argument not mutable '.Int32'.")
+(Line 14 Error "Argument not resolved '.Int33'.")
+(Line 0 Error "Type Mismatch.")

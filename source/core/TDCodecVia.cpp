@@ -70,7 +70,7 @@ TypeRef TDViaParser::ParseType()
         char dot;
         typeFunction.ReadRawChar(&dot);
         
-        pType = _typeManager->FindTypeInternal(&typeFunction);
+        pType = _typeManager->FindType(&typeFunction);
         if(!pType) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type", &typeFunction);
             pType = BadType();
@@ -692,7 +692,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
         // TODO when VIs are inflated from their parent type this will be done automatically.
         // empty clusters should all end up with the singleton empty cluster
         SubString str("EmptyParameterList");
-        TypeRef emptyVIParamList = _typeManager->FindTypeInternal(&str);
+        TypeRef emptyVIParamList =  _typeManager->FindType(&str);
         parameterBlockType = emptyVIParamList;
         dataSpaceType = type1;
     }

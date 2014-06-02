@@ -327,23 +327,30 @@ TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
     MutexedScope m(&_mutex);
     TypeRef namedType = null;
 
-    namedType = NamedType::New(this, typeName, type);
-
     TypeDictionaryIterator iter2;
     iter2 = _typeNameDictionary.find(*typeName);
-    if (iter2 == _typeNameDictionary.end()) {
-        SubString permanentTypeName;
-        namedType->GetName(&permanentTypeName);    
-        _typeNameDictionary[permanentTypeName] = namedType;
+    if (iter2 != _typeNameDictionary.end()) {
+        // If the type is already there then no NamedType wrapper is created.
+        return null;
     }
-    //TODO if already defined?
+
+    namedType = NamedType::New(this, typeName, type);
+
+    // Storage for the string used by the dictionary is part of
+    // NamedType so once it is created a GetName() is done to
+    // get pointers to the storage.
+    SubString permanentTypeName;
+    namedType->GetName(&permanentTypeName);
+    _typeNameDictionary[permanentTypeName] = namedType;
+ 
     return namedType;
 }
 //------------------------------------------------------------
 TypeRef TypeManager::FindType(const SubString* name)
 {
     MutexedScope m(&_mutex);
-    return FindTypeInternal(name);
+    TypeRef *typeValue = FindTypeConstRef(name);
+    return typeValue ? *typeValue : null;
 }
 //------------------------------------------------------------
 // Look up the pointer to a default value of a type.
@@ -364,19 +371,21 @@ void* TypeManager::FindNamedObject(SubString* name)
         return null;
 }
 //------------------------------------------------------------
-TypeRef TypeManager::FindTypeInternal(const SubString* name)
+TypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 {
+    MutexedScope m(&_mutex);
     // Internal look up is not mutex protected.
     TypeDictionaryIterator iter;
 
+    
     iter = _typeNameDictionary.find(*name);
-    TypeRef foundType = (iter != _typeNameDictionary.end()) ? iter->second : null;
+    TypeRef* foundType = (iter != _typeNameDictionary.end()) ? &iter->second : null;
     
     // When looking in root type manager go through exernal API
     // so its mutex will be used.
     if (foundType == null && _rootTypeManager) {
         _lookUpsRoutedToOwner++;
-        foundType = _rootTypeManager->FindType(name);
+        foundType = _rootTypeManager->FindTypeConstRef(name);
     } else {
         _lookUpsFound++;
     }

@@ -180,8 +180,6 @@ private:
     TypeCommon* _typeList;          // list of all Types allocated by this TypeManager
     
 friend class TDViaParser;
-    TypeRef FindTypeInternal(const SubString* name);
-        
     // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
     // also defines alignment rules. Each element in a cluster is addressable
@@ -200,6 +198,7 @@ public:
     TypeManager *RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(SubString* name, TypeRef type);
     TypeRef FindType(const SubString* name);
+    TypeRef* FindTypeConstRef(const SubString* name);
     void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
     void*   FindNamedObject(SubString* name);
     TypeRef BadType();

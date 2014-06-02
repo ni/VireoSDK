@@ -1,33 +1,40 @@
-define (HelloWorld v(.VirtualInstrument (
-    c( e(v(.String "Hello world. I can fly.") variable1) )
-    1
+define (Int32_5 dv(.Int32 5))
+
+define (HelloTypeValues dv(.VirtualInstrument (
+    c(
+        e(.Int32 n)
+        e(.Type  t)
+        e(v(.Type .Int32)  tInt32)
+        e(v(.Type .Int32_5)  tInt32_5)
+    )
     clump (1
+        Copy(.Int32 t)   
+        Copy(Int32 n)        
+        DPrintf(".Int32 type %s " t)
+        DPrintf("Int32 value %s " n)
+        Print(t)
+        Print(n)
 
-        DPrintf("Boolean  %s " Boolean)
+        DPrintf(".Int32 type %s " .Int32)
+        DPrintf("Int32 value %s " Int32)
+        Print(.Int32)
+        Print(Int32)
 
-        DPrintf("Int8  %s " Int8)
-        DPrintf("Int16  %s " Int16)
-        DPrintf("Int32  %s " Int32)
-        DPrintf("Int64  %s " Int64)
-
-        DPrintf("UInt8  %s " UInt8)
-        DPrintf("UInt16  %s " UInt16)
-        DPrintf("UInt32  %s " UInt32)
-        DPrintf("UInt64  %s " UInt64)
-
-        DPrintf("Double  %s " Double)
-        DPrintf("Single  %s " Single)
-
-        DPrintf("ComplexDouble  %s " ComplexDouble)
-        DPrintf("ComplexSingle  %s " ComplexSingle)
-
-        DPrintf("Pi %s" Pi)
-
-        DPrintf("Code Pointer %s" CodePointer)
-        DPrintf("Data Pointer %s" DataPointer)
-        DPrintf("Clump %s" Clump)
-
-        DPrintf("Virtual Instrument %s" VirtualInstrument)
+        Copy(.Int32_5 t)   
+        Copy(Int32_5 n)
+        DPrintf(".Int32_5 type %s " t)
+        DPrintf("Int32_5 value %s " n)
+        Print(t)
+        Print(n)
+        
+        DPrintf(".Int32_5 type %s " .Int32_5)
+        DPrintf("Int32_5 value %s " Int32_5)
+        Print(.Int32_5)
+        Print(Int32_5)
+             
+        DPrintf("Int32TypeMember %s " tInt32)
+        DPrintf("Int32_5TypeMember %s " tInt32_5)
     )
 ) ) )
-enqueue (HelloWorld)
+
+enqueue (HelloTypeValues)

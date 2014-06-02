@@ -1,0 +1,20 @@
+define (Int32_5 dv(.Int32 5))
+
+define (HelloTypeValues dv(.VirtualInstrument (
+    c(
+        e(.Int32 n)
+        e(.Type  t)
+        e(v(.Type .Int32)  tInt32)
+        e(v(.Type .Int32_5)  tInt32_5)
+    )
+    clump (1
+        Copy(.Int33 t)   // Should cause error   
+        Copy(.Int32 t)   
+        Copy(t .Int32)   // Should cause an error
+        Copy(t .Int33)   // Should cause an error
+        Copy(t Int32)    // Should cause an error
+        Copy(n Int32)  // Should cause an error, but does not yet do so
+    )
+) ) )
+
+enqueue (HelloTypeValues)

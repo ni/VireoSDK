@@ -391,60 +391,92 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
 //------------------------------------------------------------
 void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData)
 {
-    // When a parameter is a name like "x" the VIs cluster will be looked in first.
-    // the path parser is used so nested fields can be used such as "circle1.x"
-    AQBlock1* pData = null;
-    Int32 offset = 0;
-    TypeRef actualType = _dataSpaceType->GetSubElementOffsetFromPath(argument, &offset);
+    _actualArgumentType = null;
     
-    if (actualType != null) {
-        pData = _dataSpaceBase + offset;
-        _argumentState = kArgumentResolvedToLocal;
-    } else if (_paramBlock) {
-        actualType = _paramBlockType->GetSubElementOffsetFromPath(argument, &offset);
-        if (actualType != null) {
-            pData = _paramBlockBase + offset;
-            _argumentState = kArgumentResolvedToParameter;
-        }
-    }
-    if(actualType == null) { //look for a global type
-        SubString pathHead, pathTail;
-        argument->SplitString(&pathHead, &pathTail, '.');
-        actualType = _clump->TheTypeManager()->FindType(&pathHead);
-        if(actualType != null){
-            if(pathHead.CompareCStr("*")){
-                actualType = FormalParameterType();
-                if (!actualType->IsFlat()) {
-                    // Define a DefaultValue type. As a DV it will never merge to another instance.
-                    // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
-                    DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), actualType);
-                    pData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
-                } else {
-                    // For flat data the call instruction will simply set the callee to the default value.
-                    pData = null;
-                }
-            } else { 
-                pData = (AQBlock1*)actualType->Begin(kPARead);   // TODO based on parameter direction
-                if(pathTail.ReadChar('.')) {
-                    // If thre is a dot after the head then we have more to parse. If the top type
-                    // is a cluster then this should be a simple field index.
-                    
-                    // TODO: For arrays it is them as wel "a.0" or a.0.0.0" etc.
-                    // however the pointer to the element needs to have a life time at least as long the instruction
-                    // being created. This means variable sized arrays cannot be indexed.
-                    // Fixed sized arrays (that includes non generic ZDAs) all elements are allocated up front
-                    // so indexing is OK.
-                    void* pDataStart = pData;
-                    actualType = actualType->GetSubElementInstancePointerFromPath(&pathTail, pDataStart, (void**) &pData, false);
-                }
-            }
-            if (actualType) {
+    // "." prefixed symbols are type constant from the TypeManager
+    if (argument->ComparePrefixCStr(".")) {
+        // If it is to be passed as an input then that is OK. Elements in the
+        // type dictionary can not be used as an output.
+        char dot;
+        argument->ReadRawChar(&dot);
+        *ppData = (AQBlock1*) _clump->TheTypeManager()->FindTypeConstRef(argument);
+        if (*ppData != null) {
+            UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
+            if (usageType != kUsageTypeInput) {
+                *ppData = null;
+                _argumentState = kArgumentNotMutable;
+            } else {
+                SubString typeTypeName("Type");
+                _actualArgumentType = _clump->TheTypeManager()->FindType(&typeTypeName);
                 _argumentState = kArgumentResolvedToGlobal;
             }
         }
+        return;
     }
-    *ppData = pData;
-    _actualArgumentType = actualType;
+    
+    // See if it is a default parameter ('*')
+    if(argument->CompareCStr("*")){
+        _actualArgumentType = FormalParameterType();
+        if (!_actualArgumentType->IsFlat()) {
+            // Define a DefaultValue type. As a DV it will never merge to another instance.
+            // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
+            DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType);
+            *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+        } else {
+            // For flat data the call instruction logic for VIs will initialize the callee parameter
+            // to the default value. For native instructions a null parameter value is passed.
+            *ppData = null;
+        }
+        _argumentState = kArgumentResolvedToDefault;
+        return;
+    }
+    
+    // See if it is a local variable
+    Int32 offset = 0;
+    _actualArgumentType = _dataSpaceType->GetSubElementOffsetFromPath(argument, &offset);
+    if (_actualArgumentType != null) {
+        *ppData = _dataSpaceBase + offset;
+        _argumentState = kArgumentResolvedToLocal;
+        return;
+    }
+    
+    // See if it is a parameter variable
+    if (_paramBlock) {
+        _actualArgumentType = _paramBlockType->GetSubElementOffsetFromPath(argument, &offset);
+        if (_actualArgumentType != null) {
+            *ppData = _paramBlockBase + offset;
+            _argumentState = kArgumentResolvedToParameter;
+            return;
+        }
+    }
+    
+    // See if it is a global value.
+    // the first part of the path is the symbol. Beyond that it drills into the variable.
+    SubString pathHead, pathTail;
+    argument->SplitString(&pathHead, &pathTail, '.');
+    _actualArgumentType = _clump->TheTypeManager()->FindType(&pathHead);
+    if(_actualArgumentType != null){
+        // The symbol was found in the TypeManager chain. Get a pointer to the value.
+        
+        // TODO access-option based on parameter direction;
+        AQBlock1* pData = (AQBlock1*)_actualArgumentType->Begin(kPARead);
+
+        // If there is a dot after the head, then there is more to parse.
+        if(pathTail.ReadChar('.')) {
+            // If the top type is a cluster then the remainder should be a simple field name qualifier
+            // Array drill down not yet supported. (it would not be hard for fixed sized arrays)
+            // but blunded or variabel aray element addresses are dynamic.
+            void* pDataStart = pData;
+            _actualArgumentType = _actualArgumentType->GetSubElementInstancePointerFromPath(&pathTail, pDataStart, (void**) &pData, false);
+        }
+        if (_actualArgumentType) {
+            *ppData = pData;
+            _argumentState = kArgumentResolvedToGlobal;
+            return;
+        }
+    }
+    *ppData = null;
+    _actualArgumentType = null;
 }
 //------------------------------------------------------------
 void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prependType)
@@ -704,6 +736,7 @@ void  ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
         case kArgumentResolvedToPerch:                  simpleMessage = "Argument is perch";        break;
         case kArgumentResolvedToParameter:              simpleMessage = "Argument is parameter";    break;
         case kArgumentResolvedToGlobal:                 simpleMessage = "Argument is global";       break;
+        case kArgumentResolvedToDefault:                simpleMessage = "Argument is default";      break;
         case kArgumentResolvedToStaticString:           simpleMessage = "Argument is static";       break;
         case kArgumentResolvedToInstructionFunction:    simpleMessage = "Argument is ifunction";    break;
             simpleMessage = "Argument is clump";

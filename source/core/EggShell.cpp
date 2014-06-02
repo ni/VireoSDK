@@ -108,8 +108,9 @@ void EggShell::ParseDefine(TDViaParser *parser)
     if (!parser->TheString()->ReadChar(')'))
         return parser->LogEvent(EventLog::kHardDataError,  "')' missing");
     
-    _execContext->TheTypeManager()->Define(&symbolName, t);
-    
+    TypeRef namedType = _execContext->TheTypeManager()->Define(&symbolName, t);
+    if (!namedType)
+        return parser->LogEvent(EventLog::kHardDataError,  "Can't define symbol");    
 }
 //------------------------------------------------------------
 void EggShell::ParseEnqueueVI(TDViaParser* parser)

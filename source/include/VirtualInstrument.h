@@ -191,6 +191,7 @@ public:
         kArgumentResolved_FirstGood,
         kArgumentResolvedToLocal = kArgumentResolved_FirstGood,
         kArgumentResolvedToGlobal,
+        kArgumentResolvedToDefault,
         kArgumentResolvedToParameter,
         kArgumentResolvedToClump,
         kArgumentResolvedToPerch,
@@ -198,7 +199,7 @@ public:
         kArgumentResolvedToInstructionFunction,
         kArgumentResolved_LastGood = kArgumentResolvedToStaticString,
     };
-    ArgumentState _argumentState;
+    ArgumentState   _argumentState;
     EventLog*       _pLog;
     InstructionAllocator* _cia;
     
