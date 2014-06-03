@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <meta name="description" content="">
+                        <meta name="author" content="">
+                            <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+                                
+                                <title>Starter Template for Bootstrap</title>
+                                
+                                <!-- Bootstrap core CSS -->
+                                <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                                    
+                                    </head>
+    
+    <body>
+        <div class="container-fluid" style="padding:9px" >
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="btn-toolbar" role="toolbar" style="padding-bottom:9px">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="OpenFile"><span class="glyphicon glyphicon-floppy-open"></span></button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                                <span class="caret"></span>
+                            </button>
+                            
+                            <ul class="dropdown-menu">
+                                <li><a id="MandelbrotSample">Mandelbrot</a></li>
+                                <li><a id="PiSample">π calculator</a></li>
+                                <li><a id="TicTockSample">TicTock</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+
+
+                            <button type="button" class="btn btn-default" onclick="VRunRun()"><span class="glyphicon glyphicon-retweet"></span></button>
+                            <button type="button" class="btn btn-default" id="VRun"><span class="glyphicon glyphicon-play"></span></button>
+                            <button type="button" class="btn btn-default" id="VPause"><span class="glyphicon glyphicon-pause"></span></button>
+                            <!--
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-backward"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-forward"></span></button>
+                            -->
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="LVLink"><span class="glyphicon glyphicon-transfer"></span></button>
+                        </div>
+                    </div>
+                    
+                    <pre id="VireoSource" style="height:500px">
+define (HelloWorld dv(.VirtualInstrument (
+c(
+  e(v(.Int32 42) theAnswer)
+)
+clump (1
+       Print(theAnswer)
+)
+) ) )
+enqueue (HelloWorld)
+                    </pre>
+                    <input  id="in_state" value="*"></input>
+                    <input  id="in_address" value="localhost"></input>
+                    <input  id="link" value="foo"></input>
+                </div>
+                <div class="col-xs-6">
+                    
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#StdOut" data-toggle="tab">Console</a></li>
+                        <li><a href="#Canvas" data-toggle="tab">Canvas</a></li>
+                        <li><a href="#Explore" data-toggle="tab">Explore</a></li>
+                    </ul>
+                    
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="StdOut">
+                            <pre id="VireoOutput"  style="height:500px"> Hello </pre>
+                        </div>
+                        <div class="tab-pane" id="Canvas">
+                            <canvas id="theCanvas" height="300" width="500" style="border:1px solid #d3d3d3;">
+                        </div>
+                        <div class="tab-pane" id="Explore">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+        
+        <!-- JavaScript ================================================== -->
+        <script src="jquery/jquery.min.js"></script>
+        <script src="jquery-ui/js/jquery-ui-1.10.4.js"></script>
+        <script src="bootstrap/js/bootstrap.min.js"></script>
+        <script src="ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script>
+            var editor2;
+            
+            // Add call back for stdio
+            var Module = { 'print': function(text) { editor2.insert(text + "\n") } };
+        </script>
+        
+        <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
+        
+
+
+        <script>
+            
+            var v_state = document.getElementById("in_state")
+            var v_address = document.getElementById("in_address")
+            var v_link = document.getElementById("link")
+
+            // Define global Vireo functions
+            // might use embind instead
+            var esh = {};
+            esh.version = Module.cwrap('Vireo_Version', 'number', []);
+            esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
+            esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
+            esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
+            //esh.getValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
+            esh._delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
+            esh.repeat = false;
+            esh.pause = false;
+            esh.h = 0;
+
+            var editor1 = ace.edit("VireoSource");
+            editor1.setTheme("ace/theme/XCode");
+            editor1.getSession().setMode("ace/mode/LISP");
+            
+            editor2 = ace.edit("VireoOutput");
+            editor2.setTheme("ace/theme/XCode");
+            editor2.getSession().setMode("ace/mode/LISP");
+
+            function VRun()
+            {
+                if (esh.h != 0 ) {
+                    esh._delete(esh.h);
+                }
+                esh.h = esh.create(0);
+                esh.REPL(esh.h, editor1.getValue(), -1);
+                esh.execCount = 0
+                esh.startTime = Date.now();
+                v_state.value = "started";
+                setTimeout(VireoRunProc,50);
+            }
+            function VRunRun()
+            {
+                esh.repeat = !esh.repeat;
+                VRun();
+            }
+            function VPause()
+            {
+                esh.pause = !esh.pause;
+                if (!esh.pause) {
+                    setTimeout(VireoRunProc,0);
+                }
+            }
+
+        $("#VPause").click(function(){VPause();} );
+        $("#VRun").click(function(){VRun();} );
+        $("#VRunRun").click(function(){VRunRun();} );
+        $("#PiSample").click(function(){LoadSample("Pi.via");} );
+        $("#TicTockSample").click(function(){LoadSample("TicTock.via");} );
+        $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
+        $("#LVLink").click(function(){LVLink();} );
+
+        $("#Mandelbrot").bind(function(e){ alert("MandelBrot"); e.preventDefault(); });
+        $(function() { $( "#slider2" ).slider();});
+
+        function LVLink()
+        {
+            var the_url = "http://" + v_address.value +  ":6340/ViaCode";
+            // LabVIEW does a long poll response
+            LVLink.Count += 1;
+            v_link.value = "ping " + LVLink.Count;
+            $.ajax({
+                   type: "GET",
+                   url: the_url,
+                   dataType: "jsonp",
+                   timout:10000,
+                   error: function(x,t,m) {
+                   setTimeout(LVLink, 100);
+                    }
+                   })
+        }
+        LVLink.Count = 0;
+
+        function JSONP_ViaLoadCode(text, name)
+        {
+            // If we get a time-out, then retry for few time then give up.
+            
+            v_link.value = "load";
+
+            if ( typeof JSONP_ViaLoadCode.counter == 'undefined' ) {
+                JSONP_ViaLoadCode.counter = 0;
+            } else {
+                JSONP_ViaLoadCode.counter++;
+            }
+            
+            v_state.value = "got new code" + JSONP_ViaLoadCode.counter;
+            if (text != "") {
+                editor1.setValue(text)
+                editor1.gotoLine(0,0,false);
+            }
+            setTimeout(LVLink, 100);
+        }
+
+        function JSONP_ViaRun(name)
+        {
+            v_link.value = "run";
+            editor2.setValue("");
+            v_state.value = "runing code";
+            VRun();
+            setTimeout(LVLink, 100);
+        }
+
+var ctx;
+
+        function DrawGraph()
+        {
+            var theCanvas = document.getElementById("theCanvas");
+            ctx = theCanvas.getContext("2d");
+            
+            ctx.moveTo(0,0);
+            ctx.lineTo(200,100);
+            ctx.stroke();
+        }
+        function VireoRunProc()
+        {
+            // Run a chunk of code. if there is more pending
+            // Then restart soon, else restart when it makes sense.
+        
+            var x = esh.executeSlices(esh.h, 1000);
+            esh.execCount += 1;
+            if (x>0 && !esh.pause) {
+                // periodically sleep for 50 ms or so.
+                setTimeout(VireoRunProc,0);
+            } else {
+                v_state.value = "done " + esh.execCount + " time " + (Date.now() - esh.startTime);
+                if (esh.repeat) {
+                    setTimeout(VRun, 100);
+                }
+            }
+        }
+        function LoadSample(sampleName)
+        {
+            $.get(sampleName, function(data) { editor1.setValue(data); editor1.gotoLine(0,0,false); }, "text")  .fail(function() { alert( "error" );})
+        }
+        </script>
+    </body>
+</html>

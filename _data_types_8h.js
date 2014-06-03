@@ -1,6 +1,7 @@
 var _data_types_8h =
 [
     [ "SimpleSubVector", "class_vireo_1_1_simple_sub_vector.html", "class_vireo_1_1_simple_sub_vector" ],
+    [ "__STDC_LIMIT_MACROS", "_data_types_8h.html#aeb7e7a856ab7a794b05b6b63ef36ea3e", null ],
     [ "null", "_data_types_8h.html#ac97b8ee753e4405397a42ad5799b0f9e", null ],
     [ "VIREO_ASSERT", "_data_types_8h.html#a124ec50fb0cfb9c243216b28ede2f979", null ],
     [ "AQBlock1", "_data_types_8h.html#aca224f18b3ab5828add7e5401bc85d7a", null ],

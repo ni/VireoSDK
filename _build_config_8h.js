@@ -1,13 +1,5 @@
 var _build_config_8h =
 [
-    [ "INT16_MAX", "_build_config_8h.html#ac58f2c111cc9989c86db2a7dc4fd84ca", null ],
-    [ "INT16_MIN", "_build_config_8h.html#ad4e9955955b27624963643eac448118a", null ],
-    [ "INT32_MAX", "_build_config_8h.html#a181807730d4a375f848ba139813ce04f", null ],
-    [ "INT32_MIN", "_build_config_8h.html#a688eb21a22db27c2b2bd5836943cdcbe", null ],
-    [ "INT64_MAX", "_build_config_8h.html#ad0d744f05898e32d01f73f8af3cd2071", null ],
-    [ "INT64_MIN", "_build_config_8h.html#ab21f12f372f67b8ff0aa3432336ede67", null ],
-    [ "INT8_MAX", "_build_config_8h.html#aaf7f29f45f1a513b4748a4e5014ddf6a", null ],
-    [ "INT8_MIN", "_build_config_8h.html#aadcf2a81af243df333b31efa6461ab8e", null ],
     [ "USE_C99_TYPES", "_build_config_8h.html#a57af425a6fbf6de0a757236a471d6f83", null ],
     [ "VIREO_ARRAY_INDEX_TYPE", "_build_config_8h.html#a8e580697eb8622e3ad16641947ed6876", null ],
     [ "VIREO_ARRAY_VARIABLE_SENTINEL", "_build_config_8h.html#a4d74c00323470e733b27ebd27eeefc0e", null ],

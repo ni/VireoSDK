@@ -14,5 +14,5 @@ var class_vireo_1_1_v_i_clump =
     [ "_savePc", "class_vireo_1_1_v_i_clump.html#a9ddc8cad6853110db6d2c4e16f8ecf14", null ],
     [ "_shortCount", "class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff", null ],
     [ "_waitingClumps", "class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482", null ],
-    [ "_wakeUpInfo", "class_vireo_1_1_v_i_clump.html#aa76a3945782a90fca8b5f9dda5d1e0e9", null ]
+    [ "_wakeUpInfo", "class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51", null ]
 ];

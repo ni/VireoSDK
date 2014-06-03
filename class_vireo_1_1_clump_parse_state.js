@@ -10,6 +10,7 @@ var class_vireo_1_1_clump_parse_state =
       [ "kArgumentResolved_FirstGood", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42ea14f2b39c16ffa1248f6b6daeba6509de", null ],
       [ "kArgumentResolvedToLocal", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42eae6ecc05aeecf89b11152335900b2da70", null ],
       [ "kArgumentResolvedToGlobal", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42eab92d2f39df7f7461a296148e3476bf6c", null ],
+      [ "kArgumentResolvedToDefault", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42ead2d2841fe80ee36c08a76b7195f029e8", null ],
       [ "kArgumentResolvedToParameter", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42ea15d77094bc592ad6e87a0bc347ebbb34", null ],
       [ "kArgumentResolvedToClump", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42ea9c616b1ef88ed3c460dda5e8e36526d0", null ],
       [ "kArgumentResolvedToPerch", "class_vireo_1_1_clump_parse_state.html#a072d402db760d343c25bcb7930a5c42ead2473f21cc7b775d0e703e4f656078c8", null ],

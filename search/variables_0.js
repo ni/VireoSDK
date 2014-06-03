@@ -10,5 +10,5 @@ var searchData=
   ['_5fsleepinglist',['_sleepingList',['../class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04',1,'Vireo::ExecutionContext']]],
   ['_5ftm',['_tm',['../class_vireo_1_1_aggrigate_alignment_calculator.html#a8ffec518dcc043f92e4f98a8d3fc5379',1,'Vireo::AggrigateAlignmentCalculator']]],
   ['_5fwaitingclumps',['_waitingClumps',['../class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482',1,'Vireo::VIClump']]],
-  ['_5fwakeupinfo',['_wakeUpInfo',['../class_vireo_1_1_v_i_clump.html#aa76a3945782a90fca8b5f9dda5d1e0e9',1,'Vireo::VIClump']]]
+  ['_5fwakeupinfo',['_wakeUpInfo',['../class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51',1,'Vireo::VIClump']]]
 ];

@@ -19,7 +19,6 @@ var class_vireo_1_1_t_d_vib_decoder =
     [ "ParseDefaultValue", "class_vireo_1_1_t_d_vib_decoder.html#aa66c77d47db24c6e8f0269a2ff4c9e39", null ],
     [ "ParseEncoding", "class_vireo_1_1_t_d_vib_decoder.html#a13c07ddcb434288a9e53ea3126bae3be", null ],
     [ "ParseEquivalence", "class_vireo_1_1_t_d_vib_decoder.html#adc0511678d2fbc4e4b1b5d5b877f33ed", null ],
-    [ "ParseNamedType", "class_vireo_1_1_t_d_vib_decoder.html#a5827f96c28bb0c8f71775f58ee1607b8", null ],
     [ "ParseParamBlock", "class_vireo_1_1_t_d_vib_decoder.html#af0e2f8030a8e0acdf4dbcccbdab68925", null ],
     [ "ParsePointerType", "class_vireo_1_1_t_d_vib_decoder.html#a5c919bb76de4ddcaff5a69032fcf4ec2", null ],
     [ "_buffer", "class_vireo_1_1_t_d_vib_decoder.html#a91b0a8a49e148d999a1bd33ce6479ada", null ],
