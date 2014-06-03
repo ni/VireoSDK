@@ -3,17 +3,22 @@
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
-SITEDIR=../Documents/dox/online
+SITEDIR=../Documents/gh-pages/playground
 
-.PHONY: clean install help vjs
+.PHONY: clean install help vjs dox
 .DEFAULT_GOAL=help
 
 clean:
 	rm -f objs/*
 	
+dox:
+	cd ../source; doxygen
+
+
 install: 
+	mkdir -p $(SITEDIR)
 	cp objs/vireo.js $(SITEDIR)/vireo.js
-	cp SiteSource/VireoNest.html $(SITEDIR)/
+	cp SiteSource/*.html $(SITEDIR)/
 	cp SiteSource/*.via $(SITEDIR)/
 	@echo '==> website files copied to  $(SITEDIR)'
 

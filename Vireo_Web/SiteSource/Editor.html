@@ -48,19 +48,18 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-default" id="LVLink"><span class="glyphicon glyphicon-transfer"></span></button>
                         </div>
-                    </div>
-                    
-                    <pre id="VireoSource" style="height:500px">
+                    </div>                    
+<pre id="VireoSource" style="height:500px">
 define (HelloWorld dv(.VirtualInstrument (
-c(
-  e(v(.Int32 42) theAnswer)
-)
-clump (1
-       Print(theAnswer)
-)
+  c(
+    e(v(.String "Hello, World!") message)
+  )
+  clump (1
+    Print(message)
+  )
 ) ) )
 enqueue (HelloWorld)
-                    </pre>
+</pre>
                     <input  id="in_state" value="*"></input>
                     <input  id="in_address" value="localhost"></input>
                     <input  id="link" value="foo"></input>
@@ -76,7 +75,7 @@ enqueue (HelloWorld)
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div class="tab-pane active" id="StdOut">
-                            <pre id="VireoOutput"  style="height:500px"> Hello </pre>
+                            <pre id="VireoOutput"  style="height:500px"> </pre>
                         </div>
                         <div class="tab-pane" id="Canvas">
                             <canvas id="theCanvas" height="300" width="500" style="border:1px solid #d3d3d3;">

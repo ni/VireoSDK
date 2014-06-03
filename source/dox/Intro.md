@@ -54,6 +54,7 @@ sys	0m0.002s
 ~~~
 
 ## Next Steps
+* [Web based Vireo playground](playground/Editor.html)
 * [Introduction](index.html)
 * [Some more simple type examples](md_dox__intro_type_examples.html)
 * [Some array type examples](md_dox__intro_array_examples.html)
