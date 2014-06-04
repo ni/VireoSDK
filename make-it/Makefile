@@ -27,17 +27,27 @@ ifeq ($(OS),Windows_NT)
       #  plat stuff
     endif
 else
+    ifdef DEBUG
+        CCOPT = -O0
+        STRIP =
+    else
+        CCOPT = -Os
+        STRIP = strip esh
+        LEAN_VIREO = -DVIREO_LEAN
+    endif
+
     UNAME_S := $(shell uname -s)
-    CFLAGS=-I$(INCDIR) -Wall -MMD
+    CFLAGS=-I$(INCDIR) -Wall -MMD $(LEAN_VIREO)
+
     ifeq ($(UNAME_S),Linux)
         ifeq ($(TARGETARCH),ARMv5)
             # Build a library for an ARMv5 target
             CC=arm-none-linux-gnueabi-g++
-            CFLAGS+=-Os -fPIE -DVIREO_DYNAMIC_LIB
+            CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB
             LDFLAGS+=-L. -pie -Wl,-E
         else
             CC=g++
-            CFLAGS+=-O3 $(TARGETARCH)
+            CFLAGS+= $(CCOPT) $(TARGETARCH)
         endif
         PROGRAM_DIR = /usr/local/bin
         LIBS = -lrt -lpthread
@@ -48,12 +58,12 @@ else
         # CC=g++
         # clang settings (has been about 33% smaller)
         CC=clang++
-        CFLAGS+=-O3 $(TARGETARCH)
+        CFLAGS+= $(CCOPT) $(TARGETARCH)
         PROGRAM_DIR=/Applications/Vireo
     endif
 endif
 
-.PHONY: install clean v32 v64 lARMv5 help dox
+.PHONY: install clean v32 v64 lARMv5 help
 .DEFAULT_GOAL=help
 
 install: esh
@@ -72,25 +82,25 @@ clean:
 
 simple:
 	make esh
-	strip esh
+	$(STRIP)
 
+#========= 32 bit builds host platfrom
 v32:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
 	make TARGETARCH=-m32 esh
-	strip esh
+	$(STRIP)
 
+#========= 32 bit builds host platfrom
 v64:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
 	make TARGETARCH=-m64 esh
-	strip esh
+	$(STRIP)
 
+#========= 32 ARMv5
 lARMv5:
 	if ! [ -a libvireo.so ]; then make clean; fi;
 	make TARGETARCH=ARMv5 libvireo.so
 	arm-none-linux-gnueabi-strip libvireo.so
-
-dox:
-	cd ../source; doxygen
 
 help:
 	@echo 'Execute "make v32"     to build a 32-bit esh executable'
@@ -100,12 +110,16 @@ help:
 	@echo
 	@echo '        "make install" to install esh to $(PROGRAM_DIR), uses sudo'
 	@echo '        "make clean"   to delete $(OBJDIR) and backup files'
-	@echo '        "make dox"     to build documentation (doxygen must be installed)'
 	@echo '        "make"         to print this help dialogue'
 	@echo ''
 	@echo 'Options can be combined. For example:'
 	@echo ''
 	@echo '        "make clean v64 install"'
+	@echo ''
+	@echo 'To build debug versions with symbols and extra asserts, define the DEBUG flag:'
+	@echo ''
+	@echo '        "make clean v64 install DEBUG=1"'
+	@echo ''
 
 # Build the executable with symbols stripped
 esh: $(OBJDIR) $(OBJS)

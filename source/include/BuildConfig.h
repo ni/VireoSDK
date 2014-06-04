@@ -69,9 +69,10 @@ SDG
 // Instructions are directly concatenated there is no next pointer.
 #define VIREO_PACKED_INSTRUCTIONS
 
+#ifndef VIREO_LEAN
 #define VIREO_TRACK_MEMORY_QUANTITY
-
 #define VIREO_USING_ASSERTS
+#endif
 
 #define VIREO_ISR_DISABLE
 #define VIREO_ISR_ENABLE
