@@ -24,10 +24,10 @@ _PROGMEM Instruction0 ExecutionContext::_culDeSac;
 InstructionFunction ExecutionContext::_culDeSacFunction;
 
 #ifdef VIVM_SINGLE_EXECUTION_CONTEXT
-QueueElt*       ExecutionContext::_triggeredIsrList;               // Elts waiting for something external to wake them up
-Queue           ExecutionContext::_runQueue;				// Elts ready To run
-QueueElt*       ExecutionContext::_sleepingList;			// Elts waiting for something external to wake them up
-QueueElt*       ExecutionContext::_runningQueueElt;		// Elt actually running
+VIClump*        ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
+Queue           ExecutionContext::_runQueue;			// Elts ready To run
+VIClump*        ExecutionContext::_sleepingList;		// Elts waiting for something external to wake them up
+VIClump*        ExecutionContext::_runningQueueElt;		// Elt actually running
 uIntFastSmall   ExecutionContext::_breakoutCount;
 #endif
 
@@ -132,7 +132,7 @@ VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
     return THREAD_EXEC()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
 }
 //------------------------------------------------------------
-InstructionCore* ExecutionContext::WaitUntilTickCount(Int64 count, InstructionCore* nextInClump)
+InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInClump)
 {
 	VIClump* current = _runningQueueElt;
 	InstructionCore* next = SuspendRunningQueueElt(nextInClump);
@@ -140,9 +140,23 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(Int64 count, InstructionCo
 	VIREO_ASSERT( (current->_next == null) )
 	VIREO_ASSERT( (current->_shortCount == 0) )
 
-	current->_wakeUpInfo =  count;
-	current->_next = _sleepingList;
-	_sleepingList = current;
+	current->_wakeUpInfo =  tickCount;
+    
+    if (_sleepingList == null) {
+        // No list, now there is one.
+        current->_next = null;
+        _sleepingList = current;
+    } else {
+        // Insert into the list based on wake-up time.
+        VIClump** pFix = &_sleepingList;
+        VIClump* node = *pFix;
+        while (node && (tickCount < node->_wakeUpInfo)) {
+            pFix = &(node->_next);
+            node = *pFix;
+        }
+        current->_next = node;
+        *pFix = current;
+    }
     return next;
 }
 //------------------------------------------------------------
@@ -276,51 +290,80 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
     }
 }
 //------------------------------------------------------------
-ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices)
+ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
 {
     ExecutionContextScope scope(this);
     
     VIREO_ASSERT( (_runningQueueElt == null) )
+    
+    PlatformTickType currentTime  = PlatformTime::TickCount();
+    PlatformTickType breakOutTime = currentTime + tickCount;
+    
     if (_sleepingList != null) {
-        // Are any sleeping clumps ready to wake up.
-        CheckOccurrences(PlatformTime::TickCount());
+        CheckOccurrences(currentTime);
     }
-
     _runningQueueElt = _runQueue.Dequeue();
-    if (_runningQueueElt != null)
+    InstructionCore* currentInstruction =_runningQueueElt ?  _runningQueueElt->_savePc : null;
+    
+    while (_runningQueueElt)
     {
-        InstructionCore* currentInstruction = _runningQueueElt->_savePc;
-        _breakoutCount = numSlices; // TODO this was initial hack for first demo
+        _breakoutCount = numSlices;
 
         VIREO_ASSERT( (currentInstruction != null) )
         VIREO_ASSERT( (null == _runningQueueElt->_next) )		// Should not be on queue
         VIREO_ASSERT( (0 == _runningQueueElt->_shortCount) ) // Should not be running if triggers > 0
         do {
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
 #ifdef VIVM_UNROLL_EXEC            
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-			currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
 #endif
         } while (_breakoutCount-- > 0);
 
-        if (currentInstruction == &_culDeSac) {
-            VIREO_ASSERT(_runningQueueElt == null)
-        } else {
-            VIREO_ASSERT(currentInstruction != null)
-            VIREO_ASSERT(_runningQueueElt != null)
-            
-            // Put active elt back in RunQueue, causes rotation if several elements in the Queue
+        currentTime  = PlatformTime::TickCount();
+        if (_sleepingList != null) {
+            // Are any sleeping clumps ready to wake up.
+            CheckOccurrences(currentTime);
+        }
+
+        if (currentTime < breakOutTime) {
+            if (_runningQueueElt) {
+                if(!_runQueue.IsEmpty()) {
+                    // Time left, still working, something else to do, rotate tasks
+                    VIREO_ASSERT(currentInstruction != null)
+                    VIREO_ASSERT(_runningQueueElt != null)
+                    
+                    _runningQueueElt->_savePc = currentInstruction;
+                    VIClump *eltToReQueue = _runningQueueElt;
+                    _runningQueueElt = null;
+                    _runQueue.Enqueue(eltToReQueue);
+                    _runningQueueElt = _runQueue.Dequeue();
+                    currentInstruction = _runningQueueElt->_savePc;
+                } else {
+                    // Time left, still working, nothing else to do, continue as is.
+                    VIREO_ASSERT(currentInstruction != null)
+                    VIREO_ASSERT(_runningQueueElt != null)
+                }
+            } else {
+                // Time left, nothing running, see if something woke up.
+                _runningQueueElt = _runQueue.Dequeue();
+            }
+        } else if (_runningQueueElt) {
+            // No time left, still working, save current state.
+            VIREO_ASSERT(currentInstruction != &_culDeSac)
             _runningQueueElt->_savePc = currentInstruction;
             VIClump *eltToReQueue = _runningQueueElt;
             _runningQueueElt = null;
             _runQueue.Enqueue(eltToReQueue);
+        } else {
+            // No time left, nothing running, fine, loop will exit.
         }
     }
     
@@ -337,13 +380,13 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices)
 
 	return reply;
 }
-
+//------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
 	VIREO_ASSERT((0 == elt->_shortCount))
 	_runQueue.Enqueue(elt);
 }
-
+//------------------------------------------------------------
 #ifdef VIVM_SUPPORTS_ISR
 // Interrupts should already be disabled when this is called
 // so there is no need to add guards inside.
@@ -359,9 +402,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
     }
 }
 #endif
-
-// ??? not safe for UInt32 rollover ( the 39.7 day rollover problem)
-// CheckOccurrences
+//------------------------------------------------------------
 void ExecutionContext::CheckOccurrences(PlatformTickType t)
 {
 	VIClump* pClump;
@@ -377,10 +418,10 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
 			pClump->_next = null;
 			pClump->_wakeUpInfo = 0;  //Put in known state.
 			_runQueue.Enqueue(elt);
-		}
-		else
-		{
-			pFix = &pClump->_next;
+		} else {
+            // Items are sorted at insertion, so once a time in the future
+            // is found quit the loop.
+            break;
 		}
 		elt = *pFix; 
 	}
@@ -401,11 +442,6 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
         VIREO_ISR_ENABLE
     }    
 #endif
-    
-// ??? if msCount is less than last one then wrap around has happened
-// go through list,
-// each go through each waiting element.
-// decrement count by delta, if less than zero then enqueue.
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)

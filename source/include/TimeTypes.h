@@ -21,6 +21,9 @@ namespace Vireo
 //------------------------------------------------------------
 #if defined (__ARDUINO__)
 	typedef UInt32 PlatformTickType;
+#elif kVireoOS_emscripten
+	typedef Int64 PlatformTickType;
+//  typedef Double PlatformTickType; (slightly more native for JavaScript/emscripten) 
 #else
 	typedef Int64 PlatformTickType;
 #endif

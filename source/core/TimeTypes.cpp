@@ -79,7 +79,7 @@ PlatformTickType PlatformTime::TickCount()
 #elif (kVireoOS_emscripten)
 
     // milliseconds
-    return (Int64) emscripten_get_now();
+    return (PlatformTickType) emscripten_get_now();
 
 #elif (kVireoOS_ZynqARM)
 
@@ -129,7 +129,7 @@ PlatformTickType PlatformTime::TickCount()
 }
 
 //------------------------------------------------------------
-Int64 PlatformTime::MicrosecondsToTickCount(PlatformTickType microseconds)
+PlatformTickType PlatformTime::MicrosecondsToTickCount(Int64 microseconds)
 {
 #if defined(_WIN32) || defined(_WIN64)
     

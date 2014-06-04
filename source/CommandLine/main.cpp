@@ -104,7 +104,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 
 
 void RunExec() {
-    gShells._eState = gShells._pShell->TheExecutionContext()->ExecuteSlices(400);
+    gShells._eState = gShells._pShell->TheExecutionContext()->ExecuteSlices(400, 10000000);
     // TODO control frame rate based on time till next thing to exec
 
     if (gShells._eState == kExecutionState_None) {

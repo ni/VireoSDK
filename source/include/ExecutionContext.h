@@ -87,12 +87,13 @@ public:
 
 private:
     ECONTEXT    Queue           _runQueue;			//! Clumps ready to run
-	ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for something external to wake them up
+	ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
 	ECONTEXT    IntSmall        _breakoutCount;       //! Inner execution loop "breaks out" when this gets to 0
 
 public:
 	ExecutionContext(TypeManager* typeManager);
     ECONTEXT    PlatformTickType PlatformTickCount();
+
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
@@ -104,11 +105,11 @@ public:
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
     
     // Run the concurrent execution system for a short period of time
-	ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices);
+	ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
 	ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
-	InstructionCore*            Stop();
+	ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-	InstructionCore*            WaitUntilTickCount(Int64 count, InstructionCore* next);
+	ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
 	ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
 	ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
     

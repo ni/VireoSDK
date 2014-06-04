@@ -41,7 +41,7 @@ VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const Utf8Char* commands, Int3
 //------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
 {
-    return pShell->TheExecutionContext()->ExecuteSlices(numSlices);
+    return pShell->TheExecutionContext()->ExecuteSlices(numSlices, 20);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value)
@@ -66,7 +66,7 @@ VIREO_EXPORT void ExecutionContext_EnqueRunQueue(ExecutionContext* pContext, VIC
 //------------------------------------------------------------
 VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContext* pContext, Int32 numSlices)
 {
-    return pContext->ExecuteSlices(numSlices);
+    return pContext->ExecuteSlices(numSlices, 1);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
