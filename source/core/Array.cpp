@@ -91,7 +91,12 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreR
     TypedArrayCoreRef arrayIn = _Param(1);
     Int32 idx = _Param(2);
     TypedArrayCoreRef subArray = _Param(3);
-    VIREO_ASSERT(arrayOut != subArray);
+
+    if (arrayOut == subArray) {
+        printf("(Error 'Can't ArrayReplaceSubset inplace.')\n");
+        return THREAD_EXEC()->Stop();
+    }
+
     if(arrayOut != arrayIn){
         arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     }
@@ -109,7 +114,11 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
 
     Int32 idx = (_ParamPointer(2) != null) ? _Param(2) : 0;
     idx = Max(idx, 0); // coerce index to non-negative integer
-    VIREO_ASSERT(arrayOut != arrayIn || idx == 0);
+    
+    if (arrayOut == arrayIn && idx != 0) {
+        printf("(Error 'Can't ArraySubset inplace.')\n");
+        return THREAD_EXEC()->Stop();
+    }
 
     Int32 maxLen = arrayIn->Length() - idx; // calculate count from idx to end of array
     maxLen = Max(maxLen, 0);
@@ -152,7 +161,10 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
     TypedArrayCoreRef subArray = _Param(3);
     IntIndex subArrayLength = subArray->Length();
 
-    VIREO_ASSERT(arrayOut != subArray);
+    if (arrayOut == subArray) {
+        printf("(Error 'Can't ArrayInsertSubset inplace.')\n");
+        return THREAD_EXEC()->Stop();
+    }
 
     if (0 <= idx && idx <= arrayInLength) {
         if (arrayOut == arrayIn){
@@ -179,7 +191,11 @@ VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
     TypedArrayCoreRef arrayIn = _Param(1);
     IntIndex arrayInLength = arrayIn->Length();
 
-    VIREO_ASSERT(arrayOut != arrayIn);
+    if (arrayOut == arrayIn) {
+        printf("(Error 'Can't ArrayReverse inplace.')\n");
+        return THREAD_EXEC()->Stop();
+    }
+    
     arrayOut->Resize1D(arrayInLength);
     for (IntIndex i = 0; i < arrayInLength; i++)
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(i), arrayOut->BeginAt(arrayInLength - 1 - i));
@@ -193,7 +209,11 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     TypedArrayCoreRef arrayIn = _Param(1);
     Int32 offset = _Param(2);
 
-    VIREO_ASSERT(arrayOut != arrayIn);
+    if (arrayOut == arrayIn) {
+        printf("(Error 'Can't ArrayRotate inplace.')\n");
+        return THREAD_EXEC()->Stop();
+    }
+    
     IntIndex arrayInLength = arrayIn->Length();
     arrayOut->Resize1D(arrayInLength);
 
