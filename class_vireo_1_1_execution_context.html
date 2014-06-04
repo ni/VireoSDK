@@ -144,21 +144,21 @@ ECONTEXT void&#160;</td><td class="memItemRight" valign="bottom"><b>CheckOccurre
 <tr class="memitem:a118fa9d4e75bfcaa99d1be1247117b80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a118fa9d4e75bfcaa99d1be1247117b80"></a>
 ECONTEXT void&#160;</td><td class="memItemRight" valign="bottom"><b>ExecuteFunction</b> (<a class="el" href="class_vireo_1_1_function_clump.html">FunctionClump</a> *fclump)</td></tr>
 <tr class="separator:a118fa9d4e75bfcaa99d1be1247117b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f48f9a71bfcd9346339d76f9e34f149"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f48f9a71bfcd9346339d76f9e34f149"></a>
-ECONTEXT ExecutionState&#160;</td><td class="memItemRight" valign="bottom"><b>ExecuteSlices</b> (Int32 numSlices)</td></tr>
-<tr class="separator:a2f48f9a71bfcd9346339d76f9e34f149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbc37ba4059b3a67f94801eae41f0d90"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adbc37ba4059b3a67f94801eae41f0d90"></a>
+ECONTEXT ExecutionState&#160;</td><td class="memItemRight" valign="bottom"><b>ExecuteSlices</b> (Int32 numSlices, PlatformTickType tickCount)</td></tr>
+<tr class="separator:adbc37ba4059b3a67f94801eae41f0d90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aa9440c76e777720e8d93b6404a88a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0aa9440c76e777720e8d93b6404a88a0"></a>
 ECONTEXT <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>SuspendRunningQueueElt</b> (<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *whereToWakeUp)</td></tr>
 <tr class="separator:a0aa9440c76e777720e8d93b6404a88a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c079f1342a843342e43be150ef02109"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c079f1342a843342e43be150ef02109"></a>
-<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> ()</td></tr>
+ECONTEXT <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> ()</td></tr>
 <tr class="separator:a2c079f1342a843342e43be150ef02109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad940c6e32496f08cafca726d4505557"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad940c6e32496f08cafca726d4505557"></a>
 ECONTEXT void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearBreakout</b> ()</td></tr>
 <tr class="separator:aad940c6e32496f08cafca726d4505557"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c4522c4134021207d71bfd13fed2ff9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c4522c4134021207d71bfd13fed2ff9"></a>
-<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>WaitUntilTickCount</b> (Int64 count, <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *next)</td></tr>
-<tr class="separator:a3c4522c4134021207d71bfd13fed2ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a0fac2f92a2b8b61ac7cf93909e0b73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a0fac2f92a2b8b61ac7cf93909e0b73"></a>
+ECONTEXT <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>WaitUntilTickCount</b> (PlatformTickType count, <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *next)</td></tr>
+<tr class="separator:a1a0fac2f92a2b8b61ac7cf93909e0b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bf76f9e3adb76b3608b6a24d413ff76"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2bf76f9e3adb76b3608b6a24d413ff76"></a>
 ECONTEXT void&#160;</td><td class="memItemRight" valign="bottom"><b>EnqueueRunQueue</b> (<a class="el" href="class_vireo_1_1_v_i_clump.html">VIClump</a> *elt)</td></tr>
 <tr class="separator:a2bf76f9e3adb76b3608b6a24d413ff76"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,7 +192,7 @@ ECONTEXT <a class="el" href="class_vireo_1_1_v_i_clump.html">VIClump</a> *&#160;
 <tr class="separator:a480f18f7b2e3df90fa7e5ae790670d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f63cb3c872d96d9d0207b567f0e9a3a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f63cb3c872d96d9d0207b567f0e9a3a"></a>
 ECONTEXT IntSmall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">_breakoutCount</a></td></tr>
-<tr class="memdesc:a3f63cb3c872d96d9d0207b567f0e9a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clumps waiting for something external to wake them up. <br/></td></tr>
+<tr class="memdesc:a3f63cb3c872d96d9d0207b567f0e9a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clumps waiting for a point in time wake them up. <br/></td></tr>
 <tr class="separator:a3f63cb3c872d96d9d0207b567f0e9a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
