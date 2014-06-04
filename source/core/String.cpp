@@ -340,7 +340,12 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
             elementType->CopyData(arrayInput->BeginAt(0), pInsert, length);
             pInsert += length;
         } else { // String input that is the same as dest
-            VIREO_ASSERT(i == 0); // Only allowed for the first input
+        
+            if (i != 0) {
+                printf("(Error 'Illegal StringConcatenate inplaceness.')\n");
+                return THREAD_EXEC()->Stop();
+            }
+            
             pInsert += originalLength;
         }
     } 

@@ -779,7 +779,12 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                     err = elementType->CopyData(pSource->BeginAt(0), pInsert, length);
                     pInsert += (length * aqSize);
                 } else { // Source and dest are the same array
-                    VIREO_ASSERT(i == 0); // Only allowed for the first input
+                
+                    if (i != 0) {
+                        printf("(Error 'Illegal ArrayConcatenate inplaceness.')\n");
+                        return THREAD_EXEC()->Stop();
+                    }
+
                     pInsert += (originalLength * aqSize);
                 }
             } else {
