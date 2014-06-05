@@ -37,20 +37,20 @@ else
     endif
 
     UNAME_S := $(shell uname -s)
-    CFLAGS=-I$(INCDIR) -Wall -MMD $(LEAN_VIREO)
+    CFLAGS= -I$(INCDIR) -Wall -MMD $(LEAN_VIREO)
 
     ifeq ($(UNAME_S),Linux)
         ifeq ($(TARGETARCH),ARMv5)
             # Build a library for an ARMv5 target
             CC=arm-none-linux-gnueabi-g++
-            CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB
-            LDFLAGS+=-L. -pie -Wl,-E
+            CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB 
+            LDFLAGS+= -L. -pie -Wl,-E
         else
             CC=g++
-            CFLAGS+= $(CCOPT) $(TARGETARCH)
+            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH)
         endif
         PROGRAM_DIR = /usr/local/bin
-        LIBS = -lrt -lpthread
+        LIBS = -lrt
     endif
     ifeq ($(UNAME_S),Darwin)
         # gcc settings
@@ -58,7 +58,7 @@ else
         # CC=g++
         # clang settings (has been about 33% smaller)
         CC=clang++
-        CFLAGS+= $(CCOPT) $(TARGETARCH)
+        CFLAGS+= -pthread $(CCOPT) $(TARGETARCH)
         PROGRAM_DIR=/Applications/Vireo
     endif
 endif

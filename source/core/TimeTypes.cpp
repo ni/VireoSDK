@@ -73,7 +73,7 @@ PlatformTickType PlatformTime::TickCount()
 #elif (kVireoOS_linuxU)
 
     timespec time;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &time);
+    clock_gettime(CLOCK_MONOTONIC, &time);
     return ((Int64)time.tv_sec * 1000000000) + (Int64)time.tv_nsec;
 
 #elif (kVireoOS_emscripten)
