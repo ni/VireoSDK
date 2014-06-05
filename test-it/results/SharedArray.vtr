@@ -1,0 +1,13 @@
+v1 <Red Fish>
+v2 <Blue Fish>
+v3 <Green Fish>
+v4 <>
+alias of v1 <Red Fish>
+alias of v2 <Blue Fish>
+alias of v4 <>
+changed v4 <Blue Fish> <Blue Fish>
+changed v4 <Green Fish> <Green Fish>
+changed alias <Red Fish> <Red Fish>
+Init alias <> <>
+Other alias is still OK <> 
+Other alias is still OK <Green Fish> 
