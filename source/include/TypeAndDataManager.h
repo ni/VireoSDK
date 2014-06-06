@@ -88,14 +88,16 @@ enum EncodingEnum {
 };
 
 // UsageTypeEnum defines how parameters in a native function of VIs ParamBlock will be used.
+// Note kUsageTypeInput..kUsageTypeAlias are all forms of alias'
 enum UsageTypeEnum {
     kUsageTypeSimple = 0,       // Default for clusters, code assumed to read and write at will, not allowed in ParamBlock
     kUsageTypeInput = 1,        // Caller copies in value, VI will not change it.
     kUsageTypeOutput = 2,       // Caller provides storage(if array) VI sets value, ingores incomming value
     kUsageTypeInputOutput = 3,  // Like output, but VI uses initial value.
-    kUsageTypeStatic = 4,       // Allocated value persists from call to call
-    kUsageTypeTemp =  5,        // Storage typically carried from call to call but can be freed up.
-    kUsageTypeImmediate =  6,   // For native function value in instruction block is imediate value not a pointer
+    kUsageTypeAlias = 4,        // Non flat value that that is owned by by another element.
+    kUsageTypeStatic = 5,       // Allocated value persists from call to call
+    kUsageTypeTemp =  6,        // Storage typically carried from call to call but can be freed up.
+    kUsageTypeImmediate =  7,   // For native function value in instruction block is imediate value not a pointer
 };
 
 // PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.
@@ -395,6 +397,8 @@ public:
     Boolean IsInputParam()          { return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput); }
     //! True if aggrigate element is used as an output parameter.
     Boolean IsOutputParam()         { return (_elementUsageType == kUsageTypeOutput) || (_elementUsageType == kUsageTypeInputOutput); }
+    //! True if aggrigate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
+    Boolean IsAlias()               { return (_elementUsageType >= kUsageTypeInput) && (_elementUsageType <= kUsageTypeAlias); }
     //! True if the parameer is only visible to the callee, and is preserved between calls.
     Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }
     //! True is the parameter is only visible to the callee, but may be cleared between calls.

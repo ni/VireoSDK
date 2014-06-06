@@ -49,7 +49,7 @@ private:
     TypedBlock*             _dataSpace;           // All clumps in subVI share the same data
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
-    void ClearParamBlock();
+    void ClearTopVIParamBlock();
 public:
     Int32                   _lineNumberBase;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer

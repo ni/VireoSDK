@@ -159,6 +159,8 @@ void TDViaParser::ParseAggrigateElementList(TypeRef ElementTypes[], AggrigateAli
             usageType = kUsageTypeTemp;
         } else if (token.CompareCStr(tsImmediateParamToken)) {
             usageType = kUsageTypeTemp;
+        } else if (token.CompareCStr(tsAliasToken)) {
+            usageType = kUsageTypeAlias;
         } else {
             return  LOG_EVENTV(kSoftDataError,"Unrecognized element type", &token);
         }
@@ -1153,6 +1155,7 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
         case kUsageTypeStatic:          str = tsStaticParamToken;       break;
         case kUsageTypeTemp:            str = tsTempParamToken;         break;
         case kUsageTypeImmediate:       str = tsImmediateParamToken;    break;
+        case kUsageTypeAlias:           str = tsAliasToken;             break;
         default:                        str = "<TODO>";                 break;
     }
     _string->AppendCStr(str);

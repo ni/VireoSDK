@@ -7,8 +7,8 @@ define (HelloWorld dv(.VirtualInstrument (
 
         // i, o, and io are intended for parameter blocks
         // But internally they allow alias'
-        io(.String  alias1)
-        io(.String  alias2)
+        al(.String  alias1)
+        al(.String  alias2)
     )
     clump (1
         DPrintf("v1 <%s>" v1)

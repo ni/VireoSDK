@@ -1026,13 +1026,15 @@ NIError ClusterType::InitData(void* pData, TypeRef pattern)
     if (!IsFlat() || HasCustomDefault()) {
         // For non trivial cases visit each element
         for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
-            if ( !(*pType)->IsFlat() &&  ((*pType)->IsInputParam() || (*pType)->IsOutputParam())) {
+            AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
+
+            if ( !(*pType)->IsFlat() && (*pType)->IsAlias()) {
                 // If the element type is a parameter then the value will be top copied.
                 // the only initialization that should be done is to zero-out the block
                 // arrays and custom defaults will be copied/initialized at call time.
-                (*pType)->ZeroOutTop(((AQBlock1*)pData) + (*pType)->_offset);
+                (*pType)->ZeroOutTop(pEltData);
             } else {
-                (*pType)->InitData(((AQBlock1*)pData) + (*pType)->_offset);
+                (*pType)->InitData(pEltData);
             }
         }
         return kNIError_Success;
@@ -1051,12 +1053,15 @@ NIError ClusterType::ClearData(void* pData)
         // For non trivial cases visit each element
         for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++)
         {
-            // If the element is an input or output in a subVI call, the calling VI will clear its
-            // alias.  This only matters when execution was aborted during a subVI call.
-            if ((*pType)->IsInputParam() || (*pType)->IsOutputParam())
-                continue;
-       //     PrintType(*pType, "Cluster clear data");
-            (*pType)->ClearData(((AQBlock1*)pData) + (*pType)->_offset);
+            AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
+            // If the element is an input or output in a subVI call, the calling VI will clear
+            // the data this is an alias to. For In/Out types this is normarly zeroed out as
+            // part of the call sequence unless the VI is aborted.
+            if ((*pType)->IsAlias()) {
+                (*pType)->ZeroOutTop(pEltData);
+            } else {
+                (*pType)->ClearData(pEltData);
+            }
         }
         return kNIError_Success;
     }

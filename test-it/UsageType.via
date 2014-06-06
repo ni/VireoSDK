@@ -3,6 +3,7 @@ define (VIParamClusterFlat c(
     i(.Int32 p_i)
     o(.Int32 p_o)
     io(.Int32 p_io)
+    al(.Int32 p_al)
     s(.Int32 p_s)
     t(.Int32 p_t)
 ))

@@ -154,7 +154,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsBitBlockTypeToken     "bb"
 #define tsClusterTypeToken      "c"
 #define tsElementToken          "e"  // used for Cluster, BitCluster, and array aggregate types for simple elements
-#define tsAliasToken            "alias" // alias to another element (how are access restrictions known?) 
+#define tsAliasToken            "al" // alias to another element. 
 #define tsInputParamToken       "i"  // input parameter
 #define tsOutputParamToken      "o"  // output parameter
 #define tsInputOutputParamToken "io" // input-output parameter

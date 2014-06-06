@@ -61,7 +61,7 @@ void VirtualInstrument::InitParamBlock()
     }
 }
 //------------------------------------------------------------
-void VirtualInstrument::ClearParamBlock()
+void VirtualInstrument::ClearTopVIParamBlock()
 {
     // Since there is no caller, elements param block needs to be cleared out.
     TypedBlock* viParamBlock = this->ParamBlock();
@@ -1025,7 +1025,7 @@ class VIDataProcsClass : public IDataProcs
 
             // If it's a top VI
             if (!pClump->_caller)
-                vi->ClearParamBlock();
+                vi->ClearTopVIParamBlock();
         }
         
         return type->ClearData(pData);
