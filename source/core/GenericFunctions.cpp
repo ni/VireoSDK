@@ -810,7 +810,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
         // If there is an accumulator call it instead.
         // It will loop through the snippets settign the boolean result
         // In the third parameter. All boolean results point to the same location.
-        while(!ExecutionContext::IsCulDeSac(snippet))
+        while(ExecutionContext::IsNotCulDeSac(snippet))
         {
             Boolean bNestedAccumulator =   (snippet->_function == (InstructionFunction)VectorVectorBinaryAccumulatorOp)
                                         || (snippet->_function == (InstructionFunction)ClusterBinaryOp);
@@ -827,7 +827,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
         }
          _PROGMEM_PTR(accumulator, _function)(accumulator);
         snippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
-        while(!ExecutionContext::IsCulDeSac(snippet))
+        while(ExecutionContext::IsNotCulDeSac(snippet))
         {
             Boolean bNestedAccumulator =   (snippet->_function == (InstructionFunction)VectorVectorBinaryAccumulatorOp)
                                         || (snippet->_function == (InstructionFunction)ClusterBinaryOp);
@@ -842,7 +842,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             }
         }
     } else {
-        while(!ExecutionContext::IsCulDeSac(snippet))
+        while(ExecutionContext::IsNotCulDeSac(snippet))
         {
             snippet->_p0 += (size_t)_ParamPointer(SX);
             snippet->_p1 += (size_t)_ParamPointer(SY);
@@ -861,7 +861,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnaryOp, AggregateUnOpInstruction)
 {
     Instruction2<AQBlock1, AQBlock1>* pInstruction = (Instruction2<AQBlock1, AQBlock1>* )_ParamMethod(Snippet());
     
-    while(!ExecutionContext::IsCulDeSac(pInstruction))
+    while(ExecutionContext::IsNotCulDeSac(pInstruction))
     {
         pInstruction->_p0 += (size_t)_ParamPointer(SSource);
         pInstruction->_p1 += (size_t)_ParamPointer(SDest);
@@ -884,7 +884,7 @@ VIREO_FUNCTION_SIGNATURE1(IsEQAccumulator, void)
     if ((binop->_p0 == null) || (binop->_p1 == null)) {
         *dest = binop->_p0 == binop->_p1;
     } else {
-        while(!ExecutionContext::IsCulDeSac(pInstruction))
+        while(ExecutionContext::IsNotCulDeSac(pInstruction))
         {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if(!*dest)
@@ -903,7 +903,7 @@ VIREO_FUNCTION_SIGNATURE1(IsNEAccumulator, void)
     if ((binop->_p0 == null) || (binop->_p1 == null)) {
         *dest = binop->_p0 != binop->_p1;
     } else {
-        while(!ExecutionContext::IsCulDeSac(pInstruction))
+        while(ExecutionContext::IsNotCulDeSac(pInstruction))
         {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if(*dest)
@@ -925,7 +925,7 @@ VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
         *dest = true;
         return null;
     } else {
-        while(!ExecutionContext::IsCulDeSac(binop))
+        while(ExecutionContext::IsNotCulDeSac(binop))
         {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if(*dest) {
@@ -960,7 +960,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGTAccumulator, void)
         *dest = true;
         return null;
     } else {
-        while(!ExecutionContext::IsCulDeSac(binop))
+        while(ExecutionContext::IsNotCulDeSac(binop))
         {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if(*dest) {
@@ -995,7 +995,7 @@ VIREO_FUNCTION_SIGNATURE1(IsLEAccumulator, void)
         *dest = false;
         return null;
     } else {
-        while(!ExecutionContext::IsCulDeSac(binop))
+        while(ExecutionContext::IsNotCulDeSac(binop))
         {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if(!*dest) {
@@ -1030,7 +1030,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGEAccumulator, void)
         *dest = false;
         return null;
     } else {
-        while(!ExecutionContext::IsCulDeSac(binop))
+        while(ExecutionContext::IsNotCulDeSac(binop))
         {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if(!*dest) {

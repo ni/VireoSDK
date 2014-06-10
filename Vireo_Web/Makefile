@@ -41,7 +41,7 @@ help:
 # yielded the following sizes:
 #  -O3 833k / -Os 760k / -Oz 719k
 
-EM_OPT= -O3 -s NO_EXIT_RUNTIME=1
+EM_OPT= -O3 -s NO_EXIT_RUNTIME=1 -fno-exceptions
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\

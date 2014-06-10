@@ -21,7 +21,6 @@ namespace Vireo
 //------------------------------------------------------------
 Boolean ExecutionContext::_classInited;
 _PROGMEM Instruction0 ExecutionContext::_culDeSac;
-InstructionFunction ExecutionContext::_culDeSacFunction;
 
 #ifdef VIVM_SINGLE_EXECUTION_CONTEXT
 VIClump*        ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
@@ -31,9 +30,10 @@ VIClump*        ExecutionContext::_runningQueueElt;		// Elt actually running
 uIntFastSmall   ExecutionContext::_breakoutCount;
 #endif
 
+
 //------------------------------------------------------------
 // When the CulDeSac function is hit there is nothing to do.
-VIREO_FUNCTION_SIGNATURE0(CulDeSac)
+InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM)
 {
     return _this;
 }
@@ -59,7 +59,7 @@ VIREO_FUNCTION_SIGNATURE0(Done)
         VIREO_ASSERT( (pCallInstruction != null) )
         
         InstructionCore* pCopyOut = pCallInstruction->_piCopyOutSnippet;
-        while (!ExecutionContext::IsCulDeSac(pCopyOut)) {
+        while (ExecutionContext::IsNotCulDeSac(pCopyOut)) {
             pCopyOut = _PROGMEM_PTR(pCopyOut,_function)(pCopyOut);
         }
         
@@ -202,7 +202,7 @@ VIREO_FUNCTION_SIGNATURET(CallVI, CallVIInstruction)
 
         // Copy in parameters
         InstructionCore* currentInstruction = _this->CopyInSnippet();
-        while (!ExecutionContext::IsCulDeSac(currentInstruction)) {
+        while (ExecutionContext::IsNotCulDeSac(currentInstruction)) {
             currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
         }
         
@@ -258,7 +258,6 @@ void ExecutionContext::ClassInit()
 #ifndef VIREO_PACKED_INSTRUCTIONS
         _culDeSac._next = &_culDeSac;
 #endif
-        _culDeSacFunction = (InstructionFunction) CulDeSac;
     }
 }
 //------------------------------------------------------------
