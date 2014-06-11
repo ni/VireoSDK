@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
-               BuildableName = "CommandLine"
-               BlueprintName = "CommandLine"
-               ReferencedContainer = "container:CommandLine.xcodeproj">
+               BuildableName = "VireoEggShell"
+               BlueprintName = "VireoEggShell"
+               ReferencedContainer = "container:VireoEggShell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
-            BuildableName = "CommandLine"
-            BlueprintName = "CommandLine"
-            ReferencedContainer = "container:CommandLine.xcodeproj">
+            BuildableName = "VireoEggShell"
+            BlueprintName = "VireoEggShell"
+            ReferencedContainer = "container:VireoEggShell.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -44,8 +44,8 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "${PROJECT_DIR}/../test-it"
-      buildConfiguration = "Debug"
+      customWorkingDirectory = "/Users/paulaustin/Documents/dev/NG/R2/Tablets/Branches/Execution/VI.VirtualMachine/ViaFiles"
+      buildConfiguration = "Release"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
@@ -53,68 +53,18 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
-            BuildableName = "CommandLine"
-            BlueprintName = "CommandLine"
-            ReferencedContainer = "container:CommandLine.xcodeproj">
+            BuildableName = "VireoEggShell"
+            BlueprintName = "VireoEggShell"
+            ReferencedContainer = "container:VireoEggShell.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-v"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "SubVIParameters.via"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "Pi.via"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "HelloWorld.via"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "ReentrantMemLeak2.via"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "x/MandelbrotInline.via"
+            argument = "3ClumpVI.via"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
-         <AdditionalOption
-            key = "MallocScribble"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
-         <AdditionalOption
-            key = "DYLD_INSERT_LIBRARIES"
-            value = "/usr/lib/libgmalloc.dylib"
-            isEnabled = "YES">
-         </AdditionalOption>
-         <AdditionalOption
-            key = "AUTO_LOG_ALL"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
-         <AdditionalOption
-            key = "NSDOLoggingEnabled"
-            value = "YES"
-            isEnabled = "YES">
-         </AdditionalOption>
-         <AdditionalOption
-            key = "MallocGuardEdges"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
-         <AdditionalOption
-            key = "MallocStackLogging"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
@@ -127,9 +77,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
-            BuildableName = "CommandLine"
-            BlueprintName = "CommandLine"
-            ReferencedContainer = "container:CommandLine.xcodeproj">
+            BuildableName = "VireoEggShell"
+            BlueprintName = "VireoEggShell"
+            ReferencedContainer = "container:VireoEggShell.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

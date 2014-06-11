@@ -33,11 +33,11 @@ else
     else
         CCOPT = -Os
         STRIP = strip esh
-        LEAN_VIREO = -DVIREO_LEAN
+        VIREO_LEAN = -DVIREO_LEAN
     endif
 
     UNAME_S := $(shell uname -s)
-    CFLAGS= -I$(INCDIR) -Wall -MMD $(LEAN_VIREO)
+    CFLAGS= -I$(INCDIR) -Wall -MMD $(VIREO_LEAN)
 
     ifeq ($(UNAME_S),Linux)
         ifeq ($(TARGETARCH),ARMv5)

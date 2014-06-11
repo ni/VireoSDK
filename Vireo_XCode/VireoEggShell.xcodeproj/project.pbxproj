@@ -15,7 +15,7 @@
 		4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
 		479AFEBC170DD22C002C0FF0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479AFEBB170DD22C002C0FF0 /* Accelerate.framework */; };
-		479AFEC2170DEBEF002C0FF0 /* CommandLine in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* CommandLine */; };
+		479AFEC2170DEBEF002C0FF0 /* VireoEggShell in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */; };
 		47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
 		47D84DE717C2A271009053DB /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD317C2A271009053DB /* Array.cpp */; };
@@ -50,7 +50,7 @@
 			dstPath = /Applications/Vireo;
 			dstSubfolderSpec = 0;
 			files = (
-				479AFEC2170DEBEF002C0FF0 /* CommandLine in CopyFiles */,
+				479AFEC2170DEBEF002C0FF0 /* VireoEggShell in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,7 +90,6 @@
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
-		47862978191DB08600141666 /* EmscriptenWrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EmscriptenWrap.cpp; path = ../source/wraps/EmscriptenWrap.cpp; sourceTree = "<group>"; };
 		4786297C19254DAD00141666 /* Editor.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Editor.html; path = ../Vireo_Web/SiteSource/Editor.html; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
 		4786297D1927064300141666 /* Canvas2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas2d.cpp; path = ../source/io/Canvas2d.cpp; sourceTree = "<group>"; };
 		47937177191049BE00DF942B /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Doxyfile; path = ../source/Doxyfile; sourceTree = "<group>"; };
@@ -98,7 +97,7 @@
 		4797A38E1862265B00E643D7 /* CEntryPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CEntryPoints.h; path = ../source/include/CEntryPoints.h; sourceTree = "<group>"; };
 		4797A38F1862265B00E643D7 /* TDCodecLVFlat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TDCodecLVFlat.h; path = ../source/include/TDCodecLVFlat.h; sourceTree = "<group>"; };
 		4799F8AE18C78F060019E214 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
-		479AFE75170DCD49002C0FF0 /* CommandLine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CommandLine; sourceTree = BUILT_PRODUCTS_DIR; };
+		479AFE75170DCD49002C0FF0 /* VireoEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VireoEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		479AFEBB170DD22C002C0FF0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		47AF92321804739F00310F36 /* MandelbrotInline.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = MandelbrotInline.via; path = "../test-it/MandelbrotInline.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47B55D311894479500207C01 /* ByValueFunctions.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ByValueFunctions.via; path = "../test-it/ByValueFunctions.via"; sourceTree = "<group>"; };
@@ -381,7 +380,7 @@
 		479AFE76170DCD49002C0FF0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				479AFE75170DCD49002C0FF0 /* CommandLine */,
+				479AFE75170DCD49002C0FF0 /* VireoEggShell */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -462,7 +461,6 @@
 		47B3D49A17304C4400944D32 /* Wraps */ = {
 			isa = PBXGroup;
 			children = (
-				47862978191DB08600141666 /* EmscriptenWrap.cpp */,
 				4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */,
 				4737987517D0EBBB00C3BC2A /* main.cpp */,
 			);
@@ -484,9 +482,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		479AFE74170DCD49002C0FF0 /* CommandLine */ = {
+		479AFE74170DCD49002C0FF0 /* VireoEggShell */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 479AFE7E170DCD49002C0FF0 /* Build configuration list for PBXNativeTarget "CommandLine" */;
+			buildConfigurationList = 479AFE7E170DCD49002C0FF0 /* Build configuration list for PBXNativeTarget "VireoEggShell" */;
 			buildPhases = (
 				479AFE71170DCD49002C0FF0 /* Sources */,
 				479AFE72170DCD49002C0FF0 /* Frameworks */,
@@ -498,9 +496,9 @@
 			);
 			dependencies = (
 			);
-			name = CommandLine;
+			name = VireoEggShell;
 			productName = CommandLine;
-			productReference = 479AFE75170DCD49002C0FF0 /* CommandLine */;
+			productReference = 479AFE75170DCD49002C0FF0 /* VireoEggShell */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -512,7 +510,7 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Paul Austin";
 			};
-			buildConfigurationList = 479AFE70170DCD49002C0FF0 /* Build configuration list for PBXProject "CommandLine" */;
+			buildConfigurationList = 479AFE70170DCD49002C0FF0 /* Build configuration list for PBXProject "VireoEggShell" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -524,7 +522,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				479AFE74170DCD49002C0FF0 /* CommandLine */,
+				479AFE74170DCD49002C0FF0 /* VireoEggShell */,
 			);
 		};
 /* End PBXProject section */
@@ -638,25 +636,37 @@
 		479AFE7F170DCD49002C0FF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
 				GENERATE_PROFILING_CODE = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				LLVM_LTO = YES;
+				PRODUCT_NAME = VireoEggShell;
 			};
 			name = Debug;
 		};
 		479AFE80170DCD49002C0FF0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "VIREO_LEAN=1";
+				LLVM_LTO = YES;
+				PRODUCT_NAME = VireoEggShell;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		479AFE70170DCD49002C0FF0 /* Build configuration list for PBXProject "CommandLine" */ = {
+		479AFE70170DCD49002C0FF0 /* Build configuration list for PBXProject "VireoEggShell" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				479AFE7C170DCD49002C0FF0 /* Debug */,
@@ -665,7 +675,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		479AFE7E170DCD49002C0FF0 /* Build configuration list for PBXNativeTarget "CommandLine" */ = {
+		479AFE7E170DCD49002C0FF0 /* Build configuration list for PBXNativeTarget "VireoEggShell" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				479AFE7F170DCD49002C0FF0 /* Debug */,
