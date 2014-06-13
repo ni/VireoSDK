@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
+		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
+		4700BD781949017000794482 /* MicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4700BD771949017000794482 /* MicroMain.cpp */; };
+		4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
+		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
+		4700BD7B194A092200794482 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
+		4700BD7C194A0D3C00794482 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
+		4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
+		4700BD7E194A0D9900794482 /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
+		4700BD7F194A0DBB00794482 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
 		470F626C1886F53F003146BF /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		4727170F1828B8F300238283 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4737987517D0EBBB00C3BC2A /* main.cpp */; };
 		472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */; };
@@ -15,7 +25,6 @@
 		4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
 		479AFEBC170DD22C002C0FF0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479AFEBB170DD22C002C0FF0 /* Accelerate.framework */; };
-		479AFEC2170DEBEF002C0FF0 /* VireoEggShell in CopyFiles */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */; };
 		47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
 		47D84DE717C2A271009053DB /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD317C2A271009053DB /* Array.cpp */; };
@@ -30,12 +39,13 @@
 		47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
 		47D84DF817C2A271009053DB /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
+		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		DA8261B817145DA9002A5EF8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */; };
 		DA8261BA171464E2002A5EF8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B9171464E2002A5EF8 /* AppKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		479AFE73170DCD49002C0FF0 /* CopyFiles */ = {
+		4700BD691948FBAD00794482 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -44,19 +54,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		479AFEC1170DEBC8002C0FF0 /* CopyFiles */ = {
+		47F60B80194A551400DB1399 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /Applications/Vireo;
 			dstSubfolderSpec = 0;
 			files = (
-				479AFEC2170DEBEF002C0FF0 /* VireoEggShell in CopyFiles */,
+				47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
+		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
 		470C345218FC485400E1E148 /* Intro.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = Intro.md; path = ../source/dox/Intro.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = "<none>"; };
 		470F62681880669B003146BF /* VIScripting.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = VIScripting.via; path = "../test-it/VIScripting.via"; sourceTree = "<group>"; };
@@ -204,6 +217,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4700BD681948FBAD00794482 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		479AFE72170DCD49002C0FF0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -381,6 +401,7 @@
 			isa = PBXGroup;
 			children = (
 				479AFE75170DCD49002C0FF0 /* VireoEggShell */,
+				4700BD6B1948FBAD00794482 /* MicroEggShell */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -461,6 +482,7 @@
 		47B3D49A17304C4400944D32 /* Wraps */ = {
 			isa = PBXGroup;
 			children = (
+				4700BD771949017000794482 /* MicroMain.cpp */,
 				4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */,
 				4737987517D0EBBB00C3BC2A /* main.cpp */,
 			);
@@ -482,15 +504,31 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4700BD6A1948FBAD00794482 /* MicroEggShell */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4700BD711948FBAE00794482 /* Build configuration list for PBXNativeTarget "MicroEggShell" */;
+			buildPhases = (
+				4700BD671948FBAD00794482 /* Sources */,
+				4700BD681948FBAD00794482 /* Frameworks */,
+				4700BD691948FBAD00794482 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MicroEggShell;
+			productName = MicroEggShell;
+			productReference = 4700BD6B1948FBAD00794482 /* MicroEggShell */;
+			productType = "com.apple.product-type.tool";
+		};
 		479AFE74170DCD49002C0FF0 /* VireoEggShell */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 479AFE7E170DCD49002C0FF0 /* Build configuration list for PBXNativeTarget "VireoEggShell" */;
 			buildPhases = (
 				479AFE71170DCD49002C0FF0 /* Sources */,
 				479AFE72170DCD49002C0FF0 /* Frameworks */,
-				479AFE73170DCD49002C0FF0 /* CopyFiles */,
-				479AFEC1170DEBC8002C0FF0 /* CopyFiles */,
-				4733A36E171F24630036812B /* ShellScript */,
+				47F60B80194A551400DB1399 /* Copy Files */,
+				47F60B82194A55C100DB1399 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -523,12 +561,13 @@
 			projectRoot = "";
 			targets = (
 				479AFE74170DCD49002C0FF0 /* VireoEggShell */,
+				4700BD6A1948FBAD00794482 /* MicroEggShell */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4733A36E171F24630036812B /* ShellScript */ = {
+		47F60B82194A55C100DB1399 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -539,12 +578,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp /Applications/Vireo/CommandLine /Applications/Vireo/esh";
+			shellScript = "cp /Applications/Vireo/VireoEggShell /Applications/Vireo/esh";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4700BD671948FBAD00794482 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4700BD781949017000794482 /* MicroMain.cpp in Sources */,
+				4700BD751948FC0400794482 /* Math.cpp in Sources */,
+				4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */,
+				4700BD7A194A08E500794482 /* Queue.cpp in Sources */,
+				4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */,
+				4700BD7B194A092200794482 /* TypeAndDataManager.cpp in Sources */,
+				4700BD7C194A0D3C00794482 /* VirtualInstrument.cpp in Sources */,
+				4700BD7E194A0D9900794482 /* EventLog.cpp in Sources */,
+				4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */,
+				4700BD7F194A0DBB00794482 /* TypeDefiner.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		479AFE71170DCD49002C0FF0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -576,6 +632,49 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		4700BD721948FBAE00794482 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"VIREO_MICRO=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		4700BD731948FBAE00794482 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = "VIREO_MICRO=1";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		479AFE7C170DCD49002C0FF0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -667,6 +766,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4700BD711948FBAE00794482 /* Build configuration list for PBXNativeTarget "MicroEggShell" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4700BD721948FBAE00794482 /* Debug */,
+				4700BD731948FBAE00794482 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		479AFE70170DCD49002C0FF0 /* Build configuration list for PBXProject "VireoEggShell" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

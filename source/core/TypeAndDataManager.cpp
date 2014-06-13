@@ -202,7 +202,8 @@ void TypeManager::Free(void* pBuffer)
 // no type managers should refere to this instance as their root
 void TypeManager::DeleteTypes(Boolean finalTime)
 {
-    MutexedScope m(&_mutex);
+    MUTEX_SCOPE()
+    
     TypeManagerScope scope(this);
 
     TypeRef type = _typeList;
@@ -296,7 +297,7 @@ void TypeManager::TrackAllocation(void* id, size_t countAQ, Boolean bAlloc)
 //------------------------------------------------------------
 void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
 {
-    MutexedScope m(&_mutex); //Dont allow additions etc druing the traversal.
+    MUTEX_SCOPE()
     
     IntIndex length = (IntIndex)_typeNameDictionary.size();
     pArray->Resize1DOrEmpty(length);
@@ -324,7 +325,8 @@ TypeRef TypeManager::GetTypeList()
 //------------------------------------------------------------
 TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
 {
-    MutexedScope m(&_mutex);
+    MUTEX_SCOPE()
+
     TypeRef namedType = null;
 
     TypeDictionaryIterator iter2;
@@ -348,7 +350,8 @@ TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
 //------------------------------------------------------------
 TypeRef TypeManager::FindType(const SubString* name)
 {
-    MutexedScope m(&_mutex);
+    MUTEX_SCOPE()
+
     TypeRef *typeValue = FindTypeConstRef(name);
     return typeValue ? *typeValue : null;
 }
@@ -373,7 +376,8 @@ void* TypeManager::FindNamedObject(SubString* name)
 //------------------------------------------------------------
 TypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 {
-    MutexedScope m(&_mutex);
+    MUTEX_SCOPE()
+
     // Internal look up is not mutex protected.
     TypeDictionaryIterator iter;
 

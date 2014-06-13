@@ -177,7 +177,7 @@ private:
 #endif
 
     Int32       _aqBitCount;
-    Mutex  		_mutex;
+    MUTEX_CLASS_MEMBER
     TypeCommon* _badType;
     TypeCommon* _typeList;          // list of all Types allocated by this TypeManager
     
@@ -821,12 +821,10 @@ typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
 class TypedArrayCore
 {
 protected:
-#ifdef VIVM_TYPE_MANAGER
     AQBlock1*               _pRawBufferBegin;
     AQBlock1*               _pRawBufferEnd;
     TypeRef                 _typeRef;
     TypeRef                 _eltTypeRef;
-#endif
 
     // _dimensionAndSlabLengths works as follows
     // For example, in an array of Rank 2, there will be 2 DimensionLengths followed by

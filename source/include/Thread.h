@@ -18,6 +18,20 @@ namespace Vireo
 {
 
 //------------------------------------------------------------
+// In pure single thread environments like bare-metal, or
+// single thread command line apps, no mutex infrastrucutre is
+// needed. These macros help remove all overhead for those
+// simple cases.
+#ifdef  VIREO_MULTI_THREAD
+    #define MUTEX_CLASS_MEMBER      Mutex _mutex;
+    #define MUTEX_SCOPE()           MutexedScope mutexScope(&_mutex);
+#else
+    #define MUTEX_CLASS_MEMBER
+    #define MUTEX_SCOPE()
+#endif
+
+#ifdef VIREO_MULTI_THREAD
+//------------------------------------------------------------
 class Mutex
 {
 private:
@@ -28,6 +42,7 @@ public:
     void Acquire();
     void Release();
 };
+
 //------------------------------------------------------------
 class MutexedScope
 {
@@ -39,6 +54,7 @@ public:
     ~MutexedScope()
         { _mutex->Release(); }
 };
+#endif
 
 }
 

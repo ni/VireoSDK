@@ -93,7 +93,7 @@ public:
 private:
     ECONTEXT    Queue           _runQueue;			//! Clumps ready to run
 	ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
-	ECONTEXT    IntSmall        _breakoutCount;       //! Inner execution loop "breaks out" when this gets to 0
+	ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
 	ExecutionContext(TypeManager* typeManager);

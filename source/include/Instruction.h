@@ -174,34 +174,34 @@ struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, typ
 // Macros to make type strict single parameter function declarations for snippets
 // that take arguments passed in a param block
 #define VIREO_FUNCTION_SIGNATURET(_name_, t)  \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (t* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (t* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATUREV(_name_, _type_) \
     extern InstructionCore* VIVM_FASTCALL _name_ (_type_* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE0(_name_) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction0* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction0* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE1(_name_, t0) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction1<t0>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction1<t0>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE2(_name_, t0, t1) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction2<t0, t1>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction2<t0, t1>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE3(_name_, t0, t1, t2) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction3<t0, t1, t2>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction3<t0, t1, t2>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE4(_name_, t0, t1, t2, t3) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction4<t0, t1, t2, t3>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction4<t0, t1, t2, t3>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE5(_name_, t0, t1, t2, t3, t4) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction5<t0, t1, t2, t3, t4>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction5<t0, t1, t2, t3, t4>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE6(_name_, t0, t1, t2, t3, t4, t5) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction6<t0, t1, t2, t3, t4, t5>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction6<t0, t1, t2, t3, t4, t5>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE7(_name_, t0, t1, t2, t3, t4, t5, t6) \
-    VIVM_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7<t0, t1, t2, t3, t4, t5, t6>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7<t0, t1, t2, t3, t4, t5, t6>* _this _PROGMEM)
 
 //------------------------------------------------------------
 #define DECLARE_VIREO_PRIMITIVE0(_name_, _body_)	\

@@ -26,8 +26,6 @@ SDG
 // Platform specific overrides are found in the sections below
 #define VIVM_UNROLL_EXEC
 
-#define VIVM_TYPE_MANAGER
-
 #define VIREO_MAIN main
 
 // VIVM_FASTCALL if there is a key word that allows functions to use register
@@ -35,7 +33,19 @@ SDG
 // ARM uses registers always, and clang x86/x64 uses registers
 #define VIVM_FASTCALL
 
-#define VIVM_INSTRUCTION_LINKAGE static
+#ifdef VIREO_MICRO
+    // For Vireo-micro there is a dispatch table statically linked at build time
+    // In this case the functions need to neeed to be linkable across obj files
+    #define VIREO_INSTRUCTION_LINKAGE extern "C"
+#else
+    // For Vireo-full functions are dynamically registered by each module when loaded
+    // or when the the app is started for statically linked modules so the symbols
+    // are private to each obj.
+    #define VIREO_INSTRUCTION_LINKAGE static
+
+    #define VIREO_MULTI_THREAD
+#endif
+
 
 // Options for turning off primitives for some types.
 #define VIREO_TYPE_UInt64 1
@@ -96,7 +106,6 @@ SDG
     #define VIVM_SINGLE_EXECUTION_CONTEXT
 
     #define VIVM_BREAKOUT_COUNT 10
-    #define VIVM_INSTRUCTION_LINKAGE  extern "C"
 
     #ifdef VIVM_ENABLE_TRACE
         #define VIVM_TRACE(message)  {Serial.print(message); Serial.print("\n");}
@@ -115,7 +124,6 @@ SDG
     #define VIVM_SINGLE_EXECUTION_CONTEXT
 
     #define VIVM_BREAKOUT_COUNT 10
-    #define VIVM_INSTRUCTION_LINKAGE  extern "C"
 
     #ifdef VIVM_ENABLE_TRACE
         #define VIVM_TRACE(message)  {Serial.print(message); Serial.print("\n");}

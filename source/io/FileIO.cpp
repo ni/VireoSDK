@@ -154,7 +154,7 @@ VIREO_FUNCTION_SIGNATURET(FileOpen, OpenStruct)
 
 VIREO_FUNCTION_SIGNATURE2(StreamClose, FileHandle, Int32)
 {
-#if (VIREO_POSIX_FILEIO)
+#ifdef VIREO_POSIX_FILEIO
     _Param(1) = POSIX_NAME(close)(_Param(0));
 #else
 	#error paltfrom not supported
@@ -194,11 +194,8 @@ VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedBlock*, Int32, Int32)
         // Final count is determined by how big the array ended up.
         bytesToRead = array->AQBlockLength(array->Length());
 
-#if (VIREO_POSIX_FILEIO)
+#ifdef VIREO_POSIX_FILEIO
         ssize_t bytesRead = POSIX_NAME(read)(handle, array->RawBegin(), bytesToRead);
-#elif (kVireoOS_vxworks)
-        // TODO switch to fread for others as well
-        ssize_t bytesRead = fread((char*)array->Begin(), 1, bytesToRead, (FILE *)handle);
 #else
         #error paltfrom not supported
 #endif
@@ -222,11 +219,8 @@ VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedBlock*, Int32)
     Int32 eltsToWrite = array->Length();
     Int32 bytesToWrite = array->AQBlockLength(eltsToWrite);
 
-#if (VIREO_POSIX_FILEIO)
+#ifdef VIREO_POSIX_FILEIO
     ssize_t result = POSIX_NAME(write)(handle, array->RawBegin(), bytesToWrite);
-#elif (kVireoOS_vxworks)
-	// TODO
-	ssize_t result =  fwrite((char *)array->Begin(), 1, bytesToWrite, (FILE *)handle);
 #else
 	#error paltfrom not supported
 #endif
