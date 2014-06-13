@@ -16,7 +16,7 @@ do
     if [ -e $resultFile ]
     then
         newResultFile="results/${testFile%.*}.vntr"
-        esh $testFile >$newResultFile
+        esh $testFile | sed '/^\/\//d' >$newResultFile
         if  diff $resultFile $newResultFile >temp_test_result
         then
             rm $newResultFile
@@ -26,7 +26,7 @@ do
             echo "--------------------------------"
         fi
     else
-        esh $testFile >$resultFile
+        esh $testFile | sed '/^\/\//d' >$resultFile
         echo "Saving results for $testFile"
     fi
    # echo "--- Running $f test. with -dl"

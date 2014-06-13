@@ -2844,7 +2844,7 @@ define (videf32 dv(.VirtualInstrument (
         Sub(local22 local4 local2)
         
         DPrintf("Pi calculated to %s digits is %s" local1 local3)
-       // DPrintf("It took %s milliseconds" local2)
+        DPrintf("// It took %s milliseconds" local2)
 
 //--- end of vi
     )
