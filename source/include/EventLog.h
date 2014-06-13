@@ -26,7 +26,6 @@ private:
     Int32           _softErrorCount;
     Int32           _hardErrorCount;
     Int32           _warningCount;
-    Boolean         _traceEnabled;
 public:
     enum EventSeverity {
         //! Diagnostic trace notice, these are only recorded if tracing is turned on.
@@ -48,8 +47,6 @@ public:
     EventLog(StringRef stringRef);
     Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; };
     Int32 HardErrorCount()                  { return  _hardErrorCount; };
-    Boolean TraceEnabled()                  { return _traceEnabled; }
-    void SetTraceEnabled(Boolean value)     { _traceEnabled = value; }
     void LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra = null);
     
     // TODO: change to use streams

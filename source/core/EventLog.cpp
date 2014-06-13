@@ -22,7 +22,6 @@ StringRef EventLog::StdOut = (StringRef) 1;
 //------------------------------------------------------------
 EventLog::EventLog(StringRef string)
 {
-    _traceEnabled = false;
     _errorLog = string;
     _softErrorCount = 0;
     _hardErrorCount = 0;

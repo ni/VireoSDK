@@ -929,7 +929,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 }
                 _string.EatOptionalComma();
                 
-                if (state.LastArgumentError() || _pLog->TraceEnabled()) {
+                if (state.LastArgumentError()) {
                     state.LogArgumentProcessing(CalcCurrentLine());
                 }
                 

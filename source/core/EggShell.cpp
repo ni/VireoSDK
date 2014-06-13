@@ -149,8 +149,6 @@ NIError EggShell::REPL(SubString *commandBuffer)
         _commandCount++;
         if (command.CompareCStr("define")) {
             ParseDefine(&parser);
-        } else if (command.CompareCStr("trace")) {
-            log.SetTraceEnabled(true);  // No way to turn it off right now
         } else if (command.CompareCStr("enqueue")) {
             ParseEnqueueVI(&parser);
         } else if (command.CompareCStr("clear")) {

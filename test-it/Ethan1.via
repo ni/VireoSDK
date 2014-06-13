@@ -1,4 +1,3 @@
-trace
 define (videf1, v(.VirtualInstrument, (
     c(
         e(v(.Boolean, false), fp1)   // stop 3
