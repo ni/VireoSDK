@@ -269,7 +269,7 @@ if (_test_)                         \
 {									\
 return _this->_p0;                  \
 }									\
-return VIVM_TAIL(_NextInstruction()); \
+return _NextInstruction();          \
 }
 
 } // namespace Vireo

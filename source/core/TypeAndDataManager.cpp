@@ -528,18 +528,7 @@ NIError TypeCommon::ClearData(void* pTarget, IntIndex count)
 NIError TypeCommon::CopyData(const void* pData, void* pDataCopy)
 {
     VIREO_ASSERT(IsFlat())
-    // If the source or dest are not aligned to _topAQSize bytes, use memcpy.
-    if (((uintptr_t) pData % _topAQSize != 0) || ((uintptr_t) pDataCopy % _topAQSize != 0)) {
-        memcpy(pDataCopy, pData, _topAQSize);
-    } else {
-        switch(_topAQSize) {
-        case 8:  *(AQBlock8*)pDataCopy = *(AQBlock8*)pData; break;
-        case 4:  *(AQBlock4*)pDataCopy = *(AQBlock4*)pData; break;
-        case 2:  *(AQBlock2*)pDataCopy = *(AQBlock2*)pData; break;
-        case 1:  *(AQBlock1*)pDataCopy = *(AQBlock1*)pData; break;
-        default: memcpy(pDataCopy, pData, _topAQSize); break;
-        }
-    }
+    memcpy(pDataCopy, pData, _topAQSize);
     return kNIError_Success;
 }
 //------------------------------------------------------------

@@ -84,7 +84,7 @@ define (MandelbrotMain v(.VirtualInstrument (
 
         SubInt64(tDone tStart tDone)
         // Comment out so unit tests will not reject outputs with different times
-        // DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
+        DPrintf("//Time to calculate Mandelbrot: %s microseconds" tDone)
     )
 ) ) )
 
