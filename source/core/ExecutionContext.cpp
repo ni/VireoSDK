@@ -123,7 +123,7 @@ VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(_Param(0) * 1000);
+    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount((Int64)_Param(0) * 1000);
     return THREAD_EXEC()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
@@ -150,7 +150,7 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount
         // Insert into the list based on wake-up time.
         VIClump** pFix = &_sleepingList;
         VIClump* node = *pFix;
-        while (node && (tickCount < node->_wakeUpInfo)) {
+        while (node && (tickCount > node->_wakeUpInfo)) {
             pFix = &(node->_next);
             node = *pFix;
         }
@@ -274,7 +274,7 @@ void ExecutionContext::ClassInit()
 InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)
 {
 	VIREO_ASSERT(null != _runningQueueElt)
-    
+ 
     _runningQueueElt->_savePc = nextInClump;
     
     // Is there something else to run?
@@ -302,7 +302,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         CheckOccurrences(currentTime);
     }
     _runningQueueElt = _runQueue.Dequeue();
-    InstructionCore* currentInstruction =_runningQueueElt ?  _runningQueueElt->_savePc : null;
+    InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
     
     while (_runningQueueElt)
     {
@@ -353,6 +353,8 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
             } else {
                 // Time left, nothing running, see if something woke up.
                 _runningQueueElt = _runQueue.Dequeue();
+                currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
+                VIREO_ASSERT(currentInstruction != &_culDeSac)
             }
         } else if (_runningQueueElt) {
             // No time left, still working, save current state.
