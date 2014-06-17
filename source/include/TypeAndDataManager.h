@@ -260,7 +260,7 @@ public:
 //! Stack based class to manage a threads active TypeManager.
 class TypeManagerScope
 {
-#ifndef VIVM_SINGLE_EXECUTION_CONTEXT
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 private:
     TypeManager* _saveTypeManager;
     VIVM_THREAD_LOCAL static TypeManager* ThreadsTypeManager;

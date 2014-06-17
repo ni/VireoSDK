@@ -17,6 +17,7 @@ SDG
 
 namespace Vireo
 {
+#ifndef VIREO_MICRO
 //------------------------------------------------------------
 // VirtualInstrument
 //------------------------------------------------------------
@@ -101,6 +102,7 @@ void VirtualInstrument::GoIsDone()
     // So this is postponed until the VI the cleared
     // ClearParamBlock();
 }
+#endif
 //------------------------------------------------------------
 // If the QE is running, then suspend current QE and add it to this QE's list
 // if the QE is idle, then no need to wait, it has finished running.
@@ -165,6 +167,7 @@ TypeManager* VIClump::TheTypeManager()
 {
     return OwningVI()->OwningContext()->TheTypeManager();
 }
+#ifndef VIREO_MICRO
 //------------------------------------------------------------
 // InstructionAllocator
 //------------------------------------------------------------
@@ -1062,7 +1065,8 @@ class InstructionListDataProcsClass : public IDataProcs
     }
 };
 InstructionListDataProcsClass gInstructionListDataProcs;
-    
+#endif
+
 DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_TYPE(Instruction, ".DataPointer");

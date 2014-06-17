@@ -17,21 +17,6 @@ SDG
 namespace Vireo
 {
 
-#ifdef VIREO_USING_ASSERTS
-void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int line)
-{
-    if (!test) {
-        const char* filename = (strrchr(file, '/') ? strrchr(file, '/') + 1 : strrchr(file, '\\') ? strrchr(file, '\\') + 1 : file);
-        printf("assert %s failed in %s, line %d\n", message, filename, line);
-#ifdef VIREO_DYNAMIC_LIB
-        throw(1);
-#else
-        exit(1);
-#endif
-    }
-}
-#endif
-
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
 // Optional header added to blocks allocated from the system
 struct MallocInfo {

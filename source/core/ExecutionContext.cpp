@@ -22,12 +22,13 @@ namespace Vireo
 Boolean ExecutionContext::_classInited;
 _PROGMEM Instruction0 ExecutionContext::_culDeSac;
 
-#ifdef VIVM_SINGLE_EXECUTION_CONTEXT
-VIClump*        ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+TypeManager*    ExecutionContext::_theTypeManager;
+//VIClump*      ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
 Queue           ExecutionContext::_runQueue;			// Elts ready To run
 VIClump*        ExecutionContext::_sleepingList;		// Elts waiting for something external to wake them up
 VIClump*        ExecutionContext::_runningQueueElt;		// Elt actually running
-uIntFastSmall   ExecutionContext::_breakoutCount;
+IntSmall        ExecutionContext::_breakoutCount;
 #endif
 
 
@@ -70,8 +71,11 @@ VIREO_FUNCTION_SIGNATURE0(Done)
         runningQueueElt->_caller = null;
         exec->EnqueueRunQueue(callerClump);
     } else {
+        // Since there is no caller its a top VI
+#ifndef VIREO_MICRO
         VirtualInstrument* vi = runningQueueElt->OwningVI();
         vi->GoIsDone();
+#endif
     }
     
     // Now that any caller that needs to hoist data from the clump has been
@@ -239,6 +243,7 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
     }
 }
 //------------------------------------------------------------
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 ExecutionContext::ExecutionContext(TypeManager* typeManager)
 {
     ExecutionContext::ClassInit();
@@ -248,6 +253,7 @@ ExecutionContext::ExecutionContext(TypeManager* typeManager)
 	_runningQueueElt = (VIClump*) null;
 	_sleepingList = null;
 }
+#endif
 //------------------------------------------------------------
 void ExecutionContext::ClassInit()
 {
@@ -261,7 +267,7 @@ void ExecutionContext::ClassInit()
     }
 }
 //------------------------------------------------------------
-#ifdef VIVM_SINGLE_EXECUTION_CONTEXT
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // For smaller targets there may only one for the entire process, or processor
     ExecutionContext gSingleExecutionContext;
 #else
@@ -291,8 +297,10 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
 //------------------------------------------------------------
 ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
 {
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
     ExecutionContextScope scope(this);
-    
+#endif
+
     VIREO_ASSERT( (_runningQueueElt == null) )
     
     PlatformTickType currentTime  = PlatformTime::TickCount();
@@ -375,10 +383,13 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
     if (_sleepingList != null) {
         reply = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
     }
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+    // TODO check global memory manager for allocation errors
+#else
     if (TheTypeManager()->_totalAllocationFailures > 0) {
         reply = kExecutionState_None;
     }
-
+#endif
 	return reply;
 }
 //------------------------------------------------------------

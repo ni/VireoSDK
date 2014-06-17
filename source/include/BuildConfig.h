@@ -37,7 +37,10 @@ SDG
     // For Vireo-micro there is a dispatch table statically linked at build time
     // In this case the functions need to neeed to be linkable across obj files
     #define VIREO_INSTRUCTION_LINKAGE extern "C"
+    #define VIREO_SINGLE_GLOBAL_CONTEXT
+    #define VIREO_USING_ASSERTS
 #else
+
     // For Vireo-full functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.
@@ -103,7 +106,6 @@ SDG
     #define VIREO_ISR_ENABLE  sei();
 
     #define VIVM_SUPPORTS_FUNCTION_REGISTRATION_BY_NUMBER
-    #define VIVM_SINGLE_EXECUTION_CONTEXT
 
     #define VIVM_BREAKOUT_COUNT 10
 
@@ -121,7 +123,6 @@ SDG
     #define VIREO_SUPPORTS_ISR
 
     #define VIVM_SUPPORTS_FUNCTION_REGISTRATION_BY_NUMBER
-    #define VIVM_SINGLE_EXECUTION_CONTEXT
 
     #define VIVM_BREAKOUT_COUNT 10
 

@@ -63,7 +63,11 @@ namespace Vireo
 
 //------------------------------------------------------------
 //! Int that can be used for small counts could be In8 for very small targets.
-typedef Int32 IntSmall;
+#ifdef VIREO_MICRO
+    typedef Int8 IntSmall;
+#else
+    typedef Int32 IntSmall;
+#endif
 
 //------------------------------------------------------------
 //! Type used for indexing arrays.

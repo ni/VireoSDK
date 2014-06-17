@@ -12,11 +12,7 @@
 		4700BD781949017000794482 /* MicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4700BD771949017000794482 /* MicroMain.cpp */; };
 		4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
-		4700BD7B194A092200794482 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
-		4700BD7C194A0D3C00794482 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
 		4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
-		4700BD7E194A0D9900794482 /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
-		4700BD7F194A0DBB00794482 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
 		470F626C1886F53F003146BF /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		4727170F1828B8F300238283 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4737987517D0EBBB00C3BC2A /* main.cpp */; };
 		472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */; };
@@ -39,6 +35,9 @@
 		47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
 		47D84DF817C2A271009053DB /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
+		47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
+		47E220B11950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
+		47E220B21950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		DA8261B817145DA9002A5EF8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */; };
 		DA8261BA171464E2002A5EF8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B9171464E2002A5EF8 /* AppKit.framework */; };
@@ -204,6 +203,7 @@
 		47D88C2818504F430051CD35 /* DeeplyNestedInitializer.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = DeeplyNestedInitializer.via; path = "../test-it/DeeplyNestedInitializer.via"; sourceTree = "<group>"; };
 		47D88C29185117270051CD35 /* UsageType.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = UsageType.via; path = "../test-it/UsageType.via"; sourceTree = "<group>"; };
 		47D88C2A18566D940051CD35 /* CheckCoreTypes.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCoreTypes.via; path = "../test-it/CheckCoreTypes.via"; sourceTree = "<group>"; };
+		47E220B01950C1F700988185 /* Assert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assert.cpp; path = ../source/core/Assert.cpp; sourceTree = "<group>"; };
 		47F1285018B3F67C000DA4E1 /* LotsOStrings.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = LotsOStrings.via; path = "../test-it/LotsOStrings.via"; sourceTree = "<group>"; };
 		47F1285118B51309000DA4E1 /* CheckCopyDataMemoryLeak.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCopyDataMemoryLeak.via; path = "../test-it/CheckCopyDataMemoryLeak.via"; sourceTree = "<group>"; };
 		47F1285418BE5C06000DA4E1 /* ArrayShiftRegister.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ArrayShiftRegister.via; path = "../test-it/ArrayShiftRegister.via"; sourceTree = "<group>"; };
@@ -423,11 +423,12 @@
 		479AFE8C170DCFB2002C0FF0 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47D84DD317C2A271009053DB /* Array.cpp */,
+				47E220B01950C1F700988185 /* Assert.cpp */,
 				47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */,
 				472B7BE317D0E1E800201196 /* TDCodecVia.cpp */,
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */,
-				47D84DD317C2A271009053DB /* Array.cpp */,
 				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
 				47D84DDA17C2A271009053DB /* EggShell.cpp */,
 				470F626B1886F53F003146BF /* EventLog.cpp */,
@@ -592,12 +593,10 @@
 				4700BD751948FC0400794482 /* Math.cpp in Sources */,
 				4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */,
 				4700BD7A194A08E500794482 /* Queue.cpp in Sources */,
+				47E220B21950C1F700988185 /* Assert.cpp in Sources */,
 				4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */,
-				4700BD7B194A092200794482 /* TypeAndDataManager.cpp in Sources */,
-				4700BD7C194A0D3C00794482 /* VirtualInstrument.cpp in Sources */,
-				4700BD7E194A0D9900794482 /* EventLog.cpp in Sources */,
+				47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */,
 				4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */,
-				4700BD7F194A0DBB00794482 /* TypeDefiner.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -622,6 +621,7 @@
 				472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
+				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
 				4786297E19270C9900141666 /* Canvas2d.cpp in Sources */,
 				4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */,

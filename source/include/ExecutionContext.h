@@ -28,7 +28,7 @@ class FunctionClump;
 /** The Queue is made by linking clumps directly using their next field,
     thus clumps can only be in one queue (or list) at a time.
 ~~~
- 
+
             -----------------------------------
     Queue:  |  head                     tail  |
             -----------------------------------
@@ -42,14 +42,14 @@ class FunctionClump;
 class Queue
 {
 public :
-	VIClump* _head;
-	VIClump* _tail;
+    VIClump* _head;
+    VIClump* _tail;
 public:
-	Queue();
+    Queue();
     //! True when the Queue is empty.
-	Boolean IsEmpty() { return (this->_head == null); }
-	VIClump* Dequeue();
-	void Enqueue(VIClump*);
+    Boolean IsEmpty() { return (this->_head == null); }
+    VIClump* Dequeue();
+    void Enqueue(VIClump*);
 };
 
 enum ExecutionState
@@ -69,7 +69,7 @@ enum ExecutionState
 // All access to the outside , graphics, time, IO
 // needs to be derived from an object connected to the context.
 
-#ifdef VIVM_SINGLE_EXECUTION_CONTEXT
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     #define ECONTEXT static
 #else
     #define ECONTEXT 
@@ -86,17 +86,19 @@ class ExecutionContext
 {
 
 private:
-    TypeManager* _theTypeManager;
+    ECONTEXT    TypeManager* _theTypeManager;
 public:
-    TypeManager* TheTypeManager()    { return _theTypeManager; }
+    ECONTEXT    TypeManager* TheTypeManager()    { return _theTypeManager; }
 
 private:
     ECONTEXT    Queue           _runQueue;			//! Clumps ready to run
-	ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
-	ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
+    ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
+    ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
-	ExecutionContext(TypeManager* typeManager);
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
+    ExecutionContext(TypeManager* typeManager);
+#endif
     ECONTEXT    PlatformTickType PlatformTickCount();
 
 #ifdef VIREO_SUPPORTS_ISR
@@ -110,13 +112,13 @@ public:
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
     
     // Run the concurrent execution system for a short period of time
-	ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
-	ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
-	ECONTEXT    InstructionCore* Stop();
+    ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
+    ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
+    ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-	ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
-	ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
-	ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
+    ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
+    ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
+    ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
     
 private:
     static Boolean _classInited;
@@ -128,21 +130,21 @@ public:
     static void ClassInit();
 };
 
-#ifdef VIVM_SINGLE_EXECUTION_CONTEXT
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // A single global instance allows allows all field references
     // to resolver to a fixed global address. This avoid pointer+offset
     // instructions that are costly on small MCUs
     extern ExecutionContext gSingleExecutionContext;
     #define THREAD_EXEC()	(&gSingleExecutionContext)
 #else
-//    extern VIVM_THREAD_LOCAL ExecutionContext* gpExec;
+    #define THREAD_EXEC() ExecutionContextScope::Current()
 #endif
 
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager and ExecutionContext.
 class ExecutionContextScope
 {
-#ifndef VIVM_SINGLE_EXECUTION_CONTEXT
     ExecutionContext* _saveExec;
     TypeManagerScope  _typeManagerScope;
     VIVM_THREAD_LOCAL static ExecutionContext* _threadsExecutionContext;
@@ -165,13 +167,8 @@ public:
     {
         return (ExecutionContext*) _threadsExecutionContext;
     }
-#else
-    ExecutionContextScope(ExecutionContext* context) {}
-    ~ExecutionContextScope() {}
-#endif
-    
-    #define THREAD_EXEC() ExecutionContextScope::Current()
 };
+#endif
     
 //------------------------------------------------------------
 //! Template class to dynamically create instances of a Vireo typed variable.

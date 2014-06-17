@@ -14,6 +14,7 @@ SDG
 // For simpler linking, and perhaps help tighter optimizations,
 // the core can be compiled as a single file.
 
+
 // Type and Data system
 #include "TypeAndDataManager.cpp"
 #include "TDCodecVia.cpp"
@@ -21,6 +22,7 @@ SDG
 #include "TDCodecLVFlat.cpp"
 #include "StringUtilities.cpp"
 #include "EventLog.cpp"
+#include "Assert.cpp"
 
 // Some actual type definitions
 #include "TypeDefiner.cpp"
