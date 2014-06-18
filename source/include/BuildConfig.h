@@ -38,8 +38,29 @@ SDG
     // In this case the functions need to neeed to be linkable across obj files
     #define VIREO_INSTRUCTION_LINKAGE extern "C"
     #define VIREO_SINGLE_GLOBAL_CONTEXT
-    #define VIREO_USING_ASSERTS
+    //#define VIREO_USING_ASSERTS
+
+    #define VIREO_TYPE_Int8   1
+
 #else
+
+    // Options for turning off primitives for some types.
+    #define VIREO_TYPE_UInt8  1
+    #define VIREO_TYPE_UInt16 1
+    #define VIREO_TYPE_UInt32 1
+    #define VIREO_TYPE_UInt64 1
+
+    #define VIREO_TYPE_Int8   1
+    #define VIREO_TYPE_Int16  1
+    #define VIREO_TYPE_Int32  1
+    #define VIREO_TYPE_Int64  1
+
+    #define VIREO_TYPE_Single 1
+    #define VIREO_TYPE_Double 1
+    #define VIREO_TYPE_ComplexSingle 1
+    #define VIREO_TYPE_ComplexDouble 1
+
+    #define VIREO_TYPE_ATime 1
 
     // For Vireo-full functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
@@ -49,14 +70,6 @@ SDG
     #define VIREO_MULTI_THREAD
 #endif
 
-
-// Options for turning off primitives for some types.
-#define VIREO_TYPE_UInt64 1
-#define VIREO_TYPE_Int64  1
-#define VIREO_TYPE_Single 1
-#define VIREO_TYPE_Double 1
-#define VIREO_TYPE_ComplexSingle 1
-#define VIREO_TYPE_ComplexDouble 1
 
 #define VIREO_ARRAY_INDEX_TYPE Int32
 #define VIREO_ARRAY_VARIABLE_SENTINEL INT32_MIN

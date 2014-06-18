@@ -16,10 +16,10 @@ using namespace Vireo;
 #error this main is for the single context micro vireo
 #endif
 
-
 int VIREO_MAIN(int argc, const char * argv[])
 {
     ExecutionState status;
+    printf("start\n");
     
     // TODO: load VI from binary data
     
@@ -27,6 +27,7 @@ int VIREO_MAIN(int argc, const char * argv[])
         status = THREAD_EXEC()->ExecuteSlices(10, 10);
     } while (status != kExecutionState_None);
     
+    printf("done\n");
     return 0;
 }
 

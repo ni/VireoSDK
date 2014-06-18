@@ -95,8 +95,13 @@ typedef Int64   AQBlock8;
 
 //------------------------------------------------------------
 #ifdef VIREO_USING_ASSERTS
-    #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ );
-    void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int line);
+    #ifdef VIREO_MICRO
+        #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, __FILE__, __LINE__ );
+        void VireoAssert_Hidden(Boolean test, const char* file, int line);
+    #else
+        #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ );
+        void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int line);
+    #endif
 #else
     #define VIREO_ASSERT( _TEST_ )
 #endif

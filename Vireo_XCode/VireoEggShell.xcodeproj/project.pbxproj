@@ -12,7 +12,6 @@
 		4700BD781949017000794482 /* MicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4700BD771949017000794482 /* MicroMain.cpp */; };
 		4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
-		4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
 		470F626C1886F53F003146BF /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		4727170F1828B8F300238283 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4737987517D0EBBB00C3BC2A /* main.cpp */; };
 		472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */; };
@@ -38,6 +37,7 @@
 		47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
 		47E220B11950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47E220B21950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
+		47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */; };
 		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		DA8261B817145DA9002A5EF8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */; };
 		DA8261BA171464E2002A5EF8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B9171464E2002A5EF8 /* AppKit.framework */; };
@@ -204,6 +204,7 @@
 		47D88C29185117270051CD35 /* UsageType.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = UsageType.via; path = "../test-it/UsageType.via"; sourceTree = "<group>"; };
 		47D88C2A18566D940051CD35 /* CheckCoreTypes.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCoreTypes.via; path = "../test-it/CheckCoreTypes.via"; sourceTree = "<group>"; };
 		47E220B01950C1F700988185 /* Assert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assert.cpp; path = ../source/core/Assert.cpp; sourceTree = "<group>"; };
+		47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroDefinition_Sample.cpp; path = ../source/micro/MicroDefinition_Sample.cpp; sourceTree = "<group>"; };
 		47F1285018B3F67C000DA4E1 /* LotsOStrings.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = LotsOStrings.via; path = "../test-it/LotsOStrings.via"; sourceTree = "<group>"; };
 		47F1285118B51309000DA4E1 /* CheckCopyDataMemoryLeak.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCopyDataMemoryLeak.via; path = "../test-it/CheckCopyDataMemoryLeak.via"; sourceTree = "<group>"; };
 		47F1285418BE5C06000DA4E1 /* ArrayShiftRegister.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ArrayShiftRegister.via; path = "../test-it/ArrayShiftRegister.via"; sourceTree = "<group>"; };
@@ -411,6 +412,7 @@
 			children = (
 				472D7ACC18C683A10023C688 /* LICENSE.txt */,
 				4799F8AE18C78F060019E214 /* AUTHORS */,
+				47E220B31950E91400988185 /* Micro */,
 				47B3D49A17304C4400944D32 /* Wraps */,
 				479AFEBE170DDA76002C0FF0 /* include */,
 				479AFE8C170DCFB2002C0FF0 /* core */,
@@ -500,6 +502,14 @@
 				47CAD29417FDFD2D00DDDB46 /* vc2010.bat */,
 			);
 			name = "Make-It";
+			sourceTree = "<group>";
+		};
+		47E220B31950E91400988185 /* Micro */ = {
+			isa = PBXGroup;
+			children = (
+				47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */,
+			);
+			name = Micro;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -596,7 +606,7 @@
 				47E220B21950C1F700988185 /* Assert.cpp in Sources */,
 				4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */,
 				47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */,
-				4700BD7D194A0D6D00794482 /* StringUtilities.cpp in Sources */,
+				47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,7 +675,10 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = "VIREO_MICRO=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"VIREO_MICRO=1",
+					"VIREO_LEAN=1",
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;

@@ -294,9 +294,10 @@ DECLARE_VIREO_PRIMITIVE3( NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(
 DECLARE_VIREO_PRIMITIVE3( NandBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) & _Param(1))) ) \
 DECLARE_VIREO_PRIMITIVE3( XorBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) ^ _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE2( NotBoolean, Boolean, Boolean, (_Param(1) = !_Param(0)) )
-//------------------------------------------------------------
 
+//------------------------------------------------------------
 // UInt8
+#if defined (VIREO_TYPE_UInt8)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt8)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt8)
 DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt8)
@@ -308,9 +309,11 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt8)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt8)
 #define TYPE_CODE TC_UINT8
 #include "ConversionTable.def"
-//------------------------------------------------------------
+#endif
 
-// UInt16 
+//------------------------------------------------------------
+// UInt16
+#if defined (VIREO_TYPE_UInt16)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt16)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt16)
 DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt16)
@@ -322,9 +325,11 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt16)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt16)
 #define TYPE_CODE TC_UINT16
 #include "ConversionTable.def"
-//------------------------------------------------------------
+#endif
 
+//------------------------------------------------------------
 //UInt32
+#if defined (VIREO_TYPE_UInt32)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt32)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt32)
 DECLARE_VIREO_INTEGER_SPLIT(UInt16,UInt32)
@@ -336,6 +341,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt32)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt32)
 #define TYPE_CODE TC_UINT32
 #include "ConversionTable.def"
+#endif
 //------------------------------------------------------------
 
 //UInt64
@@ -350,9 +356,10 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt64)
 #define TYPE_CODE TC_UINT64
 #include "ConversionTable.def"
 #endif
-//------------------------------------------------------------
 
+//------------------------------------------------------------
 // Int8
+#if defined (VIREO_TYPE_Int8)
 DECLARE_VIREO_MATH_PRIMITIVES(Int8)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int8)
 DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int8)
@@ -364,9 +371,11 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int8)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int8)
 #define TYPE_CODE TC_INT8
 #include "ConversionTable.def"
-//------------------------------------------------------------
+#endif
 
+//------------------------------------------------------------
 // Int16 
+#if defined (VIREO_TYPE_Int16)
 DECLARE_VIREO_MATH_PRIMITIVES(Int16)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int16)
 DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int16)
@@ -379,9 +388,11 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int16)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int16)
 #define TYPE_CODE TC_INT16
 #include "ConversionTable.def"
-//------------------------------------------------------------
+#endif
 
+//------------------------------------------------------------
 // Int32
+#if defined (VIREO_TYPE_Int32)
 DECLARE_VIREO_MATH_PRIMITIVES(Int32)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int32)
 DECLARE_VIREO_INTEGER_SPLIT(UInt16,Int32)
@@ -393,8 +404,9 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int32)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int32)
 #define TYPE_CODE TC_INT32
 #include "ConversionTable.def"
-//------------------------------------------------------------
+#endif
 
+//------------------------------------------------------------
 // Int64
 #if defined (VIREO_TYPE_Int64)
 DECLARE_VIREO_MATH_PRIMITIVES(Int64)
@@ -408,8 +420,8 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int64)
 #define TYPE_CODE TC_INT64
 #include "ConversionTable.def"
 #endif
-//--------------------------
 
+//--------------------------
 // Single
 #if defined(VIREO_TYPE_Single)
 DECLARE_VIREO_MATH_PRIMITIVES(Single)
@@ -423,7 +435,6 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Single)
 #endif
 
 //------------------------------------------------------------
-
 // IEEE754 Double
 #if defined(VIREO_TYPE_Double)
 DECLARE_VIREO_MATH_PRIMITIVES(Double)
@@ -518,9 +529,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_FUNCTION(BranchIfFalse, "p(i(.BranchTarget) i(.Boolean))");
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Boolean)
     //TODO do we need conversion functions for booleans?? just to int16?
-    //--------------------------
 
+    //--------------------------
     // UInt8
+#if defined (VIREO_TYPE_UInt8)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt8)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt8)
     DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt8)
@@ -532,9 +544,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt8)
     #define TYPE_CODE TC_UINT8
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // UInt16
+#if defined (VIREO_TYPE_UInt8)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt16)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt16)
     DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt16)
@@ -546,9 +560,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt16)
     #define TYPE_CODE TC_UINT16
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // UInt32
+#if defined (VIREO_TYPE_UInt32)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt32)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt32)
     DEFINE_VIREO_INTEGER_SPLIT(UInt16,UInt32)
@@ -560,8 +576,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt32)
     #define TYPE_CODE TC_UINT32
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // UInt64
 #if defined (VIREO_TYPE_UInt64)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt64)
@@ -574,9 +591,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define TYPE_CODE TC_UINT64
     #include "ConversionTable.def"
 #endif
-    //--------------------------
 
+    //--------------------------
     // Int8
+#if defined (VIREO_TYPE_Int8)
     DEFINE_VIREO_MATH_FUNCTIONS(Int8)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int8)
     DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int8)
@@ -588,9 +606,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int8)
     #define TYPE_CODE TC_INT8
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // Int16
+#if defined (VIREO_TYPE_Int16)
     DEFINE_VIREO_MATH_FUNCTIONS(Int16)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int16)
     DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int16)
@@ -603,9 +623,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int16)
     #define TYPE_CODE TC_INT16
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // Int32
+#if defined (VIREO_TYPE_Int32)
     DEFINE_VIREO_MATH_FUNCTIONS(Int32)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int32)
     DEFINE_VIREO_INTEGER_SPLIT(UInt16,Int32)
@@ -619,8 +641,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)
     #define TYPE_CODE TC_INT32
     #include "ConversionTable.def"
-    //--------------------------
+#endif
 
+    //--------------------------
     // Int64
 #if defined (VIREO_TYPE_Int64)
     DEFINE_VIREO_MATH_FUNCTIONS(Int64)
@@ -636,8 +659,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define TYPE_CODE TC_INT64
     #include "ConversionTable.def"
 #endif
-    //--------------------------
 
+    //--------------------------
     //Single
 #if defined(VIREO_TYPE_Single)
 #if 0
@@ -659,8 +682,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define TYPE_CODE TC_SINGLE
     #include "ConversionTable.def"
 #endif
-    //--------------------------
 
+    //--------------------------
     // Double
 #if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_TYPE(UnOpDouble, "p(i(.Double,x),o(.Double,result))")
@@ -678,8 +701,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #include "ConversionTable.def"
     DEFINE_VIREO_FUNCTION(Random, "p(o(.Double))" );
 #endif
-    //--------------------------
 
+    //--------------------------
     // Utf8Char
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Utf8Char)
     //--------------------------

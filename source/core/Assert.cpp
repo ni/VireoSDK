@@ -18,6 +18,17 @@ namespace Vireo
 {
 
 #ifdef VIREO_USING_ASSERTS
+#ifdef VIREO_MICRO
+
+void VireoAssert_Hidden(Boolean test, const char* file, int line)
+{
+    if (!test) {
+        exit(1);
+    }
+}
+
+#else
+
 void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int line)
 {
     if (!test) {
@@ -32,6 +43,8 @@ void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int
 #endif
     }
 }
+
+#endif
 #endif
 
 }

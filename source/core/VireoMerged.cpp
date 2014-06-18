@@ -14,6 +14,15 @@ SDG
 // For simpler linking, and perhaps help tighter optimizations,
 // the core can be compiled as a single file.
 
+#ifdef VIREO_MICRO
+
+#include "Assert.cpp"
+#include "ExecutionContext.cpp"
+#include "Queue.cpp"
+#include "VirtualInstrument.cpp"
+#include "Math.cpp"
+
+#else
 
 // Type and Data system
 #include "TypeAndDataManager.cpp"
@@ -38,6 +47,7 @@ SDG
 #include "String.cpp"
 #include "GenericFunctions.cpp"
 
+#endif
 // Platform specific code should be compiled as it individual 
 // compilation units to avoid header file collisions 
 

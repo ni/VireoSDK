@@ -35,6 +35,7 @@ namespace Vireo
     #define _PROGMEM_PTR(__this_ptr, _field)  (__this_ptr->_field)
 #endif
 
+
 //------------------------------------------------------------
 // The minimal Instructions "object"
 struct InstructionCore;
@@ -271,6 +272,21 @@ return _this->_p0;                  \
 }									\
 return _NextInstruction();          \
 }
+
+//------------------------------------------------------------
+#ifdef VIREO_MICRO
+struct FunctonTableEntry {
+    InstructionFunction _function;
+    Int8                _argCount;
+};
+
+#define VIREO_FTE(_symbolName_, _argCount_)   {(InstructionFunction)_symbolName_, _argCount_}
+#define VIREO_FTE_END()  VIREO_FTE(0, 0)
+extern FunctonTableEntry FunctionTable[];
+extern Int8 FunctionTableLength;
+#endif
+
+
 
 } // namespace Vireo
 #endif //Instruction_h

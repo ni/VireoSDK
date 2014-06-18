@@ -236,6 +236,7 @@ VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
     return _NextInstruction();
 }
 
+#if defined(VIREO_TYPE_ATime)
 /* Localize the warnings for float comparison to one place
  see http://www.codeguru.com/forum/showthread.php?t=323835 */
 enum FloatComparisonMethod {
@@ -375,6 +376,7 @@ VIREO_FUNCTION_SIGNATURE2(ATimeSetFractionUInt64, ATime128, UInt64)
    // _Param(0).SetUInt64Fraction(_Param(1));
     return _NextInstruction();
 }
+#endif
 
 DEFINE_VIREO_BEGIN(Time)
 /*
@@ -391,6 +393,7 @@ DEFINE_VIREO_BEGIN(Time)
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
+#if defined(VIREO_TYPE_ATime)
 #if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION(ATimeFromDoubleDouble, "p(i(.Double) i(.Double) o(.Time))")
     DEFINE_VIREO_FUNCTION(ATimeGetSecondsDouble, "p(i(.Time) o(.Double))")
@@ -404,6 +407,8 @@ DEFINE_VIREO_BEGIN(Time)
     DEFINE_VIREO_FUNCTION(ATimeGetFractionUInt64, "p(i(.Time) o(.UInt64))")
     DEFINE_VIREO_FUNCTION(ATimeSetSecondsInt64, "p(i(.Time) o(.Int64))")
     DEFINE_VIREO_FUNCTION(ATimeSetFractionUInt64, "p(i(.Time) o(.UInt64))")
+#endif
+
 DEFINE_VIREO_END()
 
 }
