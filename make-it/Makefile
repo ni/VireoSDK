@@ -30,14 +30,14 @@ else
     ifdef DEBUG
         CCOPT = -O0
         STRIP =
+        CFLAGS += -DVIREO_DEBUG
     else
         CCOPT = -Os
         STRIP = strip esh
-        VIREO_LEAN = -DVIREO_LEAN
     endif
 
     UNAME_S := $(shell uname -s)
-    CFLAGS= -I$(INCDIR) -Wall -MMD $(VIREO_LEAN)
+    CFLAGS += -I$(INCDIR) -Wall -MMD
 
     ifeq ($(UNAME_S),Linux)
         ifeq ($(TARGETARCH),ARMv5)

@@ -95,7 +95,7 @@ SDG
 // Instructions are directly concatenated there is no next pointer.
 #define VIREO_PACKED_INSTRUCTIONS
 
-#ifndef VIREO_LEAN
+#ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY
 #define VIREO_USING_ASSERTS
 #endif
