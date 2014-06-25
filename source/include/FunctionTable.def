@@ -1,0 +1,62 @@
+/**
+ 
+ Copyright (c) 2014 National Instruments Corp.
+ 
+ This software is subject to the terms described in the LICENSE.TXT file
+ 
+ SDG
+ */
+
+
+/**
+
+  X Macro file for defining a static function table, prototypes and enums
+  
+    Prototypes:
+    #define X(_name_, _count_, ...)   VIREO_FUNCTION_SIGNATURE##_count_(_name_, __VA_ARGS__);
+
+    Enums:
+    #define X(_name_, _count_, ...)   OP_##_name_,
+
+*/
+
+
+#ifndef VIREO_MICRO
+#error this main is for the single context micro vireo
+#endif
+
+
+X(Branch, 1, Int8)
+
+#if defined(VIREO_TYPE_Int8)
+    X(AddInt8, 3, Int8, Int8, Int8)
+    X(SubInt8, 3, Int8, Int8, Int8)
+    X(MulInt8, 3, Int8, Int8, Int8)
+    X(QuotientInt8, 3, Int8, Int8, Int8)
+    X(RemainderInt8, 3, Int8, Int8, Int8)
+#endif
+
+#if defined(VIREO_TYPE_Int16)
+    X(AddInt16, 3, Int16, Int16, Int16)
+    X(SubInt16, 3, Int16, Int16, Int16)
+    X(MulInt16, 3, Int16, Int16, Int16)
+    X(QuotientInt16, 3, Int16, Int16, Int16)
+    X(RemainderInt16, 3, Int16, Int16, Int16)
+#endif
+
+#if defined(VIREO_TYPE_Int32)
+    X(AddInt64, 3, Int32, Int32, Int32)
+    X(SubInt32, 3, Int32, Int32, Int32)
+    X(MulInt32, 3, Int32, Int32, Int32)
+    X(QuotientInt32, 3, Int32, Int32, Int32)
+    X(RemainderInt32, 3, Int32, Int32, Int32)
+#endif
+
+#if defined(VIREO_TYPE_Int64)
+    X(AddInt64, 3, Int64, Int64, Int64)
+    X(SubInt64, 3, Int64, Int64, Int64)
+    X(MulInt64, 3, Int64, Int64, Int64)
+    X(QuotientInt64, 3, Int64, Int64, Int64)
+    X(RemainderInt64, 3, Int64, Int64, Int64)
+#endif
+
