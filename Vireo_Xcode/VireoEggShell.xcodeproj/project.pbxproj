@@ -18,6 +18,7 @@
 		472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE317D0E1E800201196 /* TDCodecVia.cpp */; };
 		472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
 		4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
+		47834B7D19647C71000C1A04 /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47834B7C19647C71000C1A04 /* DebugGPIO.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
 		479AFEBC170DD22C002C0FF0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479AFEBB170DD22C002C0FF0 /* Accelerate.framework */; };
 		47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */; };
@@ -100,6 +101,7 @@
 		4744A9E3182049D500E1F7D9 /* PID.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PID.via; path = "../test-it/x/PID.via"; sourceTree = "<group>"; };
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
+		47834B7C19647C71000C1A04 /* DebugGPIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugGPIO.cpp; path = ../source/io/DebugGPIO.cpp; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
 		4786297C19254DAD00141666 /* Editor.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Editor.html; path = ../Vireo_Web/SiteSource/Editor.html; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
 		4786297D1927064300141666 /* Canvas2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas2d.cpp; path = ../source/io/Canvas2d.cpp; sourceTree = "<group>"; };
@@ -358,6 +360,7 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				47834B7C19647C71000C1A04 /* DebugGPIO.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				4786297D1927064300141666 /* Canvas2d.cpp */,
 			);
@@ -594,6 +597,7 @@
 				4700BD751948FC0400794482 /* Math.cpp in Sources */,
 				4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */,
 				4700BD7A194A08E500794482 /* Queue.cpp in Sources */,
+				47834B7D19647C71000C1A04 /* DebugGPIO.cpp in Sources */,
 				47E220B21950C1F700988185 /* Assert.cpp in Sources */,
 				4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */,
 				47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */,

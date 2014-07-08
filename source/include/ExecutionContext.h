@@ -96,7 +96,9 @@ private:
     ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+    ExecutionContext();
+#else
     ExecutionContext(TypeManager* typeManager);
 #endif
     ECONTEXT    PlatformTickType PlatformTickCount();

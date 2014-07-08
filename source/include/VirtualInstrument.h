@@ -43,26 +43,50 @@ class VIClump;
 class VirtualInstrument
 {
     friend class VIDataProcsClass;
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+    friend class MicroLoader;
+#endif
 private:
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
     ExecutionContext*       _executionContext;
-    TypedBlock*             _paramBlock;          // All clumps in subVI share the same param block
-    TypedBlock*             _dataSpace;           // All clumps in subVI share the same data
+#endif
+    TypedBlockRef           _paramBlock;          // All clumps in subVI share the same param block
+    TypedBlockRef           _dataSpace;           // All clumps in subVI share the same data
+#ifdef VIREO_MICRO
+    VIClump*                _clumps;
+#else
     TypedArray1D<VIClump>*  _clumps;
+#endif
     void InitParamBlock();
     void ClearTopVIParamBlock();
 public:
+#ifndef VIREO_MICRO
     Int32                   _lineNumberBase;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
+#endif
 public :
+
+#ifdef VIREO_MICRO
+    void Init(VIClump* clumps, void* paramBlockType, void* dataSpaceType);
+#else
     NIError Init(ExecutionContext* context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
+#endif
     void PressGo();
     void GoIsDone();
 public:
     VirtualInstrument(ExecutionContext *context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+    ExecutionContext* OwningContext()   {return &gSingleExecutionContext;}
+#else
     ExecutionContext* OwningContext()   {return _executionContext;}
-    TypedArrayCore* ParamBlock()        {return _paramBlock;}
-    TypedArrayCore* DataSpace()         {return _dataSpace;}
+#endif
+    TypedBlockRef ParamBlock()          {return _paramBlock;}
+    TypedBlockRef DataSpace()           {return _dataSpace;}
+#ifdef VIREO_MICRO
+    VIClump* Clumps()                   {return _clumps;}
+#else
     TypedArray1D<VIClump>* Clumps()     {return _clumps;}
+#endif
 };
 
 //------------------------------------------------------------

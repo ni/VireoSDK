@@ -814,8 +814,13 @@ public:
 };
 
 //------------------------------------------------------------
+#if VIREO_MICRO
+typedef TypedArrayCore *TypedArrayCoreRef, TypedBlock; // TODO get rid of TypedBlock
+typedef void *TypedBlockRef;  // TODO => merge into ArrayCoreRef
+#else
 typedef TypedArrayCore *TypedArrayCoreRef, TypedBlock; // TODO get rid of TypedBlock
 typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
+#endif
 
 //! The core C++ implimentation for ArrayType typed data's value.
 class TypedArrayCore

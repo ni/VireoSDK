@@ -41,7 +41,8 @@ SDG
     //#define VIREO_USING_ASSERTS
 
     #define VIREO_TYPE_Int8   1
-
+    #define VIREO_TYPE_TickCount 1
+    #define VIREO_DebegGPIO
 #else
 
     // Options for turning off primitives for some types.
@@ -60,6 +61,7 @@ SDG
     #define VIREO_TYPE_ComplexSingle 1
     #define VIREO_TYPE_ComplexDouble 1
 
+    #define VIREO_TYPE_TickCount 1
     #define VIREO_TYPE_ATime 1
 
     // For Vireo-full functions are dynamically registered by each module when loaded

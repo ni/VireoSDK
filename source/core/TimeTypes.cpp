@@ -52,6 +52,7 @@ using namespace Vireo;
 
 namespace Vireo
 {
+#if defined(VIREO_TYPE_TickCount)
 //------------------------------------------------------------
 PlatformTickType PlatformTime::TickCount()
 {
@@ -235,6 +236,7 @@ VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
     _Param(0) = (UInt32) PlatformTime::TickCountToMilliseconds(PlatformTime::TickCount());
     return _NextInstruction();
 }
+#endif // VIREO_TYPE_TickCount
 
 #if defined(VIREO_TYPE_ATime)
 /* Localize the warnings for float comparison to one place
@@ -389,9 +391,11 @@ DEFINE_VIREO_BEGIN(Time)
     DEFINE_VIREO_FUNCTION(GTEQTime, "p(i(.Time) i(.Time) o(.Boolean))")
 */
 
+#if defined(VIREO_TYPE_TickCount)
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
+#endif
 
 #if defined(VIREO_TYPE_ATime)
 #if defined(VIREO_TYPE_Double)

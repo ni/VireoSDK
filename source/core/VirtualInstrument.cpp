@@ -45,9 +45,12 @@ NIError VirtualInstrument::Init(ExecutionContext *context, Int32 clumpCount, Typ
     }
     return kNIError_Success;
 }
+#endif
 //------------------------------------------------------------
 void VirtualInstrument::InitParamBlock()
 {
+#ifdef VIREO_MICRO
+#else
     // Since there is no caller, the param block needs to be filled out
     // as if there is one.
     TypedBlock* viParamBlock = this->ParamBlock();
@@ -60,10 +63,13 @@ void VirtualInstrument::InitParamBlock()
         TypeRef eltType = viParamType->GetSubElement(i);
         eltType->InitData(((AQBlock1*)pParamData) + eltType->ElementOffset());
     }
+#endif
 }
 //------------------------------------------------------------
 void VirtualInstrument::ClearTopVIParamBlock()
 {
+#ifdef VIREO_MICRO
+#else
     // Since there is no caller, elements param block needs to be cleared out.
     TypedBlock* viParamBlock = this->ParamBlock();
     TypeRef viParamType = viParamBlock->ElementType();
@@ -79,12 +85,16 @@ void VirtualInstrument::ClearTopVIParamBlock()
             eltType->ClearData(((AQBlock1*)pParamData) + eltType->ElementOffset());
         }
     }
+#endif
 }
 //------------------------------------------------------------
 void VirtualInstrument::PressGo()
 {
+#ifdef VIREO_MICRO
+    VIClump  *rootClump = Clumps();
+#else 
     VIClump  *rootClump = Clumps()->Begin();
-    
+#endif
     // If there is no code, or its running there is nothing to do.
     if ( rootClump == null || rootClump->ShortCount() < 1)
         return;
@@ -102,7 +112,6 @@ void VirtualInstrument::GoIsDone()
     // So this is postponed until the VI the cleared
     // ClearParamBlock();
 }
-#endif
 //------------------------------------------------------------
 // If the QE is running, then suspend current QE and add it to this QE's list
 // if the QE is idle, then no need to wait, it has finished running.

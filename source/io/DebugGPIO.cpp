@@ -34,6 +34,9 @@ VIREO_FUNCTION_SIGNATURE1(DebugLED, Boolean)
 
 	int value =  _Param(0);
 	XGpioPs_WritePin(&_gGPIO, kuZED_LED_PIN, value);
+#elif defined(VIREO_MICRO)
+	int value =  _Param(0);
+    printf((value & 0x01) ? "1\n" : "0\n");
 #endif
     return _NextInstruction();
 }
@@ -45,6 +48,8 @@ VIREO_FUNCTION_SIGNATURE1(DebugButton, Boolean)
 		InitGPIO();
 
 	_Param(0) = XGpioPs_ReadPin(&_gGPIO, kuZED_Button_PIN);
+#elif defined(VIREO_MICRO)
+	_Param(0) = false;
 #endif
     return _NextInstruction();
 }

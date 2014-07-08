@@ -118,6 +118,7 @@ InstructionCore* ExecutionContext::Stop()
 
     return &_culDeSac;
 }
+#if defined(VIREO_TYPE_TickCount)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
@@ -163,6 +164,7 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount
     }
     return next;
 }
+#endif
 //------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
 // Trigger never wait.
@@ -243,15 +245,20 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
     }
 }
 //------------------------------------------------------------
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+ExecutionContext::ExecutionContext()
+{
+    _culDeSac._function = (InstructionFunction) CulDeSac;    
+}
+#else
 ExecutionContext::ExecutionContext(TypeManager* typeManager)
 {
     ExecutionContext::ClassInit();
     
     _theTypeManager = typeManager;
     _breakoutCount = 0;
-	_runningQueueElt = (VIClump*) null;
-	_sleepingList = null;
+    _runningQueueElt = (VIClump*) null;
+    _sleepingList = null;
 }
 #endif
 //------------------------------------------------------------
@@ -317,8 +324,8 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         _breakoutCount = numSlices;
 
         VIREO_ASSERT( (currentInstruction != null) )
-        VIREO_ASSERT( (null == _runningQueueElt->_next) )		// Should not be on queue
-        VIREO_ASSERT( (0 == _runningQueueElt->_shortCount) ) // Should not be running if triggers > 0
+        VIREO_ASSERT( (null == _runningQueueElt->_next) )       // Should not be on queue
+        VIREO_ASSERT( (0 == _runningQueueElt->_shortCount) )    // Should not be running if triggers > 0
         do {
             currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
 #ifdef VIVM_UNROLL_EXEC            
@@ -462,9 +469,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
     DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(.BranchTarget) i(.Int32) o(.Int32))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(.BranchTarget))")
     DEFINE_VIREO_FUNCTION(CallVI, "p(i(.VI) i(.InstructionSnippet copyInProc) i(.InstructionSnippet copyOutProc))")
+#if defined(VIREO_TYPE_TickCount)
     DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
     DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")
+#endif
     DEFINE_VIREO_FUNCTION(Done, "p()")
     DEFINE_VIREO_FUNCTION(Stop, "p(i(.Boolean))")
     DEFINE_VIREO_FUNCTION(CulDeSac, "p(i(.Boolean))")

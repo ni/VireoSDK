@@ -1635,6 +1635,18 @@ Boolean TypedArrayCore::Resize1D(IntIndex length)
     } // else its variable size, do nothing.
 
     if (length != currentLength) {
+    
+#if 0
+        // First stage in experimenting with allocating extran memory when
+        // block grow from size n to m for n != 0.
+        // expectation is that many blocks got from 0 to n an then stay the same
+        // ones that grow from n to m are more likely to grow again.
+        if (currentLength == 0) {
+            printf("*** from 0 to %d\n", length);
+        } else {
+            printf(">>> from %d to %d\n", currentLength,  length);
+        }
+#endif
         bOK = ResizeCore(length * _eltTypeRef->TopAQSize(), currentLength, length, true);
         if (bOK)
             *GetDimensionLengths() = length;

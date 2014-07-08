@@ -60,3 +60,11 @@ X(Branch, 1, Int8)
     X(RemainderInt64, 3, Int64, Int64, Int64)
 #endif
 
+#if defined(VIREO_TYPE_TickCount)
+    X(WaitMilliseconds, 1, UInt32)
+#endif
+
+#if defined(VIREO_DebegGPIO)
+    X(DebugLED, 1, Boolean)
+    X(DebugButton, 1, Boolean)
+#endif
