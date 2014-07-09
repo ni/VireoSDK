@@ -32,11 +32,11 @@ to the called code.
 
 So applying this to a SubVI there will be an additional type; making a well formed VI look like the following
 
-define (SubVI, v(.VirtualInstrument, (param-block-type, internal-dataspace-type, clump-count, clumps)))
+define (SubVI, dv(.VirtualInstrument, (param-block-type, internal-dataspace-type, clump-count, clumps)))
 
 Thus an actual example might look like this
 
-define (AddAndSquare, v(.VirtualInstrument, (
+define (AddAndSquare, dv(.VirtualInstrument, (
     p(e(.Double,x),e(.Double,y),e(.Double,value))       // param list with names
     c()                                                 // no locals
     1,
@@ -51,25 +51,25 @@ So where internal types have not yet had the optional parameter type names in th
 DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double,x),e(.Double,y),e(.Double,value))");
 
 
-define (AddAndSquare, v(.VirtualInstrument, (
+define (AddAndSquare, dv(.VirtualInstrument, (
     p(i(.Double,x),i(.Double,y),o(.Double,value))       // param list with names
 
 
 */
-define (SubVINoParams, v(.VirtualInstrument, (
+define (SubVINoParams, dv(.VirtualInstrument, (
  c(
- e(v(.String 'Inside call: SubVINoParams') sInside)
+ e(dv(.String 'Inside call: SubVINoParams') sInside)
   )
     clump(1
     Print(sInside)
    )
  )))
  
-define (SubVIWithOneInputParam, v(.VirtualInstrument (
+define (SubVIWithOneInputParam, dv(.VirtualInstrument (
  c(i(.Int32 x))
  c(
-  e(v(.Int32 1) c1)
-  e(v(.String 'Inside call: SubVIWithOneInputParam')  sInside)
+  e(dv(.Int32 1) c1)
+  e(dv(.String 'Inside call: SubVIWithOneInputParam')  sInside)
   )
   clump(1 
   //  AddInt32(c1 x x)
@@ -78,20 +78,20 @@ define (SubVIWithOneInputParam, v(.VirtualInstrument (
    )
  )))
 
-define (SubVIWithOneOutputParam, v(.VirtualInstrument (
+define (SubVIWithOneOutputParam, dv(.VirtualInstrument (
  c(o(.Int32 result))
  c( 
- e(v(.String,'Inside call: SubVIWithOneOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOutputParam'), sInside)
   ) 
   clump(1 
     Print(sInside)
    )
  )))
 
-define (SubVIWithOneOneInAndOneOutputParam, v(.VirtualInstrument (
+define (SubVIWithOneOneInAndOneOutputParam, dv(.VirtualInstrument (
  c(i(.Int32 x) o(.Int32 result))
  c( 
- e(v(.String,'Inside call: SubVIWithOneOneInAndOneOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOneInAndOneOutputParam'), sInside)
   )
   clump(1
   DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is <%s> result is <%s>" x result)
@@ -99,10 +99,10 @@ define (SubVIWithOneOneInAndOneOutputParam, v(.VirtualInstrument (
    )
  )))
 
-define (SubVIWithOneOneInputOutputParam, v(.VirtualInstrument, (
+define (SubVIWithOneOneInputOutputParam, dv(.VirtualInstrument, (
  c(io(.Int32 x))
  c( 
- e(v(.String,'Inside call: SubVIWithOneOneInputOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOneInputOutputParam'), sInside)
   )
   clump(1
   DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is %s", x)
@@ -110,7 +110,7 @@ define (SubVIWithOneOneInputOutputParam, v(.VirtualInstrument, (
    )
  )))
  
- define (SubVIWithOneInputStringParamWithDefaultOneOutputString v(.VirtualInstrument (
+ define (SubVIWithOneInputStringParamWithDefaultOneOutputString dv(.VirtualInstrument (
  c(
     i(dv(.String 'Hello world.') stringParam)
     o(.String result))
@@ -123,12 +123,12 @@ define (SubVIWithOneOneInputOutputParam, v(.VirtualInstrument, (
    )
  )))
 
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
  c(
-  e(v(.Int32 47) c47)
-  e(v(.Int32 47) c47)
-    e(v(.String 'Before call') sBefore)
-    e(v(.String 'After call') sAfter)
+  e(dv(.Int32 47) c47)
+  e(dv(.Int32 47) c47)
+    e(dv(.String 'Before call') sBefore)
+    e(dv(.String 'After call') sAfter)
   )
   clump(1
     Print(sBefore)

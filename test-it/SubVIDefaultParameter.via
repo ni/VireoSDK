@@ -2,12 +2,12 @@
 // Generated on Tue Dec 03 10:54:41 2013
 // This tests passing a * to a subvi call which indicates that the subVI should use the default value for that parameter.
 
-define (c0, v(.Int32 5) )
-define (c1, v(.Int32 1) )
+define (c0, dv(.Int32 5) )
+define (c1, dv(.Int32 1) )
 
 //---------------------------------------------------
 //VI Definition: simple_subVI_defaultdata_input.vi
-define (videf2, v(.VirtualInstrument, (
+define (videf2, dv(.VirtualInstrument, (
     c(
         o(dv(.Int32 0) local4)   // result
         i(dv(.Int32 42) local1)   // b
@@ -15,7 +15,7 @@ define (videf2, v(.VirtualInstrument, (
     )
     c(
         e(.Int32 local3)
-        e(v(.Int32 -1) local5)
+        e(dv(.Int32 -1) local5)
     )
     1,
     clump(1,
@@ -28,7 +28,7 @@ define (videf2, v(.VirtualInstrument, (
 
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
         e(.Int32 local1)   // result
     )

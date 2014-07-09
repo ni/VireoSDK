@@ -17,7 +17,7 @@ Print (x)
 )
 )))
 
-define (HelloWorld v(.VirtualInstrument (
+define (HelloWorld dv(.VirtualInstrument (
 c(
      e(dv(.Int32 42) value)
 )

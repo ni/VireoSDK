@@ -1,4 +1,4 @@
-define (DefaultTM v(.VirtualInstrument (
+define (DefaultTM dv(.VirtualInstrument (
     c(
      e(.TypeManager tm)
      e(.Int32 n)

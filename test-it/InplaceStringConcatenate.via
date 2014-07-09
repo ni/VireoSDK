@@ -13,7 +13,7 @@ define (videf1 dv(.VirtualInstrument (
     e(.Boolean local6)
     e(dv(a(.String *) ('abc') ) local7) // input array
     e(.String local8)
-    e(v(.String 'def') local9)
+    e(dv(.String 'def') local9)
   )
   1
   clump(1
@@ -58,7 +58,7 @@ define (videf2 dv(.VirtualInstrument (
     e(.Boolean local6)
     e(dv(a(.String *) ('abc') ) local7) // input array
     e(.String local8)
-    e(v(.String 'def') local9)
+    e(dv(.String 'def') local9)
   )
   1
   clump(1

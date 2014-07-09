@@ -8,7 +8,7 @@ define (HelloWorld dv(.VirtualInstrument (
         o(dv(a(.Int32 *) (6 7 8)) param6)
     )
     c(
-        e(v(.String "Hello, world. I can fly.") variable1)
+        e(dv(.String "Hello, world. I can fly.") variable1)
     )
     clump (1
         Print(param1)

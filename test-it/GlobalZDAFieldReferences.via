@@ -1,6 +1,6 @@
 define (HelloWorldSub dv(.VirtualInstrument (
 c(
-e(v(.String "Hello") variable1)
+e(dv(.String "Hello") variable1)
 )
 clump (1
     Print(variable1)
@@ -18,7 +18,7 @@ clump (1
 
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(v(.String "TopVI") variable1)
+        e(dv(.String "TopVI") variable1)
         e(.Int32 x)
         e(a(.Int32 10)   FixedArray)
     )

@@ -5,7 +5,7 @@ define (SubVI0 dv(.ReentrantVirtualInstrument, (
    )
  )))
 
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
  c(
   )
 clump(1

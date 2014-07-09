@@ -1,6 +1,6 @@
-define (SubVIFromMyPast, v(.VirtualInstrument, (
+define (SubVIFromMyPast, dv(.VirtualInstrument, (
  c(
-    e(v(.String 'Yesterday I made scrambled eggs and they seemed far away') str)
+    e(dv(.String 'Yesterday I made scrambled eggs and they seemed far away') str)
   )
   1
   clump(1
@@ -8,9 +8,9 @@ define (SubVIFromMyPast, v(.VirtualInstrument, (
    )
  )))
 
-define (CarpeDiem, v(.VirtualInstrument, (
+define (CarpeDiem, dv(.VirtualInstrument, (
     c(
-        e(v(.String 'Here comes the sun') str)
+        e(dv(.String 'Here comes the sun') str)
     )
     1
     clump(1
@@ -20,9 +20,9 @@ define (CarpeDiem, v(.VirtualInstrument, (
     )
 )))
 
-define (SubVIFromMyFuture, v(.VirtualInstrument, (
+define (SubVIFromMyFuture, dv(.VirtualInstrument, (
  c(
-    e(v(.String 'The sun\'ll come out tomorrow') str)
+    e(dv(.String 'The sun\'ll come out tomorrow') str)
   )
   1
   clump(1

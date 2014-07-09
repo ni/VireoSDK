@@ -14,7 +14,7 @@ define (TypesToCheck dv(a(.Type *) (
 
 define (VIParamClusterFlat c())
 
-define (HelloWorld v(.VirtualInstrument (
+define (HelloWorld dv(.VirtualInstrument (
     .VIParamClusterFlat
     c(
      e(.TypeManager tm)

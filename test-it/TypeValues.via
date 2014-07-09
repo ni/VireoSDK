@@ -4,8 +4,8 @@ define (HelloTypeValues dv(.VirtualInstrument (
     c(
         e(.Int32 n)
         e(.Type  t)
-        e(v(.Type .Int32)  tInt32)
-        e(v(.Type .Int32_5)  tInt32_5)
+        e(dv(.Type .Int32)  tInt32)
+        e(dv(.Type .Int32_5)  tInt32_5)
     )
     clump (1
         Copy(.Int32 t)   

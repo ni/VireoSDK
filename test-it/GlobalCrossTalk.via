@@ -1,19 +1,33 @@
-//define (g1 dv(.Int32 0))
-//define (g2 dv(.Int32 0))
-define (g1 .Int32)
-define (g2 .Int32)
+// The Symbols are aliases to types. the the symbol g1 and g2 are
+// both names for the type .Int32 and the values are the default value for variable of 
+// this type. The internal default values should be immutable.
+
+// This is entirely different from making two variables of type .Int32
+
+// Two global types their default value should not be changeable
+define (g1 dv(.Int32 42))
+define (g2 dv(.Int32 47))
+define (g3 .g2)
+
+// Two global variable types their value is changeable
+define (gX var(.Int32))
+define (gY var(.Int32))
+define (gZ .gY)
 
 define (HelloWorld dv(.VirtualInstrument (
+    // this cluster serves as a type template 
     c(
-        e(v(.Int32 45) v1)
+        e(dv(.Int32 45) v1)
+        e(g1 v2)
     )
     clump (1
         DPrintf("Hello")
         Print(g1)
         Print(g2)
-        Copy(v1 g1)
+        Copy(g2 g1)
         Print(g1)
         Print(g2)
+        
     )
 ) ) )
 

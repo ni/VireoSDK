@@ -1,8 +1,8 @@
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(v(.String "Red Fish") v1)
-        e(v(.String "Blue Fish") v2)
-        e(v(.String "Green Fish") v3)
+        e(dv(.String "Red Fish") v1)
+        e(dv(.String "Blue Fish") v2)
+        e(dv(.String "Green Fish") v3)
         e(.String  v4)
 
         // i, o, and io are intended for parameter blocks

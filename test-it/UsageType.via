@@ -8,7 +8,7 @@ define (VIParamClusterFlat c(
     t(.Int32 p_t)
 ))
 
-define (HelloWorld v(.VirtualInstrument (
+define (HelloWorld dv(.VirtualInstrument (
     .VIParamClusterFlat
     c(
      e(dv(.Type .VIParamClusterFlat) tvar)

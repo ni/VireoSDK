@@ -2,8 +2,8 @@
 123
 */
 define (MyInt32, .Int32)
-define (Int32OneTwoThree, v(.MyInt32,123))
-define (Test, v(.VirtualInstrument, (
+define (Int32OneTwoThree, dv(.MyInt32,123))
+define (Test, dv(.VirtualInstrument, (
  c(
     e(.Int32OneTwoThree, variable0),
   ),

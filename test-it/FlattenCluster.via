@@ -3,10 +3,10 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Boolean,t) prependArraySize)
-        e(v(c(
+        e(dv(.Boolean,t) prependArraySize)
+        e(dv(c(
             e(.Int16 n0)
             e(.Int16 n1)
             e(.Int8 n2)
@@ -14,7 +14,7 @@ define (videf1, v(.VirtualInstrument, (
             e(.Int8 n4)
             e(.Int8 n5)
         ) (12849 13363 53 54 55 56 )) local1)   // 12345678
-        e(v(c(
+        e(dv(c(
             e(.Int16 n0)
             e(.Int16 n1)
             e(.Int8 n2)
@@ -23,7 +23,7 @@ define (videf1, v(.VirtualInstrument, (
             e(.Int8 n5)
         ) (0 0 0 0 0 0 )) defaultVal)   // default
         e(.String local2)   // data string
-        e(v(c(
+        e(dv(c(
             e(.Int16 n0)
             e(.Int16 n1)
             e(.Int8 n2)
@@ -32,7 +32,7 @@ define (videf1, v(.VirtualInstrument, (
             e(.Int8 n5)
         ) (1 2 3 4 5 6)) local3)   // unflattened
         e(.String local4)   // remaining string
-        e(v(.Boolean,t) error)
+        e(dv(.Boolean,t) error)
     )
     1,
     clump(1,

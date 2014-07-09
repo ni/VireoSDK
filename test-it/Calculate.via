@@ -1,7 +1,7 @@
-define (CalcUsingIntegers, v(.VirtualInstrument, (
+define (CalcUsingIntegers, dv(.VirtualInstrument, (
  c(
-    e(v(.Int32,6), i)
-    e(v(.Int32,7), j)
+    e(dv(.Int32,6), i)
+    e(dv(.Int32,7), j)
     e(.Int32, k)
   ),
   1,
@@ -10,10 +10,10 @@ define (CalcUsingIntegers, v(.VirtualInstrument, (
 	Print(k)
    )
  ) ) )
-define (CalcUsingDoubles, v(.VirtualInstrument, (
+define (CalcUsingDoubles, dv(.VirtualInstrument, (
  c(
-    e(v(.Double,6), x)
-    e(v(.Double,7), y)
+    e(dv(.Double,6), x)
+    e(dv(.Double,7), y)
     e(.Double, z)
   ),
   1,

@@ -3,24 +3,24 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Boolean,t) prependArraySize)
-        e(v(c(
+        e(dv(.Boolean,t) prependArraySize)
+        e(dv(c(
             e(a(e(.Int16),*) n0)   // value 2
             e(a(e(.Int16),*) n1)   // value 3
         ) ((16961 17475 )  (17989 18503 )  )) local1)   // ABCDEFGH
-        e(v(c(
+        e(dv(c(
             e(a(e(.Int16),*) n0)   // value 2
             e(a(e(.Int16),*) n1)   // value 3
         ) ((16961 17475 ) )) defaultVal)   // default value
         e(.String local2)   // data string
-        e(v(c(
+        e(dv(c(
             e(a(e(.Int16),*) n0)
             e(a(e(.Int16),*) n1)
         ) ((1 2 )  (3 4 )  )) local3)   // unflattened
         e(.String local4)   // remaining string
-        e(v(.Boolean,t) error)
+        e(dv(.Boolean,t) error)
     )
     1,
     clump(1,

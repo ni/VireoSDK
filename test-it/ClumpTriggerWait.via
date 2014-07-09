@@ -1,12 +1,12 @@
 define (MultiClump dv(.VirtualInstrument (
  c(
-    e(v(.String 'Clump 0 - Start') s0Start)
-    e(v(.String 'Clump 1') s1)
-    e(v(.String 'Clump 2') s2)
-    e(v(.String 'Clump 3') s3)
-    e(v(.String 'Clump 0 - 1Done') s0_1Done)
-    e(v(.String 'Clump 0 - 2Done') s0_2Done)
-    e(v(.UInt32 100) oneHundred)
+    e(dv(.String 'Clump 0 - Start') s0Start)
+    e(dv(.String 'Clump 1') s1)
+    e(dv(.String 'Clump 2') s2)
+    e(dv(.String 'Clump 3') s3)
+    e(dv(.String 'Clump 0 - 1Done') s0_1Done)
+    e(dv(.String 'Clump 0 - 2Done') s0_2Done)
+    e(dv(.UInt32 100) oneHundred)
   ) 
   4
   	clump(1         // Clump 0

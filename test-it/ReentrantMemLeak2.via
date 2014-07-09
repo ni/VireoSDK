@@ -28,7 +28,7 @@ c(
    )
  )))
  
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
 c(
     // Leak #2 was caused by the Cluster init method 
     // skipping allocation of parameter there were arrays

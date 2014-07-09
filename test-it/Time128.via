@@ -1,6 +1,6 @@
-define (HelloTime v(.VirtualInstrument (
+define (HelloTime dv(.VirtualInstrument (
     c(
-     e(v(.String "Hello world. I can fly.") variable1)
+     e(dv(.String "Hello world. I can fly.") variable1)
      e(.Time t0)
      e(.Time t1)
      e(.Time t2)

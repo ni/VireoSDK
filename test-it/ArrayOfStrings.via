@@ -3,18 +3,18 @@
 
 //---------------------------------------------------
 //VI Definition: stringManipulation.vi
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Int32 0) c1)   // index
-        e(v(.String 'brown fox ') c2)   // new element/subarray
-        e(v(.String 'The quick ') c3)   // new element/subarray
-        e(v(.String 'Blue Fish.') c4)   // new element/subarray
-        e(v(.String 'Red Fish, ') c5)   // new element/subarray
-        e(v(.String 'the lazy dog.') c6)   // element
-        e(v(.String 'jumps over ') c7)   // element
-        e(v(.String 'One Fish, ') c8)   // element
-        e(v(.Int32 2) c9)   // index
-        e(v(.String 'Two Fish. ') c10)   // element
+        e(dv(.Int32 0) c1)   // index
+        e(dv(.String 'brown fox ') c2)   // new element/subarray
+        e(dv(.String 'The quick ') c3)   // new element/subarray
+        e(dv(.String 'Blue Fish.') c4)   // new element/subarray
+        e(dv(.String 'Red Fish, ') c5)   // new element/subarray
+        e(dv(.String 'the lazy dog.') c6)   // element
+        e(dv(.String 'jumps over ') c7)   // element
+        e(dv(.String 'One Fish, ') c8)   // element
+        e(dv(.Int32 2) c9)   // index
+        e(dv(.String 'Two Fish. ') c10)   // element
         e(a(e(.String),*) w11)
         e(a(e(.String),*) w12)
         e(a(e(.String),*) w13)

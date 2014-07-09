@@ -1,16 +1,16 @@
-define (MyInt32, v(.Int32,3))
+define (MyInt32, dv(.Int32,3))
 
-define (TypeChecking, v(.VirtualInstrument, (
+define (TypeChecking, dv(.VirtualInstrument, (
  c(
-   e(v(.Int32,5), cInt32)
+   e(dv(.Int32,5), cInt32)
    e(.MyInt32, cMyInt32)
-   e(v(.Int32,10), c10)
+   e(dv(.Int32,10), c10)
    e(.Int32, value)
    e(.Double, cDouble)
    e(.Single, cSingle)
    e(.Boolean, cBoolean)
    e(.Int8, cInt8)
-   e(v(.String,'Tic'), cString)
+   e(dv(.String,'Tic'), cString)
     e(a(e(.Double),5),   arrayOfDoubleFixed1d),
     e(a(e(.Double),5,5),   arrayOfDoubleFixed2d),
     e(a(e(.Double),5,5,5),   arrayOfDoubleFixed3d),

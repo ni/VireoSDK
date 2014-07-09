@@ -1,10 +1,10 @@
 // A fast clock 100ms tics so the unit test is quicker
-define (TicTock, v(.VirtualInstrument, (
+define (TicTock, dv(.VirtualInstrument, (
  c(
-   e(v(.UInt32,100), oneHundred)
-   e(v(.UInt32,100000), oneHundredThousand)
-   e(v(.String,'Tic'), sTic)
-   e(v(.String,'Tock'), sTock)
+   e(dv(.UInt32,100), oneHundred)
+   e(dv(.UInt32,100000), oneHundredThousand)
+   e(dv(.String,'Tic'), sTic)
+   e(dv(.String,'Tock'), sTock)
    ),
  1,
  clump(1,

@@ -1,7 +1,7 @@
 define (AFewMillisecods   dv(.UInt32 200))
 define (SubVI0 dv(.ReentrantVirtualInstrument, (
  c(
-    e(v(.String 'Hello, World.') sInside)
+    e(dv(.String 'Hello, World.') sInside)
   ),
   1,
   clump(1,
@@ -12,7 +12,7 @@ define (SubVI0 dv(.ReentrantVirtualInstrument, (
 
 //define (SubVI1 dv(.ReentrantVirtualInstrument .SubVI0))
 
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
  c(
   ),
   4

@@ -1,6 +1,6 @@
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(v(.String "Hello, world. I can fly.") variable1)
+        e(dv(.String "Hello, world. I can fly.") variable1)
     )
     1
     clump (1

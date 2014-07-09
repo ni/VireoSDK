@@ -1,32 +1,31 @@
 //4
 define//
- (Test, v(.VirtualInstrument, (//c
+ (Test dv(.VirtualInstrument (//c
  c(
 e(//
-v//
+dv//
 (//
 .Int32//
-,//
+//
 2//
 )//
-,//
+//
  variable1//
  )//
- ,
-    e(v(.Int32,2), variable2),
-    e(.Int32, result),
-  ),
+    e(dv(.Int32,2) variable2)
+    e(.Int32 result)
+  )
 //  
   1//
-,//
+//
 
 //  
 clump//
 (//
 1//
-,
-    AddInt32(variable1, variable2, result),
-    Print(result),
+
+    AddInt32(variable1 variable2 result)
+    Print(result)
    )
 )//
  //

@@ -1,7 +1,7 @@
 //trace
-define (SubVI0, v(.VirtualInstrument, (
+define (SubVI0, dv(.VirtualInstrument, (
  c(
-    e(v(.String 'Inside call') sInside)
+    e(dv(.String 'Inside call') sInside)
   ),
   1,
   clump(1,
@@ -9,10 +9,10 @@ define (SubVI0, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI1, v(.VirtualInstrument, (
+define (SubVI1, dv(.VirtualInstrument, (
  c(i(.Int32 x))
  c(
-    e(v(.String 'Inside call') sInside)
+    e(dv(.String 'Inside call') sInside)
   ),
   1,
   clump(1,
@@ -21,11 +21,11 @@ define (SubVI1, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI2, v(.VirtualInstrument, (
+define (SubVI2, dv(.VirtualInstrument, (
  c(i(.Int32 x) o(.Int32 x_out))
  c(
-    e(v(.String 'Inside call') sInside)
-    e(v(.Int32 1) c1)
+    e(dv(.String 'Inside call') sInside)
+    e(dv(.Int32 1) c1)
   ),
   1,
   clump(1,
@@ -37,11 +37,11 @@ define (SubVI2, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI3, v(.VirtualInstrument, (
+define (SubVI3, dv(.VirtualInstrument, (
  c(io(.Int32 x))
  c(
-    e(v(.String 'Inside call') sInside)
-    e(v(.Int32 1) c1)
+    e(dv(.String 'Inside call') sInside)
+    e(dv(.Int32 1) c1)
   ),
   1,
   clump(1,
@@ -52,10 +52,10 @@ define (SubVI3, v(.VirtualInstrument, (
  )))
  
  
-define (SubVI1d, v(.VirtualInstrument, (
+define (SubVI1d, dv(.VirtualInstrument, (
  c(i(.Double x))
  c(
-    e(v(.String 'Inside call') sInside)
+    e(dv(.String 'Inside call') sInside)
   ),
   1,
   clump(1,
@@ -64,11 +64,11 @@ define (SubVI1d, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI2d, v(.VirtualInstrument, (
+define (SubVI2d, dv(.VirtualInstrument, (
  c(i(.Double x) o(.Double x_out))
  c(
-    e(v(.String 'Inside call') sInside)
-    e(v(.Double 1) c1)
+    e(dv(.String 'Inside call') sInside)
+    e(dv(.Double 1) c1)
   ),
   1,
   clump(1,
@@ -80,11 +80,11 @@ define (SubVI2d, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI3d, v(.VirtualInstrument, (
+define (SubVI3d, dv(.VirtualInstrument, (
  c(io(.Double x))
  c(
-    e(v(.String 'Inside call') sInside)
-    e(v(.Double 1) c1)
+    e(dv(.String 'Inside call') sInside)
+    e(dv(.Double 1) c1)
   ),
   1,
   clump(1,
@@ -95,12 +95,12 @@ define (SubVI3d, v(.VirtualInstrument, (
  )))
 
 
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
  c(
-   e(v(.Int32 42) value)
-   e(v(.Double 42.1) dValue)
-    e(v(.String 'Before call') sBefore)
-    e(v(.String 'After call')  sAfter)
+   e(dv(.Int32 42) value)
+   e(dv(.Double 42.1) dValue)
+    e(dv(.String 'Before call') sBefore)
+    e(dv(.String 'After call')  sAfter)
   ),
   1,
     clump(1,

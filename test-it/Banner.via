@@ -1,6 +1,6 @@
-define (PrintBanner v(.VirtualInstrument (
+define (PrintBanner dv(.VirtualInstrument (
     c(
-     e(v(.String @"
+     e(dv(.String @"
   _____        ____    ____
   |   |       /   /   /   /  ====|\
   |   |      /   /   /   /       |X}==================

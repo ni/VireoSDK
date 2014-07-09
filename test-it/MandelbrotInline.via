@@ -1,38 +1,38 @@
-define (MandelbrotMain v(.VirtualInstrument (
+define (MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
         e(.Int32 err)
 
-        e(v(.Utf8Char '.')    char1)
-        e(v(.Utf8Char '#')    char2)
-        e(v(.Utf8Char @'
+        e(dv(.Utf8Char '.')    char1)
+        e(dv(.Utf8Char '#')    char2)
+        e(dv(.Utf8Char @'
 ')   charLineFeed)
 
-        e(v(.String '.')    str1)
-        e(v(.String '#')    str2)
-        e(v(.String '\n')   strLineFeed)
+        e(dv(.String '.')    str1)
+        e(dv(.String '#')    str2)
+        e(dv(.String '\n')   strLineFeed)
 
-        e(v(.Double 1.0)    y)
-        e(v(.Double 1.0)    yFirst)
-        e(v(.Double -1.0)   yLast)
-        e(v(.Double -0.05)  yDelta)
+        e(dv(.Double 1.0)    y)
+        e(dv(.Double 1.0)    yFirst)
+        e(dv(.Double -1.0)   yLast)
+        e(dv(.Double -0.05)  yDelta)
 
         e(.Double   x)
-        e(v(.Double -2.0)   xFirst)
-        e(v(.Double 0.5)    xLast)
-        e(v(.Double 0.0315) xDelta)
+        e(dv(.Double -2.0)   xFirst)
+        e(dv(.Double 0.5)    xLast)
+        e(dv(.Double 0.0315) xDelta)
 
-        e(v(.Double 2)      two)
+        e(dv(.Double 2)      two)
         e(.ComplexDouble    cmplxIn)
         e(.ComplexDouble    cmplxOut)
         e(.Double           abs)
 
         e(.ComplexDouble cmplxZero)
         e(.Int32 i)
-        e(v(.Int32 0) c0)
-        e(v(.Int32 1) c1)
-        e(v(.Int32 50) c50)
+        e(dv(.Int32 0) c0)
+        e(dv(.Int32 1) c1)
+        e(dv(.Int32 50) c50)
         e(.ComplexDouble    z)
 
         e(.String           buffer)
@@ -88,7 +88,7 @@ define (MandelbrotMain v(.VirtualInstrument (
     )
 ) ) )
 
-define (Mandelbrot10 v(.VirtualInstrument (
+define (Mandelbrot10 dv(.VirtualInstrument (
     // Dataspace
     c()
     1

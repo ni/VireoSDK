@@ -1,7 +1,7 @@
-define (Test, v(.VirtualInstrument, (
+define (Test, dv(.VirtualInstrument, (
  c(
-    e(v(.Boolean,t) ct)
-    e(v(.Boolean,f) cf)
+    e(dv(.Boolean,t) ct)
+    e(dv(.Boolean,f) cf)
     e(.Boolean x)
     e(.Boolean y)
     e(.Boolean value)

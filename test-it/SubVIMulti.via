@@ -1,6 +1,6 @@
-define (SubVI1, v(.VirtualInstrument, (
+define (SubVI1, dv(.VirtualInstrument, (
  c(
-    e(v(.String,'Inside call 1'), sInside)
+    e(dv(.String,'Inside call 1'), sInside)
   ),
   1,
   clump(1,
@@ -8,9 +8,9 @@ define (SubVI1, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI2, v(.VirtualInstrument, (
+define (SubVI2, dv(.VirtualInstrument, (
  c(
-    e(v(.String,'Inside call 2'), sInside)
+    e(dv(.String,'Inside call 2'), sInside)
   ),
   1,
   clump(1,
@@ -18,9 +18,9 @@ define (SubVI2, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI3, v(.VirtualInstrument, (
+define (SubVI3, dv(.VirtualInstrument, (
  c(
-    e(v(.String,'Inside call 3'), sInside)
+    e(dv(.String,'Inside call 3'), sInside)
   ),
   1,
   clump(1,
@@ -28,9 +28,9 @@ define (SubVI3, v(.VirtualInstrument, (
    )
  )))
 
-define (SubVI4, v(.VirtualInstrument, (
+define (SubVI4, dv(.VirtualInstrument, (
  c(
-    e(v(.String,'Inside call 4'), sInside)
+    e(dv(.String,'Inside call 4'), sInside)
   ),
   1,
   clump(1,
@@ -38,10 +38,10 @@ define (SubVI4, v(.VirtualInstrument, (
    )
  )))
 
-define (TopVI, v(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument, (
  c(
-    e(v(.String,'Before call'), sBefore)
-    e(v(.String,'After call'), sAfter)
+    e(dv(.String,'Before call'), sBefore)
+    e(dv(.String,'After call'), sAfter)
   ),
   1,
   clump(1,

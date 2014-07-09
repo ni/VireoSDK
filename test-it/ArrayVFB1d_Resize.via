@@ -1,4 +1,4 @@
-define (ArrayDemo, v(.VirtualInstrument, (
+define (ArrayDemo, dv(.VirtualInstrument, (
  c(   
     e(a(.Int32 *)       variableArray1d)
     e(a(.Int32 1000)    fixedArray1d)

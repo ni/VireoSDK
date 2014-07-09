@@ -26,7 +26,7 @@ define (c15 dv(.Double -.00000000429497) )
 define (videf1 dv(.VirtualInstrument (
 c(
 e(dv(a(.Double *) (1.1 9.01926e-314 ) ) local1) // x+1
-e(v(.String "----------") line)
+e(dv(.String "----------") line)
 )
 1
 clump(1

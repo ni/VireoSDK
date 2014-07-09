@@ -3,13 +3,13 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Int32 4) c1)   // element
-        e(v(.Int32 -5345) c2)   // element
-        e(v(.Int32 3) c3)   // element
-        e(v(a(e(.Int32),*) (2 5 ) ) c4)   // appended array
-        e(v(.Int32 1) c5)   // array
+        e(dv(.Int32 4) c1)   // element
+        e(dv(.Int32 -5345) c2)   // element
+        e(dv(.Int32 3) c3)   // element
+        e(dv(a(e(.Int32),*) (2 5 ) ) c4)   // appended array
+        e(dv(.Int32 1) c5)   // array
         e(a(e(.Int32),*) w6)
         e(a(e(.Int32),*) w7)
     )

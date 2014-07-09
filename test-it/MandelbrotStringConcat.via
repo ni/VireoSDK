@@ -1,4 +1,4 @@
-define (Mandelbrot v(.VirtualInstrument (
+define (Mandelbrot dv(.VirtualInstrument (
     // Parameter list
     c(
         i(.ComplexDouble a)
@@ -8,9 +8,9 @@ define (Mandelbrot v(.VirtualInstrument (
     c(
         e(.ComplexDouble cmplxZero)
         e(.Int32 i)
-        e(v(.Int32 0) c0)
-        e(v(.Int32 1) c1)
-        e(v(.Int32 50) c50)
+        e(dv(.Int32 0) c0)
+        e(dv(.Int32 1) c1)
+        e(dv(.Int32 50) c50)
     )
     1
     clump (1
@@ -24,26 +24,26 @@ define (Mandelbrot v(.VirtualInstrument (
     )
 )))
 
-define (MandelbrotMain v(.VirtualInstrument (
+define (MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
         e(.Int32 err)
-        e(v(.String '.')    char1)
-        e(v(.String '#')    char2)
-        e(v(.String '\n')   lineFeed)
+        e(dv(.String '.')    char1)
+        e(dv(.String '#')    char2)
+        e(dv(.String '\n')   lineFeed)
 
         e(.Double           y)
-        e(v(.Double 1.0)    yFirst)
-        e(v(.Double -1.0)   yLast)
-        e(v(.Double -0.05)  yDelta)
+        e(dv(.Double 1.0)    yFirst)
+        e(dv(.Double -1.0)   yLast)
+        e(dv(.Double -0.05)  yDelta)
 
         e(.Double           x)
-        e(v(.Double -2.0)   xFirst)
-        e(v(.Double 0.5)    xLast)
-        e(v(.Double 0.0315) xDelta)
+        e(dv(.Double -2.0)   xFirst)
+        e(dv(.Double 0.5)    xLast)
+        e(dv(.Double 0.0315) xDelta)
 
-        e(v(.Double 2)      two)
+        e(dv(.Double 2)      two)
         e(.ComplexDouble    cmplxIn)
         e(.ComplexDouble    cmplxOut)
         e(.Double           abs)

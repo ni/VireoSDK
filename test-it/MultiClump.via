@@ -1,10 +1,10 @@
-define (MultiClump  v(.VirtualInstrument  (
+define (MultiClump  dv(.VirtualInstrument  (
  c(
-    e(v(.String 'Clump 0') s0)
-    e(v(.String 'Clump 1') s1)
-    e(v(.String 'Clump 2') s2)
-    e(v(.String 'Clump 3') s3)
-    e(v(.Int32 1000) oneThousand)
+    e(dv(.String 'Clump 0') s0)
+    e(dv(.String 'Clump 1') s1)
+    e(dv(.String 'Clump 2') s2)
+    e(dv(.String 'Clump 3') s3)
+    e(dv(.Int32 1000) oneThousand)
   )
   4
   	clump(1          // Clump 0

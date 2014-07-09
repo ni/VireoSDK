@@ -3,15 +3,15 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Int32 875770417) local1)   // 1234
-        e(v(.Int32 0) defaultVal)   // default value
+        e(dv(.Int32 875770417) local1)   // 1234
+        e(dv(.Int32 0) defaultVal)   // default value
         e(.String local2)   // data string
-        e(v(.Int32 12849) local3)   // 12
+        e(dv(.Int32 12849) local3)   // 12
         e(.String local4)   // remaining string
-        e(v(.Boolean,f) prependArraySize)
-        e(v(.Boolean,f) error)
+        e(dv(.Boolean,f) prependArraySize)
+        e(dv(.Boolean,f) error)
     )
     1,
     clump(1,

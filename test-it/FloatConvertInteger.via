@@ -17,7 +17,7 @@ define (videf1 dv(.VirtualInstrument (
     e(.Single s)
     e(.Double d)
     e(.Double local1)
-    e(v(.String '---------------') line)
+    e(dv(.String '---------------') line)
  )
   2
   clump(1

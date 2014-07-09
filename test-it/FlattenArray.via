@@ -3,15 +3,15 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        e(v(.Boolean,t) prependArraySize)
-        e(v(a(e(.Int16),*) (16961 17475 17989 18503 ) ) local1)   // ABCDEFGH
-        e(v(a(e(.Int16),*) (16961 17475 17989) ) defaultVal)
+        e(dv(.Boolean,t) prependArraySize)
+        e(dv(a(e(.Int16),*) (16961 17475 17989 18503 ) ) local1)   // ABCDEFGH
+        e(dv(a(e(.Int16),*) (16961 17475 17989) ) defaultVal)
         e(.String local2)   // data string
-        e(v(a(e(.Int16),*) (16961 17475) ) local3) // Unflattened array
+        e(dv(a(e(.Int16),*) (16961 17475) ) local3) // Unflattened array
         e(.String local4)   // remaining string
-        e(v(.Boolean,t) error)
+        e(dv(.Boolean,t) error)
     )
     1,
     clump(1,

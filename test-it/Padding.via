@@ -11,9 +11,9 @@ define (Cluster8 c(e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
 define (Cluster9 c(e(.Int64) e(.Int8) e(.Int8) e(.Int16) e(.Int32)  ) )
 define (Cluster10 c(e(.Int8) e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
 
-define (HelloWorld v(.VirtualInstrument (
+define (HelloWorld dv(.VirtualInstrument (
   c(
-    e(v(.String "Hello world.") variable1)
+    e(dv(.String "Hello world.") variable1)
     e(.Cluster0 v0)
     e(.Cluster1 v1)
     e(.Cluster2 v2)

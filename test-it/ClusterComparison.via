@@ -3,30 +3,30 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
         e(c(
-            e(v(.Int32 0) n1)
-            e(v(.Int32 0) n2)
-            e(v(.Int32 1) n3)
+            e(dv(.Int32 0) n1)
+            e(dv(.Int32 0) n2)
+            e(dv(.Int32 1) n3)
         ) c4)   // y
         e(c(
-            e(v(.Int32 1) n1)
-            e(v(.Int32 1) n2)
-            e(v(.Int32 3) n3)
+            e(dv(.Int32 1) n1)
+            e(dv(.Int32 1) n2)
+            e(dv(.Int32 3) n3)
         ) c8)   // y
         e(c(
-            e(v(.Int32 1) n1)
-            e(v(.Int32 0) n2)
-            e(v(.Int32 3) n3)
+            e(dv(.Int32 1) n1)
+            e(dv(.Int32 0) n2)
+            e(dv(.Int32 3) n3)
         ) c12)   // y
         e(c(
-            e(v(.Int32 1) n1)
-            e(v(.Int32 0) n2)
-            e(v(.Int32 2) n3)
+            e(dv(.Int32 1) n1)
+            e(dv(.Int32 0) n2)
+            e(dv(.Int32 2) n3)
         ) c16)
         e(.Boolean result)
-        e(v(.String "--------") line)
+        e(dv(.String "--------") line)
     )
     1,
     clump(1,

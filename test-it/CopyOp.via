@@ -1,25 +1,25 @@
-define (MyInt32, v(.Int32,3))
+define (MyInt32, dv(.Int32,3))
 
 define (Chunk16Bytes, c(e(.Int64),e(.Int64)))
 
 define (Chunk32Bytes, c(e(.Int64, f1),e(.Int64, f2),e(.Int64, f3),e(.Int64, f4)))
 define (Chunk33Bytes, c(e(.Int64, f1),e(.Int64, f2),e(.Int64, f3),e(.Int64, f4),e(.Int8, f5)))
 
-define (CopyOps, v(.VirtualInstrument, (
+define (CopyOps, dv(.VirtualInstrument, (
  c(    
 
-    e(v(.Int32,0), c0)
-    e(v(.Int32,1), c1)
-    e(v(.Int32,2), c2)
-    e(v(.Int32,3), c3)
-    e(v(.Int32,4), c4)
-    e(v(.Int32,5), c5)
-    e(v(.Int32,6), c6)
-    e(v(.Int32,7), c7)
-    e(v(.Int32,8), c8)
-    e(v(.Int32,5), cInt32)
+    e(dv(.Int32,0), c0)
+    e(dv(.Int32,1), c1)
+    e(dv(.Int32,2), c2)
+    e(dv(.Int32,3), c3)
+    e(dv(.Int32,4), c4)
+    e(dv(.Int32,5), c5)
+    e(dv(.Int32,6), c6)
+    e(dv(.Int32,7), c7)
+    e(dv(.Int32,8), c8)
+    e(dv(.Int32,5), cInt32)
     e(.MyInt32, cMyInt32)
-    e(v(.Int32,10), c10)
+    e(dv(.Int32,10), c10)
     e(.Int32, value)
     e(.Int8, cInt8)
     e(.Int16, cInt16)
@@ -36,7 +36,7 @@ define (CopyOps, v(.VirtualInstrument, (
     e(.Chunk16Bytes, c16Bytes)
     e(.Chunk32Bytes, c32Bytes)
     e(.Chunk33Bytes, c33Bytes)
-    e(v(.String,'Hello World.'), cString)
+    e(dv(.String,'Hello World.'), cString)
     e(.String, c2String)
 
  
@@ -56,7 +56,7 @@ define (CopyOps, v(.VirtualInstrument, (
     e(.Chunk32Bytes, c2_32Bytes)
     e(.Chunk33Bytes, c2_33Bytes)
 
-    e(v(.String,'Tic'), cString)
+    e(dv(.String,'Tic'), cString)
     e(a(e(.Double),5),   arrayOfDoubleFixed1d),
     e(a(e(.Double),5,5),   arrayOfDoubleFixed2d),
     e(a(e(.Double),5,5,5),   arrayOfDoubleFixed3d),

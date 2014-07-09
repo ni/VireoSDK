@@ -1,4 +1,4 @@
-define (ToStringForTypes v(.VirtualInstrument (
+define (ToStringForTypes dv(.VirtualInstrument (
     c( 
         e(.String string)
         e(c(e(.Int32) e(.Int32))   v)

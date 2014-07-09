@@ -1,19 +1,19 @@
 //Test that it is safe to call a subVI from multiple parallel clumps and that ouput parameters are copied correctly.
 // 
-define (c0, v(.Boolean true) )
-define (c1, v(.Double 1) )
+define (c0, dv(.Boolean true) )
+define (c1, dv(.Double 1) )
 //---------------------------------------------------
 //VI Definition: CCReuse_InternalRegisters_Sub2.vi
-define (videf1, v(.VirtualInstrument, (
+define (videf1, dv(.VirtualInstrument, (
     c(
-        o(v(.Int32 0) local5)   // Calls
+        o(dv(.Int32 0) local5)   // Calls
     )
     c(
         e(.Double local1)
         e(.Double local2)
         e(.Double local3)
         e(.Int32 local4)   // Calls
-        e(v(.Int32 -1) local6)
+        e(dv(.Int32 -1) local6)
     )
     1
     clump(1

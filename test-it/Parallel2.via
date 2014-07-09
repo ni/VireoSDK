@@ -1,9 +1,9 @@
 define (Parallel2  dv(.VirtualInstrument (
      c(
-        e(v(.UInt32 100)  oneHundred)
-        e(v(.UInt32 50)  fifty)
-        e(v(.String 'Pat you head.')  sHead)
-        e(v(.String 'Rub your tummy.')  sTummy)
+        e(dv(.UInt32 100)  oneHundred)
+        e(dv(.UInt32 50)  fifty)
+        e(dv(.String 'Pat you head.')  sHead)
+        e(dv(.String 'Rub your tummy.')  sTummy)
     )
     2               //Two clumps in this VI
     clump(1         //Clump 0 the root clump
