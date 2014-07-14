@@ -1,0 +1,26 @@
+-------------
+local1 value is  505, expecting 505 
+GlobalVar1 value is  505, expecting 505 
+GlobalConst1 value is  42, expecting 42 
+local1 value is  42, expecting 42 
+GlobalVar1 value is  505, expecting 505 
+local1 value is  42, expecting 42 
+GlobalVar1 value is  42, expecting 42 
+-------------
+PrintType for GlobalVar1 <.GlobalVar1>
+PrintType for GlobalVar1 base <var(.Int32)>
+PrintType for GlobalConst1 <.GlobalConst1>
+PrintType for GlobalConst1 base <dv(.Int32)>
+-------------
+local2 value is  FiveOhFive 
+GlobalVar2 value is  FiveOhFive 
+GlobalConst2 value is  FortyTwo 
+local2 value is FortyTwo
+GlobalVar2 value is FiveOhFive
+local2 value is  FortyTwo
+GlobalVar2 value is  FortyTwo
+-------------
+PrintType for GlobalVar2 <.GlobalVar2>
+PrintType for GlobalVar2 base <var(.String)>
+PrintType for GlobalConst2 <.GlobalConst2>
+PrintType for GlobalConst2 base <dv(.String)>

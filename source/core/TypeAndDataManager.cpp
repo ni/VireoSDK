@@ -697,6 +697,7 @@ WrappedType::WrappedType(TypeManager* typeManager, TypeRef type)
     _isFlat         = _wrapped->IsFlat();
     _isValid        = _wrapped->IsValid();
     _hasCustomDefault = _wrapped->HasCustomDefault();
+    _isMutableValue = _wrapped->IsMutableValue();
     _hasPadding     = _wrapped->HasPadding();
     _hasGenericType = _wrapped->HasGenericType();
     _encoding       = _wrapped->BitEncoding();
@@ -1375,23 +1376,24 @@ ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int
 //------------------------------------------------------------
 // DefaultValueType
 //------------------------------------------------------------
-DefaultValueType* DefaultValueType::New(TypeManager* typeManager, TypeRef type)
+DefaultValueType* DefaultValueType::New(TypeManager* typeManager, TypeRef type, Boolean mutableValue)
 {
-    return TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, type)(typeManager, type);
+    return TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, type)(typeManager, type, mutableValue);
 }
 //------------------------------------------------------------
-DefaultValueType::DefaultValueType(TypeManager* typeManager, TypeRef type)
+DefaultValueType::DefaultValueType(TypeManager* typeManager, TypeRef type, Boolean mutableValue)
 : WrappedType(typeManager, type)
 {
     // Initialize the block where ever it was allocated.
     _hasCustomDefault = true;
+    _isMutableValue = mutableValue;
     _ownsDefDefData = true;
     type->InitData(Begin(kPAInit), type);
 }
 //------------------------------------------------------------
 void* DefaultValueType::Begin(PointerAccessEnum mode)
 {
-    if (mode == kPAWrite || mode == kPAReadWrite) {
+    if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite) ) {
         VIREO_ASSERT(false)
         return null;
     }
@@ -2055,6 +2057,71 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
     _Param(2) = _Param(0)->GetSubElement(_Param(1));
     return _NextInstruction();
 }
+
+#if defined(VIREO_TYPE_VARIANT)
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef, TypeRef, Boolean, TypeRef)
+{
+    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    SubString valueName = _Param(1)->MakeSubStringAlias();
+    TypeRef type = _Param(2);
+    Boolean bCreateIfNotFound = _ParamPointer(3) ? _Param(3) : false;
+    
+    TypeRef valueType = null;
+    if (valueName.Length()) {
+        // If there is a name try to find one.
+        valueType = tm->FindType(&valueName);
+        if (!valueType && bCreateIfNotFound) {
+            // Not found?, make it and give it a name.
+            valueType = DefaultValueType::New(tm, type, true);
+            valueType = tm->Define(&valueName, valueType);
+        }
+    } else {
+        // Empty name? make an anonymous one.
+        valueType = DefaultValueType::New(tm, type, true);
+    }
+    
+    _Param(4) = valueType;
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+//! Set the value of a dynamically allocated variable
+VIREO_FUNCTION_SIGNATURE3(TypeSetValue, TypeRef, StaticType, void)
+{
+    TypeRef type = _Param(0);
+    TypeRef secondType = _ParamPointer(1);
+    
+    SubString otherTypeName;
+    secondType->GetName(&otherTypeName);
+    
+    if (type->IsA(&otherTypeName)) {
+        type->CopyData(_ParamPointer(2), type->Begin(kPAWrite));
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+//! Get the value of a dynamically allocated variable
+VIREO_FUNCTION_SIGNATURE3(TypeGetValue, TypeRef, StaticType, void)
+{
+    TypeRef type = _Param(0);
+    TypeRef secondType = _ParamPointer(1);
+    
+    SubString otherTypeName;
+    secondType->GetName(&otherTypeName);
+    
+    if (type->IsA(&otherTypeName)) {
+        type->CopyData(type->Begin(kPARead), _ParamPointer(2));
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
+{
+    _Param(2) = _Param(0)->GetSubElement(_Param(1));
+    return _NextInstruction();
+}
+#endif
+
 }
 
 //------------------------------------------------------------
@@ -2067,6 +2134,13 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerRootTypeManager, "p(i(.TypeManager) o(.TypeManager))");
     DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+
+#if defined(VIREO_TYPE_VARIANT)
+    DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(.TypeManager) i(.String) i(.Type) i(.Boolean) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeSetValue, "p(io(.Type) i(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeGetValue, "p(i(.Type) o(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(.Type) i(.String) o(.Type))");
+#endif
 
     DEFINE_VIREO_FUNCTION(TypeOf, "p(i(.StaticTypeAndData) o(.Type))");
     DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(.Type) o(.Int32))");

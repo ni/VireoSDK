@@ -85,8 +85,10 @@ TypeRef TDViaParser::ParseType()
         pType = ParseBitBlock();
     } else if (typeFunction.CompareCStr(tsArrayToken)) {
         pType = ParseArray();
-    } else if (typeFunction.CompareCStr(tsValueToken) || typeFunction.CompareCStr(tsDefaultValueToken)) {
-        pType = ParseDefaultValue();
+    } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
+        pType = ParseDefaultValue(false);
+    } else if (typeFunction.CompareCStr(tsVarValueToken)) {
+        pType = ParseDefaultValue(true);
     } else if (typeFunction.CompareCStr(tsEquivalenceToken)) {
         pType = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
@@ -343,7 +345,7 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     return enc;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseDefaultValue()
+TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 {
     //  syntax:   dv ( type value )
 
@@ -351,7 +353,7 @@ TypeRef TDViaParser::ParseDefaultValue()
         return BadType();
     
     TypeRef subType = ParseType();
-    DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType);
+    DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
     _string.EatOptionalComma();
     ParseData(subType, cdt->Begin(kPAInit), subType->Rank());
@@ -1099,7 +1101,7 @@ private:
     //------------------------------------------------------------
     virtual void VisitDefaultValue(TypeRef type)
     {
-        _pFormatter->_string->AppendCStr("dv(");
+        _pFormatter->_string->AppendCStr(type->IsMutableValue() ? "var(" : "dv(");
         type->BaseType()->Visit(this);
         _pFormatter->_string->AppendCStr(")");
     }

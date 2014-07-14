@@ -77,7 +77,7 @@ private :
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
-    TypeRef ParseDefaultValue();
+    TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseNamedType();
     TypeRef ParseParamBlock();
@@ -167,8 +167,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsParamBlockToken       "p"  // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
 #define tsDefaultValueToken     "dv"
-#define tsValueToken            "v"  //TODO deprecate
-
+#define tsVarValueToken         "var"
 
 #define tsClumpsToken           "clumps"
 #define tsClumpToken            "clump"

@@ -355,7 +355,7 @@ protected:
     UInt16  _isBitLevel:1;      // ( 2) Is a bitblock or bitcluster
 
     UInt16  _hasCustomDefault:1;// ( 3) A non 0 non null value
-    UInt16  _isFullyResolved:1; // ( 4) A non 0 non null value. TODO for forward references
+    UInt16  _isMutableValue:1;  // ( 4) "default" value can be changed after creation.
     UInt16  _hasGenericType:1;  // ( 5) The type contians some generic property values
     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
     
@@ -364,7 +364,6 @@ protected:
     //  properties unique to CustomPointerType objects
     UInt16  _pointerType:3;     // (10-12)
     UInt16  _ownsDefDefData:1;  // (13) Owns DefaultDefault data (clusters and arrays)
-
     
 public:
     /// @name Core Property Methods
@@ -378,6 +377,8 @@ public:
     Int32   TopAQSize()             { return _topAQSize; }
     //! True if the initial value for data of this type is not just zeroed out memory.
     Boolean HasCustomDefault()      { return _hasCustomDefault != 0; }
+    //! True if the initial value can be changed.
+    Boolean IsMutableValue()       { return _isMutableValue != 0; }
     //! Dimensionality of the type. Simple Scalars are Rank 0, arrays can be rank 0 as well.
     Int32   Rank()                  { return _rank; }
     //! True if the type is an indexable container that contains another type.
@@ -749,10 +750,10 @@ public:
 class DefaultValueType : public WrappedType
 {
 private:
-    DefaultValueType(TypeManager* typeManager, TypeRef type);
+    DefaultValueType(TypeManager* typeManager, TypeRef type, Boolean mutableValue);
     static IntIndex StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
-    static DefaultValueType* New(TypeManager* typeManager, TypeRef type);
+    static DefaultValueType* New(TypeManager* typeManager, TypeRef type, Boolean mutableValue);
 public:
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);

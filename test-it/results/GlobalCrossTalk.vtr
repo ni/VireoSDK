@@ -1,5 +1,4 @@
-Hello
-0
-0
-45
-45
+(Line 23 Error "Argument not mutable 'g1'.")
+(Line 24 Error "Argument not mutable 'Int32'.")
+(Line 25 Error "Argument not mutable 'Int8'.")
+(Line 0 Error "Type Mismatch.")

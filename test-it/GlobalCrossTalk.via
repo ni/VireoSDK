@@ -7,24 +7,22 @@
 // Two global types their default value should not be changeable
 define (g1 dv(.Int32 42))
 define (g2 dv(.Int32 47))
-define (g3 .g2)
-
-// Two global variable types their value is changeable
-define (gX var(.Int32))
-define (gY var(.Int32))
-define (gZ .gY)
 
 define (HelloWorld dv(.VirtualInstrument (
     // this cluster serves as a type template 
     c(
         e(dv(.Int32 45) v1)
-        e(g1 v2)
+        e(.g1 v2)
     )
     clump (1
         DPrintf("Hello")
         Print(g1)
         Print(g2)
+        
+        // This generates an error at load time.
         Copy(g2 g1)
+        Copy(g2 Int32)
+        Copy(g2 Int8)
         Print(g1)
         Print(g2)
         

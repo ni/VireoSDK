@@ -62,7 +62,7 @@ private :
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
-    TypeRef ParseDefaultValue();
+    TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);

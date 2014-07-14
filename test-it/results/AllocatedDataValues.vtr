@@ -1,0 +1,18 @@
+--------------
+Static definitions before copy  <4> <5> 
+Static definitions after copy  <5> <5> 
+ Name  for dynamically allocated type is <.GlobalVar1> 
+ Base Type of dynamic type is <var(.Int32)>
+Value of dynamic var is 0
+Try to change it to 5
+Value of dynamic var is 5
+Value read is 312
+--------------
+ Name  for dynamically allocated type is <.GlobalVar2> 
+ Base Type of dynamic type is <var(.String)>
+Value of dynamic var is 
+Try to change it to Hello
+Value of dynamic var is Hello
+Look up dynamic variable by name <GlobalVar1> =>  <.GlobalVar1>
+Look up dynamic variable by name <GlobalVar2> =>  <.GlobalVar2>
+Look up dynamic variable by no name <var(.Int32)>

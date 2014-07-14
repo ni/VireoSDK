@@ -97,7 +97,7 @@ void TypeDefiner::DefineCustomValue(TypeManager& tm, const char* name, Int32 val
     TDViaParser parser(&tm, &string, null, 1);
     TypeRef t = parser.ParseType();
 
-    DefaultValueType *cdt = DefaultValueType::New(&tm, t);
+    DefaultValueType *cdt = DefaultValueType::New(&tm, t, false);
     
     if (cdt->BitEncoding() == kEncoding_SInt && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;

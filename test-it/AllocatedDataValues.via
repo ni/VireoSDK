@@ -1,0 +1,120 @@
+// Type defaults are constant it should not be possible to set
+// the default value of a dv type once it has been created. 
+
+// Are these defining values or types. Well 
+ 
+// Allocated values and static values are similar
+// So some tests are included for static ones as well.
+ 
+define (Int32_4 var(.Int32 4))
+define (Int32_5 var(.Int32 5))
+define (True dv(.Boolean t))
+define (MyGlobalVar var(.Int32 312))
+
+/*
+Dynamic Types are allocated in the same TypeManager used by the executions context 
+Dynamic types are always allocated after static types, ( e.g. those defined as part of the load 
+process.  This means fairly obviously, that no static can be dependent on a dynamic type.
+
+This allows dynamic types used within a context to be freed up in the background.
+To make this safe dynamic types are always accessed through a cookie. When the type is forcefully deleted 
+then the  cookie is removed from the dictionary. 
+ 
+*/
+
+define (TestAllocateValues dv(.VirtualInstrument (
+    c(
+        e(dv(.String "") varNameEmpty)
+        e(dv(.String "GlobalVar1") varName1)
+        e(dv(.String "GlobalVar2") varName2)
+
+        e(dv(.Type  .Int32) sourceType)
+        e(.Type  dynamicType1)
+        e(.Boolean exists)
+        
+        //e(.Type(Int32) dynamicType1)    a functional type?
+
+        // ReadType(t, val) -> This can then specialize and put in a direct function
+        // that does no type checking.
+        
+        // What if?...  The Value Type is a ZDA? back to this
+        // If its is a ZDA of Int32, then 
+        // ZDA pointer? how to do that.
+        // ZDA type.
+/*
+        So Obtain value type menas it makes a type that is a global of the designiated type.
+        
+        Any code that is bound ofter that point can find the function.
+        -> Cookie 
+        -> 
+*/     
+        e(.Type  dynamicType2)
+        e(.Int32  n)
+        e(dv(.Int32 5) n2)
+        
+        e(.String  s)
+        e(dv(.String "Hello") s2)
+
+        e(.Type,  vType)
+    )
+    clump (1
+        DPrintf("--------------")
+
+        // Basic tests for static variables
+        DPrintf("Static definitions before copy  <%s> <%s> " Int32_4 Int32_5)
+        Copy(Int32_5 Int32_4)
+        DPrintf("Static definitions after copy  <%s> <%s> " Int32_4 Int32_5)
+    
+        // Allocate a named value 
+        TypeManagerObtainValueType(* varName1 .Int32 True dynamicType1)  
+                      
+        // Printing the type should print the type's name.
+        DPrintf(" Name  for dynamically allocated type is <%s> " dynamicType1)
+        TypeBaseType(dynamicType1 vType)
+        DPrintf(" Base Type of dynamic type is <%s>" vType)
+
+        TypeGetValue(dynamicType1 n)
+        DPrintf("Value of dynamic var is %s" n)
+        TypeSetValue(dynamicType1 n2)
+        DPrintf("Try to change it to %s" n2)
+        TypeGetValue(dynamicType1 n)
+        DPrintf("Value of dynamic var is %s" n)
+
+        // (TM Type forceDestroy name)    
+        // TypeManagerReleaseValueType(* dynamicType1 * name)  
+
+        TypeGetValue(.MyGlobalVar n)
+        DPrintf("Value read is %s" n)
+
+        DPrintf("--------------")
+        // Get a new type, over write the local variable
+        TypeManagerObtainValueType(* varName2 .String True dynamicType1)        
+
+        // Printing the type should print the type's name.
+        DPrintf(" Name  for dynamically allocated type is <%s> " dynamicType1)
+        TypeBaseType(dynamicType1 vType)
+        DPrintf(" Base Type of dynamic type is <%s>" vType)
+
+        TypeGetValue(dynamicType1 s)
+        DPrintf("Value of dynamic var is %s" s)
+        TypeSetValue(dynamicType1 s2)
+        DPrintf("Try to change it to %s" s2)
+        TypeGetValue(dynamicType1 s)
+        DPrintf("Value of dynamic var is %s" s)
+
+        // Check default name
+        TypeManagerObtainValueType(* varName1 sourceType * dynamicType2)
+        DPrintf("Look up dynamic variable by name <%s> =>  <%s>" varName1 dynamicType2)
+
+        // Check default name
+        TypeManagerObtainValueType(* varName2 sourceType * dynamicType2)
+        DPrintf("Look up dynamic variable by name <%s> =>  <%s>" varName2 dynamicType2)
+        
+        // Another type of empty name
+        TypeManagerObtainValueType(* varNameEmpty sourceType * dynamicType2)
+        DPrintf("Look up dynamic variable by no name <%s>" dynamicType2)
+
+    )
+) ) )
+
+enqueue (TestAllocateValues)

@@ -423,7 +423,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         if (!_actualArgumentType->IsFlat()) {
             // Define a DefaultValue type. As a DV it will never merge to another instance.
             // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
-            DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType);
+            DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
             *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         } else {
             // For flat data the call instruction logic for VIs will initialize the callee parameter
@@ -461,8 +461,24 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     if(_actualArgumentType != null){
         // The symbol was found in the TypeManager chain. Get a pointer to the value.
         
+        UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
+        AQBlock1* pData = null;
+
         // TODO access-option based on parameter direction;
-        AQBlock1* pData = (AQBlock1*)_actualArgumentType->Begin(kPARead);
+        if (usageType == kUsageTypeInput) {
+            pData = (AQBlock1*)_actualArgumentType->Begin(kPARead);
+        } else if (usageType == kUsageTypeOutput) {
+            pData = (AQBlock1*)_actualArgumentType->Begin(kPAWrite);
+        } else if (usageType == kUsageTypeInputOutput) {
+            pData = (AQBlock1*)_actualArgumentType->Begin(kPAReadWrite);
+        } else {
+            pData = null;
+        }
+
+        if (!pData) {
+            _argumentState = kArgumentNotMutable;
+            return;
+        }
 
         // If there is a dot after the head, then there is more to parse.
         if(pathTail.ReadChar('.')) {
@@ -645,7 +661,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(SubString* subVIName)
         TypeManager *tm = this->_vi->OwningContext()->TheTypeManager();
         
         // Reentrant VI clones exist in TM the caller VI is in.
-        DefaultValueType *cdt = DefaultValueType::New(tm, targetVIType);
+        DefaultValueType *cdt = DefaultValueType::New(tm, targetVIType, false);
         VirtualInstrumentObject* pVICopy = *(VirtualInstrumentObject**)cdt->Begin(kPARead);
         vi = (VirtualInstrument*) pVICopy->RawObj();
     } else {
