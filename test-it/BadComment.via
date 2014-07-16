@@ -1,0 +1,12 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+    )
+    1
+    clump (1
+        / /  Bad Comment
+        Print(variable1)
+    )
+) ) )
+
+enqueue (HelloWorld)

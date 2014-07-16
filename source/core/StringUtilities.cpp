@@ -487,8 +487,8 @@ void SubString::EatLeadingSpaces()
             _begin++;
             continue;
         } else if( *_begin == '/') {
-            //    A '//' comment
             if ((_begin+1) < _end && _begin[1] == '/') {
+                //    A '//' comment
                 // comment until EOL
                 _begin += 2;
                 while ((_begin < _end) && !IsEolChar(*_begin)) {
@@ -496,9 +496,8 @@ void SubString::EatLeadingSpaces()
                 }
                 // Once any EOL character is found the loop goes
                 // back to white space skipping.
-            }
-            //    A '/*' comment
-            else if ((_begin+1) < _end && _begin[1]=='*') {
+            } else if ((_begin+1) < _end && _begin[1]=='*') {
+                //    A '/*' comment
                 _begin += 2;
                 while ((_begin+1 < _end) && !(_begin[0]=='*' && _begin[1] =='/')) {
                     _begin++;
@@ -508,6 +507,8 @@ void SubString::EatLeadingSpaces()
                 } else {
                     _begin += 1;
                 }
+            } else {
+                break;
             }
         } else {
             break;
