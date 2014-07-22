@@ -102,6 +102,10 @@ lARMv5:
 	make TARGETARCH=ARMv5 libvireo.so
 	arm-none-linux-gnueabi-strip libvireo.so
 
+#========= node.js native module
+node_js:
+    node-gyp configure build
+
 help:
 	@echo 'Execute "make v32"     to build a 32-bit esh executable'
 	@echo '        "make v64"     to build a 64-bit esh executable'

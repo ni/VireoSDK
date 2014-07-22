@@ -78,13 +78,11 @@ define (HelloWorld dv(.VirtualInstrument (
     Print(vSquare)
     Print(vBigEmpty)
   //  Print(vBig)
-    // EnqueueRunQueue(v2)     // crash
 */
- //    EnqueueRunQueue(v3)     // does this look....
 
   )
 ) ) )
-enqueue (HelloWorld)        // ... close to this? They need to merge.
+enqueue (HelloWorld)
 
 
 
