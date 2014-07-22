@@ -104,7 +104,7 @@ lARMv5:
 
 #========= node.js native module
 node_js:
-    node-gyp configure build
+	node-gyp configure build
 
 help:
 	@echo 'Execute "make v32"     to build a 32-bit esh executable'
