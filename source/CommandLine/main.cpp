@@ -19,7 +19,7 @@
 
 using namespace Vireo;
 
-struct  {
+static struct {
     EggShell *_pRootShell;
     EggShell *_pShell;
     ExecutionState _eState;
