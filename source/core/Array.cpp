@@ -17,7 +17,6 @@ SDG
 using namespace Vireo;
 
 //------------------------------------------------------------
-
 DECLARE_VIREO_PRIMITIVE2( ArrayResize, TypedArrayCore*, Int32, (_Param(0)->Resize1D(_Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE2( ArrayLength, TypedArrayCore*, Int32, (_Param(1) = _Param(0)->Length()) )
 DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCore*, Int32, (_Param(1) = _Param(0)->Type()->Rank()) )

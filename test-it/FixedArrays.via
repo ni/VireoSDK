@@ -11,11 +11,10 @@ define (Test dv(.VirtualInstrument (
     e( a( e(.Double) 5 5)   arrayOfDoubleFixed2d)
     e(a(e(.Double) 5 5 5)   arrayOfDoubleFixed3d)
     e(dv(a(e(.Double) * ) (7))   arrayOfDoubleDynamic1ddv)
-    e(dv(a(e(.Double) 5) (7 8 9)),   arrayOfDoubleFixed1ddv)
-    //e(dv(a(e(.Double),5,5), (7)),   arrayOfDoubleFixed2ddv)
-    //e(dv(a(e(.Double),5,5,5), (7)),   arrayOfDoubleFixed3ddv)
+    e(dv(a(e(.Double) 5) (7 8 9))    arrayOfDoubleFixed1ddv)
+    //e(dv(a(e(.Double) 5 5), (7))   arrayOfDoubleFixed2ddv)
+    //e(dv(a(e(.Double) 5 5 5)  (7))   arrayOfDoubleFixed3ddv)
     )
-  1
   clump(1
   
     DPrintf('Hello World The value is %d and %d',value, value)

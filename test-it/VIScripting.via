@@ -43,7 +43,6 @@ define (HelloWorld dv(.VirtualInstrument (
         ) badProgram)
         //----------------------------------------------
 
-
         e(.TypeManager  tm)
         e(dv(.String "HelloWorld1")             hw1str)
         e(dv(.String "MyVeryOwnString")         myVeryOwnStringName)
@@ -52,16 +51,15 @@ define (HelloWorld dv(.VirtualInstrument (
         
         // VirtualInstrument is the VI's type, not an instance of that type.
         // To Make an instance of the type a variable of that type must be initialized.
-        // Somthing is a bit odd about all of this  
+        // Something is a bit odd about all of this  
         e(.VirtualInstrument                    vi1)
         e(.VirtualInstrument                    vi2)
         e(.VirtualInstrument                    vi3)
         e(.VirtualInstrument                    viBad)
-/*         e(dv(.VirtualInstrument (
-        
+        e(dv(.VirtualInstrument (        
             c(
-             //   following line causes seg fault
-             //   e(dv(.String 'a by-value hello world') variable1)
+            e(dv(.Int32 505) variable10)
+         //   e(dv(.String 'a by-value hello world') variable1)
             )
             1
             clump (1
@@ -69,12 +67,11 @@ define (HelloWorld dv(.VirtualInstrument (
             // Print(variable1)
             )
             ))
-            byValueVI)
-*/
+            viValue)
+
         e(.String                               errorLog)
         e(dv(.Type .String)                     stringType)
     )
-    1
     clump (1
         DPrintf("-------")
         Print (goodProgram1)
@@ -100,9 +97,12 @@ define (HelloWorld dv(.VirtualInstrument (
         Print (errorLog)
         EnqueueRunQueue(vi2)    // Press the run button
         DPrintf("-------")
-     //   EnqueueRunQueue(byValueVI)
-        // Copy(byValueVI vi3)  // not quite ready yet
-        // EnqueueRunQueue(vi3) // not quite ready yet
+
+//      Not quire ready to work, the VI value exists but is not quire initialized correctly         
+//      EnqueueRunQueue(viValue)
+//      vi1()
+
+
     )
 ) ) )
 enqueue (HelloWorld)
