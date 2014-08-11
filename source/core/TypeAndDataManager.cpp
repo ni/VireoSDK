@@ -1473,7 +1473,7 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     
     VIREO_ASSERT(_pRawBufferBegin == null);
     VIREO_ASSERT(_pRawBufferEnd == null);
-    ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false);
+    ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
 }
 //------------------------------------------------------------
 void TypedArrayCore::Delete(TypedArrayCore* pArray)
@@ -1565,14 +1565,16 @@ Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
 // Resize an array to match an existing pattern. The pattern
 // may be an existing array or array type definition. The latter may
 // contain variable or bounded dimension lengths.
-Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements)
+Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean init)
 {
     if (Type()->Rank() != rank) {
         return false;
     }
 
-    IntIndex *pEndLengths = dimensionLengths + rank;
-    IntIndex *pNewLength = dimensionLengths;
+    // The type knows if dimensions are bounded fixed or variable
+    IntIndex *pTypesLengths = Type()->GetDimensionLengths();
+    IntIndex *pEndRequestedLengths = dimensionLengths + rank;
+    IntIndex *pRequestedLength = dimensionLengths;
     IntIndex slabLength = ElementType()->TopAQSize();
     IntIndex originalCoreLength;
     
@@ -1580,27 +1582,48 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     IntIndex *pSlabLength = GetSlabLengths();
     originalCoreLength = Length();
     
-    while(pNewLength < pEndLengths)
+    while(pRequestedLength < pEndRequestedLengths)
     {
         *pSlabLength++ = slabLength;
+        Boolean zeroOutLogicalDim = false;
 
-        // TODO add asserts to detect well formed variable/bounded sized arrays
-        IntIndex dimLength = *pNewLength;
+        IntIndex dimLength = *pRequestedLength;
+        IntIndex typesDimLength = *pTypesLengths;
+
+        // Sanitize the requested sizes. The size requested can not
+        // over ride the specification defined by the type.
         if (dimLength == kVariableSizeSentinel) {
-            // If the reference size is "variable" then initial size will be empty.
-            // FYI this only happens when the reference is a Type.
-            slabLength = 0;
+            // Setting a dim to "variable" is ignored, make the request 0.
             dimLength = 0;
-        } else if (dimLength >= 0) {
-            slabLength *= dimLength;
-        } else {
-            // Its a bounded array, resize to match largest size, but mark the length as zero
-            slabLength *= -dimLength;
-            dimLength = 0;
+        } else if (dimLength < 0) {
+            dimLength = -dimLength;
+            if (init) {
+                zeroOutLogicalDim = true;
+            }
         }
+        
+        // Now compare with the type's specifications
+        if (typesDimLength == kVariableSizeSentinel) {
+            // Let the sanitized request pass through.
+        } else if(typesDimLength >= 0) {
+            // Bounded trumps request
+            dimLength = typesDimLength;
+        } else {
+             if (dimLength > -typesDimLength) {
+                 dimLength = -typesDimLength;
+             }
+        }
+        slabLength *= dimLength;
+
+        if (zeroOutLogicalDim)
+            dimLength = 0;
         *pLength++ = dimLength;
-        pNewLength++;
+        pRequestedLength++;
+        pTypesLengths++;
     }
+    
+    // The array is not been resized yet, but the sims and slabs have, so use
+    // the length function to calculate the new length.
     IntIndex newLength = Length();
     
     return ResizeCore(slabLength, originalCoreLength, newLength, preserveElements);
@@ -1610,7 +1633,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
 Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCore* pReference)
 {
     if (Type()->Rank() == pReference->Type()->Rank()) {
-        return ResizeDimensions(_typeRef->Rank(), pReference->GetDimensionLengths(), true);
+        return ResizeDimensions(_typeRef->Rank(), pReference->GetDimensionLengths(), true, false);
     } else {
         return false;
     }
@@ -2058,6 +2081,32 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
     return _NextInstruction();
 }
 
+#if defined(VIREO_TYPE_CONSTRUCTION)
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(TypeMakeVectorType, TypeManagerRef, TypeRef, TypeRef, Int32)
+{
+    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    
+    _Param(1) = ArrayType::New(tm, _Param(2), 1, _ParamPointer(3));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+struct TypeMakeClusterType : public VarArgInstruction
+{
+    _ParamDef(TypeManagerRef, tm);
+    _ParamDef(TypeRef, computedType);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
+{
+//  TypeManager *tm = _ParamPointer(tm) ? _Param(tm) : THREAD_EXEC()->TheTypeManager();
+//   _Param(3) = ArrayType::New(tm, _Param(1), 1, _ParamPointer(2));
+    return _NextInstruction();
+}
+#endif
+
 #if defined(VIREO_TYPE_VARIANT)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef, TypeRef, Boolean, TypeRef)
@@ -2158,6 +2207,12 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(.Type) i(.Int32) o(.Type))");
     DEFINE_VIREO_FUNCTION(TypeGetSubElementByName, "p(i(.Type) i(.String) o(.Type))");
+
+#if defined(VIREO_TYPE_CONSTRUCTION)
+    DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(.TypeManager) o(.Type) i(.Type) i(.Int32))");
+  //  DEFINE_VIREO_FUNCTION(TypeMakeClusterType, "p(i(.VarArgCount) i(.TypeManager) o(.Type) i(.Type))");
+#endif
+
 DEFINE_VIREO_END()
 
 

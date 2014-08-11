@@ -96,6 +96,9 @@ TypeRef TDViaParser::ParseType()
     } else if (typeFunction.CompareCStr("*")) {  //short hand for PointerType
         pType = ParsePointerType(true);
     } else {
+#if defined(VIREO_TYPE_CONSTRUCTION)
+        // Call a type function directly
+#endif
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive", &typeFunction);
     }
     return pType;
@@ -209,7 +212,7 @@ TypeRef TDViaParser::ParseArray()
 {
     SubString token;
     IntIndex  rank=0;
-    IntIndex  dimensionLengths[ArrayType::MaximumRank];
+    ArrayDimensionVector  dimensionLengths;
         
     if (!_string.ReadChar('('))
         return BadType();
@@ -220,13 +223,19 @@ TypeRef TDViaParser::ParseArray()
     _string.ReadToken(&token);
     while (!token.CompareCStr(")")) {
         
+
         IntMax dimensionLength;
         if(!token.ReadInt(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension", &token);
             return BadType();
         }
 
-        dimensionLengths[rank] = (IntIndex) dimensionLength;
+        if (rank >= kMaximumRank) {
+            LOG_EVENT(kSoftDataError, "Too many dimensions");
+        } else {
+            dimensionLengths[rank] = (IntIndex) dimensionLength;
+        }
+        
         rank++;
         
         _string.EatOptionalComma();
@@ -356,7 +365,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
     _string.EatOptionalComma();
-    ParseData(subType, cdt->Begin(kPAInit), subType->Rank());
+    ParseData(subType, cdt->Begin(kPAInit));
     
     if (!_string.ReadChar(')'))
         return BadType();
@@ -364,43 +373,62 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     return cdt;
 }
 //------------------------------------------------------------
-// The opening "(" has been parsed before this function has been called
-void TDViaParser::PreParseElements(Int32 rank, IntIndex *dimensionLengths)
+//
+void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths)
 {
     SubString  token;
-    SubString tempString(_string);
+    SubString  tempString(_string);
     
-    // Figure out how many initializers there are.
-    int depth = 0;
+    // Figure out how many initializers there are. The rank parameter
+    // indicates how many levels are realated to the type being parsed
+    // nesting deeper than that is assumed to be part of a deeper type
+    // such as a cluster or nested array.
+    
+    Int32 depth = 0;
+    
+    ArrayDimensionVector tempDimensionLengths;
+    for (Int32 i = 0; i < kMaximumRank; i++) {
+        dimensionLengths[i] = 0;
+        tempDimensionLengths[i] = 0;
+        }
 
-    for (Int32 i = 0; i < rank; i++)
-        dimensionLengths[i]= 0;
-
+    // The opening "(" has been parsed before this function has been called.
+    Int32 dimIndex;
     while (depth >= 0) {
+        dimIndex = (rank - depth) - 1;
+
         tempString.ReadToken(&token);
         if (token.CompareCStr("(")) {
-            // Nested elements
-            if (depth < rank)
-                dimensionLengths[depth]++;
+            if (dimIndex >= 0)
+                tempDimensionLengths[dimIndex]++;
+    
             depth++;
         } else if (token.CompareCStr(")")) {
+            // When popping out, store the max size for the current level.
+            if (dimIndex >= 0) {
+                // If the inner dimension is larger than processed before record the larger number
+                if (tempDimensionLengths[dimIndex] > dimensionLengths[dimIndex])
+                    dimensionLengths[dimIndex] = tempDimensionLengths[dimIndex];
+
+                // Reset the temp counter for this level in case its used again.
+                tempDimensionLengths[dimIndex] = 0;
+            }
             depth--;
-        } else if(!token.CompareCStr(".") && !token.CompareCStr("-")) {  // TODO "." sould be part of the token
-            // Simple elements
-            if (depth < rank)
-                dimensionLengths[depth]++;
+        } else {
+            if (dimIndex >= 0)
+                tempDimensionLengths[dimIndex]++;
         }
         tempString.EatOptionalComma();
     }
 }
-
 //------------------------------------------------------------
-void TDViaParser::ParseArrayData(TypeRef type, void* pData, Int32 rank)
+void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
-    VIREO_ASSERT(pData != null);
-    TypeRef arrayElementType = type->GetSubElement(0);
-    TypedBlock* pArray = *(TypedBlock**) pData;
     VIREO_ASSERT(pArray != null);
+    TypeRef type = pArray->Type();
+    TypeRef arrayElementType = pArray->ElementType();
+    
+    Int32 rank = type->Rank();
     
     if (rank >= 1) {
         // Read one token; it should either be a '(' indicating a collection
@@ -438,56 +466,63 @@ void TDViaParser::ParseArrayData(TypeRef type, void* pData, Int32 rank)
                 }
             }
         } else if (token.CompareCStr("(")) {
-            // Second option, it is a list of values. The outer most dimension will preflight the parsing
-            // If one or more dimension lengths are variable then the outer most dimension will preflight
-            // the parsing so the storage can be allocated. If they are all fixed or bounded
-            // that wont be necessary, the storage should already be the right size.
-            
-            IntIndex* pLengths = pArray->Type()->GetDimensionLengths();
-            VIREO_ASSERT(pLengths != null);
-            IntIndex length = pLengths[rank-1];
-          
-            //TODO: for multim dim this can only happen at the root level
-            IntIndex initializerCount = 0;
-            PreParseElements(1, &initializerCount);
+            // Second option, it is a list of values.
+            // If one or more dimension lengths are variable then the outer most dimension
+            // preflights the parsing so the overall storage can be allocated.
+            // Note that if the type is fixed or bounded the storage has already
+            // been allocated, though for bounded this will still set the logical size.
+                        
+            if (level == 0) {
+                ArrayDimensionVector initializerDimensionLengths;
+                
+                PreParseElements(rank, initializerDimensionLengths);
 
-            if (length == kVariableSizeSentinel) {
-                // Length is based on how many initializers there are
-                length = initializerCount;
-                pArray->Resize1D(length);
+                // Resize the array to the degree possible to match initializers
+                // if some of the dimensions are bounded or fixed that may impact
+                // any changes, but logical  dims can change.
+                pArray->ResizeDimensions(rank, initializerDimensionLengths, false, false);
+                
+                VIREO_ASSERT(pFirstEltInSlice == null);
+                pFirstEltInSlice = pArray->RawBegin();
             } else {
-                // TODO use some version of ResizeToMatch
-                if (length < 0) {
-                    // bounded
-                    length = -length;
-                    // Storage wont be reallocated, but
-                    // logical size may be set
-                    if (initializerCount > length) {
-                        pArray->Resize1D(length);
-                    } else {
-                        pArray->Resize1D(initializerCount);
-                    }
-                } else {
-                    pArray->Resize1D(length);
-                }
+                VIREO_ASSERT(pFirstEltInSlice != null);
             }
-        
+ 
+            // Get the dim lengths and slabs for tha actual array, not its
+            // reference type. The reference type may indicate variable size
+            // but the actaul array will always have a specific size.
+            IntIndex* pLengths = pArray->GetDimensionLengths();
+            IntIndex* pSlabs = pArray->GetSlabLengths();
+
             // Now that the Array is the right size, parse the initializers storing
             // as many as there is room for. Log a warning if extras are found.
-            AQBlock1* pArrayData = (AQBlock1*) pArray->RawBegin();
-            IntIndex  step = arrayElementType->TopAQSize();
+            Int32 dimIndex = rank - level - 1;
+            IntIndex step = pSlabs[dimIndex];
+            Int32 length = pLengths[dimIndex];
+
             IntIndex elementCount = 0;
             Boolean bExtraInitializersFound = false;
+            AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             
             while (!_string.ReadChar(')') && (_string.Length() > 0) ) {
                 // Only read as many elements as there was room allocated for.
-                void* pElement = elementCount < length ? pArrayData : null;
+                
+                void* pElement = elementCount < length ? pEltData : null;
                 if (pElement == null) {
                     bExtraInitializersFound = true;
                 }
-                ParseData(arrayElementType, pElement, arrayElementType->Rank());
+                if (dimIndex == 0) {
+                    // For the inner most dimension parse the element type
+                    ParseData(arrayElementType, pElement);
+                } else {
+                    // For nested dimensions just parse the next inner dimension
+                    ParseArrayData(pArray, pElement, level + 1);
+                }
                 _string.EatOptionalComma();
-                pArrayData += step;
+                
+                if (pFirstEltInSlice) {
+                    pEltData += step;
+                }
                 elementCount++;
             }
             
@@ -498,15 +533,16 @@ void TDViaParser::ParseArrayData(TypeRef type, void* pData, Int32 rank)
             return LOG_EVENT(kHardDataError, "'(' missing");
         }
     } else if (rank == 0) {
+        // For Zero-D arrays there are no parens, just parse the element
         AQBlock1* pArrayData = (AQBlock1*) pArray->RawBegin();
-        ParseData(arrayElementType, pArrayData, arrayElementType->Rank());
+        ParseData(arrayElementType, pArrayData);
     }
 }
 //------------------------------------------------------------
 // ParseData - parse a value from the string based on the type
 // If the text makes sense then kNIError_Success is returned.
 // If pData is Null then only the syntax check is done.
-void TDViaParser::ParseData(TypeRef type, void* pData, Int32 rank)
+void TDViaParser::ParseData(TypeRef type, void* pData)
 {
     static const SubString strVI(VI_TypeName);
 
@@ -519,7 +555,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData, Int32 rank)
     SubString  token;
     switch (encoding){
         case kEncoding_Array:
-            return ParseArrayData(type, pData, rank);
+            return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
       //case kEncoding_Int1sCompliment:
         case kEncoding_UInt:
@@ -608,7 +644,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData, Int32 rank)
                     _string.ReadToken(&token);
                     if (token.CompareCStr("*")) {
                         // If a generic is specified then the default for the type should be
-                        // used. For some pointer type this is a process or thread global, etc.
+                        // used. For some pointer types this may be a process or thread global, etc.
                         // TODO this is at too low a level, it could be done at
                         // a higher level.
                         *(ExecutionContext**)pData = THREAD_EXEC();
@@ -625,7 +661,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData, Int32 rank)
             SubString  token;
             _string.ReadValueToken(&token, TokenTraits_Any);
             if(token.CompareCStr("(")) {
-                //list of values.
+                // List of values (a b c)
                 AQBlock1* baseOffset = (AQBlock1*)pData;
                 int i = 0;
                 while (!_string.ReadChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
@@ -633,7 +669,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData, Int32 rank)
                     void* elementData = baseOffset;
                     if(elementData != null)
                         elementData = baseOffset + elementType->ElementOffset();
-                    ParseData(elementType, elementData, elementType->Rank());
+                    ParseData(elementType, elementData);
                     i++;
                 }
             }
@@ -1557,7 +1593,7 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &string, &log, 1);
     parser._loadVIsImmediatly = true;
     
-    parser.ParseData(type, _ParamPointer(2), type->Rank());
+    parser.ParseData(type, _ParamPointer(2));
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1585,7 +1621,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         SubString Int64Name("Int64");
         TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType(&Int64Name);
 
-        parser.ParseData(parseType, &parsedValue, type->Rank());
+        parser.ParseData(parseType, &parsedValue);
 
         success = (parser.ErrorCount() == 0);
         if (success) {
@@ -1640,7 +1676,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
         SubString DoubleName("Double");
         TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType(&DoubleName);
 
-        parser.ParseData(parseType, &parsedValue, type->Rank());
+        parser.ParseData(parseType, &parsedValue);
 
         success = (parser.ErrorCount() == 0);
         if (success) {

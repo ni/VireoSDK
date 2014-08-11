@@ -74,6 +74,8 @@ namespace Vireo
 typedef VIREO_ARRAY_INDEX_TYPE        IntIndex;
     
 enum { kVariableSizeSentinel = VIREO_ARRAY_VARIABLE_SENTINEL };
+enum { kMaximumRank = 15 };
+typedef IntIndex  ArrayDimensionVector[kMaximumRank];
 
 //------------------------------------------------------------
 typedef enum {

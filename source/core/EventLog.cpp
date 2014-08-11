@@ -49,7 +49,7 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *me
             preamble = "HardError";
             _hardErrorCount++;
             break;
-        case kAssetFailure:
+        case kAssertFailure:
             preamble = "Assert";
             _hardErrorCount++;
             break;

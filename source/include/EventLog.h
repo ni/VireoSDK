@@ -41,7 +41,7 @@ public:
         kHardDataError = 3,
         
         //! Internal state of the system has been compromised.
-        kAssetFailure = 4,
+        kAssertFailure = 4,
     };
     
     EventLog(StringRef stringRef);

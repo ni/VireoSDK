@@ -59,7 +59,7 @@ VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
         pShell->Delete();
 }
 //------------------------------------------------------------
-VIREO_EXPORT void ExecutionContext_EnqueRunQueue(ExecutionContext* pContext, VIClump* pClump)
+VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContext* pContext, VIClump* pClump)
 {
     pContext->EnqueueRunQueue(pClump);
 }
@@ -303,7 +303,7 @@ VIREO_EXPORT void Data_Resize1D(TypedBlock* object, Int32 size)
 VIREO_EXPORT void Data_ResizeDimensions(TypedBlock* object, Int32 rank, IntIndex* sizes)
 {
     VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    object->ResizeDimensions(rank, sizes, false);
+    object->ResizeDimensions(rank, sizes, false, false);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_RawPointerFromOffset(TypedBlock* object, Int32 offset)

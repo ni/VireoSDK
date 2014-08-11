@@ -64,6 +64,8 @@ SDG
 
     #define VIREO_TYPE_VARIANT 1
 
+    #define VIREO_TYPE_CONSTRUCTION 1
+
     // For Vireo-full functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.

@@ -719,7 +719,7 @@ private:
     static IntIndex StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
 
 public:
-    enum { MaximumRank = 15 };
+    
     static ArrayType* New(TypeManager* typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
    
     // _pDefault is a singleton for each instance of an ArrayType used as the default
@@ -906,10 +906,11 @@ public:
         return length;
     }
     
-    // Cpacity is product of all potential dimension lengths ( differs from actual size
+    // Capacity is product of all potential dimension lengths ( differs from actual size
     // in bounded arrays. Could be extended to work with optimistic allocations.
     IntIndex Capacity()
     {
+        // TODO add support for multiple dimensions
         return ((IntIndex)(_pRawBufferEnd - _pRawBufferBegin)) / _eltTypeRef->TopAQSize();
     }
     
@@ -917,7 +918,7 @@ public:
     IntIndex AQBlockLength(IntIndex count) { return ElementType()->TopAQSize() * count; }
     
     //! Resize for multi dim arrays
-    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld);
+    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean init);
     
     //! Make this array match the shape of the reference type.
     Boolean ResizeToMatchOrEmpty(TypedArrayCore* pReference);
