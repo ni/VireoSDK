@@ -28,6 +28,23 @@ VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(ArrayDimensions, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
+{
+    Int32 rank = _Param(0)->Type()->Rank();
+    IntIndex* pLengths = _Param(0)->GetDimensionLengths();
+    _Param(1)->Replace1D(0, rank, pLengths, true);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(ArrayResizeDimensions, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
+{
+    // Details on how arrays are redimensioned are in ResizeDimensions().
+    Int32 rankProvided = _Param(1)->Length();
+    IntIndex* pLengths = _Param(1)->Begin();
+    _Param(0)->ResizeDimensions(rankProvided, pLengths, false, false);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, Int32, void)
 {
     TypedArrayCore* array = _Param(0);
@@ -83,7 +100,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
 
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreRef, Int32, TypedArrayCoreRef)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -105,7 +122,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreR
     }
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -131,7 +148,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     }
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, Int32, void)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -148,7 +165,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, 
 
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRef, Int32, TypedArrayCoreRef)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -183,7 +200,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
 
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -201,7 +218,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
 
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int32)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -275,6 +292,8 @@ DEFINE_VIREO_BEGIN(ExecutionContext)
     DEFINE_VIREO_FUNCTION(ArrayLength, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayRank, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayResize, "p(io(.Array) i(.Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayDimensions, "p(i(.Array) o(a(.Int32 *)))")
+    DEFINE_VIREO_FUNCTION(ArrayResizeDimensions, "p(i(.Array) i(a(.Int32 *)))")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt, "p(i(.Array) i(.Int32) o(.*))")
     DEFINE_VIREO_FUNCTION(ArrayAppendElt, "p(i(.Array) i(.*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, "p(o(.Array) i(.Array) i(.Int32) i(.*))")

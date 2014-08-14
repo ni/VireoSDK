@@ -1567,37 +1567,71 @@ Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
 // contain variable or bounded dimension lengths.
 Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean init)
 {
-    if (Type()->Rank() != rank) {
-        return false;
-    }
-
-    // The type knows if dimensions are bounded fixed or variable
-    IntIndex *pTypesLengths = Type()->GetDimensionLengths();
-    IntIndex *pEndRequestedLengths = dimensionLengths + rank;
-    IntIndex *pRequestedLength = dimensionLengths;
-    IntIndex slabLength = ElementType()->TopAQSize();
-    IntIndex originalCoreLength;
+    Int32 valuesRank = Type()->Rank();
     
-    IntIndex *pLength = GetDimensionLengths();
-    IntIndex *pSlabLength = GetSlabLengths();
-    originalCoreLength = Length();
+    // Three sets of dimension sizes are used in this algorithm:
+    //
+    // (1) The requested dimension lenghts.
+    //
+    // (2) The underlying types dimension lenghts. The may include variable fixed and bounded)
+    //     requests must be constrained to the the these specifications.
+    //
+    // (3) The actual values dimension lenghts. These are alwasy whole numbers.
+    //
+    // If the requested size contains a variable sentinel the existing value size will be used.
+    // If the requested size if bounded (negative) the bounded size will be used.
+    //
+
+    IntIndex *pRequestedLength;
+    IntIndex *pEndRequestedLengths;
+    IntIndex *pTypesLengths = Type()->GetDimensionLengths();
+    IntIndex *pValueLengths = GetDimensionLengths();
+    IntIndex *pSlabLengths = GetSlabLengths();
+
+    // Only used if too few dimensions passed in.
+    ArrayDimensionVector tempDimensionLengths;
+    
+    IntIndex slabLength = ElementType()->TopAQSize();
+    IntIndex originalCoreLength = Length();
+
+    if (valuesRank <= rank) {
+        // If enough dimensions are supplied use them inplace
+        pRequestedLength = dimensionLengths;
+    } else {
+        // It too few are supplied fill out the remaining in a temporary copy.
+        int i=0;
+        int dimsToBeFilledIn = valuesRank - rank;
+        
+        for (; i < dimsToBeFilledIn ; i++) {
+            // Inner dimensions stay the same so copy from value's.
+            tempDimensionLengths[i] = pValueLengths[i];
+        }
+        for (; i < valuesRank ; i++) {
+            // Use supplied dims for outer.
+            tempDimensionLengths[i] = dimensionLengths[i - dimsToBeFilledIn];
+        }
+        pRequestedLength = tempDimensionLengths;
+    }
+    pEndRequestedLengths = pRequestedLength + valuesRank;
     
     while(pRequestedLength < pEndRequestedLengths)
     {
-        *pSlabLength++ = slabLength;
+        *pSlabLengths++ = slabLength;
         Boolean zeroOutLogicalDim = false;
 
         IntIndex dimLength = *pRequestedLength;
         IntIndex typesDimLength = *pTypesLengths;
 
-        // Sanitize the requested sizes. The size requested can not
-        // over ride the specification defined by the type.
+        // Sanitize the requested sizes. The size requested
+        // cannot override the specification defined by the type.
         if (dimLength == kVariableSizeSentinel) {
-            // Setting a dim to "variable" is ignored, make the request 0.
-            dimLength = 0;
+            // If the array is resized to "variable" then the existing size is used.
+            dimLength = *pValueLengths;
         } else if (dimLength < 0) {
             dimLength = -dimLength;
             if (init) {
+                // When initializing, the array will be structurally sized to
+                // to the bounded size, logically the dimension will be 0.
                 zeroOutLogicalDim = true;
             }
         }
@@ -1606,10 +1640,13 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         if (typesDimLength == kVariableSizeSentinel) {
             // Let the sanitized request pass through.
         } else if(typesDimLength >= 0) {
-            // Bounded trumps request
+            // Fixed trumps request
             dimLength = typesDimLength;
         } else {
              if (dimLength > -typesDimLength) {
+                 // If beyond bounded size make it the bounded size.
+                 // TODO logical must set after resizing.
+                 // TODO In general arrays that have mix of variable with bounded or fixed is not done yet
                  dimLength = -typesDimLength;
              }
         }
@@ -1617,7 +1654,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
 
         if (zeroOutLogicalDim)
             dimLength = 0;
-        *pLength++ = dimLength;
+        *pValueLengths++ = dimLength;
         pRequestedLength++;
         pTypesLengths++;
     }
