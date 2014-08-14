@@ -20,6 +20,7 @@ install:
 	cp objs/vireo.js $(SITEDIR)/vireo.js
 	cp SiteSource/*.html $(SITEDIR)/
 	cp SiteSource/*.via $(SITEDIR)/
+	cp SiteSource/*.json $(SITEDIR)/
 	@echo '==> website files copied to  $(SITEDIR)'
 
 help:

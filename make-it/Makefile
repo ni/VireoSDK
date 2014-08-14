@@ -107,9 +107,9 @@ node_js:
 	node-gyp configure build
 
 help:
-	@echo 'Execute "make v32"     to build a 32-bit esh executable'
+	@echo 'Execute "make simple"  to build the default esh executable'
+	@echo '        "make v32"     to build a 32-bit esh executable'
 	@echo '        "make v64"     to build a 64-bit esh executable'
-	@echo '        "make simple"  to build the default esh executable'
 	@echo '        "make lARMv5"  to build the libvireo.so library for an ARMv5 target'
 	@echo
 	@echo '        "make install" to install esh to $(PROGRAM_DIR), uses sudo'
@@ -118,11 +118,11 @@ help:
 	@echo ''
 	@echo 'Options can be combined. For example:'
 	@echo ''
-	@echo '        "make clean v64 install"'
+	@echo '        "make clean simple install"'
 	@echo ''
 	@echo 'To build debug versions with symbols and extra asserts, define the DEBUG flag:'
 	@echo ''
-	@echo '        "make clean v64 install DEBUG=1"'
+	@echo '        "make clean simple install DEBUG=1"'
 	@echo ''
 
 # Build the executable with symbols stripped
