@@ -12,6 +12,9 @@
 	<Item Name="BuildMenu5 1.vi" Type="Ability VI" URL="../BuildMenu5 1.vi">
 		<Property Name="NI.XItem.Name" Type="Str">BuildMenu5</Property>
 	</Item>
+	<Item Name="GenerateCode 1.vi" Type="Ability VI" URL="../GenerateCode 1.vi">
+		<Property Name="NI.XItem.Name" Type="Str">GenerateCode</Property>
+	</Item>
 	<Item Name="GetBounds 1.vi" Type="Ability VI" URL="../GetBounds 1.vi">
 		<Property Name="NI.XItem.Name" Type="Str">Bounds</Property>
 	</Item>
