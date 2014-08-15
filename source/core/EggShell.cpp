@@ -173,6 +173,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
     return log.TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
 //------------------------------------------------------------
+// TODO Eventually Vireo should use a a Vireo program to process file io
 #include <fcntl.h>
 #include <stdio.h>
 #ifdef _WIN32
@@ -187,7 +188,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
 	#include <sys/stat.h>
 	#define POSIX_NAME(_name_) _name_ 
 #endif
-
+//------------------------------------------------------------
 NIError EggShell::ReadFile(const char* name, SubString *string)
 {
     struct stat fileInfo;
@@ -202,7 +203,7 @@ NIError EggShell::ReadFile(const char* name, SubString *string)
         printf("(Error \"file <%s> not found\")\n", name);
     } else {
         fstat(h, &fileInfo);
-        size_t bytesToRead = fileInfo.st_size;    
+        size_t bytesToRead = (size_t)fileInfo.st_size;
         _mallocBuffer =  (char*) _typeManger->Malloc(bytesToRead);
         if (h && _mallocBuffer) {
             
@@ -247,9 +248,10 @@ NIError EggShell::ReadStdinLine(SubString *string)
         packet.ReadInt(&packetSize);
         
         if (_mallocBuffer) {
+            // Free the old buffer.
             _typeManger->Free(_mallocBuffer);
         }
-        _mallocBuffer = (char*) _typeManger->Malloc(packetSize);
+        _mallocBuffer = (char*) _typeManger->Malloc((size_t)packetSize);
         printf("packet size %d\n", (int) packetSize);
 
 #if 1
@@ -263,7 +265,7 @@ NIError EggShell::ReadStdinLine(SubString *string)
     	printf("\n");
 
 #else
-        // hangs when reading large buffers from debug console.
+        // Hangs when reading large buffers from debug console.
         size_t sz = fread(_mallocBuffer, sizeof(char), packetSize, stdin);
 #endif
         string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);

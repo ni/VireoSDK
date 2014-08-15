@@ -42,8 +42,6 @@ typedef unsigned long long  UInt64;
 typedef float               Single;
 typedef double              Double;
 
-// For places where the Vireo kenel function hold used data
-// these types can be used.
 typedef Int64               IntMax;
 typedef UInt64              UIntMax;
 
