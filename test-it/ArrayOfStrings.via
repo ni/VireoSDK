@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: stringManipulation.vi
-define (videf1, dv(.VirtualInstrument, (
+define (videf1  dv(.VirtualInstrument (
     c(
         e(dv(.Int32 0) c1)   // index
         e(dv(.String 'brown fox ') c2)   // new element/subarray
@@ -15,16 +15,16 @@ define (videf1, dv(.VirtualInstrument, (
         e(dv(.String 'One Fish, ') c8)   // element
         e(dv(.Int32 2) c9)   // index
         e(dv(.String 'Two Fish. ') c10)   // element
-        e(a(e(.String),*) w11)
-        e(a(e(.String),*) w12)
-        e(a(e(.String),*) w13)
-        e(a(e(.String),*) w14)
+        e(a(e(.String) *) w11)
+        e(a(e(.String) *) w12)
+        e(a(e(.String) *) w13)
+        e(a(e(.String) *) w14)
         e(.String w15)
-        e(a(e(.String),*) w16)
+        e(a(e(.String) *) w16)
         e(.String w17)
     )
-    1,
-    clump(1,
+    1
+    clump(1 
         ArrayConcatenate( w11 c3 c2 )
         ArrayConcatenate( w12 c5 c4 )
         ArrayConcatenate( w13 c8 c10 c7 c6 )

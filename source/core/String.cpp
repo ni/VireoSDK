@@ -387,7 +387,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
-    DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(.VarArgCount) i(.String) o(.Array))" )
+    // StringConcatenate input can be string, or array of string.
+    DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(.VarArgCount) o(.String) i(.*))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(.BranchTarget) i(.String) i(.String))");
     DEFINE_VIREO_FUNCTION(BranchIfLTString, "p(i(.BranchTarget) i(.String) i(.String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(.BranchTarget) i(.String) i(.String))")
