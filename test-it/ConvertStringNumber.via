@@ -22,14 +22,14 @@ define (Test dv(.VirtualInstrument (
     //--
     e(.Int32 value)
     e(.Int32 value2)
-    e(dv(.Int16,4) width)
+    e(dv(.Int16 4) width)
     e(dv(.Int32 12) defaultVal)
-    e(dv(.Double,1.2) dDefaultVal)
+    e(dv(.Double 1.2) dDefaultVal)
     e(dv(.Int32 0) offset)
     e(dv(.Int32 0) endoffset)
     //-------------------
-    e(dv(.Double,1.5) d1_5)
-    e(dv(.Double,1.76) d1_76)
+    e(dv(.Double 1.5) d1_5)
+    e(dv(.Double 1.76) d1_76)
 
     e(.Double dx)
     e(.Double dy)
@@ -38,7 +38,7 @@ define (Test dv(.VirtualInstrument (
     e(.String outString)
     e(dv(.String '123 456 abc')  cString)
     e(dv(.String '1.23 4.56 6.78')  dString)
-    e(dv(.Int16,4) width)
+    e(dv(.Int16 4) width)
     e(dv(.ComplexDouble (1.2 2.3)) cDouble)
 
     e(.Single local1)
@@ -48,22 +48,22 @@ define (Test dv(.VirtualInstrument (
   clump(1 
     // Int32 to String
     Print(cn2)
-    ToString(cn2,width,outString)
+    ToString(cn2 width outString)
     Print(outString)
 
     Print(c3)
-    ToString(c3,width,outString)
+    ToString(c3 width outString)
     Print(outString)
 
     //---------------------------------------------------------
 
     // Double to String
     Print(d1_5)
-    ToString(d1_5,width,outString)
+    ToString(d1_5 width outString)
     Print(outString)
 
     Print(d1_76)
-    ToString(d1_76,width,outString)
+    ToString(d1_76 width outString)
     Print(outString)
 
     //---------------------------------------------------------
@@ -90,7 +90,7 @@ define (Test dv(.VirtualInstrument (
     Print(value)
 
     Copy(endoffset offset)
-    DecimalStringToNumber(cString,offset,* * value)
+    DecimalStringToNumber(cString offset * * value)
     Print(offset)
     Print(endoffset)
     Print(value)
@@ -101,25 +101,25 @@ define (Test dv(.VirtualInstrument (
     Print(dString)
     Copy(c0 offset)
 
-    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,*)
+    ExponentialStringToNumber(dString offset dDefaultVal endoffset *)
     Print(offset)
     Print(endoffset)
     Print(dvalue)
 
     Copy(endoffset offset)
-    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
     Print(offset)
     Print(endoffset)
     Print(dvalue)
 
     Copy(endoffset offset)
-    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
     Print(offset)
     Print(endoffset)
     Print(dvalue)
 
     Copy(endoffset offset)
-    ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
+    ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
     Print(offset)
     Print(endoffset)
     Print(dvalue)

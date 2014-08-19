@@ -9,7 +9,7 @@ define (arrayOfPoints dv(.VirtualInstrument (
             e(.Double n1)
             e(.Double n2)
         )) *) Array)
-		e(dv(a(e(.Double) *) (1,2,3,4,5)) arrayOfDoubles)
+		e(dv(a(e(.Double) *) (1 2 3 4 5)) arrayOfDoubles)
     )
     1 
     clump(1 
@@ -24,7 +24,7 @@ enqueue (arrayOfPoints)
 
 define (ArrayMath dv(.VirtualInstrument (
 c(
-    e(dv(a(e(.Double) *) (0,1,2,3,4,5,6,7,8,9,10)) array1)
+    e(dv(a(e(.Double) *) (0 1 2 3 4 5 6 7 8 9 10)) array1)
     e(dv(a(e(.Double) *) (0)) array2)
     e(dv(.Double 1) scalar1)
 ) 

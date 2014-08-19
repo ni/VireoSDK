@@ -10,8 +10,8 @@ define (videf1 dv(.VirtualInstrument (
         e(.String local2)   // data string
         e(dv(.Int32 12849) local3)   // 12
         e(.String local4)   // remaining string
-        e(dv(.Boolean,f) prependArraySize)
-        e(dv(.Boolean,f) error)
+        e(dv(.Boolean f) prependArraySize)
+        e(dv(.Boolean f) error)
     )
     1 
     clump(1 

@@ -15,8 +15,8 @@ define (Test dv(.VirtualInstrument (
    // e(a(e(.Double) -5)    arrayOfDoubleBounded1d) 
 
     e(a(e(.Double) 5)    arrayOfDoubleFixed1d) 
-    e(a(e(.Double) 5,5)    arrayOfDoubleFixed2d) 
-    e(a(e(.Double) 5,5,5)    arrayOfDoubleFixed3d) 
+    e(a(e(.Double) 5 5)    arrayOfDoubleFixed2d)
+    e(a(e(.Double) 5 5 5)    arrayOfDoubleFixed3d)
 
     e(a(e(.Double) *)    arrayOfDouble1d_1) 
     e(a(e(.Double) *)    arrayOfDouble1d_2) 
@@ -31,10 +31,10 @@ define (Test dv(.VirtualInstrument (
     e(a(e(.Double) * * * * * * * *)  arrayOfDouble8d) 
     
  
-    e(dv(a(e(.Double) *)  (1,2,3))  arrayWithDefaultValues3) 
-    e(dv(a(e(.Double) *)  (4 ,5))  arrayWithDefaultValues2) 
+    e(dv(a(e(.Double) *)  (1 2 3))  arrayWithDefaultValues3)
+    e(dv(a(e(.Double) *)  (4 5))  arrayWithDefaultValues2) 
     e(dv(a(e(.Double) *)  (0))  arrayWithDefaultValues1) 
-e(dv(a(e(.Double) *)  ())  arrayWithDefaultValues0) 
+    e(dv(a(e(.Double) *)  ())  arrayWithDefaultValues0) 
 
     e(.Boolean vBool) 
     e(.Type  vType) 

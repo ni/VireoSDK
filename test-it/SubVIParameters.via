@@ -32,31 +32,31 @@ to the called code.
 
 So applying this to a SubVI there will be an additional type; making a well formed VI look like the following
 
-define (SubVI, dv(.VirtualInstrument, (param-block-type, internal-dataspace-type, clump-count, clumps)))
+define (SubVI dv(.VirtualInstrument (param-block-type internal-dataspace-type clump-count  clumps)))
 
 Thus an actual example might look like this
 
-define (AddAndSquare, dv(.VirtualInstrument, (
-    p(e(.Double,x)e(.Double,y)e(.Double,value))       // param list with names
+define (AddAndSquare, dv(.VirtualInstrument (
+    p(e(.Double x)e(.Double y)e(.Double value))       // param list with names
     c()                                                 // no locals
-    1,
-    clump(1,
-        AddDouble(x,y,value)
-        MulDouble(value,value,value)
+    1 
+    clump(1 
+        AddDouble(x y value)
+        MulDouble(value value value)
     )
  )))
 
 So where internal types have not yet had the optional parameter type names in the Vireo type, that is more important now.
 
-DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double,x)e(.Double,y)e(.Double,value))");
+DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double x)e(.Double y)e(.Double value))");
 
 
-define (AddAndSquare, dv(.VirtualInstrument, (
-    p(i(.Double,x)i(.Double,y)o(.Double,value))       // param list with names
+define (AddAndSquare, dv(.VirtualInstrument (
+    p(i(.Double x)i(.Double y)o(.Double value))       // param list with names
 
 
 */
-define (SubVINoParams, dv(.VirtualInstrument, (
+define (SubVINoParams, dv(.VirtualInstrument (
  c(
  e(dv(.String 'Inside call: SubVINoParams') sInside)
   )
@@ -99,7 +99,7 @@ define (SubVIWithOneOneInAndOneOutputParam, dv(.VirtualInstrument (
    )
  )))
 
-define (SubVIWithOneOneInputOutputParam, dv(.VirtualInstrument, (
+define (SubVIWithOneOneInputOutputParam, dv(.VirtualInstrument (
  c(io(.Int32 x))
  c( 
  e(dv(.String,'Inside call: SubVIWithOneOneInputOutputParam') sInside)
@@ -123,7 +123,7 @@ define (SubVIWithOneOneInputOutputParam, dv(.VirtualInstrument, (
    )
  )))
 
-define (TopVI, dv(.VirtualInstrument, (
+define (TopVI, dv(.VirtualInstrument (
  c(
   e(dv(.Int32 47) c47)
   e(dv(.Int32 47) c47)

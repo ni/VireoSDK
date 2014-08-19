@@ -7,7 +7,7 @@ define (ImplicitArgs dv(.VirtualInstrument (
   clump(1 
    // Immediate arguments will be allocated as constants in the modules/system scope.
    // They will be reused as much as possible.
-   //AddInt32(#42,#0,ci32)
+   //AddInt32(#42 #0,ci32)
    //Print((.Utf8 "Hello"))
    //Print(ci32)
    //AddDouble(#123.456,#1 cdouble)

@@ -1,12 +1,12 @@
 define (Test dv(.VirtualInstrument (
  c(
-    e(dv(.Boolean,t) ct)
-    e(dv(.Boolean,f) cf)
+    e(dv(.Boolean t) ct)
+    e(dv(.Boolean f) cf)
     e(.Boolean x)
     e(.Boolean y)
     e(.Boolean value)
  ) 
-  2,
+  2
   clump(1 
     Copy(cf x)
     Copy(cf y)
@@ -32,25 +32,25 @@ define (Test dv(.VirtualInstrument (
 
     clump(1 
     DPrintf("-------------")
-    AndBoolean(x,y,value)
+    AndBoolean(x y value)
     DPrintf(" And (%s %s) => %s" x y value)
 
-    OrBoolean(x,y,value)
+    OrBoolean(x y value)
     DPrintf(" Or (%s %s) => %s" x y value)
 
-    NorBoolean(x,y,value)
+    NorBoolean(x y value)
     DPrintf(" Nor (%s %s) => %s" x y value)
 
-    NandBoolean(x,y,value)
+    NandBoolean(x y value)
     DPrintf(" Nand (%s %s) => %s" x y value)
 
-    XorBoolean(x,y,value)
+    XorBoolean(x y value)
     DPrintf(" Xor (%s %s) => %s" x y value)
 
-    NotBoolean(x,value)
+    NotBoolean(x value)
     DPrintf(" Not (%s) => %s" x value)
 
-    NotBoolean(y,value)
+    NotBoolean(y value)
     DPrintf(" Not (%s) => %s" y value)
    )
  ) ) )

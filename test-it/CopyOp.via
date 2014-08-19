@@ -58,8 +58,8 @@ define (CopyOps dv(.VirtualInstrument (
 
     e(dv(.String 'Tic')  cString)
     e(a(e(.Double) 5)    arrayOfDoubleFixed1d) 
-    e(a(e(.Double) 5,5)    arrayOfDoubleFixed2d) 
-    e(a(e(.Double) 5,5,5)    arrayOfDoubleFixed3d) 
+    e(a(e(.Double) 5 5)    arrayOfDoubleFixed2d)
+    e(a(e(.Double) 5 5 5)    arrayOfDoubleFixed3d) 
     ) 
  1 
  clump(1 

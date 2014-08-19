@@ -6,19 +6,19 @@ define (CalcUsingIntegers dv(.VirtualInstrument (
   ) 
   1 
   clump(1 
-	MulInt32(i,j,k)
+	MulInt32(i j k)
 	Print(k)
    )
  ) ) )
 define (CalcUsingDoubles dv(.VirtualInstrument (
  c(
-    e(dv(.Double,6)  x)
-    e(dv(.Double,7)  y)
+    e(dv(.Double 6)  x)
+    e(dv(.Double 7)  y)
     e(.Double z)
   ) 
   1 
   clump(1 
-	MulDouble(x,y,z)
+	MulDouble(x y z)
 	Print(z)
    )
  ) ) )

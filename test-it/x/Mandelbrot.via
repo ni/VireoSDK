@@ -19,7 +19,7 @@ define (Mandelbrot v(.VirtualInstrument (
         Perch(0)
             MulComplexDouble(z z z)
             AddComplexDouble(z a z)
-        ForLoopTail(0,i,c50)
+        ForLoopTail(0 i c50)
     )
 )))
 
@@ -69,11 +69,11 @@ define (MandelbrotMain v(.VirtualInstrument (
                 Perch(2)
                     StreamWrite(file char2 err)
                 Perch(3)
-            AddDouble(x, xDelta, x)
+            AddDouble(x xDelta x)
             BranchIfLEDouble(1 x xLast)
         StreamWrite(file lineFeed err)
-        AddDouble(y, yDelta, y)
-        BranchIfGEDouble(0, y yLast)
+        AddDouble(y yDelta y)
+        BranchIfGEDouble(0 y yLast)
 
         GetMicrosecondTickCount(tDone)
         SubInt64(tDone tStart tDone)
@@ -81,34 +81,3 @@ define (MandelbrotMain v(.VirtualInstrument (
     )
 ) ) )
 enqueue (MandelbrotMain)
-
-
-/*
- //inspiration for this examples comes from
- //http://rosettacode.org/wiki/Mandelbrot_set#Go
-
- package main
- 
- import "fmt"
- import "math/cmplx"
- 
- func mandelbrot(a complex128) (z complex128) {
-    for i := 0; i < 50; i++ {
-        z = z*z + a
-    }
-    return
- }
- 
- func main() {
-    for y := 1.0; y >= -1.0; y -= 0.05 {
-        for x := -2.0; x <= 0.5; x += 0.0315 {
-            if cmplx.Abs(mandelbrot(complex(x, y))) < 2 {
-                fmt.Print("*")
-            } else {
-                fmt.Print(" ")
-            }
-        }
-        fmt.Println("")
-    }
- }
- */

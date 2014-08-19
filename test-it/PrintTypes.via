@@ -26,7 +26,7 @@ define (Test dv(.VirtualInstrument (
     e(.BranchTarget vBranchTarget)
     e(dv(.Type .Int32)  vIntType)
 
-    e(dv(a(e(.Double) *)  (1,2,3,4))    arrayOfDouble1d_1)
+    e(dv(a(e(.Double) *)  (1 2 3 4))    arrayOfDouble1d_1)
     e(a(e(.Double) *)   a2)
     e(a(e(.Double) * *)   a3)
   e(a(e(.Double) * * *)   a4)
@@ -39,7 +39,7 @@ define (Test dv(.VirtualInstrument (
   ) 
   1 
   clump(1 
- //   AddInt32(x,x,x)
+ //   AddInt32(x x x)
     Print(vType)
     //----
     TypeOf(vType vType) 
