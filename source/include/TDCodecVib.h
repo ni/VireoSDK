@@ -56,7 +56,7 @@ public:
 private :
     void MarkError(const char* message);
     TypeRef BadType()   {return _typeManager->BadType();}   // TODO could create error that encodes scan point
-    NIError ParseAggrigateElementList(TypeRef ElementTypes[], Int32* pElementCount);
+    NIError ParseAggregateElementList(TypeRef ElementTypes[], Int32* pElementCount);
     TypeRef ParseArray();
     TypeRef ParseArrayElement();
     TypeRef ParseBitBlock();

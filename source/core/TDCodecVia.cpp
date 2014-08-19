@@ -108,7 +108,7 @@ TypeRef TDViaParser::ParseBitCluster()
 {
     TypeRef elementTypes[1000];  //TODO enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
-    ParseAggrigateElementList(elementTypes, &calc);
+    ParseAggregateElementList(elementTypes, &calc);
     return BitClusterType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
@@ -116,7 +116,7 @@ TypeRef TDViaParser::ParseCluster()
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
-    ParseAggrigateElementList(elementTypes, &calc);
+    ParseAggregateElementList(elementTypes, &calc);
     return ClusterType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
@@ -124,7 +124,7 @@ TypeRef TDViaParser::ParseEquivalence()
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
     EquivalenceAlignmentCalculator calc(_typeManager);
-    ParseAggrigateElementList(elementTypes, &calc);
+    ParseAggregateElementList(elementTypes, &calc);
     return EquivalenceType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
@@ -132,11 +132,11 @@ TypeRef TDViaParser::ParseParamBlock()
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
     ParamBlockAlignmentCalculator calc(_typeManager);
-    ParseAggrigateElementList(elementTypes, &calc);
+    ParseAggregateElementList(elementTypes, &calc);
     return ParamBlockType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
-void TDViaParser::ParseAggrigateElementList(TypeRef ElementTypes[], AggrigateAlignmentCalculator* calculator)
+void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator)
 {
     SubString  token;
     SubString  fieldName;

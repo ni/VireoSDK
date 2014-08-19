@@ -737,16 +737,16 @@ NamedType::NamedType(TypeManager* typeManager, SubString* name, TypeRef wrappedT
     _name.Assign(name->Begin(), name->Length());
 }
 //------------------------------------------------------------
-// AggrigateType
+// AggregateType
 //------------------------------------------------------------
-UInt8 AggrigateType::_sharedNullsBuffer[kSharedNullsBufferLength];
+UInt8 AggregateType::_sharedNullsBuffer[kSharedNullsBufferLength];
 //------------------------------------------------------------
-Int32 AggrigateType::SubElementCount()
+Int32 AggregateType::SubElementCount()
 {
     return _elements.Length();
 }
 //------------------------------------------------------------
-TypeRef AggrigateType::GetSubElementByName(SubString* name)
+TypeRef AggregateType::GetSubElementByName(SubString* name)
 {
     // Find first part of string (look for '.')
     // find element in collection
@@ -765,7 +765,7 @@ TypeRef AggrigateType::GetSubElementByName(SubString* name)
     return null;
 }
 //------------------------------------------------------------
-TypeRef AggrigateType::GetSubElement(Int32 index)
+TypeRef AggregateType::GetSubElement(Int32 index)
 {
     if (index < 0 || index >= _elements.Length())
         return null; // element does not exist
@@ -814,7 +814,7 @@ BitClusterType* BitClusterType::New(TypeManager* typeManager, TypeRef elements[]
 }
 //------------------------------------------------------------
 BitClusterType::BitClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count)
-    : AggrigateType(typeManager, elements, count)
+    : AggregateType(typeManager, elements, count)
 {
     Int32 bitCount = 0;
     Boolean isFlat = true;
@@ -855,13 +855,13 @@ BitClusterType::BitClusterType(TypeManager* typeManager, TypeRef elements[], Int
 //------------------------------------------------------------
 // ClusterElementAlignmentCalculator
 //------------------------------------------------------------
-AggrigateAlignmentCalculator::AggrigateAlignmentCalculator(TypeManager* tm)
+AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManager* tm)
 {
     _tm = tm;
     _aqOffset = 0;
     ElementCount = 0;
-    AggrigateAlignment = 0;
-    AggrigateSize = 0;
+    AggregateAlignment = 0;
+    AggregateSize = 0;
     IncludesPadding = false;
     IsFlat = true;
     IsValid = true;
@@ -890,7 +890,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     } else {
         elementAlignment = element->AQAlignment();
     }
-    AggrigateAlignment = Max(AggrigateAlignment, elementAlignment);
+    AggregateAlignment = Max(AggregateAlignment, elementAlignment);
 
     // See if any padding is needed before this element. Round up as needed.
     elementOffset = _tm->AlignAQOffset(_aqOffset, elementAlignment);
@@ -906,9 +906,9 @@ void ClusterAlignmentCalculator::Finish()
 {
     // Round up the size of the cluster to a multiple the largest alignmnent requirement
     // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
-    AggrigateSize = _aqOffset;
-    AggrigateSize = _tm->AlignAQOffset(_aqOffset, AggrigateAlignment);
-    IncludesPadding |= AggrigateSize != _aqOffset;
+    AggregateSize = _aqOffset;
+    AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
+    IncludesPadding |= AggregateSize != _aqOffset;
 }
 //------------------------------------------------------------
 // ParamBlockAlignmentCalculator
@@ -925,7 +925,7 @@ void ParamBlockAlignmentCalculator::Finish()
 {
     // Round up the size of the cluster to a multiple the largest alignmnent requirement
     // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
-    AggrigateSize = sizeof(InstructionCore) + (ElementCount * sizeof(void*));
+    AggregateSize = sizeof(InstructionCore) + (ElementCount * sizeof(void*));
 }
 //------------------------------------------------------------
 // EquivalenceBlockAlignmentCalculator
@@ -934,9 +934,9 @@ Int32 EquivalenceAlignmentCalculator::AlignNextElement(TypeRef element)
 {
     IsValid &= element->IsValid();
     if (ElementCount == 0) {
-        AggrigateSize = element->TopAQSize();
+        AggregateSize = element->TopAQSize();
     } else {
-        VIREO_ASSERT(AggrigateSize == element->TopAQSize())
+        VIREO_ASSERT(AggregateSize == element->TopAQSize())
     }
     ElementCount++;
     
@@ -960,7 +960,7 @@ ClusterType* ClusterType::New(TypeManager* typeManager, TypeRef elements[], Int3
 }
 //------------------------------------------------------------
 ClusterType::ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count)
-    : AggrigateType(typeManager, elements, count)
+    : AggregateType(typeManager, elements, count)
 {
     Boolean hasCustomValue = false;
     Boolean hasGenericType = false;
@@ -987,8 +987,8 @@ ClusterType::ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 cou
     alignmentCalculator.Finish();
     
     _isValid = alignmentCalculator.IsValid;
-    _aqAlignment = alignmentCalculator.AggrigateAlignment;
-    _topAQSize = alignmentCalculator.AggrigateSize;
+    _aqAlignment = alignmentCalculator.AggregateAlignment;
+    _topAQSize = alignmentCalculator.AggregateSize;
     _isFlat = alignmentCalculator.IsFlat;
     _hasCustomDefault = hasCustomValue;
     _hasPadding = alignmentCalculator.IncludesPadding;
@@ -1106,7 +1106,7 @@ EquivalenceType* EquivalenceType::New(TypeManager* typeManager, TypeRef elements
 }
 //------------------------------------------------------------
 EquivalenceType::EquivalenceType(TypeManager* typeManager, TypeRef elements[], Int32 count)
-    : AggrigateType(typeManager, elements, count)
+    : AggregateType(typeManager, elements, count)
 {
     // To be equivalence they must be flat and same bit or AQ Size
     Boolean isFlat = true;
@@ -1317,7 +1317,7 @@ ParamBlockType* ParamBlockType::New(TypeManager* typeManager, TypeRef elements[]
 }
 //------------------------------------------------------------
 ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int32 count)
-    : AggrigateType(typeManager, elements, count)
+    : AggregateType(typeManager, elements, count)
 {
     Int32 aqCount = 0;
     Boolean isFlat = true;

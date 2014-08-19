@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Generic instruction generation methods for polymorphic and aggrigate functions.
+    \brief Generic instruction generation methods for polymorphic and aggregate functions.
  */
 
 #include "TypeDefiner.h"
