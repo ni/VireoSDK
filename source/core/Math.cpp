@@ -495,8 +495,8 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
     // Function signatures
-    DEFINE_VIREO_TYPE(BinOpBoolean, "p(i(.Boolean,x) i(.Boolean y) o(.Boolean result))")
-    DEFINE_VIREO_TYPE(UnOpBoolean, "p(i(.Boolean,x) o(.Boolean result))")
+    DEFINE_VIREO_TYPE(BinOpBoolean, "p(i(.Boolean x) i(.Boolean y) o(.Boolean result))")
+    DEFINE_VIREO_TYPE(UnOpBoolean, "p(i(.Boolean x) o(.Boolean result))")
 
     DEFINE_VIREO_TYPE(UnOpUInt8, "p(i(.UInt8 x) o(.UInt8 result))")
     DEFINE_VIREO_TYPE(BinOpUInt8, "p(i(.UInt8 x) i(.UInt8 y) o(.UInt8 result))")
@@ -511,9 +511,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(BinOpUInt64, "p(i(.UInt64 x) i(.UInt64 y) o(.UInt64 result))")
 
     DEFINE_VIREO_TYPE(UnOpInt8, "p(i(.Int8 x)o(.Int8 result))")
-    DEFINE_VIREO_TYPE(BinOpInt8, "p(i(.Int8 x)i(.Int8,y)o(.Int8 result))")
+    DEFINE_VIREO_TYPE(BinOpInt8, "p(i(.Int8 x)i(.Int8 y)o(.Int8 result))")
 
-    DEFINE_VIREO_TYPE(UnOpInt16, "p(i(.Int16 x) o(.Int16,result))")
+    DEFINE_VIREO_TYPE(UnOpInt16, "p(i(.Int16 x) o(.Int16 result))")
     DEFINE_VIREO_TYPE(BinOpInt16, "p(i(.Int16 x) i(.Int16 y)o(.Int16 result))")
 
     DEFINE_VIREO_TYPE(UnOpInt32, "p(i(.Int32 x) o(.Int32 result))")
@@ -670,8 +670,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")
 #endif
 
-    DEFINE_VIREO_TYPE(UnOpSingle, "p(i(.Single,x),o(.Single,result))")
-    DEFINE_VIREO_TYPE(BinOpSingle, "p(i(.Single,x),i(.Single,y),o(.Single,result))")
+    DEFINE_VIREO_TYPE(UnOpSingle, "p(i(.Single x) o(.Single result))")
+    DEFINE_VIREO_TYPE(BinOpSingle, "p(i(.Single x) i(.Single y) o(.Single result))")
     DEFINE_VIREO_MATH_FUNCTIONS(Single)
     DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(Single)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Single)
@@ -686,8 +686,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     //--------------------------
     // Double
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_TYPE(UnOpDouble, "p(i(.Double,x),o(.Double,result))")
-    DEFINE_VIREO_TYPE(BinOpDouble, "p(i(.Double,x),i(.Double,y),o(.Double,result))")
+    DEFINE_VIREO_TYPE(UnOpDouble, "p(i(.Double x) o(.Double result))")
+    DEFINE_VIREO_TYPE(BinOpDouble, "p(i(.Double x) i(.Double y) o(.Double result))")
     DEFINE_VIREO_TYPE(E, "dv(.Double  2.7182818284590451)")
     DEFINE_VIREO_TYPE(Pi, "dv(.Double  3.1415926535897931)")
     DEFINE_VIREO_TYPE(Tau, "dv(.Double  6.283185307179586)")
@@ -740,8 +740,8 @@ DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Para
 DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
-    DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle,x) o(.ComplexSingle,result))")
-    DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(.ComplexSingle,x) i(.ComplexSingle,y) o(.ComplexSingle,result))")
+    DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle x) o(.ComplexSingle result))")
+    DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(.ComplexSingle x) i(.ComplexSingle y) o(.ComplexSingle result))")
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexSingle)
     #include "ConversionTable.def"
@@ -804,8 +804,8 @@ DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, Comple
 //TODO - DECLARE_VIREO_PRIMITIVE3( CxPolar, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
-    DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble,x) o(.ComplexDouble,result))")
-    DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(.ComplexDouble,x) i(.ComplexDouble,y) o(.ComplexDouble,result))")
+    DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble x) o(.ComplexDouble result))")
+    DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(.ComplexDouble x) i(.ComplexDouble y) o(.ComplexDouble result))")
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexDouble)
     #include "ConversionTable.def"

@@ -5,7 +5,7 @@
 //VI Definition: Untitled 3
 define (videf1 dv(.VirtualInstrument (
     c(
-        e(dv(.Boolean,t) prependArraySize)
+        e(dv(.Boolean t) prependArraySize)
         e(dv(c(
             e(.Int16 n0)
             e(.Int16 n1)
@@ -32,7 +32,7 @@ define (videf1 dv(.VirtualInstrument (
             e(.Int8 n5)
         ) (1 2 3 4 5 6)) local3)   // unflattened
         e(.String local4)   // remaining string
-        e(dv(.Boolean,t) error)
+        e(dv(.Boolean t) error)
     )
     1 
     clump(1 

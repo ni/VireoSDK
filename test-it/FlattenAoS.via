@@ -7,11 +7,11 @@ define (c1 dv(a(e(.String) *) ('Default' ' data' ) ) )
 //VI Definition: Untitled 2
 define (videf1 dv(.VirtualInstrument (
     c(
-        e(dv(.Boolean,t) prependArraySize)
+        e(dv(.Boolean t) prependArraySize)
         e(.String local1)   // data string
         e(dv(a(e(.String) *) ('unflattened' ' data' ) ) local3)
         e(.String local4)   // remaining string
-        e(dv(.Boolean,t) error)
+        e(dv(.Boolean t) error)
     )
     1 
     clump(1 

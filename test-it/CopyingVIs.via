@@ -11,8 +11,7 @@ define (SubVI0 dv(.ReentrantVirtualInstrument (
  )))
 
 //define (SubVI1 dv(.ReentrantVirtualInstrument .SubVI0))
-
-define (TopVI, dv(.VirtualInstrument (
+define (TopVI dv(.VirtualInstrument (
  c(
   )
   4

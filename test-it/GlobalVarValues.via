@@ -9,7 +9,7 @@ define (HelloTypeValues dv(.VirtualInstrument (
     c(
         e(.GlobalVar1 local1)
         e(.GlobalVar2 local2)
-        e(.Type,  vType)
+        e(.Type vType)
     )
     clump (1
     

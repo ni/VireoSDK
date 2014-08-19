@@ -17,12 +17,12 @@ define (Test dv(.VirtualInstrument (
     )
   clump(1
   
-    DPrintf('Hello World The value is %d and %d',value value)
-    DPrintf('All values can be printed as a string %s',value)
-    DPrintf('Arrays can be printed as a string %s',arrayOfDoubleDynamic1ddv)
+    DPrintf('Hello World The value is %d and %d' value value)
+    DPrintf('All values can be printed as a string %s' value)
+    DPrintf('Arrays can be printed as a string %s' arrayOfDoubleDynamic1ddv)
     DPrintf('percent can be printed as <%%>')
    
- //   DPrintf('HelloWorld. Value = %s array is %s',value arrayOfDoubleDynamic1d)
+ //   DPrintf('HelloWorld. Value = %s array is %s' value arrayOfDoubleDynamic1d)
     // Test initial sizes
     //------
     ArrayLength(arrayOfDoubleBounded1d value)

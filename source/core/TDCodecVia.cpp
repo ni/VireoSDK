@@ -181,7 +181,7 @@ void TDViaParser::ParseAggrigateElementList(TypeRef ElementTypes[], AggrigateAli
         if (subType == null)
             subType = BadType();
 
-        _string.EatOptionalComma();
+        // _string.EatOptionalComma();
         _string.ReadToken(&token);
 
         // See if there is a field name.
@@ -199,7 +199,7 @@ void TDViaParser::ParseAggrigateElementList(TypeRef ElementTypes[], AggrigateAli
         ElementType* element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset);
         ElementTypes[calculator->ElementCount-1] = element;
     
-        _string.EatOptionalComma();
+        // _string.EatOptionalComma();
         _string.ReadToken(&token);
     }
     
@@ -219,7 +219,7 @@ TypeRef TDViaParser::ParseArray()
     
     TypeRef elementType = ParseArrayElement();
     
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
     _string.ReadToken(&token);
     while (!token.CompareCStr(")")) {
         
@@ -238,7 +238,7 @@ TypeRef TDViaParser::ParseArray()
         
         rank++;
         
-        _string.EatOptionalComma();
+        //_string.EatOptionalComma();
         _string.ReadToken(&token);
     }
     
@@ -289,7 +289,7 @@ TypeRef TDViaParser::ParseBitBlock()
             return BadType();        
     }
     
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
     
     if (!_string.ReadToken(&encoding))
         return BadType();
@@ -364,7 +364,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     TypeRef subType = ParseType();
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
     ParseData(subType, cdt->Begin(kPAInit));
     
     if (!_string.ReadChar(')'))
@@ -418,7 +418,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
             if (dimIndex >= 0)
                 tempDimensionLengths[dimIndex]++;
         }
-        tempString.EatOptionalComma();
+        // tempString.EatOptionalComma();
     }
 }
 //------------------------------------------------------------
@@ -518,7 +518,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                     // For nested dimensions just parse the next inner dimension
                     ParseArrayData(pArray, pElement, level + 1);
                 }
-                _string.EatOptionalComma();
+                // _string.EatOptionalComma();
                 
                 if (pFirstEltInSlice) {
                     pEltData += step;
@@ -719,7 +719,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     TypeRef dataSpaceType = null;
     
     TypeRef type1 = this->ParseType();
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
     _string.EatLeadingSpaces();
     
     if (_string.ComparePrefixCStr("c") && !_string.ComparePrefixCStr("clump")) {
@@ -727,7 +727,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
         // The next will be the data space
         parameterBlockType = type1;
         dataSpaceType = this->ParseType();
-        _string.EatOptionalComma();
+        // _string.EatOptionalComma();
     } else {
         // TODO when VIs are inflated from their parent type this will be done automatically.
         // empty clusters should all end up with the singleton empty cluster
@@ -749,7 +749,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
         }
     }
 
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
 
     // Scan though the clumps to count them and to find the SubString that
     // Holds all of them. In binary format it would be much simpler since a count would
@@ -765,7 +765,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
         if (_pLog->HardErrorCount()>0)
             return;
         
-        _string.EatOptionalComma();
+        // _string.EatOptionalComma();
         endClumpSource = _string.Begin();
         if (_string.ReadChar(')')) {
             break;
@@ -855,7 +855,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     if (!token.ReadInt(&fireCount))
         return LOG_EVENT(kHardDataError, "fire count missing");
     
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
 
     // Quickly scan through list of instructions without parsing them in detail.
     // Many syntax errors will not be detected until the code is actually loaded.
@@ -894,7 +894,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     
     state.StartSnippet(&viClump->_codeStart);
 
-    _string.EatOptionalComma();
+    // _string.EatOptionalComma();
     
     // Read first instruction. If no instruction then the closing paren
     // of the clump will be found immediately
@@ -965,7 +965,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         state.AddDataTargetArgument(&token, false); // For starters
                     }
                 }
-                _string.EatOptionalComma();
+                // _string.EatOptionalComma();
                 
                 if (state.LastArgumentError()) {
                     state.LogArgumentProcessing(CalcCurrentLine());

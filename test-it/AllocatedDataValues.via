@@ -55,7 +55,7 @@ define (TestAllocateValues dv(.VirtualInstrument (
         e(.String  s)
         e(dv(.String "Hello") s2)
 
-        e(.Type,  vType)
+        e(.Type vType)
     )
     clump (1
         DPrintf("--------------")

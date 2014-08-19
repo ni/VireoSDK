@@ -101,7 +101,6 @@ void EggShell::ParseDefine(TDViaParser *parser)
         return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
     
     parser->TheString()->ReadToken(&symbolName);
-    parser->TheString()->EatOptionalComma();
     
     TypeRef t = parser->ParseType();
 
