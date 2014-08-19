@@ -2,7 +2,7 @@ define (AFewMillisecods   dv(.UInt32 200))
 define (SubVI0 dv(.ReentrantVirtualInstrument, (
  c(
     e(dv(.String 'Hello, World.') sInside)
-  ),
+  )
   1,
   clump(1,
     Print(sInside)
@@ -14,7 +14,7 @@ define (SubVI0 dv(.ReentrantVirtualInstrument, (
 
 define (TopVI, dv(.VirtualInstrument, (
  c(
-  ),
+  )
   4
     clump(1,
     // Should end up waiting one second, not three

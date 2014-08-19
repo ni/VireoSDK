@@ -1,4 +1,4 @@
-define (MyInt32 dv(.Int32,3))
+define (MyInt32 dv(.Int32 3))
 
 define (Chunk16Bytes c(e(.Int64) e(.Int64)))
 
@@ -8,18 +8,18 @@ define (Chunk33Bytes c(e(.Int64 f1) e(.Int64 f2) e(.Int64 f3) e(.Int64 f4) e(.In
 define (CopyOps dv(.VirtualInstrument (
  c(    
 
-    e(dv(.Int32,0)  c0)
-    e(dv(.Int32,1)  c1)
-    e(dv(.Int32,2)  c2)
-    e(dv(.Int32,3)  c3)
-    e(dv(.Int32,4)  c4)
-    e(dv(.Int32,5)  c5)
-    e(dv(.Int32,6)  c6)
-    e(dv(.Int32,7)  c7)
-    e(dv(.Int32,8)  c8)
-    e(dv(.Int32,5)  cInt32)
+    e(dv(.Int32 0)  c0)
+    e(dv(.Int32 1)  c1)
+    e(dv(.Int32 2)  c2)
+    e(dv(.Int32 3)  c3)
+    e(dv(.Int32 4)  c4)
+    e(dv(.Int32 5)  c5)
+    e(dv(.Int32 6)  c6)
+    e(dv(.Int32 7)  c7)
+    e(dv(.Int32 8)  c8)
+    e(dv(.Int32 5)  cInt32)
     e(.MyInt32 cMyInt32)
-    e(dv(.Int32,10)  c10)
+    e(dv(.Int32 10)  c10)
     e(.Int32 value)
     e(.Int8 cInt8)
     e(.Int16 cInt16)

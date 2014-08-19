@@ -3,8 +3,8 @@ Parallel.via - Do two things at once
 */
 define (Parallel dv(.VirtualInstrument (
      c(
-        e(dv(.UInt32,100) oneHundred)
-        e(dv(.UInt32,50) fifty)
+        e(dv(.UInt32 100) oneHundred)
+        e(dv(.UInt32 50) fifty)
         e(dv(.String 'Pat you head.') sHead)
         e(dv(.String 'Rub your tummy.') sTummy)
     )

@@ -1,10 +1,10 @@
-define (MyInt32 dv(.Int32,3))
+define (MyInt32 dv(.Int32 3))
 
 define (TypeChecking dv(.VirtualInstrument (
  c(
-   e(dv(.Int32,5)  cInt32)
+   e(dv(.Int32 5)  cInt32)
    e(.MyInt32 cMyInt32)
-   e(dv(.Int32,10)  c10)
+   e(dv(.Int32 10)  c10)
    e(.Int32 value)
    e(.Double cDouble)
    e(.Single cSingle)
@@ -12,8 +12,8 @@ define (TypeChecking dv(.VirtualInstrument (
    e(.Int8 cInt8)
    e(dv(.String 'Tic')  cString)
     e(a(e(.Double) 5)    arrayOfDoubleFixed1d) 
-    e(a(e(.Double) 5,5)    arrayOfDoubleFixed2d) 
-    e(a(e(.Double) 5,5,5)    arrayOfDoubleFixed3d) 
+    e(a(e(.Double) 5 5)    arrayOfDoubleFixed2d) 
+    e(a(e(.Double) 5 5 5)    arrayOfDoubleFixed3d) 
 
    ) 
  1 
@@ -29,11 +29,11 @@ define (TypeChecking dv(.VirtualInstrument (
     Copy(cSingle c10)
     Copy(cMyInt32 cInt32)
     Copy(c10 cInt32)
-	AddInt32(cInt32,cMyInt32,value)
+	AddInt32(cInt32 cMyInt32 value)
     Print(value)
-	AddDouble(cDouble,cMyInt32,cDouble) // Error
-	AddInt32(cDouble,c10,cInt32)        // Error
-	AddDouble(cDouble,c10,cInt32)       // Error
+	AddDouble(cDouble cMyInt32 cDouble) // Error
+	AddInt32(cDouble c10 cInt32)        // Error
+	AddDouble(cDouble c10 cInt32)       // Error
 	ArrayLength(cString value)   // formal type is "Array" which means type info is present is that all
     Print(value)
 	ArrayLength(arrayOfDoubleFixed2d cInt32)

@@ -10,13 +10,13 @@
 
 define (Test dv(.VirtualInstrument (
  c(
- e(.Int32,value)
-      e(dv(.Int32,1) c1)
+ e(.Int32 value)
+      e(dv(.Int32 1) c1)
       e(.Type  vType)                        // A Type variable
       e(dv(.Type,.Int32)  vIntType)            // A Type variable with a default value.
       e(a(e(.Type) *)   emptyArrayOfTypes)
       e(a(e(.Int32) *)   emptyArrayOfInts1)
-      e(dv(a(e(.Type) *)  (.Int16,.Int32,.Pi,.VirtualInstrument,.HelloWorld))  arrayOfTypes)
+      e(dv(a(e(.Type) *)  (.Int16,.Int32 .Pi,.VirtualInstrument,.HelloWorld))  arrayOfTypes)
       e(dv(a(e(.Int32) *)  (0))  emptyArrayOfInts)
       e(dv(a(e(.Int32) *)  (2,3))  arrayOfInts)
       e(dv(a(e(.Double) *)  (1,2,3,4))   arrayOfDoubles)

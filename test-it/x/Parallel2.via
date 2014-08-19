@@ -1,7 +1,7 @@
 define (Parallel2 v(.VirtualInstrument (
      c(
-        e(v(.UInt32,1000) oneThousand)
-        e(v(.UInt32,500) fiveHundred)
+        e(v(.UInt32 1000) oneThousand)
+        e(v(.UInt32 500) fiveHundred)
         e(v(.String 'Pat you head.') sHead)
         e(v(.String 'Rub your tummy.') sTummy)
     ) 

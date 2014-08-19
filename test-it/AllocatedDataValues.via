@@ -38,7 +38,7 @@ define (TestAllocateValues dv(.VirtualInstrument (
         // that does no type checking.
         
         // What if?...  The Value Type is a ZDA? back to this
-        // If its is a ZDA of Int32, then 
+        // If its is a ZDA of Int32  then 
         // ZDA pointer? how to do that.
         // ZDA type.
 /*

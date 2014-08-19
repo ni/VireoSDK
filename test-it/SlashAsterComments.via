@@ -4,7 +4,7 @@
 define/**/(/**/Test/**/,/**/dv/**/(/**/.VirtualInstrument/**/,/**/ (
  /**/c/**/(/**/
     /**/e/**/(/**/dv/**/(/**/.Int32/**/,/**/2/**/)/**/,/**/ variable1/**/)/**/,/**/
-    e(dv(.Int32,2)  variable2) 
+    e(dv(.Int32 2)  variable2) 
     e(.Int32 result) 
   /**/)/**/,/**/
   /**/1/**/,/**/

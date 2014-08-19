@@ -1,9 +1,9 @@
 define (BranchBackAndForth dv(.VirtualInstrument (
  c(
-   e(dv(.Int32,1)  c1)
-   e(dv(.Int32,2)  c2)
-   e(dv(.Int32,3)  c3)
-   e(dv(.Int32,4)  c4)
+   e(dv(.Int32 1)  c1)
+   e(dv(.Int32 2)  c2)
+   e(dv(.Int32 3)  c3)
+   e(dv(.Int32 4)  c4)
    ) 
  1 
  clump(1 

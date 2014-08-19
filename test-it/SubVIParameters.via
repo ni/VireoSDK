@@ -10,14 +10,14 @@
 
 So where functions are currently listed like this
 
-    DEFINE_VIREO_FUNCTION(AddDouble, "p(e(.Double),e(.Double),e(.Double))")
-    DEFINE_VIREO_FUNCTION(SubDouble, "p(e(.Double),e(.Double),e(.Double))")
-    DEFINE_VIREO_FUNCTION(MulDouble, "p(e(.Double),e(.Double),e(.Double))")
-    DEFINE_VIREO_FUNCTION(DivDouble, "p(e(.Double),e(.Double),e(.Double))")
+    DEFINE_VIREO_FUNCTION(AddDouble, "p(e(.Double)e(.Double)e(.Double))")
+    DEFINE_VIREO_FUNCTION(SubDouble, "p(e(.Double)e(.Double)e(.Double))")
+    DEFINE_VIREO_FUNCTION(MulDouble, "p(e(.Double)e(.Double)e(.Double))")
+    DEFINE_VIREO_FUNCTION(DivDouble, "p(e(.Double)e(.Double)e(.Double))")
 
 Instead the prototye can be defined, and then reused.
 
-    DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double),e(.Double),e(.Double))");
+    DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double)e(.Double)e(.Double))");
 
     DEFINE_VIREO_FUNCTION(AddDouble, ".BinOpDouble")
     DEFINE_VIREO_FUNCTION(SubDouble, ".BinOpDouble")
@@ -37,7 +37,7 @@ define (SubVI, dv(.VirtualInstrument, (param-block-type, internal-dataspace-type
 Thus an actual example might look like this
 
 define (AddAndSquare, dv(.VirtualInstrument, (
-    p(e(.Double,x),e(.Double,y),e(.Double,value))       // param list with names
+    p(e(.Double,x)e(.Double,y)e(.Double,value))       // param list with names
     c()                                                 // no locals
     1,
     clump(1,
@@ -48,11 +48,11 @@ define (AddAndSquare, dv(.VirtualInstrument, (
 
 So where internal types have not yet had the optional parameter type names in the Vireo type, that is more important now.
 
-DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double,x),e(.Double,y),e(.Double,value))");
+DEFINE_VIREO_TYPE(BinOpDouble, "p(e(.Double,x)e(.Double,y)e(.Double,value))");
 
 
 define (AddAndSquare, dv(.VirtualInstrument, (
-    p(i(.Double,x),i(.Double,y),o(.Double,value))       // param list with names
+    p(i(.Double,x)i(.Double,y)o(.Double,value))       // param list with names
 
 
 */
@@ -81,7 +81,7 @@ define (SubVIWithOneInputParam, dv(.VirtualInstrument (
 define (SubVIWithOneOutputParam, dv(.VirtualInstrument (
  c(o(.Int32 result))
  c( 
- e(dv(.String,'Inside call: SubVIWithOneOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOutputParam') sInside)
   ) 
   clump(1 
     Print(sInside)
@@ -91,7 +91,7 @@ define (SubVIWithOneOutputParam, dv(.VirtualInstrument (
 define (SubVIWithOneOneInAndOneOutputParam, dv(.VirtualInstrument (
  c(i(.Int32 x) o(.Int32 result))
  c( 
- e(dv(.String,'Inside call: SubVIWithOneOneInAndOneOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOneInAndOneOutputParam') sInside)
   )
   clump(1
   DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is <%s> result is <%s>" x result)
@@ -102,7 +102,7 @@ define (SubVIWithOneOneInAndOneOutputParam, dv(.VirtualInstrument (
 define (SubVIWithOneOneInputOutputParam, dv(.VirtualInstrument, (
  c(io(.Int32 x))
  c( 
- e(dv(.String,'Inside call: SubVIWithOneOneInputOutputParam'), sInside)
+ e(dv(.String,'Inside call: SubVIWithOneOneInputOutputParam') sInside)
   )
   clump(1
   DPrintf(" Inside SubVIWithOneOneInputOutputParam input value is %s", x)

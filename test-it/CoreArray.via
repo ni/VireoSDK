@@ -1,16 +1,16 @@
 
 define (Test dv(.VirtualInstrument (
  c(
-    e(dv(.Int32,0)  c0) 
-    e(dv(.Int32,1)  c1) 
-    e(dv(.Int32,2)  c2) 
-    e(dv(.Int32,3)  c3) 
-    e(dv(.Int32,4)  c4) 
-    e(dv(.Int32,5)  c5) 
-    e(dv(.Int32,6)  c6) 
-    e(dv(.Int32,7)  c7) 
-    e(dv(.Int32,8)  c8) 
-    e(dv(.Int32,16)  c16) 
+    e(dv(.Int32 0)  c0) 
+    e(dv(.Int32 1)  c1) 
+    e(dv(.Int32 2)  c2) 
+    e(dv(.Int32 3)  c3) 
+    e(dv(.Int32 4)  c4) 
+    e(dv(.Int32 5)  c5) 
+    e(dv(.Int32 6)  c6) 
+    e(dv(.Int32 7)  c7) 
+    e(dv(.Int32 8)  c8) 
+    e(dv(.Int32 16)  c16) 
 
    // e(a(e(.Double) -5)    arrayOfDoubleBounded1d) 
 
@@ -22,13 +22,13 @@ define (Test dv(.VirtualInstrument (
     e(a(e(.Double) *)    arrayOfDouble1d_2) 
     e(a(e(.Double) *)    arrayOfDouble1d_3) 
 
-    e(a(e(.Double) *,*)  arrayOfDouble2d) 
-    e(a(e(.Double) *,*,*)  arrayOfDouble3d) 
-    e(a(e(.Double) *,*,*,*)  arrayOfDouble4d) 
-    e(a(e(.Double) *,*,*,*,*)  arrayOfDouble5d) 
-    e(a(e(.Double) *,*,*,*,*,*)  arrayOfDouble6d) 
-    e(a(e(.Double) *,*,*,*,*,*,*)  arrayOfDouble7d) 
-    e(a(e(.Double) *,*,*,*,*,*,*,*)  arrayOfDouble8d) 
+    e(a(e(.Double) * *)  arrayOfDouble2d) 
+    e(a(e(.Double) * * *)  arrayOfDouble3d) 
+    e(a(e(.Double) * * * *)  arrayOfDouble4d) 
+    e(a(e(.Double) * * * * *)  arrayOfDouble5d) 
+    e(a(e(.Double) * * * * * *)  arrayOfDouble6d) 
+    e(a(e(.Double) * * * * * * *)  arrayOfDouble7d) 
+    e(a(e(.Double) * * * * * * * *)  arrayOfDouble8d) 
     
  
     e(dv(a(e(.Double) *)  (1,2,3))  arrayWithDefaultValues3) 

@@ -1,7 +1,7 @@
 define (CalcUsingIntegers dv(.VirtualInstrument (
  c(
-    e(dv(.Int32,6)  i)
-    e(dv(.Int32,7)  j)
+    e(dv(.Int32 6)  i)
+    e(dv(.Int32 7)  j)
     e(.Int32 k)
   ) 
   1 

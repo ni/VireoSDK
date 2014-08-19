@@ -2,9 +2,9 @@
 define (FailAssert dv(.VirtualInstrument (
  c(
  e(dv(.String  '----') cSeperator)
- e(dv(.Int32,0) c0)
- e(dv(.Int32,-1) cn1)
- e(dv(.Int32,1) c1)
+ e(dv(.Int32 0) c0)
+ e(dv(.Int32 -1) cn1)
+ e(dv(.Int32 1) c1)
  ) // defaults to false
  1
  clump(1
