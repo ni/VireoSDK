@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, dv(.VirtualInstrument, (
+define (videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean,t) prependArraySize)
         e(dv(c(
@@ -34,8 +34,8 @@ define (videf1, dv(.VirtualInstrument, (
         e(.String local4)   // remaining string
         e(dv(.Boolean,t) error)
     )
-    1,
-    clump(1,
+    1 
+    clump(1 
         FlattenToString(local1 prependArraySize local2)
         Print(local2)
         Print(local3)

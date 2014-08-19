@@ -41,11 +41,11 @@ define (HelloWorld dv(.VirtualInstrument (
     clump (1
         TypeManagerCurrentTypeManager(tm)
         TypeManagerGetTypes(tm allTypes)
-        ArrayLength(allTypes, n)
+        ArrayLength(allTypes n)
         DPrintf(" Total number of types %d" n)
 
         Print(TypesToCheck)
-        ArrayLength(TypesToCheck, n)
+        ArrayLength(TypesToCheck n)
 
         Perch(0)
         BranchIfGEInt32(1 i n)

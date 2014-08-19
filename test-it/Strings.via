@@ -1,85 +1,85 @@
 //trace
-define (ToStringTest, dv(.VirtualInstrument, (
+define (ToStringTest dv(.VirtualInstrument (
  c(
- e(dv(.String, 'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorld)
- e(dv(.String, @'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorldLiteral)
- e(dv(.String, @'bad escape\') cBadEscape1)
- e(dv(.String, @'bad es\cape') cBadEscape2)
+ e(dv(.String  'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorld)
+ e(dv(.String  @'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorldLiteral)
+ e(dv(.String  @'bad escape\') cBadEscape1)
+ e(dv(.String  @'bad es\cape') cBadEscape2)
 
-e(dv(.String, @'Hello World
+e(dv(.String  @'Hello World
 Line2
 Line3
 Line4           tabbed field') cHelloWorldMultiline)
- e(dv(.String, 'Hello') cHello)
- e(dv(.String, '----') cSeperator)
+ e(dv(.String  'Hello') cHello)
+ e(dv(.String  '----') cSeperator)
  e(.String cStrValue)
- e(dv(.Int32,0),c0)
- e(dv(.Int32,-1),cn1)
- e(dv(.Int32,1),c1)
- 	e(.Int8,  vInt8)
-	e(.Int16, vInt16)
-    e(.Int32, vInt32)
-    e(.Int64, vInt64)
-    e(.UInt8,  vUInt8)
-    e(.UInt16, vUInt16)
-    e(.UInt32, vUInt32)
-    e(.UInt64, vUInt64)
-    e(.Double, vDouble)
-    e(.Single, vSingle)
-    e(.Boolean, vBoolean)
- ), // defaults to false
- 1,
- clump(1,
-  ToString(vInt8, *, cStrValue)
+ e(dv(.Int32,0) c0)
+ e(dv(.Int32,-1) cn1)
+ e(dv(.Int32,1) c1)
+ 	e(.Int8  vInt8)
+	e(.Int16 vInt16)
+    e(.Int32 vInt32)
+    e(.Int64 vInt64)
+    e(.UInt8  vUInt8)
+    e(.UInt16 vUInt16)
+    e(.UInt32 vUInt32)
+    e(.UInt64 vUInt64)
+    e(.Double vDouble)
+    e(.Single vSingle)
+    e(.Boolean vBoolean)
+ )  // defaults to false
+ 1 
+ clump(1 
+  ToString(vInt8 * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(vInt16, *, cStrValue)
+  ToString(vInt16 * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(vInt32, *, cStrValue)
+  ToString(vInt32 * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(vInt64, *, cStrValue)
+  ToString(vInt64 * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
   
-  ToString(vSingle, *, cStrValue)
+  ToString(vSingle * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(vDouble, *, cStrValue)
+  ToString(vDouble * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(vBoolean, *, cStrValue)
+  ToString(vBoolean * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  ToString(cHello, *, cStrValue)
+  ToString(cHello * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
   
-  ToString(cHelloWorld, *, cStrValue)
+  ToString(cHelloWorld * cStrValue)
   Print (cStrValue)
   Print (cSeperator)
   
-    DPrintf(" @string hello world <%s>", cHelloWorldLiteral)
-    ToString(cHelloWorld, *, cStrValue)
-    DPrintf(" ToString on @string hello world <%s>", cStrValue)
+    DPrintf(" @string hello world <%s>" cHelloWorldLiteral)
+    ToString(cHelloWorld * cStrValue)
+    DPrintf(" ToString on @string hello world <%s>" cStrValue)
 
-DPrintf("@string multiline hello world <%s>", cHelloWorldMultiline)
+DPrintf("@string multiline hello world <%s>" cHelloWorldMultiline)
 
     Print(cBadEscape1)
     Print(cBadEscape2)
 
-  StringToUpper(cHello, cStrValue)
+  StringToUpper(cHello cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 
-  StringToLower(cHello, cStrValue)
+  StringToLower(cHello cStrValue)
   Print (cStrValue)
   Print (cSeperator)
 

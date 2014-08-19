@@ -26,9 +26,9 @@ define (videf1 dv(.VirtualInstrument (
         Print(c0)
         Print(c1)
 
-        ArrayLength(arrayOfDoubleBounded2dMixed, value)
+        ArrayLength(arrayOfDoubleBounded2dMixed value)
         DPrintf("Array(-5 4) length %s" value)
-        ArrayCapacity(arrayOfDoubleBounded2dMixed, value)
+        ArrayCapacity(arrayOfDoubleBounded2dMixed value)
         DPrintf("Array(-5 4) capacity %s" value)
     )
 )))

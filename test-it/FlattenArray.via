@@ -3,18 +3,18 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, dv(.VirtualInstrument, (
+define (videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean,t) prependArraySize)
-        e(dv(a(e(.Int16),*) (16961 17475 17989 18503 ) ) local1)   // ABCDEFGH
-        e(dv(a(e(.Int16),*) (16961 17475 17989) ) defaultVal)
+        e(dv(a(e(.Int16) *) (16961 17475 17989 18503 ) ) local1)   // ABCDEFGH
+        e(dv(a(e(.Int16) *) (16961 17475 17989) ) defaultVal)
         e(.String local2)   // data string
-        e(dv(a(e(.Int16),*) (16961 17475) ) local3) // Unflattened array
+        e(dv(a(e(.Int16) *) (16961 17475) ) local3) // Unflattened array
         e(.String local4)   // remaining string
         e(dv(.Boolean,t) error)
     )
-    1,
-    clump(1,
+    1 
+    clump(1 
         FlattenToString(local1 prependArraySize local2)
         Print(local2)
         Print(local3)

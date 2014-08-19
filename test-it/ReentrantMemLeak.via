@@ -1,15 +1,15 @@
-define (SubVI0 dv(.ReentrantVirtualInstrument, (
+define (SubVI0 dv(.ReentrantVirtualInstrument (
  c()
   clump(1
     DPrintf("In reentrant  SubVI ")
    )
  )))
 
-define (TopVI, dv(.VirtualInstrument, (
+define (TopVI dv(.VirtualInstrument (
  c(
   )
 clump(1
-    // Should end up waiting one second, not three
+    // Should end up waiting one second not three
     Trigger(1)
     Trigger(2)
     Wait(1)

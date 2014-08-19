@@ -17,8 +17,8 @@ define (videf1 dv(.VirtualInstrument (
     c(
         e(dv(c(
             e(.Double n0)   // proportional gain (Kc)
-            e(.Double n1)   // integral time (Ti, min)
-            e(.Double n2)   // derivative time (Td, min)
+            e(.Double n1)   // integral time (Ti min)
+            e(.Double n2)   // derivative time (Td min)
         ) (0.800000 0.000100 0.000010 )) local1)   // PID gains
         e(dv(c(
             e(.Double n0)   // output high
@@ -82,8 +82,8 @@ define (videf2 dv(.VirtualInstrument (
         i(dv(.Double -1.000000) local2)   // dt (s)
         i(dv(c(
             e(.Double n0)   // proportional gain (Kc)
-            e(.Double n1)   // integral time (Ti, min)
-            e(.Double n2)   // derivative time (Td, min)
+            e(.Double n1)   // integral time (Ti min)
+            e(.Double n2)   // derivative time (Td min)
         ) (1.000000 0.010000 0.000000 )) local5)   // PID gains
         i(dv(.Double 0.000000) local4)   // process variable
         i(dv(.Double 0.000000) local3)   // setpoint
@@ -91,8 +91,8 @@ define (videf2 dv(.VirtualInstrument (
     c(
         e(.Double local8)
         e(.Double local9)   // proportional gain (Kc)
-        e(.Double local10)   // integral time (Ti, min)
-        e(.Double local11)   // derivative time (Td, min)
+        e(.Double local10)   // integral time (Ti min)
+        e(.Double local11)   // derivative time (Td min)
         e(.Boolean local12)
         e(.Double local13)
         e(.Double local14)   // y
@@ -102,10 +102,10 @@ define (videf2 dv(.VirtualInstrument (
         e(.Boolean local18)
         e(.Double local19)   // proportional gain (Kc)
         e(.Double local20)   // proportional gain (Kc)
-        e(.Double local21)   // integral time (Ti, min)
-        e(.Double local22)   // integral time (Ti, min)
-        e(.Double local23)   // derivative time (Td, min)
-        e(.Double local24)   // derivative time (Td, min)
+        e(.Double local21)   // integral time (Ti min)
+        e(.Double local22)   // integral time (Ti min)
+        e(.Double local23)   // derivative time (Td min)
+        e(.Double local24)   // derivative time (Td min)
         e(.Double local25)   // process variable
         e(.Double local26)   // process variable
         e(.Double local27)

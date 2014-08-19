@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: PID.vi
-define (CalcPid, v(.VirtualInstrument, (
+define (CalcPid v(.VirtualInstrument (
     c(
         o(v(.Double 0) fp1)         // output
         i(v(.Boolean false) fp2)    // reinitialize? (F)
@@ -14,8 +14,8 @@ define (CalcPid, v(.VirtualInstrument, (
         i(v(.Double 0.01) fp6)      // dt (s)
         i(c(
             e(v(.Double 1) n7)      // proportional gain (Kc)
-            e(v(.Double 0.01) n8)   // integral time (Ti, min)
-            e(v(.Double 0) n9)      // derivative time (Td, min)
+            e(v(.Double 0.01) n8)   // integral time (Ti min)
+            e(v(.Double 0) n9)      // derivative time (Td min)
         ) fp10)                     // PID gains
         i(v(.Double 0) fp11)        // process variable
         i(v(.Double 42.42) fp12)    // setpoint
@@ -30,8 +30,8 @@ define (CalcPid, v(.VirtualInstrument, (
         e(v(.Double 0) c19)
         e(.Double w20)
         e(.Double w21)   // proportional gain (Kc)
-        e(.Double w22)   // integral time (Ti, min)
-        e(.Double w23)   // derivative time (Td, min)
+        e(.Double w22)   // integral time (Ti min)
+        e(.Double w23)   // derivative time (Td min)
         e(.Boolean w24)
         e(.Double w25)
         e(.Double w26)   // y
@@ -45,10 +45,10 @@ define (CalcPid, v(.VirtualInstrument, (
         e(.Double w34)   // process variable
         e(.Double w35)   // proportional gain (Kc)
         e(.Double w36)   // proportional gain (Kc)
-        e(.Double w37)   // integral time (Ti, min)
-        e(.Double w38)   // integral time (Ti, min)
-        e(.Double w39)   // derivative time (Td, min)
-        e(.Double w40)   // derivative time (Td, min)
+        e(.Double w37)   // integral time (Ti min)
+        e(.Double w38)   // integral time (Ti min)
+        e(.Double w39)   // derivative time (Td min)
+        e(.Double w40)   // derivative time (Td min)
         e(.Double w41)   // process variable
         e(.Double w42)   // process variable
         e(.Double w43)
@@ -89,17 +89,17 @@ define (CalcPid, v(.VirtualInstrument, (
         e(.Double w78)
         e(.Double w79)
     )
-    1,
-    clump(1,
+    1 
+    clump(1 
         DPrintf("pv <%s>  sp<%s>" fp11 fp12)
         Print(fp10)
         Sub(fp12 fp11 w20)
         Copy(fp10.n7 w21 )                        // unbundle
         Copy(fp10.n8 w22 )                        // unbundle
         Copy(fp10.n9 w23 )                        // unbundle
-        IsNEDouble(w22, c19, w24)
+        IsNEDouble(w22 c19 w24)
 //--- begin case structure
-        BranchIfTrue(0, w24)                      // CaseStructure test
+        BranchIfTrue(0 w24)                      // CaseStructure test
 //--- default case
         Copy(c14 w26 )                            // case output tunnel
         Copy(c14 w27 )                            // case output tunnel
@@ -115,9 +115,9 @@ define (CalcPid, v(.VirtualInstrument, (
         Mul(w20 w21 w29)
         Mul(c16 fp6 w30)
 //--- begin case structure
-        BranchIfTrue(2, fp2)                      // CaseStructure test
+        BranchIfTrue(2 fp2)                      // CaseStructure test
 //--- default case
-        IsGTDouble(w30, c19, w31)
+        IsGTDouble(w30 c19 w31)
         Copy(w31 w32 )                            // case output tunnel
         Branch(3)
 //--- case
@@ -137,16 +137,16 @@ define (CalcPid, v(.VirtualInstrument, (
         Copy(w46 w45 )                            // LSR copy into inner wire
         Copy(w48 w47 )                            // LSR copy into inner wire
         Copy(w50 w49 )                            // LSR copy into inner wire
-        IsEQDouble(w23, w39, w51)
-        IsEQDouble(w22, w37, w52)
-        IsEQDouble(w21, w35, w53)
+        IsEQDouble(w23 w39 w51)
+        IsEQDouble(w22 w37 w52)
+        IsEQDouble(w21 w35 w53)
         And(w53 w52 w54)
         And(w54 w51 w55)
 //--- begin case structure
-        BranchIfTrue(6, w33)                      // CaseStructure test
+        BranchIfTrue(6 w33)                      // CaseStructure test
 //--- default case
 //--- begin case structure
-        BranchIfTrue(4, w32)                      // CaseStructure test
+        BranchIfTrue(4 w32)                      // CaseStructure test
 //--- default case
         Copy(w43 w60 )                            // case output tunnel
         Copy(w41 w61 )                            // case output tunnel
@@ -171,7 +171,7 @@ define (CalcPid, v(.VirtualInstrument, (
 //--- end case structure
 //--- begin case structure
         Perch(7)
-        BranchIfTrue(8, w24)     // CaseStructure test
+        BranchIfTrue(8 w24)     // CaseStructure test
 //--- default case
         Add(w29 w63 w64)
         Copy(c19 w78 )                            // case output tunnel
@@ -186,7 +186,7 @@ define (CalcPid, v(.VirtualInstrument, (
         Mul(w68 w30 w69)
         Add(w69 w49 w70)
 //--- begin case structure
-        BranchIfTrue(9, w65)                      // CaseStructure test
+        BranchIfTrue(9 w65)                      // CaseStructure test
 //--- default case
         Add(w29 w63 w71)
         Sub(w45 w71 w72)
@@ -196,7 +196,7 @@ define (CalcPid, v(.VirtualInstrument, (
 //--- case
 //--- begin case structure
         Perch(9)
-        BranchIfTrue(10, w33)    // CaseStructure test
+        BranchIfTrue(10 w33)    // CaseStructure test
 //--- default case
         Copy(w70 w73 )                            // case output tunnel
         Branch(11)
@@ -223,12 +223,12 @@ define (CalcPid, v(.VirtualInstrument, (
         Copy(w79 w46 )
         Copy(w20 w48 )
         Copy(w78 w50 )
-        BranchIfFalse(13, c18)                    // Loop condition terminal
+        BranchIfFalse(13 c18)                    // Loop condition terminal
         Branch(3)                                 // loop again
 //--- end while loop
         Perch(13)
         Copy(w46 fp1 )          // FP Term
-        DPrintf("output <%s>", fp1)
+        DPrintf("output <%s>" fp1)
 //--- end of vi
     )
 )))
@@ -246,8 +246,8 @@ define (RunPid v(.VirtualInstrument (
         e(v(.Double 0.01) fp6)      // dt (s)
         e(c(
             e(v(.Double 1) n7)      // proportional gain (Kc)
-            e(v(.Double 0.01) n8)   // integral time (Ti, min)
-            e(v(.Double 0) n9)      // derivative time (Td, min)
+            e(v(.Double 0.01) n8)   // integral time (Ti min)
+            e(v(.Double 0) n9)      // derivative time (Td min)
         ) fp10)                     // PID gains
         e(v(.Double 0) fp11)        // process variable
         e(v(.Double 42.42) fp12)    // setpoint

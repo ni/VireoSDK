@@ -14,7 +14,7 @@ define (videf1 dv(.VirtualInstrument (
         e(.UInt8 n0)
         e(.UInt8 n1)
         e(.UInt8 n2)
-    )),*) ((65 114 114 ) (97 121 32 ) ) ) AoC)   // Array Of a Cluster Of Three Bytes
+    )) *) ((65 114 114 ) (97 121 32 ) ) ) AoC)   // Array Of a Cluster Of Three Bytes
     e(dv(c(
         e(.UInt8 n0)
         e(.UInt8 n1)

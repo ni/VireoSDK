@@ -1,7 +1,7 @@
 define (default20 dv(.Single 20) )
 define (stringa373 dv(.String 'a373') )
 
-define (Test, dv(.VirtualInstrument, (
+define (Test dv(.VirtualInstrument (
  c(
     e(.Int32 x)
     e(.Int32 y)
@@ -36,16 +36,16 @@ define (Test, dv(.VirtualInstrument, (
     e(.Double dvalue)
     e(.Double dvalue2)
     e(.String outString)
-    e(dv(.String,'123 456 abc'), cString)
-    e(dv(.String,'1.23 4.56 6.78'), dString)
+    e(dv(.String '123 456 abc')  cString)
+    e(dv(.String '1.23 4.56 6.78')  dString)
     e(dv(.Int16,4) width)
     e(dv(.ComplexDouble (1.2 2.3)) cDouble)
 
     e(.Single local1)
     e(.Int32 local2)
- ),
-  1,
-  clump(1,
+ ) 
+  1 
+  clump(1 
     // Int32 to String
     Print(cn2)
     ToString(cn2,width,outString)
@@ -77,19 +77,19 @@ define (Test, dv(.VirtualInstrument, (
     Print(endoffset)
     Print(value)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
     Print(offset)
     Print(endoffset)
     Print(value)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
     Print(offset)
     Print(endoffset)
     Print(value)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     DecimalStringToNumber(cString,offset,*,*,value)
     Print(offset)
     Print(endoffset)
@@ -106,19 +106,19 @@ define (Test, dv(.VirtualInstrument, (
     Print(endoffset)
     Print(dvalue)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
     Print(offset)
     Print(endoffset)
     Print(dvalue)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
     Print(offset)
     Print(endoffset)
     Print(dvalue)
 
-    Copy(endoffset, offset)
+    Copy(endoffset offset)
     ExponentialStringToNumber(dString,offset,dDefaultVal,endoffset,dvalue)
     Print(offset)
     Print(endoffset)

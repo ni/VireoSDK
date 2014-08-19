@@ -25,7 +25,7 @@ define (HelloWorld dv(.VirtualInstrument (
     clump (1
         Print(variable1)
         
-        // A VI is a ZDA (zero dimensioned array), or object
+        // A VI is a ZDA (zero dimensioned array)  or object
         // Dig into one of the VIs fields 
         ArrayLength(HelloWorldSub.Clumps x)
         DPrintf("Clump count %s" x)

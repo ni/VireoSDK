@@ -1,16 +1,16 @@
-define (ImplicitArgs, dv(.VirtualInstrument, (
+define (ImplicitArgs dv(.VirtualInstrument (
  c(
-    e(.Int32, ci32)
-    e(.Double, cdouble)
-  ),
-  1,
-  clump(1,
+    e(.Int32 ci32)
+    e(.Double cdouble)
+  ) 
+  1 
+  clump(1 
    // Immediate arguments will be allocated as constants in the modules/system scope.
    // They will be reused as much as possible.
    //AddInt32(#42,#0,ci32)
    //Print((.Utf8 "Hello"))
    //Print(ci32)
-   //AddDouble(#123.456,#1,cdouble)
+   //AddDouble(#123.456,#1 cdouble)
    //Print(cdouble)
    )
  ) ) )

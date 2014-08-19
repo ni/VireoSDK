@@ -1,23 +1,23 @@
-define (CalcUsingIntegers, dv(.VirtualInstrument, (
+define (CalcUsingIntegers dv(.VirtualInstrument (
  c(
-    e(dv(.Int32,6), i)
-    e(dv(.Int32,7), j)
-    e(.Int32, k)
-  ),
-  1,
-  clump(1,
+    e(dv(.Int32,6)  i)
+    e(dv(.Int32,7)  j)
+    e(.Int32 k)
+  ) 
+  1 
+  clump(1 
 	MulInt32(i,j,k)
 	Print(k)
    )
  ) ) )
-define (CalcUsingDoubles, dv(.VirtualInstrument, (
+define (CalcUsingDoubles dv(.VirtualInstrument (
  c(
-    e(dv(.Double,6), x)
-    e(dv(.Double,7), y)
-    e(.Double, z)
-  ),
-  1,
-  clump(1,
+    e(dv(.Double,6)  x)
+    e(dv(.Double,7)  y)
+    e(.Double z)
+  ) 
+  1 
+  clump(1 
 	MulDouble(x,y,z)
 	Print(z)
    )

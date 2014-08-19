@@ -1,98 +1,98 @@
-define (Test, dv(.VirtualInstrument, (
+define (Test dv(.VirtualInstrument (
  c(
     e(dv(.Int32,1) c1)
-    e(dv(.Int32,2), c2)
-    e(dv(.Int32,4), c4)
-    e(dv(.Int32,8), c8)
-    e(dv(.Int32,16), c16)
-    e(.Boolean, vBool)
-    e(.Type,  vType)
+    e(dv(.Int32,2)  c2)
+    e(dv(.Int32,4)  c4)
+    e(dv(.Int32,8)  c8)
+    e(dv(.Int32,16)  c16)
+    e(.Boolean vBool)
+    e(.Type  vType)
 
-    e(.Int32, vSize)
-    e(.Int8,  vInt8)
-    e(.Int16, vInt16)
-    e(.Int32, vInt32)
-    e(.Int64, vInt64)
-    e(.UInt8,  vUInt8)
-    e(.UInt16, vUInt16)
-    e(.UInt32, vUInt32)
-    e(.UInt64, vUInt64)
-    e(.Double, vDouble)
-    e(.Single, vSingle)
-    e(.String, vString)
-    e(.Time, vTime)
-    e(.VirtualInstrument, vVI)
-    e(.Clump, vClump)
-    e(.BranchTarget, vBranchTarget)
-    e(dv(.Type, .Int32)  vIntType)
+    e(.Int32 vSize)
+    e(.Int8  vInt8)
+    e(.Int16 vInt16)
+    e(.Int32 vInt32)
+    e(.Int64 vInt64)
+    e(.UInt8  vUInt8)
+    e(.UInt16 vUInt16)
+    e(.UInt32 vUInt32)
+    e(.UInt64 vUInt64)
+    e(.Double vDouble)
+    e(.Single vSingle)
+    e(.String  vString)
+    e(.Time vTime)
+    e(.VirtualInstrument vVI)
+    e(.Clump vClump)
+    e(.BranchTarget vBranchTarget)
+    e(dv(.Type .Int32)  vIntType)
 
-    e(dv(a(e(.Double),*), (1,2,3,4)),   arrayOfDouble1d_1)
-    e(a(e(.Double),*)   a2)
+    e(dv(a(e(.Double) *)  (1,2,3,4))    arrayOfDouble1d_1)
+    e(a(e(.Double) *)   a2)
     e(a(e(.Double) * *)   a3)
   e(a(e(.Double) * * *)   a4)
   e(a(e(.Double) 1 2 3)   a5)
-  e(a(e(.Double) -1 -2 -3),   a6)
- e(a(e(.Double) -1 2 -3),   a7)
- e(a(e(.Double) 1 -2 3),   a8)
-    e(c(e(.Int32)e(.Double)e(.Boolean)e(.String)) , cluster1)
+  e(a(e(.Double) -1 -2 -3)    a6)
+ e(a(e(.Double) -1 2 -3)    a7)
+ e(a(e(.Double) 1 -2 3)    a8)
+    e(c(e(.Int32)e(.Double)e(.Boolean)e(.String))  cluster1)
 
-  ),
-  1,
-  clump(1,
+  ) 
+  1 
+  clump(1 
  //   AddInt32(x,x,x)
     Print(vType)
     //----
-    TypeOf(vType, vType),
+    TypeOf(vType vType) 
     Print(vType)
-    TypeOf(vDouble, vType),
+    TypeOf(vDouble vType) 
     Print(vType)
-    TypeOf(vSingle, vType),
+    TypeOf(vSingle vType) 
     Print(vType)
-    TypeOf(vBool, vType),
+    TypeOf(vBool vType) 
     Print(vType)
-    TypeOf(vString, vType),
+    TypeOf(vString vType) 
     Print(vType)
-    TypeOf(vTime, vType),
+    TypeOf(vTime vType) 
     Print(vType)
-    TypeOf(vVI, vType),
+    TypeOf(vVI vType) 
     Print(vType)
-    TypeOf(vClump, vType),
+    TypeOf(vClump vType) 
     Print(vType)
-    TypeOf(vBranchTarget, vType),
-    Print(vType)
-    //----
-    TypeOf(vInt8, vType),
-    Print(vType)
-    TypeOf(vInt16, vType),
-    Print(vType)
-    TypeOf(vInt32, vType),
-    Print(vType)
-    TypeOf(vInt64, vType),
+    TypeOf(vBranchTarget vType) 
     Print(vType)
     //----
-    TypeOf(vUInt8, vType),
+    TypeOf(vInt8 vType) 
     Print(vType)
-    TypeOf(vUInt16, vType),
+    TypeOf(vInt16 vType) 
     Print(vType)
-    TypeOf(vUInt32, vType),
+    TypeOf(vInt32 vType) 
     Print(vType)
-    TypeOf(vUInt64, vType),
+    TypeOf(vInt64 vType) 
     Print(vType)
-    TypeOf(a2, vType),
+    //----
+    TypeOf(vUInt8 vType) 
     Print(vType)
-    TypeOf(a3, vType),
+    TypeOf(vUInt16 vType) 
     Print(vType)
-    TypeOf(a4, vType),
+    TypeOf(vUInt32 vType) 
     Print(vType)
-    TypeOf(a5, vType),
+    TypeOf(vUInt64 vType) 
     Print(vType)
-    TypeOf(a6, vType),
+    TypeOf(a2 vType) 
     Print(vType)
-    TypeOf(a7, vType),
+    TypeOf(a3 vType) 
     Print(vType)
-    TypeOf(a8, vType),
+    TypeOf(a4 vType) 
     Print(vType)
-    TypeOf(cluster1, vType),
+    TypeOf(a5 vType) 
+    Print(vType)
+    TypeOf(a6 vType) 
+    Print(vType)
+    TypeOf(a7 vType) 
+    Print(vType)
+    TypeOf(a8 vType) 
+    Print(vType)
+    TypeOf(cluster1 vType) 
  //   Print(vType)
     Print(cluster1)
    )

@@ -20,7 +20,7 @@ define (MultiClump  dv(.VirtualInstrument  (
     	Print(s2)
         Trigger(3)
         )
-  	clump(2,         // Clump 3
+  	clump(2         // Clump 3
     	Print(s3)
         )
   )))

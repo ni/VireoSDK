@@ -1,10 +1,10 @@
 //Test that it is safe to call a subVI from multiple parallel clumps and that ouput parameters are copied correctly.
 // 
-define (c0, dv(.Boolean true) )
-define (c1, dv(.Double 1) )
+define (c0 dv(.Boolean true) )
+define (c1 dv(.Double 1) )
 //---------------------------------------------------
 //VI Definition: CCReuse_InternalRegisters_Sub2.vi
-define (videf1, dv(.VirtualInstrument, (
+define (videf1 dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local5)   // Calls
     )
@@ -22,7 +22,7 @@ define (videf1, dv(.VirtualInstrument, (
         Copy(local2 local1 )     // LSR copy into inner wire
         Add(local1 c1 local3)
         Copy(local3 local2 )
-        BranchIfTrue(1, c0)                       // Loop condition terminal
+        BranchIfTrue(1 c0)                       // Loop condition terminal
         Branch(0)                                 // loop again
 //--- end while loop
         Perch(1)

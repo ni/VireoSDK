@@ -75,11 +75,11 @@ define (MandelbrotMain v(.VirtualInstrument (
                    ArrayAppendElt(buffer char2)
                 Perch(3)
 
-                AddDouble(x, xDelta, x)
+                AddDouble(x xDelta x)
             BranchIfLEDouble(1 x xLast)
 
         ArrayAppendElt(buffer charLineFeed)
-        AddDouble(y yDelta, y)
+        AddDouble(y yDelta y)
         BranchIfGEDouble(0 y yLast)
 
         GetMicrosecondTickCount(tDone)

@@ -1,70 +1,70 @@
-define (VectorOp, dv(.VirtualInstrument, (
+define (VectorOp dv(.VirtualInstrument (
  c(   
-    e(.Boolean, vBool),
-    e(.Type,  vType),
-    e(.Int32, vSize),
-    e(dv(.Int32,-1), cneg1),
-    e(dv(.Int32,0), c0),
-    e(dv(.Int32,1), c1),
-    e(dv(.Int32,2), c2),
-    e(dv(.Int32,3), c3),
-    e(dv(.Int32,4), c4),
-    e(dv(.Int32,5), c5),
-    e(dv(.Int32,6), c6),
-    e(dv(.Int32,7), c7),
-    e(dv(.Int32,8), c8),
-    e(dv(.Int32,9), c9),
-    e(.Double, vValue),
-    e(dv(.Double,2.5), d2_5),
-    e(.Pi, vPi),
-    e(.Int32,size),
+    e(.Boolean vBool) 
+    e(.Type  vType) 
+    e(.Int32 vSize) 
+    e(dv(.Int32,-1)  cneg1) 
+    e(dv(.Int32,0)  c0) 
+    e(dv(.Int32,1)  c1) 
+    e(dv(.Int32,2)  c2) 
+    e(dv(.Int32,3)  c3) 
+    e(dv(.Int32,4)  c4) 
+    e(dv(.Int32,5)  c5) 
+    e(dv(.Int32,6)  c6) 
+    e(dv(.Int32,7)  c7) 
+    e(dv(.Int32,8)  c8) 
+    e(dv(.Int32,9)  c9) 
+    e(.Double vValue) 
+    e(dv(.Double,2.5)  d2_5) 
+    e(.Pi vPi) 
+    e(.Int32,size) 
 
-    e(dv(a(e(.Double),*), (1,2,3,4)),   arrayOfDouble1d_1),
-    e(dv(a(e(.Double),*), (2,3,4,5)),   arrayOfDouble1d_2),
-    e(a(e(.Double),*),   arrayOfDouble1d_3),
-    e(dv(.String, '----') cSeperator)
+    e(dv(a(e(.Double) *)  (1,2,3,4))    arrayOfDouble1d_1) 
+    e(dv(a(e(.Double) *)  (2,3,4,5))    arrayOfDouble1d_2) 
+    e(a(e(.Double) *)    arrayOfDouble1d_3) 
+    e(dv(.String  '----') cSeperator)
 
-  ),
-  1,
-    clump(1,
+  ) 
+  1 
+    clump(1 
         Print(vPi)
 
-        ArrayLength(arrayOfDouble1d_1, vSize)
+        ArrayLength(arrayOfDouble1d_1 vSize)
         Print(vSize)
-        ArrayLength(arrayOfDouble1d_2, vSize)
+        ArrayLength(arrayOfDouble1d_2 vSize)
         Print(vSize)
-        ArrayLength(arrayOfDouble1d_3, vSize)
-        Print(vSize)
-
-        Add(arrayOfDouble1d_1, arrayOfDouble1d_2, arrayOfDouble1d_3)
-
-        ArrayLength(arrayOfDouble1d_1, vSize)
-        Print(vSize)
-        ArrayLength(arrayOfDouble1d_2, vSize)
-        Print(vSize)
-        ArrayLength(arrayOfDouble1d_3, vSize)
+        ArrayLength(arrayOfDouble1d_3 vSize)
         Print(vSize)
 
-        ArrayIndexElt(arrayOfDouble1d_1, c0, vValue)
+        Add(arrayOfDouble1d_1 arrayOfDouble1d_2 arrayOfDouble1d_3)
+
+        ArrayLength(arrayOfDouble1d_1 vSize)
+        Print(vSize)
+        ArrayLength(arrayOfDouble1d_2 vSize)
+        Print(vSize)
+        ArrayLength(arrayOfDouble1d_3 vSize)
+        Print(vSize)
+
+        ArrayIndexElt(arrayOfDouble1d_1 c0 vValue)
         Print(vValue)
-        ArrayIndexElt(arrayOfDouble1d_1, c1, vValue)
+        ArrayIndexElt(arrayOfDouble1d_1 c1 vValue)
         Print(vValue)
-        ArrayIndexElt(arrayOfDouble1d_1, c2, vValue)
+        ArrayIndexElt(arrayOfDouble1d_1 c2 vValue)
         Print(vValue)
         
         Print(vPi)
          
-        ArrayIndexElt(arrayOfDouble1d_3, c0, vValue)
+        ArrayIndexElt(arrayOfDouble1d_3 c0 vValue)
         Print(vValue)
-        ArrayIndexElt(arrayOfDouble1d_3, c1, vValue)
+        ArrayIndexElt(arrayOfDouble1d_3 c1 vValue)
         Print(vValue)
-        ArrayIndexElt(arrayOfDouble1d_3, c2, vValue)
+        ArrayIndexElt(arrayOfDouble1d_3 c2 vValue)
         Print(vValue)
         
         // Check array indexing 
-        ArrayIndexElt(arrayOfDouble1d_3, cneg1, vValue)
+        ArrayIndexElt(arrayOfDouble1d_3 cneg1 vValue)
         Print(vValue)
-        ArrayIndexElt(arrayOfDouble1d_3, c4, vValue)
+        ArrayIndexElt(arrayOfDouble1d_3 c4 vValue)
         Print(vValue)
 
         
@@ -73,75 +73,75 @@ define (VectorOp, dv(.VirtualInstrument, (
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
         
-        Mul(arrayOfDouble1d_1, arrayOfDouble1d_2, arrayOfDouble1d_3)
+        Mul(arrayOfDouble1d_1 arrayOfDouble1d_2 arrayOfDouble1d_3)
 
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_2)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Sub(arrayOfDouble1d_1, arrayOfDouble1d_2, arrayOfDouble1d_3)
+        Sub(arrayOfDouble1d_1 arrayOfDouble1d_2 arrayOfDouble1d_3)
 
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_2)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Div(arrayOfDouble1d_1, arrayOfDouble1d_2, arrayOfDouble1d_3)
+        Div(arrayOfDouble1d_1 arrayOfDouble1d_2 arrayOfDouble1d_3)
 
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_2)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Add(arrayOfDouble1d_1, d2_5, arrayOfDouble1d_3)
+        Add(arrayOfDouble1d_1 d2_5 arrayOfDouble1d_3)
 
         Print(arrayOfDouble1d_1)
         Print(d2_5)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Add(d2_5, arrayOfDouble1d_1, arrayOfDouble1d_3)
+        Add(d2_5 arrayOfDouble1d_1 arrayOfDouble1d_3)
 
         Print(d2_5)
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Sine(arrayOfDouble1d_1, arrayOfDouble1d_3)
+        Sine(arrayOfDouble1d_1 arrayOfDouble1d_3)
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        Cosine(arrayOfDouble1d_1, arrayOfDouble1d_3)
+        Cosine(arrayOfDouble1d_1 arrayOfDouble1d_3)
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        ArrayAppendElt(arrayOfDouble1d_1, d2_5)
-        SquareRoot(arrayOfDouble1d_1, arrayOfDouble1d_3)
+        ArrayAppendElt(arrayOfDouble1d_1 d2_5)
+        SquareRoot(arrayOfDouble1d_1 arrayOfDouble1d_3)
         Print(arrayOfDouble1d_1)
         Print(arrayOfDouble1d_3)
         Print(cSeperator)
 
-        ArrayFill(arrayOfDouble1d_1, c8, d2_5)
+        ArrayFill(arrayOfDouble1d_1 c8 d2_5)
         Print(arrayOfDouble1d_1)
-        ArrayReplaceElt(arrayOfDouble1d_1, arrayOfDouble1d_1, c7, vPi)
+        ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_1 c7 vPi)
         Print(arrayOfDouble1d_1)
         
-        ArrayReplaceElt(arrayOfDouble1d_1, arrayOfDouble1d_1, c8, vPi)
+        ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_1 c8 vPi)
         Print(arrayOfDouble1d_1)
-        ArrayReplaceElt(arrayOfDouble1d_1, arrayOfDouble1d_1, cneg1, vPi)
+        ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_1 cneg1 vPi)
         Print(arrayOfDouble1d_1)
-        ArrayReplaceElt(arrayOfDouble1d_1, arrayOfDouble1d_1, c0, vPi)
+        ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_1 c0 vPi)
         Print(arrayOfDouble1d_1)
-        ArrayReplaceElt(arrayOfDouble1d_1, arrayOfDouble1d_2, c1, vPi)
+        ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_2 c1 vPi)
         DPrintf(" modified destination %s" arrayOfDouble1d_1)
         DPrintf(" unmodified source    %s" arrayOfDouble1d_2)
 
-        ArrayResize(arrayOfDouble1d_1, c9)
+        ArrayResize(arrayOfDouble1d_1 c9)
         Print(arrayOfDouble1d_1)
-        ArrayResize(arrayOfDouble1d_1, c0)
+        ArrayResize(arrayOfDouble1d_1 c0)
         Print(arrayOfDouble1d_1)
    )
  ) ) )

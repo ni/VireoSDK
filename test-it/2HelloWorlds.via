@@ -12,12 +12,12 @@ define (HelloWorld dv(.VirtualInstrument (
     )
     1
     clump (1
-        DPrintf("v1 = <%s>", variable1)
-        DPrintf("v2 = <%s>", variable2)
-        DPrintf(" ArrayResize(variable1, c0)")
-        ArrayResize(variable1, c0)
-        DPrintf("v1 = <%s> should be empty", variable1)
-        DPrintf("v2 = <%s> should not be empty", variable2)        
+        DPrintf("v1 = <%s>" variable1)
+        DPrintf("v2 = <%s>" variable2)
+        DPrintf(" ArrayResize(variable1 c0)")
+        ArrayResize(variable1 c0)
+        DPrintf("v1 = <%s> should be empty" variable1)
+        DPrintf("v2 = <%s> should not be empty" variable2)        
     )
 ) ) )
 enqueue (HelloWorld)

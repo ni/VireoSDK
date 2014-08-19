@@ -1,36 +1,36 @@
-define (Test, dv(.VirtualInstrument, (
+define (Test dv(.VirtualInstrument (
  c(
     e(dv(.Boolean,t) ct)
     e(dv(.Boolean,f) cf)
     e(.Boolean x)
     e(.Boolean y)
     e(.Boolean value)
- ),
+ ) 
   2,
-  clump(1,
-    Copy(cf, x)
-    Copy(cf, y)
+  clump(1 
+    Copy(cf x)
+    Copy(cf y)
     Trigger(1)
     Wait(1)
     
-    Copy(ct, x)
-    Copy(cf, y)
+    Copy(ct x)
+    Copy(cf y)
     Trigger(1)
     Wait(1)
    
-    Copy(cf, x)
-    Copy(ct, y)
+    Copy(cf x)
+    Copy(ct y)
     Trigger(1)
     Wait(1)
 
-    Copy(ct, x)
-    Copy(ct, y)
+    Copy(ct x)
+    Copy(ct y)
     Trigger(1)
     Wait(1)
     //----------------
    )
 
-    clump(1,
+    clump(1 
     DPrintf("-------------")
     AndBoolean(x,y,value)
     DPrintf(" And (%s %s) => %s" x y value)

@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1, dv(.VirtualInstrument, (
+define (videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Int32 875770417) local1)   // 1234
         e(dv(.Int32 0) defaultVal)   // default value
@@ -13,8 +13,8 @@ define (videf1, dv(.VirtualInstrument, (
         e(dv(.Boolean,f) prependArraySize)
         e(dv(.Boolean,f) error)
     )
-    1,
-    clump(1,
+    1 
+    clump(1 
         FlattenToString(local1 prependArraySize local2)
         Print(local2)
         Print(local3)
