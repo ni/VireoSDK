@@ -164,10 +164,14 @@ SDG
     #define snprintf _snprintf
     #define isinf !_finite
     #define isnan _isnan
+
+    #undef VIREO_MAIN
     #define VIREO_MAIN  __cdecl main
 
+    #undef VIVM_THREAD_LOCAL
     #define VIVM_THREAD_LOCAL __declspec(thread)
 
+    #undef VIREO_EXPORT
     #define VIREO_EXPORT extern "C" __declspec(dllexport)
 
     #define VIREO_DATE_TIME_STDLIB

@@ -26,6 +26,7 @@ install:
 help:
 	@echo 'Execute "make vjs"     to build vireo.js'
 	@echo '        "make clean"   to remove intermediate files'
+	@echo '        "make dox"     to rebuild doxygen web content'
 	@echo '        "make install" to copy files to web directory'
 	@echo '        "make"         to print this help dialogue'
 	@echo ''

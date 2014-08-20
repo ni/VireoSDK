@@ -1,4 +1,4 @@
-define (Mandelbrot v(.VirtualInstrument (
+define (Mandelbrot dv(.VirtualInstrument (
     // Parameter list
     c(
         i(.ComplexDouble a)
@@ -8,9 +8,9 @@ define (Mandelbrot v(.VirtualInstrument (
     c(
         e(.ComplexDouble cmplxZero)
         e(.Int32 i)
-        e(v(.Int32 0) c0)
-        e(v(.Int32 1) c1)
-        e(v(.Int32 50) c50)
+        e(dv(.Int32 0) c0)
+        e(dv(.Int32 1) c1)
+        e(dv(.Int32 50) c50)
     )
     1
     clump (1
@@ -19,30 +19,30 @@ define (Mandelbrot v(.VirtualInstrument (
         Perch(0)
             MulComplexDouble(z z z)
             AddComplexDouble(z a z)
-        ForLoopTail(0,i,c50)
+        ForLoopTail(0 i c50)
     )
 )))
 
-define (MandelbrotMain v(.VirtualInstrument (
+define (MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
         e(.Int32 err)
-        e(v(.String '.')    char1)
-        e(v(.String '#')    char2)
-        e(v(.String '\n')   lineFeed)
+        e(dv(.String '.')    char1)
+        e(dv(.String '#')    char2)
+        e(dv(.String '\n')   lineFeed)
 
-        e(v(.Double 1.0)    y)
-        e(v(.Double 1.0)    yFirst)
-        e(v(.Double -1.0)   yLast)
-        e(v(.Double -0.05)  yDelta)
+        e(dv(.Double 1.0)    y)
+        e(dv(.Double 1.0)    yFirst)
+        e(dv(.Double -1.0)   yLast)
+        e(dv(.Double -0.05)  yDelta)
 
         e(.Double   x)
-        e(v(.Double -2.0)   xFirst)
-        e(v(.Double 0.5)    xLast)
-        e(v(.Double 0.0315) xDelta)
+        e(dv(.Double -2.0)   xFirst)
+        e(dv(.Double 0.5)    xLast)
+        e(dv(.Double 0.0315) xDelta)
 
-        e(v(.Double 2)      two)
+        e(dv(.Double 2)      two)
         e(.ComplexDouble    cmplxIn)
         e(.ComplexDouble    cmplxOut)
         e(.Double           abs)
@@ -57,8 +57,7 @@ define (MandelbrotMain v(.VirtualInstrument (
         Perch(0)
             Copy(xFirst x)
             Perch(1)
-                // Explicit constructor for simple cluster types is not needed
-                // fields can be set directly
+                // Copy can copy directly into sub-fields of a cluster
                 Copy(x cmplxIn.real)
                 Copy(y cmplxIn.imaginary)
                 Mandelbrot(cmplxIn cmplxOut)
@@ -69,47 +68,15 @@ define (MandelbrotMain v(.VirtualInstrument (
                 Perch(2)
                     StreamWrite(file char2 err)
                 Perch(3)
-            AddDouble(x, xDelta, x)
+            AddDouble(x xDelta x)
             BranchIfLEDouble(1 x xLast)
         StreamWrite(file lineFeed err)
-        AddDouble(y, yDelta, y)
-        BranchIfGEDouble(0, y yLast)
+        AddDouble(y yDelta y)
+        BranchIfGEDouble(0 y yLast)
 
         GetMicrosecondTickCount(tDone)
         SubInt64(tDone tStart tDone)
-        // coment out so unit tests will not reject output
-        // DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
+        DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
     )
 ) ) )
 enqueue (MandelbrotMain)
-
-
-/*
- //inspiration for this examples comes from
- //http://rosettacode.org/wiki/Mandelbrot_set#Go
-
- package main
- 
- import "fmt"
- import "math/cmplx"
- 
- func mandelbrot(a complex128) (z complex128) {
-    for i := 0; i < 50; i++ {
-        z = z*z + a
-    }
-    return
- }
- 
- func main() {
-    for y := 1.0; y >= -1.0; y -= 0.05 {
-        for x := -2.0; x <= 0.5; x += 0.0315 {
-            if cmplx.Abs(mandelbrot(complex(x, y))) < 2 {
-                fmt.Print("*")
-            } else {
-                fmt.Print(" ")
-            }
-        }
-        fmt.Println("")
-    }
- }
- */
