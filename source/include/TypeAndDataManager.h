@@ -369,7 +369,7 @@ public:
     /// @name Core Property Methods
     /// Core type properties are stored in each object so they can be directly accessed.
 
-    //! How the data as a whole is encoded, either a simple encoding like "2s compliment binary" or an aggrigate encoding.
+    //! How the data as a whole is encoded, either a simple encoding like "2s compliment binary" or an Aggregate encoding.
     EncodingEnum BitEncoding()      { return (EncodingEnum) _encoding; }
     //! Memory alignment required for values of this type.
     Int32   AQAlignment()             { return _aqAlignment; }
@@ -394,11 +394,11 @@ public:
     //! True if the type contains one or more generic types.
     Boolean HasGenericType()        { return _hasGenericType != 0; }
 
-    //! True if aggrigate element is used as an input parameter.
+    //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam()          { return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput); }
-    //! True if aggrigate element is used as an output parameter.
+    //! True if aggregate element is used as an output parameter.
     Boolean IsOutputParam()         { return (_elementUsageType == kUsageTypeOutput) || (_elementUsageType == kUsageTypeInputOutput); }
-    //! True if aggrigate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
+    //! True if aggregate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
     Boolean IsAlias()               { return (_elementUsageType >= kUsageTypeInput) && (_elementUsageType <= kUsageTypeAlias); }
     //! True if the parameer is only visible to the callee, and is preserved between calls.
     Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }
@@ -417,26 +417,26 @@ public:
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitBad(this); }
     //! For a wrapped type, return the type that was wrapped, null otherwise.
     virtual TypeRef BaseType()                          { return null; }
-    //! How many element in an aggrigate, 0 if the type is not an aggrigate.
+    //! How many element in an Aggregate, 0 if the type is not an Aggregate.
     virtual Int32   SubElementCount()                   { return 0; }
-    //! Get an element of an aggrigate using the elements field name.
+    //! Get an element of an Aggregate using the elements field name.
     virtual TypeRef GetSubElementByName(SubString* name){ return null; }
-    //! Get an element of an aggrigate using it index.
+    //! Get an element of an Aggregate using it index.
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
 
-    //! Parse through a path, digging through aggrigate element names. Calculates the cumulative offset.
+    //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
     TypeRef GetSubElementOffsetFromPath(SubString* name, Int32 *offset);
-    //! Parse through a path, digging through aggrigate element names, references and array indexes.
+    //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     
     //! Set the SubString to the name if the type is not anonymous.
     virtual void GetName(SubString* name)               { name->AliasAssign(null, null); }
-    //! Set the SubString to the aggrigates elements field name.
+    //! Set the SubString to the aggregates elements field name.
     virtual void GetElementName(SubString* name)        { name->AliasAssign(null, null); }
     //! Return a pointer to the raw vector of dimension lengths.
     virtual IntIndex* GetDimensionLengths()             { return null; }
     
-    //! Offset in AQs in the containing aggrigate
+    //! Offset in AQs in the containing aggregate
     virtual IntIndex ElementOffset()                    { return 0; }
 
     // Methods for working with individual elements
@@ -525,14 +525,14 @@ public:
     virtual void    GetElementName(SubString* name) { name->AliasAssign(null, null); }
 };
 //------------------------------------------------------------
-//! Give a type a field name and offset properties. Used inside an AggrigateType
+//! Give a type a field name and offset properties. Used inside an aggregateType
 class ElementType : public WrappedType
 {
 private:
     ElementType(TypeManager* typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
 
 public:
-    Int32                   _offset;  // Relative to the begining of the aggrigate
+    Int32                   _offset;  // Relative to the begining of the aggregate
     InlineArray<Utf8Char>   _elementName;
 
 public:
@@ -557,7 +557,7 @@ public:
 };
 //------------------------------------------------------------
 //! A type that is a collection of sub types.
-class AggrigateType : public TypeCommon
+class AggregateType : public TypeCommon
 {
     /// Since this class is variable size, classes that derive from it can not
     /// have member variables  as they would be stompped on.
@@ -576,7 +576,7 @@ protected:
 protected:
     InlineArray<ElementType*>   _elements;
 
-    AggrigateType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+    AggregateType(TypeManager* typeManager, TypeRef elements[], Int32 count)
     : TypeCommon(typeManager), _elements(count)
     {
         _pDefault = null;
@@ -584,22 +584,22 @@ protected:
     }
     static IntIndex StructSize(Int32 count)
     {
-        return sizeof(AggrigateType) + InlineArray<ElementType*>::ExtraStructSize(count);
+        return sizeof(AggregateType) + InlineArray<ElementType*>::ExtraStructSize(count);
     }
 
 public:
-    virtual ~AggrigateType() {};
+    virtual ~AggregateType() {};
     virtual Int32   SubElementCount();
     virtual TypeRef GetSubElementByName(SubString* name);
     virtual TypeRef GetSubElement(Int32 index);
 };
 //------------------------------------------------------------
-//! A type that is an aggrigate of BitBlockTypes.
-class BitClusterType : public AggrigateType
+//! A type that is an aggregate of BitBlockTypes.
+class BitClusterType : public AggregateType
 {
 private:
     BitClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggrigateType::StructSize(count); }
+    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static BitClusterType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitBitCluster(this); }
@@ -608,11 +608,11 @@ public:
 };
 //------------------------------------------------------------
 //! A type that permits its data to be looked at though more than one perspective.
-class EquivalenceType : public AggrigateType
+class EquivalenceType : public AggregateType
 {
 private:
     EquivalenceType(TypeManager* typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggrigateType::StructSize(count); }
+    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static EquivalenceType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitEquivalence(this); }
@@ -622,13 +622,13 @@ public:
     virtual NIError ClearData(void* pData);
 };
 //------------------------------------------------------------
-//! A type that is an aggrigate of other types.
-class ClusterType : public AggrigateType
+//! A type that is an aggregate of other types.
+class ClusterType : public AggregateType
 {
 private:
     ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count);
     virtual ~ClusterType();
-    static IntIndex StructSize(Int32 count) { return AggrigateType::StructSize(count); }
+    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ClusterType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitCluster(this); }
@@ -638,10 +638,10 @@ public:
     virtual NIError ClearData(void* pData);
 };
 //------------------------------------------------------------
-//! Base class for calculating core properties for aggrigate types.
-class AggrigateAlignmentCalculator
+//! Base class for calculating core properties for aggregate types.
+class AggregateAlignmentCalculator
 {
-    /// When aggrigate types are parsed by a codec the decoder needs to calculate
+    /// When aggregate types are parsed by a codec the decoder needs to calculate
     /// core properties as the elements are parsed and created. This class and
     /// its decendents keep the details internal to the TypeManager.
 protected:
@@ -649,50 +649,50 @@ protected:
     Int32           _aqOffset;
 public:
     Int32   ElementCount;
-    Int32   AggrigateAlignment;
-    Int32   AggrigateSize;
+    Int32   AggregateAlignment;
+    Int32   AggregateSize;
     Boolean IncludesPadding;
     Boolean IsValid;
     Boolean IsFlat;
 public:
-    AggrigateAlignmentCalculator(TypeManager* tm);
+    AggregateAlignmentCalculator(TypeManager* tm);
     virtual Int32  AlignNextElement(TypeRef element) = 0;
     virtual void   Finish() = 0;
 };
 //------------------------------------------------------------
 //! Calculates core properties for ClusterTypes
-class ClusterAlignmentCalculator : public AggrigateAlignmentCalculator
+class ClusterAlignmentCalculator : public AggregateAlignmentCalculator
 {
 public:
-    ClusterAlignmentCalculator(TypeManager* tm) : AggrigateAlignmentCalculator(tm) {}
+    ClusterAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
 //------------------------------------------------------------
 //! Calculates core properties for ClusterTypes
-class ParamBlockAlignmentCalculator :  public AggrigateAlignmentCalculator
+class ParamBlockAlignmentCalculator :  public AggregateAlignmentCalculator
 {
 public:
-    ParamBlockAlignmentCalculator(TypeManager* tm) : AggrigateAlignmentCalculator(tm) {}
+    ParamBlockAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
 //------------------------------------------------------------
 //! Calculates core properties for EquivalenceTypes
-class EquivalenceAlignmentCalculator :  public AggrigateAlignmentCalculator
+class EquivalenceAlignmentCalculator :  public AggregateAlignmentCalculator
 {
 public:
-    EquivalenceAlignmentCalculator(TypeManager* tm) : AggrigateAlignmentCalculator(tm) {}
+    EquivalenceAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
 //------------------------------------------------------------
 //! A type that describes the parameter block used by a native InstructionFunction
-class ParamBlockType : public AggrigateType
+class ParamBlockType : public AggregateType
 {
 private:
     ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggrigateType::StructSize(count); }
+    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ParamBlockType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitParamBlock(this); }
