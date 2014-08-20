@@ -1,7 +1,7 @@
 var class_vireo_1_1_virtual_instrument =
 [
     [ "VirtualInstrument", "class_vireo_1_1_virtual_instrument.html#a33838fcd5c491d8cf836284684536334", null ],
-    [ "ClearParamBlock", "class_vireo_1_1_virtual_instrument.html#a80089391f842f893e8c475f7377392d7", null ],
+    [ "ClearTopVIParamBlock", "class_vireo_1_1_virtual_instrument.html#a5652fab8fe403faa36958626f18d2a62", null ],
     [ "Clumps", "class_vireo_1_1_virtual_instrument.html#a668c0ffb08aeaac345a9ef00d50dd4c0", null ],
     [ "DataSpace", "class_vireo_1_1_virtual_instrument.html#a51fec5a1a074da25062686ff67457c8a", null ],
     [ "GoIsDone", "class_vireo_1_1_virtual_instrument.html#a3963cd249ce5555e0fd7a925799f8507", null ],

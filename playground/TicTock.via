@@ -1,17 +1,17 @@
-define (TicTock v(.VirtualInstrument (
+define (TicTock dv(.VirtualInstrument (
  c(
-   e(v(.UInt32 500)     t1_milliseconds)
-   e(v(.UInt32 500000)  t2_microseconds)
-   e(v(.String 'Tic')   sTic)
-   e(v(.String 'Tock')  sTock)
-   ),
- 1,
+   e(dv(.UInt32 500)     t1_milliseconds)
+   e(dv(.UInt32 500000)  t2_microseconds)
+   e(dv(.String 'Tic')   sTic)
+   e(dv(.String 'Tock')  sTock)
+   )
+ 1
  clump(1
    Perch(0)
-   Print(sTic)
-   WaitMilliseconds(t1_milliseconds)
-   Print(sTock)
-   WaitMicroseconds(t2_microseconds)
+     Print(sTic)
+     WaitMilliseconds(t1_milliseconds)
+     Print(sTock)
+     WaitMicroseconds(t2_microseconds)
    Branch(0)
    )
 )))

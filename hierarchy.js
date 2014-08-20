@@ -1,6 +1,6 @@
 var hierarchy =
 [
-    [ "Vireo::AggrigateAlignmentCalculator", "class_vireo_1_1_aggrigate_alignment_calculator.html", [
+    [ "Vireo::AggregateAlignmentCalculator", "class_vireo_1_1_aggregate_alignment_calculator.html", [
       [ "Vireo::ClusterAlignmentCalculator", "class_vireo_1_1_cluster_alignment_calculator.html", null ],
       [ "Vireo::EquivalenceAlignmentCalculator", "class_vireo_1_1_equivalence_alignment_calculator.html", null ],
       [ "Vireo::ParamBlockAlignmentCalculator", "class_vireo_1_1_param_block_alignment_calculator.html", null ]
@@ -58,8 +58,6 @@ var hierarchy =
       ] ],
       [ "Vireo::VectorOpInstruction", "struct_vireo_1_1_vector_op_instruction.html", null ]
     ] ],
-    [ "Vireo::Mutex", "class_vireo_1_1_mutex.html", null ],
-    [ "Vireo::MutexedScope", "class_vireo_1_1_mutexed_scope.html", null ],
     [ "Vireo::PatchInfo", "struct_vireo_1_1_patch_info.html", null ],
     [ "Vireo::PlatformTime", "class_vireo_1_1_platform_time.html", null ],
     [ "Vireo::Queue", "class_vireo_1_1_queue.html", null ],
@@ -80,7 +78,7 @@ var hierarchy =
       [ "Vireo::TempStackCStringFromString", "class_vireo_1_1_temp_stack_c_string_from_string.html", null ]
     ] ],
     [ "Vireo::TypeCommon", "class_vireo_1_1_type_common.html", [
-      [ "Vireo::AggrigateType", "class_vireo_1_1_aggrigate_type.html", [
+      [ "Vireo::AggregateType", "class_vireo_1_1_aggregate_type.html", [
         [ "Vireo::BitClusterType", "class_vireo_1_1_bit_cluster_type.html", null ],
         [ "Vireo::ClusterType", "class_vireo_1_1_cluster_type.html", null ],
         [ "Vireo::EquivalenceType", "class_vireo_1_1_equivalence_type.html", null ],

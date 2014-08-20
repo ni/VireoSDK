@@ -108,8 +108,7 @@ $(document).ready(function(){initNavTree('_data_types_8h.html','');});
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">DataTypes.h File Reference</div>  </div>
 </div><!--header-->
@@ -139,7 +138,7 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>null</b>&#160;&#160;&#160;((void *)0)</td></tr>
 <tr class="separator:ac97b8ee753e4405397a42ad5799b0f9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a124ec50fb0cfb9c243216b28ede2f979"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a124ec50fb0cfb9c243216b28ede2f979"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_ASSERT</b>(_TEST_)&#160;&#160;&#160;VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ );</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_ASSERT</b>(_TEST_)</td></tr>
 <tr class="separator:a124ec50fb0cfb9c243216b28ede2f979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -200,6 +199,9 @@ typedef Int32&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::IntSm
 typedef VIREO_ARRAY_INDEX_TYPE&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::IntIndex</b></td></tr>
 <tr class="memdesc:adf1195f0450d73309ccef9fcd2f01157"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type used for indexing arrays. <br/></td></tr>
 <tr class="separator:adf1195f0450d73309ccef9fcd2f01157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d4709e187958215dd933570efb8304d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d4709e187958215dd933570efb8304d"></a>
+typedef IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::ArrayDimensionVector</b> [kMaximumRank]</td></tr>
+<tr class="separator:a4d4709e187958215dd933570efb8304d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aca224f18b3ab5828add7e5401bc85d7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aca224f18b3ab5828add7e5401bc85d7a"></a>
 typedef UInt8&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::AQBlock1</b></td></tr>
 <tr class="separator:aca224f18b3ab5828add7e5401bc85d7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,6 +220,9 @@ Enumerations</h2></td></tr>
 <tr class="memitem:a2f1d78b8a3a7382fe3948d9184b53d0b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f1d78b8a3a7382fe3948d9184b53d0b"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>kVariableSizeSentinel</b> = VIREO_ARRAY_VARIABLE_SENTINEL
  }</td></tr>
 <tr class="separator:a2f1d78b8a3a7382fe3948d9184b53d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201836723811d659de29134c1518b870"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a201836723811d659de29134c1518b870"></a>enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>kMaximumRank</b> = 15
+ }</td></tr>
+<tr class="separator:a201836723811d659de29134c1518b870"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a21dcb2df769231f51231b8010e7cf262"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a21dcb2df769231f51231b8010e7cf262"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>NIError</b> { <br/>
 &#160;&#160;<b>kNIError_Success</b> = 0, 
 <b>kNIError_kInsufficientResources</b> = 1, 
@@ -231,12 +236,6 @@ Enumerations</h2></td></tr>
 <br/>
  }</td></tr>
 <tr class="separator:a21dcb2df769231f51231b8010e7cf262"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a1bee7025a042d24ea90ab1542ab1be18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1bee7025a042d24ea90ab1542ab1be18"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VireoAssert_Hidden</b> (Boolean test, const char *message, const char *file, int line)</td></tr>
-<tr class="separator:a1bee7025a042d24ea90ab1542ab1be18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Core types (Int32,...) and ifdefs to work around a few platfrom collisions. </p>

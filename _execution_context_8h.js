@@ -13,5 +13,6 @@ var _execution_context_8h =
       [ "kExecutionState_ClumpsWaitingOnTime", "_execution_context_8h.html#a4ad8f80c5ccd62b545090b910bee838ca651c956ad00714e572e2189dbbe0dd72", null ],
       [ "kExecutionState_ClumpsWaitingOnQueues", "_execution_context_8h.html#a4ad8f80c5ccd62b545090b910bee838caea1de0c69caea6f1782b63b74a750f3b", null ],
       [ "kExecutionState_ClumpsWaitingOnISRs", "_execution_context_8h.html#a4ad8f80c5ccd62b545090b910bee838ca218929ce678824d405cb1fed654fb982", null ]
-    ] ]
+    ] ],
+    [ "CulDeSac", "_execution_context_8h.html#ab03c2f9d7a2240db9fe35a02a3e4c37a", null ]
 ];

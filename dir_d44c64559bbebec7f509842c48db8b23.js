@@ -19,10 +19,7 @@ var dir_d44c64559bbebec7f509842c48db8b23 =
       [ "TDVibDecoder", "class_vireo_1_1_t_d_vib_decoder.html", "class_vireo_1_1_t_d_vib_decoder" ],
       [ "TDVibEncoder", "class_vireo_1_1_t_d_vib_encoder.html", "class_vireo_1_1_t_d_vib_encoder" ]
     ] ],
-    [ "Thread.h", "_thread_8h.html", [
-      [ "Mutex", "class_vireo_1_1_mutex.html", "class_vireo_1_1_mutex" ],
-      [ "MutexedScope", "class_vireo_1_1_mutexed_scope.html", "class_vireo_1_1_mutexed_scope" ]
-    ] ],
+    [ "Thread.h", "_thread_8h.html", "_thread_8h" ],
     [ "TimeTypes.h", "_time_types_8h.html", "_time_types_8h" ],
     [ "TypeAndDataManager.h", "_type_and_data_manager_8h.html", "_type_and_data_manager_8h" ],
     [ "TypeDefiner.h", "_type_definer_8h.html", "_type_definer_8h" ],

@@ -42,7 +42,7 @@ var _t_d_codec_via_8h =
     [ "tsUInt", "_t_d_codec_via_8h.html#a76c824c0cc261672f18404fd81bfb251", null ],
     [ "tsUnicode", "_t_d_codec_via_8h.html#a3cf410fca33b21393622163d50a9536f", null ],
     [ "tsUnusedBits", "_t_d_codec_via_8h.html#a8ca1ffcdda2ccb77ea402cbb5bee727b", null ],
-    [ "tsValueToken", "_t_d_codec_via_8h.html#a5e397b1ab3eda747421d2ef5bb30451c", null ],
+    [ "tsVarValueToken", "_t_d_codec_via_8h.html#a1302665e5d34ae31e5010b8a26727b18", null ],
     [ "tsVolatileToken", "_t_d_codec_via_8h.html#a999082c61a34e82369da27f3b0b66cb6", null ],
     [ "tsZigZag", "_t_d_codec_via_8h.html#ac1ecb70189b09235a012a45fec3e3b34", null ],
     [ "Format", "_t_d_codec_via_8h.html#a964427b62f24acc2439935484353ac4d", null ]

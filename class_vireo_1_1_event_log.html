@@ -130,7 +130,7 @@ Public Types</h2></td></tr>
 <a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1ae0d85383c18578abdd1f22269241eca5">kSoftDataError</a> = 2, 
 <a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1a5f909b01b25dcd7b3af4198a4ef9ff25">kHardDataError</a> = 3, 
 <br/>
-&#160;&#160;<a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1a0aa0495d1e99cd21f9ec7244b1b03cb7">kAssetFailure</a> = 4
+&#160;&#160;<a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1abd1ce7f74bab3098694623e9745acb0d">kAssertFailure</a> = 4
 <br/>
  }</td></tr>
 <tr class="separator:a590f5a040d0e9c80a9559a03b95e11b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -146,12 +146,6 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><b>TotalErrorCount</b> 
 <tr class="memitem:a414e387e7e47d685c03916a718d67cb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a414e387e7e47d685c03916a718d67cb6"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>HardErrorCount</b> ()</td></tr>
 <tr class="separator:a414e387e7e47d685c03916a718d67cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fb67f8cfbbd69c95f0d29bfbe84b890"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8fb67f8cfbbd69c95f0d29bfbe84b890"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>TraceEnabled</b> ()</td></tr>
-<tr class="separator:a8fb67f8cfbbd69c95f0d29bfbe84b890"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f71cbc011b1e2292616905fe9d2dbdb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f71cbc011b1e2292616905fe9d2dbdb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetTraceEnabled</b> (Boolean value)</td></tr>
-<tr class="separator:a8f71cbc011b1e2292616905fe9d2dbdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae980830474f33246b727f65a8adcfb7a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae980830474f33246b727f65a8adcfb7a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>LogEvent</b> (<a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">EventSeverity</a> severity, Int32 lineNumber, const char *message, <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *extra=null)</td></tr>
 <tr class="separator:ae980830474f33246b727f65a8adcfb7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -181,9 +175,6 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_hardErrorCount</b><
 <tr class="memitem:a9db3b5eb42bf5e9c7a6769afd4bbb2c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9db3b5eb42bf5e9c7a6769afd4bbb2c7"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_warningCount</b></td></tr>
 <tr class="separator:a9db3b5eb42bf5e9c7a6769afd4bbb2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec11682f11a55db732a6ef20e4fd42d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec11682f11a55db732a6ef20e4fd42d1"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>_traceEnabled</b></td></tr>
-<tr class="separator:aec11682f11a55db732a6ef20e4fd42d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A Class to collect trace, warning and error events when processing a data set. </p>
@@ -210,7 +201,7 @@ Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>_traceEnabled</b><
 <tr><td class="fieldname"><a class="anchor" id="a590f5a040d0e9c80a9559a03b95e11b1a5f909b01b25dcd7b3af4198a4ef9ff25"></a>kHardDataError&#160;</td><td class="fielddoc">
 <p>An error in the input was detected and the operation cannot continue. </p>
 </td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a590f5a040d0e9c80a9559a03b95e11b1a0aa0495d1e99cd21f9ec7244b1b03cb7"></a>kAssetFailure&#160;</td><td class="fielddoc">
+<tr><td class="fieldname"><a class="anchor" id="a590f5a040d0e9c80a9559a03b95e11b1abd1ce7f74bab3098694623e9745acb0d"></a>kAssertFailure&#160;</td><td class="fielddoc">
 <p>Internal state of the system has been compromised. </p>
 </td></tr>
 </table>

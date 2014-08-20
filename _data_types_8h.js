@@ -8,6 +8,7 @@ var _data_types_8h =
     [ "AQBlock2", "_data_types_8h.html#a4a83a61ef74772fed0e78c65b6c2a10a", null ],
     [ "AQBlock4", "_data_types_8h.html#aa39e2fed2038ca59570e1de1b29e5664", null ],
     [ "AQBlock8", "_data_types_8h.html#a679b1742f8324ce87a0f5ec98814cdc4", null ],
+    [ "ArrayDimensionVector", "_data_types_8h.html#a4d4709e187958215dd933570efb8304d", null ],
     [ "Boolean", "_data_types_8h.html#a3790b6de8c45ebee9af548380c3fb8d2", null ],
     [ "Double", "_data_types_8h.html#a1f2c5f02159fb28428e23074cc04166d", null ],
     [ "Int16", "_data_types_8h.html#a292a71e839a94f0bafde3510df52d972", null ],
@@ -27,6 +28,7 @@ var _data_types_8h =
     [ "Utf16Char", "_data_types_8h.html#a0f181359cd24675eda65638152ea3e25", null ],
     [ "Utf8Char", "_data_types_8h.html#ab4f6605067abdf285072cb21a921d0a3", null ],
     [ "kVariableSizeSentinel", "_data_types_8h.html#a2f1d78b8a3a7382fe3948d9184b53d0ba2c422600acf985f9b85a5cbc81eff1cf", null ],
+    [ "kMaximumRank", "_data_types_8h.html#a201836723811d659de29134c1518b870afee08790d6aca4560133eae35943720b", null ],
     [ "NIError", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262", [
       [ "kNIError_Success", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262a9a5cba15626976f6fc4848310d846ca8", null ],
       [ "kNIError_kInsufficientResources", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262abff7777ae9172f2e88079fd40121126d", null ],
@@ -36,6 +38,5 @@ var _data_types_8h =
       [ "kNIError_kCantEncode", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262a447bb504e07caf2e0e486257662a41c9", null ],
       [ "kNIError_kLogicFailure", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262a4cd28f399339fa0ad434ad79497d57ea", null ],
       [ "kNIError_ValueTruncated", "_data_types_8h.html#a21dcb2df769231f51231b8010e7cf262a302a08fc26a7aa16863a678bcd192673", null ]
-    ] ],
-    [ "VireoAssert_Hidden", "_data_types_8h.html#a1bee7025a042d24ea90ab1542ab1be18", null ]
+    ] ]
 ];

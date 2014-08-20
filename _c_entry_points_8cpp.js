@@ -28,7 +28,7 @@ var _c_entry_points_8cpp =
     [ "EggShell_PokeMemory", "_c_entry_points_8cpp.html#ab23211459bb5579e49d3cb5d434081c9", null ],
     [ "EggShell_REPL", "_c_entry_points_8cpp.html#ab5bab7621c29b92445e5db1211be8a9e", null ],
     [ "EggShell_SetDelayedLoad", "_c_entry_points_8cpp.html#adf3e06a23079d440333fcab66d0a0fa9", null ],
-    [ "ExecutionContext_EnqueRunQueue", "_c_entry_points_8cpp.html#adc0c58c0cd36e7687c71d6ea4d70ca2f", null ],
+    [ "ExecutionContext_EnqueueRunQueue", "_c_entry_points_8cpp.html#a848b4575584c99a94cde02c57a6c2106", null ],
     [ "ExecutionContext_ExecuteSlices", "_c_entry_points_8cpp.html#a50860b90e512573b9cf1a534c983f1a9", null ],
     [ "TypeManager_Define", "_c_entry_points_8cpp.html#a67d28dc9840444d3ca1b86ce51490446", null ],
     [ "TypeManager_FindType", "_c_entry_points_8cpp.html#ab3bb163a079e6d2e497bcd3b3c16530c", null ],
