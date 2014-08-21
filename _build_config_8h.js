@@ -11,7 +11,6 @@ var _build_config_8h =
     [ "VIREO_ISR_ENABLE", "_build_config_8h.html#aa1d600d4f52d8647c3e3215ab3c9f2a6", null ],
     [ "VIREO_MAIN", "_build_config_8h.html#a05b4daac1b8c8724e34a904fa29ce4d8", null ],
     [ "VIREO_MULTI_THREAD", "_build_config_8h.html#af8c1fc567940d0c8e4e18bdfdc759e73", null ],
-    [ "VIREO_PACKED_INSTRUCTIONS", "_build_config_8h.html#aefb787fd3bfb65af50fd9f5ef42a0d67", null ],
     [ "VIREO_PERF_COUNTERS", "_build_config_8h.html#aad1d149ffb702827d31d6439d7a2f98b", null ],
     [ "VIREO_POSIX_FILEIO", "_build_config_8h.html#ad410a0dc28691ca72ca8642ebecdf394", null ],
     [ "VIREO_TYPE_ATime", "_build_config_8h.html#a5c38b16c596c36c0ddad5e37c4cf378a", null ],

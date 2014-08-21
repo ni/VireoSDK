@@ -1,6 +1,5 @@
 var NAVTREEINDEX5 =
 {
-"class_vireo_1_1_type_common.html#a1b190786b82636cfbdfd493962ea3567":[4,0,0,66,51],
 "class_vireo_1_1_type_common.html#a1c8f0bf67bd622965c12905d37acdb17":[4,0,0,66,65],
 "class_vireo_1_1_type_common.html#a1f3eeaaba690de16fa19a3f307785c50":[4,0,0,66,10],
 "class_vireo_1_1_type_common.html#a212acaacb165a723b27db73ecfdf3595":[4,0,0,66,7],
@@ -220,8 +219,9 @@ var NAVTREEINDEX5 =
 "class_vireo_1_1_v_i_clump.html#aede1e23686dfdd663d26b4a88110d8f0":[4,0,0,75,0],
 "class_vireo_1_1_v_i_clump.html#af9cc63e4775b1f3d40ffb33da03b06d0":[4,0,0,75,5],
 "class_vireo_1_1_v_i_data_procs_class.html":[4,0,0,76],
-"class_vireo_1_1_v_i_data_procs_class.html#a1a907c15a3fef9c4ed997bf9536b6b63":[4,0,0,76,1],
-"class_vireo_1_1_v_i_data_procs_class.html#a44c392ad98b0d0a550efee97624e93b4":[4,0,0,76,0],
+"class_vireo_1_1_v_i_data_procs_class.html#a1a907c15a3fef9c4ed997bf9536b6b63":[4,0,0,76,2],
+"class_vireo_1_1_v_i_data_procs_class.html#a44c392ad98b0d0a550efee97624e93b4":[4,0,0,76,1],
+"class_vireo_1_1_v_i_data_procs_class.html#aab9bde5b83baf3207ab7de6ec76de50c":[4,0,0,76,0],
 "class_vireo_1_1_virtual_instrument.html":[4,0,0,77],
 "class_vireo_1_1_virtual_instrument.html#a04c01980e18cea17344e615968ba7868":[4,0,0,77,15],
 "class_vireo_1_1_virtual_instrument.html#a2e2dae5fed80e5a724b3e2a07ee5a2ad":[4,0,0,77,9],
