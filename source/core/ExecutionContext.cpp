@@ -261,9 +261,6 @@ void ExecutionContext::ClassInit()
     {
         _classInited = true;
         _culDeSac._function = (InstructionFunction) CulDeSac;
-#ifndef VIREO_PACKED_INSTRUCTIONS
-        _culDeSac._next = &_culDeSac;
-#endif
     }
 }
 //------------------------------------------------------------

@@ -45,9 +45,6 @@ typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *InstructionFunction) (Instruct
 struct InstructionCore
 {
 	InstructionFunction  _function;
-#ifndef VIREO_PACKED_INSTRUCTIONS
-	InstructionCore* _next;
-#endif
 };
    
 // A non-null faked allocation for two pass packed instruction
@@ -73,13 +70,8 @@ struct VarArgInstruction : public InstructionCore
 // determine what the 'next' instruction is. If the instruction is derived
 // from and extended it must be overridden, or else an incorrect result will
 // be returned.
-#ifdef VIREO_PACKED_INSTRUCTIONS
-    #define NEXT_INSTRUCTION_METHOD()   inline InstructionCore* Next() { return this + 1; }
-    #define NEXT_INSTRUCTION_METHODV()  inline InstructionCore* Next() { return ( (InstructionCore*) ((size_t*)((VarArgInstruction*)this + 1) + (int)this->_count) ); }
-#else
-    #define NEXT_INSTRUCTION_METHOD()   inline InstructionCore* Next() { return this->_next; }
-    #define NEXT_INSTRUCTION_METHODV()   inline InstructionCore* Next() { return this->_next; }
-#endif
+#define NEXT_INSTRUCTION_METHOD()   inline InstructionCore* Next() { return this + 1; }
+#define NEXT_INSTRUCTION_METHODV()  inline InstructionCore* Next() { return ( (InstructionCore*) ((size_t*)((VarArgInstruction*)this + 1) + (int)this->_count) ); }
 
 //------------------------------------------------------------
 // Structs for various static argument count instructions

@@ -96,9 +96,6 @@ SDG
 // FILESYSTEM covers open/close operations
 #define VIREO_FILESYSTEM_DIRLIST 1
 
-// Instructions are directly concatenated there is no next pointer.
-#define VIREO_PACKED_INSTRUCTIONS
-
 #ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY
 #define VIREO_USING_ASSERTS
@@ -116,8 +113,6 @@ SDG
 
     #define kVireoOS_wiring
 
-    #define VIREO_PACKED_INSTRUCTIONS
-
     #define VIREO_SUPPORTS_ISR
     #define VIREO_ISR_DISABLE  cli();
     #define VIREO_ISR_ENABLE  sei();
@@ -134,8 +129,6 @@ SDG
 //------------------------------------------------------------
 #elif defined(__PIC32MX__)
     #define kVireoOS_wiring
-
-    #define VIREO_PACKED_INSTRUCTIONS
 
     #define VIREO_SUPPORTS_ISR
 

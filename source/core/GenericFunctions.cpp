@@ -220,14 +220,9 @@ struct AggregateBinOpInstruction : public InstructionCore
     _ParamImmediateDef(InstructionCore*, Snippet);
     _ParamImmediateDef(InstructionCore*, Accumulator);
     inline InstructionCore* Accumulator()   { return this->_piAccumulator; }
-#ifdef VIREO_PACKED_INSTRUCTIONS
     inline InstructionCore* Snippet()       { return this->_piSnippet; }
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Next()          { return this->_piNext; }
-#else
-    inline InstructionCore* Snippet()       { return this->_piSnippet; }
-    NEXT_INSTRUCTION_METHOD()
-#endif
 };
 //------------------------------------------------------------
 InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilder)
@@ -283,10 +278,9 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             Int32 binOpArgId = pInstructionBuilder->AddSubSnippet();
             Int32 accumulatorOpArgId = pInstructionBuilder->AddSubSnippet();
 
-#ifdef VIREO_PACKED_INSTRUCTIONS
-            // add room for next field
+            // Add room for next field
             pInstructionBuilder->AddSubSnippet();
-#endif
+
             // Emit the vector op
             AggregateBinOpInstruction* vectorBinOp = (AggregateBinOpInstruction*) pInstructionBuilder->EmitInstruction();
             pInstruction = vectorBinOp;
@@ -317,9 +311,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
-#ifdef VIREO_PACKED_INSTRUCTIONS
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
-#endif
             break;
         }
         case kEncoding_Cluster:
@@ -332,10 +324,10 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
             Int32 binOpArgId = pInstructionBuilder->AddSubSnippet(); // Add param slots to hold the snippets
             Int32 accumulatorOpArgId = pInstructionBuilder->AddSubSnippet();
-#ifdef VIREO_PACKED_INSTRUCTIONS
-            // add room for next field
+
+            // Add room for next field
             pInstructionBuilder->AddSubSnippet();
-#endif
+
             AggregateBinOpInstruction* clusterOp = (AggregateBinOpInstruction*)pInstructionBuilder->EmitInstruction();
             pInstruction = clusterOp;
             
@@ -380,9 +372,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
-#ifdef VIREO_PACKED_INSTRUCTIONS
+
             pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
-#endif
             break;
         }
         default:
@@ -404,15 +395,9 @@ struct AggregateUnOpInstruction : public InstructionCore
         _ParamDef(TypedArrayCore*, VDest);
         _ParamDef(AQBlock1*, SDest);
     };
-#ifdef VIREO_PACKED_INSTRUCTIONS
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()          { return this->_piNext; }
-#else
-    _ParamImmediateDef(InstructionCore*, Snippet);
-    inline InstructionCore* Snippet()   { return this->_piSnippet; }
-    NEXT_INSTRUCTION_METHOD()
-#endif
 };
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
@@ -464,10 +449,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             snippetBuilder.EmitInstruction();
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-            
-#ifdef VIREO_PACKED_INSTRUCTIONS
             pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
-#endif
             break;
         }
         case kEncoding_Cluster:
@@ -500,9 +482,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             }
             
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-#ifdef VIREO_PACKED_INSTRUCTIONS
             pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
-#endif
             break;
         }
         default:
@@ -520,15 +500,9 @@ struct Search1DArrayInstruction : public InstructionCore
     _ParamDef(AQBlock1*, Element);
     _ParamDef(Int32, StartIndex);
     _ParamDef(Int32, FoundIndex);
-#ifdef VIREO_PACKED_INSTRUCTIONS
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()      { return this->_piNext; }
-#else
-    _ParamImmediateDef(InstructionCore*, Snippet);
-    inline InstructionCore* Snippet()   { return this->_piSnippet; }
-    NEXT_INSTRUCTION_METHOD()
-#endif
 };
 //------------------------------------------------------------
 InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
@@ -559,10 +533,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     snippetBuilder.EmitInstruction();
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-
-#ifdef VIREO_PACKED_INSTRUCTIONS
     pInstructionBuilder->RecordNextHere(&searchOp->_piNext);
-#endif
 
     return pInstruction;
 }
@@ -604,15 +575,9 @@ struct VectorOpInstruction : public InstructionCore
     _ParamDef(TypedArrayCore*, Array);
     _ParamImmediateDef(AQBlock1*, Result);
     _ParamImmediateDef(Boolean, IsIdentityOne);
-#ifdef VIREO_PACKED_INSTRUCTIONS
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()          { return this->_piNext; }
-#else
-    _ParamImmediateDef(InstructionCore*, Snippet);
-    inline InstructionCore* Snippet()   { return this->_piSnippet; }
-    NEXT_INSTRUCTION_METHOD()
-#endif
 };
 //------------------------------------------------------------
 InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
@@ -659,11 +624,9 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     snippetBuilder.InternalAddArg(destType, pInstructionBuilder->_argPointers[1]);
     snippetBuilder.InternalAddArg(destType, pInstructionBuilder->_argPointers[1]);
     snippetBuilder.EmitInstruction();
+    
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-
-#ifdef VIREO_PACKED_INSTRUCTIONS
     pInstructionBuilder->RecordNextHere(&vectorOp->_piNext);
-#endif
 
     return (InstructionCore*) vectorOp;
 }

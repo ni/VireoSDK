@@ -122,19 +122,12 @@ struct CallVIInstruction : public InstructionCore
 
     _ParamImmediateDef(VIClump*, viRootClump);
 
-#ifdef VIREO_PACKED_INSTRUCTIONS
     // In packed mode, the adjacent instruction is the first copy-in
     // instruction. The instruction following the subVI call has its own
     // explicit field.
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* CopyInSnippet()    { return this + 1; }
     inline InstructionCore* Next()             { return this->_piNext; }
-#else
-    // In unpacked mode all instructions have their own pointer
-    _ParamImmediateDef(InstructionCore*, CopyInSnippet);
-    inline InstructionCore* CopyInSnippet()    { return this->_piCopyInSnippet; }
-    NEXT_INSTRUCTION_METHOD()
-#endif
 
     _ParamImmediateDef(InstructionCore*, CopyOutSnippet);
 };
@@ -146,11 +139,7 @@ public:
     AQBlock1*   _next;
     
     InstructionAllocator() { _size = 0; _next = null; }
-#ifdef VIREO_PACKED_INSTRUCTIONS
     Boolean IsCalculatePass() { return _next == null; }
-#else
-    Boolean IsCalculatePass() { return false; }
-#endif
     void AddRequest(size_t count);
     void Allocate (TypeManager * tm);
     void* AllocateSlice(size_t count);

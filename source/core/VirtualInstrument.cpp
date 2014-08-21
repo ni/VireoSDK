@@ -262,32 +262,22 @@ InstructionCore* ClumpParseState::AllocInstructionCore(Int32 argumentCount)
     Int32 size = sizeof(InstructionCore) + (sizeof(void*) * argumentCount);
     
     // Allocate the instruction
-#ifdef VIREO_PACKED_INSTRUCTIONS
     if (_cia->IsCalculatePass()) {
         _cia->AddRequest(size);
         return kFakedInstruction;
     } else {
         instruction = (InstructionCore*)_cia->AllocateSlice(size);
     }
-#else
-    instruction = (InstructionCore*) _clump->TheTypeManager()->Malloc(size);
-#endif
     
     instruction->_function = null;
     
     // Patch up the previous jump point as necessary
-#ifdef VIREO_PACKED_INSTRUCTIONS
     // For the first instruction in a block there will be a address to patch to jump
     // to this block. In packed mode, once it is set no more "next" patches will be done for the block
     if (_pWhereToPatch) {
         *_pWhereToPatch = instruction;
         _pWhereToPatch = null;
     }
-#else
-    instruction->_next = null;
-    *_pWhereToPatch = instruction;
-    _pWhereToPatch = &instruction->_next;
-#endif
     
     return instruction;
 }
@@ -797,13 +787,9 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     // and ad the real ones that will be used for the low level instruciton.
     _argCount = 1;
     
-#ifdef VIREO_PACKED_INSTRUCTIONS
     // No explicit field, the first copy-in instruction follows this instructions.
     Int32 copyInId = -1;
     AddSubSnippet();    // Reserve storage for the explicit next pointer (_piNext)
-#else
-    Int32 copyInId = AddSubSnippet();
-#endif
     Int32 copyOutId = AddSubSnippet();
 
     _bIsVI = false;
@@ -901,11 +887,9 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     EndEmitSubSnippet(&snippetBuilder);
     _instructionType = null;
     
-#ifdef VIREO_PACKED_INSTRUCTIONS
     // Now that sub snippets have been made, configure the clump parser so that
     // The CallVI instruciton knows where to go after it is done.
     RecordNextHere(&callInstruction->_piNext);
-#endif
 
     return callInstruction;
 }
@@ -1030,7 +1014,6 @@ class VIDataProcsClass : public IDataProcs
         }
         return kNIError_Success;
     }
-#ifdef VIREO_PACKED_INSTRUCTIONS
     virtual NIError ClearData(TypeRef type, void* pData)
     {
         VirtualInstrumentObject *vio = *(VirtualInstrumentObject**) pData;
@@ -1049,10 +1032,6 @@ class VIDataProcsClass : public IDataProcs
         
         return type->ClearData(pData);
     }
-#else
-    // No special processing is needed for Clear since InstructionList has its
-    // own special Clear method
-#endif
 };
 VIDataProcsClass gVIDataProcs;
 //------------------------------------------------------------
@@ -1061,21 +1040,8 @@ class InstructionListDataProcsClass : public IDataProcs
 {
     virtual NIError ClearData(TypeRef type, void* pData)
     {
-#ifdef VIREO_PACKED_INSTRUCTIONS
         // All instructions for all clumps in a VI are atored in one
         // block of memory. The VI will free it.
-#else
-        TypeManager *tm = TypeManagerScope::Current();
-        InstructionCore *ins = *(InstructionCore**) pData;
-        if (ins == null) {
-            return kNIError_Success;
-        }
-        InstructionCore *next;
-        for (; ins  != null; ins = next) {
-            next = ins->_next;
-            tm->Free(ins);
-        }
-#endif 
         *(void**)pData = null;
         return kNIError_Success;
     }
