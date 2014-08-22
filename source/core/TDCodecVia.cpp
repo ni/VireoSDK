@@ -364,8 +364,13 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     TypeRef subType = ParseType();
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
-    // _string.EatOptionalComma();
-    ParseData(subType, cdt->Begin(kPAInit));
+    // The initializer value is optional, so check to see there is something
+    // other than a closing paren.
+    
+    _string.EatLeadingSpaces();
+    if (!_string.ComparePrefixCStr(")")) {
+        ParseData(subType, cdt->Begin(kPAInit));
+    }
     
     if (!_string.ReadChar(')'))
         return BadType();
