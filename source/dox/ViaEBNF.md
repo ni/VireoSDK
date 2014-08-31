@@ -11,7 +11,7 @@ For clarity, the following EBNF grammar goes a bit further and defines the core 
 
 ~~~{.ebnf}
 type                    := named_type | array | cluster | default_value_type
-					     | bit_cluster | equivalence | param_block
+					     | bit_cluster | equivalence | param_block | var_type
 
 named_type              := '.'  type_in_dictionary
 
@@ -39,7 +39,7 @@ bit_cluster             := 'bc' '(' cluster_element* ')'
 
 cluster_element         := 'element_usage_type '(' type [element_name] ')'
 
-  element_usage_type    := 'e' | 'i' | 'io' | 'o' | 's' | 't' | 'x' | 'im'
+  element_usage_type    := 'e' | 'i' | 'io' | 'o' | 's' | 't' | 'x' | 'im' | 'al'
 
   element_name          := token
 
@@ -52,7 +52,9 @@ bit_block               := 'bb' '(' bit_count encoding ')'
                          | 'IntBiased' | 'IEEE754B' | 'Pointer'
                          | 'Q' | 'Q1' |
 
-default_value_type      := 'dv' '(' type data_element ')'
+default_value_type      := 'dv' '(' type { data_element } ')'
+
+var_type                := 'var' '(' type { data_element } ')'
 ~~~
 
 ### Grammar for data values {#DataValue_EBNF}
@@ -81,7 +83,7 @@ fire_count              := whole_number_token
 
 data_instruction        := instruction_name '(' instruction_argument* ')'
 
-instruction_name        := 'Perch' , type_name
+instruction_name        := 'Perch' | type_name
 
 instruction_argument    := token | wild_card
 ~~~

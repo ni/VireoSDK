@@ -1,0 +1,44 @@
+// A typedef
+define (Point c(
+            e(.Int32 n0)
+            e(.Int32 n1)
+) )
+
+// A typedef based on another with its own default values.
+define (10x20Point dv(.Point (10 20)))
+
+define (videf1 dv(.VirtualInstrument (
+    c(
+        // (1)This is how defaults look from LabVIEW.
+        // The defaults are sep    
+        e(dv(c(
+            e(.Int32 n0)
+            e(.Int32 n1)
+        ) (2 3)) localTop)   // Hallo - top defaults
+
+        // (2)This is also legal Vireo format, but it not 
+        // logical for LV to generate this.
+        e(dv(c(
+            e(dv(.Int32 2) n0)
+            e(dv(.Int32 3) n1)
+        )) localDeep)          // Hallo - deep defaults
+        
+        // defaults are captured at the top level so that
+        // they can be applied to more complex types
+        // Here are some examples:        
+        e(.Point  defaultPoint)
+        e(dv(.Point (4 5)) typedefPoint)
+        e(.10x20Point   customPoint)
+        e(dv(.10x20Point (100 200)) overriddenCustomPoint)
+
+    )
+    clump (1
+        DPrintf("Top defaults %s" localTop)
+        DPrintf("Deep defaults %s" localDeep)
+        DPrintf("Typedef defaults %s" typedefPoint)
+        DPrintf("Typedef with non zero defaults %s" customPoint)
+        DPrintf("Typedef with overridden defaults %s" overriddenCustomPoint)
+    )
+)))
+enqueue(videf1)
+    

@@ -1,0 +1,5 @@
+Top defaults (2 3)
+Deep defaults (2 3)
+Typedef defaults (4 5)
+Typedef with non zero defaults (10 20)
+Typedef with overridden defaults (100 200)

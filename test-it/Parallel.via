@@ -19,13 +19,13 @@ define (Parallel dv(.VirtualInstrument (
         Perch(0)        // Labels are scoped to a clump this is Label 0
         Print(sHead)
         WaitMilliseconds(oneHundred)
-   //     Branch(0)       // Branch to Label 0
+       // Branch(0)       // Branch to Label 0
     )
     clump(1        // Clump 2
         Perch(0)
         Print(sTummy)
         WaitMilliseconds(oneHundred)
-    //    Branch(0)
+       // Branch(0)
     )
 )))
 

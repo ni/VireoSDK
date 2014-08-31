@@ -1,0 +1,44 @@
+// Test out inline constants
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(.Int32 x)
+        e(.String str)
+    )
+    clump (1
+/*
+        typical literas could be 
+            1. number           10 or 10.5 or 10.5e2
+            2. boolean          t 
+            3. string           "abc" @"12"
+            4. collection       (e1 e2 e3)
+            
+        Symbols can be any token. If the token has special characters
+        it need to be escaped. How.
+*/             
+
+        StringToUpper(* str)
+        DPrintf("passing default value <%s>" str)
+        StringToUpper("Hello, World" str)
+        DPrintf("passing inline double quoted constant value <%s>" str)
+        StringToUpper('Hello, World' str)
+        DPrintf("passing inline single quoted constant value <%s>" str)
+        StringToUpper(@"Hello, World" str)
+        DPrintf("passing inline @double quoted constant value <%s>" str)
+        StringToUpper(@'Hello, World' str)
+        DPrintf("passing inline @single quoted constant value <%s>" str)
+
+        StringToLower("Hello, World" str)
+        DPrintf("passing inline constant value <%s>" str)
+        MulInt32(6 7 x)
+        DPrintf("passing inline constant value <%s>" x)
+        
+        // MulInt32(6 7 9) not allowed.
+
+        // This does not work (yet)
+        // Mul(8 9 x)
+        // DPrintf("passing inline constant value to polymorphic function <%s>" x)
+    )
+) ) )
+
+enqueue (HelloWorld)

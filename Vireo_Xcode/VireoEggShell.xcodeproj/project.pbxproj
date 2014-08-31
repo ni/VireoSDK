@@ -124,6 +124,8 @@
 		472B7BE917D0E43D00201196 /* TDCodecVia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TDCodecVia.h; path = ../source/include/TDCodecVia.h; sourceTree = "<group>"; };
 		472B7BEA17D0E43D00201196 /* TDCodecVib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TDCodecVib.h; path = ../source/include/TDCodecVib.h; sourceTree = "<group>"; };
 		472D7ACC18C683A10023C688 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = "<group>"; };
+		4730015E19AFCAF400B3F4CA /* Internals */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Internals; path = ../source/dox/Internals; sourceTree = "<group>"; };
+		4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DoxygenLayout.xml; path = ../source/dox/DoxygenLayout.xml; sourceTree = "<group>"; };
 		4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleCountMain.cpp; path = ../source/CommandLine/SimpleCountMain.cpp; sourceTree = "<group>"; };
 		4737987517D0EBBB00C3BC2A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/CommandLine/main.cpp; sourceTree = "<group>"; };
 		4744496F19098ED8002A9A96 /* IntroTypeExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroTypeExamples.md; path = ../source/dox/IntroTypeExamples.md; sourceTree = "<group>"; };
@@ -295,6 +297,8 @@
 		470C345018F8831600E1E148 /* Dox */ = {
 			isa = PBXGroup;
 			children = (
+				4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */,
+				4730015E19AFCAF400B3F4CA /* Internals */,
 				47937178191186BF00DF942B /* README.md */,
 				47937177191049BE00DF942B /* Doxyfile */,
 				470C345218FC485400E1E148 /* Intro.md */,

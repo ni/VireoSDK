@@ -201,15 +201,15 @@ void* InstructionAllocator::AllocateSlice(size_t count)
 //------------------------------------------------------------
 ClumpParseState::ClumpParseState(ClumpParseState* cps)
 {
-    Construct(cps->_clump, cps->_cia, cps->_pLog);
+    Construct(cps->_clump, cps->_cia, cps->_approximateLineNumber, cps->_pLog);
 }
 //------------------------------------------------------------
 ClumpParseState::ClumpParseState(VIClump* clump, InstructionAllocator *cia, EventLog *pLog)
 {
-    Construct(clump, cia, pLog);
+    Construct(clump, cia, 0, pLog);
 }
 //------------------------------------------------------------
-void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, EventLog *pLog)
+void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32 lineNumber, EventLog *pLog)
 {
     _pWhereToPatch = null;
 
@@ -223,6 +223,7 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Event
     _clump = clump;
     _vi = clump->OwningVI();
     _pLog = pLog;
+    _approximateLineNumber = lineNumber;
     _cia = cia;
     _bIsVI = false;
     
@@ -386,7 +387,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
 {
     _actualArgumentType = null;
     
-    // "." prefixed symbols are type constant from the TypeManager
+    // "." prefixed symbols are type symbols from the TypeManager
     if (argument->ComparePrefixCStr(".")) {
         // If it is to be passed as an input then that is OK. Elements in the
         // type dictionary can not be used as an output.
@@ -416,7 +417,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
             *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         } else {
-            // For flat data the call instruction logic for VIs will initialize the callee parameter
+            // For flat data, the call instruction logic for VIs will initialize the callee parameter
             // to the default value. For native instructions a null parameter value is passed.
             *ppData = null;
         }
@@ -424,7 +425,27 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    // See if it is a local variable
+    char firstChar = *argument->Begin();
+    // Currently this prevents symbols thath start with unescaped numbers
+    if (firstChar=='@' || firstChar=='"' || firstChar== '\'' || firstChar== '(' || SubString::IsNumberChar(firstChar)) {
+        // Set the resolved argument type to what the constant should be so
+        // the parameter is recognized as being there.
+        _actualArgumentType = FormalParameterType();
+        UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
+        if (usageType != kUsageTypeInput) {
+            *ppData = null;
+            _argumentState = kArgumentNotMutable;
+            return;
+        }
+    
+        DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
+        *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+        TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
+        _argumentState = kArgumentResolvedToDefault;
+        return;
+    }
+    
+    // See if it is a local variable.
     Int32 offset = 0;
     _actualArgumentType = _dataSpaceType->GetSubElementOffsetFromPath(argument, &offset);
     if (_actualArgumentType != null) {
@@ -433,7 +454,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    // See if it is a parameter variable
+    // See if it is a parameter variable.
     if (_paramBlock) {
         _actualArgumentType = _paramBlockType->GetSubElementOffsetFromPath(argument, &offset);
         if (_actualArgumentType != null) {
@@ -713,8 +734,17 @@ void ClumpParseState::EndEmitSubSnippet(ClumpParseState* subSnippet)
     _totalInstructionPointerCount += subSnippet->_totalInstructionPointerCount;
 }
 //------------------------------------------------------------
-void  ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
+void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra)
 {
+    if (lineNumber != 0) {
+        _approximateLineNumber = lineNumber;
+    }
+    _pLog->LogEvent(severity, _approximateLineNumber, message, extra);
+}
+//------------------------------------------------------------
+void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
+{
+    _approximateLineNumber = lineNumber;
     EventLog::EventSeverity severity = LastArgumentError() ? EventLog::kSoftDataError : EventLog::kTrace;
     const char* simpleMessage = null;
     switch (_argumentState)
@@ -734,7 +764,7 @@ void  ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             {
             SubString formalParameterTypeName;
             FormalParameterType()->GetName(&formalParameterTypeName);
-            _pLog->LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be", &formalParameterTypeName);
+            LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be", &formalParameterTypeName);
             }
             break;
         case kArgumentNotOptional:                      simpleMessage = "Argument not optional";    break;
@@ -755,7 +785,7 @@ void  ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             break;
     }
     if (simpleMessage) {
-        _pLog->LogEvent(severity, lineNumber, simpleMessage, &_actualArgumentName);
+        LogEvent(severity, lineNumber, simpleMessage, &_actualArgumentName);
     }
 }
 //------------------------------------------------------------

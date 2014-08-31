@@ -107,6 +107,13 @@ void TypeDefiner::DefineCustomValue(TypeManager& tm, const char* name, Int32 val
     }
 }
 //------------------------------------------------------------
+void TypeDefiner::ParseValue(TypeManager* tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
+{
+    TDViaParser parser(tm, valueString, log, lineNumber);
+
+    parser.ParseData(defaultValueType, defaultValueType->Begin(kPAInit));
+}
+//------------------------------------------------------------
 void TypeDefiner::DefineStandardTypes(TypeManager& tm)
 {
     // Numeric types and Boolean

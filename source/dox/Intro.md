@@ -23,7 +23,7 @@ As an assembly file, VIA source is low-level. It has no graphical description el
 ~~~
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(dv(.String,'hello, world') variable1)
+        e(dv(.String 'hello, world') variable1)
     )
     clump(1
         Print(variable1)

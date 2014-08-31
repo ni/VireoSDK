@@ -329,6 +329,31 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
     return tokenTraits;
 }
 //------------------------------------------------------------
+Boolean SubString::ReadSubexpressionToken(SubString* token)
+{
+    EatLeadingSpaces();
+    SubString tempString(this);
+    Boolean tokenFound;
+    const Utf8Char* begin = Begin();
+    Int32 depth = 0;
+    
+    do {
+        tokenFound = this->ReadToken(token);
+        if (token->CompareCStr("(")) {
+            depth++;
+        } else if (token->CompareCStr(")")) {
+            depth--;
+        }
+    } while (tokenFound && (depth>0));
+    
+    
+    // The loop has reached an end state, go back and
+    // add tokens that were skipped over to get to this point.
+    token->AliasAssign(begin, this->Begin());
+    
+    return tokenFound;
+}
+//------------------------------------------------------------
 Boolean SubString::ReadToken(SubString* token)
 {
     EatLeadingSpaces();

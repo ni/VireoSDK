@@ -1,0 +1,64 @@
+// Test out inline constants
+define (Ten dv(.Int32 10))
+
+define (SubVI1 dv(.VirtualInstrument (
+    c(
+        i(.Int32    ix)
+        i(.Double   dx)
+        i(a(.Int32 *)  ax)
+        o(.Int32    ixo)
+        o(.Double   dxo)
+        o(a(.Int32 *)  axo)
+    )
+    c()
+    clump (1
+        DPrintf("-v1----" ix)
+        DPrintf("Int32 <%s>" ix)
+        DPrintf("Double <%s>" dx)
+        DPrintf("Array <%s>" ax)
+    )
+) ) )
+
+define (SubVI2 dv(.VirtualInstrument (
+    c(
+        o(.Int32    ix)
+        o(.Double   dx)
+        o(a(.Int32 *)  ax)
+    )
+    c()
+    clump (1
+        DPrintf("-v2---" ix)
+        DPrintf("Int32 <%s>" ix)
+        DPrintf("Double <%s>" dx)
+        DPrintf("Array <%s>" ax)
+    )
+) ) )
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(.Int32 x)
+        e(.String str)
+        e(dv(a(.Int32 *) (4 5 6 7)) arr)
+    )
+    clump (1
+        SubVI1(* * *)
+        SubVI1(Ten * *)
+        SubVI1(4 * *)
+        SubVI1(4 4 *)
+        SubVI1(4.1 4.1 *)   // should this generate a warning? loss of data
+        SubVI1(* * arr)   // should this generate a warning? loss of data
+        SubVI1(* * (1 2 3))   // should this generate a warning? loss of data
+        SubVI1(* * ())   // should this generate a warning? loss of data
+//      SubVI1(* * ((1 2)(3 4)))   // generates an error, since the int is not formatted correctly.
+
+    // These should not compile
+    //    SubVI2(x * *)
+    //    SubVI2(* x *)
+
+    //    SubVI2(Ten * *)
+    //    SubVI2(4 * *)
+    //    SubVI2(4 4 *)
+    )
+) ) )
+
+enqueue (HelloWorld)

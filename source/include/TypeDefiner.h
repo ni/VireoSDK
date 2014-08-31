@@ -21,6 +21,8 @@ namespace Vireo {
 
 typedef void (*TypeDefinerCallback)(TypeManager& typeManager);
 
+class EventLog;
+
 //! Facilitate the registration of Vireo types that are defined in C++ code.
 class TypeDefiner
 {
@@ -33,8 +35,10 @@ public :
     static void DefineStandardTypes(TypeManager& tm);
     //! Add registered types to the specified TypeManager
     static void DefineTypes(TypeManager& tm);
-
     
+    //! Use the TypeDefiners parser to parse data according to specified type.
+    static void ParseValue(TypeManager* tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
+
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
     TypeDefiner(TypeDefinerCallback pCallback, const char* pNameSapce, Int32 version);

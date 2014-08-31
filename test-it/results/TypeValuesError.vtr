@@ -2,5 +2,5 @@
 (Line 13 Error "Argument not mutable '.Int32'.")
 (Line 14 Error "Argument not resolved '.Int33'.")
 (Line 15 Error "Argument not mutable 'Int32'.")
-(Line 0 Error "Type Mismatch.")
+(Line 15 Error "Type mismatch.")
 (Line 16 Error "Argument not mutable 'Int32'.")

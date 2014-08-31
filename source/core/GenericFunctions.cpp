@@ -90,7 +90,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
         pInstruction = pInstructionBuilder->EmitInstruction();
     } else {
-        pInstructionBuilder->_pLog->LogEvent(EventLog::kSoftDataError, 0, "Type Mismatch");
+        pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Type mismatch", null);
     }
     return pInstruction;
 }

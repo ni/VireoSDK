@@ -92,7 +92,7 @@ const UInt8 AsciiCharTraits[] =
     /* 22 "  */   0,
     /* 23 #  */   kACT_Symbol,
     /* 24 $  */   kACT_Symbol,
-    /* 25 %  */   kACT_Symbol,
+    /* 25 %  */   kACT_Id,
     /* 26 &  */   kACT_Symbol,
     /* 27 '  */   0,
     /* 28 (  */   kACT_Symbol,
@@ -225,6 +225,8 @@ public:
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);
     Boolean ReadToken(SubString* token);
+    Boolean ReadSubexpressionToken(SubString* token);
+
     Int32 CountMatches(char value);
     void TrimQuotedString();
     TokenTraits ReadValueToken(SubString* token, TokenTraits allowedTraits);

@@ -190,6 +190,8 @@ public:
     };
     ArgumentState   _argumentState;
     EventLog*       _pLog;
+    Int32           _approximateLineNumber;
+    
     InstructionAllocator* _cia;
     
     Int32           _argCount;
@@ -261,7 +263,7 @@ public:
     //------------------------------------------------------------
     ClumpParseState(ClumpParseState* cps);
     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
-    void            Construct(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
+    void            Construct(VIClump* clump, InstructionAllocator* cia, Int32 lineNumber, EventLog* pLog);
     void            StartSnippet(InstructionCore** startLocation);
     TypeRef         FormalParameterType()       { return _formalParameterType; }
     TypeRef         ActualArgumentType()        { return _actualArgumentType; }
@@ -284,7 +286,9 @@ public:
     void            AddInstructionFunctionArgument(SubString* instructionNameToken);
     VirtualInstrument*  AddSubVITargetArgument(SubString* subVIName);
     Int32           AddSubSnippet();
+    void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra);
     void            LogArgumentProcessing(Int32 lineNumber);
+
     InstructionCore*    EmitCallVIInstruction();
     InstructionCore*    EmitInstruction();
     void            EmitSimpleInstruction(const char* opName);
