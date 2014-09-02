@@ -17,7 +17,8 @@ dox:
 
 install: 
 	mkdir -p $(SITEDIR)
-	cp objs/vireo.js $(SITEDIR)/vireo.js
+	cp objs/vireo.js $(SITEDIR)/
+	cp objs/vireo.js.mem $(SITEDIR)/
 	cp SiteSource/*.html $(SITEDIR)/
 	cp SiteSource/*.via $(SITEDIR)/
 	cp SiteSource/*.json $(SITEDIR)/
