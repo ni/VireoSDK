@@ -55,7 +55,7 @@ VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
 //------------------------------------------------------------
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
 {
-    if(pShell != null)
+    if (pShell != null)
         pShell->Delete();
 }
 //------------------------------------------------------------

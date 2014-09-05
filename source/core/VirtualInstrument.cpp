@@ -36,7 +36,7 @@ NIError VirtualInstrument::Init(ExecutionContext *context, Int32 clumpCount, Typ
     _clumpSource = clumpSource;
     
     VIClump *pElt = _clumps->Begin();
-    for(IntIndex i= 0; i < clumpCount; i++)
+    for (IntIndex i= 0; i < clumpCount; i++)
     {
         pElt->_fireCount = 1; // clumps default to 1  (0 would run instantly)
         pElt->_shortCount = 1;
@@ -293,7 +293,7 @@ InstructionCore* ClumpParseState::CreateInstruction(TypeRef instructionType, Int
         
         // Alloc the memory and set the pointer to the runtime function
         instruction = this->AllocInstructionCore(argCount);        
-        if(!_cia->IsCalculatePass()) {
+        if (!_cia->IsCalculatePass()) {
             instructionType->InitData(&instruction->_function);
             
             GenericInstruction *ginstruction = (GenericInstruction*)instruction;
@@ -343,7 +343,7 @@ TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, bool allowError
     // on original map (used for generics and SubVI calling)
     VIREO_ASSERT(_instructionType != null)
     TypeRef foundType = _clump->TheTypeManager()->FindType(opName);
-    if(foundType == null && allowErrors)
+    if (foundType == null && allowErrors)
         return null;
     _instructionPointerType = foundType;
     // For now reresolving should map to a native function. In time that will change
@@ -409,7 +409,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     }
     
     // See if it is a default parameter ('*')
-    if (argument->CompareCStr("*")){
+    if (argument->CompareCStr("*")) {
         _actualArgumentType = FormalParameterType();
         if (!_actualArgumentType->IsFlat()) {
             // Define a DefaultValue type. As a DV it will never merge to another instance.
@@ -468,7 +468,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     SubString pathHead, pathTail;
     argument->SplitString(&pathHead, &pathTail, '.');
     _actualArgumentType = _clump->TheTypeManager()->FindType(&pathHead);
-    if(_actualArgumentType != null){
+    if (_actualArgumentType != null) {
         // The symbol was found in the TypeManager chain. Get a pointer to the value.
         
         UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
@@ -491,7 +491,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
 
         // If there is a dot after the head, then there is more to parse.
-        if(pathTail.ReadChar('.')) {
+        if (pathTail.ReadChar('.')) {
             // If the top type is a cluster then the remainder should be a simple field name qualifier
             // Array drill down not yet supported. (it would not be hard for fixed sized arrays)
             // but blunded or variabel aray element addresses are dynamic.
@@ -525,7 +525,7 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
         // they are fully polymorphic.
         InternalAddArg(null, ActualArgumentType());
-	} else if(dsTypeName.CompareCStr("*") && FormalParameterType()->IsOptionalParam()){
+	} else if (dsTypeName.CompareCStr("*") && FormalParameterType()->IsOptionalParam()) {
 		// "*" passed as an argument, don't need to do a typecheck
 	} else {
         if (!ActualArgumentType()->IsA(&formalParameterTypeName)) {
@@ -595,10 +595,10 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     IntMax perchIndex;
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex<kMaxPerches) {
-            if (_perches[perchIndex]<0){
+            if (_perches[perchIndex]<0) {
                 printf("(Error \"Perch <%d> duplicated in a clump\")\n", (Int32)perchIndex);
             }
-            if(_recordNextInstructionAddress<0){
+            if (_recordNextInstructionAddress<0) {
                 // Reserve the perch till the next instruction is emitted
                 // null will never be a valid instruction address.
                 _perches[perchIndex] = kPerchBeingAlocated;
@@ -847,7 +847,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     for (IntIndex i = 0; i < viArgCount; i++) {
         TypeRef paramType = viParamType->GetSubElement(i);
         IntIndex offset = paramType->ElementOffset();
-        if(!paramType->IsFlat()) {
+        if (!paramType->IsFlat()) {
             // Array parameters are top-copied in since the caller always owns the buffer
             // unless none is passed, in which case one is temporarily created in
             // in the sub VI param block.
@@ -956,7 +956,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     }
     if (_argPatchCount > 0) {
         GenericInstruction *generic = (GenericInstruction*) instruction;
-        for(int i = 0; i < _argPatchCount; i++) {
+        for (int i = 0; i < _argPatchCount; i++) {
             // Pointer to PatchInfo object was stashed in arg, look it up.
             PatchInfo *pPatch = (PatchInfo*)generic->_args[i];
             
@@ -995,10 +995,10 @@ void ClumpParseState::CommitClump()
     // That need to be copied to the _savePc field.
     _clump->_savePc = _clump->_codeStart;
     
-    if(_cia->IsCalculatePass())
+    if (_cia->IsCalculatePass())
         return;
         
-    for(int i = 0; i < _patchInfoCount; i++) {
+    for (int i = 0; i < _patchInfoCount; i++) {
         PatchInfo *pPatch = &_patchInfos[i];
         *pPatch->_whereToPatch = *pPatch->_whereToPeek;
     }

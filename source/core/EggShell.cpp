@@ -74,7 +74,7 @@ EggShell::EggShell(TypeManager *typeManager, ExecutionContext *execContext)
 NIError EggShell::Delete()
 {
     TypeManager* pTADM = _typeManger;
-    if(ShowStats) {
+    if (ShowStats) {
         pTADM->PrintMemoryStat("ES Delete begin", false);
     }
 

@@ -176,7 +176,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
     Int32       index = _Param(2);
     Int32       length = arrayIn->Length();
     
-    if(arrayOut != arrayIn){
+    if (arrayOut != arrayIn) {
         arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     } 
     
@@ -200,12 +200,12 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreR
         return THREAD_EXEC()->Stop();
     }
 
-    if(arrayOut != arrayIn){
+    if (arrayOut != arrayIn) {
         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
         arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     }
     
-    if(idx >= 0 && idx < arrayOut->Length()) { 
+    if (idx >= 0 && idx < arrayOut->Length()) { 
         Int32 length = Min(subArray->Length(), arrayOut->Length() - idx);
         arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
     }
@@ -232,7 +232,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     len = Max(len, 0);
     len = Min(len, maxLen); // coerce len to 0 .. maxLen
     arrayOut->Resize1D(len);
-    if(idx < arrayIn->Length() && arrayOut != arrayIn) { 
+    if (idx < arrayIn->Length() && arrayOut != arrayIn) { 
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(idx), arrayOut->BeginAt(0), len);
     }
     return _NextInstruction();
@@ -246,7 +246,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, 
     Int32 length = arrayIn->Length();
     Int32 index = (_ParamPointer(2) != null) ? _Param(2) : length;
 
-    if(arrayOut != arrayIn)
+    if (arrayOut != arrayIn)
         arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
 
     if (0 <= index && index <= length)
@@ -272,7 +272,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
     }
 
     if (0 <= idx && idx <= arrayInLength) {
-        if (arrayOut == arrayIn){
+        if (arrayOut == arrayIn) {
             arrayOut->Insert1D(idx, subArrayLength, subArray->BeginAt(0));
         } else {
             arrayOut->Resize1D(arrayInLength + subArrayLength);

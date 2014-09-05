@@ -206,7 +206,7 @@ void SubString::ProcessEscapes(char* dest, char* end)
                     default :   *dest = escapeChar; break;
                 }
                 dest++;
-            } else if (escapeTokenLength > 1){
+            } else if (escapeTokenLength > 1) {
                 // TODO octal, hex, Unicode stuff
             } else {
                 // Incorrectly formatted escape, ignore second char
@@ -288,7 +288,7 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
         tokenTraits = TokenTraits_Parens;
     } else if ((allowedTraits && TokenTraits_Comma) && (',' == c)) {
         tokenTraits = TokenTraits_Comma;
-    } else if (allowedTraits && (TokenTraits_Integer | TokenTraits_RealNumber)){
+    } else if (allowedTraits && (TokenTraits_Integer | TokenTraits_RealNumber)) {
         _begin--; // back up a character
         if (ComparePrefixCStr("inf") || ComparePrefixCStr("nan")) {
             _begin+=3;
@@ -523,7 +523,7 @@ void SubString::EatLeadingSpaces()
         if (IsSpaceChar(*_begin)) {
             _begin++;
             continue;
-        } else if( *_begin == '/') {
+        } else if ( *_begin == '/') {
             if ((_begin+1) < _end && _begin[1] == '/') {
                 //    A '//' comment
                 // comment until EOL

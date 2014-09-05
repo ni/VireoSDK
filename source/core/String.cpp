@@ -309,9 +309,9 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
     TypedArrayCoreRef** inputs =  (_ParamImmediate(Element)); 
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
-        if(arrayInput->ElementType()->IsArray()) {
+        if (arrayInput->ElementType()->IsArray()) {
             // TODO this needs to support N-Dim string arrays
-            for(Int32 j = 0; j < arrayInput->Length(); j++) {
+            for (Int32 j = 0; j < arrayInput->Length(); j++) {
                 StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
                 totalLength += stringInput->Length();
             }
@@ -327,15 +327,15 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
 
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
-        if(arrayInput->ElementType()->IsArray())  { // TODO this needs to support N-Dim string arrays
-            for(Int32 j = 0; j < arrayInput->Length(); j++) {
+        if (arrayInput->ElementType()->IsArray())  { // TODO this needs to support N-Dim string arrays
+            for (Int32 j = 0; j < arrayInput->Length(); j++) {
                 StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
                 VIREO_ASSERT(stringInput != pDest);
                 IntIndex length = stringInput->Length();
                 elementType->CopyData(stringInput->BeginAt(0), pInsert, length);
                 pInsert += length;
             }
-        } else if(arrayInput != pDest) { // String input that is not the same as dest
+        } else if (arrayInput != pDest) { // String input that is not the same as dest
             IntIndex length = arrayInput->Length();
             elementType->CopyData(arrayInput->BeginAt(0), pInsert, length);
             pInsert += length;

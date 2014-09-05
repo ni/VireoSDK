@@ -294,7 +294,7 @@ public:
     void Append(SubString* string)
     {
         Utf8Char* newEnd = _end + string->Length();
-        if(newEnd > _buffer + MaxLength) {
+        if (newEnd > _buffer + MaxLength) {
             newEnd = _buffer + MaxLength;
         }
         size_t length = newEnd - _end;

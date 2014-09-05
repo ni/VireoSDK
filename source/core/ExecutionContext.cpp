@@ -257,7 +257,7 @@ ExecutionContext::ExecutionContext(TypeManager* typeManager)
 //------------------------------------------------------------
 void ExecutionContext::ClassInit()
 {
-	if(!_classInited)
+	if (!_classInited)
     {
         _classInited = true;
         _culDeSac._function = (InstructionFunction) CulDeSac;
@@ -339,7 +339,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 
         if (currentTime < breakOutTime) {
             if (_runningQueueElt) {
-                if(!_runQueue.IsEmpty()) {
+                if (!_runQueue.IsEmpty()) {
                     // Time left, still working, something else to do, rotate tasks
                     VIREO_ASSERT(currentInstruction != null)
                     VIREO_ASSERT(_runningQueueElt != null)
@@ -402,7 +402,7 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 void ExecutionContext::IsrEnqueue(QueueElt* elt)
 {
 	VIVM_ASSERT((null == elt->_next))
-    if(elt->_wakeUpInfo == 0)
+    if (elt->_wakeUpInfo == 0)
     {
         QueueElt* temp = _triggeredIsrList;
         elt->_next = temp;

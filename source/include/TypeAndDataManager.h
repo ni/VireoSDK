@@ -412,7 +412,7 @@ private:
     Boolean OwnsDefDefData()        { return _ownsDefDefData != 0; }
 public:
     //! What type of internal pointer is this type. Only used for CustomValuePointers.
-    PointerTypeEnum PointerType(){ return (PointerTypeEnum)_pointerType; }
+    PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }
 
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitBad(this); }
     //! For a wrapped type, return the type that was wrapped, null otherwise.

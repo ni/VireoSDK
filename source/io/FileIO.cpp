@@ -187,7 +187,7 @@ VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedBlock*, Int32, Int32)
         if (bytesRead < 0) {
             _Param(3) = (Int32) bytesRead; // TODO error processing
             array->Resize1D(0);
-        } else if (bytesToRead != bytesRead){
+        } else if (bytesToRead != bytesRead) {
             // size the array to the number of full elements read.
             array->Resize1D((IntIndex) (bytesRead / array->ElementType()->TopAQSize()) );
         }

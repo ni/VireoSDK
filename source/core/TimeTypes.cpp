@@ -281,7 +281,7 @@ void GetCurrentATime128(ATime128 *t)
 	Int32 retval;
  
 	retval = gettimeofday(&tv, null);
-	if(retval == -1)
+	if (retval == -1)
 		*t = ATime128(0,0);
 	else {
 	//	uInt32 tempTime = (uInt32) tv.tv_sec;
@@ -293,7 +293,7 @@ void GetCurrentATime128(ATime128 *t)
     Int32 retval;
 
     retval = clock_gettime(CLOCK_REALTIME, &ts);
-    if(retval == -1)
+    if (retval == -1)
     *t = ATime128(0.0);
     else {
         uInt32 tempTime = static_cast<uInt32>(ts.tv_sec);

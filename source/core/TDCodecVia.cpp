@@ -71,7 +71,7 @@ TypeRef TDViaParser::ParseType()
         typeFunction.ReadRawChar(&dot);
         
         pType = _typeManager->FindType(&typeFunction);
-        if(!pType) {
+        if (!pType) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type", &typeFunction);
             pType = BadType();
         }
@@ -222,7 +222,7 @@ TypeRef TDViaParser::ParseArray()
         
 
         IntMax dimensionLength;
-        if(!token.ReadInt(&dimensionLength)) {
+        if (!token.ReadInt(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension", &token);
             return BadType();
         }
@@ -550,7 +550,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
     Int32 aqSize = type->TopAQSize();
     EncodingEnum encoding = type->BitEncoding();
     SubString  token;
-    switch (encoding){
+    switch (encoding) {
         case kEncoding_Array:
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
@@ -560,7 +560,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             {
                 IntMax value = 0;
                 Boolean readSuccess = _string.ReadInt(&value);
-                if(!readSuccess) {
+                if (!readSuccess) {
                     // The token didn't look like a number, so consume it anyway and
                     // Log an error.
                     SubString tempToken;
@@ -568,7 +568,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     return LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
 
-                if(!pData)
+                if (!pData)
                     return; // If no where to put the parsed data, then all is done.
                 
                 if (WriteIntToMemory(encoding, aqSize, pData, value) != kNIError_Success)
@@ -587,7 +587,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 } else {
                     return LOG_EVENT(kSoftDataError, "Data boolean value syntax error");
                 }
-                if(!pData)
+                if (!pData)
                     return;
                 
                 if (aqSize==1) {
@@ -602,9 +602,9 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 _string.ReadValueToken(&token, TokenTraits_Any);
                 Double value = 0.0;
                 Boolean readSuccess = token.ParseDouble(&value);
-                if(!readSuccess)
+                if (!readSuccess)
                     return LOG_EVENT(kSoftDataError, "Data IEEE754 syntax error");
-                if(!pData)
+                if (!pData)
                     return; // If no where to put the parsed data, then all is done.
                 
                 if (WriteRealToMemory(kEncoding_IEEE754Binary, aqSize, pData, value) != kNIError_Success)
@@ -662,14 +662,14 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             {
             SubString  token;
             _string.ReadValueToken(&token, TokenTraits_Any);
-            if(token.CompareCStr("(")) {
+            if (token.CompareCStr("(")) {
                 // List of values (a b c)
                 AQBlock1* baseOffset = (AQBlock1*)pData;
                 int i = 0;
                 while (!_string.ReadChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
                     TypeRef elementType = type->GetSubElement(i);
                     void* elementData = baseOffset;
-                    if(elementData != null)
+                    if (elementData != null)
                         elementData = baseOffset + elementType->ElementOffset();
                     ParseData(elementType, elementData);
                     i++;
@@ -740,7 +740,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VIREO_ASSERT(dataSpaceType != null)
     
     _string.EatLeadingSpaces();
-    if(_string.ComparePrefixCStr("clump")) {
+    if (_string.ComparePrefixCStr("clump")) {
         clumpCount = kVariableSizeSentinel;
     } else {
         // TODO if number is '*' then scan and count ahead.
@@ -1079,7 +1079,7 @@ private:
         type->GetSubElement(0)->Visit(this);
         IntIndex* pDimension = type->GetDimensionLengths();
 
-        for(Int32 rank = type->Rank(); rank>0; rank--){
+        for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
             if (*pDimension == kVariableSizeSentinel) {
                 _pFormatter->_string->Append('*');
