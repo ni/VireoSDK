@@ -998,7 +998,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManager* tm, EventLog* pLog)
         TypeRef type = typeList;
         while (type != typeEnd) {
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
-                TypedArrayCore  **pObj = (TypedArrayCore**) type->Begin(kPARead);
+                TypedArrayCoreRef *pObj = (TypedArrayCoreRef*) type->Begin(kPARead);
                 VirtualInstrument *vi  = (VirtualInstrument*) (*pObj)->RawObj();
                 TDViaParser::FinalizeVILoad(vi, pLog);
             }
@@ -1275,7 +1275,7 @@ void TDViaFormatter::FormatType(TypeRef type)
     }
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCore* pArray, Int32 rank)
+void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
 {
     TypeRef elementType = pArray->ElementType();
     EncodingEnum elementEncoding = elementType->BitEncoding();
@@ -1372,7 +1372,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_Array:
             // For array and object types pass the array ref (e.g. handle)
             // not the pointer to it.
-            FormatArrayData(type, *(TypedArrayCore**)pData, type->Rank());
+            FormatArrayData(type, *(TypedArrayCoreRef*)pData, type->Rank());
             break;
         case kEncoding_Cluster:
             FormatClusterData(type, pData);

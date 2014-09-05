@@ -87,7 +87,7 @@ public:
     
     // Data formatters
     void EncodeData(TypeRef type, void* pData);
-    void EncodeArrayData(TypeRef arrayType, TypedArrayCore* pData, Int32 rank);
+    void EncodeArrayData(TypeRef arrayType, TypedArrayCoreRef pData, Int32 rank);
     void EncodeArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                                    IntIndex *pDimLengths, IntIndex *pSlabLengths);
     

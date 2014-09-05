@@ -205,15 +205,15 @@ InstructionCore* ResolveGenericHelper(ClumpParseState* pInstructionBuilder, Type
 struct AggregateBinOpInstruction : public InstructionCore
 {
     union {
-        _ParamDef(TypedArrayCore*, VX);
+        _ParamDef(TypedArrayCoreRef, VX);
         _ParamDef(AQBlock1*, SX);
     };
     union {
-        _ParamDef(TypedArrayCore*, VY);
+        _ParamDef(TypedArrayCoreRef, VY);
         _ParamDef(AQBlock1*, SY);
     };
     union {
-        _ParamDef(TypedArrayCore*, VDest);
+        _ParamDef(TypedArrayCoreRef, VDest);
         _ParamDef(AQBlock1*, SDest);
         _ParamDef(Boolean, BooleanDest);
     };
@@ -388,11 +388,11 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 struct AggregateUnOpInstruction : public InstructionCore
 {
     union {
-        _ParamDef(TypedArrayCore*, VSource);
+        _ParamDef(TypedArrayCoreRef, VSource);
         _ParamDef(AQBlock1*, SSource);
     };
     union {
-        _ParamDef(TypedArrayCore*, VDest);
+        _ParamDef(TypedArrayCoreRef, VDest);
         _ParamDef(AQBlock1*, SDest);
     };
     _ParamImmediateDef(InstructionCore*, Next);
@@ -496,7 +496,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
 //------------------------------------------------------------
 struct Search1DArrayInstruction : public InstructionCore
 {
-    _ParamDef(TypedArrayCore*, Array);
+    _ParamDef(TypedArrayCoreRef, Array);
     _ParamDef(AQBlock1*, Element);
     _ParamDef(Int32, StartIndex);
     _ParamDef(Int32, FoundIndex);
@@ -572,7 +572,7 @@ VIREO_FUNCTION_SIGNATURET(Search1DArrayInternal, Search1DArrayInstruction)
 //------------------------------------------------------------
 struct VectorOpInstruction : public InstructionCore
 {
-    _ParamDef(TypedArrayCore*, Array);
+    _ParamDef(TypedArrayCoreRef, Array);
     _ParamImmediateDef(AQBlock1*, Result);
     _ParamImmediateDef(Boolean, IsIdentityOne);
     _ParamImmediateDef(InstructionCore*, Next);
@@ -1018,9 +1018,9 @@ VIREO_FUNCTION_SIGNATURE1(IsGEAccumulator, void)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
 {
-    TypedArrayCore *srcArray1 = _Param(VX);
-    TypedArrayCore *srcArray2 = _Param(VY);
-    TypedArrayCore *destArray = _Param(VDest);
+    TypedArrayCoreRef srcArray1 = _Param(VX);
+    TypedArrayCoreRef srcArray2 = _Param(VY);
+    TypedArrayCoreRef destArray = _Param(VDest);
     Instruction3<AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
@@ -1052,8 +1052,8 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruction)
 {
-    TypedArrayCore *srcArray1 = _Param(VX);
-    TypedArrayCore *srcArray2 = _Param(VY);
+    TypedArrayCoreRef srcArray1 = _Param(VX);
+    TypedArrayCoreRef srcArray2 = _Param(VY);
     Boolean *dest = _ParamPointer(BooleanDest);
     Instruction3<AQBlock1, AQBlock1, Boolean>* snippet = (Instruction3<AQBlock1, AQBlock1, Boolean>*)_ParamMethod(Snippet());
     Instruction1<void>* accumulator = (Instruction1<void>*)_ParamMethod(Accumulator());
@@ -1104,9 +1104,9 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruc
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
 {
-    TypedArrayCore *srcArray = _Param(VX);
-    TypedArrayCore *destArray1 = _Param(VY);
-    TypedArrayCore *destArray2 = _Param(VDest);
+    TypedArrayCoreRef srcArray = _Param(VX);
+    TypedArrayCoreRef destArray1 = _Param(VY);
+    TypedArrayCoreRef destArray2 = _Param(VDest);
     Instruction3<AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
     IntIndex elementSizeSrc = srcArray->ElementType()->TopAQSize();
@@ -1139,8 +1139,8 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 {
     Instruction3<void, AQBlock1, AQBlock1>* snippet = (Instruction3<void, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
-    TypedArrayCore *srcArray1 = _Param(VY);
-    TypedArrayCore *destArray = _Param(VDest);
+    TypedArrayCoreRef srcArray1 = _Param(VY);
+    TypedArrayCoreRef destArray = _Param(VDest);
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
     IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
@@ -1168,8 +1168,8 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
 {
     Instruction3<AQBlock1, void, AQBlock1>* snippet = (Instruction3<AQBlock1, void, AQBlock1>*)_ParamMethod(Snippet());
-    TypedArrayCore *srcArray1 = _Param(VX);
-    TypedArrayCore *destArray = _Param(VDest);
+    TypedArrayCoreRef srcArray1 = _Param(VX);
+    TypedArrayCoreRef destArray = _Param(VDest);
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
     IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
@@ -1196,8 +1196,8 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
 {
-    TypedArrayCore* srcArray1 = _Param(VSource);
-    TypedArrayCore* destArray = _Param(VDest);
+    TypedArrayCoreRef srcArray1 = _Param(VSource);
+    TypedArrayCoreRef destArray = _Param(VDest);
     Instruction2<AQBlock1, AQBlock1>* snippet = ( Instruction2<AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();

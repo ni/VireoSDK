@@ -352,7 +352,7 @@ void* TypeManager::FindNamedTypedBlock(SubString* name, PointerAccessEnum mode)
 // digs through the ZDA wrapper and returns a pointer to the element.
 void* TypeManager::FindNamedObject(SubString* name)
 {
-    TypedArrayCore** pObj = (TypedArrayCore**) FindNamedTypedBlock(name, kPARead);
+    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) FindNamedTypedBlock(name, kPARead);
     if (pObj)
         return (*pObj)->RawObj();
     else
@@ -670,7 +670,7 @@ TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *
             *end = null;
         }
     } else if (Rank() == 0) {
-        TypedArrayCore *array = *(TypedArrayCore**)start;
+        TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
         subType = array->ElementType();
         void* newStart = array->RawObj();
         subType = subType->GetSubElementInstancePointerFromPath(name, newStart, end, allowDynamic);
@@ -1199,7 +1199,7 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
 {
     NIError err = kNIError_Success;
     
-    TypedArrayCore **pArray = (TypedArrayCore**)pData;
+    TypedArrayCoreRef *pArray = (TypedArrayCoreRef*)pData;
     // Initialize the handle at pData to be a valid handle to an empty array
     // Note that if the type being inited was a named type the name will have been  peeled off
     // When it gets to this point.
@@ -1210,8 +1210,8 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
         if (pattern == null) {
             pattern = this;
         }
-        TypedArrayCore* newArray = TypedArrayCore::New(pattern);
-        *(TypedArrayCore**)pArray = newArray;
+        TypedArrayCoreRef newArray = TypedArrayCore::New(pattern);
+        *(TypedArrayCoreRef*)pArray = newArray;
         if (!newArray) {
             err = kNIError_kInsufficientResources;
         } else if (pattern->HasCustomDefault()) {
@@ -1376,7 +1376,7 @@ ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int
 //------------------------------------------------------------
 // DefaultValueType
 //------------------------------------------------------------
-DefaultValueType* DefaultValueType::New(TypeManager* typeManager, TypeRef type, Boolean mutableValue)
+DefaultValueType* DefaultValueType::New(TypeManager* typeManager, TypeRef valuesType, Boolean mutableValue)
 {
     return TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, type)(typeManager, type, mutableValue);
 }
@@ -1461,7 +1461,7 @@ CustomDataProcType::CustomDataProcType(TypeManager* typeManager, TypeRef type, I
 //------------------------------------------------------------
 // TypedArrayCore
 //------------------------------------------------------------
-TypedArrayCore* TypedArrayCore::New(TypeRef type)
+TypedArrayCoreRef TypedArrayCore::New(TypeRef type)
 {
     return TADM_NEW_PLACEMENT_DYNAMIC(TypedArrayCore, type->Rank())(type);
 }
@@ -1476,7 +1476,7 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
 }
 //------------------------------------------------------------
-void TypedArrayCore::Delete(TypedArrayCore* pArray)
+void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
 {
     //
     VIREO_ASSERT(pArray->_eltTypeRef != null);
@@ -1731,7 +1731,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
 }
 //------------------------------------------------------------
 // Make this array match the shape of the reference type.
-Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCore* pReference)
+Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
 {
     if (Type()->Rank() == pReference->Type()->Rank()) {
         return ResizeDimensions(_typeRef->Rank(), pReference->GetDimensionLengths(), true, false);

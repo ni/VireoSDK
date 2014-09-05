@@ -108,7 +108,7 @@ public:
     void    FormatType(TypeRef type);
     // Data formatters
     void    FormatData(TypeRef type, void* pData);
-    void    FormatArrayData(TypeRef arrayType, TypedArrayCore* pData, Int32 rank);
+    void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pData, Int32 rank);
     void    FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                 IntIndex *pDimLengths, IntIndex *pSlabLengths);
 

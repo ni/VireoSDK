@@ -60,8 +60,8 @@ public :
 public:
     VirtualInstrument(ExecutionContext *context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
     ExecutionContext* OwningContext()   {return _executionContext;}
-    TypedArrayCore* ParamBlock()        {return _paramBlock;}
-    TypedArrayCore* DataSpace()         {return _dataSpace;}
+    TypedArrayCoreRef ParamBlock()      {return _paramBlock;}
+    TypedArrayCoreRef DataSpace()       {return _dataSpace;}
     TypedArray1D<VIClump>* Clumps()     {return _clumps;}
 };
 

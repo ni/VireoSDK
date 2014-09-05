@@ -842,8 +842,8 @@ protected:
     static IntIndex StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     TypedArrayCore(TypeRef type);
 public:
-    static TypedArrayCore* New(TypeRef type);
-    static void Delete(TypedArrayCore*);
+    static TypedArrayCoreRef New(TypeRef type);
+    static void Delete(TypedArrayCoreRef);
 
 public:
     AQBlock1* BeginAt(IntIndex index)
@@ -874,7 +874,7 @@ protected:
     
 public:
     //! A minimal sanity check, it could do more.
-    static Boolean ValidateHandle(TypedArrayCore* block)
+    static Boolean ValidateHandle(TypedArrayCoreRef block)
     {
         // TODO: Allow for block valiate mode where all allocations and frees are tracked in a map
         return (block != null);
@@ -923,7 +923,7 @@ public:
     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean init);
     
     //! Make this array match the shape of the reference type.
-    Boolean ResizeToMatchOrEmpty(TypedArrayCore* pReference);
+    Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
     
     //! Resize for 1d arrays, if not enough memory leave as is.
     Boolean Resize1D(IntIndex length);

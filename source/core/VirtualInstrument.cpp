@@ -664,7 +664,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(SubString* subVIName)
     }
     
     // 2. The primary instance of the actual VI will be the value of the type.
-    TypedArrayCore** pObj = (TypedArrayCore**) targetVIType->Begin(kPARead);
+    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) targetVIType->Begin(kPARead);
     if ((*pObj)->Type()->IsA(&strReentrantVI)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
