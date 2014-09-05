@@ -409,7 +409,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     }
     
     // See if it is a default parameter ('*')
-    if(argument->CompareCStr("*")){
+    if (argument->CompareCStr("*")){
         _actualArgumentType = FormalParameterType();
         if (!_actualArgumentType->IsFlat()) {
             // Define a DefaultValue type. As a DV it will never merge to another instance.
@@ -425,9 +425,8 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    char firstChar = *argument->Begin();
-    // Currently this prevents symbols thath start with unescaped numbers
-    if (firstChar=='@' || firstChar=='"' || firstChar== '\'' || firstChar== '(' || SubString::IsNumberChar(firstChar)) {
+    // Note, symbols that start with unescaped numbers are not curently allowed.
+    if (!argument->IdentifierIsNext()) {
         // Set the resolved argument type to what the constant should be so
         // the parameter is recognized as being there.
         _actualArgumentType = FormalParameterType();

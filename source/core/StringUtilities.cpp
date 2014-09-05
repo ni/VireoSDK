@@ -92,6 +92,18 @@ Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
     return true;
 }
 //------------------------------------------------------------
+Boolean SubString::IdentifierIsNext() const
+{
+    // ID tokens must start with a letter, under score,
+    // or URL style escaped characer %20. Needs to be
+    // extended to UTF8 support
+    if (_begin <_end) {
+        if (IsLetterChar(*_begin) || *_begin == '_' || *_begin == '%')
+            return true;
+    }
+    return false;
+}
+//------------------------------------------------------------
 Boolean SubString::ReadRawChar(char* token)
 {
     if (_begin < _end) {
