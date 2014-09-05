@@ -1365,7 +1365,7 @@ ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int
         hasGenericType |= element->HasGenericType();
     }
 
-    // Since it is a funnction, the size is the size of a pointer-to-a-function with that parameters list
+    // Since it is a funnction, the size is the size of a pointer-to-a-function with that parameter list
     _encoding = kEncoding_ParameterBlock;
     _topAQSize =  aqCount;
     _isFlat = isFlat;
@@ -1560,6 +1560,70 @@ Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
         VIREO_ASSERT(false);
     }
     return true;
+}
+//------------------------------------------------------------
+#if 0
+// indexing give a vectors seems natural, but with the threaded snippet
+// execution an array of pointers to dimensions is more common.
+AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
+{
+    // Ignore extra outer dimension if supplied.
+    if (rank > Type()->Rank()) {
+        // Check extra dims to see if they are 0, if not then it's out of bounds.
+        return null;
+    }
+    
+    AQBlock1 *pElt = RawBegin();
+    IntIndex* pDimLenght = GetDimensionLengths();
+    IntIndex* pSlab = GetSlabLengths();
+    IntIndex* pEndSlab = pSlab + rank;
+    
+    // Find index by calculating dot product of
+    // SlabLength vector and dimension index vector.
+    // Note that slabs do not need to be packed.
+    for (;pSlab < pEndSlab; pSlab++) {
+        IntIndex dim = *pDimIndexes;
+        if ((dim < 0) || (dim >= *pDimLenght)) {
+            return null;
+        }
+        pElt += (*pSlab) * dim;
+        
+        pDimIndexes++;
+        pDimLenght++;
+    }
+    return pElt;
+}
+#endif
+//------------------------------------------------------------
+AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
+{
+    // Ignore extra outer dimension if supplied.
+    if (rank > Type()->Rank()) {
+        // Possibly check extra dims to see if they are 0,
+        // if not then it's out of bounds.
+        return null;
+    }
+    
+    AQBlock1 *pElt = RawBegin();
+    IntIndex* pDimLenght = GetDimensionLengths();
+    IntIndex* pSlab = GetSlabLengths();
+    IntIndex* pEndSlab = pSlab + rank;
+    
+    // Find index by calculating dot product of
+    // SlabLength vector and dimension index vector.
+    // Note that slabs do not need to be packed.
+    for (;pSlab < pEndSlab; pSlab++) {
+        IntIndex *pDim = *ppDimIndexes;
+        IntIndex dim = pDim ? *pDim : 0;
+        if ((dim < 0) || (dim >= *pDimLenght)) {
+            return null;
+        }
+        pElt += (*pSlab) * dim;
+        
+        ppDimIndexes++;
+        pDimLenght++;
+    }
+    return pElt;
 }
 //------------------------------------------------------------
 // Resize an array to match an existing pattern. The pattern

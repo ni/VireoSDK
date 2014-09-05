@@ -59,6 +59,7 @@ SDG
     #define VIREO_TYPE_Double 1
     #define VIREO_TYPE_ComplexSingle 1
     #define VIREO_TYPE_ComplexDouble 1
+    #define VIREO_TYPE_ArrayND 1
 
     #define VIREO_TYPE_ATime 1
 

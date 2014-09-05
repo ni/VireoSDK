@@ -22,7 +22,7 @@ using namespace Vireo;
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
-    return 0x00010003; // TODO
+    return 0x00010004; // TODO
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* EggShell_Create(EggShell* parent)

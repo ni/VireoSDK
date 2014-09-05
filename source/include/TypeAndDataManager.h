@@ -854,6 +854,8 @@ public:
         VIREO_ASSERT(begin <= _pRawBufferEnd)  //Is there a need to return a pointer to the 'end'
         return begin;
     }
+    AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex** pDimIndexes);
+
 public:
     void* RawObj()                  { VIREO_ASSERT(_typeRef->Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
     AQBlock1* RawBegin()            { return _pRawBufferBegin; }
@@ -950,19 +952,9 @@ public:
     T* End()                    { return (T*) TypedArrayCore::RawEnd(); }
     T  At(IntIndex index)       { return *(T*) BeginAt(index);};
     T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }
-    template <class T2> T2 AtAQ(IntIndex index) { return *(T2*)BeginAtAQ(index); }
-    
-    // TODO Indexing every element of a multi-dim array with these would be pretty costly
-    // TODO these provide no bounds checking
-    // Each of these is designed to only be called for the correctly dimensioned array
-    T* ElementAddress(IntIndex i) { return Begin(i); }
-    T* ElementAddress(IntIndex i, Int32 j) { return BeginAt((j * GetDimensionLengths()[0]) + i); }
-    T* ElementAddress(IntIndex i, Int32 j, Int32 k)
-    {
-        VIREO_ASSERT(false);
-        // calculate dot produt
-        return null;
-    }
+    T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) { return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes); }
+
+    template <class T2> T2 AtAQ(IntIndex index)         { return *(T2*)BeginAtAQ(index); }
     
     NIError Append(T element)                           { return Insert1D(Length(), 1, &element); }
     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }

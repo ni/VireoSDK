@@ -17,9 +17,9 @@ SDG
 using namespace Vireo;
 
 //------------------------------------------------------------
-DECLARE_VIREO_PRIMITIVE2( ArrayResize, TypedArrayCore*, Int32, (_Param(0)->Resize1D(_Param(1)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArrayLength, TypedArrayCore*, Int32, (_Param(1) = _Param(0)->Length()) )
-DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCore*, Int32, (_Param(1) = _Param(0)->Type()->Rank()) )
+DECLARE_VIREO_PRIMITIVE2( ArrayResize, TypedArrayCoreRef, Int32, (_Param(0)->Resize1D(_Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE2( ArrayLength, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Length()) )
+DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Type()->Rank()) )
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
@@ -47,7 +47,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayResizeDimensions, TypedArrayCoreRef, TypedArray1D
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, Int32, void)
 {
-    TypedArrayCore* array = _Param(0);
+    TypedArrayCoreRef array = _Param(0);
     TypeRef     eltType = array->ElementType();
     Int32       length = _Param(1);
     
@@ -56,6 +56,92 @@ VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, Int32, void)
     }
     return _NextInstruction();
 }
+#ifdef VIREO_TYPE_ArrayND
+//------------------------------------------------------------
+struct ArrayFillNDVParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(void*, InitialValue);
+    _ParamImmediateDef(IntIndex*, Dimension1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
+{
+    Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));
+    TypedArrayCoreRef array = _Param(ArrayOut);
+    Int32 **dimensions = _ParamImmediate(Dimension1);
+
+    ArrayDimensionVector  tempDimensionLengths;
+    for (Int32 i = 0; i < numDimensionInputs; i++) {
+        IntIndex* pDim = dimensions[i];
+        tempDimensionLengths[i] = pDim ? *pDim : 0;
+    }
+    
+    _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false, false);
+    
+    IntIndex totalLenght = _Param(ArrayOut)->Length();
+    TypeRef eltType = array->ElementType();
+    eltType->MultiCopyData(_ParamPointer(InitialValue), array->RawBegin(), totalLenght);
+    
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+struct ArrayIndexNDVParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, Array);
+    _ParamDef(void*, Element);
+    _ParamImmediateDef(IntIndex*, Dimension1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
+{
+    Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));
+    TypedArrayCoreRef array = _Param(Array);
+    IntIndex **ppDimensions = _ParamImmediate(Dimension1);
+    
+    AQBlock1* pElement = array->BeginAtNDIndirect(numDimensionInputs, ppDimensions);
+    TypeRef elementType = array->ElementType();
+    
+    if (pElement) {
+        elementType->CopyData(pElement, _ParamPointer(Element));
+    } else {
+        elementType->InitData(_ParamPointer(Element));
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+struct ArrayReplaceNDVParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamDef(void*, Element);
+    _ParamImmediateDef(IntIndex*, Dimension1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceEltNDV, ArrayReplaceNDVParamBlock)
+{
+    Int32 numDimensionInputs = ((_ParamVarArgCount() - 3));
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    Int32 **ppDimensions = _ParamImmediate(Dimension1);
+    
+    if (arrayOut != arrayIn) {
+        // To copy the full array the CopyData method gets a pointer to the ArrayRef.
+        arrayIn->Type()->CopyData(_ParamPointer(ArrayIn), _ParamPointer(ArrayOut));
+    }
+    
+    AQBlock1* pElement = arrayOut->BeginAtNDIndirect(numDimensionInputs, ppDimensions);
+    TypeRef elementType = arrayIn->ElementType();
+    
+    if (pElement) {
+        elementType->CopyData(_ParamPointer(Element), pElement);
+    }
+    return _NextInstruction();
+}
+#endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ArrayIndexElt, TypedArrayCoreRef, Int32, void)
 {
@@ -89,8 +175,9 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
     TypeRef     elementType = arrayOut->ElementType();
     Int32       index = _Param(2);
     Int32       length = arrayIn->Length();
+    
     if(arrayOut != arrayIn){
-        arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
+        arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     } 
     
     if (index >= 0 && index < length) {
@@ -114,8 +201,10 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreR
     }
 
     if(arrayOut != arrayIn){
-        arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
+        // To copy the full array the CopyData method gets a pointer to the ArrayRef.
+        arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     }
+    
     if(idx >= 0 && idx < arrayOut->Length()) { 
         Int32 length = Min(subArray->Length(), arrayOut->Length() - idx);
         arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
@@ -303,5 +392,17 @@ DEFINE_VIREO_BEGIN(ExecutionContext)
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(.Array) i(.Array) i(.Int32) i(.Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(.Array) i(.Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(.Array) i(.Array) i(.Int32))")
+
+#ifdef VIREO_TYPE_ArrayND
+    DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(.VarArgCount) o(.Array) i(.*) i(.Int32) )")
+    DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(.VarArgCount) i(.Array) o(.*) i(.Int32) )")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(.VarArgCount) o(.Array) i(.Array) i(.*) i(.Int32) )")
+   // It might be helpful to have indexing functions that take the
+   // set of indexes as a vector, but that is not needed at this time.
+   // DEFINE_VIREO_FUNCTION(ArrayIndexEltND, "p(i(.Array) i(.*) i(a(.Int32 *)) )")
+   // DEFINE_VIREO_FUNCTION(ArrayReplaceEltND, "p(io(.Array) o(.*) i(a(.Int32 *)) )")
+#endif
+
+
 DEFINE_VIREO_END()
 
