@@ -31,7 +31,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TDViaParser::TDViaParser(TypeManager *typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase)
+TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -979,7 +979,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         return LOG_EVENT(kHardDataError, "')' missing");
 }
 //------------------------------------------------------------
-void TDViaParser::FinalizeModuleLoad(TypeManager* tm, EventLog* pLog)
+void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 {
     static SubString strVIType("VirtualInstrument");
     // Once a module has been loaded sweep through all VIs and

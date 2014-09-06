@@ -39,9 +39,9 @@ EggShell* EggShell::Create(EggShell* parent)
 {
     EggShell *pShell = null;
     
-    TypeManager *pParentTADM = parent ? parent->TheTypeManager() : null;
+    TypeManagerRef pParentTADM = parent ? parent->TheTypeManager() : null;
     
-    TypeManager *pTADM = TypeManager::New(pParentTADM);
+    TypeManagerRef pTADM = TypeManager::New(pParentTADM);
     
     // Once the TADM exists use it to create the rest
     {
@@ -50,8 +50,8 @@ EggShell* EggShell::Create(EggShell* parent)
 
         if (!parent) {
             
-            TypeDefiner::DefineStandardTypes(*pTADM);
-            TypeDefiner::DefineTypes(*pTADM);
+            TypeDefiner::DefineStandardTypes(pTADM);
+            TypeDefiner::DefineTypes(pTADM);
         }
         
         // Once standard types have been loaded the execution system can be constructed
@@ -63,7 +63,7 @@ EggShell* EggShell::Create(EggShell* parent)
     return pShell;
 }
 //------------------------------------------------------------
-EggShell::EggShell(TypeManager *typeManager, ExecutionContext *execContext)
+EggShell::EggShell(TypeManagerRef typeManager, ExecutionContext *execContext)
 {
     _commandCount = 0;
     _typeManger     = typeManager;
@@ -73,7 +73,7 @@ EggShell::EggShell(TypeManager *typeManager, ExecutionContext *execContext)
 //------------------------------------------------------------
 NIError EggShell::Delete()
 {
-    TypeManager* pTADM = _typeManger;
+    TypeManagerRef pTADM = _typeManger;
     if (ShowStats) {
         pTADM->PrintMemoryStat("ES Delete begin", false);
     }

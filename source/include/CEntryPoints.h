@@ -38,9 +38,9 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
 VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump);
 //------------------------------------------------------------
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeManager_Define(TypeManager* typeManager, const char* typeName, const char* typeString);
+VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeManager_FindType(TypeManager* typeManager, const char* typeName);
+VIREO_EXPORT TypeRef TypeManager_FindType(TypeManagerRef typeManager, const char* typeName);
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_TopAQSize(TypeRef typeRef);
 //------------------------------------------------------------

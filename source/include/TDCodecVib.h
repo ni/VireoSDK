@@ -37,11 +37,11 @@ public:
 class TDVibDecoder
 {
 private:
-    TypeManager*    _typeManager;
+    TypeManagerRef  _typeManager;
     SubBuffer       _buffer;
     
 public:
-    TDVibDecoder(TypeManager *typeManager, SubBuffer* buffer);
+    TDVibDecoder(TypeManagerRef typeManager, SubBuffer* buffer);
 
     TypeRef DecodeType();
     void DecodeData(TypeRef type, void* pData, Int32 rank);

@@ -21,7 +21,7 @@ namespace Vireo
 // Optional header added to blocks allocated from the system
 struct MallocInfo {
     size_t          _length;        // how big the block is
-    TypeManager*    _manager;       // which TypeManaer was sued to allocate it.
+    TypeManagerRef  _manager;       // which TypeManaer was sued to allocate it.
 };
 #endif
 
@@ -31,18 +31,18 @@ struct MallocInfo {
 // TODO each thread can have one active TypeManager at a time.
 // this is not thread local so the rutime is not ready for
 // multithread execution.
-VIVM_THREAD_LOCAL TypeManager* TypeManagerScope::ThreadsTypeManager;
+VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 //------------------------------------------------------------    
-TypeManager* TypeManager::New(TypeManager *tmParent)
+TypeManagerRef TypeManager::New(TypeManagerRef tmParent)
 {
     // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
-    TypeManager *tm = (TypeManager*) TypeManager::GlobalMalloc(sizeof(TypeManager));
+    TypeManagerRef tm = (TypeManagerRef) TypeManager::GlobalMalloc(sizeof(TypeManager));
     new (tm) TypeManager(tmParent);
     tm->TrackAllocation(tm, sizeof(TypeManager), true);
     return tm;
 }
 //------------------------------------------------------------
-void TypeManager::Delete(TypeManager* tm)
+void TypeManager::Delete(TypeManagerRef tm)
 {    
     // Free up mutex, and any other members with destructors.
     tm->~TypeManager();
@@ -58,7 +58,7 @@ void TypeManager::PrintMemoryStat(const char* message, Boolean bLast)
     }
 }
 //------------------------------------------------------------
-TypeManager::TypeManager(TypeManager* rootTypeManager)
+TypeManager::TypeManager(TypeManagerRef rootTypeManager)
 {
 #ifdef VIREO_PERF_COUNTERS
     _lookUpsFound = 0;
@@ -389,7 +389,7 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
 {
     TypeDictionaryIterator iter;
     
-    for (TypeManager* tm = this; tm ; tm = tm->RootTypeManager()) {
+    for (TypeManagerRef tm = this; tm ; tm = tm->RootTypeManager()) {
         iter = _typeInstanceDictionary.find(*binaryName);
         if (iter != _typeInstanceDictionary.end()) {
             // Existing instance has been found;
@@ -412,11 +412,11 @@ TypeRef TypeManager::BadType()
 Int32  TypeManager::AQAlignment(Int32 size)
 {
     // subject to be conditional to archtechure
-    if(size<2)
+    if (size<2)
         return 1;
-    if(size<4)
+    if (size<4)
         return 2;
-    if(size<8)
+    if (size<8)
         return 4;
     else
         return 8;
@@ -440,7 +440,7 @@ Int32 TypeManager::BitCountToAQSize(Int32 bitCount)
 //------------------------------------------------------------
 // TypeCommon
 //------------------------------------------------------------
-TypeCommon::TypeCommon(TypeManager* typeManager)
+TypeCommon::TypeCommon(TypeManagerRef typeManager)
 {
     _typeManager = typeManager;
     _typeManager->TrackType(this);
@@ -571,15 +571,15 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     EncodingEnum thisEncoding = BitEncoding();
     EncodingEnum otherEncoding = otherType->BitEncoding();
     
-    if(this == otherType){
+    if (this == otherType) {
         return true;
-    } else if(thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
-        if(this->Rank() == otherType->Rank())
+    } else if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
+        if (this->Rank() == otherType->Rank())
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
     } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
-        if(this->SubElementCount() == otherType->SubElementCount()){
-            for(int i = 0; i < this->SubElementCount(); i++) {
-                if(!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
+        if (this->SubElementCount() == otherType->SubElementCount()) {
+            for (int i = 0; i < this->SubElementCount(); i++) {
+                if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
                     return false;
             }  return true;
         }
@@ -588,7 +588,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
         this->GetName(&thisTypeName);
         SubString otherTypeName;
         otherType->GetName(&otherTypeName);
-        if(this->IsA(&otherTypeName) || otherType->IsA(&thisTypeName))
+        if (this->IsA(&otherTypeName) || otherType->IsA(&thisTypeName))
             return true;
     } 
     return false;
@@ -607,7 +607,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         EncodingEnum thisEncoding = BitEncoding();
         EncodingEnum otherEncoding = otherType->BitEncoding();
         
-        if(thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
+        if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
             bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
         } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_SInt || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
             if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
@@ -686,7 +686,7 @@ TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *
 //------------------------------------------------------------
 // WrappedType
 //------------------------------------------------------------
-WrappedType::WrappedType(TypeManager* typeManager, TypeRef type)
+WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
     : TypeCommon(typeManager)
 {
     _wrapped = type;
@@ -707,7 +707,7 @@ WrappedType::WrappedType(TypeManager* typeManager, TypeRef type)
 //------------------------------------------------------------
 // ElementType
 //------------------------------------------------------------
-ElementType* ElementType::New(TypeManager* typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
 {
     ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset);
     
@@ -716,7 +716,7 @@ ElementType* ElementType::New(TypeManager* typeManager, SubString* name, TypeRef
     return (ElementType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ElementType::ElementType(TypeManager* typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
 : WrappedType(typeManager, wrappedType), _elementName(name->Length())
 {
     _elementName.Assign(name->Begin(), name->Length());
@@ -726,12 +726,12 @@ ElementType::ElementType(TypeManager* typeManager, SubString* name, TypeRef wrap
 //------------------------------------------------------------
 // NamedType
 //------------------------------------------------------------
-NamedType* NamedType::New(TypeManager* typeManager, SubString* name, TypeRef wrappedType)
+NamedType* NamedType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType)
 {
     return TADM_NEW_PLACEMENT_DYNAMIC(NamedType, name)(typeManager, name, wrappedType);
 }
 //------------------------------------------------------------
-NamedType::NamedType(TypeManager* typeManager, SubString* name, TypeRef wrappedType)
+NamedType::NamedType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType)
 : WrappedType(typeManager, wrappedType), _name(name->Length())
 {
     _name.Assign(name->Begin(), name->Length());
@@ -774,12 +774,12 @@ TypeRef AggregateType::GetSubElement(Int32 index)
 //------------------------------------------------------------
 // BitBlockType
 //------------------------------------------------------------
-BitBlockType* BitBlockType::New(TypeManager* typeManager, Int32 size, EncodingEnum encoding)
+BitBlockType* BitBlockType::New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding)
 {
     return TADM_NEW_PLACEMENT(BitBlockType)(typeManager, size, encoding);
 }
 //------------------------------------------------------------
-BitBlockType::BitBlockType(TypeManager* typeManager, Int32 size, EncodingEnum encoding)
+BitBlockType::BitBlockType(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding)
 : TypeCommon(typeManager)
 {
     if (size == kVariableSizeSentinel) {
@@ -804,7 +804,7 @@ BitBlockType::BitBlockType(TypeManager* typeManager, Int32 size, EncodingEnum en
 //------------------------------------------------------------
 // BitClusterType
 //------------------------------------------------------------
-BitClusterType* BitClusterType::New(TypeManager* typeManager, TypeRef elements[], Int32 count)
+BitClusterType* BitClusterType::New(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
 {
     BitClusterType* type = TADM_NEW_PLACEMENT_DYNAMIC(BitClusterType, count)(typeManager, elements, count);
     
@@ -813,7 +813,7 @@ BitClusterType* BitClusterType::New(TypeManager* typeManager, TypeRef elements[]
     return (BitClusterType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-BitClusterType::BitClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
     Int32 bitCount = 0;
@@ -855,7 +855,7 @@ BitClusterType::BitClusterType(TypeManager* typeManager, TypeRef elements[], Int
 //------------------------------------------------------------
 // ClusterElementAlignmentCalculator
 //------------------------------------------------------------
-AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManager* tm)
+AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManagerRef tm)
 {
     _tm = tm;
     _aqOffset = 0;
@@ -950,7 +950,7 @@ void EquivalenceAlignmentCalculator::Finish()
 //------------------------------------------------------------
 // ClusterType
 //------------------------------------------------------------
-ClusterType* ClusterType::New(TypeManager* typeManager, TypeRef elements[], Int32 count)
+ClusterType* ClusterType::New(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
 {
     ClusterType* type = TADM_NEW_PLACEMENT_DYNAMIC(ClusterType, count)(typeManager, elements, count);
     
@@ -959,7 +959,7 @@ ClusterType* ClusterType::New(TypeManager* typeManager, TypeRef elements[], Int3
     return (ClusterType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ClusterType::ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
     Boolean hasCustomValue = false;
@@ -1100,12 +1100,12 @@ ClusterType::~ClusterType()
 //------------------------------------------------------------
 // EquivalenceType
 //------------------------------------------------------------
-EquivalenceType* EquivalenceType::New(TypeManager* typeManager, TypeRef elements[], Int32 count)
+EquivalenceType* EquivalenceType::New(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
 {
     return TADM_NEW_PLACEMENT_DYNAMIC(EquivalenceType, count)(typeManager, elements, count);
 }
 //------------------------------------------------------------
-EquivalenceType::EquivalenceType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
     // To be equivalence they must be flat and same bit or AQ Size
@@ -1171,7 +1171,7 @@ NIError EquivalenceType::ClearData(void* pData)
 //------------------------------------------------------------
 // ArrayType
 //------------------------------------------------------------
-ArrayType* ArrayType::New(TypeManager* typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
+ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
 {
     ArrayType* type = TADM_NEW_PLACEMENT_DYNAMIC(ArrayType, rank)(typeManager, elementType, rank, dimensionLengths);
 
@@ -1180,7 +1180,7 @@ ArrayType* ArrayType::New(TypeManager* typeManager, TypeRef elementType, IntInde
     return (ArrayType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ArrayType::ArrayType(TypeManager* typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
+ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
     : WrappedType(typeManager, elementType)
 {
     _topAQSize = TheTypeManager()->PointerToAQSize();
@@ -1245,7 +1245,7 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
     if (elementTypeDest != elementType && elementTypeDest->HasGenericType())
         pDest->SetElementType(elementType, false);
 
-    if(!pDest->ResizeToMatchOrEmpty(pSource)) {
+    if (!pDest->ResizeToMatchOrEmpty(pSource)) {
         return kNIError_kInsufficientResources;
     }
     
@@ -1257,7 +1257,7 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
         AQBlock1 *pDestElt = pDest->RawBegin();
         IntIndex stride = elementType->TopAQSize();
         IntIndex count = pSource->Length();
-        for(Int32 i = 0; i < count; i++) {
+        for (Int32 i = 0; i < count; i++) {
             err = elementType->CopyData(pSourceElt, pDestElt);
             if (err != kNIError_Success) {
                 pDest->Resize1D(0);
@@ -1307,7 +1307,7 @@ void* ArrayType::Begin(PointerAccessEnum mode)
 //------------------------------------------------------------
 // ParamBlockType
 //------------------------------------------------------------
-ParamBlockType* ParamBlockType::New(TypeManager* typeManager, TypeRef elements[], Int32 count)
+ParamBlockType* ParamBlockType::New(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
 {
     ParamBlockType* type = TADM_NEW_PLACEMENT_DYNAMIC(ParamBlockType, count)(typeManager, elements, count);
 
@@ -1316,7 +1316,7 @@ ParamBlockType* ParamBlockType::New(TypeManager* typeManager, TypeRef elements[]
     return (ParamBlockType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
     Int32 aqCount = 0;
@@ -1376,12 +1376,35 @@ ParamBlockType::ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int
 //------------------------------------------------------------
 // DefaultValueType
 //------------------------------------------------------------
-DefaultValueType* DefaultValueType::New(TypeManager* typeManager, TypeRef valuesType, Boolean mutableValue)
+DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue)
 {
-    return TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, type)(typeManager, type, mutableValue);
+    DefaultValueType* type = TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, valuesType)(typeManager, valuesType, mutableValue);
+
+#if 0
+    // Constants can ( e.g. could)  be shared but it has to be carefully boot strapped
+    // (1) The DefaultValueType object is created. It has storage inlined in the object
+    // (2) The storage in the DVT is used as a location to for the parser to read in the data
+    //
+    // (3) Once loaded the type can be finialized and the default value now makes up part of the binary
+    // name for the type.
+    //
+    // Types with mutable defaults ( e.g variables) can not be merged.
+    // Non flat could be merged, but are not yet. To do so the entire sub value would have to match.
+    // partial mathces are not currently allowed since ther is not a provision for sharing ownership for sparse
+    // sets of data in deeply structured data. The root of the value must own all elements beneath it.
+    
+    if (!mutableValue && type->IsFlat()) {
+        // The binary name is not set yet.
+        AQBlock1* binaryNameLength = (AQBlock1*)(type+1) + type->TopAQSize();
+        SubString binaryName((AQBlock1*)&type->_topAQSize, binaryNameLength);
+        type = (DefaultValueType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
+    }
+#endif
+
+    return type;
 }
 //------------------------------------------------------------
-DefaultValueType::DefaultValueType(TypeManager* typeManager, TypeRef type, Boolean mutableValue)
+DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue)
 : WrappedType(typeManager, type)
 {
     // Initialize the block where ever it was allocated.
@@ -1418,24 +1441,24 @@ NIError DefaultValueType::InitData(void* pData, TypeRef pattern)
 //------------------------------------------------------------
 // PointerType
 //------------------------------------------------------------
-PointerType* PointerType::New(TypeManager* typeManager, TypeRef type)
+PointerType* PointerType::New(TypeManagerRef typeManager, TypeRef type)
 {
     return TADM_NEW_PLACEMENT(PointerType)(typeManager, type);
 }
 //------------------------------------------------------------
-PointerType::PointerType(TypeManager* typeManager, TypeRef type)
+PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type)
 {
 }
 //------------------------------------------------------------
 // CustomPointerType
 //------------------------------------------------------------
-CustomPointerType* CustomPointerType::New(TypeManager* typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
+CustomPointerType* CustomPointerType::New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
 {
     return TADM_NEW_PLACEMENT(CustomPointerType)(typeManager, type, pointer, pointerType);
 }
 //------------------------------------------------------------
-CustomPointerType::CustomPointerType(TypeManager* typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
+CustomPointerType::CustomPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
 : PointerType(typeManager, type)
 {
     _hasCustomDefault = true;
@@ -1447,12 +1470,12 @@ CustomPointerType::CustomPointerType(TypeManager* typeManager, TypeRef type, voi
 //------------------------------------------------------------
 // CustomDataProcType
 //------------------------------------------------------------
-CustomDataProcType* CustomDataProcType::New(TypeManager* typeManager, TypeRef type, IDataProcs* pDataProcs)
+CustomDataProcType* CustomDataProcType::New(TypeManagerRef typeManager, TypeRef type, IDataProcs* pDataProcs)
 {
     return TADM_NEW_PLACEMENT(CustomDataProcType)(typeManager, type, pDataProcs);
 }
 //------------------------------------------------------------
-CustomDataProcType::CustomDataProcType(TypeManager* typeManager, TypeRef type, IDataProcs* pDataProcs)
+CustomDataProcType::CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs* pDataProcs)
 : WrappedType(typeManager, type)
 {
     _isFlat = false;    // Force calls to the alloc functions
@@ -1703,7 +1726,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         // Now compare with the type's specifications
         if (typesDimLength == kVariableSizeSentinel) {
             // Let the sanitized request pass through.
-        } else if(typesDimLength >= 0) {
+        } else if (typesDimLength >= 0) {
             // Fixed trumps request
             dimLength = typesDimLength;
         } else {
@@ -1778,7 +1801,7 @@ Boolean TypedArrayCore::ResizeCore(IntIndex countAQ, IntIndex currentLength, Int
     
     if (newLength < currentLength) {
         // Shrinking
-        if(!ElementType()->IsFlat()) {
+        if (!ElementType()->IsFlat()) {
             // Clear disappearing elements
             ElementType()->ClearData(BeginAt(newLength), currentLength-newLength);
         }
@@ -2020,13 +2043,13 @@ void PrintType(TypeRef type, const char* message)
 //------------------------------------------------------------
 // TypedAndDataManager native functions
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(TypeManagerCurrentTypeManager, TypeManager*)
+VIREO_FUNCTION_SIGNATURE1(TypeManagerCurrentTypeManager, TypeManagerRef)
 {
     _Param(0) = THREAD_EXEC()->TheTypeManager();
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(TypeManagerRootTypeManager, TypeManager*, TypeManager*)
+VIREO_FUNCTION_SIGNATURE2(TypeManagerRootTypeManager, TypeManagerRef, TypeManagerRef)
 {
     if (_Param(0)) {
         _Param(1) = _Param(0)->RootTypeManager();
@@ -2056,7 +2079,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, Alloc
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<TypeRef>*)
 {
-    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
     if (tm) {
         tm->GetTypes(_Param(1));
     } else {
@@ -2067,7 +2090,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<Type
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, TypeRef)
 {
-    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
     SubString typeName = _Param(1)->MakeSubStringAlias();
     if (tm) {
         tm->Define(&typeName, _Param(2));
@@ -2186,7 +2209,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeMakeVectorType, TypeManagerRef, TypeRef, TypeRef, Int32)
 {
-    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
     
     _Param(1) = ArrayType::New(tm, _Param(2), 1, _ParamPointer(3));
     return _NextInstruction();
@@ -2202,7 +2225,7 @@ struct TypeMakeClusterType : public VarArgInstruction
 
 VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
 {
-//  TypeManager *tm = _ParamPointer(tm) ? _Param(tm) : THREAD_EXEC()->TheTypeManager();
+//  TypeManagerRef tm = _ParamPointer(tm) ? _Param(tm) : THREAD_EXEC()->TheTypeManager();
 //   _Param(3) = ArrayType::New(tm, _Param(1), 1, _ParamPointer(2));
     return _NextInstruction();
 }
@@ -2212,7 +2235,7 @@ VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef, TypeRef, Boolean, TypeRef)
 {
-    TypeManager *tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
     SubString valueName = _Param(1)->MakeSubStringAlias();
     TypeRef type = _Param(2);
     Boolean bCreateIfNotFound = _ParamPointer(3) ? _Param(3) : false;

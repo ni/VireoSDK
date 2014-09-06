@@ -86,9 +86,9 @@ class ExecutionContext
 {
 
 private:
-    ECONTEXT    TypeManager* _theTypeManager;
+    ECONTEXT    TypeManagerRef _theTypeManager;
 public:
-    ECONTEXT    TypeManager* TheTypeManager()    { return _theTypeManager; }
+    ECONTEXT    TypeManagerRef TheTypeManager()    { return _theTypeManager; }
 
 private:
     ECONTEXT    Queue           _runQueue;			//! Clumps ready to run
@@ -97,7 +97,7 @@ private:
 
 public:
 #ifndef VIREO_SINGLE_GLOBAL_CONTEXT
-    ExecutionContext(TypeManager* typeManager);
+    ExecutionContext(TypeManagerRef typeManager);
 #endif
     ECONTEXT    PlatformTickType PlatformTickCount();
 

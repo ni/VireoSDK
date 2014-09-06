@@ -163,7 +163,7 @@ void VIClump::AppendToWaitList(VIClump* elt)
     }
 }
 //------------------------------------------------------------
-TypeManager* VIClump::TheTypeManager()
+TypeManagerRef VIClump::TheTypeManager()
 {
     return OwningVI()->OwningContext()->TheTypeManager();
 }
@@ -178,7 +178,7 @@ void InstructionAllocator::AddRequest(size_t count)
     _size += count;
 }
 //------------------------------------------------------------
-void InstructionAllocator::Allocate (TypeManager * tm)
+void InstructionAllocator::Allocate (TypeManagerRef tm)
 {
     VIREO_ASSERT(_next == null);
     _next = (AQBlock1*) tm->Malloc(_size);;
@@ -668,7 +668,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(SubString* subVIName)
     if ((*pObj)->Type()->IsA(&strReentrantVI)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
-        TypeManager *tm = this->_vi->OwningContext()->TheTypeManager();
+        TypeManagerRef tm = this->_vi->OwningContext()->TheTypeManager();
         
         // Reentrant VI clones exist in TM the caller VI is in.
         DefaultValueType *cdt = DefaultValueType::New(tm, targetVIType, false);

@@ -19,7 +19,7 @@ SDG
 //------------------------------------------------------------
 namespace Vireo {
 
-typedef void (*TypeDefinerCallback)(TypeManager& typeManager);
+typedef void (*TypeDefinerCallback)(TypeManagerRef typeManager);
 
 class EventLog;
 
@@ -32,22 +32,22 @@ private:
     const char*             _pNameSpace;
 public :
     //! Add core primitive types to the specified TypeManager
-    static void DefineStandardTypes(TypeManager& tm);
+    static void DefineStandardTypes(TypeManagerRef tm);
     //! Add registered types to the specified TypeManager
-    static void DefineTypes(TypeManager& tm);
+    static void DefineTypes(TypeManagerRef tm);
     
     //! Use the TypeDefiners parser to parse data according to specified type.
-    static void ParseValue(TypeManager* tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
+    static void ParseValue(TypeManagerRef tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
     TypeDefiner(TypeDefinerCallback pCallback, const char* pNameSapce, Int32 version);
-    static TypeRef Define(TypeManager& tm, const char* name, const char* typeCStr);
-    static TypeRef Define(TypeManager& tm, SubString* name, SubString* wrappedTypeString);
-    static TypeRef ParseAndBuidType(TypeManager& tm, SubString* typeString);
-    static void DefineCustomPointerTypeWithValue(TypeManager& tm, const char* name, void* instruction, const char* typeString,PointerTypeEnum pointerType);
-    static void DefineCustomValue(TypeManager& tm, const char* name, Int32 value, const char* typeString);
-    static void DefineCustomDataProcs(TypeManager& tm, const char* name, IDataProcs* pDataProcs, const char* typeString);
+    static TypeRef Define(TypeManagerRef tm, const char* name, const char* typeCStr);
+    static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
+    static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeString,PointerTypeEnum pointerType);
+    static void DefineCustomValue(TypeManagerRef tm, const char* name, Int32 value, const char* typeString);
+    static void DefineCustomDataProcs(TypeManagerRef tm, const char* name, IDataProcs* pDataProcs, const char* typeString);
     //@}
     
 };
@@ -79,9 +79,9 @@ public :
 #else
 
 #define DEFINE_VIREO_BEGIN(_section_) \
-static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManager& tm); \
+static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm); \
 static TypeDefiner TOKENPASTE2(TheTypeDefiner, _section_, __LINE__) (TOKENPASTE2(DefineTypes, _section_, __LINE__), #_section_, kVireoABIVersion); \
-static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManager& tm) {
+static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm) {
 
 #define DEFINE_VIREO_END()   }
 

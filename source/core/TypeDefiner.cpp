@@ -26,7 +26,7 @@ namespace Vireo {
 // main entry point is called.
 TypeDefiner* gpTypeDefinerList = null;
 
-void TypeDefiner::DefineTypes(TypeManager& tm)
+void TypeDefiner::DefineTypes(TypeManagerRef tm)
 {
     TypeDefiner* pItem = gpTypeDefinerList;
     while (pItem) {
@@ -43,78 +43,77 @@ TypeDefiner::TypeDefiner(TypeDefinerCallback callback, const char* pNameSapce, I
     _pNameSpace = pNameSapce;
     gpTypeDefinerList = this;
 }
-
 //------------------------------------------------------------
-TypeRef TypeDefiner::Define(TypeManager& tm, const char* name, const char* typeString)
+TypeRef TypeDefiner::Define(TypeManagerRef tm, const char* name, const char* typeString)
 {
     SubString typeName(name);
     SubString wrappedTypeString(typeString);
     return Define(tm, &typeName, &wrappedTypeString);
 }
 //------------------------------------------------------------
-TypeRef TypeDefiner::ParseAndBuidType(TypeManager& tm, SubString* typeString)
+TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
 {
-    TypeManagerScope scope(&tm);
+    TypeManagerScope scope(tm);
 
     EventLog log(EventLog::StdOut);
-    TDViaParser parser(&tm, typeString, &log, 1);
+    TDViaParser parser(tm, typeString, &log, 1);
     return parser.ParseType();
 }
 //------------------------------------------------------------
-TypeRef TypeDefiner::Define(TypeManager& tm, SubString* typeName, SubString* typeString)
+TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
 {
-    TypeManagerScope scope(&tm);
+    TypeManagerScope scope(tm);
     TypeRef type = null;
     
     type = ParseAndBuidType(tm, typeString);
     // If a name is supplied, add it to name to type dictionary as well
     if (typeName->Length()) {
-        type = tm.Define(typeName, type);
+        type = tm->Define(typeName, type);
     }
     return type;
 }
 //------------------------------------------------------------
-void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManager& tm, const char* name, void* instruction, const char* typeCStr, PointerTypeEnum pointerType)
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeCStr, PointerTypeEnum pointerType)
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
     
-    tm.DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
+    tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
 }
 //------------------------------------------------------------
-void TypeDefiner::DefineCustomDataProcs(TypeManager& tm, const char* name, IDataProcs* pDataProcs, const char* typeCStr)
+void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, const char* name, IDataProcs* pDataProcs, const char* typeCStr)
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
     
-    tm.DefineCustomDataProcs(name, pDataProcs, type);
+    tm->DefineCustomDataProcs(name, pDataProcs, type);
 }
 //------------------------------------------------------------
-void TypeDefiner::DefineCustomValue(TypeManager& tm, const char* name, Int32 value, const char* typeString)
+void TypeDefiner::DefineCustomValue(TypeManagerRef tm, const char* name, Int32 value, const char* typeString)
 {
     SubString string(typeString);
     
-    TDViaParser parser(&tm, &string, null, 1);
+    TDViaParser parser(tm, &string, null, 1);
     TypeRef t = parser.ParseType();
 
-    DefaultValueType *cdt = DefaultValueType::New(&tm, t, false);
+    DefaultValueType *cdt = DefaultValueType::New(tm, t, false);
     
     if (cdt->BitEncoding() == kEncoding_SInt && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;
     
         string.AliasAssignCStr(name);
-        tm.Define(&string, cdt);
+        tm->Define(&string, cdt);
     }
 }
 //------------------------------------------------------------
-void TypeDefiner::ParseValue(TypeManager* tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
+void TypeDefiner::ParseValue(TypeManagerRef tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
 
     parser.ParseData(defaultValueType, defaultValueType->Begin(kPAInit));
 }
 //------------------------------------------------------------
-void TypeDefiner::DefineStandardTypes(TypeManager& tm)
+void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 {
     // Numeric types and Boolean
     Define(tm, "Boolean",       "c(e(bb(1 Boolean)))");

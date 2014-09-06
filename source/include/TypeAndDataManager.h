@@ -157,15 +157,15 @@ inline IntIndex Max(IntIndex a, IntIndex b) { return a > b ? a : b; }
 void PrintType(TypeRef type, const char* message);
 
 //------------------------------------------------------------
-//! Keeps track of Types used within a ExecutionContext. 
+//! Keeps track of Types used within a ExecutionContext.
 class TypeManager
 {
 public:
-    static TypeManager* New(TypeManager* tmParent);
-    static void Delete(TypeManager* tm);
+    static TypeManagerRef New(TypeManagerRef tmParent);
+    static void Delete(TypeManagerRef tm);
     
 private:
-    TypeManager*    _rootTypeManager;   // null if it is the root, or it is not using a root.
+    TypeManagerRef    _rootTypeManager;   // null if it is the root, or it is not using a root.
 
 #ifdef STL_MAP
     typedef std::map<SubString, TypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
@@ -178,15 +178,15 @@ private:
 
     Int32       _aqBitCount;
     MUTEX_CLASS_MEMBER
-    TypeCommon* _badType;
-    TypeCommon* _typeList;          // list of all Types allocated by this TypeManager
+    TypeRef _badType;
+    TypeRef _typeList;          // list of all Types allocated by this TypeManager
     
 friend class TDViaParser;
     // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
     // also defines alignment rules. Each element in a cluster is addressable
 private:
-    TypeManager(TypeManager* typeManager);
+    TypeManager(TypeManagerRef typeManager);
 public:
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -197,7 +197,7 @@ public:
     TypeRef GetTypeList();
     void    PrintMemoryStat(const char*, Boolean last);
     
-    TypeManager *RootTypeManager() { return _rootTypeManager; }
+    TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(SubString* name, TypeRef type);
     TypeRef FindType(const SubString* name);
     TypeRef* FindTypeConstRef(const SubString* name);
@@ -262,10 +262,10 @@ class TypeManagerScope
 {
 #ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 private:
-    TypeManager* _saveTypeManager;
-    VIVM_THREAD_LOCAL static TypeManager* ThreadsTypeManager;
+    TypeManagerRef _saveTypeManager;
+    VIVM_THREAD_LOCAL static TypeManagerRef ThreadsTypeManager;
 public:
-    TypeManagerScope(TypeManager* typeManager)
+    TypeManagerScope(TypeManagerRef typeManager)
     {
       _saveTypeManager = TypeManagerScope::ThreadsTypeManager;
       TypeManagerScope::ThreadsTypeManager = typeManager;
@@ -274,13 +274,13 @@ public:
     {
         TypeManagerScope::ThreadsTypeManager = _saveTypeManager;
     }
-    static TypeManager* Current()
+    static TypeManagerRef Current()
     {
         VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != null);
         return TypeManagerScope::ThreadsTypeManager;
     }
 #else
-    TypeManagerScope(TypeManager* typeManager) {}
+    TypeManagerScope(TypeManagerRef typeManager) {}
     ~TypeManagerScope() {}
 #endif
 };
@@ -331,11 +331,11 @@ class TypeCommon
 // TypeManager layers
     friend class TypeManager;
 private:
-    TypeCommon*     _next;              // Linked list of all Types in a TypeManager
-    TypeManager*    _typeManager;       // TypeManger that owns this type
+    TypeRef         _next;              // Linked list of all Types in a TypeManager
+    TypeManagerRef  _typeManager;       // TypeManger that owns this type
 public:
-    TypeCommon(TypeManager* typeManager);
-    TypeManager* TheTypeManager()       { return _typeManager; }
+    TypeCommon(TypeManagerRef typeManager);
+    TypeManagerRef TheTypeManager()       { return _typeManager; }
     TypeRef Next()                      { return _next; }
 public:
     // Internal to the TypeManager, but this is hard to secifiy in C++
@@ -476,7 +476,7 @@ class WrappedType : public TypeCommon
 {
 protected:
     TypeRef _wrapped;
-    WrappedType(TypeManager *typeManager, TypeRef type);
+    WrappedType(TypeManagerRef typeManager, TypeRef type);
 public:
     // Type operations
     virtual TypeRef BaseType()                          { return _wrapped; }
@@ -514,11 +514,11 @@ class NamedType : public WrappedType
 {
 private:
     InlineArray<Utf8Char>   _name;
-    NamedType(TypeManager* typeManager, SubString* name, TypeRef type);
+    NamedType(TypeManagerRef typeManager, SubString* name, TypeRef type);
 public:
     static IntIndex StructSize(SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
-    static NamedType* New(TypeManager* typeManager, SubString* name, TypeRef type);
+    static NamedType* New(TypeManagerRef typeManager, SubString* name, TypeRef type);
     
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
     virtual void    GetName(SubString* name)        { name->AliasAssign(_name.Begin(), _name.End()); }
@@ -529,7 +529,7 @@ public:
 class ElementType : public WrappedType
 {
 private:
-    ElementType(TypeManager* typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
+    ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
 
 public:
     Int32                   _offset;  // Relative to the begining of the aggregate
@@ -537,7 +537,7 @@ public:
 
 public:
     static IntIndex StructSize(SubString* name) { return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
-    static ElementType* New(TypeManager* typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
+    static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
     
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitElement(this); }
     virtual void    GetElementName(SubString* name) { name->AliasAssign(_elementName.Begin(), _elementName.End()); }
@@ -549,9 +549,9 @@ class BitBlockType : public TypeCommon
 {
 private:
     Int32   _bitSize;
-    BitBlockType(TypeManager* typeManager, Int32 size, EncodingEnum encoding);
+    BitBlockType(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
 public:
-    static BitBlockType* New(TypeManager* typeManager, Int32 size, EncodingEnum encoding);
+    static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitBitBlock(this); }
     virtual Int32   BitSize() {return _bitSize;};
 };
@@ -576,7 +576,7 @@ protected:
 protected:
     InlineArray<ElementType*>   _elements;
 
-    AggregateType(TypeManager* typeManager, TypeRef elements[], Int32 count)
+    AggregateType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : TypeCommon(typeManager), _elements(count)
     {
         _pDefault = null;
@@ -598,10 +598,10 @@ public:
 class BitClusterType : public AggregateType
 {
 private:
-    BitClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
-    static BitClusterType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitBitCluster(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
     virtual Int32 BitSize()                 { return _bitSize; }
@@ -611,10 +611,10 @@ public:
 class EquivalenceType : public AggregateType
 {
 private:
-    EquivalenceType(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    EquivalenceType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
-    static EquivalenceType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    static EquivalenceType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitEquivalence(this); }
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
@@ -626,11 +626,11 @@ public:
 class ClusterType : public AggregateType
 {
 private:
-    ClusterType(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual ~ClusterType();
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
-    static ClusterType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    static ClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitCluster(this); }
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
@@ -645,7 +645,7 @@ class AggregateAlignmentCalculator
     /// core properties as the elements are parsed and created. This class and
     /// its decendents keep the details internal to the TypeManager.
 protected:
-    TypeManager*    _tm;
+    TypeManagerRef  _tm;
     Int32           _aqOffset;
 public:
     Int32   ElementCount;
@@ -655,7 +655,7 @@ public:
     Boolean IsValid;
     Boolean IsFlat;
 public:
-    AggregateAlignmentCalculator(TypeManager* tm);
+    AggregateAlignmentCalculator(TypeManagerRef tm);
     virtual Int32  AlignNextElement(TypeRef element) = 0;
     virtual void   Finish() = 0;
 };
@@ -664,7 +664,7 @@ public:
 class ClusterAlignmentCalculator : public AggregateAlignmentCalculator
 {
 public:
-    ClusterAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
+    ClusterAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
@@ -673,7 +673,7 @@ public:
 class ParamBlockAlignmentCalculator :  public AggregateAlignmentCalculator
 {
 public:
-    ParamBlockAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
+    ParamBlockAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
@@ -682,7 +682,7 @@ public:
 class EquivalenceAlignmentCalculator :  public AggregateAlignmentCalculator
 {
 public:
-    EquivalenceAlignmentCalculator(TypeManager* tm) : AggregateAlignmentCalculator(tm) {}
+    EquivalenceAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
     virtual void   Finish();
 };
@@ -691,10 +691,10 @@ public:
 class ParamBlockType : public AggregateType
 {
 private:
-    ParamBlockType(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
-    static ParamBlockType* New(TypeManager* typeManager, TypeRef elements[], Int32 count);
+    static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Visit(TypeVisitor *tv)  { tv->VisitParamBlock(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
         {
@@ -715,12 +715,12 @@ public:
 class ArrayType : public WrappedType
 {
 private:
-    ArrayType(TypeManager* typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
+    ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
     static IntIndex StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
 
 public:
     
-    static ArrayType* New(TypeManager* typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
+    static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
    
     // _pDefault is a singleton for each instance of an ArrayType used as the default
     // value, allocated one demand
@@ -750,10 +750,10 @@ public:
 class DefaultValueType : public WrappedType
 {
 private:
-    DefaultValueType(TypeManager* typeManager, TypeRef type, Boolean mutableValue);
+    DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
     static IntIndex StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
-    static DefaultValueType* New(TypeManager* typeManager, TypeRef type, Boolean mutableValue);
+    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
 public:
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);
@@ -764,9 +764,9 @@ public:
 class PointerType : public WrappedType
 {
 protected:
-    PointerType(TypeManager* typeManager, TypeRef type);
+    PointerType(TypeManagerRef typeManager, TypeRef type);
 public:
-    static PointerType* New(TypeManager* typeManager, TypeRef type);
+    static PointerType* New(TypeManagerRef typeManager, TypeRef type);
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitPointer(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
@@ -777,12 +777,12 @@ public:
 class CustomPointerType : public PointerType
 {
 private:
-    CustomPointerType(TypeManager* typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
+    CustomPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
     CustomPointerType();
 public:
     void*           _defaultPointerValue;
 public:
-    static CustomPointerType* New(TypeManager* typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
+    static CustomPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
     
     virtual NIError InitData(void* pData, TypeRef pattern = null)
     {
@@ -804,10 +804,10 @@ public:
 class CustomDataProcType : public WrappedType
 {
 protected:
-    CustomDataProcType(TypeManager* typeManager, TypeRef type, IDataProcs *pAlloc);
+    CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs *pAlloc);
     IDataProcs*    _pDataProcs;
 public:
-    static CustomDataProcType* New(TypeManager* typeManager, TypeRef type, IDataProcs *pIAlloc);
+    static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
     virtual void    Visit(TypeVisitor *tv)              { tv->VisitPointer(_wrapped); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return _pDataProcs->InitData(_wrapped, pData, pattern ? pattern : this); }
     virtual NIError CopyData(const void* pData, void* pDataCopy) { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }

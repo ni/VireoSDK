@@ -23,7 +23,7 @@ Boolean ExecutionContext::_classInited;
 _PROGMEM Instruction0 ExecutionContext::_culDeSac;
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
-TypeManager*    ExecutionContext::_theTypeManager;
+TypeManagerRef  ExecutionContext::_theTypeManager;
 //VIClump*      ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
 Queue           ExecutionContext::_runQueue;			// Elts ready To run
 VIClump*        ExecutionContext::_sleepingList;		// Elts waiting for something external to wake them up
@@ -244,7 +244,7 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
 }
 //------------------------------------------------------------
 #ifndef VIREO_SINGLE_GLOBAL_CONTEXT
-ExecutionContext::ExecutionContext(TypeManager* typeManager)
+ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
 {
     ExecutionContext::ClassInit();
     

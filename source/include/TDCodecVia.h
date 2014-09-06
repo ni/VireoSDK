@@ -37,7 +37,7 @@ class InstructionAllocator;
 class TDViaParser
 {
 private:
-    TypeManager*    _typeManager;
+    TypeManagerRef  _typeManager;
     SubString       _string;      // "Begin()" moves through string as it is parsed.
     const Utf8Char* _originalStart;
     Int32           _lineNumberBase;
@@ -53,7 +53,7 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManager *typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase);
     TypeRef ParseType();
     void    ParseData(TypeRef type, void* pData);
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
@@ -66,7 +66,7 @@ public:
     
 public:
     static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
-    static void FinalizeModuleLoad(TypeManager *tm, EventLog* pLog);
+    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
     
 private :
     TypeRef BadType()   {return _typeManager->BadType();}

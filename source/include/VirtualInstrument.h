@@ -111,7 +111,7 @@ public:
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
     VirtualInstrument*  OwningVI() {return _owningVI;};
-    TypeManager*        TheTypeManager();    
+    TypeManagerRef      TheTypeManager();
 };
 //------------------------------------------------------------
 //! An instruciton that suspends a clump and starts a SubVI's root clump.
@@ -141,7 +141,7 @@ public:
     InstructionAllocator() { _size = 0; _next = null; }
     Boolean IsCalculatePass() { return _next == null; }
     void AddRequest(size_t count);
-    void Allocate (TypeManager * tm);
+    void Allocate (TypeManagerRef tm);
     void* AllocateSlice(size_t count);
 };
 //------------------------------------------------------------

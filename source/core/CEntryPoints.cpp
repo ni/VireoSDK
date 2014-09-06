@@ -166,13 +166,13 @@ VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
     clump->Trigger();
 }
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeManager_Define(TypeManager* typeManager, const char* typeName, const char* typeString)
+VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {
     //   TypeManagerScope scope(typeManager);
-    return TypeDefiner::Define(*typeManager, typeName, typeString);
+    return TypeDefiner::Define(typeManager, typeName, typeString);
 }
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeManager_FindType(TypeManager* typeManager, const char* typeName)
+VIREO_EXPORT TypeRef TypeManager_FindType(TypeManagerRef typeManager, const char* typeName)
 {
     SubString temp(typeName);
     return typeManager->FindType(&temp);

@@ -26,7 +26,7 @@ public:
     static EggShell* Create(EggShell* parent);
 
 private:
-    TypeManager* _typeManger;
+    TypeManagerRef _typeManger;
     ExecutionContext* _execContext;
     char*   _mallocBuffer;
     Int64   _commandCount;
@@ -38,10 +38,10 @@ public:
     Int64   CommanCount() { return _commandCount;}
     Boolean ShowStats;
     NIError Delete();    
-    TypeManager* TheTypeManager()           { return _typeManger; }
+    TypeManagerRef TheTypeManager()           { return _typeManger; }
     ExecutionContext* TheExecutionContext() { return _execContext; }
 private:
-    EggShell(TypeManager *typeManger, ExecutionContext *execContext);
+    EggShell(TypeManagerRef typeManger, ExecutionContext *execContext);
     void ParseEnqueueVI(TDViaParser* parser);
     void ParseDefine(TDViaParser* parser);
 };
