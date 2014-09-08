@@ -452,6 +452,12 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
     }    
 #endif
 }
+//------------------------------------------------------------
+void ExecutionContext::LogEvent(EventLog::EventSeverity severity, const char* message, SubString *extra)
+{
+    EventLog tempLog(EventLog::StdOut);
+    tempLog.LogEvent(severity, -1, message, extra);
+}
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")

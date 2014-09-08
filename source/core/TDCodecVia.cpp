@@ -620,7 +620,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
             } else {
-                printf("scalar that is unicode");
+                LOG_EVENT(kSoftDataError, "Scalar that is unicode");
                 // TODO support escaped chars, more error checking
             }
             break;
@@ -706,7 +706,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     if (_string.ComparePrefixCStr(tsNamedTypeToken)) {
         // This is a VI that inherits from an existing VI type./
         // This may be used for explicit clones of VIs
-        printf("***************Referring to an already existing type\n");
+        LOG_EVENT(kSoftDataError, "Referring to an already existing type");
         TypeRef pType = ParseType();
         viType->CopyData(pType->Begin(kPARead), pData);
     }

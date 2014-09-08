@@ -196,7 +196,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreR
     TypedArrayCoreRef subArray = _Param(3);
 
     if (arrayOut == subArray) {
-        printf("(Error 'Can't ArrayReplaceSubset inplace.')\n");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReplaceSubset inplace");
         return THREAD_EXEC()->Stop();
     }
 
@@ -221,7 +221,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     idx = Max(idx, 0); // coerce index to non-negative integer
     
     if (arrayOut == arrayIn && idx != 0) {
-        printf("(Error 'Can't ArraySubset inplace.')\n");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArraySubset inplace");
         return THREAD_EXEC()->Stop();
     }
 
@@ -267,7 +267,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
     IntIndex subArrayLength = subArray->Length();
 
     if (arrayOut == subArray) {
-        printf("(Error 'Can't ArrayInsertSubset inplace.')\n");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayInsertSubset inplace");
         return THREAD_EXEC()->Stop();
     }
 
@@ -297,7 +297,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
     IntIndex arrayInLength = arrayIn->Length();
 
     if (arrayOut == arrayIn) {
-        printf("(Error 'Can't ArrayReverse inplace.')\n");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReverse inplace");
         return THREAD_EXEC()->Stop();
     }
     
@@ -315,7 +315,7 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     Int32 offset = _Param(2);
 
     if (arrayOut == arrayIn) {
-        printf("(Error 'Can't ArrayRotate inplace.')\n");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayRotate inplace");
         return THREAD_EXEC()->Stop();
     }
     

@@ -570,7 +570,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
         pPatch->_whereToPeek = whereToPeek;
         InternalAddArg(null, pPatch);
     } else {
-        printf("(Error \"Too many forward patches\")\n");
+        LogEvent(EventLog::kSoftDataError, 0, "(Error \"Too many forward patches\")\n");
     }
 }
 //------------------------------------------------------------
@@ -596,7 +596,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex<kMaxPerches) {
             if (_perches[perchIndex]<0) {
-                printf("(Error \"Perch <%d> duplicated in a clump\")\n", (Int32)perchIndex);
+                LogEvent(EventLog::kSoftDataError, 0, "Perch duplicated in a clump");
             }
             if (_recordNextInstructionAddress<0) {
                 // Reserve the perch till the next instruction is emitted
@@ -604,13 +604,13 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
                 _perches[perchIndex] = kPerchBeingAlocated;
                 _recordNextInstructionAddress = (Int32)perchIndex;
             } else {
-                printf("(Error \"Double Perch <%d> not supported\")\n", (Int32)perchIndex);
+                LogEvent(EventLog::kSoftDataError, 0, "Double Perch not supported");
             }
         } else {
-            printf("(Error \"Perch <%d> exceeds limits\")\n", (Int32)perchIndex);
+            LogEvent(EventLog::kSoftDataError, 0, "Perch exceeds limits");
         }
     } else {
-        printf("(Error \"Perch label syntax error <%.*s>\")\n", FMT_LEN_BEGIN(perchToken));
+        LogEvent(EventLog::kSoftDataError, 0, "Perch label syntax error ", perchToken);
     }
 }
 //------------------------------------------------------------

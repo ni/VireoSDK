@@ -17,12 +17,14 @@ SDG
 #include "TypeAndDataManager.h"
 #include "Instruction.h"
 #include "TimeTypes.h"
+#include "EventLog.h"
 
 namespace Vireo
 {
 //------------------------------------------------------------
 class VIClump;
 class FunctionClump;
+class EventLog;
 
 //! Queue of clumps.
 /** The Queue is made by linking clumps directly using their next field,
@@ -119,12 +121,16 @@ public:
     ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
-    
+  
+public:
+    // Method for runtime errors to be routined through.
+    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, const char* message, SubString *extra = null);
+
 private:
     static Boolean _classInited;
     static Instruction0 _culDeSac;
+    
 public:
-
     static inline Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {return pInstruciton->_function != (InstructionFunction)CulDeSac;};
 
     static void ClassInit();

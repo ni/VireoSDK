@@ -487,7 +487,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
         default:
         {
-            printf("(Error \"Fucntion <%.*s> did not resolve to specific type\")\n",  FMT_LEN_BEGIN(&savedOperation));
+            pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "(Error \"Fucntion <%.*s> did not resolve to specific type\")\n", &savedOperation);
             break;
         }
     }
@@ -744,7 +744,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                 } else { // Source and dest are the same array
                 
                     if (i != 0) {
-                        printf("(Error 'Illegal ArrayConcatenate inplaceness.')\n");
+                        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
                         return THREAD_EXEC()->Stop();
                     }
 

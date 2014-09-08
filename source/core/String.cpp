@@ -342,7 +342,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
         } else { // String input that is the same as dest
         
             if (i != 0) {
-                printf("(Error 'Illegal StringConcatenate inplaceness.')\n");
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal StringConcatenate inplaceness");
                 return THREAD_EXEC()->Stop();
             }
             

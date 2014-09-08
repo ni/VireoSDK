@@ -105,7 +105,7 @@ void* TypeManager::Malloc(size_t countAQ)
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures ++;
         THREAD_EXEC()->ClearBreakout();
-        printf("exceeded allocation limit\n");
+        printf("Exceeded allocation limit\n");
         return null;
     }
 

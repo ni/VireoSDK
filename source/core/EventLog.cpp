@@ -62,10 +62,15 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *me
         return;
     
     Int32 length;
-    if (extra) {
-        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s '%.*s'.\")\n", lineNumber, preamble, message, FMT_LEN_BEGIN(extra));
+    
+    if (lineNumber > 0) {
+        if (extra) {
+            length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s '%.*s'.\")\n", lineNumber, preamble, message, FMT_LEN_BEGIN(extra));
+        } else {
+            length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
+        }
     } else {
-        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
+        length = snprintf(buffer, sizeof(buffer), "(%s \"%s.\")\n", preamble, message);
     }
     
     if (_errorLog == StdOut) {
