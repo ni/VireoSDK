@@ -27,7 +27,7 @@ public:
 
 private:
     TypeManagerRef _typeManger;
-    ExecutionContext* _execContext;
+    ExecutionContextRef _execContext;
     char*   _mallocBuffer;
     Int64   _commandCount;
     
@@ -39,9 +39,9 @@ public:
     Boolean ShowStats;
     NIError Delete();    
     TypeManagerRef TheTypeManager()           { return _typeManger; }
-    ExecutionContext* TheExecutionContext() { return _execContext; }
+    ExecutionContextRef TheExecutionContext() { return _execContext; }
 private:
-    EggShell(TypeManagerRef typeManger, ExecutionContext *execContext);
+    EggShell(TypeManagerRef typeManger, ExecutionContextRef execContext);
     void ParseEnqueueVI(TDViaParser* parser);
     void ParseDefine(TDViaParser* parser);
 };

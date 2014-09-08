@@ -46,7 +46,7 @@ InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM)
 
 VIREO_FUNCTION_SIGNATURE0(Done)
 {
-    ExecutionContext *exec = THREAD_EXEC();
+    ExecutionContextRef exec = THREAD_EXEC();
 
     VIClump* runningQueueElt = exec->_runningQueueElt;
     VIREO_ASSERT( runningQueueElt != null )
@@ -271,7 +271,7 @@ void ExecutionContext::ClassInit()
     // Typically there might be just one exec system per thread, however in the case of
     // UI controls using an exec system,there may be several. It that case they should never be 
     // nested. When ExecuteSice is called from a thread this will be set up.
-    VIVM_THREAD_LOCAL ExecutionContext* ExecutionContextScope::_threadsExecutionContext;
+    VIVM_THREAD_LOCAL ExecutionContextRef ExecutionContextScope::_threadsExecutionContext;
 #endif
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)

@@ -55,7 +55,7 @@ EggShell* EggShell::Create(EggShell* parent)
         }
         
         // Once standard types have been loaded the execution system can be constructed
-        ExecutionContext *pExecutionContext = TADM_NEW_PLACEMENT(ExecutionContext)(pTADM);
+        ExecutionContextRef pExecutionContext = TADM_NEW_PLACEMENT(ExecutionContext)(pTADM);
         
         // Last step create the shell.
         pShell = TADM_NEW_PLACEMENT(EggShell)(pTADM, pExecutionContext);
@@ -63,7 +63,7 @@ EggShell* EggShell::Create(EggShell* parent)
     return pShell;
 }
 //------------------------------------------------------------
-EggShell::EggShell(TypeManagerRef typeManager, ExecutionContext *execContext)
+EggShell::EggShell(TypeManagerRef typeManager, ExecutionContextRef execContext)
 {
     _commandCount = 0;
     _typeManger     = typeManager;

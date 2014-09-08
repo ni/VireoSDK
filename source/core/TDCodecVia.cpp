@@ -649,7 +649,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         // used. For some pointer types this may be a process or thread global, etc.
                         // TODO this is at too low a level, it could be done at
                         // a higher level.
-                        *(ExecutionContext**)pData = THREAD_EXEC();
+                        *(ExecutionContextRef*)pData = THREAD_EXEC();
                         return;
                     }
                 }

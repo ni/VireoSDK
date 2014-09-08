@@ -59,12 +59,12 @@ VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
         pShell->Delete();
 }
 //------------------------------------------------------------
-VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContext* pContext, VIClump* pClump)
+VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContextRef pContext, VIClump* pClump)
 {
     pContext->EnqueueRunQueue(pClump);
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContext* pContext, Int32 numSlices)
+VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContextRef pContext, Int32 numSlices)
 {
     return pContext->ExecuteSlices(numSlices, 1);
 }

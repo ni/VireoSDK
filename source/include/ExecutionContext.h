@@ -84,6 +84,7 @@ InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM);
 
 //------------------------------------------------------------
 //! System state necessary for executing VI Clumps.
+typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
 
@@ -151,13 +152,13 @@ public:
 //! Stack based class to manage a threads active TypeManager and ExecutionContext.
 class ExecutionContextScope
 {
-    ExecutionContext* _saveExec;
+    ExecutionContextRef _saveExec;
     TypeManagerScope  _typeManagerScope;
-    VIVM_THREAD_LOCAL static ExecutionContext* _threadsExecutionContext;
+    VIVM_THREAD_LOCAL static ExecutionContextRef _threadsExecutionContext;
 
 public:
     //! Constructor saves the currect context (if it exists) and begins a new one.
-    ExecutionContextScope(ExecutionContext* context)
+    ExecutionContextScope(ExecutionContextRef context)
     : _typeManagerScope(context->TheTypeManager())
     {
         _saveExec = _threadsExecutionContext;
@@ -169,9 +170,9 @@ public:
         _threadsExecutionContext = _saveExec;
     }
     //! Static method returns the current active ExecutionContext
-    static ExecutionContext* Current()
+    static ExecutionContextRef Current()
     {
-        return (ExecutionContext*) _threadsExecutionContext;
+        return (ExecutionContextRef) _threadsExecutionContext;
     }
 };
 #endif

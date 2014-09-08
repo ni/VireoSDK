@@ -21,7 +21,7 @@ namespace Vireo
 //------------------------------------------------------------
 // VirtualInstrument
 //------------------------------------------------------------
-NIError VirtualInstrument::Init(ExecutionContext *context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* clumpSource)
+NIError VirtualInstrument::Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* clumpSource)
 {
     VIREO_ASSERT(_executionContext == null)
     VIREO_ASSERT( sizeof(VIClump) == _clumps->ElementType()->TopAQSize() )

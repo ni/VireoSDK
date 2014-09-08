@@ -25,9 +25,9 @@ VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value);
 
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell);
 
-VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContext* pContext, VIClump* pClump);
+VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContextRef pContext, VIClump* pClump);
 
-VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContext* pContext, Int32 numSlices);
+VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContextRef pContext, Int32 numSlices);
 
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
 

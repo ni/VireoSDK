@@ -44,7 +44,7 @@ class VirtualInstrument
 {
     friend class VIDataProcsClass;
 private:
-    ExecutionContext*       _executionContext;
+    ExecutionContextRef       _executionContext;
     TypedBlock*             _paramBlock;          // All clumps in subVI share the same param block
     TypedBlock*             _dataSpace;           // All clumps in subVI share the same data
     TypedArray1D<VIClump>*  _clumps;
@@ -54,12 +54,12 @@ public:
     Int32                   _lineNumberBase;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
 public :
-    NIError Init(ExecutionContext* context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
+    NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
 public:
-    VirtualInstrument(ExecutionContext *context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
-    ExecutionContext* OwningContext()   {return _executionContext;}
+    VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
+    ExecutionContextRef OwningContext()   {return _executionContext;}
     TypedArrayCoreRef ParamBlock()      {return _paramBlock;}
     TypedArrayCoreRef DataSpace()       {return _dataSpace;}
     TypedArray1D<VIClump>* Clumps()     {return _clumps;}
