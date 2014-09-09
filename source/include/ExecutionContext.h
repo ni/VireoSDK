@@ -125,7 +125,7 @@ public:
   
 public:
     // Method for runtime errors to be routined through.
-    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, const char* message, SubString *extra = null);
+    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, const char* message, ...);
 
 private:
     static Boolean _classInited;

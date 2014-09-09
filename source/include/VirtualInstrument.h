@@ -286,7 +286,7 @@ public:
     void            AddInstructionFunctionArgument(SubString* instructionNameToken);
     VirtualInstrument*  AddSubVITargetArgument(SubString* subVIName);
     Int32           AddSubSnippet();
-    void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra = null);
+    void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...);
     void            LogArgumentProcessing(Int32 lineNumber);
 
     InstructionCore*    EmitCallVIInstruction();

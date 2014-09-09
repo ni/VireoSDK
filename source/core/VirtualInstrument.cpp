@@ -596,7 +596,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex<kMaxPerches) {
             if (_perches[perchIndex]<0) {
-                LogEvent(EventLog::kSoftDataError, 0, "Perch duplicated in a clump");
+                LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
             }
             if (_recordNextInstructionAddress<0) {
                 // Reserve the perch till the next instruction is emitted
@@ -604,13 +604,13 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
                 _perches[perchIndex] = kPerchBeingAlocated;
                 _recordNextInstructionAddress = (Int32)perchIndex;
             } else {
-                LogEvent(EventLog::kSoftDataError, 0, "Double Perch not supported");
+                LogEvent(EventLog::kSoftDataError, 0, "Double Perch '%d' not supported", perchIndex);
             }
         } else {
-            LogEvent(EventLog::kSoftDataError, 0, "Perch exceeds limits");
+            LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' exceeds limits", perchIndex);
         }
     } else {
-        LogEvent(EventLog::kSoftDataError, 0, "Perch label syntax error ", perchToken);
+        LogEvent(EventLog::kSoftDataError, 0, "Perch label syntax error '%.*s'", FMT_LEN_BEGIN(perchToken));
     }
 }
 //------------------------------------------------------------
@@ -733,12 +733,16 @@ void ClumpParseState::EndEmitSubSnippet(ClumpParseState* subSnippet)
     _totalInstructionPointerCount += subSnippet->_totalInstructionPointerCount;
 }
 //------------------------------------------------------------
-void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra)
+void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...)
 {
     if (lineNumber != 0) {
         _approximateLineNumber = lineNumber;
     }
-    _pLog->LogEvent(severity, _approximateLineNumber, message, extra);
+    
+    va_list args;
+    va_start (args, message);
+    _pLog->LogEventV(severity, _approximateLineNumber, message, args);
+    va_end (args);
 }
 //------------------------------------------------------------
 void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
@@ -763,7 +767,8 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             {
             SubString formalParameterTypeName;
             FormalParameterType()->GetName(&formalParameterTypeName);
-            LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be", &formalParameterTypeName);
+            LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be '%.*s'",
+                     FMT_LEN_BEGIN(&formalParameterTypeName));
             }
             break;
         case kArgumentNotOptional:                      simpleMessage = "Argument not optional";    break;
@@ -784,7 +789,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             break;
     }
     if (simpleMessage) {
-        LogEvent(severity, lineNumber, simpleMessage, &_actualArgumentName);
+        LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_actualArgumentName));
     }
 }
 //------------------------------------------------------------

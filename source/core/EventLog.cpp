@@ -10,6 +10,7 @@ SDG
 /*! \file
  */
 
+#include <stdarg.h>
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 
@@ -28,7 +29,27 @@ EventLog::EventLog(StringRef string)
     _warningCount = 0;
 }
 //------------------------------------------------------------
-void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra)
+void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, const char *message, va_list args)
+{
+    char buffer[200];
+    
+    vsnprintf (buffer, sizeof(buffer), message, args);
+    LogEventCore( severity, lineNumber, buffer);
+}
+//------------------------------------------------------------
+void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, ...)
+{
+    char buffer[200];
+    
+    va_list args;
+    va_start (args, message);
+    vsnprintf (buffer, sizeof(buffer), message, args);
+    va_end (args);
+    
+    LogEventCore( severity, lineNumber, buffer);
+}
+//------------------------------------------------------------
+void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, const char *message)
 {
     char buffer[200];
 
@@ -64,11 +85,7 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *me
     Int32 length;
     
     if (lineNumber > 0) {
-        if (extra) {
-            length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s '%.*s'.\")\n", lineNumber, preamble, message, FMT_LEN_BEGIN(extra));
-        } else {
-            length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
-        }
+        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
     } else {
         length = snprintf(buffer, sizeof(buffer), "(%s \"%s.\")\n", preamble, message);
     }

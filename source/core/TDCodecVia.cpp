@@ -41,6 +41,14 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _loadVIsImmediatly = false;
 }
 //------------------------------------------------------------
+void TDViaParser::LogEvent(EventLog::EventSeverity severity, const char* message, ...)
+{
+    va_list args;
+    va_start (args, message);
+    _pLog->LogEventV(severity, CalcCurrentLine(), message, args);
+    va_end (args);
+}
+//------------------------------------------------------------
 Int32 TDViaParser::CalcCurrentLine()
 {
     // As the parser moves through the string the line number is periodically calculated
@@ -72,7 +80,7 @@ TypeRef TDViaParser::ParseType()
         
         pType = _typeManager->FindType(&typeFunction);
         if (!pType) {
-            LOG_EVENTV(kSoftDataError,"Unrecognized data type", &typeFunction);
+            LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
             pType = BadType();
         }
     } else if (typeFunction.CompareCStr(tsBitClusterTypeToken)) {
@@ -99,7 +107,7 @@ TypeRef TDViaParser::ParseType()
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
 #endif
-        LOG_EVENTV(kHardDataError, "Unrecognized type primitive", &typeFunction);
+        LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
     }
     return pType;
 }
@@ -167,7 +175,7 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
         } else if (token.CompareCStr(tsAliasToken)) {
             usageType = kUsageTypeAlias;
         } else {
-            return  LOG_EVENTV(kSoftDataError,"Unrecognized element type", &token);
+            return  LOG_EVENTV(kSoftDataError,"Unrecognized element type '%.*s'",  FMT_LEN_BEGIN(&token));
         }
         
         if (!_string.ReadChar('('))
@@ -223,7 +231,7 @@ TypeRef TDViaParser::ParseArray()
 
         IntMax dimensionLength;
         if (!token.ReadInt(&dimensionLength)) {
-            LOG_EVENTV(kHardDataError, "Invalid array dimension", &token);
+            LOG_EVENTV(kHardDataError, "Invalid array dimension '%.*s'",  FMT_LEN_BEGIN(&token));
             return BadType();
         }
 
@@ -655,7 +663,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 }
                 SubString typeName;
                 type->GetName(&typeName);
-                LOG_EVENTV(kHardDataError, "Parsing pointer type", &typeName);
+                LOG_EVENTV(kHardDataError, "Parsing pointer type '%.*s'", FMT_LEN_BEGIN(&typeName));
             }
             break;
         case kEncoding_Cluster:
@@ -910,7 +918,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             
             instructionFound = (state.StartInstruction(&instructionNameToken) != null);
             if (!instructionFound)
-                LOG_EVENTV(kSoftDataError, "Function not found", &instructionNameToken);
+                LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
             
             // Starting reading actual parameters
             if (!_string.ReadChar('('))

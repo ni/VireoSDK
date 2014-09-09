@@ -47,7 +47,9 @@ public:
     EventLog(StringRef stringRef);
     Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; };
     Int32 HardErrorCount()                  { return  _hardErrorCount; };
-    void LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, SubString *extra = null);
+    void LogEventV(EventSeverity severity, Int32 lineNumber, const char *message, va_list args);
+    void LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, ...);
+    void LogEventCore(EventSeverity severity, Int32 lineNumber, const char *message);
     
     // TODO: change to use streams
     //! Special string instance for constructor to skip all messages (counts still tallied)

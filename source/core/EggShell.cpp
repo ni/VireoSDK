@@ -129,7 +129,7 @@ void EggShell::ParseEnqueueVI(TDViaParser* parser)
     if (vi != null) {
         vi->PressGo();
     } else {
-        return parser->LogEvent(EventLog::kHardDataError, "VI not found", &viName);
+        return parser->LogEvent(EventLog::kHardDataError, "VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
     }
 }
 //------------------------------------------------------------

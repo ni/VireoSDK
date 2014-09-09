@@ -453,10 +453,13 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
 #endif
 }
 //------------------------------------------------------------
-void ExecutionContext::LogEvent(EventLog::EventSeverity severity, const char* message, SubString *extra)
+void ExecutionContext::LogEvent(EventLog::EventSeverity severity, const char* message, ...)
 {
     EventLog tempLog(EventLog::StdOut);
-    tempLog.LogEvent(severity, -1, message, extra);
+    va_list args;
+    va_start (args, message);
+    tempLog.LogEventV(severity, -1, message, args);
+    va_end (args);
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
