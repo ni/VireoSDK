@@ -25,6 +25,9 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
         case kEncoding_Array:
         {
             TypedArrayCore *pArray = *(TypedArrayCore **) pData;
+            IntIndex* dimLengths = pArray->GetDimensionLengths();
+            Int32 rank = pArray->Type()->Rank();
+            
             if (pArray == null)
                 return kNIError_kResourceNotFound;
 
@@ -35,9 +38,12 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
             // other data structures always include length information.
             if (prependArrayLength)
             {
-                Int32 arrayLength = pArray->Length();
-
-                pString->Append(sizeof(arrayLength), (Utf8Char*)&arrayLength);
+                for (Int32 i = 0; i < rank; i++) {
+                    // TODO this is endianness sensitive.
+                    // LV format is bigendian. Somthing is not right here.
+                    Int32 arrayLength = dimLengths[i];
+                    pString->Append(sizeof(arrayLength), (Utf8Char*)&arrayLength);
+                }
             }
 
             if (elementType->IsFlat())
@@ -50,8 +56,8 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
                 // Arrays contained in other data structures always include
                 // length information.
                 size_t   elementLength = pArray->GetSlabLengths()[0];
-                AQBlock1 *pEnd = pArray->BeginAt(0) + (pArray->GetDimensionLengths()[0] * elementLength);
                 AQBlock1 *pElement = pArray->BeginAt(0);
+                AQBlock1 *pEnd = pElement + (pArray->Length() * elementLength);
 
                 for (; pElement < pEnd; pElement += elementLength)
                     FlattenData(elementType, pElement, pString, true);
