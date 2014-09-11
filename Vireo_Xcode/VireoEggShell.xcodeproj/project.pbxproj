@@ -147,6 +147,7 @@
 		474A5F55199E71810013F8C5 /* Vireo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Vireo-Prefix.pch"; sourceTree = "<group>"; };
 		474A5F56199E71810013F8C5 /* Vireo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vireo.h; sourceTree = "<group>"; };
 		474A5F57199E71810013F8C5 /* Vireo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vireo.m; sourceTree = "<group>"; };
+		4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Emscripten.cpp; path = ../source/io/Emscripten.cpp; sourceTree = "<group>"; };
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
@@ -447,6 +448,7 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */,
 				474A5EF2199D48A40013F8C5 /* LINX.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				4786297D1927064300141666 /* Canvas2d.cpp */,

@@ -1,0 +1,24 @@
+# The emscripten C++ to JavaScript tool chain is portable
+# It does not need an installer and can be placed any where
+# If you not using it for multiple projects it make be simple
+# to just put in a sub folder of the project and to set
+# it set environment variables when needed.
+
+# That is what this file is for. If you set up a more central 
+# shared version, then ignore this file.
+
+# usage:
+# source SetupEmscripten
+
+echo "Setting up emscripten environment"
+cd emsdk_portable
+source emsdk_env.sh
+cd ..
+
+#Other notes:
+#
+# to update the sdk do the following in the emsdk
+# cd emsdk_portable
+# ./emsdk update
+# ./emsdk install latest
+# ./emsdk activate latest

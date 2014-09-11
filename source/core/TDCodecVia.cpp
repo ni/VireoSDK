@@ -11,6 +11,7 @@ SDG
     \brief Native Verio VIA functions.
  */
 
+#include <stdarg.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"

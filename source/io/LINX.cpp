@@ -46,10 +46,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Linx)
 
 // Primitives
 DEFINE_VIREO_FUNCTION(LinxDeviceName, "p(o(.String name))");
-DEFINE_VIREO_FUNCTION(LinxDigitalChannels, "p(o(.Int32 chanelIds))");
-DEFINE_VIREO_FUNCTION(LinxDigitalWrite, "p(i(a(.Int32 *) chanelIds) i(a(.Int32 *) values))");
-DEFINE_VIREO_FUNCTION(LinxDigitalRead, "p(i(a(.Int32 *) chanelIds) o(a(.Int32 *) values))");
-
+    DEFINE_VIREO_FUNCTION(LinxDigitalChannels, "p(o(.Int32 chanelIds))");
+    DEFINE_VIREO_FUNCTION(LinxDigitalWrite, "p(i(a(.Int32 *) chanelIds) i(a(.Int32 *) values))");
+    DEFINE_VIREO_FUNCTION(LinxDigitalRead, "p(i(a(.Int32 *) chanelIds) o(a(.Int32 *) values))");
 DEFINE_VIREO_END()
 
 #endif

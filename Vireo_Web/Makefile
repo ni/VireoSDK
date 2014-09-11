@@ -62,6 +62,7 @@ EM_BC_FILES = objs/VireoMerged.bc\
     objs/TimeTypes.bc\
     objs/Canvas2D.bc\
     objs/FileIO.bc\
+    objs/Emscripten.bc\
     objs/CEntryPoints.bc
 
 vjs:
@@ -73,6 +74,7 @@ vjs:
 	emcc $(EMFLAGS) ../source/core/TimeTypes.cpp -o objs/TimeTypes.bc
 	emcc $(EMFLAGS) ../source/io/Canvas2D.cpp -o objs/Canvas2D.bc
 	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
+	emcc $(EMFLAGS) ../source/io/Emscripten.cpp -o objs/Emscripten.bc
 	emcc $(EMFLAGS) ../source/core/CEntryPoints.cpp -o objs/CEntryPoints.bc
 	emcc $(EM_OPT)  $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
 
