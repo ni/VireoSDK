@@ -475,7 +475,12 @@ public:
 class WrappedType : public TypeCommon
 {
 protected:
-    TypeRef _wrapped;
+    // The WrappedType class may be followed by arbitrary POD so make sure the
+    // the class size will maintain proper alignment.
+    union {
+        TypeRef _wrapped;
+        MaxAlignedType _alignent;
+    };
     WrappedType(TypeManagerRef typeManager, TypeRef type);
 public:
     // Type operations

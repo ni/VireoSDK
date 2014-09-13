@@ -2,7 +2,8 @@
 
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(.Int32 x)
+        e(.Int32  i)
+        e(.Double x)
         e(.String str)
     )
     clump (1
@@ -30,7 +31,9 @@ define (HelloWorld dv(.VirtualInstrument (
 
         StringToLower("Hello, World" str)
         DPrintf("passing inline constant value <%s>" str)
-        MulInt32(6 7 x)
+        MulInt32(6 7 i)
+        DPrintf("passing inline constant value <%s>" i)
+        AddDouble(3.2 1.85 x)
         DPrintf("passing inline constant value <%s>" x)
         
         // MulInt32(6 7 9) not allowed.

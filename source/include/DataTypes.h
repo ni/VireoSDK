@@ -45,6 +45,16 @@ typedef double              Double;
 typedef Int64               IntMax;
 typedef UInt64              UIntMax;
 
+typedef union {
+    // Looks like some of the recent C++ specs supply a type
+    // like this (aligned_storage) but its too early to rely
+    // on that being available.
+    IntMax  _align_IntMax;
+    Double  _align_Double;
+    void*   _align_Pointer;
+} MaxAlignedType;
+
+
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
 

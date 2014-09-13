@@ -5,3 +5,4 @@ passing inline @double quoted constant value <HELLO, WORLD>
 passing inline @single quoted constant value <HELLO, WORLD>
 passing inline constant value <hello, world>
 passing inline constant value <42>
+passing inline constant value <5.05>
