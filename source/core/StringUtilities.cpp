@@ -418,19 +418,38 @@ Boolean SubString::ReadInt(IntMax *pValue)
         bNumberFound = true;
     } else {
         Boolean bFirstChar = true;
+        IntMax base = 10;
+        if(ComparePrefixCStr("0x")) {
+            begin += 2;
+            base = 16;
+        } else {
+            base = 10;
+        }
         while(begin < _end) {
             Utf8Char oneChar = *begin;
-            if ((oneChar >= '0' && oneChar <= '9')) {
-                begin++;
-                value = (oneChar - '0') + (value * 10);
-                bNumberFound = true;
+            Int32 cValue = -1;
+            if (IsNumberChar(oneChar)) {
+                cValue = (oneChar - '0');
             } else if ( bFirstChar && ((oneChar == '-') || (oneChar == '+')) ) {
                 begin++;
                 if (oneChar == '-') {
                     sign = -1;
                 }
+            } else if (base == 16) {
+                if (oneChar >= 'a' && oneChar <= 'f') {
+                    cValue = 10 + (oneChar - 'a');
+                } else if (oneChar >= 'A' && oneChar <= 'F')  {
+                    cValue = 10 + (oneChar - 'A');
+                } else {
+                    break;  //No more hex number characters
+                }
             } else {
                 break; //No more number characters
+            }
+            if (cValue >= 0) {
+                begin++;
+                value = (value * base) + cValue;
+                bNumberFound = true;
             }
             bFirstChar = false;
         }

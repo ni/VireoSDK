@@ -1,0 +1,39 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.Int8 0x0) vInt8_1)
+        e(dv(.Int8 0xF) vInt8_2)
+        e(dv(.Int8 0xFF) vInt8_3)
+        e(dv(.Int8 0x0F) vInt8_4)
+
+        e(dv(.UInt8 0x00) vUInt8_1)
+        e(dv(.UInt8 0xF) vUInt8_2)
+        e(dv(.UInt8 0xFF) vUInt8_3)
+        e(dv(.UInt8 0x0F) vUInt8_4)
+
+        e(dv(.Int16 0x0) vInt16_1)
+        e(dv(.Int16 0xF) vInt16_2)
+        e(dv(.Int16 0xFF) vInt16_3)
+        e(dv(.Int16 0xFFFF) vInt16_4)
+
+        e(dv(.UInt16 0x00) vUInt16_1)
+        e(dv(.UInt16 0xF) vUInt16_2)
+        e(dv(.UInt16 0xFF) vUInt16_3)
+        e(dv(.UInt16 0xFFFF) vUInt16_4)
+
+        e(dv(.Int32 0x00000000) vInt8_1)
+        e(dv(.Int32 0xF) vInt8_2)
+        e(dv(.Int32 0xFF) vInt8_3)
+        e(dv(.Int32 0xffffffff) vInt8_4)
+
+        e(dv(.UInt32 0x00000000) vUInt32_1)
+        e(dv(.UInt32 0x12345678) vUInt32_2)
+        e(dv(.UInt32 0x87654321) vUInt32_3)
+        e(dv(.UInt32 0xffffffff) vUInt32_4)
+
+    )
+    clump (1
+        Print(HelloWorld.DataSpace)
+    )
+) ) )
+
+enqueue (HelloWorld)
