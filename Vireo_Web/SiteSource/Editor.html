@@ -124,6 +124,9 @@ enqueue (HelloWorld)
             esh.pause = false;
             esh.h = 0;
 
+            var theCanvas = document.getElementById("theCanvas");
+            var ctx = theCanvas.getContext("2d");
+
             var editor1 = ace.edit("VireoSource");
             editor1.setTheme("ace/theme/XCode");
             editor1.getSession().setMode("ace/mode/LISP");
@@ -215,17 +218,6 @@ enqueue (HelloWorld)
             setTimeout(LVLink, 100);
         }
 
-var ctx;
-
-        function DrawGraph()
-        {
-            var theCanvas = document.getElementById("theCanvas");
-            ctx = theCanvas.getContext("2d");
-            
-            ctx.moveTo(0,0);
-            ctx.lineTo(200,100);
-            ctx.stroke();
-        }
         function VireoRunProc()
         {
             // Run a chunk of code. if there is more pending

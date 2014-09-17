@@ -6,7 +6,7 @@ BIN=../bin
 
 COMMANDLINE = main.cpp
 CORE = EggShell.cpp VireoMerged.cpp Thread.cpp TimeTypes.cpp CEntryPoints.cpp
-IO = FileIO.cpp
+IO = FileIO.cpp Canvas2d.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
 COMMANDLINEOBJS = $(COMMANDLINE:%.cpp=$(OBJDIR)/%.o)

@@ -3,8 +3,11 @@
 define (HelloWorld dv(.VirtualInstrument (
     c(
         e(.Int32  i)
+        e(.Int16  i16)
+
         e(.Double x)
         e(.String str)
+        e(.Boolean b)
     )
     clump (1
 /*
@@ -35,6 +38,12 @@ define (HelloWorld dv(.VirtualInstrument (
         DPrintf("passing inline constant value <%s>" i)
         AddDouble(3.2 1.85 x)
         DPrintf("passing inline constant value <%s>" x)
+        
+        BooleanConvertInt16(true i16)
+        DPrintf("passing inline constant value <%s>" i16)
+        BooleanConvertInt16(false i16)
+        DPrintf("passing inline constant value <%s>" i16)
+
         
         // MulInt32(6 7 9) not allowed.
 

@@ -1,7 +1,7 @@
-define (HelloWorld dv(.VirtualInstrument (
+define (Hello2DWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello, world. I can fly.") variable1)
-        e(.Context2D ctx)
+        e(.Canvas2D ctx)
     )
     clump (1
         Print(variable1)
@@ -22,5 +22,4 @@ define (HelloWorld dv(.VirtualInstrument (
         Stroke(ctx)
     )
 ) ) )
-
-enqueue (HelloWorld)
+enqueue (Hello2DWorld)

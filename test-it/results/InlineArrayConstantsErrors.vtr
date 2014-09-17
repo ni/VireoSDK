@@ -6,7 +6,7 @@
 (Line 88 Error "Argument not mutable '(10 11 12)'.")
 (Line 88 Error "Data encoding not formatted correctly.")
 (Line 88 Error "Data encoding not formatted correctly.")
-(Line 94 Error "Argument not resolved 'true'.")
+(Line 88 HardError "'(' missing.")
 (Line 99 Error "Argument not mutable 'Ten'.")
 (Line 101 Error "Argument not mutable '4'.")
 (Line 101 Error "Argument not mutable '4'.")

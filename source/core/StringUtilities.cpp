@@ -98,6 +98,9 @@ Boolean SubString::IdentifierIsNext() const
     // or URL style escaped characer %20. Needs to be
     // extended to UTF8 support
     if (_begin <_end) {
+        // The forms of true and fasle are reserved key words.
+        if (CompareCStr("true") || CompareCStr("false"))
+            return false;
         if (IsLetterChar(*_begin) || *_begin == '_' || *_begin == '%')
             return true;
     }

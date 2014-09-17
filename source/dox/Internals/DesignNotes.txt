@@ -5,7 +5,7 @@ SubString::ReadInt() has been extended to support the 0x1234ABCDE hex style nota
 
 9/6/2014 Notes on using STL, and other C++ features.
 Vireo usese very little STL, only the Map<> class since it fits the need well and does not pull in other dependencies.
-Vireo does use the begin, end pointer design pattern for controlled sequences. So algorithymically hopefully STL users will feel somewhat at home. Also No Exceptions, and No RTTI is used. 
+Vireo does use the begin, end pointer design pattern for controlled sequences. So algorithymically hopefully STL users will feel somewhat at home. Also No Exceptions, and No RTTI is used.
 
 9/5/2014 Note on "Ref" names like TypedArrayCoreRef vs TypedArrayCore*
 While some obejects are frequently used as a values on the stack or inline in other objects.  Other types are used as objects that most alwasy allocated on the heap and refered to by a pointer. Type that fall into the second case have both a type for the core class and a ref type. some examples include (TypeCommon, TypeRef) (String, StringRef) (TypedArrayCore, TypedArrayCoreRef) The Ref types are typicaly just typedefs. Note that in many cases the memory allocated that will contian Ref values, is allocated by by dynamicall described types, so C++ constructors and the like that implement smart pointers cannot be relied on. This has been the pattern used in Vireo for some time, older code is being brought inline with this conventon.
@@ -17,7 +17,7 @@ Most of the documentation for Vireo is in the source or in the dox folder in the
     > Queues and lists that are integral to core objecs instead of separate conatainers
     > Using native tickcount on each platfrom instead of a unit like microseconds on all platfroms
     > The StringBuffer class, the core of efficient codecs.
-    > EvenLogs and Error handeling strategies
+    > EventLogs and Error handling strategies
     > Namesapces
     > Avoding new, delete and standard C++ constructors/destructors
     > Steps left to do for UTF8 support, and why UTF16 is not used.
@@ -25,7 +25,7 @@ Most of the documentation for Vireo is in the source or in the dox folder in the
     > Performance 
     > Ideas on JIT
     > Generic funcitons
-    > Fucntion CallValidation
+    > Fucntion call validation for generic functions
     > Array views
     > Iterators
 
