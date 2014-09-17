@@ -45,7 +45,8 @@ help:
 #  -O3 833k / -Os 760k / -Oz 719k
 
 EM_OPT= -O3 -s NO_EXIT_RUNTIME=1 -fno-exceptions
-EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
+EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT) 
+EMLIBRARY= --js-library ../source/io/library_canvas2d.js
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -76,7 +77,7 @@ vjs:
 	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
 	emcc $(EMFLAGS) ../source/io/Emscripten.cpp -o objs/Emscripten.bc
 	emcc $(EMFLAGS) ../source/core/CEntryPoints.cpp -o objs/CEntryPoints.bc
-	emcc $(EM_OPT)  $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
+	emcc $(EM_OPT) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically

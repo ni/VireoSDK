@@ -1,0 +1,26 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+        e(.Context2D ctx)
+    )
+    clump (1
+        Print(variable1)
+        ObtainCanvas2D(ctx "theCanvas")
+        BeginPath(ctx)
+        MoveTo(ctx 170 80)
+        BezierCurveTo(ctx 130 100 130 150 230 150)
+        BezierCurveTo(ctx 250 180 320 180 340 150)
+        BezierCurveTo(ctx 420 150 420 120 390 100)
+        BezierCurveTo(ctx 430 40 370 30 340 50)
+        BezierCurveTo(ctx 320 5 250 20 250 50)
+        BezierCurveTo(ctx 200 5 150 20 170 80)
+        ClosePath(ctx)
+        LineWidth(ctx 5)
+        FillStyle(ctx 255)
+        Fill(ctx)
+        StrokeStyle(ctx 180)
+        Stroke(ctx)
+    )
+) ) )
+
+enqueue (HelloWorld)
