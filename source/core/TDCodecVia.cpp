@@ -616,7 +616,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 if (!pData)
                     return; // If no where to put the parsed data, then all is done.
                 
-                if (WriteRealToMemory(kEncoding_IEEE754Binary, aqSize, pData, value) != kNIError_Success)
+                if (WriteDoubleToMemory(kEncoding_IEEE754Binary, aqSize, pData, value) != kNIError_Success)
                     LOG_EVENT(kSoftDataError, "Data IEEE754 size not supported");
                 
                 // TODO support 16 bit reals? 128 bit reals? those are defined by IEEE754
@@ -1223,7 +1223,7 @@ void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pD
 	const char* pBuff = buffer;
 
     Double value;
-    ReadRealFromMemory(kEncoding_IEEE754Binary, aqSize, pData, &value);
+    ReadDoubleFromMemory(kEncoding_IEEE754Binary, aqSize, pData, &value);
 
 	Int32 len;
     if (isnan(value)) {
@@ -1626,7 +1626,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         success = (parser.ErrorCount() == 0);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteRealToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
             } else {
                 WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
             }
@@ -1634,7 +1634,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
             if (pDefault) {
                 type->CopyData(pDefault, pData);
             } else if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteRealToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
             } else {
                 WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
             }
@@ -1681,7 +1681,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
         success = (parser.ErrorCount() == 0);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteRealToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
             } else {
                 WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
             }
@@ -1689,7 +1689,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
             if (pDefault) {
                 type->CopyData(pDefault, pData);
             } else if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteRealToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
             } else {
                 WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
             }

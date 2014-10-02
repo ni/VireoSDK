@@ -1990,36 +1990,75 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
     return kNIError_Success;
 }
 //------------------------------------------------------------
-NIError ReadRealFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double *pValue)
+NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double *pValue)
 {
     NIError err = kNIError_Success;
     Double value = 0.0;
-    if (encoding != kEncoding_IEEE754Binary)
-        return kNIError_kCantEncode;
-    
-    if (aqSize == 4) {
-        value = *(Single*) pData;
-    } else if (aqSize == 8) {
-        value = *(Double*) pData;
-    } else {
-        err = kNIError_kCantEncode;
+    switch (encoding) {
+        case kEncoding_IEEE754Binary:
+            switch (aqSize) {
+                case 4:  value = *(Single*) pData;      break;
+                case 8:  value = *(Double*) pData;      break;
+                default: err = kNIError_kCantDecode;    break;
+            }
+            break;
+        case kEncoding_SInt:
+            switch (aqSize) {
+                case 1:  value = *(Int8*) pData;        break;
+                case 2:  value = *(Int16*) pData;       break;
+                case 4:  value = *(Int32*) pData;       break;
+                case 8:  value = *(Int64*) pData;       break;
+                default: err = kNIError_kCantDecode;    break;
+            }
+            break;
+        case kEncoding_UInt:
+            switch (aqSize) {
+                case 1:  value = *(UInt8*) pData;       break;
+                case 2:  value = *(UInt16*) pData;      break;
+                case 4:  value = *(UInt32*) pData;      break;
+                case 8:  value = *(UInt64*) pData;      break;
+                default: err = kNIError_kCantDecode;    break;
+            }
+            break;
+        default: err = kNIError_kCantDecode; break;
     }
     *pValue = value;
     return err;
 }
 //------------------------------------------------------------
-NIError WriteRealToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value)
+NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value)
 {
     NIError err = kNIError_Success;
-    if (encoding != kEncoding_IEEE754Binary)
-        return kNIError_kCantDecode;
-
-    if (aqSize == 4) {
-        *(Single*)pData = (Single)value;
-    } else if (aqSize == 8) {
-        *(Double*)pData = value;
-    } else {
-        err = kNIError_kCantDecode;
+    switch (encoding) {
+        case kEncoding_IEEE754Binary:
+            switch (aqSize) {
+                case 4:  *(Single*)pData = (Single)value; break;
+                case 8:  *(Double*)pData = (Double)value; break;
+                default: err = kNIError_kCantEncode; break;
+            }
+            break;
+        case kEncoding_SInt:
+            switch (aqSize) {
+                case 1:  *(Int8*)pData  = (Int8)value; break;
+                case 2:  *(Int16*)pData = (Int16)value; break;
+                case 4:  *(Int32*)pData = (Int32)value; break;
+                case 8:  *(Int64*)pData = (Int64)value; break;
+                default: err = kNIError_kCantEncode; break;
+            }
+            break;
+        case kEncoding_UInt:
+            switch (aqSize) {
+                case 1:  *(UInt8*)pData  = (Int8)value; break;
+                case 2:  *(UInt16*)pData = (UInt16)value; break;
+                case 4:  *(UInt32*)pData = (UInt32)value; break;
+                case 8:  *(UInt64*)pData = (UInt64)value; break;
+                default: err = kNIError_kCantEncode; break;
+            }
+            break;
+        default: err = kNIError_kCantDecode; break;
+    }
+    if (err != kNIError_Success) {
+        memset(pData, 0, aqSize);
     }
     return err;
 }

@@ -9,7 +9,7 @@ define (c4 dv(.Int32 500) )
 define (c5 dv(.Double 100.000000) )
 define (c6 dv(.Double 0.500000) )
 define (c8 dv(.Double 50.000000) )
-define (c9 dv(.UInt32 20) )
+//define (c9 dv(.UInt32 20) )
 define (c10 .Int32 )
 define (c11 dv(.Int32 1) )
 //---------------------------------------------------
@@ -37,6 +37,7 @@ define (TopVI dv(.VirtualInstrument (
         e(dv(.Double 0.600000) fpValue1)    // Alpha
         e(dv(.Double 5.000000) fpValue2)    // NoiseLevel
         e(dv(.Double 0.03) fpValue3)        // DeltaTime
+        e(dv(.UInt32 20) fpValue4)                 // delay
         e(.Int32 frameCounter)               // i
         e(.Int32 loopCounter)               // i
         e(.Canvas2D local5)                 // Refnum out
@@ -84,7 +85,7 @@ define (TopVI dv(.VirtualInstrument (
         Perch(2)
         Copy(local8 local9 )
         Stroke(local9)
-        WaitMilliseconds(c9)
+        WaitMilliseconds(fpValue4)
         Add(frameCounter c11 frameCounter)
         BranchIfTrue(3 c1)                        // Loop condition terminal
 //--- end loop

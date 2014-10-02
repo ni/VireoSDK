@@ -998,8 +998,8 @@ public:
 // Utility functions to read and write numbers to non aligned memory based on size and encoding
 NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax* pValue);
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
-NIError ReadRealFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
-NIError WriteRealToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
+NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
+NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
 
 } // namespace Vireo
 
