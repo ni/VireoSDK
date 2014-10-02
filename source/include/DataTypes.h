@@ -168,7 +168,7 @@ public:
 
     //! Return a pointer to the first element in the vector
     const T*  Begin() const  { return _begin; }
-    
+
     //! Returns a pointer just past the last element in the vector.
     const T*  End()   const  { return _end; }
     
@@ -186,6 +186,15 @@ public:
     {
         return Compare(subVector->Begin(), subVector->Length());
     }
+};
+
+//------------------------------------------------------------
+//! A wrapper for an aray of UInt8s (.e.g bytes). It does not own the data.
+class SubBinaryBuffer :  public SimpleSubVector<UInt8>
+{
+public:
+    SubBinaryBuffer()   { }
+    SubBinaryBuffer(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }
 };
 
 }

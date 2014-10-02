@@ -16,17 +16,10 @@ SDG
 
 namespace Vireo
 {
-
-class SubBuffer : public SimpleSubVector<UInt8>
+ 
+class SubVibBuffer : SubBinaryBuffer
 {
 public:
-    SubBuffer()
-            { }
-    SubBuffer(const Utf8Char * begin, const Utf8Char *end)
-            { AliasAssign(begin, end); }
-    SubBuffer(SubBuffer* original)
-            { AliasAssign(original->Begin(), original->End()); }
-    
     IntMax ReadVBWSInt();
     IntMax ReadVBWUInt();
     NIError Error();

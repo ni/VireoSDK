@@ -104,7 +104,7 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToString, StaticType, void, Boolean, StringRef)
     return _NextInstruction();
 }
 
-IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex stringIndex, void *pDefaultData, TypeRef type, void *pData)
+IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, IntIndex stringIndex, void *pDefaultData, TypeRef type, void *pData)
 {
     EncodingEnum encoding = type->BitEncoding();
 
@@ -120,19 +120,19 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
             if (prependArrayLength)
             {
                 // If the string is long enough, read the array length
-                if (stringIndex + (IntIndex)sizeof(arrayLength) <= pString->Length())
+                if (stringIndex + (IntIndex)sizeof(arrayLength) <= pBuffer->Length())
                 {
-                    arrayLength = *(Int32 *)pString->BeginAt(stringIndex);
+                    arrayLength = *(Int32 *)(pBuffer->Begin() + stringIndex);
                     stringIndex += sizeof(arrayLength);
                 }
                 else
                     return -1;
             }
             else
-                arrayLength = (pString->Length() - stringIndex) / elementType->TopAQSize();
+                arrayLength = (pBuffer->Length() - stringIndex) / elementType->TopAQSize();
 
             // If the length is a sane value, resize the array.
-            if (arrayLength <= pString->Length() - stringIndex)
+            if (arrayLength <= pBuffer->Length() - stringIndex)
             {
                 if (pArray)
                     pArray->Resize1D(arrayLength);
@@ -145,10 +145,10 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
                 Int32 copyLength = arrayLength * elementType->TopAQSize();
 
                 // If the string is long enough, copy data.
-                if (stringIndex + copyLength <= pString->Length())
+                if (stringIndex + copyLength <= pBuffer->Length())
                 {
                     if (pArray)
-                        memcpy(pArray->BeginAt(0), pString->BeginAt(stringIndex), copyLength);
+                        memcpy(pArray->BeginAt(0), (pBuffer->Begin() + stringIndex), copyLength);
                     stringIndex += copyLength;
                 }
                 else
@@ -165,7 +165,7 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
 
                 for (; pElementData < pEnd; pElementData += elementLength)
                 {
-                    stringIndex = UnflattenData(pString, true, stringIndex, pDefaultData, elementType, pElementData);
+                    stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);
                     if (stringIndex == -1)
                         return -1;
                 }
@@ -182,7 +182,7 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
 
                 for (; pElementData < pEnd; pElementData += elementLength)
                 {
-                    stringIndex = UnflattenData(pString, true, stringIndex, pElementData, elementType, null);
+                    stringIndex = UnflattenData(pBuffer, true, stringIndex, pElementData, elementType, null);
                     if (stringIndex == -1)
                         return -1;
                 }
@@ -201,7 +201,7 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
                 IntIndex offset = elementType->ElementOffset();
                 AQBlock1* pElementData = pData ? (AQBlock1*)pData + offset : null;
 
-                stringIndex = UnflattenData(pString, true, stringIndex, pDefaultData, elementType, pElementData);
+                stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);
                 if (stringIndex == -1)
                     return -1;
             }
@@ -212,10 +212,10 @@ IntIndex UnflattenData(StringRef pString, Boolean prependArrayLength, IntIndex s
             Int32 copyLength = type->TopAQSize();
 
             // If the string is long enough, copy data.
-            if (stringIndex + copyLength <= pString->Length())
+            if (stringIndex + copyLength <= pBuffer->Length())
             {
                 if (pData)
-                    memcpy(pData, pString->BeginAt(stringIndex), copyLength);
+                    memcpy(pData, (pBuffer->Begin() + stringIndex), copyLength);
                 stringIndex += copyLength;
             }
             else
@@ -237,7 +237,8 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
     void *pData  = _ParamPointer(5);
     Boolean error;
 
-    IntIndex remainderIndex = UnflattenData(pString, prependArrayLength, 0, pDefaultData, type, pData);
+    SubBinaryBuffer subBuffer(pString->Begin(), pString->End());
+    IntIndex remainderIndex = UnflattenData(&subBuffer, prependArrayLength, 0, pDefaultData, type, pData);
     IntIndex remainderLength = pString->Length() - remainderIndex;
     error = (remainderIndex == -1);
 

@@ -115,20 +115,14 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     if(actualType == null)
         return -1;
     
-    // Initialize a String
     ExecutionContextScope scope(pShell->TheExecutionContext());
-    STACK_VAR(String, flatDataString);
-
-    // Copy buffer to string
-    flatDataString.Value->Resize1D(bufferSize);
-    Int32 copySize = Min(bufferSize, flatDataString.Value->Length());
-    memcpy(flatDataString.Value->Begin(), buffer, copySize);
+    SubBinaryBuffer subBuffer((UInt8*)buffer, (UInt8*)buffer+bufferSize);
 
     // Write unflattened data to the element
-    if (UnflattenData(flatDataString.Value, true, 0, null, actualType, pData) == -1) {
+    if (UnflattenData(&subBuffer, true, 0, null, actualType, pData) == -1) {
         return -1;
     } else {
-        return copySize;
+        return bufferSize;
     }
 }
 //------------------------------------------------------------
