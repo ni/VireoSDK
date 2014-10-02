@@ -22,7 +22,7 @@ typedef Int32 Canvas2D;
 
 #if kVireoOS_emscripten
 extern "C" {
-extern Int32 jsObtainCanvas2D(char*, int);
+extern Int32 jsObtainCanvas2D(const char*, int);
 extern void jsBeginPath(Int32);
 extern void jsClosePath(Int32);
 extern void jsStroke(Int32);
@@ -34,9 +34,9 @@ extern void jsFillStyle(Int32, const char*);
 extern void jsStrokeStyle(Int32, const char*);
 extern void jsLineWidth(Int32, Int32);
 extern void jsFillRect(Int32, double, double, double, double);
-extern void jsFillText(Int32, char*, int, double, double, double);
-extern void jsStrokeText(Int32, char*, int, double, double, double);
-extern void jsFont(Int32, char, int);
+extern void jsFillText(Int32, const char*, int, double, double, double);
+extern void jsStrokeText(Int32, const char*, int, double, double, double);
+extern void jsFont(Int32, const char*, int);
 }
 #endif
 
@@ -64,10 +64,10 @@ void ColorAlphaToJSColor(Int32 value, Double alpha, JSColorString pBuffer)
     
     // Comentary, Java script has pretty complex way to set color with alpha.
     // hard to believe it's necessary to format a string, but for now it works.
-    snprintf(pBuffer, sizeof(JSColorString), "rgba(%d,%d,%d,%1.3f)",
-            (int)((value & 0x00FF0000) >> 16),
-            (int)((value & 0x0000FF00) >> 8),
-            (int)(value & 0x000000FF),
+    snprintf(pBuffer, sizeof(JSColorString), "rgba(%u,%u,%u,%1.3f)",
+            (unsigned int)((value & 0x00FF0000) >> 16),
+            (unsigned int)((value & 0x0000FF00) >> 8),
+            (unsigned int)(value & 0x000000FF),
             alpha);
 }
 //------------------------------------------------------------

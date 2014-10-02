@@ -32,6 +32,7 @@
                                 <li><a id="MandelbrotSample">Mandelbrot</a></li>
                                 <li><a id="PiSample">π calculator</a></li>
                                 <li><a id="TicTockSample">TicTock</a></li>
+                                <li><a id="SineWaveSample">SineWave</a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -78,7 +79,16 @@ enqueue (HelloWorld)
                             <pre id="VireoOutput"  style="height:500px"> </pre>
                         </div>
                         <div class="tab-pane" id="Canvas">
+<div class="row" >
                             <canvas id="theCanvas" height="300" width="500" style="border:1px solid #d3d3d3;">
+                            </div>
+                            <div class="row" >
+                                <input type="range" id="fpValue1" step= 0.01 min=0.0 max=1.0 value=0.5 style="width:500px;padding:9px"/>
+                                <input type="range" id="fpValue2" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:500px;padding:9px"/>
+                                <input type="range" id="fpValue3" step= 0.01 min=0.0 max=0.1 value=0.001 style="width:500px;padding:9px"/>
+                                <output for=fpValue2 id=volume>50</output>
+
+                            </div>
                         </div>
                         <div class="tab-pane" id="Explore">
                         </div>
@@ -90,7 +100,6 @@ enqueue (HelloWorld)
         
         <!-- JavaScript ================================================== -->
         <script src="jquery/jquery.min.js"></script>
-        <script src="jquery-ui/js/jquery-ui-1.10.4.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
         <script src="ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
         
@@ -116,6 +125,8 @@ enqueue (HelloWorld)
             var esh = {};
             esh.version = Module.cwrap('Vireo_Version', 'number', []);
             esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
+            esh.pokeDouble = Module.cwrap('EggShell_PokeDouble', 'void', ['number', 'string', 'string', 'number']);
+
             esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
             esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
             //esh.getValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
@@ -165,11 +176,22 @@ enqueue (HelloWorld)
         $("#VRunRun").click(function(){VRunRun();} );
         $("#PiSample").click(function(){LoadSample("Pi.via");} );
         $("#TicTockSample").click(function(){LoadSample("TicTock.via");} );
+        $("#SineWaveSample").click(function(){LoadSample("SineWave.via");} );
         $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
         $("#LVLink").click(function(){LVLink();} );
 
+        $("#fpValue1").on('change', function(){LVDoubleControl("#fpValue1");} );
+        $("#fpValue2").on('change', function(){LVDoubleControl("#fpValue2");} );
+        $("#fpValue3").on('change', function(){LVDoubleControl("#fpValue3");} );
+
+        function LVDoubleControl(v)
+        {
+            controlValue = $(v).val();
+            esh.pokeDouble(esh.h, "TopVI", v.substring(1), controlValue);
+            v_state.value = $(v).val();
+        }
+
         $("#Mandelbrot").bind(function(e){ alert("MandelBrot"); e.preventDefault(); });
-        $(function() { $( "#slider2" ).slider();});
 
         function LVLink()
         {

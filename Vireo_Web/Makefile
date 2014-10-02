@@ -54,7 +54,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_REPL',\
     '_EggShell_ExecuteSlices',\
     '_EggShell_Delete',\
-    '_EggShell_GetValueInt32'\
+    '_EggShell_PeekDouble',\
+    '_EggShell_PokeDouble'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\

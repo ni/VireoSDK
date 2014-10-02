@@ -81,6 +81,26 @@ void VirtualInstrument::ClearTopVIParamBlock()
     }
 }
 //------------------------------------------------------------
+TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData)
+{
+    TypedBlock *dataSpace = this->DataSpace();
+    TypedBlock *paramBlock = this->ParamBlock();
+    
+    // Search the dataSpace and paramBlock for the desired element
+    Int32 offset = 0;
+    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(eltPath, &offset);
+    
+    if (actualType != null) {
+        *ppData = dataSpace->RawBegin() + offset;
+    } else if (paramBlock) {
+        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(eltPath, &offset);
+        if (actualType != null)
+            *ppData = paramBlock->RawBegin() + offset;
+    }
+    
+    return actualType;
+}
+//------------------------------------------------------------
 void VirtualInstrument::PressGo()
 {
     VIClump  *rootClump = Clumps()->Begin();
@@ -226,15 +246,7 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
     _approximateLineNumber = lineNumber;
     _cia = cia;
     _bIsVI = false;
-    
-    _paramBlock = _vi->ParamBlock();
-    _paramBlockBase = _paramBlock->RawBegin();
-    _paramBlockType = _paramBlock->ElementType();
-    
-    _dataSpace = _vi->DataSpace();
-    _dataSpaceBase = _dataSpace->RawBegin();
-    _dataSpaceType = _dataSpace->ElementType();
-    
+        
     _perchCount = 0;
     _recordNextInstructionAddress = -1;
     for (Int32 i = 0; i < kMaxPerches; i ++) {
@@ -444,23 +456,10 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    // See if it is a local variable.
-    Int32 offset = 0;
-    _actualArgumentType = _dataSpaceType->GetSubElementOffsetFromPath(argument, &offset);
-    if (_actualArgumentType != null) {
-        *ppData = _dataSpaceBase + offset;
-        _argumentState = kArgumentResolvedToLocal;
+    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, (void**)ppData);
+    if(_actualArgumentType) {
+        _argumentState = kArgumentResolvedToVIElement;
         return;
-    }
-    
-    // See if it is a parameter variable.
-    if (_paramBlock) {
-        _actualArgumentType = _paramBlockType->GetSubElementOffsetFromPath(argument, &offset);
-        if (_actualArgumentType != null) {
-            *ppData = _paramBlockBase + offset;
-            _argumentState = kArgumentResolvedToParameter;
-            return;
-        }
     }
     
     // See if it is a global value.
@@ -775,10 +774,9 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
         case kArgumentNotMutable:                       simpleMessage = "Argument not mutable";     break;
         // Good states
         case kArgumentResolvedToClump:                  simpleMessage = "Argument is clump";        break;
-        case kArgumentResolvedToLocal:                  simpleMessage = "Argument is local";        break;
+        case kArgumentResolvedToVIElement:              simpleMessage = "Argument is VI element";   break;
         case kArgumentResolvedToPerch:                  simpleMessage = "Argument is perch";        break;
         case kArgumentResolvedToParameter:              simpleMessage = "Argument is parameter";    break;
-        case kArgumentResolvedToGlobal:                 simpleMessage = "Argument is global";       break;
         case kArgumentResolvedToDefault:                simpleMessage = "Argument is default";      break;
         case kArgumentResolvedToStaticString:           simpleMessage = "Argument is static";       break;
         case kArgumentResolvedToInstructionFunction:    simpleMessage = "Argument is ifunction";    break;

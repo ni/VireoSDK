@@ -73,31 +73,17 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
 {
     SubString viNameString(viName);
     SubString eltNameString(eltName);
-    VirtualInstrument *VI;
-    AQBlock1 *pData = null;
-    Int32 offset = 0;
+    VirtualInstrument *vi;
 
     memset(buffer, 0, bufferSize);
 
     // If the shell or VI do not exist, do nothing.
-    if (pShell == null || (VI = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
+    if (pShell == null || (vi = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
         return -1;
 
-    TypedBlock *dataSpace = VI->DataSpace();
-    TypedBlock *paramBlock = VI->ParamBlock();
-
-    // Search the dataSpace and paramBlock for the desired element
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
-    if (actualType != null) {
-        pData = dataSpace->RawBegin() + offset;
-    } else if (paramBlock) {
-        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
-        if (actualType != null) {
-            pData = paramBlock->RawBegin() + offset;
-        }
-    }
-
-    if (actualType == null)
+    void *pData = null;
+    TypeRef actualType = vi->GetVIElementAddressFromPath(&eltNameString, &pData);
+    if(actualType == null)
         return -1;
 
     // Initialize a String
@@ -118,31 +104,17 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
 {
     SubString viNameString(viName);
     SubString eltNameString(eltName);
-    VirtualInstrument *VI;
-    AQBlock1 *pData = null;
-    Int32 offset = 0;
+    VirtualInstrument *vi;
 
     // If the shell or VI do not exist, do nothing.
-    if (pShell == null || (VI = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
+    if (pShell == null || (vi = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
         return -1;
 
-    TypedBlock *dataSpace = VI->DataSpace();
-    TypedBlock *paramBlock = VI->ParamBlock();
-
-    // Search the dataSpace and paramBlock for the desired element
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
-    if (actualType != null)
-        pData = dataSpace->RawBegin() + offset;
-    else if (paramBlock)
-    {
-        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(&eltNameString, &offset);
-        if (actualType != null)
-            pData = paramBlock->RawBegin() + offset;
-    }
-
-    if (actualType == null)
+    void *pData = null;
+    TypeRef actualType = vi->GetVIElementAddressFromPath(&eltNameString, &pData);
+    if(actualType == null)
         return -1;
-
+    
     // Initialize a String
     ExecutionContextScope scope(pShell->TheExecutionContext());
     STACK_VAR(String, flatDataString);
@@ -153,13 +125,24 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     memcpy(flatDataString.Value->Begin(), buffer, copySize);
 
     // Write unflattened data to the element
-    if (UnflattenData(flatDataString.Value, true, 0, null, actualType, pData) == -1)
+    if (UnflattenData(flatDataString.Value, true, 0, null, actualType, pData) == -1) {
         return -1;
-    else
+    } else {
         return copySize;
+    }
 }
-
 //------------------------------------------------------------
+VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
+{
+    EggShell_PokeMemory(pShell, viName, eltName, sizeof(double), (char*)&d);
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, const char* eltName)
+{
+    Double d = 0.0;
+    EggShell_PokeMemory(pShell, viName, eltName, sizeof(double), (char*)&d);
+    return d;
+}
 //------------------------------------------------------------
 VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
 {

@@ -57,6 +57,8 @@ public :
     NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
+    TypeRef GetVIElementAddressFromPath(SubString* elementPath, void** pData);
+
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
     ExecutionContextRef OwningContext()   {return _executionContext;}
@@ -178,7 +180,7 @@ public:
         kArgumentNotMutable,
         // Good states to end in
         kArgumentResolved_FirstGood,
-        kArgumentResolvedToLocal = kArgumentResolved_FirstGood,
+        kArgumentResolvedToVIElement = kArgumentResolved_FirstGood,
         kArgumentResolvedToGlobal,
         kArgumentResolvedToDefault,
         kArgumentResolvedToParameter,
@@ -235,17 +237,7 @@ private:    // state related to the the current argument
 public:
     SubString       _actualArgumentName;
 
-    // ----
-    // State related to the clumps owning VI
 public:
-    TypeRef         _paramBlockType;    // TODO get from _paramBlock ???
-    AQBlock1*       _paramBlockBase;
-    TypedBlock*     _paramBlock;
-    // ----
-    TypeRef         _dataSpaceType;     // TODO get from _paramBlock ???
-    AQBlock1*       _dataSpaceBase;
-    TypedBlock*     _dataSpace;
-    
     // ---
     // The type that has the pointer to the specific target of the function.
     TypeRef         _instructionPointerType;
