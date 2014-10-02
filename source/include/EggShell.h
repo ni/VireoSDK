@@ -40,6 +40,7 @@ public:
     NIError Delete();    
     TypeManagerRef TheTypeManager()           { return _typeManger; }
     ExecutionContextRef TheExecutionContext() { return _execContext; }
+    
 private:
     EggShell(TypeManagerRef typeManger, ExecutionContextRef execContext);
     void ParseEnqueueVI(TDViaParser* parser);

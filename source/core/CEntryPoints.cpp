@@ -69,24 +69,35 @@ VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContextRef pContext, 
     return pContext->ExecuteSlices(numSlices, 1);
 }
 //------------------------------------------------------------
+VirtualInstrument* EggShell_FindVI(EggShell* pShell, const char* viName)
+{
+    if (pShell == null)
+        return null;
+    
+    SubString viNameString(viName);
+    return (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString);
+}
+//------------------------------------------------------------
+TypeRef EggShell_FindVIEltAddress(EggShell* pShell, const char* viName, const char* eltName, void** ppData)
+{
+    VirtualInstrument *vi  = EggShell_FindVI(pShell, viName);
+    
+    if (vi == null)
+        return null;
+    
+    SubString eltNameString(eltName);
+    return vi->GetVIElementAddressFromPath(&eltNameString, ppData);
+}
+//------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
-    SubString viNameString(viName);
-    SubString eltNameString(eltName);
-    VirtualInstrument *vi;
-
     memset(buffer, 0, bufferSize);
-
-    // If the shell or VI do not exist, do nothing.
-    if (pShell == null || (vi = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
-        return -1;
-
+    
     void *pData = null;
-    TypeRef actualType = vi->GetVIElementAddressFromPath(&eltNameString, &pData);
+    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
     if(actualType == null)
         return -1;
 
-    // Initialize a String
     ExecutionContextScope scope(pShell->TheExecutionContext());
     STACK_VAR(String, flatDataString);
 
@@ -102,16 +113,8 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
 //------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
-    SubString viNameString(viName);
-    SubString eltNameString(eltName);
-    VirtualInstrument *vi;
-
-    // If the shell or VI do not exist, do nothing.
-    if (pShell == null || (vi = (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString)) == null)
-        return -1;
-
     void *pData = null;
-    TypeRef actualType = vi->GetVIElementAddressFromPath(&eltNameString, &pData);
+    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
     if(actualType == null)
         return -1;
     
@@ -128,13 +131,23 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
 //------------------------------------------------------------
 VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
 {
-    EggShell_PokeMemory(pShell, viName, eltName, sizeof(double), (char*)&d);
+    void *pData = null;
+    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+    if(actualType == null)
+        return;
+    
+    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, d);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, const char* eltName)
 {
-    Double d = 0.0;
-    EggShell_PokeMemory(pShell, viName, eltName, sizeof(double), (char*)&d);
+    void *pData = null;
+    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+    if(actualType == null)
+        return -1;
+
+    Double d;
+    ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, &d);
     return d;
 }
 //------------------------------------------------------------

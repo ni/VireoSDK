@@ -66,7 +66,6 @@ enqueue (HelloWorld)
                     <input  id="link" value="foo"></input>
                 </div>
                 <div class="col-xs-6">
-                    
                     <ul class="nav nav-tabs">
                         <li class="active"><a href="#StdOut" data-toggle="tab">Console</a></li>
                         <li><a href="#Canvas" data-toggle="tab">Canvas</a></li>
@@ -79,15 +78,15 @@ enqueue (HelloWorld)
                             <pre id="VireoOutput"  style="height:500px"> </pre>
                         </div>
                         <div class="tab-pane" id="Canvas">
-<div class="row" >
-                            <canvas id="theCanvas" height="300" width="500" style="border:1px solid #d3d3d3;">
-                            </div>
                             <div class="row" >
+                                <canvas id="theCanvas" height="400" width="500" style="border:1px solid #d3d3d3;">
+                            </div>
+                            <div class="row" id="FpTable">
                                 <input type="range" id="fpValue1" step= 0.01 min=0.0 max=1.0 value=0.5 style="width:500px;padding:9px"/>
                                 <input type="range" id="fpValue2" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:500px;padding:9px"/>
                                 <input type="range" id="fpValue3" step= 0.01 min=0.0 max=0.1 value=0.001 style="width:500px;padding:9px"/>
-                                <output for=fpValue2 id=volume>50</output>
-
+                                <input type="range" id="fpValue4" step= 1.0 min=0 max=100 value=20.0 style="width:500px;padding:9px"/>
+                                <input type="text" id="frameCounter" value="1" />
                             </div>
                         </div>
                         <div class="tab-pane" id="Explore">
@@ -97,7 +96,7 @@ enqueue (HelloWorld)
             </div>
         </div>
         <!-- /.container -->
-        
+
         <!-- JavaScript ================================================== -->
         <script src="jquery/jquery.min.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
@@ -111,8 +110,6 @@ enqueue (HelloWorld)
         </script>
         
         <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
-        
-
 
         <script>
             
@@ -126,10 +123,10 @@ enqueue (HelloWorld)
             esh.version = Module.cwrap('Vireo_Version', 'number', []);
             esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
             esh.pokeDouble = Module.cwrap('EggShell_PokeDouble', 'void', ['number', 'string', 'string', 'number']);
+            esh.peekDouble = Module.cwrap('EggShell_PeekDouble', 'number', ['number', 'string', 'string']);
 
             esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
             esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
-            //esh.getValueInt32 = Module.cwrap('EggShell_GetValueInt32', 'number', ['number',  'string', 'string']);
             esh._delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
             esh.repeat = false;
             esh.pause = false;
@@ -157,6 +154,8 @@ enqueue (HelloWorld)
                 esh.startTime = Date.now();
                 v_state.value = "started";
                 setTimeout(VireoRunProc,50);
+                setTimeout(UpdateFrontPanel,100);
+
             }
             function VRunRun()
             {
@@ -167,7 +166,8 @@ enqueue (HelloWorld)
             {
                 esh.pause = !esh.pause;
                 if (!esh.pause) {
-                    setTimeout(VireoRunProc,0);
+                    setTimeout(VireoRunProc, 0);
+                    setTimeout(UpdateFrontPanel, 0);
                 }
             }
 
@@ -180,9 +180,21 @@ enqueue (HelloWorld)
         $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
         $("#LVLink").click(function(){LVLink();} );
 
+
         $("#fpValue1").on('change', function(){LVDoubleControl("#fpValue1");} );
         $("#fpValue2").on('change', function(){LVDoubleControl("#fpValue2");} );
         $("#fpValue3").on('change', function(){LVDoubleControl("#fpValue3");} );
+        $("#fpValue4").on('change', function(){LVDoubleControl("#fpValue4");} );
+
+
+        /*
+        BuildFPTab();
+        function  BuildFPTab()
+        {
+            $("#FpTable").html.insert(' <input type="range" id="fpValue1" step= 0.01 min=0.0 max=1.0 value=0.5 style="width:500px;padding:9px"/>' +
+                                      '<input type="range" id="fpValue2" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:500px;padding:9px"/>');
+        }
+        */
 
         function LVDoubleControl(v)
         {
@@ -190,6 +202,7 @@ enqueue (HelloWorld)
             esh.pokeDouble(esh.h, "TopVI", v.substring(1), controlValue);
             v_state.value = $(v).val();
         }
+
 
         $("#Mandelbrot").bind(function(e){ alert("MandelBrot"); e.preventDefault(); });
 
@@ -240,6 +253,12 @@ enqueue (HelloWorld)
             setTimeout(LVLink, 100);
         }
 
+        function UpdateFrontPanel()
+        {
+            $("#frameCounter").val(esh.peekDouble(esh.h, "TopVI", "frameCounter"));
+            setTimeout(UpdateFrontPanel, 100);
+        }
+
         function VireoRunProc()
         {
             // Run a chunk of code. if there is more pending
@@ -249,7 +268,7 @@ enqueue (HelloWorld)
             esh.execCount += 1;
             if (x>0 && !esh.pause) {
                 // periodically sleep for 50 ms or so.
-                setTimeout(VireoRunProc,0);
+                setTimeout(VireoRunProc, 0);
             } else {
                 v_state.value = "done " + esh.execCount + " time " + (Date.now() - esh.startTime);
                 if (esh.repeat) {

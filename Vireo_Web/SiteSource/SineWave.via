@@ -50,6 +50,7 @@ define (TopVI dv(.VirtualInstrument (
         e(.Double local12)
     )
         clump(1
+        DPrintf("Switch to Canvas tab to see image.")
         _ObtainCanvas2D%2Evi(local5 c0)
 //--- begin loop
         Perch(0)
