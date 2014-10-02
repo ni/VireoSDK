@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['replacesubstringstruct',['ReplaceSubstringStruct',['../struct_replace_substring_struct.html',1,'']]]
+  ['queue',['Queue',['../db/da0/class_vireo_1_1_queue.html',1,'Vireo']]]
 ];

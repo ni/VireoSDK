@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7eexecutioncontextscope',['~ExecutionContextScope',['../class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4',1,'Vireo::ExecutionContextScope']]]
+  ['zeroouttop',['ZeroOutTop',['../de/db2/class_vireo_1_1_type_common.html#af73ae655e97974cd19ebaf2b1a1f2495',1,'Vireo::TypeCommon']]]
 ];

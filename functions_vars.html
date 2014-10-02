@@ -8,13 +8,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
-<script type="text/javascript">
-  $(document).ready(initResizable);
-  $(window).load(resizeHeight);
-</script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
 <script type="text/javascript">
@@ -47,7 +40,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li>
@@ -86,26 +79,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     </ul>
   </div>
 </div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(document).ready(function(){initNavTree('functions_vars.html','');});
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -117,54 +96,51 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 <div class="contents">
 &#160;<ul>
 <li>_bitSize
-: <a class="el" href="class_vireo_1_1_aggregate_type.html#ab7f4dc732144a94d7fabdcc2fe4b564a">Vireo::AggregateType</a>
+: <a class="el" href="d6/d3e/class_vireo_1_1_aggregate_type.html#ab7f4dc732144a94d7fabdcc2fe4b564a">Vireo::AggregateType</a>
 </li>
 <li>_breakoutCount
-: <a class="el" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">Vireo::ExecutionContext</a>
+: <a class="el" href="dc/d56/class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">Vireo::ExecutionContext</a>
 </li>
 <li>_caller
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#a4dc118d0c7b032027f559b36833d3d4a">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#a4dc118d0c7b032027f559b36833d3d4a">Vireo::VIClump</a>
 </li>
 <li>_fireCount
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#ad49c0d494549e4c1d4239b374e14db79">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#ad49c0d494549e4c1d4239b374e14db79">Vireo::VIClump</a>
 </li>
 <li>_owningVI
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#ac5da68ff60f0aed26ec986c271d5e34b">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#ac5da68ff60f0aed26ec986c271d5e34b">Vireo::VIClump</a>
 </li>
 <li>_savePc
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#a9ddc8cad6853110db6d2c4e16f8ecf14">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#a9ddc8cad6853110db6d2c4e16f8ecf14">Vireo::VIClump</a>
 </li>
 <li>_shortCount
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff">Vireo::VIClump</a>
 </li>
 <li>_sleepingList
-: <a class="el" href="class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">Vireo::ExecutionContext</a>
+: <a class="el" href="dc/d56/class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">Vireo::ExecutionContext</a>
 </li>
 <li>_tm
-: <a class="el" href="class_vireo_1_1_aggregate_alignment_calculator.html#a418c3e228b090c0d3b0ed38e8448bd01">Vireo::AggregateAlignmentCalculator</a>
+: <a class="el" href="de/d9a/class_vireo_1_1_aggregate_alignment_calculator.html#a230e57a8f9b1a12d2e8d4704746770c4">Vireo::AggregateAlignmentCalculator</a>
 </li>
 <li>_waitingClumps
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482">Vireo::VIClump</a>
 </li>
 <li>_wakeUpInfo
-: <a class="el" href="class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51">Vireo::VIClump</a>
+: <a class="el" href="d7/df6/class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51">Vireo::VIClump</a>
 </li>
 <li>DevNull
-: <a class="el" href="class_vireo_1_1_event_log.html#a8e31c61494750756563b795c1d566767">Vireo::EventLog</a>
+: <a class="el" href="d1/d32/class_vireo_1_1_event_log.html#a8e31c61494750756563b795c1d566767">Vireo::EventLog</a>
 </li>
 <li>StdOut
-: <a class="el" href="class_vireo_1_1_event_log.html#ab8bc9ff31e65b2f4f06b05c2ee0bd9ce">Vireo::EventLog</a>
+: <a class="el" href="d1/d32/class_vireo_1_1_event_log.html#ab8bc9ff31e65b2f4f06b05c2ee0bd9ce">Vireo::EventLog</a>
 </li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Generated by
-    <a href="http://www.doxygen.org/index.html">
-    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.6
+</small></address>
 </body>
 </html>

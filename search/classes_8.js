@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['namedtype',['NamedType',['../class_vireo_1_1_named_type.html',1,'Vireo']]]
+  ['maxalignedtype',['MaxAlignedType',['../de/d84/union_max_aligned_type.html',1,'']]]
 ];
