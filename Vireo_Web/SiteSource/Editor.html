@@ -134,14 +134,8 @@ enqueue (HelloWorld)
 
             var theCanvas = document.getElementById("theCanvas");
             var ctx = theCanvas.getContext("2d");
-
             var editor1 = ace.edit("VireoSource");
-            editor1.setTheme("ace/theme/XCode");
-            editor1.getSession().setMode("ace/mode/LISP");
-            
             editor2 = ace.edit("VireoOutput");
-            editor2.setTheme("ace/theme/XCode");
-            editor2.getSession().setMode("ace/mode/LISP");
 
             function VRun()
             {

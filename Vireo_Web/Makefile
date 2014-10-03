@@ -40,11 +40,20 @@ help:
 # Note on debugging:
 #   https://github.com/kripken/emscripten/wiki/Optimizing-Code
 
-# On optimization, for size, as of 5/2014 The resulting Vireo.js built with emscripten 1.16
-# yielded the following sizes:
+# On optimization, resulting Vireo.js # yielded the following sizes:
+#
+#  In early builds of emscripten high level optimizations (-O3 -Os) tended to fail though
+#  Vireo had an alignment bug that may have caused the failures.
+#
+#  5/2014 using emcc 1.16
 #  -O3 833k / -Os 760k / -Oz 719k
+#
+#  10/2014 using emcc 1.22.0
+#  Data segment is now broken out to the vireo.js.asm file
+#  -03 611k+35k  / -Os 571k+35k / -Oz 527k+35k  (all work)
+#  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
 
-EM_OPT= -O3 -s NO_EXIT_RUNTIME=1 -fno-exceptions
+EM_OPT= -Os -s NO_EXIT_RUNTIME=1 -fno-exceptions
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT) 
 EMLIBRARY= --js-library ../source/io/library_canvas2d.js
 

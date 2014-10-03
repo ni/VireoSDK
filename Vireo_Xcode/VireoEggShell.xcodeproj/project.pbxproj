@@ -262,6 +262,7 @@
 		47F1285518BFACFB000DA4E1 /* Pi.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi.via; path = "../test-it/Pi.via"; sourceTree = "<group>"; };
 		47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi_NonReentrant.via; path = "../test-it/Pi_NonReentrant.via"; sourceTree = "<group>"; };
 		47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = StringByteArrayConversion.via; path = "../test-it/StringByteArrayConversion.via"; sourceTree = "<group>"; };
+		47F4E66119DC9BBD009DCC77 /* SineWave.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SineWave.via; path = ../Vireo_Web/SiteSource/SineWave.via; sourceTree = "<group>"; };
 		47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShabangHelloWorld.via; path = "../test-it/ShabangHelloWorld.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47FDAF5618039C48002C7851 /* Mandelbrot.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Mandelbrot.via; path = "../test-it/Mandelbrot.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -471,6 +472,7 @@
 		4786297B19254D7E00141666 /* SiteSource */ = {
 			isa = PBXGroup;
 			children = (
+				47F4E66119DC9BBD009DCC77 /* SineWave.via */,
 				47CF0E7F192E8E4800BE5C85 /* Mandelbrot.via */,
 				47CF0E80192E8E4800BE5C85 /* Pi.via */,
 				47CF0E81192E8E4800BE5C85 /* TicTock.via */,

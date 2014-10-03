@@ -18,6 +18,17 @@ SDG
 #include "TypeDefiner.h"
 #include "TimeTypes.h"
 
+#define VIREO_UNIQUE_NAMES
+
+#ifdef VIREO_UNIQUE_NAMES
+    // With unique names the C-entry points AND the Vireo functions are appended with the type
+    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION(_root_##_type_, _proto_)
+#else 
+    // With non-unique names(AKA overlodaed) only the C entlry points are appended.
+    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_NAME(_root_##_type_, _root_, _proto_)
+#endif
+
+
 using namespace Vireo;
 
 #if (kVireoOS_win32U || kVireoOS_win64U)
@@ -56,6 +67,7 @@ extern "C" {
 //For some platfroms isnan, isinf, abs are functions in std not macros
 using namespace std;
 
+
 // Basic Math
 #define DECLARE_VIREO_MATH_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1)) ) \
@@ -64,10 +76,11 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) )
 
 #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION(Add##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Sub##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Mul##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Sign##TYPE, ".UnOp"#TYPE)
+    DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Sub, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Mul, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, ".UnOp"#TYPE)
+    
 //------------------------------------------------------------
 
 //Integer Math 	TODO: Add rotate, shift
@@ -137,17 +150,17 @@ using namespace std;
 #define DEFINE_VIREO_INTEGER_SPLIT(DEST, SOURCE) \
     DEFINE_VIREO_FUNCTION(Split##SOURCE, "p(i(."#SOURCE") i(."#DEST") o(."#DEST"))")
 #define DEFINE_VIREO_INTEGER_JOIN(DEST, SOURCE) \
-    DEFINE_VIREO_FUNCTION(Join##SOURCE, "p(i(."#SOURCE") i(."#SOURCE") o(."#DEST"))")
-//------------------------------------------------------------
+    DEFINE_VIREO_FUNCTION_TYPED(Join, SOURCE, "p(i(."#SOURCE") i(."#SOURCE") o(."#DEST"))")
 
+//------------------------------------------------------------
 //Signed Integer Math
 #define DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = IntAbs(_Param(0)) ) )
 
 #define DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION(Absolute##TYPE, "p(i(."#TYPE") o(."#TYPE"))")
+    DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i(."#TYPE") o(."#TYPE"))")
+    
 //------------------------------------------------------------
-
 //Floating-point Math
 #define DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) / _Param(1)) ) \
@@ -173,29 +186,29 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
 
 #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION(Div##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Cosine##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Sine##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Tangent##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Secant##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Cosecant##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Log10##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Log##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Log2##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Exp##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(SquareRoot##TYPE, ".UnOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Pow##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(ArcSine##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(ArcCosine##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(ArcTan##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(ArcTan2##TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Ceil##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Absolute##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Floor##TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Quotient##TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Remainder##TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))")
-//------------------------------------------------------------
+    DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Cosine, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Sine, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Tangent, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Secant, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Cosecant, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Log10, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Log, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Log2, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Exp, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, TYPE, ".UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Pow, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcSine, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcCosine, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcTan, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcTan2, TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))")
 
+//------------------------------------------------------------
 // Bitwise
 #define DECLARE_VIREO_BITWISE_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( And##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) & _Param(1)) ) \
@@ -206,15 +219,14 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( Not##TYPE, TYPE, TYPE, (_Param(1) = ~_Param(0)) )
 
 #define DEFINE_VIREO_BITWISE_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION(And##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Or##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Nor##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Nand##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Xor##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Not##TYPE, ".BinOp"#TYPE)
+    DEFINE_VIREO_FUNCTION_TYPED(And, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Or, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Nor, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Nand, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Xor, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Not, TYPE, ".BinOp"#TYPE)
     
 //------------------------------------------------------------
-
 // Comparison
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <  _Param(1)) ) \
@@ -225,14 +237,14 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) )
 
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION( IsLT##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
-    DEFINE_VIREO_FUNCTION( IsLE##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
-    DEFINE_VIREO_FUNCTION( IsEQ##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
-    DEFINE_VIREO_FUNCTION( IsNE##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
-    DEFINE_VIREO_FUNCTION( IsGT##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
-    DEFINE_VIREO_FUNCTION( IsGE##TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))")
-//------------------------------------------------------------
+    DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsEQ, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i(."#TYPE") i(."#TYPE") o(.Boolean))")
 
+//------------------------------------------------------------
 // Conversion
 //#define BOOLEAN 0 //TODO, do we need boolean conversions?
 #define TC_UINT8 1
@@ -264,7 +276,6 @@ using namespace std;
 #define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION( SOURCE##Convert##DEST, "p(i(."#SOURCE") o(."#DEST"))")
 
 //------------------------------------------------------------
-
 // Branch Instructions
 #define DECLARE_VIREO_CONDITIONAL_BRANCHES(TYPE) \
     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfGT##TYPE, TYPE, TYPE, (_Param(1) > _Param(2)) ) \
@@ -275,14 +286,14 @@ using namespace std;
     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfNE##TYPE, TYPE, TYPE, (_Param(1) != _Param(2)) )
 
 #define DEFINE_VIREO_BRANCH_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION(BranchIfGT##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))" ); \
-    DEFINE_VIREO_FUNCTION(BranchIfGE##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
-    DEFINE_VIREO_FUNCTION(BranchIfLT##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
-    DEFINE_VIREO_FUNCTION(BranchIfLE##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
-    DEFINE_VIREO_FUNCTION(BranchIfEQ##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
-    DEFINE_VIREO_FUNCTION(BranchIfNE##TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))");
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfGT, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))" ); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfGE, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfLT, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfLE, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfEQ, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))"); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfNE, TYPE, "p(i(.BranchTarget) i(."#TYPE") i(."#TYPE"))");
+    
 //------------------------------------------------------------
-
 // Boolean
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Boolean)
 //DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
@@ -748,26 +759,26 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexSingle, TYPE)
     #include "ConversionTable.def"
 
-    DEFINE_VIREO_FUNCTION(AddComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(SubComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(MulComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(DivComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(SignComplexSingle, "p(i(.ComplexSingle) o(.Single))")
-    DEFINE_VIREO_FUNCTION(AbsoluteComplexSingle, "p(i(.ComplexSingle) o(.Single))")
-    DEFINE_VIREO_FUNCTION(NormComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(PhaseComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(ConjugateComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(SquareRootComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(SineComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(CosineComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(TanComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(SecantComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(CosecantComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(Log10ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(LogComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(Log2ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(ExpComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
-    DEFINE_VIREO_FUNCTION(PowComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Mul, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Div, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sign, ComplexSingle, "p(i(.ComplexSingle) o(.Single))")
+    DEFINE_VIREO_FUNCTION_TYPED(Absolute, ComplexSingle, "p(i(.ComplexSingle) o(.Single))")
+    DEFINE_VIREO_FUNCTION_TYPED(Norm, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Phase, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Conjugate, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sine, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Cosine, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Tan, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Secant, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Cosecant, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log10, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
 
 DEFINE_VIREO_END()
 #endif
@@ -812,26 +823,26 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexDouble, TYPE)
     #include "ConversionTable.def"
 
-    DEFINE_VIREO_FUNCTION(AddComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(SubComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(MulComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(DivComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(SignComplexDouble, "p(i(.ComplexDouble) o(.Double))")
-    DEFINE_VIREO_FUNCTION(AbsoluteComplexDouble, "p(i(.ComplexDouble) o(.Double))")
-    DEFINE_VIREO_FUNCTION(NormComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(PhaseComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(ConjugateComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(SquareRootComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(SineComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(CosineComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(TanComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(SecantComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(CosecantComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(Log10ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(LogComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(Log2ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(ExpComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
-    DEFINE_VIREO_FUNCTION(PowComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Mul, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Div, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sign, ComplexDouble, "p(i(.ComplexDouble) o(.Double))")
+    DEFINE_VIREO_FUNCTION_TYPED(Absolute, ComplexDouble, "p(i(.ComplexDouble) o(.Double))")
+    DEFINE_VIREO_FUNCTION_TYPED(Norm, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Phase, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Conjugate, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Sine, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Cosine, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Tan, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Secant, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Cosecant, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log10, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
 DEFINE_VIREO_END()
 
 #endif
