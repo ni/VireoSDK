@@ -218,6 +218,7 @@
 		47D1884118A93EC9008AB15D /* CopyingVIs.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CopyingVIs.via; path = "../test-it/CopyingVIs.via"; sourceTree = "<group>"; };
 		47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CalVIMultipleTimesObserveOldValues.via; path = "../test-it/CalVIMultipleTimesObserveOldValues.via"; sourceTree = "<group>"; };
 		47D1AE5518122F5F003B850F /* Generics.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Generics.via; path = "../test-it/Generics.via"; sourceTree = "<group>"; };
+		47D7C8E019E325A400FACB8E /* TypeManager.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = TypeManager.md; path = ../source/dox/TypeManager.md; sourceTree = "<group>"; };
 		47D84DC417C2A258009053DB /* BuildConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = BuildConfig.h; path = ../source/include/BuildConfig.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DC917C2A258009053DB /* DataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataTypes.h; path = ../source/include/DataTypes.h; sourceTree = "<group>"; };
 		47D84DCA17C2A258009053DB /* EggShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggShell.h; path = ../source/include/EggShell.h; sourceTree = "<group>"; };
@@ -301,6 +302,7 @@
 		470C345018F8831600E1E148 /* Dox */ = {
 			isa = PBXGroup;
 			children = (
+				47D7C8E019E325A400FACB8E /* TypeManager.md */,
 				4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */,
 				4730015E19AFCAF400B3F4CA /* Internals */,
 				47937178191186BF00DF942B /* README.md */,

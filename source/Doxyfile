@@ -764,6 +764,7 @@ INPUT  = \
     dox/IntroTypeExamples.md \
     dox/IntroParallelClumpExamples.md \
     dox/IntroArrayExamples.md \
+    dox/TypeManager.md \
     dox/ViaEBNF.md \
     dox/Internals \
 
