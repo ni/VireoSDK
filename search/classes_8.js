@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['maxalignedtype',['MaxAlignedType',['../de/d84/union_max_aligned_type.html',1,'']]]
+  ['maxalignedtype',['MaxAlignedType',['../union_max_aligned_type.html',1,'']]]
 ];
