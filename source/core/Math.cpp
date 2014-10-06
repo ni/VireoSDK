@@ -18,14 +18,14 @@ SDG
 #include "TypeDefiner.h"
 #include "TimeTypes.h"
 
-#define VIREO_UNIQUE_NAMES
-
-#ifdef VIREO_UNIQUE_NAMES
-    // With unique names the C-entry points AND the Vireo functions are appended with the type
-    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION(_root_##_type_, _proto_)
-#else 
+#ifdef VIREO_ALLOW_SYMBOL_OVERLOADS
     // With non-unique names(AKA overlodaed) only the C entlry points are appended.
     #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_NAME(_root_##_type_, _root_, _proto_)
+    #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_NAME(_type1_##_root_##_type2_, _root_, _proto_)
+#else
+    // With unique names the C-entry points AND the Vireo functions are appended with the type
+    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION(_root_##_type_, _proto_)
+    #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION(_type1_##_root_##_type2_, _proto_)
 #endif
 
 
@@ -126,9 +126,9 @@ using namespace std;
 #define DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DEFINE_VIREO_FUNCTION(Div##TYPE, ".BinOp"#TYPE) */ \
-    DEFINE_VIREO_FUNCTION(Mod##TYPE, ".BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION(Quotient##TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
-    DEFINE_VIREO_FUNCTION(Remainder##TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))")
+    DEFINE_VIREO_FUNCTION_TYPED(Mod, TYPE, ".BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i(."#TYPE") i(."#TYPE") o(."#TYPE"))")
 
 #define DECLARE_VIREO_INTEGER_SPLIT(DEST, SOURCE) \
     VIREO_FUNCTION_SIGNATURE3(Split##SOURCE, SOURCE, DEST, DEST) \
@@ -148,10 +148,10 @@ using namespace std;
     }
 
 #define DEFINE_VIREO_INTEGER_SPLIT(DEST, SOURCE) \
-    DEFINE_VIREO_FUNCTION(Split##SOURCE, "p(i(."#SOURCE") i(."#DEST") o(."#DEST"))")
+    DEFINE_VIREO_FUNCTION_TYPED(Split, SOURCE, "p(i(."#SOURCE") i(."#DEST") o(."#DEST"))")
 #define DEFINE_VIREO_INTEGER_JOIN(DEST, SOURCE) \
     DEFINE_VIREO_FUNCTION_TYPED(Join, SOURCE, "p(i(."#SOURCE") i(."#SOURCE") o(."#DEST"))")
-
+    
 //------------------------------------------------------------
 //Signed Integer Math
 #define DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(TYPE) \
@@ -272,8 +272,8 @@ using namespace std;
         return _NextInstruction(); \
     }
 
-#define DEFINE_VIREO_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION( SOURCE##Convert##DEST, "p(i(."#SOURCE") o(."#DEST"))")
-#define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION( SOURCE##Convert##DEST, "p(i(."#SOURCE") o(."#DEST"))")
+#define DEFINE_VIREO_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, "p(i(."#SOURCE") o(."#DEST"))")
+#define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, "p(i(."#SOURCE") o(."#DEST"))")
 
 //------------------------------------------------------------
 // Branch Instructions

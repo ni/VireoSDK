@@ -312,32 +312,47 @@ TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
 {
     MUTEX_SCOPE()
 
-    TypeRef namedType = null;
+    // Though overloads are allowed, it is still necessary to Make a names Wrapper for each unique type.
+    // This allows teh resolved type to be passed with its name wrapper, enable funtions to see the external name
+    // of the symbol. This does mean that the string will be replicated in each NameTypeObject.
+    // Though the map object will still just hold substrings.
 
-    TypeDictionaryIterator iter2;
-    iter2 = _typeNameDictionary.find(*typeName);
-    if (iter2 != _typeNameDictionary.end()) {
-        // If the type is already there then no NamedType wrapper is created.
+    // See if one exist in the current TM or a root TM.
+    NamedTypeRef existingType = FindType(typeName);
+    
+#ifndef VIREO_ALLOW_SYMBOL_OVERLOADS
+    if (existingType != null)
         return null;
-    }
+#endif
 
-    namedType = NamedType::New(this, typeName, type);
+    Boolean bNewAtThisLevel = existingType ? (existingType->TheTypeManager() != this) : true;
+    
+    NamedTypeRef namedType = NamedType::New(this, typeName, type, existingType);
 
-    // Storage for the string used by the dictionary is part of
-    // NamedType so once it is created a GetName() is done to
-    // get pointers to the storage.
-    SubString permanentTypeName;
-    namedType->GetName(&permanentTypeName);
-    _typeNameDictionary[permanentTypeName] = namedType;
- 
+    if (bNewAtThisLevel) {
+       // printf("New symbol at this level %.*s\n", FMT_LEN_BEGIN(typeName));
+        // Storage for the string used by the dictionary is part of
+        // NamedType so once it is created a GetName() is done to
+        // get pointers to the storage. The local is temporary, but the
+        // pointer in it last longer than the map entry tha poionts to it.
+        SubString permanentTypeName;
+        namedType->GetName(&permanentTypeName);
+        _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
+    } else {
+       // printf("Overloaded symbol at this level %.*s\n", FMT_LEN_BEGIN(typeName));
+        // If this TM already has an entry then this one will be inserted into the
+        // list owned by the existing one. That list will can include links to overloads in
+        // TM's root chain.
+     }
+
     return namedType;
 }
 //------------------------------------------------------------
-TypeRef TypeManager::FindType(const SubString* name)
+NamedTypeRef TypeManager::FindType(const SubString* name)
 {
     MUTEX_SCOPE()
 
-    TypeRef *typeValue = FindTypeConstRef(name);
+    NamedTypeRef *typeValue = FindTypeConstRef(name);
     return typeValue ? *typeValue : null;
 }
 //------------------------------------------------------------
@@ -359,35 +374,36 @@ void* TypeManager::FindNamedObject(SubString* name)
         return null;
 }
 //------------------------------------------------------------
-TypeRef* TypeManager::FindTypeConstRef(const SubString* name)
+NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 {
     MUTEX_SCOPE()
 
-    // Internal look up is not mutex protected.
-    TypeDictionaryIterator iter;
+    // When instructions use a type constant, they need to point the intrution to a variable
+    // that has the TypeRef and the value. The dictionary serves as that variable so the address
+    // to the entry is returned. The Symbol cannot deleted until instructions (VIs) are cleared.
+    // Since a referenced type mus t exist before the instruction can reference it this works
+    // works out fine.
 
-    
+    TypeDictionaryIterator iter;
     iter = _typeNameDictionary.find(*name);
-    TypeRef* foundType = (iter != _typeNameDictionary.end()) ? &iter->second : null;
+    NamedTypeRef* pFoundTypeRef = (iter != _typeNameDictionary.end()) ? &iter->second : null;
     
-    // When looking in root type manager go through exernal API
-    // so its mutex will be used.
-    if (foundType == null && _rootTypeManager) {
+    if (pFoundTypeRef == null && _rootTypeManager) {
         _lookUpsRoutedToOwner++;
-        foundType = _rootTypeManager->FindTypeConstRef(name);
+        pFoundTypeRef = _rootTypeManager->FindTypeConstRef(name);
     } else {
         _lookUpsFound++;
     }
-    if (!foundType) {
+    if (!pFoundTypeRef) {
         //printf(" ** Symbol '%.*s' not found\n", FMT_LEN_BEGIN(name));
         _lookUpsNotResolved++;
     }
-    return foundType;
+    return pFoundTypeRef;
 }
 //------------------------------------------------------------
 TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName)
 {
-    TypeDictionaryIterator iter;
+    std::map<SubString, TypeRef, ComapreSubString>::iterator  iter;
     
     for (TypeManagerRef tm = this; tm ; tm = tm->RootTypeManager()) {
         iter = _typeInstanceDictionary.find(*binaryName);
@@ -726,14 +742,18 @@ ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wr
 //------------------------------------------------------------
 // NamedType
 //------------------------------------------------------------
-NamedType* NamedType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType)
+NamedType* NamedType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
 {
-    return TADM_NEW_PLACEMENT_DYNAMIC(NamedType, name)(typeManager, name, wrappedType);
+    return TADM_NEW_PLACEMENT_DYNAMIC(NamedType, name)(typeManager, name, wrappedType, nextOverload);
 }
 //------------------------------------------------------------
-NamedType::NamedType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType)
+NamedType::NamedType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
 : WrappedType(typeManager, wrappedType), _name(name->Length())
 {
+    if (nextOverload) {
+        _nextOverload = nextOverload->_nextOverload;
+        nextOverload->_nextOverload = this;
+    }
     _name.Assign(name->Begin(), name->Length());
 }
 //------------------------------------------------------------

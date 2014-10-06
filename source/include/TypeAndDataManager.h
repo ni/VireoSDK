@@ -35,6 +35,7 @@ SDG
 namespace Vireo
 {
 
+class NamedType;
 class TypeCommon;
 class TypeManager;
 class ExecutionContext;
@@ -42,6 +43,7 @@ class IDataProcs;
     
 typedef TypeCommon  *TypeRef;
 typedef TypeManager *TypeManagerRef;
+typedef NamedType *NamedTypeRef;
 
 // StaticType is used for functions tha take types determined at load time.
 // specifiying StaticType for the parameter will result in the instruction holding a TypeCommon*
@@ -168,8 +170,8 @@ private:
     TypeManagerRef    _rootTypeManager;   // null if it is the root, or it is not using a root.
 
 #ifdef STL_MAP
-    typedef std::map<SubString, TypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
-    std::map<SubString, TypeRef, ComapreSubString>  _typeNameDictionary;
+    typedef std::map<SubString, NamedTypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
+    std::map<SubString, NamedTypeRef, ComapreSubString>  _typeNameDictionary;
     std::map<SubString, TypeRef, ComapreSubString>  _typeInstanceDictionary;
 #else
     typedef DictionaryElt* TypeDictionaryIterator;
@@ -199,8 +201,8 @@ public:
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(SubString* name, TypeRef type);
-    TypeRef FindType(const SubString* name);
-    TypeRef* FindTypeConstRef(const SubString* name);
+    NamedTypeRef FindType(const SubString* name);
+    NamedTypeRef* FindTypeConstRef(const SubString* name);
     void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
     void*   FindNamedObject(SubString* name);
     TypeRef BadType();
@@ -513,17 +515,19 @@ public:
 // the type->InitValue method does. For a variante type this means the type of the value may change
 // but not notiosn that the value is a variant. A bit tenious perhaps. s
 
+
 //------------------------------------------------------------
 //! Gives a type a name ( .e.g "Int32")
 class NamedType : public WrappedType
 {
 private:
+    NamedTypeRef            _nextOverload; // May point to one in curent or root type manager.
     InlineArray<Utf8Char>   _name;
-    NamedType(TypeManagerRef typeManager, SubString* name, TypeRef type);
+    NamedType(TypeManagerRef typeManager, SubString* name, TypeRef type, NamedTypeRef nextOverload);
 public:
     static IntIndex StructSize(SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
-    static NamedType* New(TypeManagerRef typeManager, SubString* name, TypeRef type);
+    static NamedType* New(TypeManagerRef typeManager, SubString* name, TypeRef type, NamedTypeRef nextOverload);
     
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
     virtual void    GetName(SubString* name)        { name->AliasAssign(_name.Begin(), _name.End()); }
