@@ -1030,10 +1030,10 @@ InstructionCore* ClumpParseState::EmitInstruction()
         GenericInstruction *generic = (GenericInstruction*) instruction;
         for (int i = 0; i < _argPatchCount; i++) {
             // Pointer to PatchInfo object was stashed in arg, look it up.
-            PatchInfo *pPatch = (PatchInfo*)generic->_args[i];
+            PatchInfo *pPatch = (PatchInfo*)generic->_args[_argPatches[i]];
             
             // Now erase that pointer.
-            generic->_args[i] = null;
+            generic->_args[_argPatches[i]] = null;
             
             VIREO_ASSERT(pPatch->_whereToPatch == null)
             pPatch->_whereToPatch = &generic->_args[_argPatches[i]];
