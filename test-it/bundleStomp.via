@@ -34,7 +34,6 @@ define (videf1 dv(.VirtualInstrument (
             e(.Single n2)   // Numeric 3
         ) local9)
     )
-    1 
     clump(1 
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n1 local3 )                   // unbundle

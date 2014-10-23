@@ -32,25 +32,25 @@ define (Test dv(.VirtualInstrument (
 
     clump(1 
     DPrintf("-------------")
-    AndBoolean(x y value)
+    And(x y value)
     DPrintf(" And (%s %s) => %s" x y value)
 
-    OrBoolean(x y value)
+    Or(x y value)
     DPrintf(" Or (%s %s) => %s" x y value)
 
-    NorBoolean(x y value)
+    Nor(x y value)
     DPrintf(" Nor (%s %s) => %s" x y value)
 
-    NandBoolean(x y value)
+    Nand(x y value)
     DPrintf(" Nand (%s %s) => %s" x y value)
 
-    XorBoolean(x y value)
+    Xor(x y value)
     DPrintf(" Xor (%s %s) => %s" x y value)
 
-    NotBoolean(x value)
+    Not(x value)
     DPrintf(" Not (%s) => %s" x value)
 
-    NotBoolean(y value)
+    Not(y value)
     DPrintf(" Not (%s) => %s" y value)
    )
  ) ) )

@@ -201,7 +201,7 @@ void InstructionAllocator::AddRequest(size_t count)
 void InstructionAllocator::Allocate (TypeManagerRef tm)
 {
     VIREO_ASSERT(_next == null);
-    _next = (AQBlock1*) tm->Malloc(_size);;
+    _next = (AQBlock1*) tm->Malloc(_size);
 }
 //------------------------------------------------------------
 void* InstructionAllocator::AllocateSlice(size_t count)
@@ -376,7 +376,7 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
     _formalParameterIndex = 0;
     _formalParameterType = null;
     _argCount = 0;
-    _argPatchCount = 0;
+        _argPatchCount = 0;
     _bIsVI = false;
     
     TypeRef t = _clump->TheTypeManager()->FindType(opName);
@@ -420,7 +420,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    // See if it is a default parameter ('*')
+    // See if actual argument is a default parameter (e.g. '*')
     if (argument->CompareCStr("*")) {
         _actualArgumentType = FormalParameterType();
         if (!_actualArgumentType->IsFlat()) {
@@ -559,9 +559,6 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     // Note which argument needs patching.
     // WhereToPeek is the location that will have the resolved value later.
     // it should point to null when checked if not yet resolved.
-    // TODO support NamedType patches as well. That needs to cross VI boundaries
-    // so PatchInfo will move from Clump parser state to TypeString Parser
-    // and might be malloced.
     _argPatches[_argPatchCount++] = _argCount;
     if (_patchInfoCount < kMaxPatchInfos) {
         PatchInfo *pPatch = &_patchInfos[_patchInfoCount++];
@@ -930,7 +927,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
 {
     if (!_instructionType)
         return null;
-        
+    
     if (_bIsVI) {
         return EmitCallVIInstruction();
     } else if (GenericFunction() && _instructionPointerType->PointerType() == kPTGenericFunctionCodeGen) {

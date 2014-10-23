@@ -24,7 +24,7 @@ clump//
 (//
 1//
 
-    AddInt32(variable1 variable2 result)
+    Add(variable1 variable2 result)
     Print(result)
    )
 )//

@@ -15,8 +15,8 @@ define (videf1 dv(.VirtualInstrument (
     )
     1 
     clump(1 
-		MulComplexDouble(i i cmplx)
-		MulComplexDouble(cmplx cmplx cmplx)
+		Mul(i i cmplx)
+		Mul(cmplx cmplx cmplx)
         Print(c5)
 		Print(cmplx)
 //--- end of vi

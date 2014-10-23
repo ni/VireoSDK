@@ -4,7 +4,7 @@
 define (c0 dv(.String 'theCanvas') )
 define (c1 dv(.Boolean true) )
 define (c2 .Boolean )
-define (c3 dv(.UInt32 100) )
+define (c3 dv(.UInt32 20) )
 define (c4 dv(.Double 10000.000000) )
 define (c5 dv(.Double 500.000000) )
 define (c6 .Double )
@@ -60,6 +60,10 @@ define (_VireoScope3%2Evi dv(.VirtualInstrument (
         e(.Double _v21_NoiseLevel)   // NoiseLevel
     )
         clump(1
+        DPrintf("Switch to the canvas tab to see the sine wave")
+        DPrintf("")
+        DPrintf("A sample scope like display using the HTML5 canvas")
+
         _ObtainCanvas2D%2Evi(_v10_Canvas%20refnum c0)
         Trigger(1)                                // fork
 //--- begin loop
@@ -82,7 +86,6 @@ define (_VireoScope3%2Evi dv(.VirtualInstrument (
         Random(_v13_number%3A%200%20to%201)
         Mul(_v13_number%3A%200%20to%201 c4 _v13_number%3A%200%20to%201)
         Convert(_v13_number%3A%200%20to%201 _v12_Color)
-     //   FillRect(_v10_Canvas%20refnum c6 c6 c5 c5)
         BeginPath(_v10_Canvas%20refnum)
         MoveTo(_v10_Canvas%20refnum c6 c8)
         Copy(c12 _v14 )                           // initialize i

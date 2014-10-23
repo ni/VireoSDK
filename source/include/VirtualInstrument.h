@@ -151,7 +151,6 @@ struct PatchInfo
 {
     enum PatchType {
         Perch = 0,
-        NamedTypes = 1,
     };
     
     PatchType   _patchType;
