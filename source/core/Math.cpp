@@ -645,10 +645,23 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_INTEGER_JOIN(UInt64,Int32)
     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int32)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Int32)
-    DEFINE_VIREO_FUNCTION(LogicalShiftInt32, ".BinOpInt32")
-    DEFINE_VIREO_FUNCTION(RotateInt32, ".BinOpInt32")
+
+    DEFINE_VIREO_FUNCTION_TYPED(LogicalShift, Int32, ".BinOpInt32")
+    DEFINE_VIREO_FUNCTION_TYPED(Rotate, Int32, ".BinOpInt32")
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int32)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int32)
+
+#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
+    // Generator 1.0 VIA generator for LV and a few of the tests use type specific
+    // branch instructions. These support the one needed.
+    // In 1.1 the Type Neutral one are nor the way to go BranchIf()
+    // TODO: remove these once the VIA generator is fixed.
+    DEFINE_VIREO_FUNCTION_NAME(BranchIfGEInt32, BranchIfGE, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
+    DEFINE_VIREO_FUNCTION_NAME(BranchIfEQInt32, BranchIfEQ, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
+    DEFINE_VIREO_FUNCTION_NAME(BranchIfLTDouble, BranchIfLT, "p(i(.BranchTarget) i(.Double) i(.Double))" )
+    DEFINE_VIREO_FUNCTION_NAME(BranchIfLEDouble, BranchIfLE, "p(i(.BranchTarget) i(.Double) i(.Double))" )
+#endif
+
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)
     #define TYPE_CODE TC_INT32
     #include "ConversionTable.def"

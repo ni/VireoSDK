@@ -48,7 +48,7 @@ define (HelloWorld dv(.VirtualInstrument (
         ArrayLength(TypesToCheck n)
 
         Perch(0)
-        BranchIfGEInt32(1 i n)
+        BranchIfGE(1 i n)
             ArrayIndexElt(TypesToCheck i telt)
             TypeGetName(telt str1)
             TypeGetElementName(telt str2)

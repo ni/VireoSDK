@@ -633,7 +633,7 @@ define (videf16 dv(.ReentrantVirtualInstrument (
         BranchIfTrue(4 local5)                    // CaseStructure test
 //--- default case
 //--- begin case structure
-        BranchIfEQInt32(2 local2 c60)             // CaseStructure test
+        BranchIfEQ(2 local2 c60)             // CaseStructure test
 //--- default case
         Copy(local3.n0 local6 )                   // unbundle
         Copy(local3.n1 local7 )                   // unbundle
@@ -2497,7 +2497,7 @@ define (videf23 dv(.ReentrantVirtualInstrument (
     )
         clump(1
 //--- begin case structure
-        BranchIfEQInt32(2 local1 c50)             // CaseStructure test
+        BranchIfEQ(2 local1 c50)             // CaseStructure test
 //--- default case
         Copy(local2.n1 local5 )                   // unbundle
         Add(local5 local1 local5)
@@ -2946,7 +2946,7 @@ define (videf33 dv(.ReentrantVirtualInstrument (
         BranchIfTrue(5 local11)                   // CaseStructure test
 //--- default case
 //--- begin case structure
-        BranchIfEQInt32(3 local1 c50)             // CaseStructure test
+        BranchIfEQ(3 local1 c50)             // CaseStructure test
 //--- default case
         Sub(local1 c60 local5)
         Copy(c39 local15 )                        // Pre-Loop copy into LSR

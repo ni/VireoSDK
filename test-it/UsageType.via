@@ -27,7 +27,7 @@ define (HelloWorld dv(.VirtualInstrument (
         Print(variable1)
         TypeSubElementCount(tvar n)
         Perch(0)
-        BranchIfGEInt32(1 i n)
+        BranchIfGE(1 i n)
             TypeGetSubElement(tvar i telt)
             TypeGetName(telt str1)
             TypeGetElementName(telt str2)

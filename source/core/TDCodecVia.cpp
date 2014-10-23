@@ -879,6 +879,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
     SubString  instructionNameToken;
+    SubString  argExpressionTokens[kMaximumArgCount];
     
     _string.ReadToken(&token);
     if (!token.CompareCStr(tsClumpToken))
@@ -900,7 +901,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     // of the clump will be found immediately
     _string.ReadToken(&instructionNameToken);
     while(!instructionNameToken.CompareCStr(")")) {
-        Boolean instructionFound = false;
         RepinLineNumberBase();
 
         if (instructionNameToken.CompareCStr(tsPerchOpToken)) {
@@ -916,71 +916,93 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
         } else {
-            
-            instructionFound = (state.StartInstruction(&instructionNameToken) != null);
-            if (!instructionFound)
+            Boolean keepTrying = state.StartInstruction(&instructionNameToken) != null;
+            if (!keepTrying)
                 LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
-            
+
             // Starting reading actual parameters
             if (!_string.ReadChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
-
-            // 
-            //   Should be first arg or closing paren for empty arg list
-            //
-            //   func(arg1, arg2, ...)
-            //        ^
-            _string.ReadSubexpressionToken(&token);
-
-            while(!token.CompareCStr(")")) {
             
-                TypeRef formalType  = state.ReadFormalParameterType();
-                state._actualArgumentName = token;
-                if (formalType) {
-                    // TODO the type classification can be moved into a codec independent class.
-                    SubString formalParameterTypeName;
-                    formalType->GetName(&formalParameterTypeName);
+            // Parse the arguments onnce and determine how many were passed to the function.
+            Int32 argCount = 0;
+            for(; true; argCount++) {
+                _string.ReadSubexpressionToken(&token);
+                if (token.Length() == 0 || token.CompareCStr(")")) {
+                    break;
+                } else if (argCount < kMaximumArgCount) {
+                    argExpressionTokens[argCount] = token;
+                }
+            }
+            
+            if (argCount > kMaximumArgCount) {
+                return LOG_EVENT(kHardDataError, "too many argumnets");
+            }
+            
+            while(keepTrying) {
+                for(Int32 i = 0; (i < argCount) && keepTrying; i++) {
+                    token = argExpressionTokens[i];
+                    TypeRef formalType  = state.ReadFormalParameterType();
+                    state._actualArgumentName = token;
+                    if (formalType) {
+                        // TODO the type classification can be moved into a codec independent class.
+                        SubString formalParameterTypeName;
+                        formalType->GetName(&formalParameterTypeName);
+                        // printf("Trying match for %.*s %.*s (%d)\n", FMT_LEN_BEGIN(&instructionNameToken), FMT_LEN_BEGIN(&formalParameterTypeName), i);
+                        
+                        if (formalParameterTypeName.CompareCStr("VarArgCount")) {
+                            VIREO_ASSERT(!state.VarArgParameterDetected());                    
+                            state.AddVarArgCount();
+                            // If the formal type is "VarArgCount"
+                            // restart processing current argument, its the first vararg
+                            i--;
+                            continue;
+                        }                
                     
-                    if (formalParameterTypeName.CompareCStr("VarArgCount")) {
-                        VIREO_ASSERT(!state.VarArgParameterDetected());                    
-                        state.AddVarArgCount();
-                        // If the formal type is "VarArgCount"
-                        // restart processing current argument, its the first vararg
-                        continue;
-                    }                
-                    
-                    if (formalParameterTypeName.CompareCStr("BranchTarget")) {
-                        state.AddBranchTargetArgument(&token);
-                    } else if (formalParameterTypeName.CompareCStr("Clump")) {
-                        state.AddClumpTargetArgument(&token);
-                    } else if (formalParameterTypeName.CompareCStr("VI")) { // TODO was fo Call VI, may be legacy now
-                        state.AddSubVITargetArgument(&token);
-                    } else if (formalParameterTypeName.CompareCStr("InstructionFunction")) {
-                        state.AddInstructionFunctionArgument(&token);
-                    } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
-                        state.AddDataTargetArgument(&token, true);
-                    } else if (formalParameterTypeName.CompareCStr("StaticString")) {
-                        state.AddStaticString(&token);
-                    } else {
-                        // The most common case is a data value
-                        state.AddDataTargetArgument(&token, false); // For starters
+                        if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // un adorned number, 10p
+                            state.AddBranchTargetArgument(&token);
+                        } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
+                            state.AddClumpTargetArgument(&token);
+                        } else if (formalParameterTypeName.CompareCStr("VI")) { // TODO was for Call VI, may be legacy now 10c
+                            state.AddSubVITargetArgument(&token);
+                        } else if (formalParameterTypeName.CompareCStr("InstructionFunction")) { //Hmmm
+                            state.AddInstructionFunctionArgument(&token);
+                        } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
+                            state.AddDataTargetArgument(&token, true);
+                        } else if (formalParameterTypeName.CompareCStr("StaticString")) {  // For DPrintf, might not be needed now that string literasl are allowed.
+                            state.AddStaticString(&token);
+                        } else {
+                            // The most common case is a data value
+                            state.AddDataTargetArgument(&token, false); // For starters
+                        }
+                    }
+                    if (state.LastArgumentError()) {
+                        // If there is an argument mismatch stop.
+                        keepTrying = false;
+                        if (!state.HasMultipleDefinitions()) {
+                            // if there is only one match then show the specific error.
+                            // other wise "no match found" will be the error.
+                            state.LogArgumentProcessing(CalcCurrentLine());
+                        }
                     }
                 }
-                
-                if (state.LastArgumentError()) {
-                    state.LogArgumentProcessing(CalcCurrentLine());
+                if (keepTrying) {
+                    // If there were no arg mismatches then one was found.
+                    keepTrying = false;
+                } else {
+                    // Else see if there is another overload to try.
+                    keepTrying = state.StartNextOverload() != null;
                 }
-                
-                _string.ReadSubexpressionToken(&token);  // next argument or ")"
             }
             state.EmitInstruction();
-            
         }
         _string.ReadToken(&instructionNameToken);
 
+#if 0         
         if (instructionNameToken.CompareCStr(",")) {
             _string.ReadToken(&instructionNameToken);
         }
+#endif
     }
     state.CommitClump();
 

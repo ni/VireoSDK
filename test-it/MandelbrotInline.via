@@ -59,30 +59,30 @@ define (MandelbrotMain dv(.VirtualInstrument (
                 Copy(c0 i)
                 Copy(cmplxZero z)  // alternately Init(z)
                 Perch(4)
-                    MulComplexDouble(z z z)
-                    AddComplexDouble(z cmplxIn z)
+                    Mul(z z z)
+                    Add(z cmplxIn z)
                 ForLoopTail(4 i c50)
 
-                AbsoluteComplexDouble(z abs)
+                Absolute(z abs)
 
-                BranchIfLTDouble(2 abs two)
+                BranchIfLT(2 abs two)
                     ArrayAppendElt(buffer char1)
                     Branch(3)
                 Perch(2)
                    ArrayAppendElt(buffer char2)
                 Perch(3)
 
-                AddDouble(x xDelta x)
-            BranchIfLEDouble(1 x xLast)
+                Add(x xDelta x)
+            BranchIfLE(1 x xLast)
 
         ArrayAppendElt(buffer charLineFeed)
-        AddDouble(y yDelta y)
-        BranchIfGEDouble(0 y yLast)
+        Add(y yDelta y)
+        BranchIfGE(0 y yLast)
 
         GetMicrosecondTickCount(tDone)
         StreamWrite(file buffer err)
 
-        SubInt64(tDone tStart tDone)
+        Sub(tDone tStart tDone)
         // Comment out so unit tests will not reject outputs with different times
         DPrintf("//Time to calculate Mandelbrot: %s microseconds" tDone)
     )

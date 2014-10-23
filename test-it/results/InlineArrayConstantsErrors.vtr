@@ -9,5 +9,4 @@
 (Line 88 HardError "'(' missing.")
 (Line 99 Error "Argument not mutable 'Ten'.")
 (Line 101 Error "Argument not mutable '4'.")
-(Line 101 Error "Argument not mutable '4'.")
 (Line 102 Error "Argument not mutable '(1 2 3)'.")

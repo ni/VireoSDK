@@ -34,9 +34,9 @@ define (HelloWorld dv(.VirtualInstrument (
 
         StringToLower("Hello, World" str)
         DPrintf("passing inline constant value <%s>" str)
-        MulInt32(6 7 i)
+        Mul(6 7 i)
         DPrintf("passing inline constant value <%s>" i)
-        AddDouble(3.2 1.85 x)
+        Add(3.2 1.85 x)
         DPrintf("passing inline constant value <%s>" x)
         
         BooleanConvertInt16(true i16)

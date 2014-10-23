@@ -851,7 +851,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
         isFlat  &= element->IsFlat();
         isValid  |= element->IsValid();
         hasCustomValue |= element->HasCustomDefault();
-        hasGenericType |= element->HasGenericType();;
+        hasGenericType |= element->HasGenericType();
         
         encoding = element->BitEncoding();
     }

@@ -63,7 +63,7 @@ SDG
 
     // Early on, Vireo did not allow over loads so functions like Add cam wtih
     // many different signatures such as AddInt32 AddDouble etc.
-    //#define VIREO_ALLOW_SYMBOL_OVERLOADS
+    #define VIREO_ALLOW_SYMBOL_OVERLOADS
 
     #define VIREO_TYPE_ATime 1
 

@@ -9,11 +9,14 @@ define (HelloWorld dv(.VirtualInstrument (
 ) ) )
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(dv(.String "Hello, world. I can fly.") variable1)
+        e(dv(.String "Hello, world. I can swim.") variable1)
     )
     1
     clump (1
         Print(variable1)
     )
 ) ) )
+
+// With overloads this is not an automatic error  
+// It should still be an error to have duplicate signatures
 enqueue (HelloWorld)

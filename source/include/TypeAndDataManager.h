@@ -385,6 +385,8 @@ public:
     Int32   Rank()                  { return _rank; }
     //! True if the type is an indexable container that contains another type.
     Boolean IsArray()               { return BitEncoding() == kEncoding_Array; }
+    //! True if the type is an aggregate of other types.
+    Boolean IsCluster()              { return BitEncoding() == kEncoding_Cluster; }
     //! True if data can be copied by a simple block copy.
     Boolean IsFlat()                { return _isFlat != 0; }
     //! True if all types the type is composed of have been resolved to valid types.
@@ -529,6 +531,7 @@ public:
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, SubString* name, TypeRef type, NamedTypeRef nextOverload);
     
+    NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
     virtual void    GetName(SubString* name)        { name->AliasAssign(_name.Begin(), _name.End()); }
     virtual void    GetElementName(SubString* name) { name->AliasAssign(null, null); }

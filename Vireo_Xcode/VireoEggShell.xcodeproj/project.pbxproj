@@ -153,7 +153,7 @@
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
-		4786297C19254DAD00141666 /* Editor.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Editor.html; path = ../Vireo_Web/SiteSource/Editor.html; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.javascript; };
+		4786297C19254DAD00141666 /* Editor.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Editor.html; path = ../Vireo_Web/SiteSource/Editor.html; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.html; };
 		4786297D1927064300141666 /* Canvas2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas2d.cpp; path = ../source/io/Canvas2d.cpp; sourceTree = "<group>"; };
 		47937177191049BE00DF942B /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Doxyfile; path = ../source/Doxyfile; sourceTree = "<group>"; };
 		47937178191186BF00DF942B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -263,7 +263,7 @@
 		47F1285518BFACFB000DA4E1 /* Pi.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi.via; path = "../test-it/Pi.via"; sourceTree = "<group>"; };
 		47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi_NonReentrant.via; path = "../test-it/Pi_NonReentrant.via"; sourceTree = "<group>"; };
 		47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = StringByteArrayConversion.via; path = "../test-it/StringByteArrayConversion.via"; sourceTree = "<group>"; };
-		47F4E66119DC9BBD009DCC77 /* SineWave.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SineWave.via; path = ../Vireo_Web/SiteSource/SineWave.via; sourceTree = "<group>"; };
+		47F4E66119DC9BBD009DCC77 /* SineWave.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SineWave.via; path = ../Vireo_Web/SiteSource/SineWave.via; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShabangHelloWorld.via; path = "../test-it/ShabangHelloWorld.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47FDAF5618039C48002C7851 /* Mandelbrot.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Mandelbrot.via; path = "../test-it/Mandelbrot.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };

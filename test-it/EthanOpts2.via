@@ -630,7 +630,7 @@ define (videf16 dv(.ReentrantVirtualInstrument (
         BranchIfTrue(4 local5)                    // CaseStructure test
 //--- default case
 //--- begin case structure
-        BranchIfEQInt32(2 local2 c39)             // CaseStructure test
+        BranchIfEQ(2 local2 c39)             // CaseStructure test
 //--- default case
         ArrayLength(local3.n0 local6 )
         videf5(local7 local1 local3.n1 local6)
@@ -2620,7 +2620,7 @@ define (videf23 dv(.ReentrantVirtualInstrument (
     )
         clump(1
 //--- begin case structure
-        BranchIfEQInt32(2 local1 c38)             // CaseStructure test
+        BranchIfEQ(2 local1 c38)             // CaseStructure test
 //--- default case
         Add(local2.n1 local1 local5)
         Copy(local2 local6 )
@@ -2745,7 +2745,7 @@ define (videf30 dv(.VirtualInstrument (
         Print(local27)
         DPrintf("// It took %s" local8)
         ArrayReplaceElt(local29 local29 local6 local8)
-        BranchIfGEInt32(1 local6 local7)
+        BranchIfGE(1 local6 local7)
         Add(local6 c39 local6)                    // increment i
 //--- end loop
         Branch(0)                                 // loop again
@@ -3120,7 +3120,7 @@ define (videf32 dv(.ReentrantVirtualInstrument (
         BranchIfTrue(5 local11)                   // CaseStructure test
 //--- default case
 //--- begin case structure
-        BranchIfEQInt32(3 local1 c38)             // CaseStructure test
+        BranchIfEQ(3 local1 c38)             // CaseStructure test
 //--- default case
         Sub(local1 c39 local6)
         Copy(c38 local8 )                         // initialize i

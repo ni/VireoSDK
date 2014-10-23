@@ -37,7 +37,7 @@ define (HelloWorld dv(.VirtualInstrument (
                 PrintZZZX(variable1)
                 Print(variable1 variable1)
                 Print()
-                AddInt32(variable1 variable1 variable1)
+                Add(variable1 variable1 variable1)
             )
         )"
         ) badProgram)

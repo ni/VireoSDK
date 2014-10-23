@@ -29,7 +29,7 @@ define (videf1 dv(.VirtualInstrument (
         ToString(local1 * local6)
         ArrayConcatenate( local4 local4 local6)
         Copy(local4 local5 )  // This is the biggest hit. It copies all strings
-        BranchIfGEInt32(1 local1 local3)
+        BranchIfGE(1 local1 local3)
         Add(local1 c2 local1)                     // increment i
         Branch(0)                                 // loop again
         Perch(1)
@@ -65,7 +65,7 @@ define (videf2 dv(.VirtualInstrument (
         ToString(local1 * local6)
         ArrayConcatenate( local4 local4 local6)
         Copy(local4 local5 )  // This is the biggest hit. It copies all strings
-        BranchIfGEInt32(1 local1 local3)
+        BranchIfGE(1 local1 local3)
         Add(local1 c2 local1)                     // increment i
         Branch(0)                                 // loop again
         Perch(1)
@@ -101,7 +101,7 @@ define (videf3 dv(.VirtualInstrument (
         ToString(local1 * local6)
         ArrayConcatenate( local4 local4 local6)
         Copy(local4 local5 )  // This is the biggest hit. It copies all strings
-        BranchIfGEInt32(1 local1 local3)
+        BranchIfGE(1 local1 local3)
         Add(local1 c2 local1)                     // increment i
         Branch(0)                                 // loop again
         Perch(1)

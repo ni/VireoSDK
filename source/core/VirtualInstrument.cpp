@@ -368,31 +368,64 @@ TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, bool allowError
     return _instructionType;
 }
 //------------------------------------------------------------
-TypeRef ClumpParseState::StartInstruction(SubString* opName)
+TypeRef ClumpParseState::StartNextOverload()
 {
     static const SubString strVI(VI_TypeName);
 
     _instructionType = null;
     _formalParameterIndex = 0;
     _formalParameterType = null;
+    _instructionPointerType = null;
     _argCount = 0;
+    if (_argPatchCount > 0) {
+        _patchInfoCount -= _argPatchCount;
         _argPatchCount = 0;
+    }
     _bIsVI = false;
     
-    TypeRef t = _clump->TheTypeManager()->FindType(opName);
+    NamedTypeRef t = _nextFuncitonDefinition;
+    if (t) {
+        if (t == _genericFuncitonDefinition) {
+            t = t->NextOverload();
+        }
+        _nextFuncitonDefinition = t ? t->NextOverload() : null;
+    }
+    if (!t) {
+        // Got to the end of the list. If there is generic loader use it last
+        t = _genericFuncitonDefinition;
+        _genericFuncitonDefinition = null;
+    }
     
     if (t && t->BitEncoding() == kEncoding_Pointer) {
-        // looks like it resolved to a native function
+        // Looks like it resolved to a native function
         _instructionPointerType = t;
         _instructionType = _instructionPointerType->GetSubElement(0);
     } else if (t && (t->IsA(&strVI))) {
         // Also covers reentrant VIs since reentrant VIs inherit from simple VIs
         _bIsVI = true;
-        VirtualInstrument* vi = AddSubVITargetArgument(opName);
+        SubString viName;
+        t->GetName(&viName);
+        VirtualInstrument* vi = AddSubVITargetArgument(&viName);
         _instructionPointerType = t;
         _instructionType = vi->ParamBlock()->ElementType();
     }
     return _instructionType;
+}
+//------------------------------------------------------------
+TypeRef ClumpParseState::StartInstruction(SubString* opName)
+{
+    _nextFuncitonDefinition = _clump->TheTypeManager()->FindType(opName);
+    _genericFuncitonDefinition = null;
+
+    // Look for a generic loader.
+    for (NamedTypeRef overload = _nextFuncitonDefinition; overload; overload = overload->NextOverload()) {
+        if (overload->PointerType() == kPTGenericFunctionCodeGen) {
+            _genericFuncitonDefinition = overload;
+            break;
+        }
+    }
+    _hasMultipleDefinitions = _nextFuncitonDefinition ? _nextFuncitonDefinition->NextOverload() != null : false;
+    return StartNextOverload();
 }
 //------------------------------------------------------------
 void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData)
@@ -923,6 +956,41 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     return callInstruction;
 }
 //------------------------------------------------------------
+InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCount, ...)
+{
+    // Look for funciton that matches parameter list.
+    va_list args;
+    Boolean keepTrying = true;
+    StartInstruction(opName);
+    while (keepTrying) {
+        va_start (args, argCount);
+        for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
+        
+            TypeRef formalType  = ReadFormalParameterType();
+            TypeRef actualType = va_arg(args, TypeRef);
+            void* actualData = va_arg(args, void*);
+            
+            SubString formalParameterTypeName;
+            formalType->GetName(&formalParameterTypeName);
+
+            if (actualType->IsA(formalType, false) ) {
+                InternalAddArg(actualType, actualData);
+            } else {
+                keepTrying = false;
+            }
+        }
+        va_end (args);
+        if (keepTrying) {
+            keepTrying = false;
+        } else {
+            //
+            keepTrying = StartNextOverload() != null;
+        }
+    }
+    EmitInstruction();
+    return null;
+}
+//------------------------------------------------------------
 InstructionCore* ClumpParseState::EmitInstruction()
 {
     if (!_instructionType)
@@ -930,7 +998,8 @@ InstructionCore* ClumpParseState::EmitInstruction()
     
     if (_bIsVI) {
         return EmitCallVIInstruction();
-    } else if (GenericFunction() && _instructionPointerType->PointerType() == kPTGenericFunctionCodeGen) {
+    } else if (_instructionPointerType && _instructionPointerType->PointerType() == kPTGenericFunctionCodeGen) {
+        // Get pointer to load time generic resolver function.
         GenericEmitFunction genericResolver;
         _instructionPointerType->InitData(&genericResolver);
         if (genericResolver != null) {
@@ -955,6 +1024,9 @@ InstructionCore* ClumpParseState::EmitInstruction()
         _recordNextInstructionAddress = -1;
     }
     if (_argPatchCount > 0) {
+        // Now that the instruction is built, if some of the arguments
+        // still require patching (e.g. A branch to a forward perch)
+        // add the _whereToPatch field.
         GenericInstruction *generic = (GenericInstruction*) instruction;
         for (int i = 0; i < _argPatchCount; i++) {
             // Pointer to PatchInfo object was stashed in arg, look it up.
@@ -967,6 +1039,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
             pPatch->_whereToPatch = &generic->_args[_argPatches[i]];
         }
     }
+    _argPatchCount = 0;
     return instruction;
 }
 //------------------------------------------------------------
@@ -999,10 +1072,8 @@ void ClumpParseState::CommitClump()
         return;
         
     for (int i = 0; i < _patchInfoCount; i++) {
-        PatchInfo *pPatch = &_patchInfos[i];
-        *pPatch->_whereToPatch = *pPatch->_whereToPeek;
+        *_patchInfos[i]._whereToPatch = *_patchInfos[i]._whereToPeek;
     }
-   // printf(" total instruction size %d ( %d) \n", _totalInstructionPointerCount, _totalInstructionCount);
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObject*)
@@ -1069,7 +1140,7 @@ class InstructionListDataProcsClass : public IDataProcs
 {
     virtual NIError ClearData(TypeRef type, void* pData)
     {
-        // All instructions for all clumps in a VI are atored in one
+        // All instructions for all clumps in a VI are stored in one
         // block of memory. The VI will free it.
         *(void**)pData = null;
         return kNIError_Success;

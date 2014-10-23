@@ -228,6 +228,11 @@ private:    // State related to two pass parseing
     Int32           _totalInstructionCount;
     Int32           _totalInstructionPointerCount;
 
+private:    // state related to overloads
+    Boolean         _hasMultipleDefinitions;
+    NamedTypeRef    _nextFuncitonDefinition;
+    NamedTypeRef    _genericFuncitonDefinition;  // Only one allowed
+    
 private:    // state related to the the current argument
     Int32           _formalParameterIndex;
     TypeRef         _formalParameterType;
@@ -262,6 +267,8 @@ public:
     TypeRef         ReadFormalParameterType();
     void            SetClumpFireCount(Int32 fireCount);
     TypeRef         StartInstruction(SubString* opName);
+    TypeRef         StartNextOverload();
+    Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
     TypeRef         ReresolveInstruction(SubString* opName, bool allowErrors);
     void            ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData);
     void            AddDataTargetArgument(SubString* argument, Boolean prependType);
@@ -282,6 +289,8 @@ public:
 
     InstructionCore*    EmitCallVIInstruction();
     InstructionCore*    EmitInstruction();
+    InstructionCore*    EmitInstruction(SubString* opName, Int32 argCount, ...);
+
     void            EmitSimpleInstruction(const char* opName);
     void            CommitSubSnippet();
     void            CommitClump();

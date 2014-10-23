@@ -41,7 +41,8 @@ private:
     SubString       _string;      // "Begin()" moves through string as it is parsed.
     const Utf8Char* _originalStart;
     Int32           _lineNumberBase;
-    
+    enum { kMaximumArgCount = 32 };
+  
 public:
     Boolean         _loadVIsImmediatly;
     EventLog*       _pLog;

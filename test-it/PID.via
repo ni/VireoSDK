@@ -54,7 +54,7 @@ define (videf1 dv(.VirtualInstrument (
         videf2(local14 local13 local2 c2 local1 local11 local3)
         Copy(local14 local12 )
         ArrayReplaceElt(local15 local15 local8 local14)
-        BranchIfGEInt32(1 local8 local10)
+        BranchIfGE(1 local8 local10)
         Add(local8 c9 local8)                     // increment i
         Branch(0)                                 // loop again
         Perch(1)

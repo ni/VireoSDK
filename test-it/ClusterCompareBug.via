@@ -17,7 +17,7 @@ define (videf1 dv(.VirtualInstrument (
         ) (true 2 'hello' )) local1)   // error in (no error)
         e(dv(.Boolean false) local2)   // x = y?
     )
-        clump(1
+    clump(1
         IsEQ(local1 c0 local2)
         DPrintf("IsEQ(%s %s %s)" local1 c0 local2)
 //--- end of vi
