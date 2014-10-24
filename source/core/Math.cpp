@@ -656,10 +656,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     // branch instructions. These support the one needed.
     // In 1.1 the Type Neutral one are nor the way to go BranchIf()
     // TODO: remove these once the VIA generator is fixed.
-    DEFINE_VIREO_FUNCTION_NAME(BranchIfGEInt32, BranchIfGE, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
-    DEFINE_VIREO_FUNCTION_NAME(BranchIfEQInt32, BranchIfEQ, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
-    DEFINE_VIREO_FUNCTION_NAME(BranchIfLTDouble, BranchIfLT, "p(i(.BranchTarget) i(.Double) i(.Double))" )
-    DEFINE_VIREO_FUNCTION_NAME(BranchIfLEDouble, BranchIfLE, "p(i(.BranchTarget) i(.Double) i(.Double))" )
+    DEFINE_VIREO_FUNCTION(BranchIfGEInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
+    DEFINE_VIREO_FUNCTION(BranchIfEQInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
+    DEFINE_VIREO_FUNCTION(BranchIfLTDouble, "p(i(.BranchTarget) i(.Double) i(.Double))" )
+    DEFINE_VIREO_FUNCTION(BranchIfLEDouble, "p(i(.BranchTarget) i(.Double) i(.Double))" )
 #endif
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)

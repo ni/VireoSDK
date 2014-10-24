@@ -1,3 +1,5 @@
+// Use timing functions
+
 define (TicTock dv(.VirtualInstrument (
  c(
    e(dv(.UInt32 500)     t1_milliseconds)
@@ -5,8 +7,7 @@ define (TicTock dv(.VirtualInstrument (
    e(dv(.String 'Tic')   sTic)
    e(dv(.String 'Tock')  sTock)
    )
- 1
- clump(1
+ clump(
    Perch(0)
      Print(sTic)
      WaitMilliseconds(t1_milliseconds)

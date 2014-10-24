@@ -923,6 +923,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         _string.ReadToken(&instructionNameToken);
     } else {
         // Using default FireCount(1). Treat token as regulat instruction.
+        fireCount = 1;
         instructionNameToken = token;
     }
     
