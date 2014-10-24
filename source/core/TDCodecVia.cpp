@@ -859,10 +859,15 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     if (!_string.ReadChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
 
-    _string.ReadToken(&token);
+    SubString temp = _string;
+    temp.ReadToken(&token);
     IntMax fireCount;
-    if (!token.ReadInt(&fireCount))
-        return LOG_EVENT(kHardDataError, "fire count missing");
+    if (token.ReadInt(&fireCount)) {
+        // Old style firecount number found,  update _string
+        _string = temp;
+    } else {
+        // No old style firecount number, leave _string as is.
+    }
     
     // Quickly scan through list of instructions without parsing them in detail.
     // Many syntax errors will not be detected until the code is actually loaded.
@@ -895,18 +900,35 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (!_string.ReadChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
     
-    _string.ReadToken(&token);
-    IntMax fireCount;
-    if (!token.ReadInt(&fireCount))
-        return LOG_EVENT(kHardDataError, "fire count missing");
 
-    state.SetClumpFireCount((Int32)fireCount);
+    // Read first instruction, or firecount. If no instruction then the closing paren
+    // of the clump will be found immediately
+    _string.ReadToken(&token);
+    IntMax fireCount = 1;
+    if (token.ReadInt(&fireCount)) {
+        _string.ReadToken(&instructionNameToken);
+    } else if (token.CompareCStr(tsFireCountOpToken)) {
+        if (!_string.ReadChar('('))
+            return LOG_EVENT(kHardDataError, "'(' missing");
+
+        _string.ReadToken(&token);
+        if(!token.ReadInt(&fireCount)) {
+            return LOG_EVENT(kHardDataError, "fire count error");
+        }
+
+        instructionNameToken = token;
+        if (!_string.ReadChar(')'))
+            return LOG_EVENT(kHardDataError, "')' missing");
+
+        _string.ReadToken(&instructionNameToken);
+    } else {
+        // Using default FireCount(1). Treat token as regulat instruction.
+        instructionNameToken = token;
+    }
     
+    state.SetClumpFireCount((Int32)fireCount);
     state.StartSnippet(&viClump->_codeStart);
 
-    // Read first instruction. If no instruction then the closing paren
-    // of the clump will be found immediately
-    _string.ReadToken(&instructionNameToken);
     while(!instructionNameToken.CompareCStr(")")) {
         RepinLineNumberBase();
 

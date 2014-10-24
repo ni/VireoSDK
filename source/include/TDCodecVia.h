@@ -174,6 +174,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsCallVIToken           "CallVI"
 #define tsCopyOpToken           "Copy"
 #define tsPerchOpToken          "Perch"
+#define tsFireCountOpToken      "FireCount"
 
 #define tsTypeType              "Type"
 #define tsExecutionContextType  "ExecutionContext"

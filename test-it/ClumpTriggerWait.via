@@ -8,7 +8,8 @@ define (MultiClump dv(.VirtualInstrument (
     e(dv(.String 'Clump 0 - 2Done') s0_2Done)
     e(dv(.UInt32 100) oneHundred)
   ) 
-  	clump(1         // Clump 0
+  	clump(               // Clump 0
+  	    FireCount(1)
     	Print(s0Start)
         Trigger(1)       // Fork
         Trigger(2)
@@ -17,18 +18,21 @@ define (MultiClump dv(.VirtualInstrument (
         Wait(2)
         Print(s0_2Done)
         )
-  	clump(1         // Clump 1
+  	clump(               // Clump 1
+  	    FireCount(1)
     	Print(s1)
     	WaitMilliseconds(oneHundred)
     	WaitMilliseconds(oneHundred)
         Trigger(3)
         ) 
-  	clump(1         // Clump 2
+  	clump(              // Clump 2
+  	    FireCount(1)    
     	Print(s2)
     	WaitMilliseconds(oneHundred)
         Trigger(3)
         ) 
-  	clump(2         // Clump 3
+  	clump(              // Clump 3
+  	    FireCount(2)
     	Print(s3)
         )        
   )))

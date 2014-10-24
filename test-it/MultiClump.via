@@ -6,20 +6,24 @@ define (MultiClump  dv(.VirtualInstrument  (
     e(dv(.String 'Clump 3') s3)
     e(dv(.Int32 1000) oneThousand)
   )
-  	clump(1          // Clump 0
+  	clump(           // Clump 0
+  	    FireCount(1)
     	Print(s0)
         Trigger(1)
         Trigger(2)
         )
-  	clump(1          // Clump 1
+  	clump(           // Clump 1
+  	  	FireCount(1)
     	Print(s1)
         Trigger(3)
         )
-  	clump(1          // Clump 2
+  	clump(          // Clump 2
+  	  	FireCount(1)
     	Print(s2)
         Trigger(3)
         )
-  	clump(2         // Clump 3
+  	clump(         // Clump 3
+  	  	FireCount(2)
     	Print(s3)
         )
   )))
