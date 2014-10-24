@@ -10,7 +10,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.Double local1)   // number: 0 to 1
         e(.Boolean local2)
     )
-    1
     clump(1
         Random(local1)
         IsGE(local1 c0 local2)

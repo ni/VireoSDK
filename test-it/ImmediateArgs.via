@@ -3,7 +3,6 @@ define (ImplicitArgs dv(.VirtualInstrument (
     e(.Int32 ci32)
     e(.Double cdouble)
   ) 
-  1 
   clump(1 
    // Immediate arguments will be allocated as constants in the modules/system scope.
    // They will be reused as much as possible.

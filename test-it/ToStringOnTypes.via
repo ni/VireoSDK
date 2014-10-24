@@ -5,7 +5,6 @@ define (ToStringForTypes dv(.VirtualInstrument (
         e(.Type   t)
         e(dv(.Int16 10) width)
     )
-    1
     clump (1
         ToString(t width string)
         DPrintf(" The type as a string is %s" string)

@@ -7,7 +7,7 @@ define/**/(/**/Test/**/ /**/dv/**/(/**/.VirtualInstrument/**/ /**/ (
     e(dv(.Int32 2)  variable2) 
     e(.Int32 result) 
   /**/)/**//**/
-  /**/1/**/
+  /**/
   /**/clump/**/(/**/1/**/
 /**/    /**/Add/**/(/**/variable1/**//**/variable2/**/ result)/**/ /*
 

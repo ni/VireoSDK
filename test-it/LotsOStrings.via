@@ -17,7 +17,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.String local6)
         e(dv(a(.String *) () ) local7)   // string array
     )
-    1
     clump(1
 //--- begin for loop
         Copy(c0 local5 )                          // Pre-Loop copy into LSR
@@ -53,7 +52,6 @@ define (videf2 dv(.VirtualInstrument (
         e(.String local6)
         e(dv(a(.String *) () ) local7)   // string array
     )
-    1
     clump(1
 //--- begin for loop
         Copy(c0 local5 )                          // Pre-Loop copy into LSR
@@ -89,7 +87,6 @@ define (videf3 dv(.VirtualInstrument (
         e(.String local6)
         e(dv(a(.String *) () ) local7)   // string array
     )
-    1
     clump(1
 //--- begin for loop
         Copy(c0 local5 )                          // Pre-Loop copy into LSR

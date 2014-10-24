@@ -14,7 +14,6 @@ define (StringFuncions dv(.VirtualInstrument (
         e(dv(.Int32 100)   c100)
         e(dv(.Int32 110)   c110)
     )
-    1
     clump (1
         Print(variable1)
         ArraySubset(str abc c0 c1)

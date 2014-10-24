@@ -37,7 +37,6 @@ define (Test dv(.VirtualInstrument (
     e(c(e(.Int32)e(.Double)e(.Boolean)e(.String))  cluster1)
 
   ) 
-  1 
   clump(1 
  //   AddInt32(x x x)
     Print(vType)

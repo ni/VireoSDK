@@ -9,7 +9,6 @@ define (videf1 dv(.VirtualInstrument (
     e(a(.Int32 *) local2)
     e(dv(.Int32 -6) local3)
   )
-  1
   clump(1
     Convert(c1 local1)
     Convert(c2 local2)

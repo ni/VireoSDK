@@ -47,7 +47,6 @@ define (Test dv(.VirtualInstrument (
     e(.UInt16 vUInt16) 
     e(.UInt32 vUInt32) 
     e(.UInt64 vUInt64)   ) 
-  1 
   clump(1 
     // Test initial sizes
     //------

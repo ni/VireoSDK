@@ -28,7 +28,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.Boolean result)
         e(dv(.String "--------") line)
     )
-    1 
     clump(1 
         IsLT(c16 c4 result)
         Print(result)

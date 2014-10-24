@@ -21,7 +21,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.UInt8 n2)
     ) (97 121 32 ) ) eltAoC)   // Array Of a Cluster Of Three Bytes
   )
-  1
   clump(1
     Copy(c1 local1)
     Search1DArray(local1 elt idxIn idxOut)

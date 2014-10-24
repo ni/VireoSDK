@@ -21,7 +21,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.String local9)   // Results
         e(dv(.String '') local10)   // substring
     )
-    1
     clump(1
         Copy(c0 local2 )                          // Pre-Loop copy into LSR
         Copy(c1 local4 )                          // Pre-Loop copy into LSR

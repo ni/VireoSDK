@@ -39,7 +39,6 @@ define (videf1 dv(.VirtualInstrument (
     )
     c(
     )
-    1
     clump(1
 //--- begin case structure
         BranchIfTrue(0 local1)                    // CaseStructure test
@@ -73,7 +72,6 @@ define (videf2 dv(.VirtualInstrument (
         e(.UInt8 local7)   // Numeric
         e(a(.Int32 *) local8)   // Array
     )
-    1
     clump(1
 //--- begin for loop
         Copy(c0 local2 )                          // set loop count

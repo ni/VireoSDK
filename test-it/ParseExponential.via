@@ -28,7 +28,6 @@ c(
 e(dv(a(.Double *) (1.1 9.01926e-314 ) ) local1) // x+1
 e(dv(.String "----------") line)
 )
-1
 clump(1
 Print(c0)
 Print(c1)

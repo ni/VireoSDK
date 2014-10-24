@@ -5,7 +5,6 @@ define (BranchBackAndForth dv(.VirtualInstrument (
    e(dv(.Int32 3)  c3)
    e(dv(.Int32 4)  c4)
    ) 
- 1 
  clump(1 
    // A program that hops back and forth
    Print(c1)  //Start Here

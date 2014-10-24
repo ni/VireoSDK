@@ -13,7 +13,6 @@ define (PrintBanner dv(.VirtualInstrument (
   |_______/   /___/  /__/     /_______/  /_______/SDG
 ") banner)
  )
-    1
     clump (1
         Print(banner)
     )

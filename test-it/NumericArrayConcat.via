@@ -13,7 +13,6 @@ define (videf1 dv(.VirtualInstrument (
         e(a(e(.Int32) *) w6)
         e(a(e(.Int32) *) w7)
     )
-    1 
     clump(1 
         ArrayConcatenate( w6 c5 c1 c4 c3 c2 )
         ArrayConcatenate( w7 c1 w6 c3 )

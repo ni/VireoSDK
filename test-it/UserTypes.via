@@ -7,7 +7,6 @@ define (Test dv(.VirtualInstrument (
  c(
     e(.Int32OneTwoThree variable0) 
   ) 
-  1 
   clump(1 
     Print(variable0) 
    )

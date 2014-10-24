@@ -15,7 +15,6 @@ define (HelloTime dv(.VirtualInstrument (
      e(dv(.Int64 1000) i1000)
      e(dv(.UInt64 50) ui50)
      )
-    1
     clump (1
         ATimeGetCurrent(t1)
         //----------------------------

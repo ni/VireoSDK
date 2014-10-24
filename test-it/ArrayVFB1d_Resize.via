@@ -13,7 +13,6 @@ define (ArrayDemo dv(.VirtualInstrument (
     e(.Int32 length_z)  // zero
     e(.Int32 length_r)  // just right
   )
-  1
     clump(1
         ArrayLength(variableArray1d length_i)
         ArrayResize(variableArray1d c500)

@@ -19,7 +19,6 @@ define (videf1 dv(.VirtualInstrument (
     c(
         e(.String local1)   // str
     )
-    1 
     clump(1 
         Copy(c0.n2.n2.n1 local1 )                 // unbundle
         Print(local1)

@@ -13,7 +13,6 @@ define (videf1 dv(.VirtualInstrument (
         e(dv(.Boolean f) prependArraySize)
         e(dv(.Boolean f) error)
     )
-    1 
     clump(1 
         FlattenToString(local1 prependArraySize local2)
         Print(local2)

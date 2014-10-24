@@ -4,7 +4,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(a(.String *) fileList)
         e(a(.String *) folderList)
     )
-    1
     clump (1
         ListDirectory(path fileList)
         Print(fileList)

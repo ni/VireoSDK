@@ -21,7 +21,6 @@ define (videf1 dv(.VirtualInstrument (
         e(a(e(.Int32) *) local7)
         e(a(e(.Int32) *) local8)
     )
-    1 
     clump(1 
         ArraySubset(local1 c1 * c0)
         ArraySubset(local2 c1 c3 c2)

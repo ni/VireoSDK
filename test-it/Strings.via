@@ -28,7 +28,6 @@ Line4           tabbed field') cHelloWorldMultiline)
     e(.Single vSingle)
     e(.Boolean vBoolean)
  )  // defaults to false
- 1 
  clump(1 
   ToString(vInt8 * cStrValue)
   Print (cStrValue)

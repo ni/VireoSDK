@@ -12,7 +12,6 @@ define (Mandelbrot dv(.VirtualInstrument (
         e(dv(.Int32 1) c1)
         e(dv(.Int32 50) c50)
     )
-    1
     clump (1
         Copy(c0 i)
         Copy(cmplxZero z)  // alternately Init(z)
@@ -48,7 +47,6 @@ define (MandelbrotMain dv(.VirtualInstrument (
         e(.ComplexDouble    cmplxOut)
         e(.Double           abs)
         )
-    1
     clump (1
         Copy(yFirst y)
         Perch(0)

@@ -17,7 +17,6 @@ define (HelloWorld dv(.VirtualInstrument (
 
         e(.Boolean boolVar)
     )
-    1
     clump (1
         // Generic Cluster Ops
         Add(c1 c2 c3)

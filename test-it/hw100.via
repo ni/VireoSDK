@@ -1,406 +1,406 @@
 // Via file for LabVIEWs EggShell
 define (HelloWorld0 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World0.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld1 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World1.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld2 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World2.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld3 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World3.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld4 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World4.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld5 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World5.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld6 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World6.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld7 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World7.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld8 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World8.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld9 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World9.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld10 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World10.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld11 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World11.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld12 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World12.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld13 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World13.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld14 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World14.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld15 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World15.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld16 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World16.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld17 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World17.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld18 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World18.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld19 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World19.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld20 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World20.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld21 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World21.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld22 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World22.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld23 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World23.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld24 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World24.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld25 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World25.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld26 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World26.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld27 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World27.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld28 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World28.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld29 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World29.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld30 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World30.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld31 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World31.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld32 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World32.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld33 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World33.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld34 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World34.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld35 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World35.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld36 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World36.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld37 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World37.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld38 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World38.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld39 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World39.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld40 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World40.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld41 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World41.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld42 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World42.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld43 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World43.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld44 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World44.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld45 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World45.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld46 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World46.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld47 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World47.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld48 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World48.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld49 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World49.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld50 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World50.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld51 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World51.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld52 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World52.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld53 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World53.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld54 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World54.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld55 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World55.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld56 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World56.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld57 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World57.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld58 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World58.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld59 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World59.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld60 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World60.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld61 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World61.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld62 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World62.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld63 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World63.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld64 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World64.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld65 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World65.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld66 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World66.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld67 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World67.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld68 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World68.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld69 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World69.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld70 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World70.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld71 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World71.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld72 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World72.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld73 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World73.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld74 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World74.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld75 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World75.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld76 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World76.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld77 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World77.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld78 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World78.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld79 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World79.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld80 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World80.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld81 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World81.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld82 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World82.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld83 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World83.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld84 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World84.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld85 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World85.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld86 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World86.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld87 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World87.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld88 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World88.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld89 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World89.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld90 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World90.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld91 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World91.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld92 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World92.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld93 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World93.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld94 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World94.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld95 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World95.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld96 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World96.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld97 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World97.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld98 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World98.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld99 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World99.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 define (HelloWorld100 dv(.VirtualInstrument (
 c( e(dv(.String 'Hello World100.')  variable1) ) 
-1  clump(1  Print(variable1) )) ) )
+clump(1  Print(variable1) )) ) )
  
 enqueue (HelloWorld100)

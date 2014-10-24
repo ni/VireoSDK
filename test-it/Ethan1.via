@@ -3,7 +3,6 @@ define (videf1 dv(.VirtualInstrument (
         e(dv(.Boolean false)  fp1)   // stop 3
         e(dv(.Boolean false)  fp2)   // stop 2
     ) 
-    1 
     clump(1 
        Perch(0)
     )

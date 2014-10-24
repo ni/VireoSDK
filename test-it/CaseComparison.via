@@ -28,7 +28,6 @@ define (videf3 dv(.VirtualInstrument (
     c(
         e(.Int32 local2)
     )
-    1
     clump(1
 //--- begin case structure
         BranchIfEQString(1 local1 c7)             // CaseStructure test
@@ -64,7 +63,6 @@ define (videf2 dv(.VirtualInstrument (
     c(
         e(.Int32 local2)
     )
-    1
     clump(1
 //--- begin case structure
         BranchIfGTString(0 local1 c14)            // CaseStructure range test
@@ -95,7 +93,6 @@ define (videf1 dv(.VirtualInstrument (
     c(
         e(.Int32 local1)   // Numeric
     )
-    1
     clump(1
         videf2(local1 c0)
         Print(local1)

@@ -37,7 +37,6 @@ define (videf1 dv(.VirtualInstrument (
 		e(dv(a(.UInt16 *) () ) U16_array1)
         e(dv(a(.UInt16 *) () ) U16_array2)
     )
-    1
     clump(1
         Split(I8_neg1 U8_hi U8_lo)
         IsEQ(U8_hi U8_0 result_hi)
@@ -78,7 +77,6 @@ define (videf1 dv(.VirtualInstrument (
 		Split(I32_array U16_array1 U16_array2)
 		Print(U16_array1)
 		Print(U16_array2)
-
     )
 )))
 enqueue (videf1)

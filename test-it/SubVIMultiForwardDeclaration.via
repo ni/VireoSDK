@@ -2,7 +2,6 @@ define (SubVI1 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 1')  sInside)
   ) 
-  1 
   clump(1 
     Print(sInside)
    )
@@ -12,7 +11,6 @@ define (SubVI2 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 2')  sInside)
   ) 
-  1 
   clump(1 
     Print(sInside)
    )
@@ -24,7 +22,6 @@ define (TopVI dv(.VirtualInstrument (
     e(dv(.String 'Before call')  sBefore)
     e(dv(.String 'After call')  sAfter)
   ) 
-  1 
   clump(1 
     Print(sBefore)
     SubVI1()
@@ -39,7 +36,6 @@ define (SubVI3 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 3')  sInside)
   ) 
-  1 
   clump(1 
     Print(sInside)
    )
@@ -49,12 +45,9 @@ define (SubVI4 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 4')  sInside)
   ) 
-  1 
   clump(1 
     Print(sInside)
    )
  )))
-
-
 
 enqueue (TopVI)

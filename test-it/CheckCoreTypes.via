@@ -37,7 +37,6 @@ define (HelloWorld dv(.VirtualInstrument (
      e(.Int32 encoding)
      e(.String generatedString)
     )
-    2
     clump (1
         TypeManagerCurrentTypeManager(tm)
         TypeManagerGetTypes(tm allTypes)

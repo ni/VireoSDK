@@ -13,7 +13,6 @@ define (videf1 dv(.VirtualInstrument (
 		e(dv(.ComplexDouble (0 1)) i)
 		e(.ComplexDouble cmplx)
     )
-    1 
     clump(1 
 		Mul(i i cmplx)
 		Mul(cmplx cmplx cmplx)

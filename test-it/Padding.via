@@ -28,7 +28,6 @@ define (HelloWorld dv(.VirtualInstrument (
     e(.Type     t)
     e(.Boolean  b)
   )
-    1
     clump (1
     TypeOf(v0 t)
     TypeHasPadding(t b)

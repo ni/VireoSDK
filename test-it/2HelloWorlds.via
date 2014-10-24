@@ -10,7 +10,6 @@ define (HelloWorld dv(.VirtualInstrument (
     e(.HelloWorldString variable2) 
     e(.Int32 c0) 
     )
-    1
     clump (1
         DPrintf("v1 = <%s>" variable1)
         DPrintf("v2 = <%s>" variable2)

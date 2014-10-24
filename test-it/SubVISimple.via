@@ -3,7 +3,6 @@ define (SubVI0 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call') sInside)
   )
-  1 
   clump(1 
     Print(sInside)
    )
@@ -14,7 +13,6 @@ define (SubVI1  dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call') sInside)
   )
-  1 
   clump(1 
     Print(sInside)
   Print (x)
@@ -27,7 +25,6 @@ define (SubVI2  dv(.VirtualInstrument (
     e(dv(.String 'Inside call') sInside)
     e(dv(.Int32 1) c1)
   )
-  1 
   clump(1 
     Print(sInside)
     DPrintf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
@@ -43,7 +40,6 @@ define (SubVI3 dv(.VirtualInstrument (
     e(dv(.String 'Inside call') sInside)
     e(dv(.Int32 1) c1)
   )
-  1 
   clump(1 
     DPrintf("In SubVI3 with in/out parameter initially <%s>, one is <%s>" x c1)
     Add(x c1 x)
@@ -57,7 +53,6 @@ define (SubVI1d dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call') sInside)
   )
-  1 
   clump(1 
     Print(sInside)
   Print (x)
@@ -70,7 +65,6 @@ define (SubVI2d dv(.VirtualInstrument (
     e(dv(.String 'Inside call') sInside)
     e(dv(.Double 1) c1)
   )
-  1 
   clump(1 
     Print(sInside)
     DPrintf("In SubVI2d with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
@@ -86,7 +80,6 @@ define (SubVI3d dv(.VirtualInstrument (
     e(dv(.String 'Inside call') sInside)
     e(dv(.Double 1) c1)
   )
-  1 
   clump(1 
     DPrintf("In SubVI3d with in/out parameter initially <%s>, one is <%s>" x c1)
     Add(x c1 x)
@@ -102,7 +95,6 @@ define (TopVI dv(.VirtualInstrument (
     e(dv(.String 'Before call') sBefore)
     e(dv(.String 'After call')  sAfter)
   )
-  1 
     clump(1 
     SubVI0()
     Print(sBefore)

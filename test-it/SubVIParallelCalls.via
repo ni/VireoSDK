@@ -15,7 +15,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.Int32 local4)   // Calls
         e(dv(.Int32 -1) local6)
     )
-    1
     clump(1
 //--- begin while loop
         Perch(0)
@@ -40,7 +39,6 @@ define (videf2 dv(.VirtualInstrument (
         e(.Int32 local3)   // Calls
         e(.Int32 local4)
     )
-    4
     clump(1
         Trigger(1)                                // fork
         Trigger(2)                                // fork

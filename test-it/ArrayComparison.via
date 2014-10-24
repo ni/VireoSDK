@@ -23,7 +23,6 @@ define (videf1 dv(.VirtualInstrument (
             e(.UInt8 n2)
         )) *) ((65 0 0)) ) local2)   // Array Of a Cluster Of Three Bytes
     )
-    1 
     clump(1 
         IsLT(array1234 emptyArray result)
         Print(result)

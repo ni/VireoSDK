@@ -11,7 +11,6 @@ define (ArrayDemo dv(.VirtualInstrument (
     e(a(.Int32 2 3)   fixedArray2d)
     e(a(.Int32 1 2 3) fixedArray3d)
   )
-  1
     clump(1
         Print(variableArray1d)
         Print(fixedArray1d)

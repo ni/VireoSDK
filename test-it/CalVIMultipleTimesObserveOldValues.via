@@ -7,7 +7,6 @@ c(
     e(dv(.String 'Inside call') sInside)
     e(dv(.Int32 1) c1)
 )
-1
 clump(1 
     Print(sInside)
     DPrintf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
@@ -21,7 +20,6 @@ define (HelloWorld dv(.VirtualInstrument (
 c(
      e(dv(.Int32 42) value)
 )
-    1
     clump (1
         SubVI2(value value)
         SubVI2(value value)

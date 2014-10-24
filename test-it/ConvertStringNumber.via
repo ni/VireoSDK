@@ -44,7 +44,6 @@ define (Test dv(.VirtualInstrument (
     e(.Single local1)
     e(.Int32 local2)
  ) 
-  1 
   clump(1 
     // Int32 to String
     Print(cn2)

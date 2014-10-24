@@ -9,7 +9,6 @@ define (videf1 dv(.VirtualInstrument (
     e(a(.Int32 *) local1)
     e(a(.Int32 *) local2)
   )
-  1
   clump(1
 // Use default value for index param (append to end of array)
     Convert(c1 local1)

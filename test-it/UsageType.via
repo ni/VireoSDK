@@ -22,7 +22,6 @@ define (HelloWorld dv(.VirtualInstrument (
      e(.Int32 i)
      e(.Int32 n)
     )
-    2
     clump (1
         Print(variable1)
         TypeSubElementCount(tvar n)

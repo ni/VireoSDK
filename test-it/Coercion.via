@@ -203,7 +203,6 @@ define (videf1 dv(.VirtualInstrument (
             e(.ComplexDouble n12)   // Numeric 13
         ) local155)   // Cluster
     )
-    1
     clump(1
         Convert(c0 local1)
         Convert(c0 local2)

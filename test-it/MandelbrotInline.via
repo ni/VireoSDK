@@ -40,7 +40,6 @@ define (MandelbrotMain dv(.VirtualInstrument (
         e(.Int64            tStart)
         e(.Int64            tDone)
         )
-    1
     clump (1
         ArrayFill(buffer c50  char2)
         ArrayResize(buffer c0)
@@ -91,7 +90,6 @@ define (MandelbrotMain dv(.VirtualInstrument (
 define (Mandelbrot10 dv(.VirtualInstrument (
     // Dataspace
     c()
-    1
     clump (1
     MandelbrotMain()
 /*  MandelbrotMain()

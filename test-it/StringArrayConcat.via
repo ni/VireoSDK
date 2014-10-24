@@ -38,7 +38,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.String w31)
         e(.String w32)
     )
-    1 
     clump(1 
         ArrayConcatenate( w19 c2 )
         ArrayConcatenate( w20 c6 c5 )

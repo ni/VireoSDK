@@ -1,6 +1,5 @@
 define (HelloWorld0 dv (.VirtualInstrument (
  c( e(dv(.String 'Could this be a simple reentrant VI?, Hello world.') variable1) )
-            1
             clump (1
                 Print(variable1)
             )
@@ -12,7 +11,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String
         "(
             c( e(dv(.String 'Somewhat of a lambda, Hello world.') variable1) )
-            1
             clump (1
                 Print(variable1)
             )
@@ -22,7 +20,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String
         "(
             c( e(dv(.MyVeryOwnString 'Hello world using dynamically defined string type.') variable1) )
-            1
             clump (1
                 Print(variable1)
             )
@@ -32,7 +29,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String
         "(
             c( e(dv(.String 'Scripted Hello world.') variable1) )
-            1
             clump (1
                 PrintZZZX(variable1)
                 Print(variable1 variable1)
@@ -61,7 +57,6 @@ define (HelloWorld dv(.VirtualInstrument (
             e(dv(.Int32 505) variable10)
          //   e(dv(.String 'a by-value hello world') variable1)
             )
-            1
             clump (1
                 DPrintf("a by-value hello world")
             // Print(variable1)

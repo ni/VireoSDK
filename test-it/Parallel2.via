@@ -5,7 +5,6 @@ define (Parallel2  dv(.VirtualInstrument (
         e(dv(.String 'Pat you head.')  sHead)
         e(dv(.String 'Rub your tummy.')  sTummy)
     )
-    2               //Two clumps in this VI
     clump(1         //Clump 0 the root clump
         Trigger(1)        
         WaitMilliseconds(fifty)

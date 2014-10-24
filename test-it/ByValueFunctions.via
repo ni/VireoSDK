@@ -34,7 +34,6 @@ define (HelloWorld dv(.VirtualInstrument (
       ) v3)
 */
   )
-  1
   clump (1
     Print(v0DGeneric)
     Print(v1DFGeneric)

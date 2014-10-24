@@ -14,7 +14,6 @@ define (PrintArrayInfo dv(.VirtualInstrument (
     e(.Int32 length_z)  // zero
     e(.Int32 length_r)  // just right
  )
- 1
  clump(1
     DPrintf("------------------------------")
     Print (message)
@@ -43,7 +42,6 @@ define (ArrayDemo dv(.VirtualInstrument (
     e(dv(a(.Int32 10) (1 1 2 3 5 8))   fixedArray1d)
     e(dv(a(.Int32 -10) (1 1 2 3 5 8))  boundedArray1d)
   )
-  1
     clump(1
         PrintArrayInfo(strVariable variableArray1d)
         PrintArrayInfo(strFixed fixedArray1d)

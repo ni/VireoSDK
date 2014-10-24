@@ -6,7 +6,6 @@ define (Test dv(.VirtualInstrument (
     e(.Boolean y)
     e(.Boolean value)
  ) 
-  2
   clump(1 
     Copy(cf x)
     Copy(cf y)

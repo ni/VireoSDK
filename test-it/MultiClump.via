@@ -6,7 +6,6 @@ define (MultiClump  dv(.VirtualInstrument  (
     e(dv(.String 'Clump 3') s3)
     e(dv(.Int32 1000) oneThousand)
   )
-  4
   	clump(1          // Clump 0
     	Print(s0)
         Trigger(1)

@@ -14,7 +14,6 @@ c(
   e(.RectangleWithName   rwn1)
   e(.RectangleWithName   rwn2)
   )
-1
 clump
 (1
     Copy(node1 node2)

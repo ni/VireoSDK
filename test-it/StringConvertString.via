@@ -16,7 +16,6 @@ define (videf1 dv(.VirtualInstrument (
         e(.Single n1)
       ) ('' 0 )) local2) // Cluster
   )
-  1
   clump(1
     Convert(c0 local1)
     Copy(local1 local2 ) // FP Term

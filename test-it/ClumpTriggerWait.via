@@ -8,7 +8,6 @@ define (MultiClump dv(.VirtualInstrument (
     e(dv(.String 'Clump 0 - 2Done') s0_2Done)
     e(dv(.UInt32 100) oneHundred)
   ) 
-  4
   	clump(1         // Clump 0
     	Print(s0Start)
         Trigger(1)       // Fork

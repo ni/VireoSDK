@@ -4,7 +4,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.Int32 427) vInt)
         e(dv(.Double 42.4) vReal)
     )
-    1
     clump (1
         DPrintf("String with default justify   -----------")
         DPrintf("String no field width          -%s-" vStr)

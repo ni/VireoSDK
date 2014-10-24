@@ -22,7 +22,6 @@ define (videf1 dv(.ReentrantVirtualInstrument (
         e(.Single local3)
         e(.Single local4)
     )
-    1
     clump(1
         Copy(local1 local2 )
 //--- begin while loop
@@ -46,7 +45,6 @@ define (videf2 dv(.VirtualInstrument (
         e(.Int32 local2)
         e(.Boolean local3)
     )
-    1
     clump(1
         videf1(local1 c0)
         Print(local1)

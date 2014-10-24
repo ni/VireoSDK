@@ -61,7 +61,6 @@ define (CopyOps dv(.VirtualInstrument (
     e(a(e(.Double) 5 5)    arrayOfDoubleFixed2d)
     e(a(e(.Double) 5 5 5)    arrayOfDoubleFixed3d) 
     ) 
- 1 
  clump(1 
     Copy(cInt8 c2Int8)
     Copy(cInt16 c2Int16)

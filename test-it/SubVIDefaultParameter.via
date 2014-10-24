@@ -17,7 +17,6 @@ define (videf2 dv(.VirtualInstrument (
         e(.Int32 local3)
         e(dv(.Int32 -1) local5)
     )
-    1 
     clump(1 
         Add(local2 local1 local3)
         Copy(local3 local4 )                      // FP Term
@@ -32,7 +31,6 @@ define (videf1 dv(.VirtualInstrument (
     c(
         e(.Int32 local1)   // result
     )
-    1 
     clump(1 
         videf2(local1 c0 c1)  //call the subvi and overwrite the inputs with constant data
         Print(local1)        //6            

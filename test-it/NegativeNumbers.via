@@ -6,7 +6,6 @@ define (FailAssert dv(.VirtualInstrument (
  e(dv(.Int32 -1) cn1)
  e(dv(.Int32 1) c1)
  ) // defaults to false
- 1
  clump(1
   Print(cSeperator)
   Print (c0)

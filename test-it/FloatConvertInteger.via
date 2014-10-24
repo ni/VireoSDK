@@ -19,7 +19,6 @@ define (videf1 dv(.VirtualInstrument (
     e(.Double local1)
     e(dv(.String '---------------') line)
  )
-  2
   clump(1
     Copy(c0 local1)
     Trigger(1)

@@ -16,7 +16,6 @@ define (videf1 dv(.VirtualInstrument (
     e(.Boolean local6)
     e(dv(a(.Int32 *) (0 0 0 0 0 0 0 ) ) local7) // input array
   )
-  1
   clump(1
     Sub(local1 c1 local2)
     Copy(c0 local5 ) // Pre-Loop copy into LSR
@@ -55,7 +54,6 @@ define (videf2 dv(.VirtualInstrument (
     e(.Boolean local6)
     e(dv(a(.Int32 *) (0 0 0 0 0 0 0 ) ) local7) // input array
   )
-  1
   clump(1
     Sub(local1 c1 local2)
     Copy(c0 local5 ) // Pre-Loop copy into LSR

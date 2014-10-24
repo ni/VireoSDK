@@ -2,7 +2,6 @@
  c(
     e(dv(.String 'Hello world. I can fly.')  variable1)
   ) 
-  1 
   clump(1 
    Print(variable1)
    )
@@ -21,7 +20,6 @@ define (Test dv(.VirtualInstrument (
       e(dv(a(e(.Int32) *)  (2 3))  arrayOfInts)
       e(dv(a(e(.Double) *)  (1 2 3 4))   arrayOfDoubles)
   ) 
-  1 
   clump(1 
     ArrayLength(emptyArrayOfTypes value)
     Print(value)

@@ -25,7 +25,6 @@ define (VectorOp dv(.VirtualInstrument (
     e(dv(.String  '----') cSeperator)
 
   ) 
-  1 
     clump(1 
         Print(vPi)
 

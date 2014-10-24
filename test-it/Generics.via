@@ -11,7 +11,6 @@ define (arrayOfPoints dv(.VirtualInstrument (
         )) *) Array)
 		e(dv(a(e(.Double) *) (1 2 3 4 5)) arrayOfDoubles)
     )
-    1 
     clump(1 
         ArrayFill(Array dimSize samplePoint)
 		Mul(Array arrayOfDoubles Array)
@@ -28,7 +27,6 @@ c(
     e(dv(a(e(.Double) *) (0)) array2)
     e(dv(.Double 1) scalar1)
 ) 
-1 
 clump(1 
     Add( array1 scalar1 array2)
     Print(array2)
@@ -59,7 +57,6 @@ define (ClusterMath dv(.VirtualInstrument (
             e(.UInt8 n4)
          )(0 0 0 0))z)
   ) 
-  1 
   clump(1 
     Add(x y.n4 z)
     Print(z)
