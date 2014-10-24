@@ -65,6 +65,8 @@ SDG
     // many different signatures such as AddInt32 AddDouble etc.
     #define VIREO_ALLOW_SYMBOL_OVERLOADS
 
+    #define VIREO_ALLOW_DEPRECATED_CLUMP_COUNT
+
     #define VIREO_TYPE_ATime 1
 
     #define VIREO_TYPE_VARIANT 1

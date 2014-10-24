@@ -749,14 +749,21 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VIREO_ASSERT(dataSpaceType != null)
     
     _string.EatLeadingSpaces();
+    clumpCount = kVariableSizeSentinel;
+    
+#if defined(VIREO_ALLOW_DEPRECATED_CLUMP_COUNT)
     if (_string.ComparePrefixCStr("clump")) {
         clumpCount = kVariableSizeSentinel;
     } else {
-        // TODO if number is '*' then scan and count ahead.
         if (!_string.ReadInt(&clumpCount)) {
             return LOG_EVENT(kHardDataError, "VI Clump count missing");
         }
     }
+#else
+    if (!_string.ComparePrefixCStr("clump")) {
+        return LOG_EVENT(kHardDataError, "Expected 'clump' expression");
+    }
+#endif
 
     // Scan though the clumps to count them and to find the SubString that
     // Holds all of them. In binary format it would be much simpler since a count would
