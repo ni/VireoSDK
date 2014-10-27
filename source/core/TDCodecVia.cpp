@@ -978,7 +978,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         // TODO the type classification can be moved into a codec independent class.
                         SubString formalParameterTypeName;
                         formalType->GetName(&formalParameterTypeName);
-                        // printf("Trying match for %.*s %.*s (%d)\n", FMT_LEN_BEGIN(&instructionNameToken), FMT_LEN_BEGIN(&formalParameterTypeName), i);
+                         // printf("Trying match for %.*s %.*s (%d)\n", FMT_LEN_BEGIN(&instructionNameToken), FMT_LEN_BEGIN(&formalParameterTypeName), i);
                         
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
                             VIREO_ASSERT(!state.VarArgParameterDetected());                    
@@ -993,10 +993,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             state.AddBranchTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
                             state.AddClumpTargetArgument(&token);
-                        } else if (formalParameterTypeName.CompareCStr("VI")) { // TODO was for Call VI, may be legacy now 10c
-                            state.AddSubVITargetArgument(&token);
-                        } else if (formalParameterTypeName.CompareCStr("InstructionFunction")) { //Hmmm
-                            state.AddInstructionFunctionArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
                         } else if (formalParameterTypeName.CompareCStr("StaticString")) {  // For DPrintf, might not be needed now that string literasl are allowed.
