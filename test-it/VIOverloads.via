@@ -1,0 +1,58 @@
+
+define (Magnitude dv(.VirtualInstrument (
+    c(
+        i(.Single   x)
+        i(.Single   y)
+        o(.Single   m)
+    )
+    c(
+        e(.Single   t1)
+        e(.Single   t2)
+    )
+    clump (
+          DPrintf(" In Single Version %s %s" x y)
+          Mul(x x t1)
+          Mul(y y t2)
+          Add(t2 t1 t2)
+          SquareRoot(t2 m)
+    )
+) ) )
+
+define (Magnitude dv(.VirtualInstrument (
+    c(
+        i(.Double   x)
+        i(.Double   y)
+        o(.Double   m)
+    )
+    c(
+        e(.Double   t1)
+        e(.Double   t2)
+    )
+    clump (
+          DPrintf(" In Double Version %s %s" x y)
+          Mul(x x t1)
+          Mul(y y t2)
+          Add(t2 t1 t2)
+          SquareRoot(t2 m)
+    )
+) ) )
+
+define (Test dv(.VirtualInstrument (
+    c(
+        e(dv(.Double  10) xd)
+        e(dv(.Double  10) yd)
+        e(.Double zd)
+        
+        e(dv(.Single  10) xs)
+        e(dv(.Single  10) ys)
+        e(.Single zs)
+    )
+    clump(
+        Magnitude(xd yd zd)
+        DPrintf(" zd %s" zd)
+        Magnitude(xs ys zs)
+        DPrintf(" zs %s" zs)
+    )
+)))
+
+enqueue (Test)

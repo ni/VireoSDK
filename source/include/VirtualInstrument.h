@@ -282,7 +282,7 @@ public:
     void            AddBranchTargetArgument(SubString* branchTargetToken);
     void            AddClumpTargetArgument(SubString* clumpIndexToken);
     void            AddInstructionFunctionArgument(SubString* instructionNameToken);
-    VirtualInstrument*  AddSubVITargetArgument(SubString* subVIName);
+    VirtualInstrument*  AddSubVITargetArgument(TypeRef viType);
     Int32           AddSubSnippet();
     void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...);
     void            LogArgumentProcessing(Int32 lineNumber);

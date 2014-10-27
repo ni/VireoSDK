@@ -403,9 +403,7 @@ TypeRef ClumpParseState::StartNextOverload()
     } else if (t && (t->IsA(&strVI))) {
         // Also covers reentrant VIs since reentrant VIs inherit from simple VIs
         _bIsVI = true;
-        SubString viName;
-        t->GetName(&viName);
-        VirtualInstrument* vi = AddSubVITargetArgument(&viName);
+        VirtualInstrument* vi = AddSubVITargetArgument(t);
         _instructionPointerType = t;
         _instructionType = vi->ParamBlock()->ElementType();
     }
@@ -680,31 +678,26 @@ void ClumpParseState::AddClumpTargetArgument(SubString* clumpIndexToken)
     return;
 }
 //------------------------------------------------------------
-VirtualInstrument* ClumpParseState::AddSubVITargetArgument(SubString* subVIName)
+VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
 {
     static SubString strReentrantVI(ReentrantVI_TypeName);
     VirtualInstrument *vi = null;
-
-    // 1. Look up the type. This will be VirtualInstrument type.
-    TypeRef targetVIType = _vi->OwningContext()->TheTypeManager()->FindType(subVIName);
-
-    if (!targetVIType) {
-        return null;
-    }
     
-    // 2. The primary instance of the actual VI will be the value of the type.
-    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) targetVIType->Begin(kPARead);
+    // The primary instance of the actual VI will be the value of the type.
+    // If its not reentrant then every caller uses that instance. If it is, then a copy needs to be made.
+    
+    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) viType->Begin(kPARead);
     if ((*pObj)->Type()->IsA(&strReentrantVI)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
         TypeManagerRef tm = this->_vi->OwningContext()->TheTypeManager();
         
         // Reentrant VI clones exist in TM the caller VI is in.
-        DefaultValueType *cdt = DefaultValueType::New(tm, targetVIType, false);
+        DefaultValueType *cdt = DefaultValueType::New(tm, viType, false);
         VirtualInstrumentObject* pVICopy = *(VirtualInstrumentObject**)cdt->Begin(kPARead);
         vi = (VirtualInstrument*) pVICopy->RawObj();
     } else {
-        // Non reentrant use the original type
+        // Non reentrant VIs use the original type
         vi =  (VirtualInstrument*) (*pObj)->RawObj();
     }
     
