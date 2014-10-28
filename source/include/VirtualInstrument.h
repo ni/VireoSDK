@@ -185,9 +185,7 @@ public:
         kArgumentResolvedToParameter,
         kArgumentResolvedToClump,
         kArgumentResolvedToPerch,
-        kArgumentResolvedToStaticString,
-        kArgumentResolvedToInstructionFunction,
-        kArgumentResolved_LastGood = kArgumentResolvedToStaticString,
+        kArgumentResolved_LastGood = kArgumentResolvedToPerch,
     };
     ArgumentState   _argumentState;
     EventLog*       _pLog;
@@ -272,7 +270,6 @@ public:
     TypeRef         ReresolveInstruction(SubString* opName, bool allowErrors);
     void            ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData);
     void            AddDataTargetArgument(SubString* argument, Boolean prependType);
-    void            AddStaticString(SubString* argument);
     void            InternalAddArg(TypeRef actualType, void* arg);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);
     Boolean         VarArgParameterDetected()   { return _pVarArgCount != null; }
@@ -281,7 +278,6 @@ public:
     void            MarkPerch(SubString* perchToken);
     void            AddBranchTargetArgument(SubString* branchTargetToken);
     void            AddClumpTargetArgument(SubString* clumpIndexToken);
-    void            AddInstructionFunctionArgument(SubString* instructionNameToken);
     VirtualInstrument*  AddSubVITargetArgument(TypeRef viType);
     Int32           AddSubSnippet();
     void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...);

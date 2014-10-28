@@ -566,15 +566,6 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
     InternalAddArg(ActualArgumentType(), pData);
 }
 //------------------------------------------------------------
-void ClumpParseState::AddStaticString(SubString* argument)
-{
-    _argumentState = kArgumentResolvedToStaticString;
-    // Cast off the const char*.
-    // Functions that take a static string should not modify it.
-    InternalAddArg(null, (AQBlock1*)argument->Begin()+1);
-    InternalAddArg(null, (AQBlock1*)argument->End()-1);
-}
-//------------------------------------------------------------
 void ClumpParseState::InternalAddArg(TypeRef actualType, void* arg)
 {
     _argTypes[_argCount] = actualType;
@@ -708,16 +699,6 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
     return vi;
 }
 //------------------------------------------------------------
-void ClumpParseState::AddInstructionFunctionArgument(SubString* instructionNameToken)
-{
-    TypeRef instructionType = _vi->OwningContext()->TheTypeManager()->FindType(instructionNameToken);
-    InstructionFunction     functionPointer;
-    instructionType->InitData(&functionPointer);
-    
-    _argumentState = kArgumentResolvedToInstructionFunction;
-    InternalAddArg(null, (void*) functionPointer);
-}
-//------------------------------------------------------------
 Int32 ClumpParseState::AddSubSnippet()
 {
     // The sub snippet will not be built yet so just add null.
@@ -801,8 +782,6 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
         case kArgumentResolvedToPerch:                  simpleMessage = "Argument is perch";        break;
         case kArgumentResolvedToParameter:              simpleMessage = "Argument is parameter";    break;
         case kArgumentResolvedToDefault:                simpleMessage = "Argument is default";      break;
-        case kArgumentResolvedToStaticString:           simpleMessage = "Argument is static";       break;
-        case kArgumentResolvedToInstructionFunction:    simpleMessage = "Argument is ifunction";    break;
             simpleMessage = "Argument is clump";
             break;
         default:

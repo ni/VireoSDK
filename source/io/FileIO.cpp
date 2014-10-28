@@ -306,8 +306,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 //------------------------------------------------------------
 struct DPrintfParamBlock : public VarArgInstruction
 {
-    _ParamDef(const Utf8Char, formatBegin);
-    _ParamDef(const Utf8Char, formatEnd);
+    _ParamDef(StringRef, format);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
@@ -318,7 +317,7 @@ VIREO_FUNCTION_SIGNATUREV(DPrintf, DPrintfParamBlock)
     
     // Ignore begin & end, then div 2 since each argument is passed via two arguments.
     Int32       count = (_ParamVarArgCount() - 2) / 2;
-    SubString   format(_ParamPointer(formatBegin), _ParamPointer(formatEnd));
+    SubString   format = _Param(format)->MakeSubStringAlias();
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
     Format(&format, count, arguments, tempString.Value);
@@ -348,7 +347,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
     DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle");
     // Primitives
     DEFINE_VIREO_FUNCTION(Print, "p(i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(DPrintf, "p(i(.VarArgCount)i(.StaticString)i(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(DPrintf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))");
     //--------
 #ifdef VIREO_FILESYSTEM
     DEFINE_VIREO_FUNCTION(FileOpen, "p(i(.String)i(.String)i(.Int32)i(.Int32)i(.Boolean)i(.FileHandle)i(.Boolean)o(.Int32))");

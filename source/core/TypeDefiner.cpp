@@ -205,13 +205,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
-    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
-    
-    // A Debugging type that allows static data to be directly accessed from the loaded image
-    // or perhaps copied to separately malloced blocks (For DPrinf)
-    // Initially this points to data in its raw format not after processing,
-    // so no escape sequences will have been processed.
-    Define(tm, "StaticString", "c(e(.DataPointer begin) e(.DataPointer end))");
+    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");    
 }
 
 }

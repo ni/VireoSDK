@@ -995,8 +995,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
-                        } else if (formalParameterTypeName.CompareCStr("StaticString")) {  // For DPrintf, might not be needed now that string literasl are allowed.
-                            state.AddStaticString(&token);
                         } else {
                             // The most common case is a data value
                             state.AddDataTargetArgument(&token, false); // For starters
