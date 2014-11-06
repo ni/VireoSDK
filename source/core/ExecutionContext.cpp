@@ -25,7 +25,7 @@ _PROGMEM Instruction0 ExecutionContext::_culDeSac;
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
 TypeManagerRef  ExecutionContext::_theTypeManager;
 //VIClump*      ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
-Queue           ExecutionContext::_runQueue;			// Elts ready To run
+VIClumpQueue    ExecutionContext::_runQueue;			// Elts ready To run
 VIClump*        ExecutionContext::_sleepingList;		// Elts waiting for something external to wake them up
 VIClump*        ExecutionContext::_runningQueueElt;		// Elt actually running
 IntSmall        ExecutionContext::_breakoutCount;

@@ -41,14 +41,14 @@ class EventLog;
             ----------              ------------
 ~~~
 */
-class Queue
+class VIClumpQueue
 {
 public :
     VIClump* _head;
     VIClump* _tail;
 public:
-    Queue();
-    //! True when the Queue is empty.
+    VIClumpQueue();
+    //! True when the VIClumpQueue is empty.
     Boolean IsEmpty() { return (this->_head == null); }
     VIClump* Dequeue();
     void Enqueue(VIClump*);
@@ -94,7 +94,7 @@ public:
     ECONTEXT    TypeManagerRef TheTypeManager()    { return _theTypeManager; }
 
 private:
-    ECONTEXT    Queue           _runQueue;			//! Clumps ready to run
+    ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
     ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
     ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 

@@ -16,14 +16,14 @@ SDG
 namespace Vireo
 {
 
-Queue::Queue()
+VIClumpQueue::VIClumpQueue()
 {
 	this->_head = (VIClump*)null;
 	this->_tail = (VIClump*)null;
 }
 
 //! Add a clump to a Queue. The clump should not be in any other queue.
-void Queue::Enqueue(VIClump* elt)
+void VIClumpQueue::Enqueue(VIClump* elt)
 {
 	VIREO_ASSERT( (null == elt->_next ) )	// non-null would be a sign it is in another queue/list
 
@@ -44,7 +44,7 @@ void Queue::Enqueue(VIClump* elt)
 }
 
 //! Get a clump from a Queue, null returned if none.
-VIClump* Queue::Dequeue()
+VIClump* VIClumpQueue::Dequeue()
 {
 	VIClump *head = this->_head;
 
