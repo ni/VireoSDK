@@ -24,7 +24,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
     switch (encoding) {
         case kEncoding_Array:
         {
-            TypedArrayCore *pArray = *(TypedArrayCore **) pData;
+            TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;
             IntIndex* dimLengths = pArray->GetDimensionLengths();
             Int32 rank = pArray->Type()->Rank();
             
@@ -111,7 +111,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
     switch (encoding) {
         case kEncoding_Array:
         {
-            TypedArrayCore *pArray = pData ? *(TypedArrayCore **) pData : null;
+            TypedArrayCoreRef pArray = pData ? *(TypedArrayCoreRef*) pData : null;
             TypeRef elementType = type->GetSubElement(0);
             Int32 arrayLength;
 
@@ -175,7 +175,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 // pData is null, so call UnflattenData recursing on elements of pDefaultData.
                 // Arrays contained in other data structures always include
                 // length information.
-                TypedArrayCore *pDefaultArray = *(TypedArrayCore **) pDefaultData;
+                TypedArrayCoreRef pDefaultArray = *(TypedArrayCoreRef *) pDefaultData;
                 size_t   elementLength = pDefaultArray->GetSlabLengths()[0];
                 AQBlock1 *pEnd = pDefaultArray->BeginAt(0) + (pDefaultArray->GetDimensionLengths()[0] * elementLength);
                 AQBlock1 *pElementData = pDefaultArray->BeginAt(0);

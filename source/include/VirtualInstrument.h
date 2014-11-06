@@ -44,9 +44,9 @@ class VirtualInstrument
 {
     friend class VIDataProcsClass;
 private:
-    ExecutionContextRef       _executionContext;
-    TypedBlock*             _paramBlock;          // All clumps in subVI share the same param block
-    TypedBlock*             _dataSpace;           // All clumps in subVI share the same data
+    ExecutionContextRef     _executionContext;
+    TypedObjectRef          _paramBlock;          // All clumps in subVI share the same param block
+    TypedObjectRef          _dataSpace;           // All clumps in subVI share the same data
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
     void ClearTopVIParamBlock();
@@ -62,14 +62,14 @@ public :
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
     ExecutionContextRef OwningContext()   {return _executionContext;}
-    TypedArrayCoreRef ParamBlock()      {return _paramBlock;}
-    TypedArrayCoreRef DataSpace()       {return _dataSpace;}
+    TypedObjectRef ParamBlock()         {return _paramBlock;}
+    TypedObjectRef DataSpace()          {return _dataSpace;}
     TypedArray1D<VIClump>* Clumps()     {return _clumps;}
 };
 
 //------------------------------------------------------------
 //! A ZDA that contains a VirtualInstrument
-typedef TypedArray1D<VirtualInstrument> VirtualInstrumentObject;
+typedef TypedObject<VirtualInstrument> VirtualInstrumentObject;
 
 class FunctionClump
 {

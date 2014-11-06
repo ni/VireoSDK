@@ -827,7 +827,7 @@ public:
 };
 
 //------------------------------------------------------------
-typedef TypedArrayCore *TypedArrayCoreRef, TypedBlock; // TODO get rid of TypedBlock
+typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock; // TODO get rid of TypedBlock   ->TypeBlock ObjectRef??
 typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
 
 //! The core C++ implimentation for ArrayType typed data's value.
@@ -959,7 +959,6 @@ template <class T>
 class TypedArray1D : public TypedArrayCore
 {
 public:
-    T* Obj()                    { return (T*) RawObj(); }
     T* Begin()                  { return (T*) TypedArrayCore::RawBegin(); }
     T* End()                    { return (T*) TypedArrayCore::RawEnd(); }
     T  At(IntIndex index)       { return *(T*) BeginAt(index);};
@@ -972,6 +971,15 @@ public:
     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }
     NIError Append(TypedArray1D* array) { return Insert1D(Length(), array->Length(), array->Begin()); }
     NIError CopyFrom(IntIndex count, const T* pElements){ return Replace1D(0, count, pElements, true); }
+};
+
+//------------------------------------------------------------
+//! A template class to allow C++ type safe access to a Vireo object values
+template <class T>
+class TypedObject : public TypedArrayCore
+{
+public:
+    T* ObjBegin()                    { return (T*) RawObj(); }
 };
 
 //------------------------------------------------------------

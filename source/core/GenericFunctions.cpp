@@ -150,13 +150,13 @@ VIREO_FUNCTION_SIGNATURE3(CopyN, void, void, void)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(CopyObject, TypedBlock*, TypedBlock*)
+VIREO_FUNCTION_SIGNATURE2(CopyObject, TypedObjectRef, TypedObjectRef)
 {
-    TypedBlock** pArraySource = _ParamPointer(0);
-    TypedBlock** pAarrayDest = _ParamPointer(1);
+    TypedObjectRef* pObjectSource = _ParamPointer(0);
+    TypedObjectRef* pObjectDest = _ParamPointer(1);
     
-    TypeRef type = (*pArraySource)->Type();
-    type->CopyData(pArraySource, pAarrayDest);
+    TypeRef type = (*pObjectSource)->Type();
+    type->CopyData(pObjectSource, pObjectDest);
         
     return _NextInstruction();
 }

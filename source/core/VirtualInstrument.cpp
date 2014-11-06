@@ -50,7 +50,7 @@ void VirtualInstrument::InitParamBlock()
 {
     // Since there is no caller, the param block needs to be filled out
     // as if there is one.
-    TypedBlock* viParamBlock = this->ParamBlock();
+    TypedObjectRef viParamBlock = this->ParamBlock();
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
     
@@ -65,7 +65,7 @@ void VirtualInstrument::InitParamBlock()
 void VirtualInstrument::ClearTopVIParamBlock()
 {
     // Since there is no caller, elements param block needs to be cleared out.
-    TypedBlock* viParamBlock = this->ParamBlock();
+    TypedObjectRef viParamBlock = this->ParamBlock();
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
     
@@ -83,8 +83,8 @@ void VirtualInstrument::ClearTopVIParamBlock()
 //------------------------------------------------------------
 TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData)
 {
-    TypedBlock *dataSpace = this->DataSpace();
-    TypedBlock *paramBlock = this->ParamBlock();
+    TypedObjectRef dataSpace = this->DataSpace();
+    TypedObjectRef paramBlock = this->ParamBlock();
     
     // Search the dataSpace and paramBlock for the desired element
     Int32 offset = 0;
@@ -834,7 +834,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     CallVIInstruction* callInstruction  = (CallVIInstruction*) EmitInstruction();
     
     VirtualInstrument* vi =targetVIClump->OwningVI();
-    TypedBlock* viParamBlock = vi->ParamBlock();
+    TypedObjectRef viParamBlock = vi->ParamBlock();
     
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
@@ -1051,7 +1051,7 @@ void ClumpParseState::CommitClump()
 VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObject*)
 {
     VirtualInstrumentObject *pVI = _Param(0);
-    pVI->Obj()->PressGo();
+    pVI->ObjBegin()->PressGo();
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1072,7 +1072,7 @@ class VIDataProcsClass : public IDataProcs
         type->CopyData(pDataSource, pDataCopy);
 
         VirtualInstrumentObject *vioCopy = *(VirtualInstrumentObject**) pDataCopy;
-        VirtualInstrument* viCopy = vioCopy->Obj();
+        VirtualInstrument* viCopy = vioCopy->ObjBegin();
         VIClump *pClump = viCopy->Clumps()->Begin();
         VIClump *pClumpEnd = viCopy->Clumps()->End();
         // Set clumps to point to the correct owner,
@@ -1089,7 +1089,7 @@ class VIDataProcsClass : public IDataProcs
     virtual NIError ClearData(TypeRef type, void* pData)
     {
         VirtualInstrumentObject *vio = *(VirtualInstrumentObject**) pData;
-        VirtualInstrument* vi = vio->Obj();
+        VirtualInstrument* vi = vio->ObjBegin();
         
         VIClump *pClump = vi->Clumps()->Begin();
         if (pClump) {

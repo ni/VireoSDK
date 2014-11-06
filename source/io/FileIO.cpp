@@ -157,10 +157,10 @@ VIREO_FUNCTION_SIGNATURE2(FileSize, FileHandle, Int32)
 }
 #endif //VIREO_POSIX_FILESYSTEM
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedBlock*, Int32, Int32)
+VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedArrayCoreRef, Int32, Int32)
 {
     FileHandle handle   = _Param(0);
-    TypedBlock* array   = _Param(1);
+    TypedArrayCoreRef array   = _Param(1);
     Int32 numElts       = _Param(2);
     Int32 bytesToRead = 0;
     
@@ -195,10 +195,10 @@ VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedBlock*, Int32, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedBlock*, Int32)
+VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedArrayCoreRef, Int32)
 {
     FileHandle handle   = _Param(0);
-    TypedBlock* array   = _Param(1);
+    TypedArrayCoreRef array   = _Param(1);
     
     Int32 eltsToWrite = array->Length();
     Int32 bytesToWrite = array->AQBlockLength(eltsToWrite);

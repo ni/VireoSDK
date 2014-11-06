@@ -793,7 +793,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     // Preliminary initialization has already been done.
     // from the generic VirtualInstrument definition.
     VirtualInstrumentObject *vio = *(VirtualInstrumentObject**)pData;
-    VirtualInstrument *vi = vio->Begin();
+    VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
     
     vi->Init(ExecutionContextScope::Current(), (Int32)actualClumpCount, parameterBlockType, dataSpaceType, lineNumberBase, &clumpSource);

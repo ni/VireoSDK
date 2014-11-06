@@ -1247,8 +1247,8 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
 NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
 {
     NIError err = kNIError_Success;
-    TypedBlock* pSource = *((TypedBlock**)pData);
-    TypedBlock* pDest = *((TypedBlock**)pDataCopy);
+    TypedArrayCoreRef pSource = *((TypedArrayCoreRef*)pData);
+    TypedArrayCoreRef pDest = *((TypedArrayCoreRef*)pDataCopy);
     
     if (pSource == null) {
         if (pDest == null) {
@@ -1293,9 +1293,9 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
 NIError ArrayType::ClearData(void* pData)
 {
     // Free up the elements and delete the array handle at pData
-    TypedBlock* array = *(TypedBlock**) pData;
+    TypedArrayCoreRef array = *(TypedArrayCoreRef*) pData;
     if (array != null) {
-        *((TypedBlock**)pData) = null;
+        *((TypedArrayCoreRef*)pData) = null;
         TypedArrayCore::Delete(array);
     }
     return kNIError_Success;
