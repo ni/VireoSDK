@@ -1,12 +1,24 @@
 var __ctx;
+var _cookie;
+var _obj = {};
 var LibraryCanvas2D = {
-jsObtainCanvas2D: function(style, len)
+jsObtainCanvas2D: function(name, len)
 {
-    var theCanvas = document.getElementById(Pointer_stringify(style, len));
+    var theCanvas = document.getElementById(Pointer_stringify(name, len));
     __ctx = theCanvas.getContext("2d");
     // Just a start, need to keep map of contexts
     // could return index or object
     return 0;
+},
+jsNewCookie: function(obj)
+{
+    _cookie = _cookie+1;
+    _jar[_cookie] = obj;
+    return _cookie;
+},
+jsLookUpCookie: function(cookie)
+{
+    return _jar[_cookie];
 },
 jsClip: function(c) {__ctx.clip()},
 jsBeginPath: function(c) {__ctx.beginPath()},
@@ -16,8 +28,7 @@ jsLineTo: function(c,x,y) {__ctx.lineTo(x, y)},
 jsIsPointInPath: function(c,x,y) {__ctx.isPointInPath(x,y)},
 jsBezierCurveTo: function(c,c1x,c1y,c2x,c2y,x,y) {__ctx.bezierCurveTo(c1x,c1y,c2x,c2y,x,y)},
 jsQuadraticCurveTo: function(c,cx,cy,x,y) {__ctx.quadraticCurveTo(cx,cy,x,y)},
-jsArc: function(c,x1,y1,x2,y2,r) {__ctx.arc(x1,y1,x2,y2,r)},
-jsArcTo: function(c,x1,y1,x2,y2,r) {__ctx.arcTo(x1,y1,x2,y2,r)},
+jsArc: function(c,x,y,r,a1,a2,dir) {__ctx.arc(x,y,r,a1,a2,dir)},
 jsStroke: function(c) {__ctx.stroke()},
 jsFill: function(c) {__ctx.fill()},
 //Style

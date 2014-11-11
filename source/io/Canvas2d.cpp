@@ -22,6 +22,8 @@ typedef Int32 Canvas2D;
 
 #if kVireoOS_emscripten
 extern "C" {
+extern Int32 jsCreateLinearGradient(double, double, double, double);
+extern Int32 jsCreateRadialGradient(double, double, double, double, double, double);
 extern Int32 jsObtainCanvas2D(const char*, int);
 extern void jsBeginPath(Int32);
 extern void jsClosePath(Int32);
@@ -29,6 +31,7 @@ extern void jsStroke(Int32);
 extern void jsFill(Int32);
 extern void jsMoveTo(Int32, double, double);
 extern void jsLineTo(Int32, double, double);
+extern void jsArc(Int32, double, double, double, double, double, bool);
 extern void jsBezierCurveTo(Int32, double, double, double, double, double, double);
 extern void jsFillStyle(Int32, const char*);
 extern void jsStrokeStyle(Int32, const char*);
@@ -39,6 +42,13 @@ extern void jsStrokeText(Int32, const char*, int, double, double, double);
 extern void jsFont(Int32, const char*, int);
 }
 #endif
+
+struct ColorPoint {
+    Double x;
+    Int32  color;
+};
+
+typedef  TypedArray1D<ColorPoint>* ColorRampRef;
 
 //------------------------------------------------------------
 typedef  char JSColorString[64];
@@ -69,6 +79,12 @@ void ColorAlphaToJSColor(Int32 value, Double alpha, JSColorString pBuffer)
             (unsigned int)((value & 0x0000FF00) >> 8),
             (unsigned int)(value & 0x000000FF),
             alpha);
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(CreateLinearGradient, Int32, Double, Double, Double, Double, ColorRampRef)
+{
+    
+    return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ObtainCanvas2D, Canvas2D, StringRef)
@@ -115,11 +131,20 @@ VIREO_FUNCTION_SIGNATURE3(LineTo, Canvas2D, const Double, const Double)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE7(Arc, Canvas2D, const Double, const Double, const Double, const Double, const Double, const Boolean)
+{
+#if kVireoOS_emscripten
+    Boolean direction = _ParamPointer(6) ? _Param(6) : false;
+    jsArc(_Param(0), _Param(1), _Param(2), _Param(3), _Param(4), _Param(5), direction);
+#endif
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE7(BezierCurveTo, Canvas2D, const Double, const Double, const Double, const Double, const Double, const Double)
 {
     
 #if kVireoOS_emscripten
-    jsBezierCurveTo(_Param(0),_Param(1),_Param(2),_Param(3),_Param(4),_Param(5),_Param(6));
+    jsBezierCurveTo(_Param(0), _Param(1), _Param(2), _Param(3), _Param(4), _Param(5), _Param(6));
 #endif
     return _NextInstruction();
 }
@@ -130,16 +155,6 @@ VIREO_FUNCTION_SIGNATURE2(FillStyle, Canvas2D, Int32)
     JSColorString xstr;
     ColorToJSColor(_Param(1), xstr);
     jsFillStyle(_Param(0), xstr);
-#endif
-    return _NextInstruction();
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(StrokeStyle, Canvas2D, Int32)
-{
-#if kVireoOS_emscripten
-    JSColorString xstr;
-    ColorToJSColor(_Param(1), xstr);
-    jsStrokeStyle(_Param(0), xstr);
 #endif
     return _NextInstruction();
 }
@@ -166,6 +181,16 @@ VIREO_FUNCTION_SIGNATURE2(Font, Canvas2D, StringRef)
 {
 #if kVireoOS_emscripten
     jsFont(_Param(0), (char*)_Param(1)->Begin(), _Param(1)->Length());
+#endif
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StrokeStyle, Canvas2D, Int32)
+{
+#if kVireoOS_emscripten
+    JSColorString xstr;
+    ColorToJSColor(_Param(1), xstr);
+    jsStrokeStyle(_Param(0), xstr);
 #endif
     return _NextInstruction();
 }
@@ -214,25 +239,31 @@ VIREO_FUNCTION_SIGNATURE1(Fill, Canvas2D)
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(LabVIEW_Canvas2D)
 
+//    REQUIRES(".Math")  // namespace style
+//    REQUIRES(".Double")  // type dependency style
+
+    DEFINE_VIREO_TYPE(Style, ".Int32")  // can be object or RGB
+    DEFINE_VIREO_TYPE(ColorPoint, "c(e(.Double)e(.Int32))")
+    DEFINE_VIREO_TYPE(ColorRamp, "a(.ColorPoint *)")
+    DEFINE_VIREO_FUNCTION(CreateLinearGradient, "p(o(.Style)i(.Double x1)i(.Double y1)i(.Double x2)i(.Double x1)i(.ColorRamp))");
+ //   DEFINE_VIREO_FUNCTION(CreateRadialGradient, "p(o(.Style)i(.Double x1)i(.Double y1)i(.Double x2)i(.Double x1)i(.Double x1)i(.Double y1))");
+
     DEFINE_VIREO_TYPE(Canvas2D, ".Int32")
-    // Primitives
-    DEFINE_VIREO_FUNCTION(ObtainCanvas2D, "p(io(.Canvas2D)i(.String))");
+    DEFINE_VIREO_FUNCTION(ObtainCanvas2D, "p(o(.Canvas2D)i(.String))");
     DEFINE_VIREO_FUNCTION(BeginPath, "p(io(.Canvas2D))");
     DEFINE_VIREO_FUNCTION(ClosePath, "p(io(.Canvas2D))");
-    DEFINE_VIREO_FUNCTION(FillStyle, "p(io(.Canvas2D)i(.Int32))");
     DEFINE_VIREO_FUNCTION(StrokeStyle, "p(io(.Canvas2D)i(.Int32))");
-    DEFINE_VIREO_FUNCTION(FillStyleAlpha, "p(io(.Canvas2D)i(.Int32)i(.Double))");
-    DEFINE_VIREO_FUNCTION(StrokeStyleAlpha, "p(io(.Canvas2D)i(.Int32)i(.Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(StrokeStyle, StrokeStyleAlpha, "p(io(.Canvas2D)i(.Int32)i(.Double))");
+    DEFINE_VIREO_FUNCTION(FillStyle, "p(io(.Canvas2D)i(.Int32))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(FillStyle, FillStyleAlpha, "p(io(.Canvas2D)i(.Int32)i(.Double))");
     DEFINE_VIREO_FUNCTION(LineWidth, "p(io(.Canvas2D)i(.Double))");
     DEFINE_VIREO_FUNCTION(FillRect, "p(io(.Canvas2D)i(.Double)i(.Double)i(.Double)i(.Double))");
     DEFINE_VIREO_FUNCTION(MoveTo, "p(io(.Canvas2D)i(.Double)i(.Double))");
     DEFINE_VIREO_FUNCTION(BezierCurveTo, "p(io(.Canvas2D)i(.Double)i(.Double)i(.Double)i(.Double)i(.Double)i(.Double))");
-//    DEFINE_VIREO_FUNCTION(ArcTo, "p(i(.Canvas2D)i(.Double)i(.Double)i(.Double)i(.Double)i(.Double)i(.Double))");
-
+    DEFINE_VIREO_FUNCTION(Arc, "p(io(.Canvas2D)i(.Double)i(.Double)i(.Double)i(.Double)i(.Double)i(.Boolean))");
     DEFINE_VIREO_FUNCTION(LineTo, "p(io(.Canvas2D)i(.Double)i(.Double))");
     DEFINE_VIREO_FUNCTION(Stroke, "p(io(.Canvas2D))");
     DEFINE_VIREO_FUNCTION(Fill, "p(io(.Canvas2D))");
-    DEFINE_VIREO_FUNCTION(Font, "p(io(.Canvas2D)i(.String))");
     DEFINE_VIREO_FUNCTION(FillText, "p(io(.Canvas2D)i(.String)i(.Double)i(.Double)i(.Double))");
-
+    DEFINE_VIREO_FUNCTION(Font, "p(io(.Canvas2D)i(.String))");
 DEFINE_VIREO_END()

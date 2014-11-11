@@ -25,6 +25,30 @@ namespace Vireo
 class VIClump;
 class FunctionClump;
 class EventLog;
+class WaitableObject;
+
+class WaitableState
+{
+public:
+    //! What object is the clump waiting on?
+    WaitableObject* _object;
+
+    //! Any async operations waiting on this queue
+    WaitableState* _next;
+
+    //! Any async operations waiting on this queue
+    VIClump* _clump;
+    
+    //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
+    Int64 _info;
+};
+
+class WaitableObject
+{
+public:
+    WaitableState  *_waiting;
+};
+
 
 //! Queue of clumps.
 /** The Queue is made by linking clumps directly using their next field,
@@ -108,7 +132,7 @@ public:
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
-	ECONTEXT    VIClump*        RunngQueueElt() {return _runningQueueElt;}
+	ECONTEXT    VIClump*        RunningQueueElt() {return _runningQueueElt;}
     ECONTEXT    void            CheckOccurrences(PlatformTickType t);		// Will put items on the run queue if it is time. or ready bit is set.
 
     // Run a string of instructions to completion, no concurrency. 
@@ -120,6 +144,9 @@ public:
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
     ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
+    ECONTEXT    InstructionCore* WaitOnObject(WaitableObject* object, PlatformTickType tickCount, InstructionCore* nextInClump);
+
+    ECONTEXT    void            CancelWait(VIClump* elt);
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
   

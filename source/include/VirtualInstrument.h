@@ -83,13 +83,17 @@ public:
 "c(                                     \
     e(.InstructionList CodeStart)       \
     e(.DataPointer Next)                \
+    e(.Int64 WakeUpInfo)                \
     e(.DataPointer Owner)               \
     e(.DataPointer NextWaitingCaller)   \
     e(.DataPointer Caller)              \
     e(.Instruction SavePC)              \
-    e(.Int64 WakeUpInfo)                \
     e(.Int32 FireCount)                 \
     e(.Int32 ShortCount)                \
+    e(.DataPointer ws1)                 \
+    e(.DataPointer ws2)                 \
+    e(.DataPointer ws3)                 \
+    e(.Int64 ws4)                       \
 )"
 //------------------------------------------------------------
 //! A Clump owns an instruction list its execution state.
@@ -97,14 +101,16 @@ class VIClump : public FunctionClump
 {
 public:
     VIClump*            _next;              //! Next clump if this one is in a list or queue, null other wise.
+    PlatformTickType    _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
     VirtualInstrument*  _owningVI;          //! VI that this clump is part of.
 	VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
 	VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
 	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
-	PlatformTickType    _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
 	IntSmall            _fireCount;         //! What to reset _shortCount to when the clump is done.
 	IntSmall            _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
-    
+
+    WaitableState       _waitInfo[1];
+
 public:
     void Trigger();
     IntSmall            FireCount() { return _fireCount;}

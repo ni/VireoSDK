@@ -45,6 +45,7 @@ public :
     static TypeRef Define(TypeManagerRef tm, const char* name, const char* typeCStr);
     static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
     static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
+ //   static void RequireType(const char* name);
     static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeString,PointerTypeEnum pointerType);
     static void DefineCustomValue(TypeManagerRef tm, const char* name, Int32 value, const char* typeString);
     static void DefineCustomDataProcs(TypeManagerRef tm, const char* name, IDataProcs* pDataProcs, const char* typeString);
@@ -92,8 +93,8 @@ static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm) {
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
     (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction));
 
-    #define DEFINE_VIREO_FUNCTION_NAME(_symbol_, _name_, _typeTypeString_) \
-    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_symbol_, _typeTypeString_, kPTInstructionFunction));
+    #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_) \
+    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, kPTInstructionFunction));
 
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_) \
     (TypeDefiner::DefineCustomValue(tm, #_name_, value, _typeTypeString_));

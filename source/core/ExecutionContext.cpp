@@ -164,6 +164,41 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount
     return next;
 }
 //------------------------------------------------------------
+InstructionCore* ExecutionContext::WaitOnObject(WaitableObject* object, PlatformTickType tickCount, InstructionCore* nextInClump)
+{
+    VIClump* current = _runningQueueElt;
+    
+    // Wait info recs should be left null
+    VIREO_ASSERT( ( current->_wakeUpInfo[0]._next == null) )
+    
+    WaitableState *pWS = &current->_waitInfo[0];
+    pWS->_clump = current;
+    pWS->_info = 0;
+    pWS->_next = object->_waiting;
+    pWS->_object = object;
+    
+    return WaitUntilTickCount(tickCount, nextInClump);
+}
+//------------------------------------------------------------
+void ExecutionContext::CancelWait(VIClump* eltToRemove)
+{
+    eltToRemove->_wakeUpInfo = 0;
+    
+    VIClump* pClump;
+    VIClump* elt = _sleepingList;
+    VIClump** pFix = &(_sleepingList); // previous next pointer to patch when removing element.
+    
+    while(elt) {
+        pClump = elt;
+        if (pClump == eltToRemove) {
+            // Remove
+            *pFix = pClump->_next;
+            pClump->_next = null;
+        }
+        elt = *pFix; 
+    }
+}
+//------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
 // Trigger never wait.
 VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)

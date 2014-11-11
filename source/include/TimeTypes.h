@@ -35,6 +35,7 @@ class PlatformTime
 public:
 	static PlatformTickType TickCount();
     static PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
+    static PlatformTickType SecondsToTickCount(Double seconds);
     static Int64 TickCountToMilliseconds(PlatformTickType);
     static Int64 TickCountToMicroseconds(PlatformTickType);
 };

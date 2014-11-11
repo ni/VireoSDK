@@ -153,10 +153,10 @@ NIError EggShell::REPL(SubString *commandBuffer)
         } else if (command.CompareCStr("clear")) {
             _typeManger->DeleteTypes(false);
         } else if (command.CompareCStr("exit")) {
-            printf("chirp chirp\n");
+            log.LogEvent(EventLog::kTrace, 0, "chirp chirp");
             return kNIError_kResourceNotFound;
         } else {
-            printf("bad egg\n");
+            log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
             break;
         }
         parser.TheString()->EatLeadingSpaces();

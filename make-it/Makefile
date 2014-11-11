@@ -32,7 +32,7 @@ else
         STRIP =
         CFLAGS += -DVIREO_DEBUG
     else
-        CCOPT = -Os
+        CCOPT = -Oz
         STRIP = strip esh
     endif
 

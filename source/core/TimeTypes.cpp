@@ -128,6 +128,12 @@ PlatformTickType PlatformTime::TickCount()
 #endif
 }
 
+
+//------------------------------------------------------------
+PlatformTickType PlatformTime::SecondsToTickCount(Double seconds)
+{
+    return MicrosecondsToTickCount(seconds * 1000000.0);
+}
 //------------------------------------------------------------
 PlatformTickType PlatformTime::MicrosecondsToTickCount(Int64 microseconds)
 {
