@@ -25,13 +25,13 @@ namespace Vireo
 class VIClump;
 class FunctionClump;
 class EventLog;
-class WaitableObject;
+class ObservableObject;
 
 class WaitableState
 {
 public:
     //! What object is the clump waiting on?
-    WaitableObject* _object;
+    ObservableObject* _object;
 
     //! Any async operations waiting on this queue
     WaitableState* _next;
@@ -41,12 +41,46 @@ public:
     
     //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
     Int64 _info;
+public:
+    
 };
 
-class WaitableObject
+class ObservableObject
 {
 public:
-    WaitableState  *_waiting;
+    WaitableState* _waitingList;
+    
+public:
+    void InitWaitableState(WaitableState* pWS, Int64 elementsAvailable)
+    {
+        // in MT, lock object
+        pWS->_object = this;
+        pWS->_info = elementsAvailable;
+        pWS->_next = _waitingList;
+        _waitingList = pWS;
+    }
+    
+    void Remove(WaitableState* pWSEltToRemove)
+    {
+        VIREO_ASSERT(pWSEltToRemove);
+        VIREO_ASSERT(_object == this);
+        
+        WaitableState* pTemp;
+        WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
+        WaitableState* pWSVisitor = *pFix;
+        
+        while(pWSVisitor) {
+            pTemp = pWSVisitor;
+            if (pTemp == pWSEltToRemove) {
+                *pFix = pTemp->_next;
+            }
+            pWSVisitor = *pFix;
+        }
+
+        pWSEltToRemove->_info = 0;
+        pWSEltToRemove->_object = null;
+        pWSEltToRemove->_next = null;
+    }
 };
 
 
@@ -132,7 +166,7 @@ public:
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
-	ECONTEXT    VIClump*        RunningQueueElt() {return _runningQueueElt;}
+	ECONTEXT    VIClump*        CurrentClump() { return _runningQueueElt; }
     ECONTEXT    void            CheckOccurrences(PlatformTickType t);		// Will put items on the run queue if it is time. or ready bit is set.
 
     // Run a string of instructions to completion, no concurrency. 
@@ -144,7 +178,6 @@ public:
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
     ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
-    ECONTEXT    InstructionCore* WaitOnObject(WaitableObject* object, PlatformTickType tickCount, InstructionCore* nextInClump);
 
     ECONTEXT    void            CancelWait(VIClump* elt);
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
@@ -170,8 +203,10 @@ public:
     // instructions that are costly on small MCUs
     extern ExecutionContext gSingleExecutionContext;
     #define THREAD_EXEC()	(&gSingleExecutionContext)
+    #define THREAD_CLUMP() gSingleExecutionContext.CurrentClump();
 #else
     #define THREAD_EXEC() ExecutionContextScope::Current()
+    #define THREAD_CLUMP() ExecutionContextScope::Current()->CurrentClump();
 #endif
 
 #ifndef VIREO_SINGLE_GLOBAL_CONTEXT

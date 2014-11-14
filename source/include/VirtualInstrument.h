@@ -90,11 +90,32 @@ public:
     e(.Instruction SavePC)              \
     e(.Int32 FireCount)                 \
     e(.Int32 ShortCount)                \
-    e(.DataPointer ws1)                 \
-    e(.DataPointer ws2)                 \
-    e(.DataPointer ws3)                 \
-    e(.Int64 ws4)                       \
+    e(.Int32 WaitCount)                 \
+    e(.WaitableState WaitableState)             \
+    e(.WaitableState WaitableState)             \
 )"
+
+// Initially all clump had the ability to wait on timers, now that has grown to
+// timers and objects such as the queue. Yet in many cases clumps never to need to
+// on anything. In the simple case of no waiting several pointes can be saved.
+// So The clump is gogin to migrate from one fixed, to a collection of ObserverState objects
+// These are the step
+//
+// 1. move from one hardcoded time list to a fixed set of of WaitableSates that can be used for
+// timers AND synchronization objects.
+//
+// 2. Move the fixed set of buffers to a set that can be dynamically allocated (and arrays)
+//
+// 3. Get Arrays to support null-measn empty, or shared empty instances
+//
+// 4. Can other users of the _next field use the same mechanism?
+
+
+//------------------------------------------------------------
+
+
+typedef TypedArray1D<WaitableState>*   WaitableStatesRef;
+
 //------------------------------------------------------------
 //! A Clump owns an instruction list its execution state.
 class VIClump : public FunctionClump
@@ -108,17 +129,24 @@ public:
 	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
 	IntSmall            _fireCount;         //! What to reset _shortCount to when the clump is done.
 	IntSmall            _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
-
-    WaitableState       _waitInfo[1];
-
+    Int32               _waitCount;         //! How many waitSates are active?
+    WaitableState       _waitStates[2];     //! Fixed set of waits states, maximum is 2.
+    
 public:
     void Trigger();
-    IntSmall            FireCount() { return _fireCount;}
-    IntSmall            ShortCount() { return _shortCount;}
+    IntSmall            FireCount()     { return _fireCount; }
+    IntSmall            ShortCount()    { return _shortCount; }
     
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
-    VirtualInstrument*  OwningVI() {return _owningVI;};
+    VirtualInstrument*  OwningVI()      { return _owningVI; }
+    WaitableState*      GetWaitStates(Int32) { return _waitCount ? _waitStates : null; };
+    WaitableState*      ReserveWaitStates(Int32);
+ // void                InitWaitMicroseconds(WaitableState* pWS, Int32 microsecondCount);
+    void                InitWaitMilliseconds(WaitableState* pWS, Int32 millisecondCount);
+ // void                InitWaitUntil(WaitableState* pWS, PlatformTickType ticCount);
+    void                ClearWaitStates();
+    InstructionCore*    WaitOnWaitStates(InstructionCore*);
     TypeManagerRef      TheTypeManager();
 };
 //------------------------------------------------------------

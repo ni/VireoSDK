@@ -205,7 +205,10 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
-    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");    
+    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
+    
+    
+    Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
 }
 
 }

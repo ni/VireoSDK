@@ -183,6 +183,52 @@ void VIClump::AppendToWaitList(VIClump* elt)
     }
 }
 //------------------------------------------------------------
+WaitableState* VIClump::ReserveWaitStates(Int32 count)
+{
+    VIREO_ASSERT(_waitCount == 0);
+    if(count <= 2) {
+        _waitCount = count;
+        _waitStates[0]._clump = this;
+        _waitStates[1]._clump = this;
+        return _waitStates;
+    } else {
+        return null;
+    }
+    //this->_waitStates->Resize1D(length);
+    //return _waitStates->Begin();
+}
+//------------------------------------------------------------
+void VIClump::ClearWaitStates()
+{
+    if (_waitCount) {
+        for (WaitableState* pWS = _waitStates; _waitCount; pWS++) {
+            if (pWS->_object) {
+                pWS->_object->Remove(pWS);
+                pWS->_object = null;
+            }
+            _waitCount -= 1;
+        }
+    }
+}
+//------------------------------------------------------------
+void VIClump::InitWaitMilliseconds(WaitableState* pWS, Int32 millisecondCount)
+{
+    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount((Int64)millisecondCount * 1000);
+    pWS->_object = null;
+    pWS->_info = future;
+}
+//------------------------------------------------------------
+InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* current)
+{
+    if (_waitCount) {
+        // hack
+        PlatformTickType tickCount = _waitStates[0]._info;
+        return THREAD_EXEC()->WaitUntilTickCount(tickCount, current);
+    } else {
+        return current;
+    }
+}
+//------------------------------------------------------------
 TypeManagerRef VIClump::TheTypeManager()
 {
     return OwningVI()->OwningContext()->TheTypeManager();

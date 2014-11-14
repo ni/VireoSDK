@@ -141,8 +141,8 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount
 	VIClump* current = _runningQueueElt;
 	InstructionCore* next = SuspendRunningQueueElt(nextInClump);
 
-	VIREO_ASSERT( (current->_next == null) )
-	VIREO_ASSERT( (current->_shortCount == 0) )
+	VIREO_ASSERT( current->_next == null )
+	VIREO_ASSERT( current->_shortCount == 0 )
 
 	current->_wakeUpInfo =  tickCount;
     
@@ -164,22 +164,6 @@ InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount
     return next;
 }
 //------------------------------------------------------------
-InstructionCore* ExecutionContext::WaitOnObject(WaitableObject* object, PlatformTickType tickCount, InstructionCore* nextInClump)
-{
-    VIClump* current = _runningQueueElt;
-    
-    // Wait info recs should be left null
-    VIREO_ASSERT( ( current->_wakeUpInfo[0]._next == null) )
-    
-    WaitableState *pWS = &current->_waitInfo[0];
-    pWS->_clump = current;
-    pWS->_info = 0;
-    pWS->_next = object->_waiting;
-    pWS->_object = object;
-    
-    return WaitUntilTickCount(tickCount, nextInClump);
-}
-//------------------------------------------------------------
 void ExecutionContext::CancelWait(VIClump* eltToRemove)
 {
     eltToRemove->_wakeUpInfo = 0;
@@ -191,7 +175,6 @@ void ExecutionContext::CancelWait(VIClump* eltToRemove)
     while(elt) {
         pClump = elt;
         if (pClump == eltToRemove) {
-            // Remove
             *pFix = pClump->_next;
             pClump->_next = null;
         }
@@ -461,6 +444,15 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
 			*pFix = pClump->_next;
 			pClump->_next = null;
 			pClump->_wakeUpInfo = 0;  //Put in known state.
+            
+            if(pClump->_waitCount) {
+                // staging. If an object removes a ObservableState then it needs to
+                // make that clear to the Observer. It does that by clearing the target observer.
+                // timers do this by clearing the observer field.
+                // Might be nice to have some more info for the observers to to decide how to process the observation though.
+                pClump->_waitStates[0]._info = 0;
+                pClump->_waitStates[0]._object = null;
+            }
 			_runQueue.Enqueue(elt);
 		} else {
             // Items are sorted at insertion, so once a time in the future
