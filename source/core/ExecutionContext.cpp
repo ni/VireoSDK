@@ -122,64 +122,18 @@ InstructionCore* ExecutionContext::Stop()
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
     PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(_Param(0));
-    return THREAD_EXEC()->WaitUntilTickCount(future, _NextInstruction());
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
     PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount((Int64)_Param(0) * 1000);
-    return THREAD_EXEC()->WaitUntilTickCount(future, _NextInstruction());
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
 {
-    return THREAD_EXEC()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
-}
-//------------------------------------------------------------
-InstructionCore* ExecutionContext::WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInClump)
-{
-	VIClump* current = _runningQueueElt;
-	InstructionCore* next = SuspendRunningQueueElt(nextInClump);
-
-	VIREO_ASSERT( current->_next == null )
-	VIREO_ASSERT( current->_shortCount == 0 )
-
-	current->_wakeUpInfo =  tickCount;
-    
-    if (_sleepingList == null) {
-        // No list, now there is one.
-        current->_next = null;
-        _sleepingList = current;
-    } else {
-        // Insert into the list based on wake-up time.
-        VIClump** pFix = &_sleepingList;
-        VIClump* node = *pFix;
-        while (node && (tickCount > node->_wakeUpInfo)) {
-            pFix = &(node->_next);
-            node = *pFix;
-        }
-        current->_next = node;
-        *pFix = current;
-    }
-    return next;
-}
-//------------------------------------------------------------
-void ExecutionContext::CancelWait(VIClump* eltToRemove)
-{
-    eltToRemove->_wakeUpInfo = 0;
-    
-    VIClump* pClump;
-    VIClump* elt = _sleepingList;
-    VIClump** pFix = &(_sleepingList); // previous next pointer to patch when removing element.
-    
-    while(elt) {
-        pClump = elt;
-        if (pClump == eltToRemove) {
-            *pFix = pClump->_next;
-            pClump->_next = null;
-        }
-        elt = *pFix; 
-    }
+    return THREAD_CLUMP()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
 }
 //------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
@@ -189,7 +143,6 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
     _ParamPointer(0)->Trigger();
     return _NextInstruction();
 }
-
 //------------------------------------------------------------
 // Wait - it target clump is active then it waits for it to complete.
 // if target clump is complete then there is nothing to wait on.

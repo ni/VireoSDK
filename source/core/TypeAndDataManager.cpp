@@ -1102,10 +1102,10 @@ void* ClusterType::Begin(PointerAccessEnum mode)
     } else if ((mode == kPAClear) && (_pDefault != _sharedNullsBuffer)) {
         // If its for clearing the block will released once the destructor is called
         return _pDefault;
-    } else if (mode == kPAWrite || mode == kPAReadWrite) {
-        VIREO_ASSERT(false);
+    } else {
+        // This includes mode == kPAWrite mode == kPAReadWrite
+        return null;
     }
-    return null;
 }
 //------------------------------------------------------------
 ClusterType::~ClusterType()
@@ -1437,7 +1437,6 @@ DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boo
 void* DefaultValueType::Begin(PointerAccessEnum mode)
 {
     if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite) ) {
-        VIREO_ASSERT(false)
         return null;
     }
     

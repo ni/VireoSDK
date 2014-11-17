@@ -17,6 +17,7 @@ SDG
 namespace Vireo
 {
  
+//------------------------------------------------------------
 class SubVibBuffer : SubBinaryBuffer
 {
 public:
@@ -24,7 +25,6 @@ public:
     IntMax ReadVBWUInt();
     NIError Error();
 };
-
 
 //------------------------------------------------------------
 class TDVibDecoder

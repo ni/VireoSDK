@@ -38,6 +38,8 @@ public:
     static PlatformTickType SecondsToTickCount(Double seconds);
     static Int64 TickCountToMilliseconds(PlatformTickType);
     static Int64 TickCountToMicroseconds(PlatformTickType);
+    static PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);
+    static PlatformTickType MicrosecondsFromNowToTickCount(Int64 microseconds);
 };
 
 //------------------------------------------------------------

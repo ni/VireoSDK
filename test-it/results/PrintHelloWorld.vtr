@@ -1,3 +1,3 @@
 Hello, world. I can fly.
 (^ExecutionContext_null * * () 0 ^DataPointer_null ^DataPointer_null)
-(^ExecutionContext () ('Hello, world. I can fly.') ((^InstructionList ^DataPointer_null ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 0 1 0)) 5 ^DataPointer ^DataPointer)
+(^ExecutionContext () ('Hello, world. I can fly.') ((^InstructionList ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 0 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 5 ^DataPointer ^DataPointer)

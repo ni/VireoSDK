@@ -48,32 +48,37 @@ typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 //------------------------------------------------------------
 IntIndex QueueCore::RemoveIndex()
 {
-    if (_count < _insert) {
+    if (_count <= _insert) {
         return _insert - _count;
     } else {
         return _elements->Length() - (_count - _insert);
     }
 }
 //------------------------------------------------------------
-Boolean QueueCore::TryMakeRoom(IntIndex count)
+Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
 {
-    IntIndex space = _elements->Length() - _count;
+    IntIndex length = _elements->Length();
+    IntIndex space = length - _count;
     
-    if (space > count)
+    if (space >= additionalCount) {
+        // There is enough room, wrap the insert location as needed.
+        if (_insert >= length) {
+            _insert = 0;
+        }
         return true;
-    
-    NIError err = _elements->Insert1D(_insert, count);
-    return (err == kNIError_Success);
+    } else {
+        // Not enough room, grow (if possible)
+        NIError err = _elements->Insert1D(_insert, additionalCount);
+        return (err == kNIError_Success);
+    }
 }
 //------------------------------------------------------------
 void QueueCore::ChangeCount(Int32 amount)
 {
-    _count += amount;
-
-    // Let waiters know of the change. If they actually get/remove an element
-    // they will remove them selves as an waiter.
     for (WaitableState* pWS = _waitingList; pWS; pWS = pWS->_next) {
-        THREAD_EXEC()->EnqueueRunQueue(pWS->_clump);
+        if (amount == pWS->_info) {
+            THREAD_EXEC()->EnqueueRunQueue(pWS->_clump);
+        }
     }
 }
 //------------------------------------------------------------
@@ -85,6 +90,8 @@ Boolean QueueCore::Enqueue(void* pData)
     TypeRef eltType = _elements->ElementType();
     void* pTarget = _elements->BeginAt(_insert);
     eltType->CopyData(pData, pTarget);
+    _count++;
+    _insert++;
     ChangeCount(1);
     return true;
 }
@@ -98,6 +105,7 @@ Boolean QueueCore::Dequeue(void* pData)
     } else {
         void* pSource = _elements->BeginAt(RemoveIndex());
         eltType->CopyData(pSource, pData);
+        _count--;
         ChangeCount(-1);
         return true;
     }
@@ -181,7 +189,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, Double, Int32, Boolean
         // Wait on the queue and the timeout. -1 will wait forever.
         pWS = clump->ReserveWaitStates(2);
         clump->InitWaitMilliseconds(pWS, timeOut);
-        pQV->InitWaitableState(pWS+1, -1);
+        pQV->InitWaitableState(pWS+1, 1);
         return clump->WaitOnWaitStates(_this);
     } else {
         // With timeout == 0 just continue immediately.

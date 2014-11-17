@@ -27,6 +27,7 @@ class FunctionClump;
 class EventLog;
 class ObservableObject;
 
+//------------------------------------------------------------
 class WaitableState
 {
 public:
@@ -41,40 +42,32 @@ public:
     
     //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
     Int64 _info;
-public:
-    
 };
-
+//------------------------------------------------------------
 class ObservableObject
 {
 public:
     WaitableState* _waitingList;
     
 public:
-    void InitWaitableState(WaitableState* pWS, Int64 elementsAvailable)
-    {
-        // in MT, lock object
-        pWS->_object = this;
-        pWS->_info = elementsAvailable;
-        pWS->_next = _waitingList;
-        _waitingList = pWS;
-    }
     
     void Remove(WaitableState* pWSEltToRemove)
     {
-        VIREO_ASSERT(pWSEltToRemove);
-        VIREO_ASSERT(_object == this);
+        VIREO_ASSERT(pWSEltToRemove != null);
+        VIREO_ASSERT(pWSEltToRemove->_object == this);
         
         WaitableState* pTemp;
         WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
-        WaitableState* pWSVisitor = *pFix;
+        WaitableState* pVisitor = *pFix;
         
-        while(pWSVisitor) {
-            pTemp = pWSVisitor;
+        while(pVisitor) {
+            pTemp = pVisitor;
             if (pTemp == pWSEltToRemove) {
                 *pFix = pTemp->_next;
+            } else {
+                pFix = &pVisitor->_next;
             }
-            pWSVisitor = *pFix;
+            pVisitor = *pFix;
         }
 
         pWSEltToRemove->_info = 0;
@@ -82,8 +75,16 @@ public:
         pWSEltToRemove->_next = null;
     }
 };
-
-
+//------------------------------------------------------------
+class Timer : public ObservableObject
+{
+public:
+    Boolean AnythingWaiting()                   { return _waitingList != null; }
+    void QuickCheckTimers(PlatformTickType t)   { if (_waitingList) { CheckTimers(t); } }
+    void CheckTimers(PlatformTickType t);
+    void InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCount);
+};
+//------------------------------------------------------------
 //! Queue of clumps.
 /** The Queue is made by linking clumps directly using their next field,
     thus clumps can only be in one queue (or list) at a time.
@@ -120,7 +121,6 @@ enum ExecutionState
     kExecutionState_ClumpsWaitingOnQueues = 0x04,
     kExecutionState_ClumpsWaitingOnISRs = 0x08,
 };
-
     
 // Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work
 // cooperatively with other thread operations much like a message pump does. ECs
@@ -145,6 +145,10 @@ InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM);
 typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
+public:
+#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
+    ExecutionContext(TypeManagerRef typeManager);
+#endif
 
 private:
     ECONTEXT    TypeManagerRef _theTypeManager;
@@ -153,14 +157,10 @@ public:
 
 private:
     ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
-    ECONTEXT    VIClump*        _sleepingList;		//! Clumps waiting for a point in time wake them up
     ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
-    ExecutionContext(TypeManagerRef typeManager);
-#endif
-    ECONTEXT    PlatformTickType PlatformTickCount();
+    ECONTEXT    Timer           _timer;
 
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
@@ -177,9 +177,7 @@ public:
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-    ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
 
-    ECONTEXT    void            CancelWait(VIClump* elt);
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
   
@@ -206,7 +204,7 @@ public:
     #define THREAD_CLUMP() gSingleExecutionContext.CurrentClump();
 #else
     #define THREAD_EXEC() ExecutionContextScope::Current()
-    #define THREAD_CLUMP() ExecutionContextScope::Current()->CurrentClump();
+    #define THREAD_CLUMP() ExecutionContextScope::Current()->CurrentClump()
 #endif
 
 #ifndef VIREO_SINGLE_GLOBAL_CONTEXT

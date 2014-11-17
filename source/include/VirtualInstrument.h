@@ -141,13 +141,12 @@ public:
     void AppendToWaitList(VIClump* elt);
     VirtualInstrument*  OwningVI()      { return _owningVI; }
     WaitableState*      GetWaitStates(Int32) { return _waitCount ? _waitStates : null; };
-    WaitableState*      ReserveWaitStates(Int32);
- // void                InitWaitMicroseconds(WaitableState* pWS, Int32 microsecondCount);
-    void                InitWaitMilliseconds(WaitableState* pWS, Int32 millisecondCount);
- // void                InitWaitUntil(WaitableState* pWS, PlatformTickType ticCount);
+    WaitableState*      ReserveWaitStatesWithTimeout(Int32, PlatformTickType count);
+    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
     void                ClearWaitStates();
     InstructionCore*    WaitOnWaitStates(InstructionCore*);
-    TypeManagerRef      TheTypeManager();
+    ExecutionContextRef OwningContext()    { return OwningVI()->OwningContext(); }
+    TypeManagerRef      TheTypeManager(){ return OwningContext()->TheTypeManager(); }
 };
 //------------------------------------------------------------
 //! An instruciton that suspends a clump and starts a SubVI's root clump.

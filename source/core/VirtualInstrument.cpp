@@ -183,55 +183,54 @@ void VIClump::AppendToWaitList(VIClump* elt)
     }
 }
 //------------------------------------------------------------
-WaitableState* VIClump::ReserveWaitStates(Int32 count)
+WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickType tickCount)
 {
     VIREO_ASSERT(_waitCount == 0);
     if(count <= 2) {
         _waitCount = count;
         _waitStates[0]._clump = this;
         _waitStates[1]._clump = this;
+        OwningContext()->_timer.InitWaitableTimerState(_waitStates, tickCount);
         return _waitStates;
     } else {
         return null;
     }
-    //this->_waitStates->Resize1D(length);
-    //return _waitStates->Begin();
 }
 //------------------------------------------------------------
 void VIClump::ClearWaitStates()
 {
+    // When an instruction retries and decides its time to continue for any reason
+    // It needs to removed WaitableObservers registered with objects it was waiting on.
     if (_waitCount) {
         for (WaitableState* pWS = _waitStates; _waitCount; pWS++) {
             if (pWS->_object) {
                 pWS->_object->Remove(pWS);
-                pWS->_object = null;
+                VIREO_ASSERT(pWS->_object == null);
             }
             _waitCount -= 1;
         }
     }
 }
 //------------------------------------------------------------
-void VIClump::InitWaitMilliseconds(WaitableState* pWS, Int32 millisecondCount)
+InstructionCore* VIClump::WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInstruction)
 {
-    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount((Int64)millisecondCount * 1000);
-    pWS->_object = null;
-    pWS->_info = future;
+    VIREO_ASSERT( _next == null )
+    VIREO_ASSERT( _shortCount == 0 )
+
+    ReserveWaitStatesWithTimeout(1, tickCount);
+    return this->WaitOnWaitStates(nextInstruction);
 }
 //------------------------------------------------------------
-InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* current)
+InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* nextInstruction)
 {
     if (_waitCount) {
-        // hack
-        PlatformTickType tickCount = _waitStates[0]._info;
-        return THREAD_EXEC()->WaitUntilTickCount(tickCount, current);
+        // Hack, single one is a timer so it doesn't retry. There will be nothing to clear.
+        if (_waitCount == 1)
+            _waitCount = 0;
+        return OwningContext()->SuspendRunningQueueElt(nextInstruction);
     } else {
-        return current;
+        return nextInstruction;
     }
-}
-//------------------------------------------------------------
-TypeManagerRef VIClump::TheTypeManager()
-{
-    return OwningVI()->OwningContext()->TheTypeManager();
 }
 #ifndef VIREO_MICRO
 //------------------------------------------------------------
@@ -247,7 +246,9 @@ void InstructionAllocator::AddRequest(size_t count)
 void InstructionAllocator::Allocate (TypeManagerRef tm)
 {
     VIREO_ASSERT(_next == null);
-    _next = (AQBlock1*) tm->Malloc(_size);
+    if (_size) {
+        _next = (AQBlock1*) tm->Malloc(_size);
+    }
 }
 //------------------------------------------------------------
 void* InstructionAllocator::AllocateSlice(size_t count)

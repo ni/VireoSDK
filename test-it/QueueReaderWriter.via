@@ -1,0 +1,53 @@
+
+define (TestProgram dv(.VirtualInstrument (
+    c(
+        e(.Queue q)
+        e(dv(.Double 42.5) x)
+        e(.Double y)
+        e(.Boolean done)
+    )
+    
+    clump (
+        Trigger(1)
+        Trigger(2)
+        Wait(1)
+        Wait(2)
+        DPrintf(" Reader/Writer done")
+    )
+    
+    clump (
+        WaitMilliseconds(50)
+        EnqueueElement(q 1.1 1000 done)        
+        DPrintf(">>1Added1 new value" )
+        
+        WaitMilliseconds(51)
+        EnqueueElement(q 1.2 1000 done)        
+        DPrintf(">>2Added2 new value" )
+
+        WaitMilliseconds(52)
+        EnqueueElement(q 1.3 1000 done)        
+        DPrintf(">>3Added3 new value" )
+
+        WaitMilliseconds(53)
+        EnqueueElement(q 1.4 1000 done)        
+        DPrintf(">>4Added4 new value" )
+    )
+    
+    clump (
+        WaitMilliseconds(61)
+        DequeueElement(q y 55 done)
+        DPrintf("Dequeued1 value is %s %s" y done)
+        DequeueElement(q y 70 done)
+        DPrintf("Dequeued2 value is %s %s" y done)
+        DequeueElement(q y 72 done)
+        DPrintf("Dequeued3 value is %s %s" y done)
+        DequeueElement(q y 73 done)
+        DPrintf("Dequeued4 value is %s %s" y done)
+        DequeueElement(q y 73 done)
+        DPrintf("Dequeued5 value is %s %s" y done)
+    )
+    
+) ) )
+
+
+enqueue (TestProgram)

@@ -128,7 +128,16 @@ PlatformTickType PlatformTime::TickCount()
 #endif
 }
 
-
+//------------------------------------------------------------
+PlatformTickType PlatformTime::MicrosecondsFromNowToTickCount(Int64 microsecondCount)
+{
+    return PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(microsecondCount);
+}
+//------------------------------------------------------------
+PlatformTickType PlatformTime::MillisecondsFromNowToTickCount(Int64 millisecondCount)
+{
+    return PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(millisecondCount * 1000);
+}
 //------------------------------------------------------------
 PlatformTickType PlatformTime::SecondsToTickCount(Double seconds)
 {

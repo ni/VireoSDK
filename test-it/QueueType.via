@@ -1,0 +1,19 @@
+
+define (TestProgram dv(.VirtualInstrument (
+    c(
+        e(.Queue q)
+        e(dv(.Double 42.5) x)
+        e(.Double y)
+        e(.Boolean done)
+    )
+    clump (
+        DPrintf(" in %s out %s" x y)
+        EnqueueElement(q x 10 done)
+        DequeueElement(q y 10 done)
+        DPrintf(" in %s out %s" x y)
+        DequeueElement(q y 10 done)
+        DPrintf(" y %s" y)
+    )
+) ) )
+
+enqueue (TestProgram)
