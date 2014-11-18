@@ -27,17 +27,21 @@ ifeq ($(OS),Windows_NT)
       #  plat stuff
     endif
 else
+    UNAME_S := $(shell uname -s)
+    CFLAGS += -I$(INCDIR) -Wall -MMD
+
     ifdef DEBUG
         CCOPT = -O0
         STRIP =
         CFLAGS += -DVIREO_DEBUG
     else
-        CCOPT = -Oz
+        ifeq ($(UNAME_S),Darwin)
+            CCOPT = -Oz
+        else
+            CCOPT = -O3
+        endif
         STRIP = strip esh
     endif
-
-    UNAME_S := $(shell uname -s)
-    CFLAGS += -I$(INCDIR) -Wall -MMD
 
     ifeq ($(UNAME_S),Linux)
         ifeq ($(TARGETARCH),ARMv5)
