@@ -121,13 +121,13 @@ InstructionCore* ExecutionContext::Stop()
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
-    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(_Param(0));
+    PlatformTickType future = PlatformTime::MicrosecondsFromNowToTickCount(_Param(0));
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    PlatformTickType future = PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount((Int64)_Param(0) * 1000);
+    PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(_Param(0));
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
@@ -137,7 +137,6 @@ VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
 }
 //------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
-// Trigger never wait.
 VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 {
     _ParamPointer(0)->Trigger();
@@ -222,7 +221,7 @@ ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
     _theTypeManager = typeManager;
     _breakoutCount = 0;
 	_runningQueueElt = (VIClump*) null;
-	_sleepingList = null;
+    _timer._waitingList = null;
 }
 #endif
 //------------------------------------------------------------
@@ -274,9 +273,8 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
     PlatformTickType currentTime  = PlatformTime::TickCount();
     PlatformTickType breakOutTime = currentTime + tickCount;
     
-    if (_sleepingList != null) {
-        CheckOccurrences(currentTime);
-    }
+    _timer.QuickCheckTimers(currentTime);
+
     _runningQueueElt = _runQueue.Dequeue();
     InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
     
@@ -302,11 +300,8 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 #endif
         } while (_breakoutCount-- > 0);
 
-        currentTime  = PlatformTime::TickCount();
-        if (_sleepingList != null) {
-            // Are any sleeping clumps ready to wake up.
-            CheckOccurrences(currentTime);
-        }
+        currentTime = PlatformTime::TickCount();
+        _timer.QuickCheckTimers(currentTime);
 
         if (currentTime < breakOutTime) {
             if (_runningQueueElt) {
@@ -348,7 +343,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
     if (!_runQueue.IsEmpty()) {
         reply = (ExecutionState) (reply | kExecutionState_ClumpsInRunQueue);
     }
-    if (_sleepingList != null) {
+    if (_timer.AnythingWaiting()) {
         reply = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
     }
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -383,30 +378,21 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 }
 #endif
 //------------------------------------------------------------
-void ExecutionContext::CheckOccurrences(PlatformTickType t)
+void Timer::CheckTimers(PlatformTickType t)
 {
-	VIClump* pClump;
-	VIClump* elt = _sleepingList;
-	VIClump** pFix = &(_sleepingList); // previous next pointer to patch when removing element.
+	WaitableState* pTemp;
+	WaitableState* elt = _waitingList;
+	WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
 
-	// Enqueue all elements that are ready to run
+ 	// Enqueue all elements that are ready to run
 	while(elt) {
-		pClump = elt;
-		if (pClump->_wakeUpInfo <= t) {
+		pTemp = elt;
+		if (pTemp->_info <= t) {
 			// Remove
-			*pFix = pClump->_next;
-			pClump->_next = null;
-			pClump->_wakeUpInfo = 0;  //Put in known state.
-            
-            if(pClump->_waitCount) {
-                // staging. If an object removes a ObservableState then it needs to
-                // make that clear to the Observer. It does that by clearing the target observer.
-                // timers do this by clearing the observer field.
-                // Might be nice to have some more info for the observers to to decide how to process the observation though.
-                pClump->_waitStates[0]._info = 0;
-                pClump->_waitStates[0]._object = null;
-            }
-			_runQueue.Enqueue(elt);
+			*pFix = pTemp->_next;
+			pTemp->_next = null;
+			pTemp->_info = 0;
+            THREAD_EXEC()->EnqueueRunQueue(pTemp->_clump);
 		} else {
             // Items are sorted at insertion, so once a time in the future
             // is found quit the loop.
@@ -431,6 +417,29 @@ void ExecutionContext::CheckOccurrences(PlatformTickType t)
         VIREO_ISR_ENABLE
     }    
 #endif
+}
+//------------------------------------------------------------
+void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCount)
+{
+    pWS->_object = this;
+    pWS->_info =  tickCount;
+    if (_waitingList == null) {
+        VIREO_ASSERT( pWS->_next == null )
+        // No list, now there is one.
+        //printf(" WUTC Starting new sleep list\n");
+        _waitingList = pWS;
+    } else {
+        // Insert into the list based on wake-up time.
+        //printf(" WUTC Inserting into existing sleep list\n");
+        WaitableState** pFix = &_waitingList;
+        WaitableState* pVisitor = *pFix;
+        while (pVisitor && (tickCount > pVisitor->_info)) {
+            pFix = &(pVisitor->_next);
+            pVisitor = *pFix;
+        }
+        pWS->_next = pVisitor;
+        *pFix = pWS;
+    }
 }
 //------------------------------------------------------------
 void ExecutionContext::LogEvent(EventLog::EventSeverity severity, const char* message, ...)

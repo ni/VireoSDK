@@ -60,6 +60,8 @@
 		47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
 		47D84DF817C2A271009053DB /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
+		47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E180571A083769007A8DB4 /* Synchronization.cpp */; };
+		47E180591A083769007A8DB4 /* Synchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E180571A083769007A8DB4 /* Synchronization.cpp */; };
 		47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
 		47E220B11950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47E220B21950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
@@ -125,6 +127,7 @@
 		472B7BE917D0E43D00201196 /* TDCodecVia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TDCodecVia.h; path = ../source/include/TDCodecVia.h; sourceTree = "<group>"; };
 		472B7BEA17D0E43D00201196 /* TDCodecVib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TDCodecVib.h; path = ../source/include/TDCodecVib.h; sourceTree = "<group>"; };
 		472D7ACC18C683A10023C688 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = "<group>"; };
+		472FF18919FACD5300401059 /* Parallel.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Parallel.via; path = ../Vireo_Web/SiteSource/Parallel.via; sourceTree = "<group>"; };
 		4730015E19AFCAF400B3F4CA /* Internals */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Internals; path = ../source/dox/Internals; sourceTree = "<group>"; };
 		4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DoxygenLayout.xml; path = ../source/dox/DoxygenLayout.xml; sourceTree = "<group>"; };
 		4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleCountMain.cpp; path = ../source/CommandLine/SimpleCountMain.cpp; sourceTree = "<group>"; };
@@ -255,6 +258,7 @@
 		47D88C2818504F430051CD35 /* DeeplyNestedInitializer.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = DeeplyNestedInitializer.via; path = "../test-it/DeeplyNestedInitializer.via"; sourceTree = "<group>"; };
 		47D88C29185117270051CD35 /* UsageType.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = UsageType.via; path = "../test-it/UsageType.via"; sourceTree = "<group>"; };
 		47D88C2A18566D940051CD35 /* CheckCoreTypes.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCoreTypes.via; path = "../test-it/CheckCoreTypes.via"; sourceTree = "<group>"; };
+		47E180571A083769007A8DB4 /* Synchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Synchronization.cpp; path = ../source/core/Synchronization.cpp; sourceTree = "<group>"; };
 		47E220B01950C1F700988185 /* Assert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assert.cpp; path = ../source/core/Assert.cpp; sourceTree = "<group>"; };
 		47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroDefinition_Sample.cpp; path = ../source/micro/MicroDefinition_Sample.cpp; sourceTree = "<group>"; };
 		47F1285018B3F67C000DA4E1 /* LotsOStrings.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = LotsOStrings.via; path = "../test-it/LotsOStrings.via"; sourceTree = "<group>"; };
@@ -474,6 +478,7 @@
 		4786297B19254D7E00141666 /* SiteSource */ = {
 			isa = PBXGroup;
 			children = (
+				472FF18919FACD5300401059 /* Parallel.via */,
 				47F4E66119DC9BBD009DCC77 /* SineWave.via */,
 				47CF0E7F192E8E4800BE5C85 /* Mandelbrot.via */,
 				47CF0E80192E8E4800BE5C85 /* Pi.via */,
@@ -537,6 +542,7 @@
 				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
 				47D84DDF17C2A271009053DB /* Math.cpp */,
 				472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */,
+				47E180571A083769007A8DB4 /* Synchronization.cpp */,
 				47D84DE017C2A271009053DB /* Thread.cpp */,
 				47D84DE117C2A271009053DB /* Queue.cpp */,
 				47D84DE217C2A271009053DB /* String.cpp */,
@@ -775,6 +781,7 @@
 				474A5F7E199E72130013F8C5 /* Thread.cpp in Sources */,
 				474A5F77199E72130013F8C5 /* TypeAndDataManager.cpp in Sources */,
 				474A5F7B199E72130013F8C5 /* ExecutionContext.cpp in Sources */,
+				47E180591A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				474A5F76199E72130013F8C5 /* TypeDefiner.cpp in Sources */,
 				474A5F7D199E72130013F8C5 /* GenericFunctions.cpp in Sources */,
 				474A5F85199E72260013F8C5 /* FileIO.cpp in Sources */,
@@ -790,6 +797,7 @@
 				47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */,
 				47D84DEE17C2A271009053DB /* EggShell.cpp in Sources */,
 				4750F17019C378D600FA80B8 /* library_canvas2d.js in Sources */,
+				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
 				47D84DF317C2A271009053DB /* Math.cpp in Sources */,
 				47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */,
@@ -997,6 +1005,11 @@
 				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = YES;
 				GCC_INSTRUMENT_PROGRAM_FLOW_ARCS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"VIREO_DEBUG=1",
+					"$(inherited)",
+				);
 				GENERATE_PROFILING_CODE = YES;
 				LLVM_LTO = NO;
 				PRODUCT_NAME = VireoEggShell;

@@ -33,6 +33,7 @@ private:
     
     IntIndex RemoveIndex();
 public:
+    void InitWaitableQueueState(WaitableState* pWS, Int64 elementsAvailable);
     Boolean Compress();
     Boolean TryMakeRoom(IntIndex length);
     Boolean Enqueue(void* pData);
@@ -44,7 +45,15 @@ public:
 typedef Int32 CallSiteQueueState;
 typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 
-
+//------------------------------------------------------------
+void QueueCore::InitWaitableQueueState(WaitableState* pWS, Int64 elementsAvailable)
+{
+    // in MT, lock object
+    pWS->_object = this;
+    pWS->_info = elementsAvailable;
+    pWS->_next = _waitingList;
+    _waitingList = pWS;
+}
 //------------------------------------------------------------
 IntIndex QueueCore::RemoveIndex()
 {
@@ -147,9 +156,8 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, Double, Int32, Boolean
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pWS = clump->ReserveWaitStates(2);
-        clump->InitWaitMilliseconds(pWS, timeOut);
-        pQV->InitWaitableState(pWS+1, -1);
+        pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pQV->InitWaitableQueueState(pWS+1, -1);
         return clump->WaitOnWaitStates(_this);
     } else {
         // With timeout == 0 just continue immediately.
@@ -187,9 +195,8 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, Double, Int32, Boolean
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pWS = clump->ReserveWaitStates(2);
-        clump->InitWaitMilliseconds(pWS, timeOut);
-        pQV->InitWaitableState(pWS+1, 1);
+        pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pQV->InitWaitableQueueState(pWS+1, 1);
         return clump->WaitOnWaitStates(_this);
     } else {
         // With timeout == 0 just continue immediately.

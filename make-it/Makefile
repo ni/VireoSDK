@@ -84,6 +84,13 @@ simple:
 	make esh
 	$(STRIP)
 
+lc:
+	@cat ../source/core/*.cpp >allcpp.txt
+	# SED needs double $ to get past make var expansion
+	@sed -e 's=//.*$$==' -e'/^ *$$/d' allcpp.txt >allcpp2.txt
+	@wc -l allcpp2.txt
+	@rm allcpp.txt allcpp2.txt
+
 #========= 32 bit builds host platfrom
 v32:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
@@ -114,6 +121,7 @@ help:
 	@echo
 	@echo '        "make install" to install esh to $(PROGRAM_DIR), uses sudo'
 	@echo '        "make clean"   to delete $(OBJDIR) and backup files'
+	@echo '        "make lc"      to count the lines of code'
 	@echo '        "make"         to print this help dialogue'
 	@echo ''
 	@echo 'Options can be combined. For example:'

@@ -375,7 +375,7 @@ VIREO_FUNCTION_SIGNATURE3(AddVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArra
 }
 #endif
 
-DEFINE_VIREO_BEGIN(ExecutionContext)
+DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayFill, "p(o(.Array) i(.Int32) i(.*))")
     DEFINE_VIREO_FUNCTION(ArrayCapacity, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayLength, "p(i(.Array) o(.Int32))")

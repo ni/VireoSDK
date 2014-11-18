@@ -490,8 +490,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 
                 VIREO_ASSERT(pFirstEltInSlice == null);
                 pFirstEltInSlice = pArray->RawBegin();
-            } else {
-                VIREO_ASSERT(pFirstEltInSlice != null);
             }
  
             // Get the dim lengths and slabs for tha actual array, not its
