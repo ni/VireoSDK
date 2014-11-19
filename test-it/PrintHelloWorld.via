@@ -1,12 +1,29 @@
+// Define a value that inherits from Int32
+define (TheAnswer  dv(.Int32 42))
+
+// Define a value that inherits from VirtualInstrument
 define (HelloWorld dv(.VirtualInstrument (
-    c(
+
+    // This is a simple data space
+    c(  
         e(dv(.String "Hello, world. I can fly.") variable1)
     )
-    clump (1
+    // This is the code
+    clump (
+        // Print the greeting, symbol resolves to a local
         Print(variable1)
+        
+        // Print the answer, symbol resolves to a global
+        Print(TheAnswer)
+        
+        // Print a predefined global (Types are values)
         Print(VirtualInstrument)
+        
+        // Print another global defined in the file
         Print(HelloWorld)
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue (HelloWorld)                // Runs HelloWorld
+
+enqueue (VirtualInstrument)         // Runs the empty VI

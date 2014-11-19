@@ -91,8 +91,7 @@ define (VirtualInstrument
         e(a(.*) DataSpace)              
         e(a(.VIClump *) Clumps)     // An array of clumps, see definition below.      
         e(.Int32 lineNumberBase)    // Internal fields for maping back to souce code    
-        e(.DataPointer ClumpSourceBegin)
-        e(.DataPointer ClumpSourceEnd)  
+        e(.SubString ClumpSource)
     ))
 )
 

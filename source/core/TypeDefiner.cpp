@@ -207,8 +207,8 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
     
-    
     Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
+    Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 }
 
 }

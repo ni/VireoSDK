@@ -34,8 +34,7 @@ class VIClump;
     e(a(.*) DataSpace)              \
     e(a(.VIClump *) Clumps)         \
     e(.Int32 lineNumberBase)        \
-    e(.DataPointer ClumpSourceBegin)\
-    e(.DataPointer ClumpSourceEnd)  \
+    e(.SubString ClumpSource)       \
 ))"
 
 //------------------------------------------------------------
