@@ -46,6 +46,7 @@ SDG
 #include "Math.cpp"
 #include "String.cpp"
 #include "GenericFunctions.cpp"
+#include "Synchronization.cpp"
 
 #endif
 // Platform specific code should be compiled as it individual 
