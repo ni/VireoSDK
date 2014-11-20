@@ -1514,7 +1514,8 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     this->_eltTypeRef = type->GetSubElement(0);
     
     VIREO_ASSERT(_pRawBufferBegin == null);
-    VIREO_ASSERT(_pRawBufferEnd == null);
+    VIREO_ASSERT(_capacity == 0);
+
     ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
 }
 //------------------------------------------------------------
@@ -1523,7 +1524,6 @@ void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
     //
     VIREO_ASSERT(pArray->_eltTypeRef != null);
     IntIndex i = pArray->Length();
- //   PrintType(pArray->_eltTypeRef, "an array is clearing out it contents");
     pArray->_eltTypeRef->ClearData(pArray->RawBegin(), i);
     pArray->AQFree();
     TypeManagerScope::Current()->Free(pArray);
@@ -1533,17 +1533,14 @@ Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
 {
     VIREO_ASSERT(countBytes >= 0)
     VIREO_ASSERT(_pRawBufferBegin == null);
-    VIREO_ASSERT(_pRawBufferEnd == null);
+
     if (countBytes) {
         _pRawBufferBegin = (AQBlock1*) TypeManagerScope::Current()->Malloc(countBytes);
-        if (_pRawBufferBegin) {
-            _pRawBufferEnd = _pRawBufferBegin + countBytes;
-        } else {
-            _pRawBufferEnd = _pRawBufferBegin;
+        if (!_pRawBufferBegin) {
             return false;
         }
     } else {
-        _pRawBufferBegin = _pRawBufferEnd = null;
+        _pRawBufferBegin = null;
     }
     return true;
 }
@@ -1561,7 +1558,6 @@ Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
             AQBlock1 *newBegin = (AQBlock1*) TypeManagerScope::Current()->Realloc(_pRawBufferBegin, countBytes, preserveBytes);
             if (newBegin) {
                 _pRawBufferBegin = newBegin;
-                _pRawBufferEnd = _pRawBufferBegin + countBytes;
             } else {
                 return false;
             }            
@@ -1576,26 +1572,23 @@ Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
 void TypedArrayCore::AQFree()
 {
     if (_pRawBufferBegin) {
-        VIREO_ASSERT(_pRawBufferEnd != null);
         TypeManagerScope::Current()->Free(_pRawBufferBegin);
         _pRawBufferBegin = null;
-        _pRawBufferEnd = null;
-    } else {
-        VIREO_ASSERT(_pRawBufferEnd == null);
     }
 }
 //------------------------------------------------------------
-// If the array is a of a generic type then it element type
+// If the array is a of a generic type then its element type
 // can be set dynamicaly so long as the specified type maintains
-// a an IsA() relationship
+// a an IsA() relationship with the Array's Type ElementType.
 Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
 {
     if (_typeRef->Rank() == 0) {
         // Out with the old
         _eltTypeRef->ClearData(RawBegin());
         // In with the new
+        AQRealloc(type->TopAQSize(), 0);
         _eltTypeRef = type;
-        AQRealloc(_eltTypeRef->TopAQSize(), 0);
+        _capacity = 1;
         _eltTypeRef->InitData(RawBegin());
     } else {
         // TODO: Resetting non ZDA array element type not currently supported
@@ -1764,12 +1757,19 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         pRequestedLength++;
         pTypesLengths++;
     }
-    
-    // The array is not been resized yet, but the sims and slabs have, so use
+
+    if (slabLength > 0) {
+        _capacity = slabLength / ElementType()->TopAQSize();
+    } else {
+        _capacity = 0;
+    }
+
+    // The array is not been resized yet, but the dims and slabs have, so use
     // the length function to calculate the new length.
     IntIndex newLength = Length();
     
-    return ResizeCore(slabLength, originalCoreLength, newLength, preserveElements);
+    Boolean bOK = ResizeCore(slabLength, originalCoreLength, newLength, preserveElements);
+    return bOK;
 }
 //------------------------------------------------------------
 // Make this array match the shape of the reference type.
@@ -1803,6 +1803,7 @@ Boolean TypedArrayCore::Resize1D(IntIndex length)
     } // else its variable size, do nothing.
 
     if (length != currentLength) {
+        _capacity = length;
         bOK = ResizeCore(length * _eltTypeRef->TopAQSize(), currentLength, length, true);
         if (bOK)
             *GetDimensionLengths() = length;
@@ -1836,10 +1837,11 @@ Boolean TypedArrayCore::ResizeCore(IntIndex countAQ, IntIndex currentLength, Int
     }
 
     if (bOK && (startInitPoistion < newLength)) {
-        // Init new elements, if this fails then some will be initialize
+        // Init new elements, if this fails then some will be initialize, remaining will be null
         NIError err = ElementType()->InitData(BeginAt(startInitPoistion), newLength-startInitPoistion);
         bOK = (err == kNIError_Success);
     }
+        
     return bOK;
 }
 //------------------------------------------------------------

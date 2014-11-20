@@ -834,8 +834,12 @@ typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
 class TypedArrayCore
 {
 protected:
+    // Pointer to the array's first element (AFEP)
     AQBlock1*               _pRawBufferBegin;
-    AQBlock1*               _pRawBufferEnd;
+    
+    // Number of total elements there is capacity for in the managed block of memory
+    IntIndex                _capacity;
+
     TypeRef                 _typeRef;
     TypeRef                 _eltTypeRef;
 
@@ -863,7 +867,6 @@ public:
         VIREO_ASSERT(index >= 0)
         VIREO_ASSERT(ElementType() != null)
         AQBlock1* begin = (RawBegin() + (index * ElementType()->TopAQSize()));
-        VIREO_ASSERT(begin <= _pRawBufferEnd)  //Is there a need to return a pointer to the 'end'
         return begin;
     }
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex** pDimIndexes);
@@ -871,11 +874,13 @@ public:
 public:
     void* RawObj()                  { VIREO_ASSERT(_typeRef->Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
     AQBlock1* RawBegin()            { return _pRawBufferBegin; }
-    AQBlock1* RawEnd()              { return _pRawBufferEnd; }
     void* BeginAtAQ(IntIndex index) { return RawBegin() + index; }
     
 public:
+    //! Array's type.
     TypeRef Type()                  { return _typeRef; }
+    
+    //! The element type of this array instance. This type may be more specific than the element in Array's Type.
     TypeRef ElementType()           { return _eltTypeRef; }
     Boolean SetElementType(TypeRef, Boolean preserveElements);
     
@@ -919,13 +924,12 @@ public:
         }
         return length;
     }
-    
+
     // Capacity is product of all potential dimension lengths ( differs from actual size
     // in bounded arrays. Could be extended to work with optimistic allocations.
     IntIndex Capacity()
     {
-        // TODO add support for multiple dimensions
-        return ((IntIndex)(_pRawBufferEnd - _pRawBufferBegin)) / _eltTypeRef->TopAQSize();
+        return abs(_capacity);
     }
     
     //! Calculate the length of a contigious chunk of elements
@@ -960,7 +964,7 @@ class TypedArray1D : public TypedArrayCore
 {
 public:
     T* Begin()                  { return (T*) TypedArrayCore::RawBegin(); }
-    T* End()                    { return (T*) TypedArrayCore::RawEnd(); }
+    T* End()                    { return (T*) Begin() + Length(); }
     T  At(IntIndex index)       { return *(T*) BeginAt(index);};
     T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }
     T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) { return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes); }
