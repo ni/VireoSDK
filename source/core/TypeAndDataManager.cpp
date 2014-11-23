@@ -1584,7 +1584,7 @@ void TypedArrayCore::AQFree()
 // a an IsA() relationship with the Array's Type ElementType.
 Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
 {
-    if (_typeRef->Rank() == 0) {
+    if (Rank() == 0) {
         // Out with the old
         _eltTypeRef->ClearData(RawBegin());
         // In with the new
@@ -1604,7 +1604,7 @@ IntIndex TypedArrayCore::InternalCalculateLength()
     // Calculate how many elements are in the array based on the
     // current length of each dimension.
     IntIndex *pDimLength = GetDimensionLengths();
-    IntIndex *pEndDimLength = pDimLength + _typeRef->Rank();
+    IntIndex *pEndDimLength = pDimLength + Rank();
     IntIndex length = 1;
     while (pDimLength < pEndDimLength) {
         length *= *pDimLength++;
@@ -1614,8 +1614,8 @@ IntIndex TypedArrayCore::InternalCalculateLength()
 //------------------------------------------------------------
 IntIndex TypedArrayCore::GetLength(IntIndex i)
 {
-    VIREO_ASSERT((i >= 0) && (i < Type()->Rank()));
-    if ((i >= 0) && (i < Type()->Rank())) {
+    VIREO_ASSERT((i >= 0) && (i < Rank()));
+    if ((i >= 0) && (i < Rank())) {
         return GetDimensionLengths()[i];
     } else {
         return 0;
@@ -1629,7 +1629,7 @@ IntIndex TypedArrayCore::GetLength(IntIndex i)
 AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
 {
     // Ignore extra outer dimension if supplied.
-    if (rank > Type()->Rank()) {
+    if (rank > Rank()) {
         // Check extra dims to see if they are 0, if not then it's out of bounds.
         return null;
     }
@@ -1659,7 +1659,7 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
 AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
 {
     // Ignore extra outer dimension if supplied.
-    if (rank > Type()->Rank()) {
+    if (rank > Rank()) {
         // Possibly check extra dims to see if they are 0,
         // if not then it's out of bounds.
         return null;
@@ -1692,7 +1692,7 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
 // contain variable or bounded dimension lengths.
 Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements)
 {
-    Int32 valuesRank = Type()->Rank();
+    Int32 valuesRank = Rank();
     
     // Three sets of dimension sizes are used in this algorithm:
     //
@@ -1743,7 +1743,6 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     
     IntIndex newCapacity = 1;
     Int32    newLength = 1;
-    Boolean  dynamicCpapcity = true;
     
     while(pRequestedLength < pEndRequestedLengths)
     {
@@ -1757,7 +1756,6 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
             // Fixed trumps request
             dimCapactiy = typesDimLength;
             dimLength = dimCapactiy;
-            dynamicCpapcity = false;
         } else if (typesDimLength != kVariableSizeSentinel) {
             // Capacity is bounded length
             // Length is request, but clipped ant bounded length
@@ -1765,7 +1763,6 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
              if (dimLength > dimCapactiy) {
                  dimLength = dimCapactiy;
              }
-            dynamicCpapcity = false;
         }
         newCapacity *= dimCapactiy;
         slabLength *= dimCapactiy;
@@ -1799,7 +1796,7 @@ Boolean TypedArrayCore::Resize1D(IntIndex length)
     IntIndex currentLength = Length();
     IntIndex refDimensionLength = *_typeRef->GetDimensionLengths();
 
-    if (_typeRef->Rank()!=1)
+    if (Rank() != 1)
         return false;
 
     if (refDimensionLength >= 0) {

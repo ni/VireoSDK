@@ -853,7 +853,7 @@ private:
 public:
     IntIndex  Rank()                { return _typeRef->Rank(); }
     IntIndex* GetDimensionLengths() { return _dimensionAndSlabLengths; }
-    IntIndex* GetSlabLengths()      { return &_dimensionAndSlabLengths[0] + _typeRef->Rank(); }
+    IntIndex* GetSlabLengths()      { return &_dimensionAndSlabLengths[0] + Rank(); }
     
 protected:
     static IntIndex StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
@@ -873,7 +873,7 @@ public:
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex** pDimIndexes);
 
 public:
-    void* RawObj()                  { VIREO_ASSERT(_typeRef->Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
+    void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
     AQBlock1* RawBegin()            { return _pRawBufferBegin; }
     void* BeginAtAQ(IntIndex index) { return RawBegin() + index; }
     
