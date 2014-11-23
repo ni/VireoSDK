@@ -1516,7 +1516,9 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     VIREO_ASSERT(_pRawBufferBegin == null);
     VIREO_ASSERT(_capacity == 0);
 
-    ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
+    // Resize it to 0, This will rigger any allocatons necesary for fixed or ounded arrays
+    // ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
+    ResizeDimensions(0, null, false);
 }
 //------------------------------------------------------------
 void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
@@ -1597,9 +1599,33 @@ Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
     return true;
 }
 //------------------------------------------------------------
+IntIndex TypedArrayCore::InternalCalculateLength()
+{
+    // Calculate how many elements are in the array based on the
+    // current length of each dimension.
+    IntIndex *pDimLength = GetDimensionLengths();
+    IntIndex *pEndDimLength = pDimLength + _typeRef->Rank();
+    IntIndex length = 1;
+    while (pDimLength < pEndDimLength) {
+        length *= *pDimLength++;
+    }
+    return length;
+}
+//------------------------------------------------------------
+IntIndex TypedArrayCore::GetLength(IntIndex i)
+{
+    VIREO_ASSERT((i >= 0) && (i < Type()->Rank()));
+    if ((i >= 0) && (i < Type()->Rank())) {
+        return GetDimensionLengths()[i];
+    } else {
+        return 0;
+    }
+}
+//------------------------------------------------------------
 #if 0
 // indexing give a vectors seems natural, but with the threaded snippet
 // execution an array of pointers to dimensions is more common.
+// so the BeginAtNDIndirect is used instead.
 AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
 {
     // Ignore extra outer dimension if supplied.
@@ -1664,7 +1690,7 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
 // Resize an array to match an existing pattern. The pattern
 // may be an existing array or array type definition. The latter may
 // contain variable or bounded dimension lengths.
-Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean init)
+Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements)
 {
     Int32 valuesRank = Type()->Rank();
     
@@ -1672,13 +1698,15 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     //
     // (1) The requested dimension lenghts.
     //
-    // (2) The underlying types dimension lenghts. The may include variable fixed and bounded)
-    //     requests must be constrained to the the these specifications.
+    // (2) The underlying type's dimension lenghts, which may be variable fixed or bounded.
+    //     Requests must be constrained to these specifications.
     //
-    // (3) The actual values dimension lenghts. These are alwasy whole numbers.
+    // (3) The current actual dimension lenght of the values.
     //
     // If the requested size contains a variable sentinel the existing value size will be used.
     // If the requested size if bounded (negative) the bounded size will be used.
+    // Current actual dimension lenghts are regular positive integers, never bounded or variable sentinels.
+    //
     //
 
     IntIndex *pRequestedLength;
@@ -1686,13 +1714,13 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     IntIndex *pTypesLengths = Type()->GetDimensionLengths();
     IntIndex *pValueLengths = GetDimensionLengths();
     IntIndex *pSlabLengths = GetSlabLengths();
-
-    // Only used if too few dimensions passed in.
-    ArrayDimensionVector tempDimensionLengths;
     
     IntIndex slabLength = ElementType()->TopAQSize();
     IntIndex originalCoreLength = Length();
 
+    // Only used if too few dimensions passed in.
+    ArrayDimensionVector tempDimensionLengths;
+    
     if (valuesRank <= rank) {
         // If enough dimensions are supplied use them inplace
         pRequestedLength = dimensionLengths;
@@ -1713,70 +1741,53 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     }
     pEndRequestedLengths = pRequestedLength + valuesRank;
     
+    IntIndex newCapacity = 1;
+    Int32    newLength = 1;
+    Boolean  dynamicCpapcity = true;
+    
     while(pRequestedLength < pEndRequestedLengths)
     {
         *pSlabLengths++ = slabLength;
-        Boolean zeroOutLogicalDim = false;
-
         IntIndex dimLength = *pRequestedLength;
         IntIndex typesDimLength = *pTypesLengths;
-
-        // Sanitize the requested sizes. The size requested
-        // cannot override the specification defined by the type.
-        if (dimLength == kVariableSizeSentinel) {
-            // If the array is resized to "variable" then the existing size is used.
-            dimLength = *pValueLengths;
-        } else if (dimLength < 0) {
-            dimLength = -dimLength;
-            if (init) {
-                // When initializing, the array will be structurally sized to
-                // to the bounded size, logically the dimension will be 0.
-                zeroOutLogicalDim = true;
-            }
-        }
+        IntIndex dimCapactiy = dimLength;
         
         // Now compare with the type's specifications
-        if (typesDimLength == kVariableSizeSentinel) {
-            // Let the sanitized request pass through.
-        } else if (typesDimLength >= 0) {
+        if (typesDimLength >= 0) {
             // Fixed trumps request
-            dimLength = typesDimLength;
-        } else {
-             if (dimLength > -typesDimLength) {
-                 // If beyond bounded size make it the bounded size.
-                 // TODO logical must set after resizing.
-                 // TODO In general arrays that have mix of variable with bounded or fixed is not done yet
-                 dimLength = -typesDimLength;
+            dimCapactiy = typesDimLength;
+            dimLength = dimCapactiy;
+            dynamicCpapcity = false;
+        } else if (typesDimLength != kVariableSizeSentinel) {
+            // Capacity is bounded length
+            // Length is request, but clipped ant bounded length
+            dimCapactiy = -typesDimLength;
+             if (dimLength > dimCapactiy) {
+                 dimLength = dimCapactiy;
              }
+            dynamicCpapcity = false;
         }
-        slabLength *= dimLength;
-
-        if (zeroOutLogicalDim)
-            dimLength = 0;
+        newCapacity *= dimCapactiy;
+        slabLength *= dimCapactiy;
+        newLength *= dimLength;
         *pValueLengths++ = dimLength;
         pRequestedLength++;
         pTypesLengths++;
     }
-
-    if (slabLength > 0) {
-        _capacity = slabLength / ElementType()->TopAQSize();
-    } else {
-        _capacity = 0;
-    }
-
-    // The array is not been resized yet, but the dims and slabs have, so use
-    // the length function to calculate the new length.
-    IntIndex newLength = Length();
     
-    Boolean bOK = ResizeCore(slabLength, originalCoreLength, newLength, preserveElements);
-    return bOK;
+    if (newCapacity != Capacity()) {
+        _capacity = (newLength < newCapacity) ? -newCapacity :  newCapacity;
+        return ResizeCapacity(slabLength, originalCoreLength, newLength, preserveElements);
+    } else {
+        return true;
+    }
 }
 //------------------------------------------------------------
 // Make this array match the shape of the reference type.
 Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
 {
-    if (Type()->Rank() == pReference->Type()->Rank()) {
-        return ResizeDimensions(_typeRef->Rank(), pReference->GetDimensionLengths(), true, false);
+    if (Rank() == pReference->Rank()) {
+        return ResizeDimensions(Rank(), pReference->GetDimensionLengths(), true);
     } else {
         return false;
     }
@@ -1792,26 +1803,28 @@ Boolean TypedArrayCore::Resize1D(IntIndex length)
         return false;
 
     if (refDimensionLength >= 0) {
-        // TODO figure out how many elements are affected and re init them
-        // Fixed size array no changes will be made.
+        VIREO_ASSERT(_capacity == refDimensionLength);
         return length <= refDimensionLength;
     } else if (refDimensionLength != kVariableSizeSentinel) {
+        VIREO_ASSERT(_capacity == refDimensionLength);
         // Bounded size size upto bounded size, no further.
         if (length > -refDimensionLength) {
             return false;
-        } 
-    } // else its variable size, do nothing.
-
-    if (length != currentLength) {
+        }
+    } else {
+        // else its variable size, do nothing.
         _capacity = length;
-        bOK = ResizeCore(length * _eltTypeRef->TopAQSize(), currentLength, length, true);
+    }
+    
+    if (length != currentLength) {
+        bOK = ResizeCapacity(length * _eltTypeRef->TopAQSize(), currentLength, length, true);
         if (bOK)
             *GetDimensionLengths() = length;
     }
     return bOK;
 }
 //------------------------------------------------------------
-Boolean TypedArrayCore::ResizeCore(IntIndex countAQ, IntIndex currentLength, IntIndex newLength, Boolean preserveElements)
+Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentLength, IntIndex newLength, Boolean preserveElements)
 {
     Boolean bOK = true;
     
@@ -1821,6 +1834,7 @@ Boolean TypedArrayCore::ResizeCore(IntIndex countAQ, IntIndex currentLength, Int
     
     if (newLength < currentLength) {
         // Shrinking
+        VIREO_ASSERT(_pRawBufferBegin!= null);
         if (!ElementType()->IsFlat()) {
             // Clear disappearing elements
             ElementType()->ClearData(BeginAt(newLength), currentLength-newLength);
@@ -1835,7 +1849,7 @@ Boolean TypedArrayCore::ResizeCore(IntIndex countAQ, IntIndex currentLength, Int
         // will take this path when initializing
         bOK = AQRealloc(countAQ, 0);
     }
-
+    
     if (bOK && (startInitPoistion < newLength)) {
         // Init new elements, if this fails then some will be initialize, remaining will be null
         NIError err = ElementType()->InitData(BeginAt(startInitPoistion), newLength-startInitPoistion);

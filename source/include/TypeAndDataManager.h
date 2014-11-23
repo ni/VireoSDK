@@ -851,6 +851,7 @@ protected:
 private:
     IntIndex                _dimensionAndSlabLengths[2];
 public:
+    IntIndex  Rank()                { return _typeRef->Rank(); }
     IntIndex* GetDimensionLengths() { return _dimensionAndSlabLengths; }
     IntIndex* GetSlabLengths()      { return &_dimensionAndSlabLengths[0] + _typeRef->Rank(); }
     
@@ -893,50 +894,31 @@ public:
     //! A minimal sanity check, it could do more.
     static Boolean ValidateHandle(TypedArrayCoreRef block)
     {
-        // TODO: Allow for block valiate mode where all allocations and frees are tracked in a map
         return (block != null);
     }
     
-    IntIndex GetLength(IntIndex i)
-    {
-        VIREO_ASSERT((i >= 0) && (i < Type()->Rank())); // TODO remove, initially I want to catch any of these.
-        if ((i >= 0) && (i < Type()->Rank())) {
-            return GetDimensionLengths()[i];
-        } else {
-            return 0;
-        }
-    }
+    IntIndex GetLength(IntIndex i);
     
     // Total Length  (product of all dimension lengths)
     // For actual arrays (not types) this will always be regular whole number.
     // Types may be variable, fixed, or bounded.
-    IntIndex Length()
-    {
-        // TODO Its going to make sense for dim 0 to
-        // alwasy be the cumulative length, and for 1d arrays that will be the only entry
-        // for 2d there will be cumulateive and individual, with strides for each dim as well
-        // It will only calculated when resized then adn this will work better as an inlined function 
-        IntIndex *pDimLength = GetDimensionLengths();
-        IntIndex *pEndDimLength = pDimLength + _typeRef->Rank();
-        IntIndex length = 1;
-        while (pDimLength < pEndDimLength) {
-            length *= *pDimLength++;
-        }
-        return length;
-    }
+    IntIndex InternalCalculateLength();
+    IntIndex Length()       { return Rank() == 1 ? *GetDimensionLengths() :  InternalCalculateLength(); }
 
-    // Capacity is product of all potential dimension lengths ( differs from actual size
-    // in bounded arrays. Could be extended to work with optimistic allocations.
-    IntIndex Capacity()
-    {
-        return abs(_capacity);
-    }
+    //! Returns the maximum number of elements the current underlying storage could hold.
+    IntIndex Capacity()     { return abs(_capacity); }
+    
+    //! Attempt to grow the capacity of the array so that resizing the dimensions will not need
+    // to realloc the underlying storage. This is a soft request and underlying system may reclaim the memory.
+    // This method has no effect on fixed or bounded arrays. Returns true if the array capacity
+    // is greater than or equal to the amount requested.
+    Boolean Reserve(IntIndex length)        { return length <= Capacity(); }
     
     //! Calculate the length of a contigious chunk of elements
-    IntIndex AQBlockLength(IntIndex count) { return ElementType()->TopAQSize() * count; }
+    IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
     
     //! Resize for multi dim arrays
-    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean init);
+    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld);
     
     //! Make this array match the shape of the reference type.
     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
@@ -949,7 +931,7 @@ public:
 
 private:
     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
-    Boolean ResizeCore(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean preserveElements);
+    Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean preserveElements);
     
 public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);

@@ -601,7 +601,7 @@ VIREO_FUNCTION_SIGNATURET(Search1DArrayInternal, Search1DArrayInstruction)
         startIndex = 0;
     Instruction3<AQBlock1, void, Boolean>* snippet = (Instruction3<AQBlock1, void, Boolean>*)_ParamMethod(Snippet());
     
-    VIREO_ASSERT(array->Type()->Rank() == 1);
+    VIREO_ASSERT(array->Rank() == 1);
     IntIndex arrayLength = array->Length();
     IntIndex elementSize = array->ElementType()->TopAQSize();
     Boolean found = false;
@@ -699,7 +699,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
     Instruction3<AQBlock1, AQBlock1, AQBlock1>* scalarOpSnippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     Boolean isIdentityOne = _ParamImmediate(IsIdentityOne);
 
-    VIREO_ASSERT(array->Type()->Rank() == 1);
+    VIREO_ASSERT(array->Rank() == 1);
     IntIndex arrayLength = array->Length();
     IntIndex elementSize = array->ElementType()->TopAQSize();
 
@@ -737,8 +737,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
 //------------------------------------------------------------
 InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBuilder)
 {
-    const char* pArrayConcatenateOpName = "ArrayConcatenateInternal";
-    SubString ArrayConcatenateOpToken(pArrayConcatenateOpName);
+    SubString ArrayConcatenateOpToken("ArrayConcatenateInternal");
 
     pInstructionBuilder->ReresolveInstruction(&ArrayConcatenateOpToken, false);
     Int32 argCount = pInstructionBuilder->_argCount;

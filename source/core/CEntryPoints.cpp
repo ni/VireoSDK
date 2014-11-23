@@ -293,7 +293,7 @@ VIREO_EXPORT void Data_Resize1D(TypedBlock* object, Int32 size)
 VIREO_EXPORT void Data_ResizeDimensions(TypedBlock* object, Int32 rank, IntIndex* sizes)
 {
     VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    object->ResizeDimensions(rank, sizes, false, false);
+    object->ResizeDimensions(rank, sizes, false);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_RawPointerFromOffset(TypedBlock* object, Int32 offset)

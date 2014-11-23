@@ -19,7 +19,7 @@ using namespace Vireo;
 //------------------------------------------------------------
 DECLARE_VIREO_PRIMITIVE2( ArrayResize, TypedArrayCoreRef, Int32, (_Param(0)->Resize1D(_Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE2( ArrayLength, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Length()) )
-DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Type()->Rank()) )
+DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Rank()) )
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
@@ -30,7 +30,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayDimensions, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
 {
-    Int32 rank = _Param(0)->Type()->Rank();
+    Int32 rank = _Param(0)->Rank();
     IntIndex* pLengths = _Param(0)->GetDimensionLengths();
     _Param(1)->Replace1D(0, rank, pLengths, true);
     return _NextInstruction();
@@ -41,7 +41,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayResizeDimensions, TypedArrayCoreRef, TypedArray1D
     // Details on how arrays are redimensioned are in ResizeDimensions().
     Int32 rankProvided = _Param(1)->Length();
     IntIndex* pLengths = _Param(1)->Begin();
-    _Param(0)->ResizeDimensions(rankProvided, pLengths, false, false);
+    _Param(0)->ResizeDimensions(rankProvided, pLengths, false);
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -78,7 +78,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
         tempDimensionLengths[i] = pDim ? *pDim : 0;
     }
     
-    _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false, false);
+    _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);
     
     IntIndex totalLenght = _Param(ArrayOut)->Length();
     TypeRef eltType = array->ElementType();

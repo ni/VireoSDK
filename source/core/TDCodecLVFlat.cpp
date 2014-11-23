@@ -26,7 +26,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
         {
             TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;
             IntIndex* dimLengths = pArray->GetDimensionLengths();
-            Int32 rank = pArray->Type()->Rank();
+            Int32 rank = pArray->Rank();
             
             if (pArray == null)
                 return kNIError_kResourceNotFound;

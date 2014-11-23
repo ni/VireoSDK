@@ -486,7 +486,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact
                 // any changes, but logical  dims can change.
-                pArray->ResizeDimensions(rank, initializerDimensionLengths, false, false);
+                pArray->ResizeDimensions(rank, initializerDimensionLengths, false);
                 
                 VIREO_ASSERT(pFirstEltInSlice == null);
                 pFirstEltInSlice = pArray->RawBegin();
