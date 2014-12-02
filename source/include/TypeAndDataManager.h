@@ -924,14 +924,14 @@ public:
     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
     
     //! Resize for 1d arrays, if not enough memory leave as is.
-    Boolean Resize1D(IntIndex length);
+    Boolean Resize1D(IntIndex length)       { return ResizeDimensions(1, &length, true); }
     
     //! Resize, if not enough memory, then size to zero
     Boolean Resize1DOrEmpty(IntIndex length);
 
 private:
     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
-    Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean preserveElements);
+    Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean reserveExists);
     
 public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);
