@@ -1742,11 +1742,11 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
             // Capacity is bounded length
             // Length is request, but clipped at bounded length
             dimCapactiy = -typesDimLength;
-             if (dimLength > dimCapactiy) {
+            if (dimLength > dimCapactiy) {
                  // TODO ignore excessive request or clip
                  // dimLength = *pValueLengths;
                  dimLength = dimCapactiy;
-             }
+            }
         }
         newCapacity *= dimCapactiy;
         slabLength *= dimCapactiy;
@@ -1797,42 +1797,6 @@ Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapacti
     _capacity = reserveExists ? -newCapacity :  newCapacity;
     return bOK;
 }
-#if 0
-//------------------------------------------------------------
-Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapactiy, IntIndex newCapacity, Boolean preserveElements)
-{
-    // Resize the underlying block of bytes as needed.
-    
-    Boolean bOK = true;
-    IntIndex startInitPoistion = preserveElements ? currentCapactiy : 0;
-    IntIndex lengthInit = newCapacity - startInitPoistion;
-    
-    if (newCapacity < currentCapactiy) {
-        // Shrinking
-        VIREO_ASSERT(_pRawBufferBegin!= null);
-        if (!ElementType()->IsFlat()) {
-            // Clear disappearing elements
-            ElementType()->ClearData(BeginAt(newCapacity), currentCapactiy-newCapacity);
-        }
-        bOK = AQRealloc(countAQ, countAQ);
-    } else if (newCapacity > currentCapactiy) {
-        // Growing
-        Int32 eltSize = _eltTypeRef->TopAQSize();
-        bOK = AQRealloc(countAQ, (eltSize * currentCapactiy));
-        ElementType()->InitData(BeginAt(startInitPoistion), lengthInit);
-    } else {
-        // Capacity is the same but reserve elements need to reset.
-    }
-    
-    if (bOK && (startInitPoistion < newCapacity)) {
-        // Init new elements, if this fails then some will be initialize, remaining will be null
-        NIError err = ElementType()->InitData(BeginAt(startInitPoistion), newCapacity - startInitPoistion);
-        bOK = (err == kNIError_Success);
-    }
-        
-    return bOK;
-}
-#endif
 //------------------------------------------------------------
 // Make this array match the shape of the reference type.
 Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
