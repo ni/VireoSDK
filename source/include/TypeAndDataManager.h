@@ -837,11 +837,14 @@ protected:
     // Pointer to the array's first element (AFEP)
     AQBlock1*               _pRawBufferBegin;
     
-    // Number of total elements there is capacity for in the managed block of memory
-    IntIndex                _capacity;
-
+    // Array's type may be more generic than a spefic instance of an array.
     TypeRef                 _typeRef;
+
+    // Specific type an instance is an array of.
     TypeRef                 _eltTypeRef;
+
+    // Number of total elements there is capacity for in the managed block of memory.
+    IntIndex                _capacity;
 
     // _dimensionAndSlabLengths works as follows
     // For example, in an array of Rank 2, there will be 2 DimensionLengths followed by
