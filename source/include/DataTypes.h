@@ -196,7 +196,45 @@ public:
     SubBinaryBuffer()   { }
     SubBinaryBuffer(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }
 };
+//------------------------------------------------------------
+//! A light weight iterator for sequential reads of staticly type values
+template <class T>
+class Itr {
+protected:
+    T*   _current;
+    T*   _end;
+public:
+    Itr(T* begin, T* end) {_current = begin; _end = end;}
+    Itr(T* begin, IntIndex length) {_current = begin; _end = begin + length;}
+    //! Read the iterators next pointer
+    T* ReadP()          { return _current++; }
+    //! Read the iterators next value
+    T Read()            { return *_current++;  }
+    Boolean InRange()   { return _current < _end; }
+};
+//------------------------------------------------------------
+//! A light weight iterator for sequential reads of runtime typed values
+class BlockItr : public Itr<AQBlock1>
+{
+    IntIndex _blockLength;
+public:
+    //! Construct an iterator for an array of blocks 
+    BlockItr(void* begin, IntIndex blockLength, IntIndex count)
+    : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count))
+    {
+        _blockLength = blockLength;
+    }
+    //! Read the iterators next pointer
+    AQBlock1* ReadP()
+    {
+        AQBlock1* p = _current;
+        _current += _blockLength;
+        return p;
+    }
+};
+//------------------------------------------------------------
+typedef Itr<IntIndex>   IntIndexItr;
+
 
 }
-
 #endif // DataTypes_h

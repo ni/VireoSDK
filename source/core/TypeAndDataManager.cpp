@@ -493,15 +493,12 @@ NIError TypeCommon::InitData(void* pTarget, IntIndex count)
     if (IsFlat()) {
         memset(pTarget, 0, TopAQSize() * count);
     } else {
-        Int32 step = TopAQSize();
-        AQBlock1 *pTargetElt = (AQBlock1*)pTarget;
-        AQBlock1 *pTargetEnd = (AQBlock1*)pTarget + (step * count);
-        while (pTargetElt < pTargetEnd) {
-            err = InitData(pTargetElt);
+        BlockItr iTarget(pTarget, TopAQSize(), count);
+        while (iTarget.InRange()) {
+            err = InitData(iTarget.ReadP());
             if (err != kNIError_Success) {
                 break;
             }
-            pTargetElt += step;
         }
         // TODO if init fails, go back and clear?
     }
@@ -514,13 +511,10 @@ NIError TypeCommon::ClearData(void* pTarget, IntIndex count)
     if (IsFlat()) {
         memset(pTarget, 0, TopAQSize() * count);
     } else {
-        size_t step = TopAQSize();
-        AQBlock1 *pTargetElt = (AQBlock1*)pTarget;
-        AQBlock1 *pTargetEnd = (AQBlock1*)pTarget + (step * count);
-        while (pTargetElt < pTargetEnd) {
+        BlockItr iTarget(pTarget, TopAQSize(), count);
+        while (iTarget.InRange()) {
             // use virtual method
-            ClearData(pTargetElt);
-            pTargetElt += step;
+            ClearData(iTarget.ReadP());
         }
     }
     return kNIError_Success;
@@ -539,16 +533,14 @@ NIError TypeCommon::CopyData(const void* pSource, void* pDest, IntIndex count)
     if (IsFlat()) {
         memmove(pDest, pSource, count * TopAQSize());
     } else {
+        BlockItr iDest(pDest, TopAQSize(), count);
         Int32 step = TopAQSize();
         AQBlock1 *pSourceElt = (AQBlock1*)pSource;
-        AQBlock1 *pSourceEnd = (AQBlock1*)pSource + (step * count);
-        AQBlock1 *pDestElt = (AQBlock1*)pDest;
-        while (pSourceElt < pSourceEnd) {
-            err = CopyData(pSourceElt, pDestElt);
+        while (iDest.InRange()) {
+            err = CopyData(pSourceElt, iDest.ReadP());
+            pSourceElt += step;
             if (err != kNIError_Success)
                 break;
-            pSourceElt += step;
-            pDestElt += step;
         }
     }    
     return err;
@@ -559,14 +551,10 @@ NIError TypeCommon::MultiCopyData(const void* pSource, void* pDest, IntIndex cou
     if (IsFlat() && TopAQSize() == 1) {
         memset(pDest, (int)*(AQBlock1*)pSource, count);
     } else {
-        Int32 step = TopAQSize();
-        AQBlock1 *pSourceElt = (AQBlock1*)pSource;
-        AQBlock1 *pDestElt = (AQBlock1*)pDest;
-        AQBlock1 *pDestEnd = (AQBlock1*)pDest + (step * count);
-        while (pDestElt < pDestEnd) {
+        BlockItr iDest(pDest, TopAQSize(), count);
+        while (iDest.InRange()) {
             // TODO process errors
-            CopyData(pSourceElt, pDestElt);
-            pDestElt += step;
+            CopyData(pSource, iDest.ReadP());
         }
     }
     return kNIError_Success;
@@ -1516,8 +1504,7 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     this->_typeRef = type;
     this->_eltTypeRef = type->GetSubElement(0);
 
-    // Resize it to 0, This will rigger any allocatons necesary for fixed or ounded arrays
-    // ResizeDimensions(type->Rank(), type->GetDimensionLengths(), false, true);
+    // Resize it to 0, This will trigger any allocatons necesary for fixed or ounded arrays
     ResizeDimensions(0, null, false);
 }
 //------------------------------------------------------------
@@ -1602,11 +1589,10 @@ IntIndex TypedArrayCore::InternalCalculateLength()
 {
     // Calculate how many elements are in the array based on the
     // current length of each dimension.
-    IntIndex *pDimLength = GetDimensionLengths();
-    IntIndex *pEndDimLength = pDimLength + Rank();
     IntIndex length = 1;
-    while (pDimLength < pEndDimLength) {
-        length *= *pDimLength++;
+    IntIndexItr iDim( GetDimensionLengths(), Rank());
+    while (iDim.InRange()) {
+        length *= iDim.Read();
     }
     return length;
 }
@@ -1634,26 +1620,26 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
     }
     
     AQBlock1 *pElt = RawBegin();
-    IntIndex* pDimLenght = GetDimensionLengths();
-    IntIndex* pSlab = GetSlabLengths();
-    IntIndex* pEndSlab = pSlab + rank;
+    IntIndex* pDimLength = GetDimensionLengths();
+    IntIndexItr iSlab(GetSlabLengths(), rank);
     
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
     // Note that slabs do not need to be packed.
-    for (;pSlab < pEndSlab; pSlab++) {
+    while (iSlab.InRange()) {
         IntIndex dim = *pDimIndexes;
-        if ((dim < 0) || (dim >= *pDimLenght)) {
+        if ((dim < 0) || (dim >= *pDimLength)) {
             return null;
         }
-        pElt += (*pSlab) * dim;
+        pElt += dim * iSlab.NextV();
         
         pDimIndexes++;
-        pDimLenght++;
+        pDimLength++;
     }
     return pElt;
 }
 #endif
+
 //------------------------------------------------------------
 AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
 {
@@ -1665,23 +1651,21 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
     }
     
     AQBlock1 *pElt = RawBegin();
-    IntIndex* pDimLenght = GetDimensionLengths();
-    IntIndex* pSlab = GetSlabLengths();
-    IntIndex* pEndSlab = pSlab + rank;
+    IntIndex* pDimLength = GetDimensionLengths();
+    IntIndexItr iSlab(GetSlabLengths(), rank);
     
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
     // Note that slabs do not need to be packed.
-    for (;pSlab < pEndSlab; pSlab++) {
+    while (iSlab.InRange()) {
         IntIndex *pDim = *ppDimIndexes;
         IntIndex dim = pDim ? *pDim : 0;
-        if ((dim < 0) || (dim >= *pDimLenght)) {
+        if ((dim < 0) || (dim >= *pDimLength)) {
             return null;
         }
-        pElt += (*pSlab) * dim;
-        
+        pElt += dim * iSlab.Read();
         ppDimIndexes++;
-        pDimLenght++;
+        pDimLength++;
     }
     return pElt;
 }
@@ -1708,8 +1692,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     //
     //
 
-    IntIndex *pRequestedLength;
-    IntIndex *pEndRequestedLengths;
+    IntIndex *pRequestedLengths;
     IntIndex *pTypesLengths = Type()->GetDimensionLengths();
     IntIndex *pValueLengths = GetDimensionLengths();
     IntIndex *pSlabLengths = GetSlabLengths();
@@ -1722,7 +1705,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     
     if (valuesRank <= rank) {
         // If enough dimensions are supplied use them inplace
-        pRequestedLength = dimensionLengths;
+        pRequestedLengths = dimensionLengths;
     } else {
         // It too few are supplied fill out the remaining in a temporary copy.
         int i=0;
@@ -1736,17 +1719,16 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
             // Use supplied dims for outer.
             tempDimensionLengths[i] = dimensionLengths[i - dimsToBeFilledIn];
         }
-        pRequestedLength = tempDimensionLengths;
+        pRequestedLengths = tempDimensionLengths;
     }
-    pEndRequestedLengths = pRequestedLength + valuesRank;
+    IntIndexItr  iRequestedDim(pRequestedLengths, valuesRank);
     
     IntIndex newCapacity = 1;
     Int32    newLength = 1;
     
-    while(pRequestedLength < pEndRequestedLengths)
-    {
+    while(iRequestedDim.InRange()) {
         *pSlabLengths++ = slabLength;
-        IntIndex dimLength = *pRequestedLength;
+        IntIndex dimLength = iRequestedDim.Read();
         IntIndex typesDimLength = *pTypesLengths;
         IntIndex dimCapactiy = dimLength;
         
@@ -1769,9 +1751,8 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         newCapacity *= dimCapactiy;
         slabLength *= dimCapactiy;
         newLength *= dimLength;
-        // This commits the new length, perhaps to early.
+        // This commits the new length, perhaps too early.
         *pValueLengths++ = dimLength;
-        pRequestedLength++;
         pTypesLengths++;
     }
     
