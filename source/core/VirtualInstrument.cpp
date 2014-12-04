@@ -490,8 +490,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
                 *ppData = null;
                 _argumentState = kArgumentNotMutable;
             } else {
-                SubString typeTypeName("Type");
-                _actualArgumentType = _clump->TheTypeManager()->FindType(&typeTypeName);
+                _actualArgumentType = _clump->TheTypeManager()->FindType("Type");
                 _argumentState = kArgumentResolvedToGlobal;
             }
         }

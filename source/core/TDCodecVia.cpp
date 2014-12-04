@@ -738,8 +738,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     } else {
         // TODO when VIs are inflated from their parent type this will be done automatically.
         // empty clusters should all end up with the singleton empty cluster
-        SubString str("EmptyParameterList");
-        TypeRef emptyVIParamList =  _typeManager->FindType(&str);
+        TypeRef emptyVIParamList =  _typeManager->FindType("EmptyParameterList");
         parameterBlockType = emptyVIParamList;
         dataSpaceType = type1;
     }
@@ -1662,8 +1661,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         Int64 parsedValue;
 
         // ParseData needs to be given an integer type so that it parses the string as a decimal string.
-        SubString Int64Name("Int64");
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType(&Int64Name);
+        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Int64");
 
         parser.ParseData(parseType, &parsedValue);
 
@@ -1717,8 +1715,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
         Double parsedValue;
 
         // ParseData needs to be given a floating point type so that it parses the string as an exponential string.
-        SubString DoubleName("Double");
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType(&DoubleName);
+        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Double");
 
         parser.ParseData(parseType, &parsedValue);
 

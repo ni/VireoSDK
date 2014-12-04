@@ -576,8 +576,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
     Search1DArrayInstruction* searchOp = (Search1DArrayInstruction*) pInstructionBuilder->EmitInstruction(); //emit the search op
     pInstruction = searchOp;
-    SubString booleanName("Boolean");
-    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType(&booleanName);
+    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType("Boolean");
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, searchOp, snippetArgId);

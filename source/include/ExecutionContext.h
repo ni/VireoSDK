@@ -244,10 +244,9 @@ class StackVar
 {
 public:
     T *Value;
-    StackVar(const char* tName)
+    StackVar(const char* name)
     {
-        SubString stringTypeName(tName);
-        TypeRef type = THREAD_EXEC()->TheTypeManager()->FindType(&stringTypeName);
+        TypeRef type = THREAD_EXEC()->TheTypeManager()->FindType(name);
         VIREO_ASSERT(type->IsArray() && !type->IsFlat());
         Value = null;
         if (type) {
