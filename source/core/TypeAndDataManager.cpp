@@ -63,7 +63,6 @@ TypeManager::TypeManager(TypeManagerRef rootTypeManager)
 #ifdef VIREO_PERF_COUNTERS
     _lookUpsFound = 0;
     _lookUpsRoutedToOwner = 0;
-    _lookUpsNotResolved = 0;
     _typesShared = 0;
 #endif
     _totalAllocations = 0;
@@ -312,12 +311,10 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
 {
     MUTEX_SCOPE()
 
-    // Though overloads are allowed, it is still necessary to Make a names Wrapper for each unique type.
-    // This allows teh resolved type to be passed with its name wrapper, enable funtions to see the external name
-    // of the symbol. This does mean that the string will be replicated in each NameTypeObject.
-    // Though the map object will still just hold substrings.
+    // Though overloads are allowed, it is still necessary to make a name wrapper for each unique type.
+    // This allows the resolved type to be passed with its name wrapper, and allows funtions to see the name
+    // of the resolved symbol.
 
-    // See if one exist in the current TM or a root TM.
     NamedTypeRef existingType = FindType(typeName);
     
 #ifndef VIREO_ALLOW_SYMBOL_OVERLOADS
@@ -325,35 +322,51 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
         return null;
 #endif
 
-    Boolean bNewAtThisLevel = existingType ? (existingType->TheTypeManager() != this) : true;
+    return NewNamedType(typeName, type, existingType);
+}
+//------------------------------------------------------------
+NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingType)
+{
+    // Storage for the string used by the dictionary is part of
+    // NamedType so once it is created GetName() is used to
+    // get pointers to the storage types internal name. The local is temporary, but the
+    // pointers in it last as long as the type, which is longer than
+    // the map entry that poionts to it.
+    Boolean bNewInThisTM = existingType ? (existingType->TheTypeManager() != this) : true;
     
     NamedTypeRef namedType = NamedType::New(this, typeName, type, existingType);
-
-    if (bNewAtThisLevel) {
-       // printf("New symbol at this level %.*s\n", FMT_LEN_BEGIN(typeName));
-        // Storage for the string used by the dictionary is part of
-        // NamedType so once it is created a GetName() is done to
-        // get pointers to the storage. The local is temporary, but the
-        // pointer in it last longer than the map entry tha poionts to it.
+    if (bNewInThisTM) {
         SubString permanentTypeName;
         namedType->GetName(&permanentTypeName);
         _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
     } else {
-       // printf("Overloaded symbol at this level %.*s\n", FMT_LEN_BEGIN(typeName));
-        // If this TM already has an entry then this one will be inserted into the
-        // list owned by the existing one. That list will can include links to overloads in
-        // TM's root chain.
-     }
-
+        // If it is already in this TypeManager the new type is threaded of of the
+        // Original one define.
+    }
     return namedType;
+}
+//------------------------------------------------------------
+NamedTypeRef TypeManager::FindType(const char* name)
+{
+    SubString ssName(name);
+    return FindType(&ssName);
 }
 //------------------------------------------------------------
 NamedTypeRef TypeManager::FindType(const SubString* name)
 {
     MUTEX_SCOPE()
 
-    NamedTypeRef *typeValue = FindTypeConstRef(name);
-    return typeValue ? *typeValue : null;
+    NamedTypeRef *pType = FindTypeConstRef(name);
+    NamedTypeRef type = pType ? *pType : null;
+    
+    if (!type && name->ComparePrefixCStr("$")) {
+        // Names that start with $ are parameters.
+        // They are all direct derivatives of "*" and are allocated as needed.
+        NamedTypeRef genericType = FindType("*");
+        type = NewNamedType(name, genericType, null);
+    }
+    
+    return type;
 }
 //------------------------------------------------------------
 // Look up the pointer to a default value of a type.
@@ -363,7 +376,7 @@ void* TypeManager::FindNamedTypedBlock(SubString* name, PointerAccessEnum mode)
     return t ? t->Begin(mode) : null;
 }
 //------------------------------------------------------------
-// Look up the pointer to a a default objects avalue. This Method
+// Look up the pointer to a default object's avalue. This Method
 // digs through the ZDA wrapper and returns a pointer to the element.
 void* TypeManager::FindNamedObject(SubString* name)
 {
@@ -378,11 +391,12 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 {
     MUTEX_SCOPE()
 
+    // Why return a references to a TypeRef?
     // When instructions use a type constant, they need to point the intrution to a variable
     // that has the TypeRef and the value. The dictionary serves as that variable so the address
-    // to the entry is returned. The Symbol cannot deleted until instructions (VIs) are cleared.
-    // Since a referenced type mus t exist before the instruction can reference it this works
-    // works out fine.
+    // to the entry is returned. The Symbol cannot be deleted until instructions (VIs) are cleared.
+    // Since a referenced type must exist before the instruction can reference it,
+    // this works out fine.
 
     TypeDictionaryIterator iter;
     iter = _typeNameDictionary.find(*name);
@@ -394,10 +408,7 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
     } else {
         _lookUpsFound++;
     }
-    if (!pFoundTypeRef) {
-        //printf(" ** Symbol '%.*s' not found\n", FMT_LEN_BEGIN(name));
-        _lookUpsNotResolved++;
-    }
+
     return pFoundTypeRef;
 }
 //------------------------------------------------------------

@@ -167,7 +167,7 @@ public:
     static void Delete(TypeManagerRef tm);
     
 private:
-    TypeManagerRef    _rootTypeManager;   // null if it is the root, or it is not using a root.
+    TypeManagerRef    _rootTypeManager;   // Root is null when the instance is the root.
 
 #ifdef STL_MAP
     typedef std::map<SubString, NamedTypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
@@ -181,7 +181,7 @@ private:
     Int32       _aqBitCount;
     MUTEX_CLASS_MEMBER
     TypeRef _badType;
-    TypeRef _typeList;          // list of all Types allocated by this TypeManager
+    TypeRef _typeList;                  // List of all Types allocated by this TypeManager
     
 friend class TDViaParser;
     // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
@@ -189,6 +189,7 @@ friend class TDViaParser;
     // also defines alignment rules. Each element in a cluster is addressable
 private:
     TypeManager(TypeManagerRef typeManager);
+    NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingType);
 public:
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -201,6 +202,8 @@ public:
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
+
+    NamedTypeRef FindType(const char* name);
     NamedTypeRef FindType(const SubString* name);
     NamedTypeRef* FindTypeConstRef(const SubString* name);
     void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
@@ -248,13 +251,11 @@ public:
 private:
     Int64 _lookUpsFound;
     Int64 _lookUpsRoutedToOwner;
-    Int64 _lookUpsNotResolved;
 public:
     Int32 _typesShared;
 
     Int64 LookUpsFound()            { return _lookUpsFound;}
     Int64 LookUpsRoutedToOwner()    { return _lookUpsRoutedToOwner;}
-    Int64 LookUpsNotResolved()      { return _lookUpsNotResolved;}
 #endif
 };
 

@@ -1,0 +1,47 @@
+
+// Work on generic parameterized types
+
+// Step 1: 
+// Allow types to be defined with generic parameters. 
+define (TQueue 
+    c(
+        e(.DataPointer)
+        
+        // Simple, and still valid way, a generic field in a type
+        // primarily used runtime generics (e.g. variants) are needed
+        e(a(.*  *)elements) 
+
+        // New method allows the the generic type to be identified
+        // as as a template parameter, and enables stricter types
+        // be resolved to at load time.
+        e(a(.$1 *)elements) 
+        e(.Int32 insert)
+        e(.Int32 count)
+        e(.DataPointer firstState)
+    )
+)
+
+// Step 2 - Not yet working
+// Instantiate templates
+define (TestProgram dv(.VirtualInstrument (
+    c(
+       // e(.TQueue<.Double> q)
+       // e(.TQueue<.String> q)
+       // e(.TQueue<.Queue<Int64>> q)
+       
+        e(.Queue q)
+        e(dv(.Double 42.5) x)
+        e(.Double y)
+        e(.Boolean done)
+    )
+    clump (
+        DPrintf(" in %s out %s" x y)
+        EnqueueElement(q x 10 done)
+        DequeueElement(q y 10 done)
+        DPrintf(" in %s out %s" x y)
+        DequeueElement(q y 10 done)
+        DPrintf(" y %s" y)
+    )
+) ) )
+
+enqueue (TestProgram)

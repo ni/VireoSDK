@@ -91,7 +91,7 @@ const UInt8 AsciiCharTraits[] =
     /* 21 !  */   kACT_Symbol,
     /* 22 "  */   0,
     /* 23 #  */   kACT_Symbol,
-    /* 24 $  */   kACT_Symbol,
+    /* 24 $  */   kACT_Id,
     /* 25 %  */   kACT_Id,
     /* 26 &  */   kACT_Symbol,
     /* 27 '  */   0,
