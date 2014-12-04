@@ -308,7 +308,7 @@ TypeRef TypeManager::GetTypeList()
     return _typeList;
 }
 //------------------------------------------------------------
-TypeRef TypeManager::Define(SubString* typeName, TypeRef type)
+TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
 {
     MUTEX_SCOPE()
 
@@ -730,12 +730,12 @@ ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wr
 //------------------------------------------------------------
 // NamedType
 //------------------------------------------------------------
-NamedType* NamedType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
+NamedType* NamedType::New(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
 {
     return TADM_NEW_PLACEMENT_DYNAMIC(NamedType, name)(typeManager, name, wrappedType, nextOverload);
 }
 //------------------------------------------------------------
-NamedType::NamedType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
+NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
 : WrappedType(typeManager, wrappedType), _name(name->Length())
 {
     if (nextOverload) {

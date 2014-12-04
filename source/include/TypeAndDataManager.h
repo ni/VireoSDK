@@ -200,7 +200,7 @@ public:
     void    PrintMemoryStat(const char*, Boolean last);
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
-    TypeRef Define(SubString* name, TypeRef type);
+    TypeRef Define(const SubString* name, TypeRef type);
     NamedTypeRef FindType(const SubString* name);
     NamedTypeRef* FindTypeConstRef(const SubString* name);
     void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
@@ -525,11 +525,11 @@ class NamedType : public WrappedType
 private:
     NamedTypeRef            _nextOverload; // May point to one in curent or root type manager.
     InlineArray<Utf8Char>   _name;
-    NamedType(TypeManagerRef typeManager, SubString* name, TypeRef type, NamedTypeRef nextOverload);
+    NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
 public:
-    static IntIndex StructSize(SubString* name)
+    static IntIndex StructSize(const SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
-    static NamedType* New(TypeManagerRef typeManager, SubString* name, TypeRef type, NamedTypeRef nextOverload);
+    static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
     
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
