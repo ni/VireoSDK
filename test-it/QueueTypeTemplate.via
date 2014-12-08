@@ -26,7 +26,7 @@ define (TestProgram dv(.VirtualInstrument (
        // e(.TQueue<.String> q)
        // e(.TQueue<.Queue<Int64>> q)
        
-        e(.Queue q)
+        e(.Queue<.Double> q)
         e(dv(.Double 42.5) x)
         e(.Double y)
         e(.Boolean done)

@@ -246,7 +246,7 @@ public:
     T *Value;
     StackVar(const char* name)
     {
-        TypeRef type = THREAD_EXEC()->TheTypeManager()->FindType(name);
+        TypeRef type = TypeManagerScope::Current()->FindType(name);
         VIREO_ASSERT(type->IsArray() && !type->IsFlat());
         Value = null;
         if (type) {

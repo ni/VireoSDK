@@ -430,6 +430,170 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
     _typeInstanceDictionary[*binaryName] = type;
     return type;
 }
+
+#if 1
+    //------------------------------------------------------------
+    class InstantiateTemplateVisitor : public TypeVisitor
+    {
+    public:
+        static TypeRef InstantiateTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements)
+        {
+        
+            InstantiateTemplateVisitor itv(tm, replacements);
+            typeTemplate->Visit(&itv);
+            return itv._newType;
+        }
+    private:
+        TypeManagerRef _tm;
+        TypeRef _replacementTypes;  // one for now
+        TypeRef _newType;
+    private:        
+        InstantiateTemplateVisitor(TypeManagerRef tm, TypeRef replacement)
+        {
+            _tm = tm;
+            _replacementTypes = replacement;
+            _newType = null;
+        }
+        //------------------------------------------------------------
+        virtual void VisitBad(TypeRef type)
+        {
+            _newType = _tm->BadType();
+            VIREO_ASSERT(false);
+        }
+        //------------------------------------------------------------
+        virtual void VisitBitBlock(TypeRef type)
+        {
+            _newType = _tm->BadType();
+            VIREO_ASSERT(false);
+        }
+        //------------------------------------------------------------
+        virtual void VisitBitCluster(TypeRef type)
+        {
+            _newType = _tm->BadType();
+            VIREO_ASSERT(false);
+        }
+        //------------------------------------------------------------
+        virtual void VisitCluster(TypeRef type)
+        {
+            TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
+            IntIndex subElementCount = type->SubElementCount();
+            for (int i = 0; i < subElementCount; i++) {
+                elementTypes[i] = _tm->InstantiateTemplateType(type->GetSubElement(i), _replacementTypes);
+            }
+
+            _newType  = ClusterType::New(_tm, elementTypes, type->SubElementCount());
+        }
+        //------------------------------------------------------------
+        virtual void VisitParamBlock(TypeRef type)
+        {
+            _newType = type;
+        }
+        //------------------------------------------------------------
+        virtual void VisitEquivalence(TypeRef type)
+        {
+            _newType = type;
+        }
+        //------------------------------------------------------------
+        virtual void VisitArray(TypeRef type)
+        {
+            // A type can not currently derived based on dimension size
+            TypeRef subType = _tm->InstantiateTemplateType(type->GetSubElement(0), _replacementTypes);
+            VIREO_ASSERT(subType != type->GetSubElement(0));
+            
+            _newType = ArrayType::New(_tm, subType, type->Rank(), type->GetDimensionLengths());
+            VIREO_ASSERT(_newType != type);
+        }
+        //------------------------------------------------------------
+        virtual void VisitElement(TypeRef type)
+        {
+            TypeRef   baseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
+            SubString fieldName;
+            type->GetElementName(&fieldName);
+            UsageTypeEnum usageType = type->ElementUsageType();
+            IntIndex offset = type->ElementOffset();
+            _newType = ElementType::New(_tm, &fieldName, baseType, usageType, offset);
+            VIREO_ASSERT(_newType != type);
+        }
+        //------------------------------------------------------------
+        virtual void VisitNamed(TypeRef type)
+        {
+            SubString name;
+            type->GetName(&name);
+            
+            if(name.CompareCStr("$1")) {
+                _newType = _replacementTypes;
+                return;
+            }
+            // To get here the named type was generic, and that means the
+            // base type is also generic. First ceaate the hyotheitcal new name
+            // and see if instance already exists. If not, make one.
+            
+            // Create a new name, TODO should  really useTDCodecVIA
+            STACK_VAR(String, tempString);
+
+            tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
+            tempString.Value->Append('<');
+            _replacementTypes->GetName(&name);
+            tempString.Value->Append('.');
+            tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
+            tempString.Value->Append('>');
+            name = tempString.Value->MakeSubStringAlias();
+            
+            // Find an existing instantion, or make one.
+            _newType = _tm->FindType(&name);
+            if (!_newType) {
+                TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
+                VIREO_ASSERT(newBaseType != type->BaseType());
+                _newType = _tm->Define(&name, newBaseType);
+                // The new type needs to have an IsA relation ship to the template it is derived from
+                // how to do that?
+            } else {
+                _newType = type;
+            }
+        }
+        //------------------------------------------------------------
+        virtual void VisitPointer(TypeRef type)
+        {
+            TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
+            if (newBaseType != type->BaseType()) {
+                _newType = PointerType::New(_tm, newBaseType);
+            } else {
+                _newType = type;
+            }
+        }
+        //------------------------------------------------------------
+        virtual void VisitDefaultValue(TypeRef type)
+        {
+            TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
+            if (newBaseType != type->BaseType()) {
+                // Templated defaults are a bit extreme. If the type is generic then
+                // how could the data have been parsed.
+                _newType = DefaultValueType::New(_tm, type->BaseType(), type->IsMutableValue());
+            } else {
+                _newType = type;
+            }
+        }
+        //------------------------------------------------------------
+        virtual void VisitCustomDefaultPointer(TypeRef type)
+        {
+            _newType = type;
+        }
+        //------------------------------------------------------------
+        virtual void VisitCustomDataProc(TypeRef type)
+        {
+            _newType = type;
+        }
+    };
+#endif
+//------------------------------------------------------------
+TypeRef TypeManager::InstantiateTemplateType(TypeRef type, TypeRef parameters)
+{
+    if (!type->HasGenericType()) {
+        return type;
+    } else {
+        return InstantiateTemplateVisitor::InstantiateTemplate(this, type, parameters);
+    }
+}
 //------------------------------------------------------------
 TypeRef TypeManager::BadType()
 {
