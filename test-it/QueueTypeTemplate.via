@@ -7,10 +7,6 @@ define (TQueue
     c(
         e(.DataPointer)
         
-        // Simple, and still valid way, a generic field in a type
-        // primarily used runtime generics (e.g. variants) are needed
-        e(a(.*  *)elements) 
-
         // New method allows the the generic type to be identified
         // as as a template parameter, and enables stricter types
         // be resolved to at load time.
@@ -25,7 +21,8 @@ define (TQueue
 // Instantiate templates
 define (TestProgram dv(.VirtualInstrument (
     c(
-       // e(.TQueue<.Double> q)
+       // e(.Double<.Int32> td)            // A meaningless type specialization
+          e(.TQueue<.Double> tq)           // A more meaningful type specialization
        // e(.TQueue<.String> q)
        // e(.TQueue<.Queue<Int64>> q)
        
@@ -36,11 +33,18 @@ define (TestProgram dv(.VirtualInstrument (
     )
     clump (
         DPrintf(" in %s out %s" x y)
+        DPrintf(" Type %s" q)
         EnqueueElement(q x 10 done)
+        DPrintf(" Type %s" q)
         DequeueElement(q y 10 done)
+        DPrintf(" Type %s" q)
         DPrintf(" in %s out %s" x y)
         DequeueElement(q y 10 done)
         DPrintf(" y %s" y)
+        
+        DPrintf(" Type %s" tq)
+//        EnqueueElement(tq 57.8 10 done)
+        DPrintf(" Type %s" tq.elements)
     )
 ) ) )
 

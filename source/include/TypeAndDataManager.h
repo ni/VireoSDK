@@ -202,6 +202,7 @@ public:
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
+    TypeRef InstantiateTemplateType(TypeRef type, TypeRef parameters);
 
     NamedTypeRef FindType(const char* name);
     NamedTypeRef FindType(const SubString* name);

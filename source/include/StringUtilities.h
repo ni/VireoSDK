@@ -222,7 +222,6 @@ public:
     Boolean ComparePrefixCStr(const char* begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((const char*)begin)); }
     Boolean ReadRawChar(char* token);
     Boolean ReadChar(char token);
-    Boolean ReadChar(const char* token) { return ReadChar(token[0]);};  // TODO deprecate, one used one place and that place is deprecated
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);
     Boolean ReadToken(SubString* token);

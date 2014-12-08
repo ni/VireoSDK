@@ -102,14 +102,22 @@ TypeRef TDViaParser::ParseType()
         pType = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         pType = ParsePointerType(false);
-    } else if (typeFunction.CompareCStr("*")) {  //short hand for PointerType
-        pType = ParsePointerType(true);
     } else {
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
 #endif
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
     }
+
+    if (_string.ReadChar('<')) {
+        TypeRef replacement = ParseType();
+        if (_string.ReadChar('>')) {
+            pType = this->_typeManager->InstantiateTemplateType(pType, replacement);
+        } else {
+            pType = BadType();
+        }
+    }
+    
     return pType;
 }
 //------------------------------------------------------------

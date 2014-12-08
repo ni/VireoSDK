@@ -10,8 +10,11 @@ For clarity, the following EBNF grammar goes a bit further and defines the core 
 ### Grammar for types
 
 ~~~{.ebnf}
-type                    := named_type | array | cluster | default_value_type
-					     | bit_cluster | equivalence | param_block | var_type
+type                    := ( named_type 
+                             | array 
+                             | cluster | bit_cluster | equivalence | param_block 
+                             | var_type | default_value_type
+                           ) { template_parameters } 
 
 named_type              := '.'  type_in_dictionary
 
@@ -55,6 +58,9 @@ bit_block               := 'bb' '(' bit_count encoding ')'
 default_value_type      := 'dv' '(' type { data_element } ')'
 
 var_type                := 'var' '(' type { data_element } ')'
+
+template_parameters     := '<' type* '>'
+
 ~~~
 
 ### Grammar for data values {#DataValue_EBNF}
@@ -77,9 +83,7 @@ parameter_type          := type
 
 dataspace_type          := type
 
-data_clump              := 'clump' '(' fire_count data_instruction* ')'
-
-fire_count              := whole_number_token
+data_clump              := 'clump' '(' data_instruction* ')'
 
 data_instruction        := instruction_name '(' instruction_argument* ')'
 

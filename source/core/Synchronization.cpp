@@ -126,7 +126,7 @@ VIREO_FUNCTION_SIGNATURE2(Queue_Obtain, void, StringRef)
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, Double, Int32, Boolean)
+VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
 {
     QueueCore *pQV = _Param(0)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
@@ -165,7 +165,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, Double, Int32, Boolean
     }
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, Double, Int32, Boolean)
+VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 {
     QueueCore *pQV = _Param(0)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
@@ -207,10 +207,8 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, Double, Int32, Boolean
 DEFINE_VIREO_BEGIN(Synchronization)
 
 // Initially queues are queues of doubles.
-
 DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer)e(a(.Double *)elements)e(.Int32 insert)e(.Int32 count)e(.DataPointer firstState))")
 DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
-DEFINE_VIREO_TYPE(QueueState, "c(e(.Int32 pendingOp)e(.DataPointer queue)e(.DataPointer clump)e(.DataPointer next))")
 
 DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
 DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.Double element)i(.Int32 timeOut)o(.Boolean timedOut))")
