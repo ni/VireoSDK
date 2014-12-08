@@ -8,10 +8,10 @@ define (videf1 dv(.VirtualInstrument (
         e(dv(.Int32 4) c1)   // element
         e(dv(.Int32 -5345) c2)   // element
         e(dv(.Int32 3) c3)   // element
-        e(dv(a(e(.Int32) *) (2 5 ) ) c4)   // appended array
+        e(dv(a(.Int32 *) (2 5 ) ) c4)   // appended array
         e(dv(.Int32 1) c5)   // array
-        e(a(e(.Int32) *) w6)
-        e(a(e(.Int32) *) w7)
+        e(a(.Int32 *) w6)
+        e(a(.Int32 *) w7)
     )
     clump(1 
         ArrayConcatenate( w6 c5 c1 c4 c3 c2 )

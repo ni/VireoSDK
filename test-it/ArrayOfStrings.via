@@ -15,12 +15,12 @@ define (videf1  dv(.VirtualInstrument (
         e(dv(.String 'One Fish, ') c8)   // element
         e(dv(.Int32 2) c9)   // index
         e(dv(.String 'Two Fish. ') c10)   // element
-        e(a(e(.String) *) w11)
-        e(a(e(.String) *) w12)
-        e(a(e(.String) *) w13)
-        e(a(e(.String) *) w14)
+        e(a(.String *) w11)
+        e(a(.String *) w12)
+        e(a(.String *) w13)
+        e(a(.String *) w14)
         e(.String w15)
-        e(a(e(.String) *) w16)
+        e(a(.String *) w16)
         e(.String w17)
     )
     clump(1 

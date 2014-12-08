@@ -7,17 +7,17 @@ define (videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean t) prependArraySize)
         e(dv(c(
-            e(a(e(.Int16) *) n0)   // value 2
-            e(a(e(.Int16) *) n1)   // value 3
+            e(a(.Int16 *) n0)   // value 2
+            e(a(.Int16 *) n1)   // value 3
         ) ((16961 17475 )  (17989 18503 )  )) local1)   // ABCDEFGH
         e(dv(c(
-            e(a(e(.Int16) *) n0)   // value 2
-            e(a(e(.Int16) *) n1)   // value 3
+            e(a(.Int16 *) n0)   // value 2
+            e(a(.Int16 *) n1)   // value 3
         ) ((16961 17475 ) )) defaultVal)   // default value
         e(.String local2)   // data string
         e(dv(c(
-            e(a(e(.Int16) *) n0)
-            e(a(e(.Int16) *) n1)
+            e(a(.Int16 *) n0)
+            e(a(.Int16 *) n1)
         ) ((1 2 )  (3 4 )  )) local3)   // unflattened
         e(.String local4)   // remaining string
         e(dv(.Boolean t) error)

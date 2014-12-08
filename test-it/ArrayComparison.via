@@ -12,16 +12,16 @@ define (videf1 dv(.VirtualInstrument (
         e(dv(.String "bc") bcde)
         e(.Boolean result)
         e(dv(.String "--------") line)
-        e(dv(a(e(c(
+        e(dv(a(c(
             e(.UInt8 n0)
             e(.UInt8 n1)
             e(.UInt8 n2)
-        )) *) ((64 114 114 ) (97 121 32 ) (79 102 32 ) (97 32 67 ) (108 117 115 ) (116 101 114 ) (32 79 102 ) (32 84 104 ) (114 101 101 ) (32 66 121 ) (116 101 115 ) ) ) local1)   // Array Of a Cluster Of Three Bytes
-        e(dv(a(e(c(
+        ) *) ((64 114 114 ) (97 121 32 ) (79 102 32 ) (97 32 67 ) (108 117 115 ) (116 101 114 ) (32 79 102 ) (32 84 104 ) (114 101 101 ) (32 66 121 ) (116 101 115 ) ) ) local1)   // Array Of a Cluster Of Three Bytes
+        e(dv(a(c(
             e(.UInt8 n0)
             e(.UInt8 n1)
             e(.UInt8 n2)
-        )) *) ((65 0 0)) ) local2)   // Array Of a Cluster Of Three Bytes
+        ) *) ((65 0 0)) ) local2)   // Array Of a Cluster Of Three Bytes
     )
     clump(1 
         IsLT(array1234 emptyArray result)

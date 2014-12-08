@@ -6,14 +6,14 @@ define (Test dv(.VirtualInstrument (
     e(a(.Double -5 4)   arrayOfDoubleBounded2dMixed)
     e(a(.Double 5 -4)   arrayOfDoubleBounded2dMixed2)
 
-    e( a( e(.Double) *)   arrayOfDoubleDynamic1d)
-    e( a( e(.Double) 5)   arrayOfDoubleFixed1d)
-    e( a( e(.Double) 5 5)   arrayOfDoubleFixed2d)
-    e(a(e(.Double) 5 5 5)   arrayOfDoubleFixed3d)
-    e(dv(a(e(.Double) * ) (7))   arrayOfDoubleDynamic1ddv)
-    e(dv(a(e(.Double) 5) (7 8 9))    arrayOfDoubleFixed1ddv)
-    //e(dv(a(e(.Double) 5 5) (7))   arrayOfDoubleFixed2ddv)
-    //e(dv(a(e(.Double) 5 5 5)  (7))   arrayOfDoubleFixed3ddv)
+    e(a(.Double *)   arrayOfDoubleDynamic1d)
+    e(a(.Double 5)   arrayOfDoubleFixed1d)
+    e(a(.Double 5 5)   arrayOfDoubleFixed2d)
+    e(a(.Double 5 5 5)   arrayOfDoubleFixed3d)
+    e(dv(a(.Double * ) (7))   arrayOfDoubleDynamic1ddv)
+    e(dv(a(.Double 5) (7 8 9))    arrayOfDoubleFixed1ddv)
+    //e(dv(a(.Double 5 5) (7))   arrayOfDoubleFixed2ddv)
+    //e(dv(a(.Double 5 5 5)  (7))   arrayOfDoubleFixed3ddv)
     )
   clump(1
   

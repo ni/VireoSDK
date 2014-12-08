@@ -224,7 +224,7 @@ TypeRef TDViaParser::ParseArray()
     if (!_string.ReadChar('('))
         return BadType();
     
-    TypeRef elementType = ParseArrayElement();
+    TypeRef elementType = ParseType();
     
     _string.ReadToken(&token);
     while (!token.CompareCStr(")")) {
@@ -249,31 +249,6 @@ TypeRef TDViaParser::ParseArray()
     
     ArrayType  *array = ArrayType::New(_typeManager, elementType, rank, dimensionLengths);
     return array;
-}
-//------------------------------------------------------------
-TypeRef TDViaParser::ParseArrayElement()
-{
-    SubString fieldName;
-    
-    _string.EatLeadingSpaces();
-    
-    if (_string.Length() > 1 && !_string.ComparePrefixCStr(tsElementToken)) {
-        return ParseType();
-    }
-    
-    // TODO  the following is deprecated
-    if (!_string.ReadChar(tsElementToken))
-        return BadType();
-    
-    if (!_string.ReadChar('('))
-        return BadType();
-    
-    TypeRef subType = ParseType();
-    
-    if (!_string.ReadChar(')'))
-        return BadType();
-    
-    return subType;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitBlock()

@@ -72,7 +72,6 @@ private :
     TypeRef BadType()   {return _typeManager->BadType();}
     void    ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator);
     TypeRef ParseArray();
-    TypeRef ParseArrayElement();
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();

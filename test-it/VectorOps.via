@@ -19,9 +19,9 @@ define (VectorOp dv(.VirtualInstrument (
     e(.Pi vPi) 
     e(.Int32 size) 
 
-    e(dv(a(e(.Double) *)  (1 2 3 4))    arrayOfDouble1d_1) 
-    e(dv(a(e(.Double) *)  (2 3 4 5))    arrayOfDouble1d_2) 
-    e(a(e(.Double) *)    arrayOfDouble1d_3) 
+    e(dv(a(.Double *)  (1 2 3 4))    arrayOfDouble1d_1) 
+    e(dv(a(.Double *)  (2 3 4 5))    arrayOfDouble1d_2) 
+    e(a(.Double *)    arrayOfDouble1d_3) 
     e(dv(.String  '----') cSeperator)
 
   ) 

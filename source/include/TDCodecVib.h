@@ -51,7 +51,6 @@ private :
     TypeRef BadType()   {return _typeManager->BadType();}   // TODO could create error that encodes scan point
     NIError ParseAggregateElementList(TypeRef ElementTypes[], Int32* pElementCount);
     TypeRef ParseArray();
-    TypeRef ParseArrayElement();
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();

@@ -2,13 +2,13 @@
 // Generated on Fri Nov 15 13:11:30 2013
 
 define (c0 dv(.Int32 4) )
-define (c1 dv(a(e(c(
+define (c1 dv(a(c(
     e(.Boolean n0)
     e(c(
         e(.String n0)   // s
-        e(a(e(.Int32) *) n1)
+        e(a(.Int32 *) n1)
     ) n1)   // ss
-)) *) ((false ('((())))*((' (1 2 3 4 )  ) ) (true ('()()()()' (4 4 8 9 )  ) ) (false ('
+) *) ((false ('((())))*((' (1 2 3 4 )  ) ) (true ('()()()()' (4 4 8 9 )  ) ) (false ('
 
 ' (4 7 8 9 )  ) ) (true ('' (4 7 8 9 )  ) ) (false ('LastStringElement' (4 5 8 9 )  ) ) ) ) )
 //---------------------------------------------------
@@ -19,7 +19,7 @@ define (videf1 dv(.VirtualInstrument (
             e(.Boolean n0)
             e(c(
                 e(.String n0)   // s
-                e(a(e(.Int32) *) n1)
+                e(a(.Int32 *) n1)
             ) n1)   // ss
         ) local1)
         e(.String local2)   // s

@@ -11,9 +11,9 @@ define (TypeChecking dv(.VirtualInstrument (
    e(.Boolean cBoolean)
    e(.Int8 cInt8)
    e(dv(.String 'Tic')  cString)
-    e(a(e(.Double) 5)    arrayOfDoubleFixed1d) 
-    e(a(e(.Double) 5 5)    arrayOfDoubleFixed2d) 
-    e(a(e(.Double) 5 5 5)    arrayOfDoubleFixed3d) 
+    e(a(.Double 5)    arrayOfDoubleFixed1d) 
+    e(a(.Double 5 5)    arrayOfDoubleFixed2d) 
+    e(a(.Double 5 5 5)    arrayOfDoubleFixed3d) 
    ) 
  clump(1 
     Print(cInt32)

@@ -5,11 +5,11 @@ define (arrayOfPoints dv(.VirtualInstrument (
             e(dv(.Double 1) n1)
             e(dv(.Double 2) n2)
         ) samplePoint)
-        e(a(e(c(
+        e(a(c(
             e(.Double n1)
             e(.Double n2)
-        )) *) Array)
-		e(dv(a(e(.Double) *) (1 2 3 4 5)) arrayOfDoubles)
+        ) *) Array)
+		e(dv(a(.Double *) (1 2 3 4 5)) arrayOfDoubles)
     )
     clump(1 
         ArrayFill(Array dimSize samplePoint)
@@ -23,8 +23,8 @@ enqueue (arrayOfPoints)
 
 define (ArrayMath dv(.VirtualInstrument (
 c(
-    e(dv(a(e(.Double) *) (0 1 2 3 4 5 6 7 8 9 10)) array1)
-    e(dv(a(e(.Double) *) (0)) array2)
+    e(dv(a(.Double *) (0 1 2 3 4 5 6 7 8 9 10)) array1)
+    e(dv(a(.Double *) (0)) array2)
     e(dv(.Double 1) scalar1)
 ) 
 clump(1 

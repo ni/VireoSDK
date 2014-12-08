@@ -10,7 +10,7 @@ define (videf1 dv(.VirtualInstrument (
         // Leak # 1 was arrays in the data space. Caused by?
         e(dv(a(.String *) ('b' 'c') )       v0)
         e(dv(a(.String *) () )       v1)
-        e(a(e(.Double) -5 4)   arrayOfDoubleBounded2dMixed)
+        e(a(.Double -5 4)   arrayOfDoubleBounded2dMixed)
         e(dv(.Int32  42) value)
     )
     clump(1
