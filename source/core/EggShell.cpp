@@ -22,9 +22,6 @@ SDG
   |_______/   /___/  /__/     /_______/  /_______/SDG
  */
 
-#include "stdlib.h"
-
-
 #include "DataTypes.h"
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"

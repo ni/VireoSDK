@@ -16,6 +16,7 @@ SDG
 
 #define STL_MAP
 
+#include <stdlib.h> // abs()
 #include <new>      // for new placement
 
 #ifdef STL_MAP

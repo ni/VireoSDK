@@ -16,7 +16,6 @@ SDG
 #include "TypeAndDataManager.h"
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
-#include <stdlib.h>
 
 namespace Vireo
 {

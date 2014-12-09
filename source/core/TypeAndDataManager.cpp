@@ -10,7 +10,6 @@ SDG
 /*! \file
  */
 
-#include <stdlib.h>
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
 
