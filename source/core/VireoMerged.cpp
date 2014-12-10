@@ -26,6 +26,7 @@ SDG
 
 // Type and Data system
 #include "TypeAndDataManager.cpp"
+#include "TypeTemplates.cpp"
 #include "TDCodecVia.cpp"
 //#include "TDCodecVib.cpp"
 #include "TDCodecLVFlat.cpp"

@@ -167,39 +167,6 @@ VIREO_FUNCTION_SIGNATURE3(CopyStaticTypedBlock, void, void, StaticType)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-// Concatenate the opname with the types and resolve. prefix is optionally null
-InstructionCore* ResolveGenericHelper(ClumpParseState* pInstructionBuilder, TypeRef prefixType, TypeRef suffixType)
-{
-    InstructionCore* pInstruction = null;
-    SubString baseOpToken = pInstructionBuilder->_instructionPointerType->GetName();
-    do //drill down into prefix type
-    {
-        TypeRef tempSuffixType = suffixType;
-        while(pInstruction == null && tempSuffixType != null) //drill down into suffixType
-        {
-            SubString typeNameToken;
-            if (prefixType)
-                typeNameToken = prefixType->GetName();
-            TempStackCString binOpName(&typeNameToken);
-
-            binOpName.Append(&baseOpToken);
-            
-            typeNameToken = tempSuffixType->GetName();
-            if (typeNameToken.Length() == 0)
-                break;
-            binOpName.Append(&typeNameToken);
-            
-            SubString binOpToken((Utf8Char*) binOpName.BeginCStr(), binOpName.End());
-            if (pInstructionBuilder->ReresolveInstruction(&binOpToken, true) != null)
-                pInstruction = pInstructionBuilder->EmitInstruction();
-            tempSuffixType = tempSuffixType->BaseType();
-        }
-        if (prefixType) 
-            prefixType = prefixType->BaseType();
-    } while(prefixType != null && pInstruction == null);
-    return pInstruction;
-}
-//------------------------------------------------------------
 struct AggregateBinOpInstruction : public InstructionCore
 {
     union {
@@ -246,9 +213,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     if (savedOperation.CompareCStr("Split") || savedOperation.CompareCStr("Join")) {  // Split and Join are uniquely identified by source type rather than dest type
         goalType = sourceXType;
     }
-    pInstruction = ResolveGenericHelper(pInstructionBuilder, null, goalType);
-    if (pInstruction != null)
-        return pInstruction;
+
     switch(goalType->BitEncoding())
     {
     case kEncoding_Array:
@@ -454,11 +419,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
         prefixType = sourceXType; //convert has two types(pre & post) unlike other UnOps
         suffixType = destType;
-    }
-    //Attempt to resolve to a specific instruction, if we don't find one, we can recurse again if the arguments are vectors or clusters. 
-    pInstruction = ResolveGenericHelper(pInstructionBuilder, prefixType, suffixType);
-    if (pInstruction != null) {
-        return pInstruction;
     }
 
     switch(destType->BitEncoding())
