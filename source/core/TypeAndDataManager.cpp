@@ -335,8 +335,7 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     
     NamedTypeRef namedType = NamedType::New(this, typeName, type, existingType);
     if (bNewInThisTM) {
-        SubString permanentTypeName;
-        namedType->GetName(&permanentTypeName);
+        SubString permanentTypeName = namedType->GetName();
         _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
     } else {
         // If it is already in this TypeManager the new type is threaded of of the
@@ -629,13 +628,11 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 // matches the one provided.
 Boolean TypeCommon::IsA(TypeRef otherType)
 {
-    SubString otherTypeName;
-    otherType->GetName(&otherTypeName);
+    SubString otherTypeName = otherType->GetName();
     
     SubString angle("<");
     if (otherType->HasGenericType()) {
-        SubString name;
-        GetName(&name);
+        SubString name = GetName();
         int i = name.FindFirstMatch(&angle, 0, false);
         if (i>0) {
             name = SubString(name.Begin(), name.Begin() + i);
@@ -650,9 +647,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 {
     TypeRef t = this;
     while (t) {
-        SubString name;
-        t->GetName(&name);
-        if (name.Compare(otherTypeName))
+        if (t->GetName().Compare(otherTypeName))
             return true;
         t = t->BaseType();
     }
@@ -2071,10 +2066,9 @@ NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Do
 //------------------------------------------------------------
 void PrintType(TypeRef type, const char* message)
 {
-    SubString ss1;
-    SubString ss2;
-    type->GetName(&ss1);
-    type->GetElementName(&ss2);
+    SubString ss1 = type->GetName();
+    SubString ss2 = type->GetElementName();
+
     printf("Type <%.*s> <%.*s> %s\n", FMT_LEN_BEGIN(&ss1), FMT_LEN_BEGIN(&ss2), message);
 }
 //------------------------------------------------------------
@@ -2208,8 +2202,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeUsageType, TypeRef, Int32)
 VIREO_FUNCTION_SIGNATURE2(TypeGetElementName, TypeRef, StringRef)
 {
     TypeRef t = _Param(0);
-    SubString elementName;
-    t->GetElementName(&elementName);
+    SubString elementName = t->GetElementName();
     _Param(1)->CopyFromSubString(&elementName);
     return _NextInstruction();
 }
@@ -2217,8 +2210,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeGetElementName, TypeRef, StringRef)
 VIREO_FUNCTION_SIGNATURE2(TypeGetName, TypeRef, StringRef)
 {
     TypeRef t = _Param(0);
-    SubString name;
-    t->GetName(&name);
+    SubString name = t->GetName();
     _Param(1)->CopyFromSubString(&name);
     return _NextInstruction();
 }

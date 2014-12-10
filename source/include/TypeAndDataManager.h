@@ -444,9 +444,9 @@ public:
     TypeRef GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     
     //! Set the SubString to the name if the type is not anonymous.
-    virtual void GetName(SubString* name)               { name->AliasAssign(null, null); }
+    virtual SubString GetName()                         { return SubString(null, null); }
     //! Set the SubString to the aggregates elements field name.
-    virtual void GetElementName(SubString* name)        { name->AliasAssign(null, null); }
+    virtual SubString GetElementName()                  { return SubString(null, null); }
     //! Return a pointer to the raw vector of dimension lengths.
     virtual IntIndex* GetDimensionLengths()             { return null; }
     
@@ -504,7 +504,7 @@ public:
     virtual TypeRef GetSubElementByName(SubString* name){ return _wrapped->GetSubElementByName(name); }
     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped->GetSubElement(index); }
     virtual Int32   BitSize()                           { return _wrapped->BitSize(); }
-    virtual void    GetName(SubString* name)            { _wrapped->GetName(name); }
+    virtual SubString GetName()                         { return _wrapped->GetName(); }
     virtual IntIndex* GetDimensionLengths()             { return _wrapped->GetDimensionLengths(); }
     // Data operations
     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped->Begin(mode); }
@@ -544,8 +544,8 @@ public:
     
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
-    virtual void    GetName(SubString* name)        { name->AliasAssign(_name.Begin(), _name.End()); }
-    virtual void    GetElementName(SubString* name) { name->AliasAssign(null, null); }
+    virtual SubString GetName()                     { return SubString(_name.Begin(), _name.End()); }
+    virtual SubString GetElementName()              { return SubString(null, null); }
 };
 //------------------------------------------------------------
 //! Give a type a field name and offset properties. Used inside an aggregateType
@@ -563,7 +563,7 @@ public:
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
     
     virtual void    Visit(TypeVisitor *tv)          { tv->VisitElement(this); }
-    virtual void    GetElementName(SubString* name) { name->AliasAssign(_elementName.Begin(), _elementName.End()); }
+    virtual SubString GetElementName()              { return SubString(_elementName.Begin(), _elementName.End()); }
     virtual IntIndex ElementOffset()                { return _offset; }
 };
 //------------------------------------------------------------
@@ -758,7 +758,7 @@ public:
     virtual Int32   SubElementCount()                   { return 1; }
     virtual TypeRef GetSubElementByName(SubString* name){ return Rank() == 0 ? _wrapped->GetSubElementByName(name) : null ; }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
-    virtual void    GetName(SubString* name)            { name->AliasAssignCStr("Array"); }
+    virtual SubString GetName()                         { return SubString("Array"); }
     virtual IntIndex* GetDimensionLengths()             { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);

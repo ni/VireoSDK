@@ -124,8 +124,7 @@ void TypeTemplateVisitor::VisitArray(TypeRef type)
 void TypeTemplateVisitor::VisitElement(TypeRef type)
 {
     TypeRef   baseType = Visit(type->BaseType());
-    SubString fieldName;
-    type->GetElementName(&fieldName);
+    SubString fieldName = type->GetElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
     IntIndex offset = type->ElementOffset();
     _newType = ElementType::New(_typeManager, &fieldName, baseType, usageType, offset);
@@ -134,8 +133,7 @@ void TypeTemplateVisitor::VisitElement(TypeRef type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitNamed(TypeRef type)
 {
-    SubString name;
-    type->GetName(&name);
+    SubString name = type->GetName();
     
     if(name.CompareCStr("$1")) {
         _newType = _replacementTypes;
@@ -150,7 +148,7 @@ void TypeTemplateVisitor::VisitNamed(TypeRef type)
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('<');
-    _replacementTypes->GetName(&name);
+    name = _replacementTypes->GetName();
     tempString.Value->Append('.');
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('>');

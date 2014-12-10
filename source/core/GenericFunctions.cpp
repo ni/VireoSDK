@@ -48,8 +48,8 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         return null;
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString originalCopyOp;
-    pInstructionBuilder->_instructionPointerType->GetName(&originalCopyOp);
+    SubString originalCopyOp = pInstructionBuilder->_instructionPointerType->GetName();
+    
     // Compare types
     
     if (sourceType->IsA(destType, true) || destType->IsA(sourceType, true)) {
@@ -171,8 +171,7 @@ VIREO_FUNCTION_SIGNATURE3(CopyStaticTypedBlock, void, void, StaticType)
 InstructionCore* ResolveGenericHelper(ClumpParseState* pInstructionBuilder, TypeRef prefixType, TypeRef suffixType)
 {
     InstructionCore* pInstruction = null;
-    SubString baseOpToken;
-    pInstructionBuilder->_instructionPointerType->GetName(&baseOpToken);
+    SubString baseOpToken = pInstructionBuilder->_instructionPointerType->GetName();
     do //drill down into prefix type
     {
         TypeRef tempSuffixType = suffixType;
@@ -180,12 +179,12 @@ InstructionCore* ResolveGenericHelper(ClumpParseState* pInstructionBuilder, Type
         {
             SubString typeNameToken;
             if (prefixType)
-                prefixType->GetName(&typeNameToken);
+                typeNameToken = prefixType->GetName();
             TempStackCString binOpName(&typeNameToken);
 
             binOpName.Append(&baseOpToken);
             
-            tempSuffixType->GetName(&typeNameToken);
+            typeNameToken = tempSuffixType->GetName();
             if (typeNameToken.Length() == 0)
                 break;
             binOpName.Append(&typeNameToken);
@@ -232,8 +231,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     TypeRef destType = pInstructionBuilder->_argTypes[2];
     TypeRef goalType = destType;
     Boolean isAccumulator = false;
-    SubString savedOperation;
-    pInstructionBuilder->_instructionPointerType->GetName(&savedOperation);
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+    
     // Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
     if (sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
         goalType = sourceXType;
@@ -254,11 +253,10 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     {
     case kEncoding_Array:
         {
-            SubString savedOperation;
             
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
-            pInstructionBuilder->_instructionPointerType->GetName(&savedOperation);
+            SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
             const char* pVectorBinOpName = null;
             // TODO: Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
@@ -322,8 +320,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         }
         case kEncoding_Cluster:
         {
-            SubString savedOperation;
-            pInstructionBuilder->_instructionPointerType->GetName(&savedOperation);
+            SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
             const char* pClusterBinOpName = "ClusterBinaryOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
@@ -442,15 +439,13 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     InstructionCore* pInstruction = null;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString savedOperation;
-    pInstructionBuilder->_instructionPointerType->GetName(&savedOperation);
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
 
     TypeRef prefixType = null;
     TypeRef suffixType = sourceXType;
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficent copy
-        SubString destTypeName;
-        destType->GetName(&destTypeName);
+        SubString destTypeName = destType->GetName();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
             const char* copyOpName = "Copy";
             SubString copyOpToken(copyOpName);
@@ -637,8 +632,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
 {
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString savedOperation;
-    pInstructionBuilder->_instructionPointerType->GetName(&savedOperation);
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
 
     const char* scalarOpName = null;
     Boolean isIdentityOne = false;

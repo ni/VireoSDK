@@ -200,15 +200,13 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
 //------------------------------------------------------------
 VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer)
 {
-    SubString name;
-    typeRef->GetName(&name);
+    SubString name = typeRef->GetName();
     *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void TypeRef_ElementName(TypeRef typeRef, Int32* bufferSize, char* buffer)
 {
-    SubString name;
-    typeRef->GetElementName(&name);
+    SubString name = typeRef->GetElementName();
     *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------

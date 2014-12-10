@@ -594,8 +594,7 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
         return;
     }
     
-    SubString dsTypeName;
-    ActualArgumentType()->GetName(&dsTypeName);
+    SubString dsTypeName = ActualArgumentType()->GetName();
     
     if (prependType) {
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
@@ -815,8 +814,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             break;
         case kArgumentTypeMismatch:
             {
-            SubString formalParameterTypeName;
-            FormalParameterType()->GetName(&formalParameterTypeName);
+            SubString formalParameterTypeName = FormalParameterType()->GetName();
             LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be '%.*s'",
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }
@@ -989,9 +987,6 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
             TypeRef actualType = va_arg(args, TypeRef);
             void* actualData = va_arg(args, void*);
             
-            SubString formalParameterTypeName;
-            formalType->GetName(&formalParameterTypeName);
-
             if (actualType->IsA(formalType, false) ) {
                 InternalAddArg(actualType, actualData);
             } else {

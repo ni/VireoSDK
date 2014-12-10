@@ -643,8 +643,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         return;
                     }
                 }
-                SubString typeName;
-                type->GetName(&typeName);
+                SubString typeName = type->GetName();
                 LOG_EVENTV(kHardDataError, "Parsing pointer type '%.*s'", FMT_LEN_BEGIN(&typeName));
             }
             break;
@@ -956,8 +955,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     state._actualArgumentName = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
-                        SubString formalParameterTypeName;
-                        formalType->GetName(&formalParameterTypeName);
+                        SubString formalParameterTypeName = formalType->GetName();
                          // printf("Trying match for %.*s %.*s (%d)\n", FMT_LEN_BEGIN(&instructionNameToken), FMT_LEN_BEGIN(&formalParameterTypeName), i);
                         
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
@@ -1130,8 +1128,7 @@ private:
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
         type->BaseType()->Visit(this);
-        SubString elementName;
-        type->GetElementName(&elementName);
+        SubString elementName = type->GetElementName();
         if (elementName.Length()>0) {
             // Add element name if it exists.
             _pFormatter->_string->Append(' ');
@@ -1145,8 +1142,7 @@ private:
         // At this point names are terminal elements.
         // There needs to be a mechanism that will optionally collect all the named dependencies
         // in a type.
-        SubString name;
-        type->GetName(&name);
+        SubString name = type->GetName();
         if (name.Length()>0 ) {
             _pFormatter->_string->Append('.');
             _pFormatter->_string->Append(name.Length(), (Utf8Char*)name.Begin());
@@ -1282,8 +1278,7 @@ void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pD
 //------------------------------------------------------------
 void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
 {
-    SubString name;
-    pointerType->GetName(&name);
+    SubString name = pointerType->GetName();
     //   printf("n:'%.*s', \n", FMT_LEN_BEGIN(name));
     // For pointer types, they are opaque to runtime code.
     // So the dispatch is now directed based on the type.
