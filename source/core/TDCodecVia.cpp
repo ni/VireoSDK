@@ -112,7 +112,7 @@ TypeRef TDViaParser::ParseType()
     if (_string.ReadChar('<')) {
         TypeRef replacement = ParseType();
         if (_string.ReadChar('>')) {
-            pType = this->_typeManager->InstantiateTemplateType(pType, replacement);
+            pType = InstantiateTypeTemplate(_typeManager,  pType, replacement);
         } else {
             pType = BadType();
         }
