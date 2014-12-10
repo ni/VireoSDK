@@ -267,7 +267,10 @@ private:    // state related to the the current argument
     Int32           _formalParameterIndex;
     TypeRef         _formalParameterType;
     TypeRef         _actualArgumentType;
-    
+
+private:
+    TypeRef         _baseViType;
+    TypeRef         _baseReentrantViType;
 public:
     SubString       _actualArgumentName;
 

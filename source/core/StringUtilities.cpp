@@ -598,12 +598,12 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
 {
     IntIndex length = Length();
     IntIndex searchStringLength = searchString->Length();
-
+    
+    // TODO There is much opportuity to optimize this.
     for (; offset + searchStringLength <= length; offset++) {
         if (searchString->Compare(_begin + offset, searchStringLength, ignoreCase))
             return offset;
     }
-
     return -1;
 }
 //------------------------------------------------------------

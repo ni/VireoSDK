@@ -429,170 +429,6 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
     _typeInstanceDictionary[*binaryName] = type;
     return type;
 }
-
-#if 1
-    //------------------------------------------------------------
-    class InstantiateTemplateVisitor : public TypeVisitor
-    {
-    public:
-        static TypeRef InstantiateTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements)
-        {
-        
-            InstantiateTemplateVisitor itv(tm, replacements);
-            typeTemplate->Visit(&itv);
-            return itv._newType;
-        }
-    private:
-        TypeManagerRef _tm;
-        TypeRef _replacementTypes;  // one for now
-        TypeRef _newType;
-    private:        
-        InstantiateTemplateVisitor(TypeManagerRef tm, TypeRef replacement)
-        {
-            _tm = tm;
-            _replacementTypes = replacement;
-            _newType = null;
-        }
-        //------------------------------------------------------------
-        virtual void VisitBad(TypeRef type)
-        {
-            _newType = _tm->BadType();
-            VIREO_ASSERT(false);
-        }
-        //------------------------------------------------------------
-        virtual void VisitBitBlock(TypeRef type)
-        {
-            _newType = _tm->BadType();
-            VIREO_ASSERT(false);
-        }
-        //------------------------------------------------------------
-        virtual void VisitBitCluster(TypeRef type)
-        {
-            _newType = _tm->BadType();
-            VIREO_ASSERT(false);
-        }
-        //------------------------------------------------------------
-        virtual void VisitCluster(TypeRef type)
-        {
-            TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
-            IntIndex subElementCount = type->SubElementCount();
-            for (int i = 0; i < subElementCount; i++) {
-                elementTypes[i] = _tm->InstantiateTemplateType(type->GetSubElement(i), _replacementTypes);
-            }
-
-            _newType  = ClusterType::New(_tm, elementTypes, type->SubElementCount());
-        }
-        //------------------------------------------------------------
-        virtual void VisitParamBlock(TypeRef type)
-        {
-            _newType = type;
-        }
-        //------------------------------------------------------------
-        virtual void VisitEquivalence(TypeRef type)
-        {
-            _newType = type;
-        }
-        //------------------------------------------------------------
-        virtual void VisitArray(TypeRef type)
-        {
-            // A type can not currently derived based on dimension size
-            TypeRef subType = _tm->InstantiateTemplateType(type->GetSubElement(0), _replacementTypes);
-            VIREO_ASSERT(subType != type->GetSubElement(0));
-            
-            _newType = ArrayType::New(_tm, subType, type->Rank(), type->GetDimensionLengths());
-            VIREO_ASSERT(_newType != type);
-        }
-        //------------------------------------------------------------
-        virtual void VisitElement(TypeRef type)
-        {
-            TypeRef   baseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
-            SubString fieldName;
-            type->GetElementName(&fieldName);
-            UsageTypeEnum usageType = type->ElementUsageType();
-            IntIndex offset = type->ElementOffset();
-            _newType = ElementType::New(_tm, &fieldName, baseType, usageType, offset);
-            VIREO_ASSERT(_newType != type);
-        }
-        //------------------------------------------------------------
-        virtual void VisitNamed(TypeRef type)
-        {
-            SubString name;
-            type->GetName(&name);
-            
-            if(name.CompareCStr("$1")) {
-                _newType = _replacementTypes;
-                return;
-            }
-            // To get here the named type was generic, and that means the
-            // base type is also generic. First ceaate the hyotheitcal new name
-            // and see if instance already exists. If not, make one.
-            
-            // Create a new name, TODO should  really useTDCodecVIA
-            STACK_VAR(String, tempString);
-
-            tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
-            tempString.Value->Append('<');
-            _replacementTypes->GetName(&name);
-            tempString.Value->Append('.');
-            tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
-            tempString.Value->Append('>');
-            name = tempString.Value->MakeSubStringAlias();
-            
-            // Find an existing instantion, or make one.
-            _newType = _tm->FindType(&name);
-            if (!_newType) {
-                TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
-                VIREO_ASSERT(newBaseType != type->BaseType());
-                _newType = _tm->Define(&name, newBaseType);
-                // The new type needs to have an IsA relation ship to the template it is derived from
-                // how to do that?
-            } else {
-                _newType = type;
-            }
-        }
-        //------------------------------------------------------------
-        virtual void VisitPointer(TypeRef type)
-        {
-            TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
-            if (newBaseType != type->BaseType()) {
-                _newType = PointerType::New(_tm, newBaseType);
-            } else {
-                _newType = type;
-            }
-        }
-        //------------------------------------------------------------
-        virtual void VisitDefaultValue(TypeRef type)
-        {
-            TypeRef newBaseType = _tm->InstantiateTemplateType(type->BaseType(), _replacementTypes);
-            if (newBaseType != type->BaseType()) {
-                // Templated defaults are a bit extreme. If the type is generic then
-                // how could the data have been parsed.
-                _newType = DefaultValueType::New(_tm, type->BaseType(), type->IsMutableValue());
-            } else {
-                _newType = type;
-            }
-        }
-        //------------------------------------------------------------
-        virtual void VisitCustomDefaultPointer(TypeRef type)
-        {
-            _newType = type;
-        }
-        //------------------------------------------------------------
-        virtual void VisitCustomDataProc(TypeRef type)
-        {
-            _newType = type;
-        }
-    };
-#endif
-//------------------------------------------------------------
-TypeRef TypeManager::InstantiateTemplateType(TypeRef type, TypeRef parameters)
-{
-    if (!type->HasGenericType()) {
-        return type;
-    } else {
-        return InstantiateTemplateVisitor::InstantiateTemplate(this, type, parameters);
-    }
-}
 //------------------------------------------------------------
 TypeRef TypeManager::BadType()
 {
@@ -762,11 +598,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             }  return true;
         }
     } else {
-        SubString thisTypeName;
-        this->GetName(&thisTypeName);
-        SubString otherTypeName;
-        otherType->GetName(&otherTypeName);
-        if (this->IsA(&otherTypeName) || otherType->IsA(&thisTypeName))
+        if (this->IsA(otherType) || otherType->IsA(this))
             return true;
     } 
     return false;
@@ -776,10 +608,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 {
     Boolean bMatch = false;
 
-    SubString otherTypeName;
-    otherType->GetName(&otherTypeName);
-
-    if (IsA(&otherTypeName)) {
+    if (IsA(otherType)) {
         bMatch = true;
     } else if (compatibleStructure) {
         EncodingEnum thisEncoding = BitEncoding();
@@ -798,7 +627,26 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 //------------------------------------------------------------
 // Dig throught nested type names to see if one of the names
 // matches the one provided.
-Boolean TypeCommon::IsA(const SubString* otherTypeName)
+Boolean TypeCommon::IsA(TypeRef otherType)
+{
+    SubString otherTypeName;
+    otherType->GetName(&otherTypeName);
+    
+    SubString angle("<");
+    if (otherType->HasGenericType()) {
+        SubString name;
+        GetName(&name);
+        int i = name.FindFirstMatch(&angle, 0, false);
+        if (i>0) {
+            name = SubString(name.Begin(), name.Begin() + i);
+            if (name.Compare(&otherTypeName))
+                return true;
+        }
+    }
+    return IsA(&otherTypeName);
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsA(const SubString *otherTypeName)
 {
     TypeRef t = this;
     while (t) {
@@ -1688,7 +1536,7 @@ void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
     
     pArray->_eltTypeRef->ClearData(pArray->RawBegin(), pArray->Length());
     pArray->AQFree();
-    TypeManagerScope::Current()->Free(pArray);
+    THREAD_TADM()->Free(pArray);
 }
 //------------------------------------------------------------
 Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
@@ -1697,7 +1545,7 @@ Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
     VIREO_ASSERT(_pRawBufferBegin == null);
 
     if (countBytes) {
-        _pRawBufferBegin = (AQBlock1*) TypeManagerScope::Current()->Malloc(countBytes);
+        _pRawBufferBegin = (AQBlock1*) THREAD_TADM()->Malloc(countBytes);
         if (!_pRawBufferBegin) {
             return false;
         }
@@ -1717,7 +1565,7 @@ Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
     } else {
         if (countBytes) {
             // resize existing allocation.
-            AQBlock1 *newBegin = (AQBlock1*) TypeManagerScope::Current()->Realloc(_pRawBufferBegin, countBytes, preserveBytes);
+            AQBlock1 *newBegin = (AQBlock1*) THREAD_TADM()->Realloc(_pRawBufferBegin, countBytes, preserveBytes);
             if (newBegin) {
                 _pRawBufferBegin = newBegin;
             } else {
@@ -1734,7 +1582,7 @@ Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
 void TypedArrayCore::AQFree()
 {
     if (_pRawBufferBegin) {
-        TypeManagerScope::Current()->Free(_pRawBufferBegin);
+        THREAD_TADM()->Free(_pRawBufferBegin);
         _pRawBufferBegin = null;
     }
 }
@@ -2234,7 +2082,7 @@ void PrintType(TypeRef type, const char* message)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(TypeManagerCurrentTypeManager, TypeManagerRef)
 {
-    _Param(0) = THREAD_EXEC()->TheTypeManager();
+    _Param(0) = THREAD_TADM();
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2268,7 +2116,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, Alloc
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<TypeRef>*)
 {
-    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
     if (tm) {
         tm->GetTypes(_Param(1));
     } else {
@@ -2279,7 +2127,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<Type
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, TypeRef)
 {
-    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
     SubString typeName = _Param(1)->MakeSubStringAlias();
     if (tm) {
         tm->Define(&typeName, _Param(2));
@@ -2398,7 +2246,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeMakeVectorType, TypeManagerRef, TypeRef, TypeRef, Int32)
 {
-    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
     
     _Param(1) = ArrayType::New(tm, _Param(2), 1, _ParamPointer(3));
     return _NextInstruction();
@@ -2414,7 +2262,7 @@ struct TypeMakeClusterType : public VarArgInstruction
 
 VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
 {
-//  TypeManagerRef tm = _ParamPointer(tm) ? _Param(tm) : THREAD_EXEC()->TheTypeManager();
+//  TypeManagerRef tm = _ParamPointer(tm) ? _Param(tm) : THREAD_TADM();
 //   _Param(3) = ArrayType::New(tm, _Param(1), 1, _ParamPointer(2));
     return _NextInstruction();
 }
@@ -2424,7 +2272,7 @@ VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef, TypeRef, Boolean, TypeRef)
 {
-    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_EXEC()->TheTypeManager();
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
     SubString valueName = _Param(1)->MakeSubStringAlias();
     TypeRef type = _Param(2);
     Boolean bCreateIfNotFound = _ParamPointer(3) ? _Param(3) : false;
@@ -2453,10 +2301,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeSetValue, TypeRef, StaticType, void)
     TypeRef type = _Param(0);
     TypeRef secondType = _ParamPointer(1);
     
-    SubString otherTypeName;
-    secondType->GetName(&otherTypeName);
-    
-    if (type->IsA(&otherTypeName)) {
+    if (type->IsA(secondType)) {
         type->CopyData(_ParamPointer(2), type->Begin(kPAWrite));
     }
     return _NextInstruction();
@@ -2468,10 +2313,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetValue, TypeRef, StaticType, void)
     TypeRef type = _Param(0);
     TypeRef secondType = _ParamPointer(1);
     
-    SubString otherTypeName;
-    secondType->GetName(&otherTypeName);
-    
-    if (type->IsA(&otherTypeName)) {
+    if (type->IsA(secondType)) {
         type->CopyData(type->Begin(kPARead), _ParamPointer(2));
     }
     return _NextInstruction();

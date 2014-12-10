@@ -44,7 +44,7 @@ widget_and_html
 runlog.txt
 *.mode1v3
 Documents/dox/online
-Vireo_Web/objs
+Vireo_Web/objs/*.bc
 Documents/dox/old.online
 sample-vis/Gyro Boy 11_30
 sample-vis/Gyro Boy 12_15

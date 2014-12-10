@@ -69,6 +69,8 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
     // If a name is supplied, add it to name to type dictionary as well
     if (typeName->Length()) {
         type = tm->Define(typeName, type);
+    } else {
+        printf("anon type\n");
     }
     return type;
 }

@@ -300,6 +300,9 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
         _perches[i] = kPerchUndefined;
     }
     
+    _baseViType = _clump->TheTypeManager()->FindType(VI_TypeName);
+    _baseReentrantViType = _clump->TheTypeManager()->FindType(ReentrantVI_TypeName);
+    
     memset(&_patchInfos, 0, sizeof (_patchInfos));
 }
 //------------------------------------------------------------
@@ -417,8 +420,6 @@ TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, bool allowError
 //------------------------------------------------------------
 TypeRef ClumpParseState::StartNextOverload()
 {
-    static const SubString strVI(VI_TypeName);
-
     _instructionType = null;
     _formalParameterIndex = 0;
     _formalParameterType = null;
@@ -447,7 +448,7 @@ TypeRef ClumpParseState::StartNextOverload()
         // Looks like it resolved to a native function
         _instructionPointerType = t;
         _instructionType = _instructionPointerType->GetSubElement(0);
-    } else if (t && (t->IsA(&strVI))) {
+    } else if (t && (t->IsA(_baseViType))) {
         // Also covers reentrant VIs since reentrant VIs inherit from simple VIs
         _bIsVI = true;
         VirtualInstrument* vi = AddSubVITargetArgument(t);
@@ -593,18 +594,18 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
         return;
     }
     
-    SubString dsTypeName, formalParameterTypeName;
+    SubString dsTypeName;
     ActualArgumentType()->GetName(&dsTypeName);
-    FormalParameterType()->GetName(&formalParameterTypeName);
     
     if (prependType) {
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
         // they are fully polymorphic.
         InternalAddArg(null, ActualArgumentType());
 	} else if (dsTypeName.CompareCStr("*") && FormalParameterType()->IsOptionalParam()) {
-		// "*" passed as an argument, don't need to do a typecheck
+        // '*' as an argument means no value is passed. If its marks as options this is OK
+        // the '*' is not the generic type in this case.
 	} else {
-        if (!ActualArgumentType()->IsA(&formalParameterTypeName)) {
+        if (!ActualArgumentType()->IsA(FormalParameterType())) {
             _argumentState = kArgumentTypeMismatch;
         }
     }
@@ -724,7 +725,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
     // If its not reentrant then every caller uses that instance. If it is, then a copy needs to be made.
     
     TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) viType->Begin(kPARead);
-    if ((*pObj)->Type()->IsA(&strReentrantVI)  && !_cia->IsCalculatePass()) {
+    if ((*pObj)->Type()->IsA(_baseReentrantViType)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
         TypeManagerRef tm = this->_vi->OwningContext()->TheTypeManager();

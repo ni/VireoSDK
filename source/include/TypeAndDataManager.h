@@ -56,7 +56,15 @@ class TypedArrayCore;
 template <class T>
 class TypedArray1D;
 
-#define TADM_NEW_PLACEMENT(_class_) new (TypeManagerScope::Current()->Malloc(sizeof(_class_))) _class_
+#ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+    // TODO Type manager needs single instance global option like that used by execution context.
+    #error
+    #define THREAD_TADM() // TBD
+#else
+    #define THREAD_TADM() TypeManagerScope::Current()
+#endif
+
+#define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
     
 // EncodingEnum defines the base set of encodings used to annotate the underlying semantics
@@ -203,7 +211,6 @@ public:
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
-    TypeRef InstantiateTemplateType(TypeRef type, TypeRef parameters);
 
     NamedTypeRef FindType(const char* name);
     NamedTypeRef FindType(const SubString* name);
@@ -361,7 +368,7 @@ protected:
 
     UInt16  _hasCustomDefault:1;// ( 3) A non 0 non null value
     UInt16  _isMutableValue:1;  // ( 4) "default" value can be changed after creation.
-    UInt16  _hasGenericType:1;  // ( 5) The type contians some generic property values
+    UInt16  _hasGenericType:1;  // ( 5) The type contians some generic types
     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
     
     //  properties unique to prototype elements. they are never merged up
@@ -468,7 +475,8 @@ public:
     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
     
     Boolean CompareType(TypeRef otherType);
-    Boolean IsA(const SubString* name);
+    Boolean IsA(const SubString* otherTypeName);
+    Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     
     //! Size of the type in bits including padding. If the type is bit level it s the raw bit size wiht no padding.
@@ -574,10 +582,9 @@ public:
 //! A type that is a collection of sub types.
 class AggregateType : public TypeCommon
 {
+protected:
     /// Since this class is variable size, classes that derive from it can not
     /// have member variables  as they would be stompped on.
-
-protected:
     Int32 _bitSize;  // only used by BitCluster
     
 protected:
@@ -1007,6 +1014,9 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
+
+//------------------------------------------------------------
+TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements);
 
 } // namespace Vireo
 
