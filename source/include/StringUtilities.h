@@ -187,7 +187,7 @@ const UInt8 AsciiCharTraits[] =
     
 //------------------------------------------------------------
 //! The core class for working with strings. The SubString never owns the data it points to.
-class SubString : public SimpleSubVector<Utf8Char>
+class SubString : public SubVector<Utf8Char>
 {
 public:
     static Boolean IsAscii(char c)      { return !(c & 0x10); }

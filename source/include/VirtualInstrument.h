@@ -196,6 +196,7 @@ class ClumpParseState
     // The compiler (clang) really did not want to allow static const pointers so they are #defines
 #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
 #define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
+public:
     static const Int32 kMaxPerches = 200;   // TODO dynamic
     static const Int32 kMaxArguments = 100; // TODO dynamic
     static const Int32 kMaxPatchInfos = 100; // TODO allow more

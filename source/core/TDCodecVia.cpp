@@ -109,13 +109,12 @@ TypeRef TDViaParser::ParseType()
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
     }
 
+    FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
     if (_string.ReadChar('<')) {
-        TypeRef replacement = ParseType();
-        if (_string.ReadChar('>')) {
-            pType = InstantiateTypeTemplate(_typeManager,  pType, replacement);
-        } else {
-            pType = BadType();
+        for(int i = 0; !_string.ReadChar('>'); i++) {
+            templateParameters.Append(ParseType());
         }
+        pType = InstantiateTypeTemplate(_typeManager,  pType, &templateParameters);
     }
     
     return pType;
@@ -870,7 +869,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
     SubString  instructionNameToken;
-    SubString  argExpressionTokens[kMaximumArgCount];
+    SubString  argExpressionTokens[ClumpParseState::kMaxArguments];
     
     _string.ReadToken(&token);
     if (!token.CompareCStr(tsClumpToken))
@@ -933,18 +932,18 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!_string.ReadChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
-            // Parse the arguments onnce and determine how many were passed to the function.
+            // Parse the arguments once and determine how many were passed to the function.
             Int32 argCount = 0;
             for(; true; argCount++) {
                 _string.ReadSubexpressionToken(&token);
                 if (token.Length() == 0 || token.CompareCStr(")")) {
                     break;
-                } else if (argCount < kMaximumArgCount) {
+                } else if (argCount < ClumpParseState::kMaxArguments) {
                     argExpressionTokens[argCount] = token;
                 }
             }
             
-            if (argCount > kMaximumArgCount) {
+            if (argCount > ClumpParseState::kMaxArguments) {
                 return LOG_EVENT(kHardDataError, "too many argumnets");
             }
             

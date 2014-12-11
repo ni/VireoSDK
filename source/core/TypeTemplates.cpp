@@ -22,12 +22,12 @@ TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef
 class TypeTemplateVisitor : public TypeVisitor
 {
 public:
-    TypeTemplateVisitor(TypeManagerRef tm, TypeRef replacement);
+    TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* parameters);
     TypeRef Visit(TypeRef type);
 
 private:
     TypeManagerRef _typeManager;
-    TypeRef _replacementTypes;
+    SubVector<TypeRef>* _parameters;
     TypeRef _newType;
 private:
     
@@ -46,7 +46,7 @@ private:
     virtual void VisitCustomDataProc(TypeRef type);
 };
 //------------------------------------------------------------
-TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, TypeRef parameters)
+TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, SubVector<TypeRef>* parameters)
 {
     TypeTemplateVisitor itv(tm, parameters);
     return itv.Visit(type);
@@ -64,10 +64,10 @@ TypeRef TypeTemplateVisitor::Visit(TypeRef type)
     }
 }
 //------------------------------------------------------------
-TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, TypeRef replacement)
+TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* parameters)
 {
     _typeManager = tm;
-    _replacementTypes = replacement;
+    _parameters = parameters;
     _newType = null;
 }
 //------------------------------------------------------------
@@ -136,7 +136,7 @@ void TypeTemplateVisitor::VisitNamed(TypeRef type)
     SubString name = type->GetName();
     
     if(name.CompareCStr("$1")) {
-        _newType = _replacementTypes;
+        _newType = *_parameters->Begin();
         return;
     }
     // To get here the named type was generic, and that means the
@@ -148,7 +148,7 @@ void TypeTemplateVisitor::VisitNamed(TypeRef type)
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('<');
-    name = _replacementTypes->GetName();
+    name =  (*_parameters->Begin())->GetName();
     tempString.Value->Append('.');
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('>');

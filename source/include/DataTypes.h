@@ -119,26 +119,25 @@ typedef Int64   AQBlock8;
 //------------------------------------------------------------
 //! A wrapper that gives a raw block of elements a Begin(), End(), and Length() method.
 template <class T>
-class SimpleSubVector
+class SubVector
 {
 protected:
     const T*  _begin;
     const T*  _end;
 public:
     //! Construct a wrapper from an existing wrapper.
-    SimpleSubVector()
+    SubVector()
     {
         _begin = _end = null;
     }
-    
     //! Construct a wrapper for a raw block of elements.
-    SimpleSubVector(const T* begin, const T* end)
+    SubVector(const T* begin, const T* end)
     {
-        assign(begin, end);
+        _begin = begin;
+        _end = end;
     }
-    
     //! Reassign the wrapper.
-    void AliasAssign(SimpleSubVector *subVector)
+    void AliasAssign(SubVector *subVector)
     {
         if (subVector) {
             _begin = subVector->Begin();
@@ -182,7 +181,7 @@ public:
     }
     
     //! Return true if the blocks are equivalent.
-    bool Compare(const SimpleSubVector *subVector)
+    bool Compare(const SubVector *subVector)
     {
         return Compare(subVector->Begin(), subVector->Length());
     }
@@ -190,7 +189,7 @@ public:
 
 //------------------------------------------------------------
 //! A wrapper for an aray of UInt8s (.e.g bytes). It does not own the data.
-class SubBinaryBuffer :  public SimpleSubVector<UInt8>
+class SubBinaryBuffer :  public SubVector<UInt8>
 {
 public:
     SubBinaryBuffer()   { }
@@ -238,41 +237,47 @@ typedef Itr<IntIndex>   IntIndexItr;
 //------------------------------------------------------------
 //! A Fixed C array that has and API that looks a bit like Vireo arrays
 template <class T, size_t COUNT>
-class FixedCArray
+    class FixedCArray : public SubVector<T>
 {
 protected:
     // The buffer has a an extra element for cases where the C array
     // contains a null element at the end.
     T    _buffer[COUNT+1];
-    T*   _end;
-    
+    // Since this class owns the buffer and it know what is going on,
+    // in certain cases it is OK to write and the end pointer.
+    T*   NonConstEnd() { return const_cast<T*>(this->_end); }
 public:
-    FixedCArray(SimpleSubVector<T>* string)
+    FixedCArray()
     {
+        this->_begin = _buffer;
+        this->_end = _buffer;
+        *NonConstEnd() = (T) 0;
+    }
+    FixedCArray(SubVector<T>* string)
+    {
+        this->_begin = _buffer;
         size_t length = (string->Length() < COUNT) ? string->Length() : COUNT;
-        _end = _buffer + length;
+        this->_end = _buffer + length;
         memcpy(_buffer, string->Begin(), length);
-        *_end = (T) 0;
+        *NonConstEnd() = (T) 0;
     }
     FixedCArray(T* begin, IntIndex length)
     {
+        this->_begin = _buffer;
         if (length >= COUNT)
             length = COUNT;
-        _end = _buffer + length;
+        this->_end = _buffer + length;
         memcpy(_buffer, begin, length);
-        *_end = (T) 0;
+        *NonConstEnd() = (T) 0;
     }
-    T* End()            { return _end; }
-    T* Begin()          { return _buffer; }
-    IntIndex Length()   { return _end - _buffer; }
     IntIndex Capacity() { return COUNT - 1; }
     Boolean Append(T element)
     {
-        Int32 i = Length();
+        IntIndex i = this->Length();
         if (i < COUNT) {
             _buffer[i] = element;
-            _end++;
-            *_end = (T) 0;
+            this->_end++;
+            _buffer[this->Length()] = (T) 0;
             return true;
         } else {
             return true;
@@ -280,14 +285,12 @@ public:
     }
     Boolean Append(const T* begin, size_t length)
     {
-        T* newEnd = _end + length;
-        if (newEnd > _buffer + Capacity()) {
+        if (length + this->Length() > Capacity()) {
             return false;
         }
-        length = newEnd - _end;
-        memcpy(_end, begin, length);
-        _end = newEnd;
-        *_end = (T) 0;
+        memcpy(NonConstEnd(), begin, length);
+        this->_end += length;
+        *NonConstEnd() = (T) 0;
         return true;
     }
 };

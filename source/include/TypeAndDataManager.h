@@ -1016,7 +1016,7 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
 
 //------------------------------------------------------------
-TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements);
+TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, SubVector<TypeRef>*);
 
 } // namespace Vireo
 
