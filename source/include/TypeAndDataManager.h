@@ -1004,7 +1004,7 @@ class TempStackCStringFromString : public TempStackCString
 {
 public:
     TempStackCStringFromString(StringRef string)
-    : TempStackCString((char*)string->Begin(), string->Length())
+    : TempStackCString(string->Begin(), string->Length())
     { }
 };
 

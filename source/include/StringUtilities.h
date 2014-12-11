@@ -267,43 +267,21 @@ class ComapreSubString
 };
 
 //------------------------------------------------------------
-//! Make a null terminated copy of a SubString. Used for calling OS APIs
-class TempStackCString
+//! A null terminated copy of a SubString. Used for calling OS APIs
+class TempStackCString : public FixedCArray<Utf8Char, 255>
 {
-    enum { MaxLength = 255 };
-private:
-    Utf8Char    _buffer[MaxLength+1];
-    Utf8Char*   _end;
 public:
+    TempStackCString(SubString* string) : FixedCArray(string) {}
+    TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) {}
     
-    TempStackCString(char* begin, Int32 length)
+    Boolean Append(SubString* string)
     {
-        length = (length < MaxLength) ? length : MaxLength;
-        _end = _buffer + length;
-        memcpy(_buffer, begin, length);
-        *_end = (Utf8Char) 0;
+        return FixedCArray::Append(string->Begin(), (size_t)string->Length());
     }
-    TempStackCString(SubString* string)
+    char* BeginCStr()
     {
-        Int32 length = (string->Length() < MaxLength) ? string->Length() : MaxLength;
-        _end = _buffer + length;
-        memcpy(_buffer, string->Begin(), length);
-        *_end = (Utf8Char) 0;
+        return (char*) _buffer;
     }
-    void Append(SubString* string)
-    {
-        Utf8Char* newEnd = _end + string->Length();
-        if (newEnd > _buffer + MaxLength) {
-            newEnd = _buffer + MaxLength;
-        }
-        size_t length = newEnd - _end;
-        memcpy(_end, string->Begin(), length);
-        _end = newEnd;
-        *_end = (Utf8Char) 0;
-    }
-    
-    char*       BeginCStr() { return (char*) _buffer; }
-    Utf8Char*   End()       { return _end; }
 };
 
 } // namespace Vireo

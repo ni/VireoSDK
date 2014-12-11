@@ -235,6 +235,62 @@ public:
 //------------------------------------------------------------
 typedef Itr<IntIndex>   IntIndexItr;
 
-
+//------------------------------------------------------------
+//! A Fixed C array that has and API that looks a bit like Vireo arrays
+template <class T, size_t COUNT>
+class FixedCArray
+{
+protected:
+    // The buffer has a an extra element for cases where the C array
+    // contains a null element at the end.
+    T    _buffer[COUNT+1];
+    T*   _end;
+    
+public:
+    FixedCArray(SimpleSubVector<T>* string)
+    {
+        size_t length = (string->Length() < COUNT) ? string->Length() : COUNT;
+        _end = _buffer + length;
+        memcpy(_buffer, string->Begin(), length);
+        *_end = (T) 0;
+    }
+    FixedCArray(T* begin, IntIndex length)
+    {
+        if (length >= COUNT)
+            length = COUNT;
+        _end = _buffer + length;
+        memcpy(_buffer, begin, length);
+        *_end = (T) 0;
+    }
+    T* End()            { return _end; }
+    T* Begin()          { return _buffer; }
+    IntIndex Length()   { return _end - _buffer; }
+    IntIndex Capacity() { return COUNT - 1; }
+    Boolean Append(T element)
+    {
+        Int32 i = Length();
+        if (i < COUNT) {
+            _buffer[i] = element;
+            _end++;
+            *_end = (T) 0;
+            return true;
+        } else {
+            return true;
+        }
+    }
+    Boolean Append(const T* begin, size_t length)
+    {
+        T* newEnd = _end + length;
+        if (newEnd > _buffer + Capacity()) {
+            return false;
+        }
+        length = newEnd - _end;
+        memcpy(_end, begin, length);
+        _end = newEnd;
+        *_end = (T) 0;
+        return true;
+    }
+};
+    
 }
 #endif // DataTypes_h
