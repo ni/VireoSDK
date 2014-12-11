@@ -14,20 +14,20 @@ define (Parallel dv(.VirtualInstrument (
         e(v(.String 'Pat you head.') sHead)
         e(v(.String 'Rub your tummy.') sTummy)
     ) 
-    clump(1         // Clump 0 (the root clump)
-         Trigger(1)    // Trigger Clump #1        
+    clump(              // Clump 0 (the root clump)
+         Trigger(1)     // Trigger Clump #1        
          WaitMilliseconds(fiveHundred)
          Trigger(2)     
          Wait(1)        // Wait till clump #1 is complete (will it?)
          Wait(2)
     )
-    clump(1         // Clump 1 with a fire count of 1
-        Perch(0)    // Labels are scoped to a clump, this is Label 0
+    clump(              // Clump 1
+        Perch(0)        // Labels are scoped to a clump, this is Label 0
         Print(sHead)
         WaitMilliseconds(oneThousand)
-        Branch(0)   // Branch to Perch 0
+        Branch(0)       // Branch to Perch 0
     ) 
-    clump(1         // Clump 2 with a fire count of 1
+    clump(              // Clump 2
         Perch(0)
         Print(sTummy)
         WaitMilliseconds(oneThousand)

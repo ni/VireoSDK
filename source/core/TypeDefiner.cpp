@@ -63,14 +63,11 @@ TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
 TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
 {
     TypeManagerScope scope(tm);
-    TypeRef type = null;
+    TypeRef type = ParseAndBuidType(tm, typeString);
     
-    type = ParseAndBuidType(tm, typeString);
-    // If a name is supplied, add it to name to type dictionary as well
     if (typeName->Length()) {
+        // Use the name if provided, else it an anonymous type.
         type = tm->Define(typeName, type);
-    } else {
-        printf("anon type\n");
     }
     return type;
 }

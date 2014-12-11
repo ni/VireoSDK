@@ -139,13 +139,8 @@ public:
     //! Reassign the wrapper.
     void AliasAssign(SubVector *subVector)
     {
-        if (subVector) {
-            _begin = subVector->Begin();
-            _end = subVector->End();
-        } else {
-            _begin = null;
-            _end = null;
-        }
+        _begin = subVector->Begin();
+        _end = subVector->End();
     }
 
     //! Reassign the wrapper to a new raw block of elements.
@@ -280,7 +275,7 @@ public:
             _buffer[this->Length()] = (T) 0;
             return true;
         } else {
-            return true;
+            return false;
         }
     }
     Boolean Append(const T* begin, size_t length)

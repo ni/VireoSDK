@@ -109,8 +109,8 @@ TypeRef TDViaParser::ParseType()
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
     }
 
-    FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
     if (_string.ReadChar('<')) {
+        FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
         for(int i = 0; !_string.ReadChar('>'); i++) {
             templateParameters.Append(ParseType());
         }

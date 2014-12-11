@@ -20,7 +20,7 @@ define (ArrayDemo, dv(.VirtualInstrument, (
         // Size set by number of initializers
         e(dv(a(.Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)
     )
-    clump(1
+    clump(
         Print(variableArray1d)
         Print(fixedArray1d)
         Print(boundedArray1d)        
