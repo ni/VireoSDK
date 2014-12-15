@@ -310,12 +310,6 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
     // of the resolved symbol.
 
     NamedTypeRef existingType = FindType(typeName);
-    
-#ifndef VIREO_ALLOW_SYMBOL_OVERLOADS
-    if (existingType != null)
-        return null;
-#endif
-
     return NewNamedType(typeName, type, existingType);
 }
 //------------------------------------------------------------

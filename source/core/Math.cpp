@@ -18,15 +18,9 @@ SDG
 #include "TypeDefiner.h"
 #include "TimeTypes.h"
 
-#ifdef VIREO_ALLOW_SYMBOL_OVERLOADS
-    // With non-unique names(AKA overlodaed) only the C entlry points are appended.
-    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
-    #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
-#else
-    // With unique names the C-entry points AND the Vireo functions are appended with the type
-    #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION(_root_##_type_, _proto_)
-    #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION(_type1_##_root_##_type2_, _proto_)
-#endif
+// With non-unique names(AKA overlodaed) only the C entlry points are appended.
+#define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
+#define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
 
 
 using namespace Vireo;
@@ -651,11 +645,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int32)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int32)
 
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
+#if 1
+    // TODO remove these once no tergets are no longer relying on current gen LV via emitter
     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
-    // branch instructions. These support the one needed.
-    // In 1.1 the Type Neutral one are nor the way to go BranchIf()
-    // TODO: remove these once the VIA generator is fixed.
+    // branch instructions. These support the ones needed.
     DEFINE_VIREO_FUNCTION(BranchIfGEInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
     DEFINE_VIREO_FUNCTION(BranchIfLTDouble, "p(i(.BranchTarget) i(.Double) i(.Double))" )

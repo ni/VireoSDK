@@ -254,16 +254,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
             snippetBuilder.EmitInstruction(&savedOperation, 3, xEltType, null, yEltType, null, destEltType, null);
-#else
-            snippetBuilder.StartInstruction(&savedOperation);
-            // TODO: Validating runtime will require  type checking
-            snippetBuilder.InternalAddArg(xEltType, null);
-            snippetBuilder.InternalAddArg(yEltType, null);
-            snippetBuilder.InternalAddArg(destEltType, null);
-            snippetBuilder.EmitInstruction();
-#endif
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             
             // Create the accumulator snippet
@@ -304,7 +295,6 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
             for (Int32 i = 0; i < goalType->SubElementCount(); i++)
             {
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
                 TypeRef arg1Type, arg2Type, arg3Type;
                 void    *arg1Data, *arg2Data, *arg3Data;
                 
@@ -332,29 +322,6 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                 }
                 
                 snippetBuilder.EmitInstruction(&savedOperation, 3, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type, arg3Data);
-#else
-                snippetBuilder.StartInstruction(&savedOperation);
-
-                if (sourceXType->BitEncoding() == kEncoding_Cluster) { //TODO: Better type checking
-                    TypeRef subType = sourceXType->GetSubElement(i);
-                    snippetBuilder.InternalAddArg(subType, (void*)(size_t)subType->ElementOffset());
-                } else {
-                    snippetBuilder.InternalAddArg(sourceXType, null);
-                }
-                if (sourceYType->BitEncoding() == kEncoding_Cluster) {
-                    TypeRef subType = sourceYType->GetSubElement(i);
-                    snippetBuilder.InternalAddArg(subType, (void*)(size_t)subType->ElementOffset());
-                } else {
-                    snippetBuilder.InternalAddArg(sourceYType, null);
-                }
-                if (destType->BitEncoding() == kEncoding_Cluster) {
-                    TypeRef subType = destType->GetSubElement(i);
-                    snippetBuilder.InternalAddArg(subType, (void*)(size_t)subType->ElementOffset());
-                } else {
-                    snippetBuilder.InternalAddArg(destType, null);
-                }
-                snippetBuilder.EmitInstruction();
-#endif
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             
@@ -436,16 +403,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
             
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
-
             snippetBuilder.EmitInstruction(&savedOperation, 2, sourceXType->GetSubElement(0), null, destType->GetSubElement(0), null);
-#else
-            snippetBuilder.StartInstruction(&savedOperation);
-            //arg pointers are null on the element instruction. They will get updated at runtime by the vector op
-            snippetBuilder.InternalAddArg(sourceXType->GetSubElement(0), null);
-            snippetBuilder.InternalAddArg(sourceXType->GetSubElement(0), null);
-            snippetBuilder.EmitInstruction();
-#endif
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
@@ -475,19 +433,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
                     sourceSub = sourceXType->GetSubElement(i);
                     sourceData =  (void*)(size_t)sourceSub->ElementOffset();
                 }
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
                 snippetBuilder.EmitInstruction(&savedOperation, 2, sourceSub, sourceData, destSub, (void*)(size_t)destSub->ElementOffset());
-#else
-                snippetBuilder.StartInstruction(&savedOperation);
-                if (sourceXType->BitEncoding() == kEncoding_Cluster)
-                {
-                    sourceSub = sourceXType->GetSubElement(i);
-                    sourceData =  (void*)(size_t)sourceSub->ElementOffset();
-                }
-                snippetBuilder.InternalAddArg(sourceSub, sourceData);
-                snippetBuilder.InternalAddArg(destSub, (void*)(size_t)destSub->ElementOffset());
-                snippetBuilder.EmitInstruction();
-#endif
             }
             
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -625,19 +571,8 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorOp, scalarOpSnippetArgId);
     
-#if defined(VIREO_ALLOW_SYMBOL_OVERLOADS)
     snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), null,
         destType, pInstructionBuilder->_argPointers[1], destType, pInstructionBuilder->_argPointers[1]);
-#else
-
-    snippetBuilder.StartInstruction(&scalarOpToken);
-    // The first operand pointer is null.  It will get updated at runtime by the scalar op.
-    snippetBuilder.InternalAddArg(sourceType->GetSubElement(0), null);
-    // The other operand pointer and the result pointer are set to the output argument.
-    snippetBuilder.InternalAddArg(destType, pInstructionBuilder->_argPointers[1]);
-    snippetBuilder.InternalAddArg(destType, pInstructionBuilder->_argPointers[1]);
-    snippetBuilder.EmitInstruction();
-#endif
     
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&vectorOp->_piNext);
