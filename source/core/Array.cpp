@@ -20,6 +20,7 @@ using namespace Vireo;
 DECLARE_VIREO_PRIMITIVE2( ArrayResize, TypedArrayCoreRef, Int32, (_Param(0)->Resize1D(_Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE2( ArrayLength, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Length()) )
 DECLARE_VIREO_PRIMITIVE2( ArrayRank, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Rank()) )
+DECLARE_VIREO_PRIMITIVE2( ArrayElementType, TypedArrayCoreRef, TypeRef, (_Param(1) = _Param(0)->ElementType()) )
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
@@ -380,6 +381,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayCapacity, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayLength, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayRank, "p(i(.Array) o(.Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayElementType, "p(i(.Array) o(.Type))")
     DEFINE_VIREO_FUNCTION(ArrayResize, "p(io(.Array) i(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDimensions, "p(i(.Array) o(a(.Int32 *)))")
     DEFINE_VIREO_FUNCTION(ArrayResizeDimensions, "p(io(.Array) i(a(.Int32 *)))")
@@ -392,9 +394,6 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(.Array) i(.Array) i(.Int32) i(.Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(.Array) i(.Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(.Array) i(.Array) i(.Int32))")
-
-
-
 
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(.VarArgCount) o(.Array) i(.*) i(.Int32) )")

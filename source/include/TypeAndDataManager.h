@@ -206,7 +206,7 @@ public:
 
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
-    TypeRef GetTypeList();
+    TypeRef TypeList() { return _typeList; }
     void    PrintMemoryStat(const char*, Boolean last);
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }

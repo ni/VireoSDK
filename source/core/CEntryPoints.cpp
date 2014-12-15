@@ -50,7 +50,7 @@ VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value)
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
 {
-    return eggShell->TheTypeManager()->GetTypeList();
+    return eggShell->TheTypeManager()->TypeList();
 }
 //------------------------------------------------------------
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell)

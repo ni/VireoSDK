@@ -206,7 +206,7 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     // Now free up the type objects
     type = _typeList;
     while (type) {
-        TypeRef  nextType = type->_next;
+        TypeRef  nextType = type->Next();
         type->~TypeCommon();
         this->Free(type);
         type = nextType;
@@ -299,11 +299,6 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
     } else {
         pArray->Resize1D(0);
     }
-}
-//------------------------------------------------------------
-TypeRef TypeManager::GetTypeList()
-{
-    return _typeList;
 }
 //------------------------------------------------------------
 TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
@@ -2129,11 +2124,9 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, TypedArrayCoreRef, TypeRef)
+VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
 {
     // Return the static type.
-    // TODO what about a function that returns run-time type
-    // This is not needed until dynamic types esixt.
     TypeRef staticType = (TypeRef)_ParamPointer(0);
     _Param(2) = staticType;
     return _NextInstruction();

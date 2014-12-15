@@ -200,9 +200,9 @@ protected:
 public:
     Itr(T* begin, T* end) {_current = begin; _end = end;}
     Itr(T* begin, IntIndex length) {_current = begin; _end = begin + length;}
-    //! Read the iterators next pointer
+    //! Read the iterator's next pointer
     T* ReadP()          { return _current++; }
-    //! Read the iterators next value
+    //! Read the iterator's next value
     T Read()            { return *_current++;  }
     Boolean InRange()   { return _current < _end; }
 };
@@ -242,20 +242,26 @@ protected:
     // in certain cases it is OK to write and the end pointer.
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
 public:
+
+    //! Construct the array and initialize it as empty.
     FixedCArray()
     {
         this->_begin = _buffer;
         this->_end = _buffer;
         *NonConstEnd() = (T) 0;
     }
-    FixedCArray(SubVector<T>* string)
+    
+    //! Construct the array and initialize it from a SubVector.
+    FixedCArray(SubVector<T>* buffer)
     {
         this->_begin = _buffer;
-        size_t length = (string->Length() < COUNT) ? string->Length() : COUNT;
+        size_t length = (buffer->Length() < COUNT) ? buffer->Length() : COUNT;
         this->_end = _buffer + length;
-        memcpy(_buffer, string->Begin(), length);
+        memcpy(_buffer, buffer->Begin(), length);
         *NonConstEnd() = (T) 0;
     }
+    
+    //! Construct the array and initialize it from a block of data.
     FixedCArray(T* begin, IntIndex length)
     {
         this->_begin = _buffer;
@@ -265,7 +271,14 @@ public:
         memcpy(_buffer, begin, length);
         *NonConstEnd() = (T) 0;
     }
+    
+    //! Return the maximum capacity of the array.
     IntIndex Capacity() { return COUNT - 1; }
+    
+    //! Return a reference to the indexed element in the vector (no range checking).
+    const T&  operator[] (const int i)  { return _buffer[i]; }
+    
+    //! Append an element to the aray if there is room.
     Boolean Append(T element)
     {
         IntIndex i = this->Length();
@@ -278,6 +291,8 @@ public:
             return false;
         }
     }
+    
+    //! Append a block of elements to the aray if there is room.
     Boolean Append(const T* begin, size_t length)
     {
         if (length + this->Length() > Capacity()) {

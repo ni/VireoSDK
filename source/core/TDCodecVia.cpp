@@ -1024,7 +1024,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
     // out of memory and can't allocate any more types.
     
     TypeRef typeEnd = null;
-    TypeRef typeList = tm->_typeList;
+    TypeRef typeList = tm->TypeList();
 
     while (true) {
         TypeRef type = typeList;
@@ -1037,13 +1037,14 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
             type = type->Next();
         }
         
-        if (tm->_typeList == typeList)
+        // If nothing has been added the head of the list will be the same.
+        if (tm->TypeList() == typeList)
             break;
         
         // Loop again and process new definitions.
         // Initial case it reentrant VIs
         typeEnd = typeList;
-        typeList = tm->_typeList;
+        typeList = tm->TypeList();
     }
 }
 //------------------------------------------------------------
@@ -1595,6 +1596,14 @@ VIREO_FUNCTION_SIGNATURE3(ToTypeAndDataString, StaticType, void, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(DefaultValueToString, TypeRef, StringRef)
+{
+    _Param(1)->Resize1D(0);
+    TDViaFormatter formatter(_Param(1), false, 0);
+    formatter.FormatData(_Param(0), _Param(0)->Begin(kPARead));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ToString, StaticType, void, Int16, StringRef)
 {
     _Param(3)->Resize1D(0);
@@ -1727,6 +1736,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 }
 
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
+    DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
     DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")
     DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
