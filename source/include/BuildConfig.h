@@ -67,6 +67,10 @@ SDG
 
     #define VIREO_TYPE_VARIANT 1
 
+    // Track internal unique C function names for primitive functions.
+    // Used for generating C source
+    #define VIREO_INSTRUCTION_REFLECTION 1
+
     #define VIREO_TYPE_CONSTRUCTION 1
 
     // For Vireo-full functions are dynamically registered by each module when loaded

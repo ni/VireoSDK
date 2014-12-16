@@ -187,7 +187,15 @@ private:
     SimpleDictionary       _typeNameDictionary;
 #endif
 
-    Int32       _aqBitCount;
+#if defined(VIREO_INSTRUCTION_REFLECTION)
+    struct CPrimtitiveInfo {
+        TypeRef _type;
+        const char* _cName;
+    };
+    std::map<void*, CPrimtitiveInfo>  _cPrimitiveDictionary;
+#endif
+
+    Int32   _aqBitCount;
     MUTEX_CLASS_MEMBER
     TypeRef _badType;
     TypeRef _typeList;                  // List of all Types allocated by this TypeManager
@@ -226,10 +234,14 @@ public:
     Int32   AQBitSize() {return _aqBitCount; }
     
 public:
-    NIError RegisterType(const char* name, const char* typeString);
-	NIError DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
-	NIError DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef type);
-    
+#if defined (VIREO_INSTRUCTION_REFLECTION)
+	TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType, const char* cName);
+#else
+    TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
+#endif
+	TypeRef DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef type);
+    TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
+
 public:
     // Low level allocation functions
     // TODO pull out into its own class.

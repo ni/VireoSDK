@@ -221,29 +221,38 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     }
 }
 //------------------------------------------------------------
-NIError TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType)
+#if defined (VIREO_INSTRUCTION_REFLECTION)
+TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType, const char* cName)
+#else
+TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType)
+#endif
 {
     CustomPointerType *valueTypeNode = CustomPointerType::New(this, typeRef, pointer, pointerType);
     
     if (valueTypeNode) {
         SubString typeName(name);
-        Define(&typeName, valueTypeNode);
-        return kNIError_Success;
+        TypeRef type =  Define(&typeName, valueTypeNode);
+#if defined (VIREO_INSTRUCTION_REFLECTION)
+        CPrimtitiveInfo cpi;
+        cpi._cName = cName;
+        cpi._type = type;
+        _cPrimitiveDictionary.insert(std::make_pair(pointer, cpi));
+#endif
+        return type;
     } else {
-        return kNIError_kInsufficientResources;
+        return null;
     }
 }
 //------------------------------------------------------------
-NIError TypeManager::DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef typeRef)
+TypeRef TypeManager::DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef typeRef)
 {
     CustomDataProcType *allocTypeNode = CustomDataProcType::New(this, typeRef, pDataProcs);
     
     if (allocTypeNode) {
         SubString typeName(name);
-        Define(&typeName, allocTypeNode);
-        return kNIError_Success;
+        return Define(&typeName, allocTypeNode);
     } else {
-        return kNIError_kInsufficientResources;
+        return null;
     }
 }
 //------------------------------------------------------------
@@ -2305,6 +2314,56 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
 }
 #endif
 
+#if defined(VIREO_INSTRUCTION_REFLECTION)
+//------------------------------------------------------------
+//! Map a native primtitive function pointer to its TypeRef and its native name.
+TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cName)
+{
+    std::map<void*, CPrimtitiveInfo>::iterator iter = _cPrimitiveDictionary.find(pointer);
+    
+    if (iter != _cPrimitiveDictionary.end()) {
+        CPrimtitiveInfo cpi = iter->second;
+        cName->AliasAssignCStr(cpi._cName);
+        return cpi._type;
+    } else if (RootTypeManager()) {
+        return RootTypeManager()->FindCustomPointerTypeFromValue(pointer, cName);
+    } else {
+        return BadType();
+    }
+}
+//------------------------------------------------------------
+//! Map a native primtitive function pointer to its TypeRef and its native name.
+VIREO_FUNCTION_SIGNATURE3(InstructionType, InstructionCore*, TypeRef, StringRef)
+{
+    InstructionCore* pinstruction = _Param(0);
+    SubString cName;
+    _Param(1) = THREAD_TADM()->FindCustomPointerTypeFromValue((void*)pinstruction->_function, &cName);
+    _Param(2)->CopyFromSubString(&cName);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+//! Determine the type that described the actual argument passed and its allocation origin
+VIREO_FUNCTION_SIGNATURE4(InstructionArgType, InstructionCore*, Int32, TypeRef, Int32)
+{
+    // TODO
+    // Origin will be:
+    //  0 - unknown
+    //  1 - private data space
+    //  2 - paramblock
+    //  3 - global
+    _Param(2) = null;
+    _Param(3) = 0;
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+//! Determine the next instruction in the instruction list.
+VIREO_FUNCTION_SIGNATURE2(InstructionNext, InstructionCore*, InstructionCore*)
+{
+    // TODO
+    _Param(1) = null;
+    return _NextInstruction();
+}
+#endif
 }
 
 //------------------------------------------------------------
@@ -2317,6 +2376,12 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerRootTypeManager, "p(i(.TypeManager) o(.TypeManager))");
     DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+
+#if defined(VIREO_INSTRUCTION_REFLECTION)
+    DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
+    DEFINE_VIREO_FUNCTION(InstructionArgType, "p(i(.Instruction)i(.Int32)o(.Type)o(.Int32))");
+    DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(.Instruction)o(.Instruction))");
+#endif
 
 #if defined(VIREO_TYPE_VARIANT)
     DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(.TypeManager) i(.String) i(.Type) i(.Boolean) o(.Type))");

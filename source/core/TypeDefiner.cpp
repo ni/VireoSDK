@@ -72,6 +72,15 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
     return type;
 }
 //------------------------------------------------------------
+#if defined (VIREO_INSTRUCTION_REFLECTION)
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeCStr, PointerTypeEnum pointerType, const char* cname)
+{
+    SubString typeString(typeCStr);
+    TypeRef type = ParseAndBuidType(tm, &typeString);
+    
+    tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType, cname);
+}
+#else
 void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeCStr, PointerTypeEnum pointerType)
 {
     SubString typeString(typeCStr);
@@ -79,6 +88,7 @@ void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char
     
     tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
 }
+#endif
 //------------------------------------------------------------
 void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, const char* name, IDataProcs* pDataProcs, const char* typeCStr)
 {

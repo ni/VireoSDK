@@ -1,0 +1,110 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "Hello, Wei") variable1)
+        e(dv(.Int32  505) variable2)
+        e(dv(.Boolean  true) variable3)
+        e(dv(.Boolean  false) variable4)
+        e(dv(.Boolean  false) v7)
+        e(dv(.Boolean  false) v8)
+        e(dv(.Boolean  false) v9)
+    )
+    clump (
+        Add(variable2 variable2 variable2)
+        Print(variable1)
+    )
+    clump (
+        Print(variable1)
+        Print(variable1)
+    )
+) ) )
+
+define (Converter dv(.VirtualInstrument (
+    c(
+        e(.Type     dsType)
+        e(.Int32    count)
+        e(.Int32    index)
+        e(.Int32    zero)
+        e(.Type     eltType)
+        e(.String   typeName)  
+        e(.String   eltName)  
+        e(.String   eltValue) 
+        e(a(.VIClump *) clumps) // alias to the array of clumps
+        e(.VIClump clump)
+        e(.Instruction inst)
+        e(.Type  instructionType)
+        e(.Type  parameterListType)
+        e(.String internalName)
+        
+        // For iterating through parameter types
+        e(.Int32    count2)
+        e(.Int32    index2)
+        e(.Type     argType)
+
+    )
+    clump (
+        ArrayElementType(HelloWorld.DataSpace dsType)
+        
+        // Print the dataspace type
+    
+        TypeSubElementCount(dsType count)
+        DPrintf("//-------------------------")
+        DPrintf("class DST_HelloWorld {  " )
+        Perch(0)
+            TypeGetSubElement(dsType index eltType)
+            TypeGetName(eltType typeName) 
+            TypeGetElementName(eltType eltName) 
+            DPrintf("  VT%s _%s;" typeName eltName)
+            Add(index 1 index)
+        BranchIfLT(0 index count)
+        DPrintf("};")
+        
+        // Print the dataspace initializer
+
+        Init(index)
+        DPrintf("//-------------------------")
+        DPrintf("DST_HelloWorld  ds = {  " )
+        Perch(1)
+            TypeGetSubElement(dsType index eltType)
+            DefaultValueToString(eltType eltValue)
+            DPrintf("  %s," eltValue)
+            Add(index 1 index)
+        BranchIfLT(1 index count)
+        DPrintf("};")
+
+        // Print clump initializer
+
+        Copy(HelloWorld.Clumps clumps)
+        ArrayLength(clumps count)
+        DPrintf("//Number of clumps %s" count)        
+        DPrintf("//-------------------------")
+        ArrayIndexElt(clumps 0 clump)        
+        InstructionType(clump.CodeStart instructionType internalName)
+            
+            DPrintf("Instructions inst = {" clump.CodeStart)     
+            TypeGetName(instructionType typeName)
+            DPrintf("   _I1(%s" internalName)
+            
+            
+            // The instruction type is a pointer.
+            // To get acces to the pointer's description get its sub element
+            TypeGetSubElement(instructionType 0 parameterListType)
+            TypeSubElementCount(parameterListType count2)
+            DPrintf(" param count %s" count2)
+            Init(index2)
+            
+            // Loop through all arguments 
+            Perch(2)
+                TypeGetSubElement(parameterListType index2 argType)
+                TypeGetName(argType typeName) 
+                DPrintf("%s, " typeName)
+                Add(index2 1 index2)
+            BranchIfLT(2 index2 count2)
+  
+
+        DPrintf("   )" internalName)
+        DPrintf("}\n" clump.CodeStart)            
+    )
+) ) )
+
+
+enqueue (Converter)

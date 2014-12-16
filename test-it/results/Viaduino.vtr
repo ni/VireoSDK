@@ -1,0 +1,27 @@
+class DST_HelloWorld {  
+  VTString _variable1;
+  VTInt32 _variable2;
+  VTBoolean _variable3;
+  VTBoolean _variable4;
+  VTBoolean _v7;
+  VTBoolean _v8;
+  VTBoolean _v9;
+};
+DST_HelloWorld  ds = {  
+  Hello, Wei,
+  505,
+  t,
+  f,
+  f,
+  f,
+  f,
+};
+Instructions inst = {
+   _I1(AddInt32
+ param count 3
+Int32, 
+Int32, 
+Int32, 
+   )
+}
+
