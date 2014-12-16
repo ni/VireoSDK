@@ -64,7 +64,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "QueueTypeTemplate.via"
+            argument = "Viaduino.via"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -72,7 +72,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "LotsOStrings.via"
+            argument = "ArrayFillNDV.via"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument

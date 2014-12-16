@@ -1,3 +1,8 @@
+// A very preliminary test that uses VI and Instruction reflection 
+// to generate source for building a static linked version of the run time 
+// instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
+
+
 define (HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello, Wei") variable1)
