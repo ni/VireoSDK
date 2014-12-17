@@ -4,7 +4,7 @@ define (Hello2DWorld dv(.VirtualInstrument (
         e(.Canvas2D ctx)
     )
     clump (1
-        Print(variable1)
+        Println(variable1)
         ObtainCanvas2D(ctx "theCanvas")
         BeginPath(ctx)
         MoveTo(ctx 170 80)

@@ -16,9 +16,9 @@ define (TypeChecking dv(.VirtualInstrument (
     e(a(.Double 5 5 5)    arrayOfDoubleFixed3d) 
    ) 
  clump(1 
-    Print(cInt32)
-    Print(cDouble)
-    Print(cString)
+    Println(cInt32)
+    Println(cDouble)
+    Println(cString)
     Copy(c10 cDouble)
     Copy(cDouble c10)
     Copy(cDouble cSingle)
@@ -28,12 +28,12 @@ define (TypeChecking dv(.VirtualInstrument (
     Copy(cMyInt32 cInt32)
     Copy(c10 cInt32)
 	Add(cInt32 cMyInt32 value)
-    Print(value)
+    Println(value)
 	Add(cDouble cMyInt32 cDouble) // Error
 	Add(cDouble c10 cInt32)        // Error
 	Add(cDouble c10 cInt32)       // Error
 	ArrayLength(cString value)   // formal type is "Array" which means type info is present is that all
-    Print(value)
+    Println(value)
 	ArrayLength(arrayOfDoubleFixed2d cInt32)
     ArrayLength(cInt32 cInt32)         // Error
     ArrayLength(cString cDouble)       // Error

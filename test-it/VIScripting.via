@@ -1,7 +1,7 @@
 define (HelloWorld0 dv (.VirtualInstrument (
  c( e(dv(.String 'Could this be a simple reentrant VI?, Hello world.') variable1) )
             clump (1
-                Print(variable1)
+                Println(variable1)
             )
 )))
 
@@ -12,7 +12,7 @@ define (HelloWorld dv(.VirtualInstrument (
         "(
             c( e(dv(.String 'Somewhat of a lambda, Hello world.') variable1) )
             clump (1
-                Print(variable1)
+                Println(variable1)
             )
         )"
         ) goodProgram1)
@@ -21,7 +21,7 @@ define (HelloWorld dv(.VirtualInstrument (
         "(
             c( e(dv(.MyVeryOwnString 'Hello world using dynamically defined string type.') variable1) )
             clump (1
-                Print(variable1)
+               Println(variable1)
             )
         )"
         ) goodProgram2)
@@ -31,8 +31,8 @@ define (HelloWorld dv(.VirtualInstrument (
             c( e(dv(.String 'Scripted Hello world.') variable1) )
             clump (1
                 PrintZZZX(variable1)
-                Print(variable1 variable1)
-                Print()
+                Println(variable1 variable1)
+                Println()
                 Add(variable1 variable1 variable1)
             )
         )"
@@ -58,8 +58,8 @@ define (HelloWorld dv(.VirtualInstrument (
          //   e(dv(.String 'a by-value hello world') variable1)
             )
             clump (1
-                DPrintf("a by-value hello world")
-            // Print(variable1)
+                Printf("a by-value hello world")
+            //  Println(variable1)
             )
             ))
             viValue)
@@ -68,15 +68,15 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.Type .String)                     stringType)
     )
     clump (1
-        DPrintf("-------")
-        Print (goodProgram1)
+        Printf("-------")
+        Println(goodProgram1)
         FromString(goodProgram1 vi1 errorLog)   // FromString() will create the instance in the current TypeManager
-        Print (errorLog)
-        DPrintf("-------")
-        Print (badProgram)
+        Println(errorLog)
+        Printf("-------")
+        Println(badProgram)
         FromString(badProgram viBad errorLog)
-        Print (errorLog)
-        DPrintf("-------")
+        Println(errorLog)
+        Printf("-------")
 
 
         EnqueueRunQueue(vi1)
@@ -89,15 +89,13 @@ define (HelloWorld dv(.VirtualInstrument (
         TypeManagerCurrentTypeManager(tm)
         TypeManagerDefineType(tm myVeryOwnStringName stringType)
         FromString(goodProgram2 vi2 errorLog)   // FromString() will create the instance in the current TypeManager
-        Print (errorLog)
+        Println(errorLog)
         EnqueueRunQueue(vi2)    // Press the run button
-        DPrintf("-------")
+        Printf("-------")
 
 //      Not quire ready to work, the VI value exists but is not quire initialized correctly         
 //      EnqueueRunQueue(viValue)
 //      vi1()
-
-
     )
 ) ) )
 enqueue (HelloWorld)

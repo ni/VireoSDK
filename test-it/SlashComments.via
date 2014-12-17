@@ -24,7 +24,7 @@ clump//
 1//
 
     Add(variable1 variable2 result)
-    Print(result)
+    Println(result)
    )
 )//
  //

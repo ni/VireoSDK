@@ -46,87 +46,87 @@ define (Test dv(.VirtualInstrument (
  ) 
   clump(1 
     // Int32 to String
-    Print(cn2)
+    Println(cn2)
     ToString(cn2 width outString)
-    Print(outString)
+    Println(outString)
 
-    Print(c3)
+    Println(c3)
     ToString(c3 width outString)
-    Print(outString)
+    Println(outString)
 
     //---------------------------------------------------------
 
     // Double to String
-    Print(d1_5)
+    Println(d1_5)
     ToString(d1_5 width outString)
-    Print(outString)
+    Println(outString)
 
-    Print(d1_76)
+    Println(d1_76)
     ToString(d1_76 width outString)
-    Print(outString)
+    Println(outString)
 
     //---------------------------------------------------------
 
     // String to Int32
-    Print(cString)
+    Println(cString)
     Copy(c0 offset)
 
     DecimalStringToNumber(cString offset defaultVal endoffset value)
-    Print(offset)
-    Print(endoffset)
-    Print(value)
+    Println(offset)
+    Println(endoffset)
+    Println(value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
-    Print(offset)
-    Print(endoffset)
-    Print(value)
+    Println(offset)
+    Println(endoffset)
+    Println(value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
-    Print(offset)
-    Print(endoffset)
-    Print(value)
+    Println(offset)
+    Println(endoffset)
+    Println(value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset * * value)
-    Print(offset)
-    Print(endoffset)
-    Print(value)
+    Println(offset)
+    Println(endoffset)
+    Println(value)
 
     //---------------------------------------------------------
 
     // String to Double
-    Print(dString)
+    Println(dString)
     Copy(c0 offset)
 
     ExponentialStringToNumber(dString offset dDefaultVal endoffset *)
-    Print(offset)
-    Print(endoffset)
-    Print(dvalue)
+    Println(offset)
+    Println(endoffset)
+    Println(dvalue)
 
     Copy(endoffset offset)
     ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
-    Print(offset)
-    Print(endoffset)
-    Print(dvalue)
+    Println(offset)
+    Println(endoffset)
+    Println(dvalue)
 
     Copy(endoffset offset)
     ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
-    Print(offset)
-    Print(endoffset)
-    Print(dvalue)
+    Println(offset)
+    Println(endoffset)
+    Println(dvalue)
 
     Copy(endoffset offset)
     ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
-    Print(offset)
-    Print(endoffset)
-    Print(dvalue)
+    Println(offset)
+    Println(endoffset)
+    Println(dvalue)
 
     //---------------------------------------------------------
 
     DecimalStringToNumber(stringa373 * default20 local2 local1)
-    Print(local1)
+    Println(local1)
 
    )
  ) ) )

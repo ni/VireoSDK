@@ -47,7 +47,7 @@ define (videf2 dv(.VirtualInstrument (
     )
     clump(1
         videf1(local1 c0)
-        Print(local1)
+        Println(local1)
         Copy(c6 local2 )                          // initialize i
 //--- begin while loop
         Perch(0)
@@ -58,7 +58,7 @@ define (videf2 dv(.VirtualInstrument (
         Branch(0)                                 // loop again
 //--- end while loop
         Perch(1)
-        Print(local1)
+        Println(local1)
         Copy(c6 local2 )                          // initialize i
 //--- begin while loop
         Perch(2)
@@ -69,7 +69,7 @@ define (videf2 dv(.VirtualInstrument (
         Branch(2)                                 // loop again
 //--- end while loop
         Perch(3)
-        Print(local1)
+        Println(local1)
 //--- end of vi
     )
 )))

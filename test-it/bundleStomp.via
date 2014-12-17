@@ -48,7 +48,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local4 local8.n1 )                   // bundle
         Copy(local5 local8.n2 )                   // bundle
         Add(local8 local6 local9)
-        Print(local9)
+        Println(local9)
 //--- end of vi
     )
 )))

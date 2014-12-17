@@ -6,13 +6,13 @@ define (HelloSdl v(.VirtualInstrument (
 
     1
     clump (1
-        Print(variable1)
+       Println(variable1)
 
         SdlInit(framePause)
         Perch(0)
         SdlRender(framePause)
         WaitMilliseconds(framePause)
-        DPrintf("In  Loop")
+        Printf("In  Loop")
         Branch(0)
     )
 ) ) )

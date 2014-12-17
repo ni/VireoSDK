@@ -8,11 +8,11 @@ c(
     e(dv(.Int32 1) c1)
 )
 clump(1 
-    Print(sInside)
-    DPrintf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+    Println(sInside)
+    Printf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
     Add(x c1 x_out)
-    DPrintf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
-    Print(x)
+    Printf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+    Println(x)
 )
 )))
 

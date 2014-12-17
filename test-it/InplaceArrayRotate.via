@@ -13,13 +13,13 @@ define (videf1 dv(.VirtualInstrument (
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayRotate(local1 local2 local3)
-    Print(local2)
-    Print(local1)
+    Println(local2)
+    Println(local1)
 
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayRotate(local1 local1 local3)
-    Print(local1)
+    Println(local1)
     //--- end of vi
   )
 )))

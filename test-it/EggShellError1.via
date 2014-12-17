@@ -3,16 +3,16 @@ c(
 e(dv(.String "Hello, world. I can fly.") variable1)
 )
 clump (1
-//Print(variable1)
+// Println(variable1)
 )
 clump (1
-//Print(variable1)
+// Println(variable1)
 )
 clump (1
-//Print(variable1)
+// Println(variable1)
 )
 clump (1
-//Print(variable1)
+// Println(variable1)
 )
 ) ) )
 
@@ -23,9 +23,9 @@ define ,HelloWorld dv(.VirtualInstrument (
         e(.Int32 x)
     )
     clump (1
-        Print(variable1)
+        Println(variable1)
         ArrayLength(HelloWorld0.Clumps x)
-        Print(x)
+        Println(x)
     )
 ) ) )
 

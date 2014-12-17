@@ -23,7 +23,7 @@ define (HelloWorld dv(.VirtualInstrument (
      e(.Int32 n)
     )
     clump (1
-        Print(variable1)
+       Println(variable1)
         TypeSubElementCount(tvar n)
         Perch(0)
         BranchIfGE(1 i n)
@@ -31,13 +31,13 @@ define (HelloWorld dv(.VirtualInstrument (
             TypeGetName(telt str1)
             TypeGetElementName(telt str2)
             TypeUsageType(telt usage)
-            DPrintf(" e( .%s %s)  //%d " str1 str2 usage)
+            Printf(" e( .%s %s)  //%d " str1 str2 usage)
             Add(i one i)
         Branch(0)
         Perch(1)
     )
     clump(1
-        Print(n)
+       Println(n)
     )
     
       //  While()

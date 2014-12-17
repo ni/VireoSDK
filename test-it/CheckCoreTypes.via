@@ -41,9 +41,9 @@ define (HelloWorld dv(.VirtualInstrument (
         TypeManagerCurrentTypeManager(tm)
         TypeManagerGetTypes(tm allTypes)
         ArrayLength(allTypes n)
-        DPrintf(" Total number of types %d" n)
+        Printf(" Total number of types %d" n)
 
-        Print(TypesToCheck)
+       Println(TypesToCheck)
         ArrayLength(TypesToCheck n)
 
         Perch(0)
@@ -61,16 +61,16 @@ define (HelloWorld dv(.VirtualInstrument (
             TypeUsageType(telt usage)
             
             // TopAQ size omitted to avoid differences between 32 and 64 bit builds.
-            DPrintf(" e(.%s)  // encoding:%2d usage:%d baseType:%s dv:%s generic:%s"
+            Printf(" e(.%s)  // encoding:%2d usage:%d baseType:%s dv:%s generic:%s"
                     str1 encoding usage baseType hasCustomDefault hasGeneric)
             ToTypeAndDataString(telt generatedString)
-            //DPrintf(" generated strgin <%s>" generatedString)
+            //Printf(" generated strgin <%s>" generatedString)
             Add(i one i)
         Branch(0)
         Perch(1)
     )
     clump(1
-        Print(n)
+       Println(n)
     )
     
       //  While()

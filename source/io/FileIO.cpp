@@ -304,14 +304,14 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 // correct API is used to pick up the parameter.
 
 //------------------------------------------------------------
-struct DPrintfParamBlock : public VarArgInstruction
+struct PrintfParamBlock : public VarArgInstruction
 {
     _ParamDef(StringRef, format);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(DPrintf, DPrintfParamBlock)
+VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
 {
     STACK_VAR(String, tempString);
     
@@ -326,7 +326,7 @@ VIREO_FUNCTION_SIGNATUREV(DPrintf, DPrintfParamBlock)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(Print, StaticType, void)
+VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
 {
     STACK_VAR(String, tempString);
     if (tempString.Value) {
@@ -346,8 +346,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
     DEFINE_VIREO_VALUE(StdOut, STDOUT_FILENO, ".FileHandle");
     DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle");
     // Primitives
-    DEFINE_VIREO_FUNCTION(Print, "p(i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(DPrintf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))");
+    // Print is like PrintLn
+    DEFINE_VIREO_FUNCTION(Println, "p(i(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(Printf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))");
     //--------
 #ifdef VIREO_FILESYSTEM
     DEFINE_VIREO_FUNCTION(FileOpen, "p(i(.String)i(.String)i(.Int32)i(.Int32)i(.Boolean)i(.FileHandle)i(.Boolean)o(.Int32))");

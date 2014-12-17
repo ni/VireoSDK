@@ -11,16 +11,16 @@ define (HelloWorld dv(.VirtualInstrument (
     // This is the code
     clump (
         // Print the greeting, symbol resolves to a local
-        Print(variable1)
+       Println(variable1)
         
         // Print the answer, symbol resolves to a global
-        Print(TheAnswer)
+       Println(TheAnswer)
         
         // Print a predefined global (Types are values)
-        Print(VirtualInstrument)
+       Println(VirtualInstrument)
         
         // Print another global defined in the file
-        Print(HelloWorld)
+       Println(HelloWorld)
     )
 ) ) )
 

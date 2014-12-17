@@ -6,7 +6,7 @@ define (HelloWorld dv(.VirtualInstrument (
     )
     clump (1
         ListDirectory(path fileList)
-        Print(fileList)
+        Println(fileList)
     )
 ) ) )
 

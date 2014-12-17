@@ -8,9 +8,9 @@ define (TicTock  dv(.VirtualInstrument  (
    ) 
  clump(
    Perch(0)
-   Print(sTic)
+   Println(sTic)
    WaitMilliseconds(oneHundred)
-   Print(sTock)
+   Println(sTock)
    WaitMicroseconds(oneHundredThousand)
   // Branch(0)    // In the unit test dir don't loop.
    )

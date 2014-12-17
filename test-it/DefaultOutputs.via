@@ -81,10 +81,10 @@ define (videf2 dv(.VirtualInstrument (
         Remainder(local1 c2 local4)
         IsNE(local4 c3 local5)
         videf1(local5 local6 local7 local8)
-        Print(local8)
-        Print(local7)
-        Print(local6)
-        Print(c1)
+        Println(local8)
+        Println(local7)
+        Println(local6)
+        Println(c1)
         BranchIfGE(1 local1 local3)
         Add(local1 c8 local1)                     // increment i
         Branch(0)                                 // loop again

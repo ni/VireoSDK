@@ -7,19 +7,19 @@ define (BranchBackAndForth dv(.VirtualInstrument (
    ) 
  clump(1 
    // A program that hops back and forth
-   Print(c1)  //Start Here
+   Println(c1)  //Start Here
    Branch(1)
    
    Perch(0)   //<<----- 0
-   Print(c3)   
+   Println(c3)   
    Branch(2)
    
    Perch(1)   //<<----- 1
-   Print(c2)
+   Println(c2)
    Branch(0)
    
    Perch(2)   //<<----- 2
-   Print(c4)   
+   Println(c4)   
    Branch(3)
    Perch(3)   //<<- 3 Perchs at the end once caused a problem
    )

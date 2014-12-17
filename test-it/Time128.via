@@ -19,17 +19,17 @@ define (HelloTime dv(.VirtualInstrument (
         ATimeGetCurrent(t1)
         //----------------------------
         ATimeFromDoubleDouble(d1000 d50 t0)
-        DPrintf(" ATimeFromDoubleDouble %s" t0)
+        Printf(" ATimeFromDoubleDouble %s" t0)
 
         ATimeGetSecondsDouble(t0 d0)
-        DPrintf(" ATimeGetSecondsDouble %s" t0)
+        Printf(" ATimeGetSecondsDouble %s" t0)
         
         ATimeGetSecondsInt64(t0 i0)
-        DPrintf(" ATimeGetSecondsInt64 %s" t0)
+        Printf(" ATimeGetSecondsInt64 %s" t0)
 
         //----------------------------
         ATimeFromInt64UInt64(i0 ui50 t0)
-        DPrintf(" ATimeFromInt64UInt64 %s" t0)
+        Printf(" ATimeFromInt64UInt64 %s" t0)
 
     )
 ) ) )

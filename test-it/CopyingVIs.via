@@ -4,7 +4,7 @@ define (SubVI0 dv(.ReentrantVirtualInstrument (
     e(dv(.String 'Hello, World.') sInside)
   )
   clump(1 
-    Print(sInside)
+    Println(sInside)
     WaitMilliseconds(AFewMillisecods)
    )
  )))

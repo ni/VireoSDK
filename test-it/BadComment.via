@@ -4,7 +4,7 @@ define (HelloWorld dv(.VirtualInstrument (
     )
     clump (1
          / /  Bad Comment
-        Print(variable1)
+        Println(variable1)
     )
 ) ) )
 

@@ -30,16 +30,16 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local4 local3 )                      // LSR copy into inner wire
         Add(local3 c4 local5)
         ArraySubset(local6 local1 c2 *)
-        DPrintf("Remaining part %s => %s" local1 local6)
+        Printf("Remaining part %s => %s" local1 local6)
         ArrayLength(local6 local7 )
         IsGT(local7 c1 local8)
         ArraySubset(local9 local1 * c4)
-        DPrintf("first  part %s => %s" local1 local9)
+        Printf("first  part %s => %s" local1 local9)
         Copy(local6 local2 )
-        DPrintf("Remaining part copy %s %s" local6 local2)
+        Printf("Remaining part copy %s %s" local6 local2)
 
         Copy(local5 local4 )
-        DPrintf("----")
+        Printf("----")
 
         BranchIfFalse(1 local8)                   // Loop condition terminal
         Branch(0)                                 // loop again

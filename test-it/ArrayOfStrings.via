@@ -29,10 +29,10 @@ define (videf1  dv(.VirtualInstrument (
         ArrayConcatenate( w13 c8 c10 c7 c6 )
         ArrayReplaceSubset(w14 w13 c1 w11 )
         StringConcatenate(w15 w14 )
-        Print(w15 )
+        Println(w15 )
         ArrayReplaceSubset(w16 w13 c9 w12 )
         StringConcatenate(w17 w16 )
-        Print(w17 )
+        Println(w17 )
         // --- end of vi
     )
 )))

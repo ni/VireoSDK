@@ -26,7 +26,7 @@ define (videf1 dv(.VirtualInstrument (
         StringConcatenate(local7 local6 c1 local6 c1)
         Copy(local7 local3 )
         IsEQ(local7 c0 local4)
-        Print(local7)
+        Println(local7)
 //--- end of vi
     )
 )))

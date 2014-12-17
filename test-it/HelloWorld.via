@@ -3,7 +3,7 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Hello, world. I can fly.") variable1)
     )
     clump (
-        Print(variable1)
+       Println(variable1)
     )
 ) ) )
 

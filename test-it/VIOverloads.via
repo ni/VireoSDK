@@ -10,7 +10,7 @@ define (Magnitude dv(.VirtualInstrument (
         e(.Single   t2)
     )
     clump (
-          DPrintf(" In Single Version %s %s" x y)
+          Printf(" In Single Version %s %s" x y)
           Mul(x x t1)
           Mul(y y t2)
           Add(t2 t1 t2)
@@ -29,7 +29,7 @@ define (Magnitude dv(.VirtualInstrument (
         e(.Double   t2)
     )
     clump (
-          DPrintf(" In Double Version %s %s" x y)
+          Printf(" In Double Version %s %s" x y)
           Mul(x x t1)
           Mul(y y t2)
           Add(t2 t1 t2)
@@ -49,9 +49,9 @@ define (Test dv(.VirtualInstrument (
     )
     clump(
         Magnitude(xd yd zd)
-        DPrintf(" zd %s" zd)
+        Printf(" zd %s" zd)
         Magnitude(xs ys zs)
-        DPrintf(" zs %s" zs)
+        Printf(" zs %s" zs)
     )
 )))
 

@@ -11,26 +11,26 @@ define (HelloWorld dv(.VirtualInstrument (
         al(.String  alias2)
     )
     clump (1
-        DPrintf("v1 <%s>" v1)
-        DPrintf("v2 <%s>" v2)
-        DPrintf("v3 <%s>" v3)
-        DPrintf("v4 <%s>" v4)
+        Printf("v1 <%s>" v1)
+        Printf("v2 <%s>" v2)
+        Printf("v3 <%s>" v3)
+        Printf("v4 <%s>" v4)
 
         CopyTop(v1 alias1)        
-        DPrintf("alias of v1 <%s>" alias1)
+        Printf("alias of v1 <%s>" alias1)
         CopyTop(v2 alias1)
-        DPrintf("alias of v2 <%s>" alias1)
+        Printf("alias of v2 <%s>" alias1)
         CopyTop(v4 alias1)
-        DPrintf("alias of v4 <%s>" alias1)
+        Printf("alias of v4 <%s>" alias1)
         Copy(v2 v4)
-        DPrintf("changed v4 <%s> <%s>" v4 alias1)
+        Printf("changed v4 <%s> <%s>" v4 alias1)
         Copy(v3 v4)
-        DPrintf("changed v4 <%s> <%s>" v4 alias1)
+        Printf("changed v4 <%s> <%s>" v4 alias1)
         Copy(v1 alias1)
-        DPrintf("changed alias <%s> <%s>" v4 alias1)
+        Printf("changed alias <%s> <%s>" v4 alias1)
 
         Init(alias1)
-        DPrintf("Init alias <%s> <%s>" v4 alias1)
+        Printf("Init alias <%s> <%s>" v4 alias1)
 
         // the top will be zeroed out at cleanup but it can be done explicitly as well
         CopyTop(alias1 alias2)
@@ -39,10 +39,10 @@ define (HelloWorld dv(.VirtualInstrument (
         // If the variabel is copied or used in any other regular 
         // way to in the zero state it will crash
         // Copy(v2 alias1)
-        // DPrintf("ZeroOut alias <%s> <%s>" v4 alias1)
-        DPrintf("Other alias is still OK <%s> " alias2)            
+        // Printf("ZeroOut alias <%s> <%s>" v4 alias1)
+        Printf("Other alias is still OK <%s> " alias2)            
         Copy(v3 v4)
-        DPrintf("Other alias is still OK <%s> " alias2)            
+        Printf("Other alias is still OK <%s> " alias2)            
 
         // alias2 will be cleaned up by runtime. 
     )

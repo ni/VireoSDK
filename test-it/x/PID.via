@@ -91,8 +91,8 @@ define (CalcPid v(.VirtualInstrument (
     )
     1 
     clump(1 
-        DPrintf("pv <%s>  sp<%s>" fp11 fp12)
-        Print(fp10)
+        Printf("pv <%s>  sp<%s>" fp11 fp12)
+       Println(fp10)
         Sub(fp12 fp11 w20)
         Copy(fp10.n7 w21 )                        // unbundle
         Copy(fp10.n8 w22 )                        // unbundle
@@ -228,7 +228,7 @@ define (CalcPid v(.VirtualInstrument (
 //--- end while loop
         Perch(13)
         Copy(w46 fp1 )          // FP Term
-        DPrintf("output <%s>" fp1)
+        Printf("output <%s>" fp1)
 //--- end of vi
     )
 )))

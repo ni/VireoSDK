@@ -95,19 +95,19 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1
         videf2(local1 c0)
-        Print(local1)
+        Println(local1)
         videf2(local1 c1)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
         videf2(local1 c2)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
         videf3(local1 c3)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
         videf3(local1 c4)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
         videf3(local1 c5)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
         videf3(local1 c6)
-        Print(local1 )                      // FP Term
+        Println(local1 )                      // FP Term
 //--- end of vi
     )
 )))

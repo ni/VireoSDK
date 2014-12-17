@@ -24,12 +24,12 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1 
         FlattenToString(local1 prependArraySize local2)
-        Print(local2)
-        Print(local3)
+       Println(local2)
+       Println(local3)
         UnflattenFromString(local2 prependArraySize defaultVal local4 local3 error)
-        Print(local3)
-        Print(local4)
-        Print(error)
+       Println(local3)
+       Println(local4)
+       Println(error)
 //--- end of vi
     )
 )))

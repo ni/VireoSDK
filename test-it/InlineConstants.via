@@ -22,34 +22,34 @@ define (HelloWorld dv(.VirtualInstrument (
 */             
 
         StringToUpper(* str)
-        DPrintf("passing default value <%s>" str)
+        Printf("passing default value <%s>" str)
         StringToUpper("Hello, World" str)
-        DPrintf("passing inline double quoted constant value <%s>" str)
+        Printf("passing inline double quoted constant value <%s>" str)
         StringToUpper('Hello, World' str)
-        DPrintf("passing inline single quoted constant value <%s>" str)
+        Printf("passing inline single quoted constant value <%s>" str)
         StringToUpper(@"Hello, World" str)
-        DPrintf("passing inline @double quoted constant value <%s>" str)
+        Printf("passing inline @double quoted constant value <%s>" str)
         StringToUpper(@'Hello, World' str)
-        DPrintf("passing inline @single quoted constant value <%s>" str)
+        Printf("passing inline @single quoted constant value <%s>" str)
 
         StringToLower("Hello, World" str)
-        DPrintf("passing inline constant value <%s>" str)
+        Printf("passing inline constant value <%s>" str)
         Mul(6 7 i)
-        DPrintf("passing inline constant value <%s>" i)
+        Printf("passing inline constant value <%s>" i)
         Add(3.2 1.85 x)
-        DPrintf("passing inline constant value <%s>" x)
+        Printf("passing inline constant value <%s>" x)
         
         BooleanConvertInt16(true i16)
-        DPrintf("passing inline constant value <%s>" i16)
+        Printf("passing inline constant value <%s>" i16)
         BooleanConvertInt16(false i16)
-        DPrintf("passing inline constant value <%s>" i16)
+        Printf("passing inline constant value <%s>" i16)
 
         
         // MulInt32(6 7 9) not allowed.
 
         // This does not work (yet)
         // Mul(8 9 x)
-        // DPrintf("passing inline constant value to polymorphic function <%s>" x)
+        // Printf("passing inline constant value to polymorphic function <%s>" x)
     )
 ) ) )
 

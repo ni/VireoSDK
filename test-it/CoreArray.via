@@ -50,106 +50,106 @@ define (Test dv(.VirtualInstrument (
   clump(1 
     // Test initial sizes
     //------
-    Print(c3)
+    Println(c3)
     ArrayLength(arrayOfDouble1d_1 vSize)
     IsEQ(vSize c0 vBool)
-    Print(vBool)
+    Println(vBool)
     ArrayRank(arrayOfDouble1d_1 vSize)
     IsEQ(vSize c1 vBool)
-    Print(vBool)
+    Println(vBool)
     //------
     ArrayLength(arrayOfDouble2d vSize)
     IsEQ(vSize c0 vBool)
-    Print(vSize)
-    Print(vBool)
+    Println(vSize)
+    Println(vBool)
     //------
     ArrayLength(arrayWithDefaultValues3 vSize)
     IsEQ(vSize c3 vBool)
-    DPrintf("3 default elt array has size %d" vSize) 
-    Print(vBool)
+    Printf("3 default elt array has size %d" vSize) 
+    Println(vBool)
     //------
     ArrayLength(arrayWithDefaultValues2 vSize) 
     IsEQ(vSize c2 vBool) 
-    DPrintf("2 default elt array has size %d" vSize) 
-    Print(vBool) 
+    Printf("2 default elt array has size %d" vSize) 
+    Println(vBool) 
     //------
     ArrayLength(arrayWithDefaultValues1 vSize) 
     IsEQ(vSize c1 vBool) 
-    DPrintf("1 default elt array has size %d" vSize) 
-    Print(vBool) 
+    Printf("1 default elt array has size %d" vSize) 
+    Println(vBool) 
     //------
     ArrayLength(arrayWithDefaultValues0 vSize) 
     IsEQ(vSize c0 vBool) 
-    DPrintf("0 default elt array has size %d" vSize) 
-    Print(vBool) 
+    Printf("0 default elt array has size %d" vSize) 
+    Println(vBool) 
 
     //-------------------------------------
     // Various ranks fixed arrays
-        Print(c3) 
+       Println(c3) 
     ArrayRank(arrayOfDoubleFixed1d vSize) 
     IsEQ(vSize c1 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDoubleFixed2d vSize) 
     IsEQ(vSize c2 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDoubleFixed3d vSize) 
     IsEQ(vSize c3 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
 
     //-------------------------------------
     ArrayLength(arrayOfDoubleFixed1d vSize) 
     IsEQ(vSize c5 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
 
     //-------------------------------------
     // Various ranks
     //------
     ArrayRank(arrayOfDouble2d vSize) 
     IsEQ(vSize c2 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble2d vSize) 
     IsEQ(vSize c2 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble3d vSize) 
     IsEQ(vSize c3 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble4d vSize) 
     IsEQ(vSize c4 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble5d vSize) 
     IsEQ(vSize c5 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble6d vSize) 
     IsEQ(vSize c6 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble7d vSize) 
     IsEQ(vSize c7 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
     ArrayRank(arrayOfDouble8d vSize) 
     IsEQ(vSize c8 vBool) 
-    Print(vSize) 
-    Print(vBool) 
+    Println(vSize) 
+    Println(vBool) 
     //------
    )
  ) ) )

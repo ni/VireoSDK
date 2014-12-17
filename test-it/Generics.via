@@ -16,7 +16,7 @@ define (arrayOfPoints dv(.VirtualInstrument (
 		Mul(Array arrayOfDoubles Array)
 		Add(Array samplePoint Array)
 		Add(Array samplePoint.n1 Array)
-        Print(Array)
+       Println(Array)
     )
 )))
 enqueue (arrayOfPoints)
@@ -29,7 +29,7 @@ c(
 ) 
 clump(1 
     Add( array1 scalar1 array2)
-    Print(array2)
+    Println(array2)
     )
 )))
 enqueue(ArrayMath)
@@ -59,22 +59,22 @@ define (ClusterMath dv(.VirtualInstrument (
   ) 
   clump(1 
     Add(x y.n4 z)
-    Print(z)
+    Println(z)
 	
     Add(x.n1 y z)
-    Print(z)
+    Println(z)
     
     Add(x y z)
-    Print(z)
+    Println(z)
 
     Mul(x y z)
-    Print(z)
+    Println(z)
 	
     Mul(x.n4 y z)
-    Print(z)
+    Println(z)
 	
     Mul(x y.n2 z)
-    Print(z)
+    Println(z)
    )
  ) ) )
 enqueue (ClusterMath)

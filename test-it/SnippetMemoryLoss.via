@@ -20,19 +20,19 @@ define (HelloWorld dv(.VirtualInstrument (
     clump (1
         // Generic Cluster Ops
         Add(c1 c2 c3)
-        Print(c3)
+        Println(c3)
 
         // Generic Vector Ops
         Add(v1 v2 v3)
-        Print(v3)
+        Println(v3)
         IsEQ(v1 v3 boolVar)
-        Print(boolVar)
+        Println(boolVar)
         IsEQ(v3 v4 boolVar)
-        Print(boolVar)
+        Println(boolVar)
     
         // Vector of Clusters
         Add(vc1 vc2 vc3)
-        Print(vc3)
+        Println(vc3)
 
     )
 ) ) )

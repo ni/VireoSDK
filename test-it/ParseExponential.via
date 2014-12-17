@@ -29,35 +29,35 @@ e(dv(a(.Double *) (1.1 9.01926e-314 ) ) local1) // x+1
 e(dv(.String "----------") line)
 )
 clump(1
-Print(c0)
-Print(c1)
-Print(c2)
-Print(c3)
+ Println(c0)
+ Println(c1)
+ Println(c2)
+ Println(c3)
 
-Print(line)
+ Println(line)
 
-Print(c4)
-Print(c5)
-Print(c6)
-Print(c7)
+ Println(c4)
+ Println(c5)
+ Println(c6)
+ Println(c7)
 
-Print(line)
+ Println(line)
 
-Print(c8)
-Print(c9)
-Print(c10)
-Print(c11)
+ Println(c8)
+ Println(c9)
+ Println(c10)
+ Println(c11)
 
-Print(line)
+ Println(line)
 
-Print(c12)
-Print(c13)
-Print(c14)
-Print(c15)
+ Println(c12)
+ Println(c13)
+ Println(c14)
+ Println(c15)
 
-Print(line)
+ Println(line)
 
-Print(local1)
+ Println(local1)
 //--- end of vi
 )
 )))

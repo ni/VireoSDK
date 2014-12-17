@@ -8,23 +8,23 @@ define (MultiClump  dv(.VirtualInstrument  (
   )
   	clump(           // Clump 0
   	    FireCount(1)
-    	Print(s0)
+    	Println(s0)
         Trigger(1)
         Trigger(2)
         )
   	clump(           // Clump 1
   	  	FireCount(1)
-    	Print(s1)
+    	Println(s1)
         Trigger(3)
         )
   	clump(          // Clump 2
   	  	FireCount(1)
-    	Print(s2)
+    	Println(s2)
         Trigger(3)
         )
   	clump(         // Clump 3
   	  	FireCount(2)
-    	Print(s3)
+    	Println(s3)
         )
   )))
 enqueue (MultiClump)

@@ -10,11 +10,11 @@ define (ShowStats v(.VirtualInstrument (
     clump (1
         TypeManagerCurrentTypeManager(vTypeManager)
         TypeManagerAllocationStatistics(vTypeManager stats)
-        Print(stats)
+        Println(stats)
         
         TypeManagerRootTypeManager(vTypeManager vTypeManager)
         TypeManagerAllocationStatistics(vTypeManager stats)
-        Print(stats)
+        Println(stats)
     )
 ) ) )
 enqueue (ShowStats)

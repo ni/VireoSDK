@@ -3,7 +3,7 @@ define (SubVIFromMyPast dv(.VirtualInstrument (
     e(dv(.String 'Yesterday I made scrambled eggs and they seemed far away') str)
   )
   clump(1
-    Print(str)
+    Println(str)
    )
  )))
 
@@ -13,7 +13,7 @@ define (CarpeDiem dv(.VirtualInstrument (
     )
     clump(1
         SubVIFromMyPast()
-        Print(str)
+       Println(str)
         SubVIFromMyFuture()
     )
 )))
@@ -23,7 +23,7 @@ define (SubVIFromMyFuture dv(.VirtualInstrument (
     e(dv(.String 'The sun\'ll come out tomorrow') str)
   )
   clump(1
-    Print(str)
+    Println(str)
    )
  )))
 

@@ -21,7 +21,7 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1 
         Copy(c0.n2.n2.n1 local1 )                 // unbundle
-        Print(local1)
+       Println(local1)
 //--- end of vi
     )
 )))

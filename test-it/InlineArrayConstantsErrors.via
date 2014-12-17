@@ -14,10 +14,10 @@ define (SubVI1 dv(.VirtualInstrument (
     )
     c()
     clump (1
-        DPrintf("-v1----" ix)
-        DPrintf("Int32 <%s>" ix)
-        DPrintf("Double <%s>" dx)
-        DPrintf("Array <%s>" ax)
+        Printf("-v1----" ix)
+        Printf("Int32 <%s>" ix)
+        Printf("Double <%s>" dx)
+        Printf("Array <%s>" ax)
     )
 ) ) )
 
@@ -29,10 +29,10 @@ define (SubVI2 dv(.VirtualInstrument (
     )
     c()
     clump (1
-        DPrintf("-v2---" ix)
-        DPrintf("Int32 <%s>" ix)
- //       DPrintf("Double <%s>" dx)
-       DPrintf("Array <%s>" ax)
+        Printf("-v2---" ix)
+        Printf("Int32 <%s>" ix)
+ //       Printf("Double <%s>" dx)
+       Printf("Array <%s>" ax)
     )
 ) ) )
 
@@ -44,7 +44,7 @@ define (SubVI3 dv(.VirtualInstrument (
     clump (1
         // its an output, but since the caller passes the storage
         // this will print the value that are currently there.
-        DPrintf("Array <%s>" ax)
+        Printf("Array <%s>" ax)
     )
 ) ) )
 
@@ -56,10 +56,10 @@ define (SubVI4 dv(.VirtualInstrument (
     )
     c()
     clump (1
-        DPrintf("-v2---" ix)
-        DPrintf("Int32 <%s>" ix)
- //       DPrintf("Double <%s>" dx)
-       DPrintf("Array <%s>" ax)
+        Printf("-v2---" ix)
+        Printf("Int32 <%s>" ix)
+ //       Printf("Double <%s>" dx)
+       Printf("Array <%s>" ax)
     )
 ) ) )
 

@@ -76,7 +76,7 @@ define (MandelbrotMain dv(.VirtualInstrument (
         GetMicrosecondTickCount(tDone)
         Sub(tDone tStart tDone)
         // coment out so unit tests will not reject output
-        // DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
+        // Printf("Time to calculate Mandelbrot: %s microseconds" tDone)
     )
 ) ) )
 enqueue (MandelbrotMain)

@@ -8,7 +8,7 @@ define (Test dv(.VirtualInstrument (
     e(.Int32OneTwoThree variable0) 
   ) 
   clump(1 
-    Print(variable0) 
+    Println(variable0) 
    )
  ) ) )
 enqueue (Test)

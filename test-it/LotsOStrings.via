@@ -33,9 +33,9 @@ define (videf1 dv(.VirtualInstrument (
         Branch(0)                                 // loop again
         Perch(1)
         Copy(local5 local7 )     // FP Term
-        Print(local4)
-        Print(local7)
-        Print(local5)
+       Println(local4)
+       Println(local7)
+       Println(local5)
 //--- end of vi
     )
 )))
@@ -68,9 +68,9 @@ define (videf2 dv(.VirtualInstrument (
         Branch(0)                                 // loop again
         Perch(1)
         Copy(local5 local7 )     // FP Term
-        Print(local4)
-        Print(local7)
-        Print(local5)
+       Println(local4)
+       Println(local7)
+       Println(local5)
 //--- end of vi
     )
 )))
@@ -103,9 +103,9 @@ define (videf3 dv(.VirtualInstrument (
         Branch(0)                                 // loop again
         Perch(1)
         Copy(local5 local7 )     // FP Term
-        Print(local4)
-        Print(local7)
-        Print(local5)
+       Println(local4)
+       Println(local7)
+       Println(local5)
 //--- end of vi
     )
 )))

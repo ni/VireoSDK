@@ -16,7 +16,7 @@ define/**/(/**/Test/**/ /**/dv/**/(/**/.VirtualInstrument/**/ /**/ (
 
 
 */
-  /**/  Print/**/(/**/result/**/)/**/ /**/
+  /**/  Println/**/(/**/result/**/)/**/ /**/
   /**/ )
 /**/ ) /**/) /**/)
 /**/enqueue/**/ (/**/Test/**/)/**/

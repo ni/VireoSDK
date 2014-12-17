@@ -32,7 +32,7 @@ define (HelloWorld dv(.VirtualInstrument (
 
     )
     clump (1
-        Print(HelloWorld.DataSpace)
+        Println(HelloWorld.DataSpace)
     )
 ) ) )
 

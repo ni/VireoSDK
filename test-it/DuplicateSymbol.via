@@ -3,7 +3,7 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Hello, world. I can fly.") variable1)
     )
     clump (1
-        Print(variable1)
+        Println(variable1)
     )
 ) ) )
 define (HelloWorld dv(.VirtualInstrument (
@@ -11,7 +11,7 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Hello, world. I can swim.") variable1)
     )
     clump (1
-        Print(variable1)
+        Println(variable1)
     )
 ) ) )
 

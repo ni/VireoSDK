@@ -5,9 +5,9 @@ define (SubVI0 dv(.ReentrantVirtualInstrument (
     e(dv(.String 'Hello, Moon.') sAfter)
   )
   clump(1
-    Print(sBefore)
+    Println(sBefore)
     WaitMilliseconds(AFewMillisecods)
-    Print(sAfter)
+    Println(sAfter)
    )
  )))
 

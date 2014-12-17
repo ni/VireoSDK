@@ -19,7 +19,7 @@ define (videf1 dv(.VirtualInstrument (
   clump(1
     Convert(c0 local1)
     Copy(local1 local2 ) // FP Term
-    Print(local2)
+    Println(local2)
     //--- end of vi
   )
 )))

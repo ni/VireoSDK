@@ -86,7 +86,7 @@ define (MandelbrotMain v(.VirtualInstrument (
         StreamWrite(file buffer err)
 
         SubInt64(tDone tStart tDone)
-        DPrintf("Time to calculate Mandelbrot: %s microseconds" tDone)
+        Printf("Time to calculate Mandelbrot: %s microseconds" tDone)
     )
 ) ) )
 

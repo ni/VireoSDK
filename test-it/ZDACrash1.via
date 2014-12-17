@@ -7,7 +7,7 @@ define (videf1 dv(.VirtualInstrument (
     c(
     )
     clump(1
-        Print(local1)
+        Println(local1)
     )
 )))
 //---------------------------------------------------
@@ -18,9 +18,9 @@ define (videf2 dv(.VirtualInstrument (
         e(a(.Int32 *) local8)   // Array
     )
     clump(1
-        Print(local7)
+        Println(local7)
         videf1(local7)
-        Print(local7)
+        Println(local7)
         videf1(*)
         videf1(local8)
     )

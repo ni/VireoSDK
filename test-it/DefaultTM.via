@@ -14,7 +14,7 @@ define (DefaultTM dv(.VirtualInstrument (
         // The default value for a type manager is the current ExecutionContexts TM
         TypeManagerGetTypes(* allTypes)
         ArrayLength(allTypes n)
-        DPrintf(" Total number of types %d" n)
+        Printf(" Total number of types %d" n)
         // Answere should be 1 (and its the VI that is running)
         
         
@@ -22,7 +22,7 @@ define (DefaultTM dv(.VirtualInstrument (
         TypeManagerDefineType(* myVeryOwnStringTypeName stringType)
         TypeManagerGetTypes(* allTypes)
         ArrayLength(allTypes n)
-        DPrintf(" Total number of types %d" n)
+        Printf(" Total number of types %d" n)
        
     )
 ) ) )

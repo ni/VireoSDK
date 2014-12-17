@@ -18,13 +18,13 @@ define (Parallel v(.VirtualInstrument (
     ) 
     clump(1        // Clump 1
         Perch(0)        // Labels are scoped to a clump this is Label 0
-        Print(sHead)
+        Println(sHead)
         WaitMilliseconds(oneThousand)
   //      Branch(0)       // Branch to Label 0
     ) 
     clump(1        // Clump 2
         Perch(0)
-        Print(sTummy)
+        Println(sTummy)
         WaitMilliseconds(oneThousand)
   //      Branch(0)
     )

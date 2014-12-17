@@ -34,7 +34,7 @@ define (videf1 dv(.VirtualInstrument (
 
     Perch(1)
     Copy(local5 local7 ) // FP Term
-    Print(local7)
+    Println(local7)
     //--- end of vi
   )
 )))
@@ -72,7 +72,7 @@ define (videf2 dv(.VirtualInstrument (
 
     Perch(1)
     Copy(local5 local7 ) // FP Term
-    Print(local7)
+    Println(local7)
     //--- end of vi
   )
 )))

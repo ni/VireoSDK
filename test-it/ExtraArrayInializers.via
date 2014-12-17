@@ -6,9 +6,9 @@ define (ArrayDemo dv(.VirtualInstrument (
 
   )
     clump(1
-        Print(variableArray1dwithDefaults)
-        Print(fixedArray1dwithDefaults)
-        Print(boundedArray1dwithDefaults)
+        Println(variableArray1dwithDefaults)
+        Println(fixedArray1dwithDefaults)
+        Println(boundedArray1dwithDefaults)
    )
  ) ) )
 enqueue (ArrayDemo)

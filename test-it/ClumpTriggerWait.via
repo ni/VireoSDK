@@ -10,30 +10,30 @@ define (MultiClump dv(.VirtualInstrument (
   ) 
   	clump(               // Clump 0
   	    FireCount(1)
-    	Print(s0Start)
+    	Println(s0Start)
         Trigger(1)       // Fork
         Trigger(2)
         Wait(1)          // Join
-        Print(s0_1Done)
+       Println(s0_1Done)
         Wait(2)
-        Print(s0_2Done)
+       Println(s0_2Done)
         )
   	clump(               // Clump 1
   	    FireCount(1)
-    	Print(s1)
+    	Println(s1)
     	WaitMilliseconds(oneHundred)
     	WaitMilliseconds(oneHundred)
         Trigger(3)
         ) 
   	clump(              // Clump 2
   	    FireCount(1)    
-    	Print(s2)
+    	Println(s2)
     	WaitMilliseconds(oneHundred)
         Trigger(3)
         ) 
   	clump(              // Clump 3
   	    FireCount(2)
-    	Print(s3)
+    	Println(s3)
         )        
   )))
 enqueue (MultiClump)

@@ -7,13 +7,13 @@ define (FailAssert dv(.VirtualInstrument (
  e(dv(.Int32 1) c1)
  ) // defaults to false
  clump(1
-  Print(cSeperator)
-  Print (c0)
-  Print (cSeperator)
-  Print (c1)
-  Print (cSeperator)
-  Print (cn1)
-  Print (cSeperator)
+  Println(cSeperator)
+  Println(c0)
+  Println(cSeperator)
+  Println(c1)
+  Println(cSeperator)
+  Println(cn1)
+  Println(cSeperator)
    )
 )))
 

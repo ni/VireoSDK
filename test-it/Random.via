@@ -13,10 +13,10 @@ define (videf1 dv(.VirtualInstrument (
     clump(1
         Random(local1)
         IsGE(local1 c0 local2)
-        Print(local2)
+        Println(local2)
         Random(*)
         IsLT(local1 c1 local2)
-        Print(local2)
+        Println(local2)
 //--- end of vi
     )
 )))

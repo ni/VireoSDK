@@ -2777,8 +2777,8 @@ define (videf30 dv(.VirtualInstrument (
         Sub(local19 local1 local1)
         Copy(local1 local20 )                     // FP Term
         Copy(local18 local21 )                    // FP Term
-        DPrintf("Pi calculated to %s digits is %s" c0 local18)
-        DPrintf("// It took %s milliseconds" local1)
+        Printf("Pi calculated to %s digits is %s" c0 local18)
+        Printf("// It took %s milliseconds" local1)
 
 //--- end of vi
     )

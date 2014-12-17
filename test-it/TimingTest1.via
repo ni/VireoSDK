@@ -35,9 +35,9 @@ define (videf1 dv(.VirtualInstrument (
         Sub(local5 c5 local6)
         Copy(c6 local4 )                          // initialize i
         Perch(0)
-        Print(c1)
+        Println(c1)
         WaitMilliseconds(c4)
-        Print(c3)
+        Println(c3)
         BranchIfGE(1 local4 local6)
         Add(local4 c5 local4)                     // increment i
         Branch(0)                                 // loop again
@@ -51,9 +51,9 @@ define (videf1 dv(.VirtualInstrument (
         Sub(local2 c5 local3)
         Copy(c6 local1 )                          // initialize i
         Perch(0)
-        Print(c1)
+        Println(c1)
         WaitMilliseconds(c2)
-        Print(c3)
+        Println(c3)
         BranchIfGE(1 local1 local3)
         Add(local1 c5 local1)                     // increment i
         Branch(0)                                 // loop again

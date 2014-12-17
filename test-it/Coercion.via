@@ -372,7 +372,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local10 local155.n10 )               // bundle
         Copy(local4 local155.n11 )                // bundle
         Copy(c0 local155.n12 )                    // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local24 local155.n0 )                // bundle
         Copy(local13 local155.n1 )                // bundle
@@ -387,7 +387,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local22 local155.n10 )               // bundle
         Copy(c1 local155.n11 )                    // bundle
         Copy(local16 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local83 local155.n0 )                // bundle
         Copy(local84 local155.n1 )                // bundle
@@ -402,7 +402,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local94 local155.n10 )               // bundle
         Copy(local88 local155.n11 )               // bundle
         Copy(local87 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local95 local155.n0 )                // bundle
         Copy(local96 local155.n1 )                // bundle
@@ -417,7 +417,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local105 local155.n10 )              // bundle
         Copy(local100 local155.n11 )              // bundle
         Copy(local99 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local107 local155.n0 )               // bundle
         Copy(local108 local155.n1 )               // bundle
@@ -432,7 +432,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local117 local155.n10 )              // bundle
         Copy(local111 local155.n11 )              // bundle
         Copy(local110 local155.n12 )              // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local119 local155.n0 )               // bundle
         Copy(local120 local155.n1 )               // bundle
@@ -447,7 +447,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local129 local155.n10 )              // bundle
         Copy(local123 local155.n11 )              // bundle
         Copy(local122 local155.n12 )              // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local131 local155.n0 )               // bundle
         Copy(c11 local155.n1 )                    // bundle
@@ -462,7 +462,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local141 local155.n10 )              // bundle
         Copy(local135 local155.n11 )              // bundle
         Copy(local134 local155.n12 )              // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(c12 local155.n0 )                    // bundle
         Copy(local144 local155.n1 )               // bundle
@@ -477,7 +477,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local154 local155.n10 )              // bundle
         Copy(local148 local155.n11 )              // bundle
         Copy(local147 local155.n12 )              // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local71 local155.n0 )                // bundle
         Copy(local72 local155.n1 )                // bundle
@@ -492,7 +492,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local81 local155.n10 )               // bundle
         Copy(local76 local155.n11 )               // bundle
         Copy(local75 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local36 local155.n0 )                // bundle
         Copy(local25 local155.n1 )                // bundle
@@ -507,7 +507,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(c2 local155.n10 )                    // bundle
         Copy(local29 local155.n11 )               // bundle
         Copy(local28 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local48 local155.n0 )                // bundle
         Copy(local37 local155.n1 )                // bundle
@@ -522,7 +522,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local46 local155.n10 )               // bundle
         Copy(local41 local155.n11 )               // bundle
         Copy(local40 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local59 local155.n0 )                // bundle
         Copy(local49 local155.n1 )                // bundle
@@ -537,7 +537,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local57 local155.n10 )               // bundle
         Copy(local53 local155.n11 )               // bundle
         Copy(local52 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
         Copy(c13 local155 )
         Copy(local70 local155.n0 )                // bundle
         Copy(local60 local155.n1 )                // bundle
@@ -552,7 +552,7 @@ define (videf1 dv(.VirtualInstrument (
         Copy(local68 local155.n10 )               // bundle
         Copy(local64 local155.n11 )               // bundle
         Copy(local63 local155.n12 )               // bundle
-        Print(local155)
+        Println(local155)
 //--- end of vi
     )
 )))

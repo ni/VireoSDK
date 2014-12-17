@@ -53,7 +53,7 @@ define (videf1 dv(.VirtualInstrument (
         ArrayIndexElt(w22 c17 w30)
         ArrayIndexElt(w22 c18 w31)
         ArrayConcatenate(w32 w23 w24 w25 w26 w27 w28 w29 w30 w31 )
-        Print(w32 )
+       Println(w32 )
         // --- end of vi
     )
 )))

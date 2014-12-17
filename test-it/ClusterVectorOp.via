@@ -39,11 +39,11 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1
         Sign(c0 local0)
-        Print(local0)
+        Println(local0)
         Sign(c1 local1)
-        Print(local1)
+        Println(local1)
         Sign(c2 local2)
-        Print(local2)
+        Println(local2)
     )
 )))
 

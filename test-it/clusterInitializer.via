@@ -16,8 +16,8 @@ define (videf1 dv(.VirtualInstrument (
     clump(1 
 		Mul(i i cmplx)
 		Mul(cmplx cmplx cmplx)
-        Print(c5)
-		Print(cmplx)
+       Println(c5)
+		Println(cmplx)
 //--- end of vi
     )
 )))

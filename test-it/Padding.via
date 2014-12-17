@@ -31,47 +31,47 @@ define (HelloWorld dv(.VirtualInstrument (
     clump (1
     TypeOf(v0 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b)
+    Printf("type %s has padding %s" t b)
 
     TypeOf(v1 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v2 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v3 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v4 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v5 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v6 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v7 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v8 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
     
     TypeOf(v9 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     TypeOf(v10 t)
     TypeHasPadding(t b)
-    DPrintf("type %s has padding %s" t b) 
+    Printf("type %s has padding %s" t b) 
 
     )
 ) ) )

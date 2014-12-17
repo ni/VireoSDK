@@ -20,7 +20,7 @@ define (videf2 dv(.VirtualInstrument (
     clump(1 
         ArrayConcatenate(local3 local1 local2)
         Copy(local3 local4 )                      // FP Term
-        DPrintf("In SubVI with optional parameters '%s' ## '%s' => '%s'" local1 local2 local4)
+        Printf("In SubVI with optional parameters '%s' ## '%s' => '%s'" local1 local2 local4)
 //--- end of vi
     )
 )))
@@ -33,11 +33,11 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1 
         videf2(local1 c0 c1)  //call the subvi and overwrite the inputs with constant data
-        Print(local1)        //6            
+        Println(local1)        //6            
         videf2(local1 * c1) //call the subvi again and pass a * as input, subvi call should re-init the input to its default.
-        Print(local1) //43
+        Println(local1) //43
         videf2(local1 c1 *) //call the subvi again and pass a * as input, subvi call should re-init the input to its default.
-        Print(local1) //1
+        Println(local1) //1
 
         videf2(* * *) //call the subvi again and pass a * as output, which should be interpreted as a discarded output.
 //--- end of vi

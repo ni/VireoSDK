@@ -58,61 +58,61 @@ define (TestAllocateValues dv(.VirtualInstrument (
         e(.Type vType)
     )
     clump (1
-        DPrintf("--------------")
+        Printf("--------------")
 
         // Basic tests for static variables
-        DPrintf("Static definitions before copy  <%s> <%s> " Int32_4 Int32_5)
+        Printf("Static definitions before copy  <%s> <%s> " Int32_4 Int32_5)
         Copy(Int32_5 Int32_4)
-        DPrintf("Static definitions after copy  <%s> <%s> " Int32_4 Int32_5)
+        Printf("Static definitions after copy  <%s> <%s> " Int32_4 Int32_5)
     
         // Allocate a named value 
         TypeManagerObtainValueType(* varName1 .Int32 True dynamicType1)  
                       
         // Printing the type should print the type's name.
-        DPrintf(" Name  for dynamically allocated type is <%s> " dynamicType1)
+        Printf(" Name  for dynamically allocated type is <%s> " dynamicType1)
         TypeBaseType(dynamicType1 vType)
-        DPrintf(" Base Type of dynamic type is <%s>" vType)
+        Printf(" Base Type of dynamic type is <%s>" vType)
 
         TypeGetValue(dynamicType1 n)
-        DPrintf("Value of dynamic var is %s" n)
+        Printf("Value of dynamic var is %s" n)
         TypeSetValue(dynamicType1 n2)
-        DPrintf("Try to change it to %s" n2)
+        Printf("Try to change it to %s" n2)
         TypeGetValue(dynamicType1 n)
-        DPrintf("Value of dynamic var is %s" n)
+        Printf("Value of dynamic var is %s" n)
 
         // (TM Type forceDestroy name)    
         // TypeManagerReleaseValueType(* dynamicType1 * name)  
 
         TypeGetValue(.MyGlobalVar n)
-        DPrintf("Value read is %s" n)
+        Printf("Value read is %s" n)
 
-        DPrintf("--------------")
+        Printf("--------------")
         // Get a new type, over write the local variable
         TypeManagerObtainValueType(* varName2 .String True dynamicType1)        
 
         // Printing the type should print the type's name.
-        DPrintf(" Name  for dynamically allocated type is <%s> " dynamicType1)
+        Printf(" Name  for dynamically allocated type is <%s> " dynamicType1)
         TypeBaseType(dynamicType1 vType)
-        DPrintf(" Base Type of dynamic type is <%s>" vType)
+        Printf(" Base Type of dynamic type is <%s>" vType)
 
         TypeGetValue(dynamicType1 s)
-        DPrintf("Value of dynamic var is %s" s)
+        Printf("Value of dynamic var is %s" s)
         TypeSetValue(dynamicType1 s2)
-        DPrintf("Try to change it to %s" s2)
+        Printf("Try to change it to %s" s2)
         TypeGetValue(dynamicType1 s)
-        DPrintf("Value of dynamic var is %s" s)
+        Printf("Value of dynamic var is %s" s)
 
         // Check default name
         TypeManagerObtainValueType(* varName1 sourceType * dynamicType2)
-        DPrintf("Look up dynamic variable by name <%s> =>  <%s>" varName1 dynamicType2)
+        Printf("Look up dynamic variable by name <%s> =>  <%s>" varName1 dynamicType2)
 
         // Check default name
         TypeManagerObtainValueType(* varName2 sourceType * dynamicType2)
-        DPrintf("Look up dynamic variable by name <%s> =>  <%s>" varName2 dynamicType2)
+        Printf("Look up dynamic variable by name <%s> =>  <%s>" varName2 dynamicType2)
         
         // Another type of empty name
         TypeManagerObtainValueType(* varNameEmpty sourceType * dynamicType2)
-        DPrintf("Look up dynamic variable by no name <%s>" dynamicType2)
+        Printf("Look up dynamic variable by no name <%s>" dynamicType2)
 
     )
 ) ) )

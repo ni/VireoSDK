@@ -34,225 +34,225 @@ define (videf1 dv(.VirtualInstrument (
     clump(1
 //--------
 //Variable dims    
-        DPrintf("av0 value % s" av0)
+        Printf("av0 value % s" av0)
         ArrayDimensions(av0 dims)        
-        DPrintf(" av0 %s " dims)
+        Printf(" av0 %s " dims)
         
-        DPrintf("av1 value % s" av1)
+        Printf("av1 value % s" av1)
         ArrayDimensions(av1 dims)        
-        DPrintf(" av1 %s " dims)
+        Printf(" av1 %s " dims)
         
-        DPrintf("av2 value % s" av2)
+        Printf("av2 value % s" av2)
         ArrayDimensions(av2 dims)        
-        DPrintf(" av2 %s " dims)
+        Printf(" av2 %s " dims)
 
-        DPrintf("av3 value % s" av3)
+        Printf("av3 value % s" av3)
         ArrayDimensions(av3 dims)        
-        DPrintf(" av3 %s " dims)
+        Printf(" av3 %s " dims)
         
-        DPrintf("av4 value % s" av4)
+        Printf("av4 value % s" av4)
         ArrayDimensions(av4 dims)        
-        DPrintf(" av4 %s " dims)
+        Printf(" av4 %s " dims)
 //--------
 //Fixed dims    
-        DPrintf("af0 value % s" af0)
+        Printf("af0 value % s" af0)
         ArrayDimensions(af0 dims)        
-        DPrintf(" af0 %s " dims)
+        Printf(" af0 %s " dims)
         
-        DPrintf("af1 value % s" af1)
+        Printf("af1 value % s" af1)
         ArrayDimensions(af1 dims)        
-        DPrintf(" af1 %s " dims)
+        Printf(" af1 %s " dims)
         
-        DPrintf("af2 value % s" af2)
+        Printf("af2 value % s" af2)
         ArrayDimensions(af2 dims)        
-        DPrintf(" af2 %s " dims)
+        Printf(" af2 %s " dims)
 
-        DPrintf("af3 value % s" af3)
+        Printf("af3 value % s" af3)
         ArrayDimensions(af3 dims)        
-        DPrintf(" af3 %s " dims)
+        Printf(" af3 %s " dims)
         
-        DPrintf("af4 value % s" af4)
+        Printf("af4 value % s" af4)
         ArrayDimensions(af4 dims)        
-        DPrintf(" af4 %s " dims)
+        Printf(" af4 %s " dims)
         
 //--------
 //Bounded dims    
-      //  Print("-----")
+      //   Println("-----")
 
-        DPrintf("ab0 value % s" ab0)
+        Printf("ab0 value % s" ab0)
         ArrayDimensions(ab0 dims)        
-        DPrintf(" ab0 %s " dims)
+        Printf(" ab0 %s " dims)
         
-        DPrintf("ab1 value % s" ab1)
+        Printf("ab1 value % s" ab1)
         ArrayDimensions(ab1 dims)        
-        DPrintf(" ab1 %s " dims)
+        Printf(" ab1 %s " dims)
         
-        DPrintf("ab2 value % s" ab2)
+        Printf("ab2 value % s" ab2)
         ArrayDimensions(ab2 dims)        
-        DPrintf(" ab2 %s " dims)
+        Printf(" ab2 %s " dims)
 
-        DPrintf("ab3 value % s" ab3)
+        Printf("ab3 value % s" ab3)
         ArrayDimensions(ab3 dims)        
-        DPrintf(" ab3 %s " dims)
+        Printf(" ab3 %s " dims)
         
-        DPrintf("ab4 value % s" ab4)
+        Printf("ab4 value % s" ab4)
         ArrayDimensions(ab4 dims)        
-        DPrintf(" ab4 %s " dims)
+        Printf(" ab4 %s " dims)
 
 //--------
 // Resizing
         ArrayResizeDimensions(ab0 d0)
         ArrayDimensions(ab0 dims)        
-        DPrintf(" ab0 %s %s" dims d0)
+        Printf(" ab0 %s %s" dims d0)
         
         ArrayResizeDimensions(ab0 d1)
         ArrayDimensions(ab0 dims)        
-        DPrintf(" ab0 %s %s" dims d1)
+        Printf(" ab0 %s %s" dims d1)
         
 //--------
         ArrayResizeDimensions(ab1 d0)
         ArrayDimensions(ab1 dims)        
-        DPrintf(" ab1 %s %s" dims d0)
+        Printf(" ab1 %s %s" dims d0)
 
         ArrayResizeDimensions(ab1 d1)
         ArrayDimensions(ab1 dims)        
-        DPrintf(" ab1 %s %s" dims d1)
+        Printf(" ab1 %s %s" dims d1)
         
         ArrayResizeDimensions(ab1 d2)
         ArrayDimensions(ab1 dims)        
-        DPrintf(" ab1 %s %s" dims d2)
+        Printf(" ab1 %s %s" dims d2)
         
         ArrayResizeDimensions(ab1 d3)
         ArrayDimensions(ab1 dims)        
-        DPrintf(" ab1 %s %s" dims d3)
+        Printf(" ab1 %s %s" dims d3)
 //--------
         ArrayResizeDimensions(ab2 d0)
         ArrayDimensions(ab2 dims)        
-        DPrintf(" ab2 %s %s" dims d0)
+        Printf(" ab2 %s %s" dims d0)
 
         ArrayResizeDimensions(ab2 d1)
         ArrayDimensions(ab2 dims)        
-        DPrintf(" ab2 %s %s" dims d1)
+        Printf(" ab2 %s %s" dims d1)
         
         ArrayResizeDimensions(ab2 d2)
         ArrayDimensions(ab2 dims)        
-        DPrintf(" ab2 %s %s" dims d2)
+        Printf(" ab2 %s %s" dims d2)
         
         ArrayResizeDimensions(ab2 d3)
         ArrayDimensions(ab2 dims)        
-        DPrintf(" ab2 %s %s" dims d3)
+        Printf(" ab2 %s %s" dims d3)
 //--------
         ArrayResizeDimensions(af2 d0)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims d0)
+        Printf("af2 %s %s" dims d0)
 
         ArrayResizeDimensions(af2 d1)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims d1)
+        Printf("af2 %s %s" dims d1)
         
         ArrayResizeDimensions(af2 d2)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims d2)
+        Printf("af2 %s %s" dims d2)
         
         ArrayResizeDimensions(af2 d4)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims d4)
+        Printf("af2 %s %s" dims d4)
         
         ArrayResizeDimensions(af2 d5)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims d5)
+        Printf("af2 %s %s" dims d5)
 
         ArrayResizeDimensions(af2 dToMany)
         ArrayDimensions(af2 dims)        
-        DPrintf("af2 %s %s" dims dToMany)
+        Printf("af2 %s %s" dims dToMany)
         
 //--------
         ArrayResizeDimensions(av2 d0)
         ArrayDimensions(av2 dims)        
-        DPrintf("av2 %s" dims)
+        Printf("av2 %s" dims)
 
         ArrayResizeDimensions(av2 d1)
         ArrayDimensions(av2 dims)        
-        DPrintf("av2 %s" dims)
+        Printf("av2 %s" dims)
         
         ArrayResizeDimensions(av2 d2)
         ArrayDimensions(av2 dims)        
-        DPrintf("av2 %s" dims)
+        Printf("av2 %s" dims)
         
         ArrayResizeDimensions(av2 d3)
         ArrayDimensions(av2 dims)        
-        DPrintf("av2 %s" dims)
+        Printf("av2 %s" dims)
 //--------
         // no dims
         ArrayResizeDimensions(av3 d0)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d0)
+        Printf("av3 %s %s" dims d0)
 
         // 1 dim
         ArrayResizeDimensions(av3 d1)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d1)
+        Printf("av3 %s %s" dims d1)
         
         // 2 dim
         ArrayResizeDimensions(av3 d2)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d2)
+        Printf("av3 %s %s" dims d2)
         
         // 3 dim
         ArrayResizeDimensions(av3 d3)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d3)
+        Printf("av3 %s %s" dims d3)
 
         // 4 dim one outer ignored
         ArrayResizeDimensions(av3 d4)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d4)
+        Printf("av3 %s %s" dims d4)
 
         // 5 dims two outer ignored
         ArrayResizeDimensions(av3 d5)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims d5)
+        Printf("av3 %s %s" dims d5)
 
         // to many dims lots ignored
         ArrayResizeDimensions(av3 dToMany)
         ArrayDimensions(av3 dims)        
-        DPrintf("av3 %s %s" dims dToMany)
+        Printf("av3 %s %s" dims dToMany)
 
 //--------
         // no dims
         ArrayResizeDimensions(ab3 d0)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d0)
+        Printf("ab3 %s %s" dims d0)
 
         // 1 dim
         ArrayResizeDimensions(ab3 d1)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d1)
+        Printf("ab3 %s %s" dims d1)
         
         // 2 dim
         ArrayResizeDimensions(ab3 d2)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d2)
+        Printf("ab3 %s %s" dims d2)
         
         // 3 dim
         ArrayResizeDimensions(ab3 d3)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d3)
+        Printf("ab3 %s %s" dims d3)
 
         // 4 dim one outer ignored
         ArrayResizeDimensions(ab3 d4)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d4)
+        Printf("ab3 %s %s" dims d4)
 
         // 5 dims two outer ignored
         ArrayResizeDimensions(ab3 d5)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims d5)
+        Printf("ab3 %s %s" dims d5)
 
         // to many dims lots ignored
         ArrayResizeDimensions(ab3 dToMany)
         ArrayDimensions(ab3 dims)        
-        DPrintf("ab3 %s %s" dims dToMany)
+        Printf("ab3 %s %s" dims dToMany)
 
 
     )

@@ -14,7 +14,7 @@ define (PrintBanner dv(.VirtualInstrument (
 ") banner)
  )
     clump (1
-        Print(banner)
+        Println(banner)
     )
 ) ) )
 enqueue (PrintBanner)

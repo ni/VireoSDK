@@ -30,27 +30,27 @@ define (Test dv(.VirtualInstrument (
    )
 
     clump(1 
-    DPrintf("-------------")
+    Printf("-------------")
     And(x y value)
-    DPrintf(" And (%s %s) => %s" x y value)
+    Printf(" And (%s %s) => %s" x y value)
 
     Or(x y value)
-    DPrintf(" Or (%s %s) => %s" x y value)
+    Printf(" Or (%s %s) => %s" x y value)
 
     Nor(x y value)
-    DPrintf(" Nor (%s %s) => %s" x y value)
+    Printf(" Nor (%s %s) => %s" x y value)
 
     Nand(x y value)
-    DPrintf(" Nand (%s %s) => %s" x y value)
+    Printf(" Nand (%s %s) => %s" x y value)
 
     Xor(x y value)
-    DPrintf(" Xor (%s %s) => %s" x y value)
+    Printf(" Xor (%s %s) => %s" x y value)
 
     Not(x value)
-    DPrintf(" Not (%s) => %s" x value)
+    Printf(" Not (%s) => %s" x value)
 
     Not(y value)
-    DPrintf(" Not (%s) => %s" y value)
+    Printf(" Not (%s) => %s" y value)
    )
  ) ) )
 enqueue (Test)
