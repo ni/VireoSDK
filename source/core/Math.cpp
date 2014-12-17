@@ -293,6 +293,9 @@ DECLARE_VIREO_COMPARISON_PRIMITIVES(Boolean)
 //DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
 DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfTrue, Boolean, (_Param(1)) )
 DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfFalse, Boolean, (!_Param(1)) )
+DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNull, void*, (null==_Param(1)) )
+DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNotNull, void*, (null!=_Param(1)) )
+
 DECLARE_VIREO_PRIMITIVE3( AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) & _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE3( OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE3( NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) | _Param(1))) ) \
@@ -532,6 +535,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Boolean)
     DEFINE_VIREO_FUNCTION(BranchIfTrue, "p(i(.BranchTarget) i(.Boolean))" );
     DEFINE_VIREO_FUNCTION(BranchIfFalse, "p(i(.BranchTarget) i(.Boolean))");
+    DEFINE_VIREO_FUNCTION(BranchIfNull, "p(i(.BranchTarget) i(.DataPointer))" );
+    DEFINE_VIREO_FUNCTION(BranchIfNotNull, "p(i(.BranchTarget) i(.DataPointer))");
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Boolean)
     //TODO do we need conversion functions for booleans?? just to int16?
 

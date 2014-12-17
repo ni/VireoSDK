@@ -1149,7 +1149,7 @@ class VIDataProcsClass : public IDataProcs
 VIDataProcsClass gVIDataProcs;
 //------------------------------------------------------------
 //! Custom data methods needed to free up instruction lists.
-class InstructionListDataProcsClass : public IDataProcs
+class InstructionBlockDataProcsClass : public IDataProcs
 {
     virtual NIError ClearData(TypeRef type, void* pData)
     {
@@ -1159,13 +1159,13 @@ class InstructionListDataProcsClass : public IDataProcs
         return kNIError_Success;
     }
 };
-InstructionListDataProcsClass gInstructionListDataProcs;
+InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 #endif
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_TYPE(Instruction, ".DataPointer");
-    DEFINE_VIREO_CUSTOM_DP(InstructionList, ".Instruction", &gInstructionListDataProcs);
+    DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(VIClump, VIClump_TypeString);
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);
     DEFINE_VIREO_TYPE(ReentrantVirtualInstrument, ".VirtualInstrument");  // A case of simple inheritance

@@ -17,5 +17,9 @@ DST_HelloWorld  ds = {
   f,
 };//Number of clumps 2
 Instructions inst = {
-   _I1(AddInt32Int32,Int32,Int32,)
+   _I1(AddInt32, Int32,Int32,Int32,)
+   _I1(SubInt32, Int32,Int32,Int32,)
+   _I1(MulInt32, Int32,Int32,Int32,)
+   _I1(Println, StaticTypeAndData,)
+   _I1(Done, )
 };

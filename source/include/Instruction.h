@@ -39,8 +39,8 @@ namespace Vireo
 //------------------------------------------------------------
 // The minimal Instructions "object"
 struct InstructionCore;
-
-typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *InstructionFunction) (InstructionCore*);
+typedef InstructionCore* InstructionRef;
+typedef InstructionRef (VIVM_FASTCALL _PROGMEM *InstructionFunction) (InstructionCore*);
 
 struct InstructionCore
 {

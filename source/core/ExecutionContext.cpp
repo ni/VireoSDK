@@ -33,18 +33,14 @@ IntSmall        ExecutionContext::_breakoutCount;
 
 
 //------------------------------------------------------------
-// When the CulDeSac function is hit there is nothing to do.
+// CulDeSac returns itself allowing an unriolled execution loop to complete.
 InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM)
 {
     return _this;
 }
 //------------------------------------------------------------
-//For halt will cause exec to break out of its inner loop. The instruction should also have a null next field.
-//This will prevent the QueueElt from being requeued.
-// When the Done instruction is hit the clump is done, and will not
-// run again until it is refired, (different from suspended)
-
-VIREO_FUNCTION_SIGNATURE0(Done)
+// When the Done instruction is hit the clump is done.
+InstructionCore* VIVM_FASTCALL Done (Instruction0* _this _PROGMEM)
 {
     ExecutionContextRef exec = THREAD_EXEC();
 
@@ -454,7 +450,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(.BranchTarget) i(.Int32) o(.Int32))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(.BranchTarget))")
-    DEFINE_VIREO_FUNCTION(CallVI, "p(i(.VI) i(.InstructionSnippet copyInProc) i(.InstructionSnippet copyOutProc))")
+    DEFINE_VIREO_FUNCTION(CallVI, "p(i(.VI) i(.Instruction copyInProc) i(.Instruction copyOutProc))")
     DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
     DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")

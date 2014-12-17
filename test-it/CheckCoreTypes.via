@@ -7,7 +7,7 @@ define (TypesToCheck dv(a(.Type *) (
     .Type .TypeManager
     .VI .Clump
     //.CodePointer .DataPointer -- omitted to avoid diffs between 32 and 64 bit builds.
-    .BranchTarget .InstructionFunction .InstructionSnippet
+    .BranchTarget .Instruction .InstructionBlock
     .Array .Object
     )
 ))

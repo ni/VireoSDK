@@ -97,7 +97,7 @@ define (VirtualInstrument
 
 define (VIClump
     c(                                     
-        e(.InstructionList CodeStart)         
+        e(.InstructionBlock CodeStart)         
         e(.DataPointer Next)                
         e(.DataPointer Owner)               
         e(.DataPointer NextWaitingCaller)   

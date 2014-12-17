@@ -890,6 +890,14 @@ AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManagerRef tm)
     IsValid = true;
 }
 //------------------------------------------------------------
+void AggregateAlignmentCalculator::Finish()
+{
+    // Round up the size of the aggregate to a multiple the largest alignment requirement
+    // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
+    AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
+    IncludesPadding |= AggregateSize != _aqOffset;
+}
+//------------------------------------------------------------
 Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
 {
     ElementCount++;
@@ -925,30 +933,32 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     return elementOffset;
 }
 //------------------------------------------------------------
-void ClusterAlignmentCalculator::Finish()
-{
-    // Round up the size of the cluster to a multiple the largest alignmnent requirement
-    // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
-    AggregateSize = _aqOffset;
-    AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
-    IncludesPadding |= AggregateSize != _aqOffset;
-}
-//------------------------------------------------------------
 // ParamBlockAlignmentCalculator
+//------------------------------------------------------------
+ParamBlockAlignmentCalculator::ParamBlockAlignmentCalculator(TypeManagerRef tm)
+: AggregateAlignmentCalculator(tm)
+{
+    // ParamBlock describe a native instruction parameter block.
+    // This structure derives from InstructionCore and at minimum
+    // includes a function pointer.
+    _aqOffset = sizeof(InstructionCore);
+}
 //------------------------------------------------------------
 Int32 ParamBlockAlignmentCalculator::AlignNextElement(TypeRef element)
 {
+    static SubString  stad("StaticTypeAndData");
+
+    Int32 elementOffset = _aqOffset;
     IsValid &= element->IsValid();
-    Int32 elementOffset = sizeof(InstructionCore) + (ElementCount * sizeof(void*));
+    if (element->IsA(&stad)) {
+        // The StaticTypeAndData parameter is two pointers
+        _aqOffset += 2 * sizeof(void*);
+    } else {
+        _aqOffset += sizeof(void*);
+    }
+    AggregateAlignment = sizeof(void*);
     ElementCount++;
     return elementOffset;
-}
-//------------------------------------------------------------
-void ParamBlockAlignmentCalculator::Finish()
-{
-    // Round up the size of the cluster to a multiple the largest alignmnent requirement
-    // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
-    AggregateSize = sizeof(InstructionCore) + (ElementCount * sizeof(void*));
 }
 //------------------------------------------------------------
 // EquivalenceBlockAlignmentCalculator
@@ -961,14 +971,13 @@ Int32 EquivalenceAlignmentCalculator::AlignNextElement(TypeRef element)
     } else {
         VIREO_ASSERT(AggregateSize == element->TopAQSize())
     }
+    if (element->AQAlignment() > AggregateAlignment) {
+        AggregateAlignment = element->AQAlignment();
+    }
     ElementCount++;
     
-    // All elements are overlayed, so they staret where element does, which is at 0
+    // All elements are overlayed, so they start where element does, which is at 0
     return 0;
-}
-//------------------------------------------------------------
-void EquivalenceAlignmentCalculator::Finish()
-{
 }
 //------------------------------------------------------------
 // ClusterType
@@ -1342,59 +1351,42 @@ ParamBlockType* ParamBlockType::New(TypeManagerRef typeManager, TypeRef elements
 ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
-    Int32 aqCount = 0;
     Boolean isFlat = true;
-    Boolean isValid = true;
     Boolean hasGenericType = false;
     //  Boolean hasVarArg = false; TODO look for upto one and only one var arg type
     
     // The param block describes the structure allocated for a single instuction object
     // For a native function. The size will be base plus the storage needed for pointers
     // to each element.
-
-    aqCount = sizeof(InstructionCore);
-
+    
+    ParamBlockAlignmentCalculator alignmentCalculator(this->TheTypeManager());
     for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
         ElementType* element = *pType;
-        Int32 subAQCount = 0;
         
-        VIREO_ASSERT(element->_offset == aqCount)
+#ifdef VIREO_USING_ASSERTS
+        Int32 offset = alignmentCalculator.AlignNextElement(element);
+        VIREO_ASSERT(element->_offset == offset);
+#else
+        alignmentCalculator.AlignNextElement(element);
+#endif
+
+        hasGenericType |= element->HasGenericType();
         UsageTypeEnum ute = element->ElementUsageType();
-        
-        if (ute >=  kUsageTypeInput && ute <=  kUsageTypeTemp) {
-            subAQCount = sizeof(void*);
-        } else if (ute == kUsageTypeImmediate) {
-            if (element->TopAQSize() <= (Int32)sizeof(void*)) {
-                subAQCount = sizeof(void*);
-            } else {
-                printf("(Error Immediate Mode Type is too large for param block)\n"); // TODO:Report error
-            }
-        } else if (ute == kUsageTypeSimple) {
-            printf("(Error simple element type not allowed in ParamBlock)\n"); // TODO:Report error
-        } else {
-            printf("(Error invalid usage type <%d> in ParamBlock)\n", (int)ute); // TODO:Report error
-        }
-        
         if (ute == kUsageTypeStatic || ute == kUsageTypeTemp) {
             // static and temp values are owned by the instruction, not the VIs data space
             // and will need extra work to be inited and cleared if they are not flat
             isFlat &= element->IsFlat();
         }
-        
-        // Now add room for this element.
-        aqCount += subAQCount;
-        
-        isValid |= element->IsValid();
-        hasGenericType |= element->HasGenericType();
     }
-
+    alignmentCalculator.Finish();
+    
     // Since it is a funnction, the size is the size of a pointer-to-a-function with that parameter list
-    _encoding = kEncoding_ParameterBlock;
-    _topAQSize =  aqCount;
-    _isFlat = isFlat;
+    _isValid = alignmentCalculator.IsValid;
+    _aqAlignment = alignmentCalculator.AggregateAlignment;
+    _topAQSize = alignmentCalculator.AggregateSize;
+    _isFlat = isFlat;  //should be false ??
     _hasGenericType = hasGenericType;
-    _aqAlignment = sizeof(void*);
-    _isValid = isValid;
+    _encoding = kEncoding_ParameterBlock;
 }
 //------------------------------------------------------------
 // DefaultValueType
@@ -2325,17 +2317,17 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
 }
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
-VIREO_FUNCTION_SIGNATURE3(InstructionType, InstructionCore*, TypeRef, StringRef)
+VIREO_FUNCTION_SIGNATURE3(InstructionType, InstructionRef, TypeRef, StringRef)
 {
-    InstructionCore* pinstruction = _Param(0);
+    InstructionCore* pInstruction = _Param(0);
     SubString cName;
-    _Param(1) = THREAD_TADM()->FindCustomPointerTypeFromValue((void*)pinstruction->_function, &cName);
+    _Param(1) = THREAD_TADM()->FindCustomPointerTypeFromValue((void*)pInstruction->_function, &cName);
     _Param(2)->CopyFromSubString(&cName);
     return _NextInstruction();
 }
 //------------------------------------------------------------
 //! Determine the type that described the actual argument passed and its allocation origin
-VIREO_FUNCTION_SIGNATURE4(InstructionArgType, InstructionCore*, Int32, TypeRef, Int32)
+VIREO_FUNCTION_SIGNATURE4(InstructionArgType, InstructionRef, Int32, TypeRef, Int32)
 {
     // TODO
     // Origin will be:
@@ -2349,10 +2341,19 @@ VIREO_FUNCTION_SIGNATURE4(InstructionArgType, InstructionCore*, Int32, TypeRef, 
 }
 //------------------------------------------------------------
 //! Determine the next instruction in the instruction list.
-VIREO_FUNCTION_SIGNATURE2(InstructionNext, InstructionCore*, InstructionCore*)
+VIREO_FUNCTION_SIGNATURE2(InstructionNext, InstructionRef, InstructionRef)
 {
-    // TODO
-    _Param(1) = null;
+    InstructionCore* pInstruction = _Param(0);
+    SubString cName;
+    
+    if (ExecutionContext::IsDone(pInstruction)) {
+        _Param(1) = null;
+    } else {
+        TypeRef t = THREAD_TADM()->FindCustomPointerTypeFromValue((void*)pInstruction->_function, &cName);
+        t = t->GetSubElement(0);
+        Int32 size = t->TopAQSize();
+        _Param(1) = (InstructionCore*) ((UInt8*)pInstruction + size);
+    }
     return _NextInstruction();
 }
 #endif

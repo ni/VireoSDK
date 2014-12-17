@@ -80,18 +80,18 @@ public:
 //! The VIA definition for a Clump. Must match the C++ definition.
 #define VIClump_TypeString              \
 "c(                                     \
-    e(.InstructionList CodeStart)       \
+    e(.InstructionBlock CodeStart)       \
     e(.DataPointer Next)                \
     e(.Int64 WakeUpInfo)                \
     e(.DataPointer Owner)               \
     e(.DataPointer NextWaitingCaller)   \
     e(.DataPointer Caller)              \
-    e(.Instruction SavePC)              \
+    e(.Instruction SavePC)       \
     e(.Int32 FireCount)                 \
     e(.Int32 ShortCount)                \
     e(.Int32 WaitCount)                 \
-    e(.WaitableState WaitableState)             \
-    e(.WaitableState WaitableState)             \
+    e(.WaitableState WaitableState)     \
+    e(.WaitableState WaitableState)     \
 )"
 
 // Initially all clump had the ability to wait on timers, now that has grown to

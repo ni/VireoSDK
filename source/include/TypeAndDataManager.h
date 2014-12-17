@@ -690,7 +690,7 @@ public:
 public:
     AggregateAlignmentCalculator(TypeManagerRef tm);
     virtual Int32  AlignNextElement(TypeRef element) = 0;
-    virtual void   Finish() = 0;
+    void   Finish();
 };
 //------------------------------------------------------------
 //! Calculates core properties for ClusterTypes
@@ -699,16 +699,14 @@ class ClusterAlignmentCalculator : public AggregateAlignmentCalculator
 public:
     ClusterAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
-    virtual void   Finish();
 };
 //------------------------------------------------------------
 //! Calculates core properties for ClusterTypes
 class ParamBlockAlignmentCalculator :  public AggregateAlignmentCalculator
 {
 public:
-    ParamBlockAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
+    ParamBlockAlignmentCalculator(TypeManagerRef tm);
     virtual Int32  AlignNextElement(TypeRef element);
-    virtual void   Finish();
 };
 //------------------------------------------------------------
 //! Calculates core properties for EquivalenceTypes
@@ -717,7 +715,6 @@ class EquivalenceAlignmentCalculator :  public AggregateAlignmentCalculator
 public:
     EquivalenceAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}
     virtual Int32  AlignNextElement(TypeRef element);
-    virtual void   Finish();
 };
 //------------------------------------------------------------
 //! A type that describes the parameter block used by a native InstructionFunction
