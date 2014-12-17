@@ -2062,14 +2062,6 @@ NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Do
     return err;
 }
 //------------------------------------------------------------
-void PrintType(TypeRef type, const char* message)
-{
-    SubString ss1 = type->GetName();
-    SubString ss2 = type->GetElementName();
-
-    printf("Type <%.*s> <%.*s> %s\n", FMT_LEN_BEGIN(&ss1), FMT_LEN_BEGIN(&ss2), message);
-}
-//------------------------------------------------------------
 // TypedAndDataManager native functions
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(TypeManagerCurrentTypeManager, TypeManagerRef)

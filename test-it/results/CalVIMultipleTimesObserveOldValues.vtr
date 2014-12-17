@@ -1,24 +1,24 @@
+Inside call
 In SubVI2 with in and out parameters initially <42> <0>, one is <1>
 In SubVI2 with in and out parameters after add <42> <43>, one is <1>
-In SubVI2 with in and out parameters initially <43> <43>, one is <1>
-In SubVI2 with in and out parameters after add <43> <44>, one is <1>
-In SubVI2 with in and out parameters initially <44> <44>, one is <1>
-In SubVI2 with in and out parameters after add <44> <45>, one is <1>
-In SubVI2 with in and out parameters initially <45> <45>, one is <1>
-In SubVI2 with in and out parameters after add <45> <46>, one is <1>
-In SubVI2 with in and out parameters initially <46> <46>, one is <1>
-In SubVI2 with in and out parameters after add <46> <47>, one is <1>
-In SubVI2 with in and out parameters initially <47> <47>, one is <1>
-In SubVI2 with in and out parameters after add <47> <48>, one is <1>
-Inside call
 42
 Inside call
+In SubVI2 with in and out parameters initially <43> <43>, one is <1>
+In SubVI2 with in and out parameters after add <43> <44>, one is <1>
 43
 Inside call
+In SubVI2 with in and out parameters initially <44> <44>, one is <1>
+In SubVI2 with in and out parameters after add <44> <45>, one is <1>
 44
 Inside call
+In SubVI2 with in and out parameters initially <45> <45>, one is <1>
+In SubVI2 with in and out parameters after add <45> <46>, one is <1>
 45
 Inside call
+In SubVI2 with in and out parameters initially <46> <46>, one is <1>
+In SubVI2 with in and out parameters after add <46> <47>, one is <1>
 46
 Inside call
+In SubVI2 with in and out parameters initially <47> <47>, one is <1>
+In SubVI2 with in and out parameters after add <47> <48>, one is <1>
 47

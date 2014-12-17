@@ -1,7 +1,4 @@
 -------
--------
--------
--------
 (
             c( e(dv(.String 'Somewhat of a lambda, Hello world.') variable1) )
             clump (1
@@ -9,6 +6,7 @@
             )
         )
 
+-------
 (
             c( e(dv(.String 'Scripted Hello world.') variable1) )
             clump (1
@@ -21,10 +19,12 @@
 (Line 4 Error "Function not found 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
 
+-------
 Somewhat of a lambda, Hello world.
 Could this be a simple reentrant VI?, Hello world.
 (Line 4 Error "Function not found 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
 
+-------
 Could this be a simple reentrant VI?, Hello world.
 Hello world using dynamically defined string type.

@@ -94,14 +94,14 @@ define (Converter dv(.VirtualInstrument (
             // To get acces to the pointer's description get its sub element
             TypeGetSubElement(instructionType 0 parameterListType)
             TypeSubElementCount(parameterListType count2)
-         //   Printf(" param count %s\n" count2)
             Init(index2)
             
             // Loop through all arguments 
             Perch(2)
                 TypeGetSubElement(parameterListType index2 argType)
                 TypeGetName(argType typeName) 
-                Printf("%s," typeName)
+                Printf("%s" typeName)
+                Printf(",")
                 Add(index2 1 index2)
             BranchIfLT(2 index2 count2)
   

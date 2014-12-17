@@ -426,11 +426,9 @@ void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCoun
     if (_waitingList == null) {
         VIREO_ASSERT( pWS->_next == null )
         // No list, now there is one.
-        //printf(" WUTC Starting new sleep list\n");
         _waitingList = pWS;
     } else {
         // Insert into the list based on wake-up time.
-        //printf(" WUTC Inserting into existing sleep list\n");
         WaitableState** pFix = &_waitingList;
         WaitableState* pVisitor = *pFix;
         while (pVisitor && (tickCount > pVisitor->_info)) {

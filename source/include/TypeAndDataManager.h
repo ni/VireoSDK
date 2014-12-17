@@ -165,7 +165,6 @@ struct StaticTypeAndData
 
 inline IntIndex Min(IntIndex a, IntIndex b) { return a < b ? a : b; }
 inline IntIndex Max(IntIndex a, IntIndex b) { return a > b ? a : b; }
-void PrintType(TypeRef type, const char* message);
 
 //------------------------------------------------------------
 //! Keeps track of Types used within a ExecutionContext.

@@ -955,7 +955,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
                         SubString formalParameterTypeName = formalType->GetName();
-                         // printf("Trying match for %.*s %.*s (%d)\n", FMT_LEN_BEGIN(&instructionNameToken), FMT_LEN_BEGIN(&formalParameterTypeName), i);
                         
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
                             VIREO_ASSERT(!state.VarArgParameterDetected());                    
@@ -1279,7 +1278,6 @@ void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pD
 void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
 {
     SubString name = pointerType->GetName();
-    //   printf("n:'%.*s', \n", FMT_LEN_BEGIN(name));
     // For pointer types, they are opaque to runtime code.
     // So the dispatch is now directed based on the type.
     if (name.CompareCStr(tsTypeType)) {

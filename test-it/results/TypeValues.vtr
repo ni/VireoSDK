@@ -1,18 +1,18 @@
 .Int32 type .Int32 
 Int32 value 0 
+.Int32
+0
 .Int32 type .Int32 
 Int32 value 0 
+.Int32
+0
 .Int32_5 type .Int32_5 
 Int32_5 value 5 
+.Int32_5
+5
 .Int32_5 type .Int32_5 
 Int32_5 value 5 
+.Int32_5
+5
 Int32TypeMember .Int32 
 Int32_5TypeMember .Int32_5 
-.Int32
-0
-.Int32
-0
-.Int32_5
-5
-.Int32_5
-5

@@ -1,4 +1,5 @@
  Total number of types 3
+(.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .AsciiChar .Time .Type .TypeManager .VI .Clump .BranchTarget .InstructionFunction .InstructionSnippet .Array .Object)
  e(.Boolean)  // encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:f generic:f
  e(.Int8)  // encoding:10 usage:0 baseType:c(e(bb(8 SInt))) dv:f generic:f
  e(.Int16)  // encoding:10 usage:0 baseType:c(e(bb(16 SInt))) dv:f generic:f
@@ -25,4 +26,3 @@
  e(.InstructionSnippet)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.Array)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.Object)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
-(.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .AsciiChar .Time .Type .TypeManager .VI .Clump .BranchTarget .InstructionFunction .InstructionSnippet .Array .Object)

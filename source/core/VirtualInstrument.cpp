@@ -1070,7 +1070,6 @@ void ClumpParseState::CommitSubSnippet()
     // a null at the end. Used in conjunction with
     // the funciton ExecutionContext::IsCulDeSac()
     EmitSimpleInstruction("CulDeSac");
-    // printf(" total sub-snippet size %d (%d) \n", _totalInstructionPointerCount, _totalInstructionCount);
 }
 //------------------------------------------------------------
 void ClumpParseState::CommitClump()

@@ -321,7 +321,6 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
     Format(&format, count, arguments, tempString.Value);
-   // tempString.Value->Append('\n'); // DPrintfs always have line feeds
     POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
     return _NextInstruction();
 }
@@ -332,7 +331,8 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
     if (tempString.Value) {
         TDViaFormatter formatter(tempString.Value, false);
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
-        printf("%.*s\n", tempString.Value->Length(), tempString.Value->Begin());
+        tempString.Value->Append('\n');
+        POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
     }
     
     return _NextInstruction();
