@@ -21,9 +21,9 @@ do
         then
             rm $newResultFile
         else
-            echo " $testFile results are different"
+            echo \n" $testFile results are different"
             cat temp_test_result
-            echo "--------------------------------"
+            echo "--------------------------------\n"
         fi
     else
         esh $testFile | sed '/^\/\//d' >$resultFile
@@ -34,7 +34,7 @@ do
 done
 rm temp_test_result
 
-echo "--------------------------------"
+echo "--------------------------------\n"
 # not test wont work if nullglob is on.
 if ls results/*.vntr &> /dev/null; then
   echo "The following results are different from the expected."

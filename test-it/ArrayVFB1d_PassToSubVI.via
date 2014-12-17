@@ -11,7 +11,7 @@ define (PrintArrayInfo dv(.VirtualInstrument (
     e(.Int32 length_r)  // just right
  )
  clump(1
-    Printf("------------------------------")
+    Printf("------------------------------\n")
     Println(message)
     Println(param1)
     ArrayLength(param1 length_i)

@@ -19,7 +19,7 @@ define (videf1 dv(.VirtualInstrument (
     )
     clump(1
         IsEQ(local1 c0 local2)
-        Printf("IsEQ(%s %s %s)" local1 c0 local2)
+        Printf("IsEQ(%s %s %s)\n" local1 c0 local2)
 //--- end of vi
     )
 )))

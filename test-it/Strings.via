@@ -65,11 +65,11 @@ Line4           tabbed field') cHelloWorldMultiline)
   Println(cStrValue)
   Println(cSeperator)
   
-    Printf(" @string hello world <%s>" cHelloWorldLiteral)
+    Printf(" @string hello world <%s>\n" cHelloWorldLiteral)
     ToString(cHelloWorld * cStrValue)
-    Printf(" ToString on @string hello world <%s>" cStrValue)
+    Printf(" ToString on @string hello world <%s>\n" cStrValue)
 
-Printf("@string multiline hello world <%s>" cHelloWorldMultiline)
+Printf("@string multiline hello world <%s>\n" cHelloWorldMultiline)
 
     Println(cBadEscape1)
     Println(cBadEscape2)

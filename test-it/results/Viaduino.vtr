@@ -6,7 +6,7 @@ class DST_HelloWorld {
   VTBoolean _v7;
   VTBoolean _v8;
   VTBoolean _v9;
-};
+};//-------------------------
 DST_HelloWorld  ds = {  
   Hello, Wei,
   505,
@@ -15,13 +15,7 @@ DST_HelloWorld  ds = {
   f,
   f,
   f,
-};
+};//Number of clumps 2
 Instructions inst = {
-   _I1(AddInt32
- param count 3
-Int32, 
-Int32, 
-Int32, 
-   )
-}
-
+   _I1(AddInt32Int32,Int32,Int32,)
+};

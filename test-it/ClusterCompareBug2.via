@@ -33,7 +33,7 @@ define (videf1 dv(.VirtualInstrument (
         ArrayFill(local3 c4 c3)
         ArrayFill(local5 c4 c5)
         IsEQ(local5 c0 local4)
-        Printf("IsEQ(%s %s %s)" local5 c0 local4)
+        Printf("IsEQ(%s %s %s)\n" local5 c0 local4)
 //--- end of vi
     )
 )))

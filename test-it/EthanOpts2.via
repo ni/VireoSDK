@@ -2743,7 +2743,7 @@ define (videf30 dv(.VirtualInstrument (
         Sub(local28 local8 local8)
         Copy(local27 local2 )
         Println(local27)
-        Printf("// It took %s" local8)
+        Printf("// It took %s\n" local8)
         ArrayReplaceElt(local29 local29 local6 local8)
         BranchIfGE(1 local6 local7)
         Add(local6 c39 local6)                    // increment i

@@ -13,57 +13,57 @@ define (HelloTypeValues dv(.VirtualInstrument (
     )
     clump (1
     
-        Printf("-------------")
+        Printf("-------------\n")
         // Since the VI uses a Global as the initial value.
         // The VIs data space will pick up the value the global has when
         // the VI is constructed
-        Printf("local1 value is  %s, expecting 505 " local1)
-        Printf("GlobalVar1 value is  %s, expecting 505 " GlobalVar1)
-        Printf("GlobalConst1 value is  %s, expecting 42 " GlobalConst1)
+        Printf("local1 value is  %s, expecting 505 \n" local1)
+        Printf("GlobalVar1 value is  %s, expecting 505 \n" GlobalVar1)
+        Printf("GlobalConst1 value is  %s, expecting 42 \n" GlobalConst1)
         
 //      Copy(local1 GlobalConst1)  cant write on constants
         Copy(GlobalConst1 local1)
-        Printf("local1 value is  %s, expecting 42 " local1)
-        Printf("GlobalVar1 value is  %s, expecting 505 " GlobalVar1)
+        Printf("local1 value is  %s, expecting 42 \n" local1)
+        Printf("GlobalVar1 value is  %s, expecting 505 \n" GlobalVar1)
         
         Copy(local1 GlobalVar1)
-        Printf("local1 value is  %s, expecting 42 " local1)
-        Printf("GlobalVar1 value is  %s, expecting 42 " GlobalVar1)  
+        Printf("local1 value is  %s, expecting 42 \n" local1)
+        Printf("GlobalVar1 value is  %s, expecting 42 \n" GlobalVar1)  
         
-        Printf("-------------")
+        Printf("-------------\n")
         TypeOf(GlobalVar1 vType)
-        Printf("PrintType for GlobalVar1 <%s>" vType)
+        Printf("PrintType for GlobalVar1 <%s>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalVar1 base <%s>" vType)
+        Printf("PrintType for GlobalVar1 base <%s>\n" vType)
 
         TypeOf(GlobalConst1 vType)
-        Printf("PrintType for GlobalConst1 <%s>" vType)
+        Printf("PrintType for GlobalConst1 <%s>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalConst1 base <%s>" vType)
+        Printf("PrintType for GlobalConst1 base <%s>\n" vType)
 
-        Printf("-------------")
-        Printf("local2 value is  %s " local2)
-        Printf("GlobalVar2 value is  %s " GlobalVar2)
-        Printf("GlobalConst2 value is  %s " GlobalConst2)
+        Printf("-------------\n")
+        Printf("local2 value is  %s \n" local2)
+        Printf("GlobalVar2 value is  %s \n" GlobalVar2)
+        Printf("GlobalConst2 value is  %s \n" GlobalConst2)
 
         Copy(GlobalConst2 local2)
-        Printf("local2 value is %s" local2)
-        Printf("GlobalVar2 value is %s" GlobalVar2)
+        Printf("local2 value is %s\n" local2)
+        Printf("GlobalVar2 value is %s\n" GlobalVar2)
 
         Copy(local2 GlobalVar2)
-        Printf("local2 value is  %s" local2)
-        Printf("GlobalVar2 value is  %s" GlobalVar2)  
-        Printf("-------------")
+        Printf("local2 value is  %s\n" local2)
+        Printf("GlobalVar2 value is  %s\n" GlobalVar2)  
+        Printf("-------------\n")
 
         TypeOf(GlobalVar2 vType)
-        Printf("PrintType for GlobalVar2 <%s>" vType)
+        Printf("PrintType for GlobalVar2 <%s>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalVar2 base <%s>" vType)
+        Printf("PrintType for GlobalVar2 base <%s>\n" vType)
 
         TypeOf(GlobalConst2 vType)
-        Printf("PrintType for GlobalConst2 <%s>" vType)
+        Printf("PrintType for GlobalConst2 <%s>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalConst2 base <%s>" vType)
+        Printf("PrintType for GlobalConst2 base <%s>\n" vType)
 
 
     )

@@ -33,11 +33,11 @@ define (videf1 dv(.VirtualInstrument (
 
     )
     clump (1
-        Printf("Top defaults %s" localTop)
-        Printf("Deep defaults %s" localDeep)
-        Printf("Typedef defaults %s" typedefPoint)
-        Printf("Typedef with non zero defaults %s" customPoint)
-        Printf("Typedef with overridden defaults %s" overriddenCustomPoint)
+        Printf("Top defaults %s\n" localTop)
+        Printf("Deep defaults %s\n" localDeep)
+        Printf("Typedef defaults %s\n" typedefPoint)
+        Printf("Typedef with non zero defaults %s\n" customPoint)
+        Printf("Typedef with overridden defaults %s\n" overriddenCustomPoint)
     )
 )))
 enqueue(videf1)

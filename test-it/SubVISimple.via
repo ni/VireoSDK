@@ -27,9 +27,9 @@ define (SubVI2  dv(.VirtualInstrument (
   )
   clump(1 
     Println(sInside)
-    Printf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+    Printf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>\n" x x_out c1)
     Add(x c1 x_out)
-    Printf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+    Printf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>\n" x x_out c1)
     Println(x)
    )
  )))
@@ -41,9 +41,9 @@ define (SubVI3 dv(.VirtualInstrument (
     e(dv(.Int32 1) c1)
   )
   clump(1 
-    Printf("In SubVI3 with in/out parameter initially <%s>, one is <%s>" x c1)
+    Printf("In SubVI3 with in/out parameter initially <%s>, one is <%s>\n" x c1)
     Add(x c1 x)
-    Printf("In SubVI3 with in/out parameter after add <%s>, one is <%s>" x c1)
+    Printf("In SubVI3 with in/out parameter after add <%s>, one is <%s>\n" x c1)
    )
  )))
  
@@ -67,9 +67,9 @@ define (SubVI2d dv(.VirtualInstrument (
   )
   clump(1 
     Println(sInside)
-    Printf("In SubVI2d with in and out parameters initially <%s> <%s>, one is <%s>" x x_out c1)
+    Printf("In SubVI2d with in and out parameters initially <%s> <%s>, one is <%s>\n" x x_out c1)
     Add(x c1 x_out)
-    Printf("In SubVI2d with in and out parameters after add <%s> <%s>, one is <%s>" x x_out c1)
+    Printf("In SubVI2d with in and out parameters after add <%s> <%s>, one is <%s>\n" x x_out c1)
     Println(x)
    )
  )))
@@ -81,9 +81,9 @@ define (SubVI3d dv(.VirtualInstrument (
     e(dv(.Double 1) c1)
   )
   clump(1 
-    Printf("In SubVI3d with in/out parameter initially <%s>, one is <%s>" x c1)
+    Printf("In SubVI3d with in/out parameter initially <%s>, one is <%s>\n" x c1)
     Add(x c1 x)
-    Printf("In SubVI3d with in/out parameter after add <%s>, one is <%s>" x c1)
+    Printf("In SubVI3d with in/out parameter after add <%s>, one is <%s>\n" x c1)
    )
  )))
 

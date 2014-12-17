@@ -22,9 +22,9 @@ define (videf1 dv(.VirtualInstrument (
         Copy(c1 local2)	  // set local 2 to 2
         Trigger(2)                                // fork
         //Copy(local2 local4)	  // set local4 to local2
-Printf("beforeWait")
+        Printf("beforeWait\n")
         Wait(2)                                   // join
-Printf("inside 0 %s (should be last line)" local3)
+        Printf("inside 0 %s (should be last line)\n" local3)
         //Add(local4 local3 local5)	
         //Copy(local5 local6 )                      // FP Term
 // Println(local6)
@@ -32,12 +32,12 @@ Printf("inside 0 %s (should be last line)" local3)
     )
     clump(1
         Copy(c0 local1)
-Printf("inside 1")
+        Printf("inside 1\n")
         Trigger(2)                                // fork
     )
     clump(2
         Add(local2 local1 local3)
-Printf("inside 2 %s" local3)
+        Printf("inside 2 %s\n" local3)
     )
 )))
 //--------------------------------------------------

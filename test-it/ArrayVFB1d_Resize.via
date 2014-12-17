@@ -19,7 +19,7 @@ define (ArrayDemo dv(.VirtualInstrument (
         ArrayLength(variableArray1d length_z)
         ArrayResize(variableArray1d 1000)
         ArrayLength(variableArray1d length_r)
-        Printf("variableArray1d initial:%4s shrinking:%4s bigger:%4s empty:%4s just_right:%4s" length_i length_s length_b length_z length_r)
+        Printf("variableArray1d initial:%4s shrinking:%4s bigger:%4s empty:%4s just_right:%4s\n" length_i length_s length_b length_z length_r)
 
         ArrayLength(fixedArray1d length_i)
         ArrayResize(fixedArray1d 500)
@@ -30,7 +30,7 @@ define (ArrayDemo dv(.VirtualInstrument (
         ArrayLength(fixedArray1d length_z)
         ArrayResize(fixedArray1d 1000)
         ArrayLength(fixedArray1d length_r)
-        Printf("fixedArray1d initial:%4s  shrinking:%4s bigger:%4s empty:%4s just_right:%4s" length_i length_s length_b length_z length_r)
+        Printf("fixedArray1d initial:%4s  shrinking:%4s bigger:%4s empty:%4s just_right:%4s\n" length_i length_s length_b length_z length_r)
 
         ArrayLength(boundedArray1d length_i)
         ArrayResize(boundedArray1d 500)
@@ -41,7 +41,7 @@ define (ArrayDemo dv(.VirtualInstrument (
         ArrayLength(boundedArray1d length_z)
         ArrayResize(boundedArray1d 1000)
         ArrayLength(boundedArray1d length_r)
-        Printf("boundedArray1d initial:%s  shrinking:%s bigger:%s empty:%s just_right:%s" length_i length_s length_b length_z length_r)
+        Printf("boundedArray1d initial:%s  shrinking:%s bigger:%s empty:%s just_right:%s\n" length_i length_s length_b length_z length_r)
    )
  ) ) )
 enqueue (ArrayDemo)

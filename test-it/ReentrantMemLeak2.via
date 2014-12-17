@@ -9,7 +9,7 @@ c(
 )
  c()
   clump(1
-    Printf("In reentrant  SubVI0 ")
+    Printf("In reentrant  SubVI0 \n")
    )
  )))
 
@@ -24,7 +24,7 @@ c(
 )
  c()
   clump(1
-    Printf("In reentrant  SubVI1 ")
+    Printf("In reentrant  SubVI1 \n")
    )
  )))
  
@@ -44,7 +44,7 @@ c(
   e(c( e(a(.Int8 0)) e(a(.Int8 0)) e(a(.Int8 0)) ) local1)
 )
 clump(1
-    Printf("There should be no leaks")
+    Printf("There should be no leaks\n")
     SubVI0(local0)
     SubVI1(local1)
    )

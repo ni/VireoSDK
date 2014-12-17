@@ -12,10 +12,10 @@ define (SubVI1 dv(.VirtualInstrument (
     )
     c()
     clump (1
-        Printf("-v1----" ix)
-        Printf("Int32 <%s>" ix)
-        Printf("Double <%s>" dx)
-        Printf("Array <%s>" ax)
+        Printf("-v1----\n" ix)
+        Printf("Int32 <%s>\n" ix)
+        Printf("Double <%s>\n" dx)
+        Printf("Array <%s>\n" ax)
     )
 ) ) )
 
@@ -27,10 +27,10 @@ define (SubVI2 dv(.VirtualInstrument (
     )
     c()
     clump (1
-        Printf("-v2---" ix)
-        Printf("Int32 <%s>" ix)
-        Printf("Double <%s>" dx)
-        Printf("Array <%s>" ax)
+        Printf("-v2---\n" ix)
+        Printf("Int32 <%s>\n" ix)
+        Printf("Double <%s>\n" dx)
+        Printf("Array <%s>\n" ax)
     )
 ) ) )
 

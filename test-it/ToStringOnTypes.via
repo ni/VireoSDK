@@ -7,10 +7,10 @@ define (ToStringForTypes dv(.VirtualInstrument (
     )
     clump (1
         ToString(t width string)
-        Printf(" The type as a string is %s" string)
+        Printf(" The type as a string is %s\n" string)
         TypeOf(v t)
         ToString(t width string)
-        Printf(" The type as a string is %s" string)
+        Printf(" The type as a string is %s\n" string)
 
     )
 ) ) )

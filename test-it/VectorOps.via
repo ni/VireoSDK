@@ -135,8 +135,8 @@ define (VectorOp dv(.VirtualInstrument (
         ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_1 c0 vPi)
        Println(arrayOfDouble1d_1)
         ArrayReplaceElt(arrayOfDouble1d_1 arrayOfDouble1d_2 c1 vPi)
-        Printf(" modified destination %s" arrayOfDouble1d_1)
-        Printf(" unmodified source    %s" arrayOfDouble1d_2)
+        Printf(" modified destination %s\n" arrayOfDouble1d_1)
+        Printf(" unmodified source    %s\n" arrayOfDouble1d_2)
 
         ArrayResize(arrayOfDouble1d_1 c9)
        Println(arrayOfDouble1d_1)

@@ -68,15 +68,15 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.Type .String)                     stringType)
     )
     clump (1
-        Printf("-------")
+        Printf("-------\n")
         Println(goodProgram1)
         FromString(goodProgram1 vi1 errorLog)   // FromString() will create the instance in the current TypeManager
         Println(errorLog)
-        Printf("-------")
+        Printf("-------\n")
         Println(badProgram)
         FromString(badProgram viBad errorLog)
         Println(errorLog)
-        Printf("-------")
+        Printf("-------\n")
 
 
         EnqueueRunQueue(vi1)
@@ -91,7 +91,7 @@ define (HelloWorld dv(.VirtualInstrument (
         FromString(goodProgram2 vi2 errorLog)   // FromString() will create the instance in the current TypeManager
         Println(errorLog)
         EnqueueRunQueue(vi2)    // Press the run button
-        Printf("-------")
+        Printf("-------\n")
 
 //      Not quire ready to work, the VI value exists but is not quire initialized correctly         
 //      EnqueueRunQueue(viValue)

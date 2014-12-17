@@ -65,22 +65,22 @@ define (Test dv(.VirtualInstrument (
     //------
     ArrayLength(arrayWithDefaultValues3 vSize)
     IsEQ(vSize c3 vBool)
-    Printf("3 default elt array has size %d" vSize) 
+    Printf("3 default elt array has size %d\n" vSize) 
     Println(vBool)
     //------
     ArrayLength(arrayWithDefaultValues2 vSize) 
     IsEQ(vSize c2 vBool) 
-    Printf("2 default elt array has size %d" vSize) 
+    Printf("2 default elt array has size %d\n" vSize) 
     Println(vBool) 
     //------
     ArrayLength(arrayWithDefaultValues1 vSize) 
     IsEQ(vSize c1 vBool) 
-    Printf("1 default elt array has size %d" vSize) 
+    Printf("1 default elt array has size %d\n" vSize) 
     Println(vBool) 
     //------
     ArrayLength(arrayWithDefaultValues0 vSize) 
     IsEQ(vSize c0 vBool) 
-    Printf("0 default elt array has size %d" vSize) 
+    Printf("0 default elt array has size %d\n" vSize) 
     Println(vBool) 
 
     //-------------------------------------

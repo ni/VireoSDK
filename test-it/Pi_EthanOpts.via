@@ -2843,7 +2843,7 @@ define (videf32 dv(.VirtualInstrument (
         GetMillisecondTickCount(local22)
         Sub(local22 local4 local2)
         
-        Printf("Pi calculated to %s digits is %s" local1 local3)
+        Printf("Pi calculated to %s digits is %s\n" local1 local3)
         Printf("// It took %s milliseconds" local2)
 
 //--- end of vi

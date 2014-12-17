@@ -61,8 +61,8 @@ define (videf1 dv(.VirtualInstrument (
         GetMillisecondTickCount(local16)
         Sub(local16 local7 local4)
         ArraySubset(local15 local15 * c3)
-        Printf(" First 50 values %s" local15)
-   //     Printf(" Time it took %s" local4)
+        Printf(" First 50 values %s\n" local15)
+   //     Printf(" Time it took %s\n" local4)
         Copy(local15 local6 )
         Copy(local15 local5 )
 //--- end of vi

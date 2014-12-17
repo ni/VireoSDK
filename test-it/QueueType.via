@@ -7,12 +7,12 @@ define (TestProgram dv(.VirtualInstrument (
         e(.Boolean timedOut)
     )
     clump (
-        Printf(" in %s out %s" x y)
+        Printf(" in %s out %s\n" x y)
         EnqueueElement(q x 10 timedOut)
         DequeueElement(q y 10 timedOut)
-        Printf(" in %s out %s" x y)
+        Printf(" in %s out %s\n" x y)
         DequeueElement(q y 10 timedOut)
-        Printf(" y %s" y)
+        Printf(" y %s\n" y)
     )
 ) ) )
 

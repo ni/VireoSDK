@@ -1,7 +1,7 @@
 define (SubVI0 dv(.ReentrantVirtualInstrument (
  c()
   clump(1
-    Printf("In reentrant  SubVI ")
+    Printf("In reentrant  SubVI \n")
    )
  )))
 

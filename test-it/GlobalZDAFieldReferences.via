@@ -28,17 +28,17 @@ define (HelloWorld dv(.VirtualInstrument (
         // A VI is a ZDA (zero dimensioned array)  or object
         // Dig into one of the VIs fields 
         ArrayLength(HelloWorldSub.Clumps x)
-        Printf("Clump count %s" x)
+        Printf("Clump count %s\n" x)
         
         // Array length of an object is one
         ArrayLength(HelloWorldSub.ParamBlock x)
-        Printf("ParamBlock count %s" x)
+        Printf("ParamBlock count %s\n" x)
         ArrayLength(HelloWorldSub.DataSpace x)
-        Printf("DataSpace count %s" x)
+        Printf("DataSpace count %s\n" x)
         
         // This is not legal yet
         // ArrayLength(HelloWorldSub.DataSpace.FixedArray x)
-        // Printf("DataSpace count %s" x)
+        // Printf("DataSpace count %s\n" x)
     )
 ) ) )
 
