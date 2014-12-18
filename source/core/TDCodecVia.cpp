@@ -1064,7 +1064,7 @@ private:
         _pFormatter->_string->AppendCStr("BadType");
     }
     //------------------------------------------------------------
-    virtual void VisitBitBlock(TypeRef type)
+    virtual void VisitBitBlock(BitBlockType* type)
     {
         _pFormatter->_string->AppendCStr("bb(");
         Int32 bitCount = type->BitSize();
@@ -1080,35 +1080,35 @@ private:
         IntIndex subElementCount = type->SubElementCount();
         for (int i = 0; i < subElementCount; i++) {
             TypeRef subType = type->GetSubElement(i);
-            subType->Visit(this);
+            subType->Accept(this);
         }
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitBitCluster(TypeRef type)
+    virtual void VisitBitCluster(BitClusterType* type)
     {
         VisitAggregate(type, "bc(");
     }
     //------------------------------------------------------------
-    virtual void VisitCluster(TypeRef type)
+    virtual void VisitCluster(ClusterType* type)
     {
         VisitAggregate(type, "c(");
     }
     //------------------------------------------------------------
-    virtual void VisitParamBlock(TypeRef type)
+    virtual void VisitParamBlock(ParamBlockType* type)
     {
         VisitAggregate(type, "p(");
     }
     //------------------------------------------------------------
-    virtual void VisitEquivalence(TypeRef type)
+    virtual void VisitEquivalence(EquivalenceType* type)
     {
         VisitAggregate(type, "eq(");
     }
     //------------------------------------------------------------
-    virtual void VisitArray(TypeRef type)
+    virtual void VisitArray(ArrayType* type)
     {
         _pFormatter->_string->AppendCStr("a(");
-        type->GetSubElement(0)->Visit(this);
+        type->GetSubElement(0)->Accept(this);
         IntIndex* pDimension = type->GetDimensionLengths();
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
@@ -1122,11 +1122,11 @@ private:
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitElement(TypeRef type)
+    virtual void VisitElement(ElementType* type)
     {
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
-        type->BaseType()->Visit(this);
+        type->BaseType()->Accept(this);
         SubString elementName = type->GetElementName();
         if (elementName.Length()>0) {
             // Add element name if it exists.
@@ -1136,7 +1136,7 @@ private:
         _pFormatter->_string->Append(')');
     }
     //------------------------------------------------------------
-    virtual void VisitNamed(TypeRef type)
+    virtual void VisitNamed(NamedType* type)
     {
         // At this point names are terminal elements.
         // There needs to be a mechanism that will optionally collect all the named dependencies
@@ -1149,31 +1149,31 @@ private:
         }
     }
     //------------------------------------------------------------
-    virtual void VisitPointer(TypeRef type)
+    virtual void VisitPointer(PointerType* type)
     {
         _pFormatter->_string->AppendCStr("*");
-        type->BaseType()->Visit(this);
+        type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
     //------------------------------------------------------------
-    virtual void VisitDefaultValue(TypeRef type)
+    virtual void VisitDefaultValue(DefaultValueType* type)
     {
         _pFormatter->_string->AppendCStr(type->IsMutableValue() ? "var(" : "dv(");
-        type->BaseType()->Visit(this);
+        type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitCustomDefaultPointer(TypeRef type)
+    virtual void VisitDefaultPointer(DefaultPointerType* type)
     {
         _pFormatter->_string->AppendCStr("dvp(");
-        type->BaseType()->Visit(this);
+        type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitCustomDataProc(TypeRef type)
+    virtual void VisitCustomDataProc(CustomDataProcType* type)
     {
         _pFormatter->_string->AppendCStr("cdp(");
-        type->BaseType()->Visit(this);
+        type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
 };
@@ -1297,7 +1297,7 @@ void TDViaFormatter::FormatType(TypeRef type)
 {
     if (type) {
         TDViaFormatterTypeVisitor visitor(this);
-        type->Visit(&visitor);
+        type->Accept(&visitor);
     } else {
         _string->Append(4, (Utf8Char*)"null");
     }

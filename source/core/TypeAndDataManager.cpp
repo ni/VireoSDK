@@ -227,7 +227,7 @@ TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* po
 TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType)
 #endif
 {
-    CustomPointerType *valueTypeNode = CustomPointerType::New(this, typeRef, pointer, pointerType);
+    DefaultPointerType *valueTypeNode = DefaultPointerType::New(this, typeRef, pointer, pointerType);
     
     if (valueTypeNode) {
         SubString typeName(name);
@@ -1465,14 +1465,14 @@ PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 {
 }
 //------------------------------------------------------------
-// CustomPointerType
+// DefaultPointerType
 //------------------------------------------------------------
-CustomPointerType* CustomPointerType::New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
+DefaultPointerType* DefaultPointerType::New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
 {
-    return TADM_NEW_PLACEMENT(CustomPointerType)(typeManager, type, pointer, pointerType);
+    return TADM_NEW_PLACEMENT(DefaultPointerType)(typeManager, type, pointer, pointerType);
 }
 //------------------------------------------------------------
-CustomPointerType::CustomPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
+DefaultPointerType::DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
 : PointerType(typeManager, type)
 {
     _hasCustomDefault = true;
@@ -2299,6 +2299,10 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
 #endif
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
+TypeRef TypeManager::FindSymboFromPointer(DataPointer pointer, StringRef symbolName)
+{
+    return null;
+}
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
 TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cName)
@@ -2343,11 +2347,13 @@ VIREO_FUNCTION_SIGNATURE3(InstructionArg, const InstructionRef, const Int32, Dat
 VIREO_FUNCTION_SIGNATURE3(TypeManagerPointerToSymbol, const TypeManagerRef, const DataPointer, StringRef)
 {
     // The type and value may be part of a parent TypeManager
-    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+  //  TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
 
     //TempStackCString buffer(null);
     char buffer[50];
     snprintf(buffer, 50, "%p", _Param(1));
+
+
 
     _Param(2)->Resize1D(0);
     _Param(2)->AppendCStr(buffer);

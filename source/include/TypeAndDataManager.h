@@ -36,15 +36,31 @@ SDG
 namespace Vireo
 {
 
-class NamedType;
 class TypeCommon;
+class BitBlockType;
+class BitClusterType;
+class ClusterType;
+class BitBlockType;
+class ParamBlockType;
+class EquivalenceType;
+class NamedType;
+class ArrayType;
+class ElementType;
+class PointerType;
+class DefaultValueType;
+class DefaultPointerType;
+class CustomDataProcType;
+
 class TypeManager;
 class ExecutionContext;
 class IDataProcs;
+class String;
+
     
 typedef TypeCommon  *TypeRef;
 typedef TypeManager *TypeManagerRef;
 typedef NamedType *NamedTypeRef;
+typedef String *StringRef;
 
 // StaticType is used for functions tha take types determined at load time.
 // specifiying StaticType for the parameter will result in the instruction holding a TypeCommon*
@@ -235,11 +251,12 @@ public:
 public:
 #if defined (VIREO_INSTRUCTION_REFLECTION)
 	TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType, const char* cName);
+    TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
+    TypeRef FindSymboFromPointer(DataPointer ptr, StringRef SymbolName);
 #else
     TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
 	TypeRef DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef type);
-    TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
 
 public:
     // Low level allocation functions
@@ -332,18 +349,18 @@ class TypeVisitor
 {
 public:
     virtual void VisitBad(TypeRef type) = 0;
-    virtual void VisitBitBlock(TypeRef type) = 0;
-    virtual void VisitBitCluster(TypeRef type) = 0;
-    virtual void VisitCluster(TypeRef type)  = 0;
-    virtual void VisitParamBlock(TypeRef type)  = 0;
-    virtual void VisitEquivalence(TypeRef type) = 0;
-    virtual void VisitArray(TypeRef type)  = 0;
-    virtual void VisitElement(TypeRef type) = 0;
-    virtual void VisitNamed(TypeRef type) = 0;
-    virtual void VisitPointer(TypeRef type) = 0;
-    virtual void VisitDefaultValue(TypeRef type) = 0;
-    virtual void VisitCustomDefaultPointer(TypeRef type) = 0;
-    virtual void VisitCustomDataProc(TypeRef type) = 0;
+    virtual void VisitBitBlock(BitBlockType* type) = 0;
+    virtual void VisitBitCluster(BitClusterType* type) = 0;
+    virtual void VisitCluster(ClusterType* type)  = 0;
+    virtual void VisitParamBlock(ParamBlockType* type)  = 0;
+    virtual void VisitEquivalence(EquivalenceType* type) = 0;
+    virtual void VisitArray(ArrayType* type)  = 0;
+    virtual void VisitElement(ElementType* type) = 0;
+    virtual void VisitNamed(NamedType* type) = 0;
+    virtual void VisitPointer(PointerType* type) = 0;
+    virtual void VisitDefaultValue(DefaultValueType* type) = 0;
+    virtual void VisitDefaultPointer(DefaultPointerType* type) = 0;
+    virtual void VisitCustomDataProc(CustomDataProcType* type) = 0;
 };
 
 //------------------------------------------------------------
@@ -384,7 +401,7 @@ protected:
     
     //  properties unique to prototype elements. they are never merged up
     UInt16  _elementUsageType:3;// (7-9) ElementType::UsageType
-    //  properties unique to CustomPointerType objects
+    //  properties unique to DefaultPointerType objects
     UInt16  _pointerType:3;     // (10-12)
     UInt16  _ownsDefDefData:1;  // (13) Owns DefaultDefault data (clusters and arrays)
     
@@ -439,7 +456,7 @@ public:
     //! What type of internal pointer is this type. Only used for CustomValuePointers.
     PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }
 
-    virtual void    Visit(TypeVisitor *tv)              { tv->VisitBad(this); }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitBad(this); }
     //! For a wrapped type, return the type that was wrapped, null otherwise.
     virtual TypeRef BaseType()                          { return null; }
     //! How many element in an Aggregate, 0 if the type is not an Aggregate.
@@ -554,7 +571,7 @@ public:
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
     
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
-    virtual void    Visit(TypeVisitor *tv)          { tv->VisitNamed(this); }
+    virtual void    Accept(TypeVisitor *tv)         { tv->VisitNamed(this); }
     virtual SubString GetName()                     { return SubString(_name.Begin(), _name.End()); }
     virtual SubString GetElementName()              { return SubString(null, null); }
 };
@@ -573,7 +590,7 @@ public:
     static IntIndex StructSize(SubString* name) { return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
     
-    virtual void    Visit(TypeVisitor *tv)          { tv->VisitElement(this); }
+    virtual void    Accept(TypeVisitor *tv)         { tv->VisitElement(this); }
     virtual SubString GetElementName()              { return SubString(_elementName.Begin(), _elementName.End()); }
     virtual IntIndex ElementOffset()                { return _offset; }
 };
@@ -586,7 +603,7 @@ private:
     BitBlockType(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
 public:
     static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
-    virtual void    Visit(TypeVisitor *tv)          { tv->VisitBitBlock(this); }
+    virtual void    Accept(TypeVisitor *tv)         { tv->VisitBitBlock(this); }
     virtual Int32   BitSize() {return _bitSize;};
 };
 //------------------------------------------------------------
@@ -635,7 +652,7 @@ private:
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    virtual void    Visit(TypeVisitor *tv)  { tv->VisitBitCluster(this); }
+    virtual void    Accept(TypeVisitor *tv) { tv->VisitBitCluster(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
     virtual Int32 BitSize()                 { return _bitSize; }
 };
@@ -648,7 +665,7 @@ private:
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static EquivalenceType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    virtual void    Visit(TypeVisitor *tv)  { tv->VisitEquivalence(this); }
+    virtual void    Accept(TypeVisitor *tv) { tv->VisitEquivalence(this); }
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
@@ -664,7 +681,7 @@ private:
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    virtual void    Visit(TypeVisitor *tv)  { tv->VisitCluster(this); }
+    virtual void    Accept(TypeVisitor *tv) { tv->VisitCluster(this); }
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
@@ -725,7 +742,7 @@ private:
     static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    virtual void    Visit(TypeVisitor *tv)  { tv->VisitParamBlock(this); }
+    virtual void    Accept(TypeVisitor *tv) { tv->VisitParamBlock(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
         {
             return kNIError_Success;
@@ -761,7 +778,7 @@ public:
     // negative VariableDimensionSentinel means varible, and will not be prealocated.
     IntIndex    _dimensionLengths[1];
     
-    virtual void    Visit(TypeVisitor *tv)              { tv->VisitArray(this); }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.
     virtual Int32   SubElementCount()                   { return 1; }
     virtual TypeRef GetSubElementByName(SubString* name){ return Rank() == 0 ? _wrapped->GetSubElementByName(name) : null ; }
@@ -785,7 +802,7 @@ private:
 public:
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
 public:
-    virtual void    Visit(TypeVisitor *tv)              { tv->VisitDefaultValue(this); }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
 };
@@ -797,22 +814,22 @@ protected:
     PointerType(TypeManagerRef typeManager, TypeRef type);
 public:
     static PointerType* New(TypeManagerRef typeManager, TypeRef type);
-    virtual void    Visit(TypeVisitor *tv)              { tv->VisitPointer(this); }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitPointer(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
     virtual TypeRef GetSubElementByName(SubString* name){ return null; }
 };
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example the address to a C function.
-class CustomPointerType : public PointerType
+class DefaultPointerType : public PointerType
 {
 private:
-    CustomPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
-    CustomPointerType();
+    DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
+    DefaultPointerType();
 public:
     void*           _defaultPointerValue;
 public:
-    static CustomPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
+    static DefaultPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
     
     virtual NIError InitData(void* pData, TypeRef pattern = null)
     {
@@ -838,7 +855,7 @@ protected:
     IDataProcs*    _pDataProcs;
 public:
     static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
-    virtual void    Visit(TypeVisitor *tv)              { tv->VisitPointer(_wrapped); }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitCustomDataProc(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return _pDataProcs->InitData(_wrapped, pData, pattern ? pattern : this); }
     virtual NIError CopyData(const void* pData, void* pDataCopy) { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
     virtual NIError ClearData(void* pData)              { return _pDataProcs->ClearData(_wrapped, pData); }

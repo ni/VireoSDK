@@ -23,6 +23,6 @@
  e(.Clump)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.BranchTarget)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.Instruction)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
- e(.InstructionBlock)  // encoding:15 usage:0 baseType:*.DataPointer dv:f generic:f
+ e(.InstructionBlock)  // encoding:15 usage:0 baseType:cdp(.Instruction) dv:f generic:f
  e(.Array)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.Object)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f

@@ -23,7 +23,7 @@ class TypeTemplateVisitor : public TypeVisitor
 {
 public:
     TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* parameters);
-    TypeRef Visit(TypeRef type);
+    TypeRef Accept(TypeRef type);
 
 private:
     TypeManagerRef _typeManager;
@@ -32,32 +32,32 @@ private:
 private:
     
     virtual void VisitBad(TypeRef type);
-    virtual void VisitBitBlock(TypeRef type);
-    virtual void VisitBitCluster(TypeRef type);
-    virtual void VisitCluster(TypeRef type);
-    virtual void VisitParamBlock(TypeRef type);
-    virtual void VisitEquivalence(TypeRef type);
-    virtual void VisitArray(TypeRef type);
-    virtual void VisitElement(TypeRef type);
-    virtual void VisitNamed(TypeRef type);
-    virtual void VisitPointer(TypeRef type);
-    virtual void VisitDefaultValue(TypeRef type);
-    virtual void VisitCustomDefaultPointer(TypeRef type);
-    virtual void VisitCustomDataProc(TypeRef type);
+    virtual void VisitBitBlock(BitBlockType* type);
+    virtual void VisitBitCluster(BitClusterType* type);
+    virtual void VisitCluster(ClusterType* type);
+    virtual void VisitParamBlock(ParamBlockType* type);
+    virtual void VisitEquivalence(EquivalenceType* type);
+    virtual void VisitArray(ArrayType* type);
+    virtual void VisitElement(ElementType* type);
+    virtual void VisitNamed(NamedType* type);
+    virtual void VisitPointer(PointerType* type);
+    virtual void VisitDefaultValue(DefaultValueType* type);
+    virtual void VisitDefaultPointer(DefaultPointerType* type);
+    virtual void VisitCustomDataProc(CustomDataProcType* type);
 };
 //------------------------------------------------------------
 TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, SubVector<TypeRef>* parameters)
 {
     TypeTemplateVisitor itv(tm, parameters);
-    return itv.Visit(type);
+    return itv.Accept(type);
 }
 //------------------------------------------------------------
-TypeRef TypeTemplateVisitor::Visit(TypeRef type)
+TypeRef TypeTemplateVisitor::Accept(TypeRef type)
 {
     if (!type->HasGenericType()) {
         return type;
     } else {
-        type->Visit(this);
+        type->Accept(this);
         TypeRef newType = _newType;
         _newType = null;
         return newType;
@@ -77,53 +77,53 @@ void TypeTemplateVisitor::VisitBad(TypeRef type)
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitBitBlock(TypeRef type)
+void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitBitCluster(TypeRef type)
+void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitCluster(TypeRef type)
+void TypeTemplateVisitor::VisitCluster(ClusterType* type)
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
     for (int i = 0; i < subElementCount; i++) {
-        elementTypes[i] = Visit(type->GetSubElement(i));
+        elementTypes[i] = Accept(type->GetSubElement(i));
     }
     _newType  = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitParamBlock(TypeRef type)
+void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitEquivalence(TypeRef type)
+void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitArray(TypeRef type)
+void TypeTemplateVisitor::VisitArray(ArrayType* type)
 {
     // A type can not currently derived based on dimension size
-    TypeRef subType = Visit(type->GetSubElement(0));
+    TypeRef subType = Accept(type->GetSubElement(0));
     VIREO_ASSERT(subType != type->GetSubElement(0));
     
     _newType = ArrayType::New(_typeManager, subType, type->Rank(), type->GetDimensionLengths());
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitElement(TypeRef type)
+void TypeTemplateVisitor::VisitElement(ElementType* type)
 {
-    TypeRef   baseType = Visit(type->BaseType());
+    TypeRef   baseType = Accept(type->BaseType());
     SubString fieldName = type->GetElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
     IntIndex offset = type->ElementOffset();
@@ -131,7 +131,7 @@ void TypeTemplateVisitor::VisitElement(TypeRef type)
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitNamed(TypeRef type)
+void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
     SubString name = type->GetName();
     
@@ -157,7 +157,7 @@ void TypeTemplateVisitor::VisitNamed(TypeRef type)
     // Find an existing instantion, or make one.
     _newType = _typeManager->FindType(&name);
     if (!_newType) {
-        TypeRef newBaseType = Visit(type->BaseType());
+        TypeRef newBaseType = Accept(type->BaseType());
         VIREO_ASSERT(newBaseType != type->BaseType());
         _newType = _typeManager->Define(&name, newBaseType);
         // The new type needs to have an IsA relation ship to the template it is derived from
@@ -167,9 +167,9 @@ void TypeTemplateVisitor::VisitNamed(TypeRef type)
     }
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitPointer(TypeRef type)
+void TypeTemplateVisitor::VisitPointer(PointerType* type)
 {
-    TypeRef newBaseType = Visit(type->BaseType());
+    TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         _newType = PointerType::New(_typeManager, newBaseType);
     } else {
@@ -177,9 +177,9 @@ void TypeTemplateVisitor::VisitPointer(TypeRef type)
     }
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitDefaultValue(TypeRef type)
+void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
 {
-    TypeRef newBaseType = Visit(type->BaseType());
+    TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         // Templated defaults are a bit extreme. If the type is generic then
         // how could the data have been parsed.
@@ -189,13 +189,13 @@ void TypeTemplateVisitor::VisitDefaultValue(TypeRef type)
     }
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitCustomDefaultPointer(TypeRef type)
+void TypeTemplateVisitor::VisitDefaultPointer(DefaultPointerType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
-void TypeTemplateVisitor::VisitCustomDataProc(TypeRef type)
+void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
 {
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
