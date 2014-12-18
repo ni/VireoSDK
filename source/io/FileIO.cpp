@@ -334,7 +334,6 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
         tempString.Value->Append('\n');
         POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
     }
-    
     return _NextInstruction();
 }
 //------------------------------------------------------------

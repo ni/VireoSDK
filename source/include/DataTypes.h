@@ -45,6 +45,11 @@ typedef double              Double;
 typedef Int64               IntMax;
 typedef UInt64              UIntMax;
 
+//! Poiner to generic data
+typedef void*               DataPointer;
+//! Poiner to native executable code
+typedef void*               CodePointer;
+
 typedef union {
     // Looks like some of the recent C++ specs supply a type
     // like this (aligned_storage) but its too early to rely
@@ -204,7 +209,7 @@ public:
     T* ReadP()          { return _current++; }
     //! Read the iterator's next value
     T Read()            { return *_current++;  }
-    Boolean InRange()   { return _current < _end; }
+    Boolean HasNext()   { return _current < _end; }
 };
 //------------------------------------------------------------
 //! A light weight iterator for sequential reads of runtime typed values

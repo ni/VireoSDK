@@ -5,21 +5,24 @@
 
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(dv(.String "Hello, Wei") variable1)
+        e(dv(.String "Hello, Brandon") variable1)
         e(dv(.Int32  505) variable2)
         e(dv(.Boolean  true) variable3)
         e(dv(.Boolean  false) variable4)
-        e(dv(.Boolean  false) v7)
-        e(dv(.Boolean  false) v8)
-        e(dv(.Boolean  false) v9)
+        e(dv(.Boolean  false) vb1)
+        e(dv(.Boolean  false) vb2)
+        e(dv(.Boolean  false) vb3)
+        e(dv(.Int8  508) v8)
+        e(dv(.Int64 564) v64)
     )
     clump (
         Add(variable2 variable2 variable2)
-        Sub(variable2 variable2 variable2)
-        Mul(variable2 variable2 variable2)
+        Sub(v8 v8 v8)
+        Mul(v64 v64 v64)
         Println(variable1)
     )
     clump (
+        Sub(variable2 variable2 variable2)
         Println(variable1)
         Println(variable1)
     )
@@ -45,7 +48,13 @@ define (Converter dv(.VirtualInstrument (
         // For iterating through parameter types
         e(.Int32    count2)
         e(.Int32    index2)
+        e(.Int32    clumpIndex)
+        e(.Int32    clumpCount)
+        e(.Int32    argPointerCategory)
         e(.Type     argType)
+        
+        e(.DataPointer argValuePointer)
+        e(.String argSymbolName)
 
     )
     clump (
@@ -63,7 +72,7 @@ define (Converter dv(.VirtualInstrument (
             Printf("  VT%s _%s;\n" typeName eltName)
             Add(index 1 index)
         BranchIfLT(0 index count)
-        Printf("};")
+        Printf("};\n")
         
         // Print the dataspace initializer
 
@@ -81,47 +90,117 @@ define (Converter dv(.VirtualInstrument (
         // Print clump initializer
 
         Copy(HelloWorld.Clumps clumps)
-        ArrayLength(clumps count)
-        Printf("//Number of clumps %s\n" count)        
+       // CreateArrayItr(HelloWorld.Clumps clumpItr)
+        
+        ArrayLength(clumps clumpCount)
+        Printf("\n")
         Printf("//-------------------------\n")
         
-        // For each clump
-        ArrayIndexElt(clumps 0 clump)
-        Copy(clump.CodeStart inst)
-        Printf("Instructions inst = {\n")     
+            Perch(5)
+            // For each clump
+            ArrayIndexElt(clumps clumpIndex clump)
+            Copy(clump.CodeStart inst)
+            Printf("Instructions _clump%d_instructions = {\n" clumpIndex)     
+                
+                //For each instruction
+                Perch(3)
+                InstructionType(inst instructionType internalName)
+                TypeGetName(instructionType typeName)
+                TypeGetSubElement(instructionType 0 parameterListType)
+                
+                Printf("   _I1(%s, " internalName)
+                
+                // For each argument in an instruction
+                // The instruction type is a pointer.
+                // To get acces to the pointer's description get its sub element
+                TypeSubElementCount(parameterListType count2)
+                Init(index2)
+                
+                    // Loop through all arguments 
+                    Branch(4)
+                    Perch(2)
+                        // TypeGetSubElement(parameterListType index2 argType)
+                        //TypeGetName(argType typeName) 
+                        InstructionArg(inst index2 argValuePointer)
+                        TypeManagerPointerToSymbol(* argValuePointer argSymbolName)
+
+                        Printf("%s" argSymbolName)
+                        Printf(", ")
+                        Add(index2 1 index2)
+                        Perch(4)
+                    BranchIfLT(2 index2 count2)
+                    Printf(")\n")
             
-            //For each instruction
-            Perch(3)
-            InstructionType(inst instructionType internalName)
-            TypeGetName(instructionType typeName)
-            TypeGetSubElement(instructionType 0 parameterListType)
-            
-            Printf("   _I1(%s, " internalName)
-            
-            // For each argument in an instruction
-            // The instruction type is a pointer.
-            // To get acces to the pointer's description get its sub element
-            TypeSubElementCount(parameterListType count2)
-            Init(index2)
-            
-            // Loop through all arguments 
-            Branch(4)
-            Perch(2)
-                TypeGetSubElement(parameterListType index2 argType)
-                TypeGetName(argType typeName) 
-                Printf("%s" typeName)
-                Printf(",")
-                Add(index2 1 index2)
-                Perch(4)
-            BranchIfLT(2 index2 count2)
-            Printf(")\n")
-  
-        InstructionNext(inst inst)
-        BranchIfNotNull(3 inst)
-        
-        Printf("};\n")            
+                InstructionNext(inst inst)
+                BranchIfNotNull(3 inst)
+                Printf("};\n")            
+
+            Add(clumpIndex 1 clumpIndex)
+            BranchIfLT(5 clumpIndex clumpCount)        
+
     )
 ) ) )
 
 
 enqueue (Converter)
+
+/*
+
+InstructionItr 
+ClumpItr
+VirtualInstrumentItr
+IntItr
+ArgumentItr
+
+//Iterator<.Instrument>
+
+Iterator itr
+
+InstructionCreateItr
+
+An iterator can be created for any standard array 
+using the following ArrayCreateItr
+
+Any thing stored in a standard array can be iterated over using 
+ArrayCreateItr(array iterator)
+ArrayCreateItrEx(array iterator start end)
+// How to specific the walking path?
+ArrayCreateItrND(array iterator start end)
+
+
+That covers many of common structures. A few have special ones
+
+InstructionCreateItr
+TypeManagerCreateTypeItr
+ParameterCreateItr
+ 
+ 
+ItrNext()
+ItrNext(.ArrayItr)
+ItrNext(.InstructionItr)
+ItrNext(.TypeItr)
+
+When the Iterator is create a done flag can/could be added that
+the Next operation OR's in a done state
+
+Will bind to the correct type of iterator
+
+With a base Iterator a predicate iterator can be added as a wrapper. 
+
+
+
+
+ 
+//Clumps, Queue?
+
+//
+
+
+itr.Value
+itr.Next
+itr.HasNext
+
+How to access 
+
+
+*/

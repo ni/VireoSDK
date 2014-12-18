@@ -501,7 +501,7 @@ NIError TypeCommon::InitData(void* pTarget, IntIndex count)
         memset(pTarget, 0, TopAQSize() * count);
     } else {
         BlockItr iTarget(pTarget, TopAQSize(), count);
-        while (iTarget.InRange()) {
+        while (iTarget.HasNext()) {
             err = InitData(iTarget.ReadP());
             if (err != kNIError_Success) {
                 break;
@@ -519,7 +519,7 @@ NIError TypeCommon::ClearData(void* pTarget, IntIndex count)
         memset(pTarget, 0, TopAQSize() * count);
     } else {
         BlockItr iTarget(pTarget, TopAQSize(), count);
-        while (iTarget.InRange()) {
+        while (iTarget.HasNext()) {
             // use virtual method
             ClearData(iTarget.ReadP());
         }
@@ -543,7 +543,7 @@ NIError TypeCommon::CopyData(const void* pSource, void* pDest, IntIndex count)
         BlockItr iDest(pDest, TopAQSize(), count);
         Int32 step = TopAQSize();
         AQBlock1 *pSourceElt = (AQBlock1*)pSource;
-        while (iDest.InRange()) {
+        while (iDest.HasNext()) {
             err = CopyData(pSourceElt, iDest.ReadP());
             pSourceElt += step;
             if (err != kNIError_Success)
@@ -559,7 +559,7 @@ NIError TypeCommon::MultiCopyData(const void* pSource, void* pDest, IntIndex cou
         memset(pDest, (int)*(AQBlock1*)pSource, count);
     } else {
         BlockItr iDest(pDest, TopAQSize(), count);
-        while (iDest.InRange()) {
+        while (iDest.HasNext()) {
             // TODO process errors
             CopyData(pSource, iDest.ReadP());
         }
@@ -1598,7 +1598,7 @@ IntIndex TypedArrayCore::InternalCalculateLength()
     // current length of each dimension.
     IntIndex length = 1;
     IntIndexItr iDim( GetDimensionLengths(), Rank());
-    while (iDim.InRange()) {
+    while (iDim.HasNext()) {
         length *= iDim.Read();
     }
     return length;
@@ -1633,7 +1633,7 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
     // Note that slabs do not need to be packed.
-    while (iSlab.InRange()) {
+    while (iSlab.HasNext()) {
         IntIndex dim = *pDimIndexes;
         if ((dim < 0) || (dim >= *pDimLength)) {
             return null;
@@ -1664,7 +1664,7 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
     // Note that slabs do not need to be packed.
-    while (iSlab.InRange()) {
+    while (iSlab.HasNext()) {
         IntIndex *pDim = *ppDimIndexes;
         IntIndex dim = pDim ? *pDim : 0;
         if ((dim < 0) || (dim >= *pDimLength)) {
@@ -1733,7 +1733,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     IntIndex newCapacity = 1;
     Int32    newLength = 1;
     
-    while(iRequestedDim.InRange()) {
+    while(iRequestedDim.HasNext()) {
         *pSlabLengths++ = slabLength;
         IntIndex dimLength = iRequestedDim.Read();
         IntIndex typesDimLength = *pTypesLengths;
@@ -2317,7 +2317,7 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
 }
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
-VIREO_FUNCTION_SIGNATURE3(InstructionType, InstructionRef, TypeRef, StringRef)
+VIREO_FUNCTION_SIGNATURE3(InstructionType, const InstructionRef, TypeRef, StringRef)
 {
     InstructionCore* pInstruction = _Param(0);
     SubString cName;
@@ -2327,21 +2327,40 @@ VIREO_FUNCTION_SIGNATURE3(InstructionType, InstructionRef, TypeRef, StringRef)
 }
 //------------------------------------------------------------
 //! Determine the type that described the actual argument passed and its allocation origin
-VIREO_FUNCTION_SIGNATURE4(InstructionArgType, InstructionRef, Int32, TypeRef, Int32)
+VIREO_FUNCTION_SIGNATURE3(InstructionArg, const InstructionRef, const Int32, DataPointer)
 {
+    _Param(2) = ((GenericInstruction*)_Param(0))->_args[_Param(1)];
+    
     // TODO
-    // Origin will be:
-    //  0 - unknown
-    //  1 - private data space
-    //  2 - paramblock
-    //  3 - global
-    _Param(2) = null;
-    _Param(3) = 0;
+    // Look up the typ of this specific parameter
+    // for simple args this is just indexing onto the ParamBlock list
+    // for VarArgs there is a bit more work.
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
+//! Determine the type that described the actual argument passed and its allocation origin
+VIREO_FUNCTION_SIGNATURE3(TypeManagerPointerToSymbol, const TypeManagerRef, const DataPointer, StringRef)
+{
+    // The type and value may be part of a parent TypeManager
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+
+    //TempStackCString buffer(null);
+    char buffer[50];
+    snprintf(buffer, 50, "%p", _Param(1));
+
+    _Param(2)->Resize1D(0);
+    _Param(2)->AppendCStr(buffer);
+
+    // TODO
+    // Look up the typ of this specific parameter
+    // for simple args this is just indexing onto the ParamBlock list
+    // for VarArgs there is a bit more work.
     return _NextInstruction();
 }
 //------------------------------------------------------------
 //! Determine the next instruction in the instruction list.
-VIREO_FUNCTION_SIGNATURE2(InstructionNext, InstructionRef, InstructionRef)
+VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
 {
     InstructionCore* pInstruction = _Param(0);
     SubString cName;
@@ -2371,8 +2390,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
+    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbol, "p(i(.TypeManager)i(.DataPointer)o(.String)o(.Int32))");
     DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
-    DEFINE_VIREO_FUNCTION(InstructionArgType, "p(i(.Instruction)i(.Int32)o(.Type)o(.Int32))");
+    DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(.Instruction)i(.Int32)o(.DataPointer))");
     DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(.Instruction)o(.Instruction))");
 #endif
 
