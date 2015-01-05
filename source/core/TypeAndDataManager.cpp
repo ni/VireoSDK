@@ -1395,7 +1395,11 @@ DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valu
 {
     DefaultValueType* type = TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, valuesType)(typeManager, valuesType, mutableValue);
 
-#if 0
+    return type;
+}
+//------------------------------------------------------------
+DefaultValueType* DefaultValueType::FinalizeConstant()
+{
     // Constants can ( e.g. could)  be shared but it has to be carefully boot strapped
     // (1) The DefaultValueType object is created. It has storage inlined in the object
     // (2) The storage in the DVT is used as a location to for the parser to read in the data
@@ -1408,15 +1412,14 @@ DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valu
     // partial mathces are not currently allowed since ther is not a provision for sharing ownership for sparse
     // sets of data in deeply structured data. The root of the value must own all elements beneath it.
     
-    if (!mutableValue && type->IsFlat()) {
+    if (!IsMutableValue() && IsFlat()) {
         // The binary name is not set yet.
-        AQBlock1* binaryNameLength = (AQBlock1*)(type+1) + type->TopAQSize();
-        SubString binaryName((AQBlock1*)&type->_topAQSize, binaryNameLength);
-        type = (DefaultValueType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
+        AQBlock1* binaryNameEnd = (AQBlock1*)(this+1) + TopAQSize();
+        SubString binaryName((AQBlock1*)&this->_topAQSize, binaryNameEnd);
+        return (DefaultValueType*) this->TheTypeManager()->ResolveToUniqueInstance(this,  &binaryName);
+    } else {
+        return this;
     }
-#endif
-
-    return type;
 }
 //------------------------------------------------------------
 DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue)

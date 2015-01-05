@@ -356,6 +356,10 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     if (!_string.ComparePrefixCStr(")")) {
         ParseData(subType, cdt->Begin(kPAInit));
     }
+
+    // Simple constants can resolved to a unique instance.
+    // Perhaps even deeper constant values, let the type system figure it out.
+    cdt = cdt->FinalizeConstant();
     
     if (!_string.ReadChar(')'))
         return BadType();

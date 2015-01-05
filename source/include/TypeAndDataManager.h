@@ -801,6 +801,7 @@ private:
     static IntIndex StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
+    DefaultValueType* FinalizeConstant();
 public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);

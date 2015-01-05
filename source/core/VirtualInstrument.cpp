@@ -505,6 +505,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             // Define a DefaultValue type. As a DV it will never merge to another instance.
             // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
+            cdt = cdt->FinalizeConstant();
             *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         } else {
             // For flat data, the call instruction logic for VIs will initialize the callee parameter
@@ -528,8 +529,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
     
         DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-        *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
+        cdt = cdt->FinalizeConstant();
+        *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         _argumentState = kArgumentResolvedToDefault;
         return;
     }
