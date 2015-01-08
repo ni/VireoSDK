@@ -138,11 +138,12 @@ enum PointerTypeEnum {
 
 // PointerTypeEnum defines how a pointer to data will be used.
 enum PointerAccessEnum {
-    kPAInit = 0,
-    kPARead = 1,
-    kPAWrite = 2,
-    kPAReadWrite = 3,
-    kPAClear = 4,
+    kPAInit = 0,                // for object construction
+    kPARead = 1,                // for read only operations (some constants allocate on demand)
+    kPAWrite = 2,               // for write with no care about previous value
+    kPAReadWrite = 3,           // for read or write with
+    kPAClear = 4,               // for object destruction
+    kPASoftRead = 5,            // for read, but only if it exists
 };
 
 //------------------------------------------------------------

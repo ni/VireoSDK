@@ -592,7 +592,8 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             for (int i = 0; i < this->SubElementCount(); i++) {
                 if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
                     return false;
-            }  return true;
+            }
+            return true;
         }
     } else {
         if (this->IsA(otherType) || otherType->IsA(this))
@@ -1112,10 +1113,14 @@ void* ClusterType::Begin(PointerAccessEnum mode)
         }
         return _pDefault;
     } else if ((mode == kPAClear) && (_pDefault != _sharedNullsBuffer)) {
-        // If its for clearing the block will released once the destructor is called
+        // If its for clearing then only the contents will be cleared
+        // the block is freed in ClusterType's destructor
+        return _pDefault;
+    } else if (mode == kPASoftRead) {
+        // Soft reads just use what currently exists, they never allocate
         return _pDefault;
     } else {
-        // This includes mode == kPAWrite mode == kPAReadWrite
+        // This includes mode == kPAWrite mode == kPAReadWrite, not allowed
         return null;
     }
 }
@@ -1315,23 +1320,26 @@ NIError ArrayType::ClearData(void* pData)
 //------------------------------------------------------------
 void* ArrayType::Begin(PointerAccessEnum mode)
 {
+    if (mode == kPARead) {
     // Default-Defaults are generated as needed on demand and should
     // only be accessed in read mode
-    if (mode == kPARead) {
         if (_pDefault == null) {
             TypeManagerScope scope(TheTypeManager());
-            // On demand allocations for defdef data
-            // belong to the TM the type is owned by
+            // On demand allocations for defdef data belong
+            // to the TM that the type is owned by
             _ownsDefDefData = true;
             this->InitData(&_pDefault);
         }
         return &_pDefault;
     } else if (mode == kPAClear) {
-        // Unlike the cluster which may have any extra block, arrays
+        // Unlike the cluster which may have an extra block, arrays
         // just have one pointer and its part of the object.
         // The clear operation will free the entire array, so the
-        // ArrayType class doe not need a destructor
+        // ArrayType class does not need a destructor
         return &_pDefault;
+    } else if (mode == kPASoftRead) {
+        // Soft reads just use what currently exists, they never allocate
+        return _pDefault ? &_pDefault : null;
     } else {
         return null;
     }
