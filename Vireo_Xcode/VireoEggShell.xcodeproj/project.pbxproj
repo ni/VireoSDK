@@ -67,6 +67,8 @@
 		47E220B11950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47E220B21950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */; };
+		47EEBCC21A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
+		47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
 		47F551FA1A3A581100735FD5 /* SampleStaticLinkProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F551F91A3A581100735FD5 /* SampleStaticLinkProgram.cpp */; };
 		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		DA8261B817145DA9002A5EF8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */; };
@@ -265,6 +267,7 @@
 		47E180571A083769007A8DB4 /* Synchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Synchronization.cpp; path = ../source/core/Synchronization.cpp; sourceTree = "<group>"; };
 		47E220B01950C1F700988185 /* Assert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assert.cpp; path = ../source/core/Assert.cpp; sourceTree = "<group>"; };
 		47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroDefinition_Sample.cpp; path = ../source/micro/MicroDefinition_Sample.cpp; sourceTree = "<group>"; };
+		47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TypeAndDataReflection.cpp; path = ../source/core/TypeAndDataReflection.cpp; sourceTree = "<group>"; };
 		47F1285018B3F67C000DA4E1 /* LotsOStrings.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = LotsOStrings.via; path = "../test-it/LotsOStrings.via"; sourceTree = "<group>"; };
 		47F1285118B51309000DA4E1 /* CheckCopyDataMemoryLeak.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CheckCopyDataMemoryLeak.via; path = "../test-it/CheckCopyDataMemoryLeak.via"; sourceTree = "<group>"; };
 		47F1285418BE5C06000DA4E1 /* ArrayShiftRegister.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ArrayShiftRegister.via; path = "../test-it/ArrayShiftRegister.via"; sourceTree = "<group>"; };
@@ -541,6 +544,7 @@
 				47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */,
 				472B7BE317D0E1E800201196 /* TDCodecVia.cpp */,
 				47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */,
+				47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */,
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
 				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
@@ -773,6 +777,7 @@
 			files = (
 				474A5F58199E71810013F8C5 /* Vireo.m in Sources */,
 				474A5F74199E71FC0013F8C5 /* TDCodecLVFlat.cpp in Sources */,
+				47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */,
 				474A5F80199E72130013F8C5 /* String.cpp in Sources */,
 				474A5F73199E71F50013F8C5 /* Assert.cpp in Sources */,
 				474A5F84199E721B0013F8C5 /* LINX.cpp in Sources */,
@@ -808,6 +813,7 @@
 				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
 				47D84DF317C2A271009053DB /* Math.cpp in Sources */,
+				47EEBCC21A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */,
 				47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */,
 				47D84DF417C2A271009053DB /* Thread.cpp in Sources */,
 				47D84DF517C2A271009053DB /* Queue.cpp in Sources */,

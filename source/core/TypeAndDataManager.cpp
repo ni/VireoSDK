@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -388,8 +388,8 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
     MUTEX_SCOPE()
 
     // Why return a references to a TypeRef?
-    // When instructions use a type constant, they need to point the intrution to a variable
-    // that has the TypeRef and the value. The dictionary serves as that variable so the address
+    // When instructions use a type constant, the instructions need to point to a variable
+    // that has the TypeRef as the value. The dictionary serves as that variable so the address
     // to the entry is returned. The Symbol cannot be deleted until instructions (VIs) are cleared.
     // Since a referenced type must exist before the instruction can reference it,
     // this works out fine.
@@ -606,7 +606,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 {
     Boolean bMatch = false;
 
-    if (IsA(otherType)) {
+    if (this == otherType) {
         bMatch = true;
     } else if (compatibleStructure) {
         EncodingEnum thisEncoding = BitEncoding();
@@ -618,8 +618,27 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
             if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
+        } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
+            if (this->SubElementCount() == otherType->SubElementCount()) {
+                for (int i = 0; i < this->SubElementCount(); i++) {
+                    if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
+                        break;
+                }
+                bMatch = true;
+            }
         }
     }
+  
+#if 0
+    if (!bMatch && otherType->GetName().Length() == 0) {
+        printf(" whoas!!\n");
+    }
+#endif
+
+    if (!bMatch  && (otherType->GetName().Length() > 0)) {
+        bMatch = IsA(otherType);
+    }
+
     return bMatch;
 }
 //------------------------------------------------------------
@@ -639,11 +658,18 @@ Boolean TypeCommon::IsA(TypeRef otherType)
                 return true;
         }
     }
+    
     return IsA(&otherTypeName);
 }
 //------------------------------------------------------------
 Boolean TypeCommon::IsA(const SubString *otherTypeName)
 {
+#if 0
+// clusters in arrays are often anonymous, compare structurally
+    if (otherTypeName->Length() == 0) {
+        return false;
+    }
+#endif
     TypeRef t = this;
     while (t) {
         if (t->GetName().Compare(otherTypeName))
@@ -1321,8 +1347,8 @@ NIError ArrayType::ClearData(void* pData)
 void* ArrayType::Begin(PointerAccessEnum mode)
 {
     if (mode == kPARead) {
-    // Default-Defaults are generated as needed on demand and should
-    // only be accessed in read mode
+        // Default-Defaults are generated as needed on demand and should
+        // only be accessed in read mode
         if (_pDefault == null) {
             TypeManagerScope scope(TheTypeManager());
             // On demand allocations for defdef data belong
@@ -2310,10 +2336,6 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
 #endif
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-TypeRef TypeManager::FindSymboFromPointer(DataPointer pointer, StringRef symbolName)
-{
-    return null;
-}
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
 TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cName)
@@ -2345,34 +2367,18 @@ VIREO_FUNCTION_SIGNATURE3(InstructionType, const InstructionRef, TypeRef, String
 VIREO_FUNCTION_SIGNATURE3(InstructionArg, const InstructionRef, const Int32, DataPointer)
 {
     _Param(2) = ((GenericInstruction*)_Param(0))->_args[_Param(1)];
-    
     // TODO
-    // Look up the typ of this specific parameter
-    // for simple args this is just indexing onto the ParamBlock list
+    // Look up the type of this specific parameter
+    // for simple args this works since it is just indexing into the ParamBlock list
     // for VarArgs there is a bit more work.
     return _NextInstruction();
 }
-
 //------------------------------------------------------------
 //! Determine the type that described the actual argument passed and its allocation origin
-VIREO_FUNCTION_SIGNATURE3(TypeManagerPointerToSymbol, const TypeManagerRef, const DataPointer, StringRef)
+VIREO_FUNCTION_SIGNATURE4(TypeManagerPointerToSymbolPath, const TypeManagerRef, const TypeRef, const DataPointer, StringRef)
 {
-    // The type and value may be part of a parent TypeManager
-  //  TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
-
-    //TempStackCString buffer(null);
-    char buffer[50];
-    snprintf(buffer, 50, "%p", _Param(1));
-
-
-
-    _Param(2)->Resize1D(0);
-    _Param(2)->AppendCStr(buffer);
-
-    // TODO
-    // Look up the typ of this specific parameter
-    // for simple args this is just indexing onto the ParamBlock list
-    // for VarArgs there is a bit more work.
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+    tm->PointerToSymbolPath(_Param(1), _Param(2), _Param(3));
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2407,7 +2413,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbol, "p(i(.TypeManager)i(.DataPointer)o(.String)o(.Int32))");
+    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");
     DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
     DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(.Instruction)i(.Int32)o(.DataPointer))");
     DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(.Instruction)o(.Instruction))");

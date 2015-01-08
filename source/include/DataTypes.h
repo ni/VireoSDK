@@ -230,6 +230,10 @@ public:
         _current += _blockLength;
         return p;
     }
+    Boolean PointerInRange(void* p)
+    {
+        return p>=_current && p < _end;
+    }
 };
 //------------------------------------------------------------
 typedef Itr<IntIndex>   IntIndexItr;

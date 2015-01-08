@@ -1,25 +1,19 @@
+size is 8//-------------------------
 class DST_HelloWorld {  
-  VTString _variable1;
-  VTInt32 _variable2;
-  VTBoolean _variable3;
-  VTBoolean _variable4;
-  VTBoolean _v7;
-  VTBoolean _v8;
-  VTBoolean _v9;
-};//-------------------------
+  VTInt32 _vInt32;
+  VTDouble _vDouble;
+};
 DST_HelloWorld  ds = {  
-  Hello, Wei,
   505,
-  t,
-  f,
-  f,
-  f,
-  f,
-};//Number of clumps 2
-Instructions inst = {
-   _I1(AddInt32, Int32,Int32,Int32,)
-   _I1(SubInt32, Int32,Int32,Int32,)
-   _I1(MulInt32, Int32,Int32,Int32,)
-   _I1(Println, StaticTypeAndData,)
-   _I1(Done, )
+  505,
+};
+Instructions _clump0_instructions = {
+   _I3(AddInt32, Int32, Int32Point.y, *pointer-not-found*)
+   _I3(AddInt32, Int32Point.x, Int32Point.y, *pointer-not-found*)
+   _I3(AddInt32, number_two, number_two, *pointer-not-found*)
+   _I3(MulDouble, DoublePoint.x, DoublePoint.y, *pointer-not-found*)
+   _I2(TypeTopAQSize, .Int32Point, global_int)
+   _I2(TypeTopAQSize, .Int32, *pointer-not-found*)
+   _I2(TypeTopAQSize, .Double, *pointer-not-found*)
+   _I0(Done)
 };

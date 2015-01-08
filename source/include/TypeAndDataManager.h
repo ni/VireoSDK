@@ -83,6 +83,8 @@ class TypedArray1D;
 #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
     
+#define tsTypeType         "Type"
+
 // EncodingEnum defines the base set of encodings used to annotate the underlying semantics
 // of a low level bit block. It is the key for serialization to and from binary, ASCII
 // or other formats.
@@ -253,7 +255,8 @@ public:
 #if defined (VIREO_INSTRUCTION_REFLECTION)
 	TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType, const char* cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
-    TypeRef FindSymboFromPointer(DataPointer ptr, StringRef SymbolName);
+    TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
+    Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
 #else
     TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
@@ -916,7 +919,8 @@ public:
     void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
     AQBlock1* RawBegin()            { return _pRawBufferBegin; }
     void* BeginAtAQ(IntIndex index) { return RawBegin() + index; }
-    
+    BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()->TopAQSize(), Length()); }
+
 public:
     //! Array's type.
     TypeRef Type()                  { return _typeRef; }
@@ -995,6 +999,7 @@ public:
     
     NIError Append(T element)                           { return Insert1D(Length(), 1, &element); }
     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }
+    NIError Insert(IntIndex position, IntIndex count, const T* pElements)  { return Insert1D(position, count, pElements); }
     NIError Append(TypedArray1D* array) { return Insert1D(Length(), array->Length(), array->Begin()); }
     NIError CopyFrom(IntIndex count, const T* pElements){ return Replace1D(0, count, pElements, true); }
 };
@@ -1017,6 +1022,10 @@ public:
     void CopyFromSubString(SubString* string)   { CopyFrom(string->Length(), string->Begin()); }
     void AppendCStr(const char* cstr)           { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
+    void InsertCStr(IntIndex position, const char* cstr)
+                                                { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    void InsertSubString(IntIndex position, SubString* string)
+                                                { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
 };
 
 typedef String *StringRef;
