@@ -120,7 +120,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
     }
  
     SubString rootName;
-    Boolean isTypeRefConstant;
+    Boolean isTypeRefConstant = false;
     if (_found) {
         rootName = type->GetName();
     } else {
