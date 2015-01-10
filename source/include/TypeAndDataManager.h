@@ -208,7 +208,7 @@ private:
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     struct CPrimtitiveInfo {
         TypeRef _type;
-        const char* _cName;
+        ConstCStr _cName;
     };
     std::map<void*, CPrimtitiveInfo>  _cPrimitiveDictionary;
 #endif
@@ -233,12 +233,12 @@ public:
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
     TypeRef TypeList() { return _typeList; }
-    void    PrintMemoryStat(const char*, Boolean last);
+    void    PrintMemoryStat(ConstCStr, Boolean last);
     
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
 
-    NamedTypeRef FindType(const char* name);
+    NamedTypeRef FindType(ConstCStr name);
     NamedTypeRef FindType(const SubString* name);
     NamedTypeRef* FindTypeConstRef(const SubString* name);
     void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
@@ -253,14 +253,14 @@ public:
     
 public:
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-	TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType, const char* cName);
+	TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
     Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
 #else
-    TypeRef DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
+    TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
-	TypeRef DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef type);
+	TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
 
 public:
     // Low level allocation functions
@@ -1020,9 +1020,9 @@ class String : public TypedArray1D< Utf8Char >
 public:
     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
     void CopyFromSubString(SubString* string)   { CopyFrom(string->Length(), string->Begin()); }
-    void AppendCStr(const char* cstr)           { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
-    void InsertCStr(IntIndex position, const char* cstr)
+    void InsertCStr(IntIndex position, ConstCStr cstr)
                                                 { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }

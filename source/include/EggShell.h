@@ -33,7 +33,7 @@ private:
     
 public:
     NIError REPL(SubString *commandBuffer);
-    NIError ReadFile(const char* name, SubString *string);
+    NIError ReadFile(ConstCStr name, SubString *string);
     NIError ReadStdinLine(SubString *string);
     Int64   CommanCount() { return _commandCount;}
     Boolean ShowStats;

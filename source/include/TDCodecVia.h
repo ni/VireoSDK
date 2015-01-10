@@ -46,7 +46,7 @@ public:
     Boolean         _loadVIsImmediatly;
     EventLog*       _pLog;
 
-    void    LogEvent(EventLog::EventSeverity severity, const char* message, ...);
+    void    LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
     Int32   ErrorCount()
         { return _pLog->TotalErrorCount(); }
     Int32   CalcCurrentLine();

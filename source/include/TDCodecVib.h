@@ -47,7 +47,7 @@ public:
     void DecodeInstructionArguments(VIClump* clump);
 
 private :
-    void MarkError(const char* message);
+    void MarkError(ConstCStr message);
     TypeRef BadType()   {return _typeManager->BadType();}   // TODO could create error that encodes scan point
     NIError ParseAggregateElementList(TypeRef ElementTypes[], Int32* pElementCount);
     TypeRef ParseArray();

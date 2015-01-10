@@ -29,7 +29,7 @@ class TypeDefiner
 private:
     TypeDefiner*            _pNext;
     TypeDefinerCallback     _pCallback;
-    const char*             _pNameSpace;
+    ConstCStr               _pNameSpace;
 public :
     //! Add core primitive types to the specified TypeManager
     static void DefineStandardTypes(TypeManagerRef tm);
@@ -41,18 +41,18 @@ public :
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
-    TypeDefiner(TypeDefinerCallback pCallback, const char* pNameSapce, Int32 version);
-    static TypeRef Define(TypeManagerRef tm, const char* name, const char* typeCStr);
+    TypeDefiner(TypeDefinerCallback pCallback, ConstCStr pNameSapce, Int32 version);
+    static TypeRef Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeCStr);
     static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
     static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
-    // static void RequireType(const char* name);
+    // static void RequireType(ConstCStr name);
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeString,PointerTypeEnum pointerType, const char* cname);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
 #else
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, const char* name, void* instruction, const char* typeString,PointerTypeEnum pointerType);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeString,PointerTypeEnum pointerType);
 #endif
-    static void DefineCustomValue(TypeManagerRef tm, const char* name, Int32 value, const char* typeString);
-    static void DefineCustomDataProcs(TypeManagerRef tm, const char* name, IDataProcs* pDataProcs, const char* typeString);
+    static void DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString);
+    static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeString);
     //@}
     
 };

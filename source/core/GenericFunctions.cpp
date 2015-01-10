@@ -21,7 +21,7 @@ namespace Vireo
 {
 
 //------------------------------------------------------------
-const char* CopyProcName(void *pSource, void *pDest, Int32 aqSize)
+ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
 {
     // If the source or dest are not aligned to aqSize bytes, return null.
     if (((uintptr_t) pSource % aqSize != 0) || ((uintptr_t) pDest % aqSize != 0))
@@ -56,7 +56,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         void* pSource = pInstructionBuilder->_argPointers[0];
         void* pDest = pInstructionBuilder->_argPointers[1];
         void* extraParam = null;
-        const char* copyOpName = null;
+        ConstCStr copyOpName = null;
         if (originalCopyOp.CompareCStr("CopyTop")) {
             copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize());
             if (!copyOpName) {
@@ -222,7 +222,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
             SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
-            const char* pVectorBinOpName = null;
+            ConstCStr pVectorBinOpName = null;
             // TODO: Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
                 if (savedOperation.CompareCStr("Split"))
@@ -277,7 +277,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         case kEncoding_Cluster:
         {
             SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
-            const char* pClusterBinOpName = "ClusterBinaryOp";
+            ConstCStr pClusterBinOpName = "ClusterBinaryOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
             pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
@@ -379,7 +379,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         // Special case for convert, if the types are the same go straight to the more efficent copy
         SubString destTypeName = destType->GetName();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
-            const char* copyOpName = "Copy";
+            ConstCStr copyOpName = "Copy";
             SubString copyOpToken(copyOpName);
             pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
             return pInstructionBuilder->EmitInstruction();
@@ -392,7 +392,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     {
     case kEncoding_Array:
         {
-            const char* pVectorUnOpName = "VectorUnaryOp";
+            ConstCStr pVectorUnOpName = "VectorUnaryOp";
             SubString vectorUnOpToken(pVectorUnOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false); //build a vector op
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
@@ -411,7 +411,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
         case kEncoding_Cluster:
         {
-            const char* pClusterUnOpName = "ClusterUnaryOp";
+            ConstCStr pClusterUnOpName = "ClusterUnaryOp";
             SubString clusterUnOpToken(pClusterUnOpName);
 
             pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken, false);
@@ -462,7 +462,7 @@ struct Search1DArrayInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 {
-    const char* pSearchOpName = "Search1DArrayInternal";
+    ConstCStr pSearchOpName = "Search1DArrayInternal";
     SubString searchOpToken(pSearchOpName);
 
     pInstructionBuilder->ReresolveInstruction(&searchOpToken, false);
@@ -540,7 +540,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
 
-    const char* scalarOpName = null;
+    ConstCStr scalarOpName = null;
     Boolean isIdentityOne = false;
     if (savedOperation.CompareCStr("AddElements")) {
         scalarOpName = "Add";
@@ -560,7 +560,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     SubString scalarOpToken(scalarOpName);
 
     // Build the vector op
-    const char* vectorOpName = "VectorOpInternal";
+    ConstCStr vectorOpName = "VectorOpInternal";
     SubString vectorOpToken(vectorOpName);
     pInstructionBuilder->ReresolveInstruction(&vectorOpToken, false);
     pInstructionBuilder->InternalAddArg(null, (void *) (size_t)isIdentityOne);

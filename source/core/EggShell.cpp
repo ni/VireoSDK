@@ -185,7 +185,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
 	#define POSIX_NAME(_name_) _name_ 
 #endif
 //------------------------------------------------------------
-NIError EggShell::ReadFile(const char* name, SubString *string)
+NIError EggShell::ReadFile(ConstCStr name, SubString *string)
 {
     struct stat fileInfo;
 #if (kVireoOS_win32U || kVireoOS_win64U)

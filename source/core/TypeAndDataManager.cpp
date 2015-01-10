@@ -48,7 +48,7 @@ void TypeManager::Delete(TypeManagerRef tm)
     TypeManager::GlobalFree(tm);
 }
 //------------------------------------------------------------
-void TypeManager::PrintMemoryStat(const char* message, Boolean bLast)
+void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
 {
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
@@ -222,9 +222,9 @@ void TypeManager::DeleteTypes(Boolean finalTime)
 }
 //------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType, const char* cName)
+TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType, ConstCStr cName)
 #else
-TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType)
+TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType)
 #endif
 {
     DefaultPointerType *valueTypeNode = DefaultPointerType::New(this, typeRef, pointer, pointerType);
@@ -244,7 +244,7 @@ TypeRef TypeManager::DefineCustomPointerTypeWithValue(const char* name, void* po
     }
 }
 //------------------------------------------------------------
-TypeRef TypeManager::DefineCustomDataProcs(const char* name, IDataProcs* pDataProcs, TypeRef typeRef)
+TypeRef TypeManager::DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef typeRef)
 {
     CustomDataProcType *allocTypeNode = CustomDataProcType::New(this, typeRef, pDataProcs);
     
@@ -342,7 +342,7 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     return namedType;
 }
 //------------------------------------------------------------
-NamedTypeRef TypeManager::FindType(const char* name)
+NamedTypeRef TypeManager::FindType(ConstCStr name)
 {
     SubString ssName(name);
     return FindType(&ssName);

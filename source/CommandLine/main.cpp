@@ -31,7 +31,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 {
     Boolean showStats = false;
     Boolean noShell = false;
-    const char* fileName = null;
+    ConstCStr fileName = null;
     
     Int32 i = 1;
     while ( i < argc) {

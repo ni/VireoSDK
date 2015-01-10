@@ -316,14 +316,14 @@ public:
     void            AddClumpTargetArgument(SubString* clumpIndexToken);
     VirtualInstrument*  AddSubVITargetArgument(TypeRef viType);
     Int32           AddSubSnippet();
-    void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...);
+    void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
     void            LogArgumentProcessing(Int32 lineNumber);
 
     InstructionCore*    EmitCallVIInstruction();
     InstructionCore*    EmitInstruction();
     InstructionCore*    EmitInstruction(SubString* opName, Int32 argCount, ...);
 
-    void            EmitSimpleInstruction(const char* opName);
+    void            EmitSimpleInstruction(ConstCStr opName);
     void            CommitSubSnippet();
     void            CommitClump();
     void            BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction, Int32 argIndex);

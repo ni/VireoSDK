@@ -20,7 +20,7 @@ namespace Vireo
 #ifdef VIREO_USING_ASSERTS
 #ifdef VIREO_MICRO
 
-void VireoAssert_Hidden(Boolean test, const char* file, int line)
+void VireoAssert_Hidden(Boolean test, ConstCStr file, int line)
 {
     if (!test) {
         exit(1);
@@ -29,10 +29,10 @@ void VireoAssert_Hidden(Boolean test, const char* file, int line)
 
 #else
 
-void VireoAssert_Hidden(Boolean test, const char* message, const char* file, int line)
+void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int line)
 {
     if (!test) {
-        const char* filename = (strrchr(file, '/') ? strrchr(file, '/') + 1 : strrchr(file, '\\') ? strrchr(file, '\\') + 1 : file);
+        ConstCStr filename = (strrchr(file, '/') ? strrchr(file, '/') + 1 : strrchr(file, '\\') ? strrchr(file, '\\') + 1 : file);
         printf("assert %s failed in %s, line %d\n", message, filename, line);
 #ifdef VIREO_DYNAMIC_LIB
         // When called as a DLL/Shared library throwing a C++ exception

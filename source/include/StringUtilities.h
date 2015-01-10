@@ -200,10 +200,10 @@ public:
 
 public:
     SubString()                         {}
-    SubString(const char * begin)       { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
-    SubString(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }
+    SubString(ConstCStr begin)          { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
+    SubString(const Utf8Char* begin, const Utf8Char* end) { AliasAssign(begin, end); }
     SubString(SubString* original)      { AliasAssign(original->Begin(), original->End()); }
-    void AliasAssignCStr(const char* begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
+    void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
     
     void EatToEol();
     void EatLeadingSpaces();
@@ -214,12 +214,12 @@ public:
     Int32 LengthAferProcessingEscapes();
     void ProcessEscapes(char* begin, char* end);
     
-    Boolean Compare(const SubString *string)  const { return Compare(string->Begin(), string->Length()); }
+    Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
-    Boolean CompareCStr(const char* begin) const;
+    Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
-    Boolean ComparePrefixCStr(const char* begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((const char*)begin)); }
+    Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
     Boolean ReadRawChar(char* token);
     Boolean ReadChar(char token);
     Boolean ReadInt(IntMax* value);

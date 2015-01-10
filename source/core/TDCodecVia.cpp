@@ -43,7 +43,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _loadVIsImmediatly = false;
 }
 //------------------------------------------------------------
-void TDViaParser::LogEvent(EventLog::EventSeverity severity, const char* message, ...)
+void TDViaParser::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
 {
     va_list args;
     va_start (args, message);
@@ -1079,7 +1079,7 @@ private:
         _pFormatter->_string->Append(')');
     }
     //------------------------------------------------------------
-    void VisitAggregate(TypeRef type, const char* prefix)
+    void VisitAggregate(TypeRef type, ConstCStr prefix)
     {
         _pFormatter->_string->AppendCStr(prefix);
         IntIndex subElementCount = type->SubElementCount();
@@ -1192,7 +1192,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
 //------------------------------------------------------------
 void TDViaFormatter::FormatEncoding(EncodingEnum value)
 {
-    const char *str = null;
+    ConstCStr str = null;
     switch(value)
     {
         case kEncoding_Boolean:         str = tsBoolean;        break;
@@ -1209,7 +1209,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
 //------------------------------------------------------------
 void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
 {
-    const char *str = null;
+    ConstCStr str = null;
     switch(value)
     {
         case kUsageTypeSimple:          str = tsElementToken;           break;
@@ -1228,7 +1228,7 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
 void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
-    const char* format = null;
+    ConstCStr format = null;
     
     if (encoding == kEncoding_SInt) {
         format = "%*lld";
@@ -1246,7 +1246,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
 void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
-	const char* pBuff = buffer;
+	ConstCStr pBuff = buffer;
 
     Double value;
     ReadDoubleFromMemory(kEncoding_IEEE754Binary, aqSize, pData, &value);

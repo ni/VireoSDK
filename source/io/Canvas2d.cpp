@@ -55,7 +55,7 @@ typedef  char JSColorString[64];
 void ColorToJSColor(Int32 value, JSColorString pBuffer)
 {
     // Format "#xxxxxxxx"  - 9 characters + zero
-    static const char *hexChars = "0123456789AFCDEF";
+    static ConstCStr hexChars = "0123456789AFCDEF";
     char* pCurrent = pBuffer + 7;
     *pCurrent-- = 0;
     *pBuffer = '#';

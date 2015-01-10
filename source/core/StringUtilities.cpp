@@ -61,7 +61,7 @@ Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ign
 }
 //------------------------------------------------------------
 // Compare to a null terminated C string
-Boolean SubString::CompareCStr(const char* begin2) const
+Boolean SubString::CompareCStr(ConstCStr begin2) const
 {
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _end;
@@ -475,7 +475,7 @@ Boolean SubString::ParseDouble(Double *pValue)
     //
     Double value;
     TempStackCString tempCStr(this);
-    const char* current = tempCStr.BeginCStr();
+    ConstCStr current = tempCStr.BeginCStr();
     char* end = null;
     
     value = strtod(current, (char**)&end);
@@ -485,15 +485,15 @@ Boolean SubString::ParseDouble(Double *pValue)
 #if (kVireoOS_win32U || kVireoOS_win64U )
     if (!bParsed) {
         Int32 length = Length();
-        if (length >= 3 && strncmp("inf", (const char*)_begin, 3) == 0) {
+        if (length >= 3 && strncmp("inf", (ConstCStr)_begin, 3) == 0) {
             value = std::numeric_limits<double>::infinity();
             bParsed = true;
             _begin += 3;
-        } else if (length >= 3 && strncmp("nan", (const char*)_begin, 3) == 0) {
+        } else if (length >= 3 && strncmp("nan", (ConstCStr)_begin, 3) == 0) {
             value = std::numeric_limits<double>::quiet_NaN();
             bParsed = true;
             _begin += 3;
-        } else if (length >= 4 && strncmp("-inf", (const char*)_begin, 4) == 0) {
+        } else if (length >= 4 && strncmp("-inf", (ConstCStr)_begin, 4) == 0) {
             value = -std::numeric_limits<double>::infinity();
             bParsed = true;
             _begin += 4;
@@ -715,9 +715,9 @@ void Utf16toAscii (Int32 count, Utf16Char* stringIn, char* stringOut)
     }
 }
 
-void AsciiToUtf16 (Int32 count, const char* stringIn, Utf16Char* stringOut)
+void AsciiToUtf16 (Int32 count, ConstCStr stringIn, Utf16Char* stringOut)
 {
-    const char* stringEnd = stringIn + count;
+    ConstCStr stringEnd = stringIn + count;
     
     while (stringIn < stringEnd)
     {

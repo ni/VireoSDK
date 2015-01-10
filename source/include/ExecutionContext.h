@@ -184,7 +184,7 @@ public:
   
 public:
     // Method for runtime errors to be routined through.
-    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, const char* message, ...);
+    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
 
 private:
     static Boolean _classInited;
@@ -246,7 +246,7 @@ class StackVar
 {
 public:
     T *Value;
-    StackVar(const char* name)
+    StackVar(ConstCStr name)
     {
         TypeRef type = TypeManagerScope::Current()->FindType(name);
         VIREO_ASSERT(type->IsArray() && !type->IsFlat());

@@ -784,7 +784,7 @@ void ClumpParseState::EndEmitSubSnippet(ClumpParseState* subSnippet)
     _totalInstructionPointerCount += subSnippet->_totalInstructionPointerCount;
 }
 //------------------------------------------------------------
-void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, const char *message, ...)
+void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, ConstCStr message, ...)
 {
     if (lineNumber != 0) {
         _approximateLineNumber = lineNumber;
@@ -800,7 +800,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
 {
     _approximateLineNumber = lineNumber;
     EventLog::EventSeverity severity = LastArgumentError() ? EventLog::kSoftDataError : EventLog::kTrace;
-    const char* simpleMessage = null;
+    ConstCStr simpleMessage = null;
     switch (_argumentState)
     {
         case kArgumentNotResolved:
@@ -1059,7 +1059,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     return instruction;
 }
 //------------------------------------------------------------
-void ClumpParseState::EmitSimpleInstruction(const char* opName)
+void ClumpParseState::EmitSimpleInstruction(ConstCStr opName)
 {
     SubString ssName(opName);
     StartInstruction(&ssName);

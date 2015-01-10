@@ -436,7 +436,7 @@ void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCoun
     }
 }
 //------------------------------------------------------------
-void ExecutionContext::LogEvent(EventLog::EventSeverity severity, const char* message, ...)
+void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
 {
     EventLog tempLog(EventLog::StdOut);
     va_list args;

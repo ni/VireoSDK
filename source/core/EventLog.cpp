@@ -29,7 +29,7 @@ EventLog::EventLog(StringRef string)
     _warningCount = 0;
 }
 //------------------------------------------------------------
-void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, const char *message, va_list args)
+void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args)
 {
     char buffer[200];
     
@@ -37,7 +37,7 @@ void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, const char *m
     LogEventCore( severity, lineNumber, buffer);
 }
 //------------------------------------------------------------
-void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *message, ...)
+void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...)
 {
     char buffer[200];
     
@@ -49,11 +49,11 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, const char *me
     LogEventCore( severity, lineNumber, buffer);
 }
 //------------------------------------------------------------
-void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, const char *message)
+void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message)
 {
     char buffer[200];
 
-    const char* preamble;
+    ConstCStr preamble;
     
     switch (severity) {
         case kTrace:
