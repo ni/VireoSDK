@@ -22,6 +22,30 @@ SDG
 namespace Vireo
 {
 
+
+//------------------------------------------------------------
+//! The core class for working with strings. The SubString never owns the data it points to.
+inline Int32 SubString::Utf8CharByteSequenceLength(const Utf8Char* pChar)
+{
+    // For a UTF-8 reference
+    // see:  http://tools.ietf.org/html/rfc3629
+    
+    Utf8Char leadByte = *pChar;
+    if (!leadByte & 0x80) {
+        return 1;
+    } else if ((leadByte & 0xE0) == 0xC0) {
+        return 2;
+    } else if ((leadByte & 0xF0) == 0xE0) {
+        return 3;
+    } else if ((leadByte & 0xF8) == 0xF0) {
+        return 4;
+    } else {
+        // 5 or 6 bytes encodings are not part of the
+        // adopted UTF-8 standard. Bad encodings are
+        // treated as a single byte.
+        return 1;
+    }
+}
 //------------------------------------------------------------
 Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2) const
 {
@@ -532,6 +556,23 @@ Int32 SubString::CountMatches(char value)
         pChar++;
     }
     return matchCount;
+}
+//------------------------------------------------------------
+//! The length of the string in logical characters, not bytes.
+Int32 SubString::StringLength()
+{
+    const Utf8Char* pCharSequence  = _begin;
+    const Utf8Char* pEnd = _end;
+
+    // If the string contains invalid UTF-8 encodings the logical lenght
+    // may be shorter than expected.
+
+    Int32 i = 0;
+    while (pCharSequence < pEnd) {
+        pCharSequence = pCharSequence + Utf8CharByteSequenceLength(pCharSequence);
+        i++;
+    }
+    return i;
 }
 //------------------------------------------------------------
 void SubString::EatLeadingSpaces()

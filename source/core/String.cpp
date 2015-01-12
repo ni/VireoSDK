@@ -235,6 +235,13 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringLength, StringRef, Int32)
+{
+    SubString ss = _Param(0)->MakeSubStringAlias();
+    _Param(1) = ss.StringLength();
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
 {
     IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
@@ -385,6 +392,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StringLength, "p(i(.String) o(.Int32))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
     // StringConcatenate input can be string, or array of string.

@@ -197,7 +197,8 @@ public:
     static Boolean IsLetterChar(char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Letter); }
     static Boolean IsIdentifierChar(char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
     static Boolean IsSymbolChar(char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
-
+    static Int32   Utf8CharByteSequenceLength(const Utf8Char*);
+    
 public:
     SubString()                         {}
     SubString(ConstCStr begin)          { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
@@ -229,6 +230,7 @@ public:
     Boolean IdentifierIsNext() const;
 
     Int32 CountMatches(char value);
+    Int32 StringLength();
     void TrimQuotedString();
     TokenTraits ReadValueToken(SubString* token, TokenTraits allowedTraits);
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
