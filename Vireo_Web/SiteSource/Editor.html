@@ -57,7 +57,7 @@ define (HelloWorld dv(.VirtualInstrument (
     e(dv(.String "Hello, World!") message)
   )
   clump (1
-    Print(message)
+    Println(message)
   )
 ) ) )
 enqueue (HelloWorld)
@@ -146,6 +146,7 @@ enqueue (HelloWorld)
             esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
             esh.pokeDouble = Module.cwrap('EggShell_PokeDouble', 'void', ['number', 'string', 'string', 'number']);
             esh.peekDouble = Module.cwrap('EggShell_PeekDouble', 'number', ['number', 'string', 'string']);
+            esh.pokeString = Module.cwrap('EggShell_PokeString', 'void', ['number', 'string', 'string', 'string']);
 
             esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
             esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);

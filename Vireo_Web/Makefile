@@ -18,10 +18,10 @@ dox:
 install: 
 	mkdir -p $(SITEDIR)
 	cp objs/vireo.js $(SITEDIR)/
-	cp objs/vireo.js.mem $(SITEDIR)/
 	cp SiteSource/*.html $(SITEDIR)/
 	cp SiteSource/*.via $(SITEDIR)/
 	cp SiteSource/*.json $(SITEDIR)/
+	cp objs/vireo.js.mem $(SITEDIR)/
 	@echo '==> website files copied to  $(SITEDIR)'
 
 help:
@@ -64,7 +64,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_ExecuteSlices',\
     '_EggShell_Delete',\
     '_EggShell_PeekDouble',\
-    '_EggShell_PokeDouble'\
+    '_EggShell_PokeDouble',\
+    '_EggShell_PeekString',\
+    '_EggShell_PokeString'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\

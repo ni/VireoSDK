@@ -6,15 +6,12 @@ define (Mandelbrot dv(.VirtualInstrument (
     )
     // Dataspace
     c(
-        e(.ComplexDouble cmplxZero)
         e(.Int32 i)
-        e(dv(.Int32 0) c0)
-        e(dv(.Int32 1) c1)
         e(dv(.Int32 50) c50)
     )
     clump (1
-        Copy(c0 i)
-        Copy(cmplxZero z)  // alternately Init(z)
+        Init(i)
+        Init(z)  
         Perch(0)
             Mul(z z z)
             Add(z a z)

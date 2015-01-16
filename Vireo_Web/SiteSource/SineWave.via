@@ -59,9 +59,9 @@ define (_VireoScope3%2Evi dv(.VirtualInstrument (
         e(.Double _v21_NoiseLevel)   // NoiseLevel
     )
     clump(
-        DPrintf("Switch to the canvas tab to see the sine wave")
-        DPrintf("")
-        DPrintf("A sample scope like display using the HTML5 canvas")
+        Printf("Switch to the canvas tab to see the sine wave\n")
+        Printf("\n")
+        Printf("A sample scope like display using the HTML5 canvas\n")
 
         _ObtainCanvas2D%2Evi(_v10_Canvas%20refnum c0)
         Trigger(1)                                // fork

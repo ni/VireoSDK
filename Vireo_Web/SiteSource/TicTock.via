@@ -9,9 +9,9 @@ define (TicTock dv(.VirtualInstrument (
    )
  clump(
    Perch(0)
-     Print(sTic)
+     Println(sTic)
      WaitMilliseconds(t1_milliseconds)
-     Print(sTock)
+     Println(sTock)
      WaitMicroseconds(t2_microseconds)
    Branch(0)
    )

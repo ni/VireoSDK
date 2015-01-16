@@ -81,7 +81,7 @@ void VirtualInstrument::ClearTopVIParamBlock()
     }
 }
 //------------------------------------------------------------
-TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData)
+TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData, Boolean allowDynamic)
 {
     TypedObjectRef dataSpace = this->DataSpace();
     TypedObjectRef paramBlock = this->ParamBlock();
@@ -536,7 +536,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, (void**)ppData);
+    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, (void**)ppData, false);
     if(_actualArgumentType) {
         _argumentState = kArgumentResolvedToVIElement;
         return;

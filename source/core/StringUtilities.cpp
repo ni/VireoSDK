@@ -19,18 +19,20 @@ SDG
 #if (kVireoOS_win32U || kVireoOS_win64U )
 #include <limits>
 #endif
+
 namespace Vireo
 {
-
-
 //------------------------------------------------------------
 //! The core class for working with strings. The SubString never owns the data it points to.
-inline Int32 SubString::Utf8CharByteSequenceLength(const Utf8Char* pChar)
+Int32 SubString::CharLength(const Utf8Char* begin)
 {
+#if defined(VIREO_ASCII_ONLY)
+    return begin + 1;
+#else
     // For a UTF-8 reference
     // see:  http://tools.ietf.org/html/rfc3629
     
-    Utf8Char leadByte = *pChar;
+    Utf8Char leadByte = *begin;
     if (!leadByte & 0x80) {
         return 1;
     } else if ((leadByte & 0xE0) == 0xC0) {
@@ -45,6 +47,7 @@ inline Int32 SubString::Utf8CharByteSequenceLength(const Utf8Char* pChar)
         // treated as a single byte.
         return 1;
     }
+#endif
 }
 //------------------------------------------------------------
 Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2) const
@@ -139,6 +142,45 @@ Boolean SubString::ReadRawChar(char* token)
     } else {
         return false;
     }
+}
+//------------------------------------------------------------
+Boolean SubString::ReadUtf32(Utf32Char* value)
+{
+    Utf32Char uChar = 0;
+#if defined(VIREO_ASCII_ONLY)
+    if (_begin < _end) {
+        uChar = *_begin++
+        if (uChar & 0xFFFFFF80) {
+            uChar = 0;
+        }
+    }
+#else
+    static Utf32Char LeadByteMasks[] = {0x0000007F, 0x0000001F, 0x0000000F, 0x00000007};
+    
+    if (_begin < _end) {
+        Int32 continuationOctets = CharLength(_begin) - 1;
+        Int32 octet = (*_begin++);
+
+        if ((octet & 0xFFFFFF80) && (continuationOctets == 0)) {
+            // Invalid lead octet (5 and 6 octet patterns are not supported.)
+            uChar = 0;
+        } else  {
+            uChar = octet & LeadByteMasks[continuationOctets];
+            while (continuationOctets--) {
+                octet = (*_begin++);
+                if ((octet & 0xFFFFFFC0) == 0x00000080) {
+                    uChar = (uChar << 6) | (octet & 0x0000003F);
+                } else {
+                    // Invalid continuation octet
+                    uChar = 0;
+                    break;
+                }
+            }
+        }
+     }
+#endif
+    *value = uChar;
+    return uChar != 0;
 }
 //------------------------------------------------------------
 Boolean SubString::ReadChar(char token)
@@ -569,10 +611,32 @@ Int32 SubString::StringLength()
 
     Int32 i = 0;
     while (pCharSequence < pEnd) {
-        pCharSequence = pCharSequence + Utf8CharByteSequenceLength(pCharSequence);
+        pCharSequence = pCharSequence + CharLength(pCharSequence);
         i++;
     }
     return i;
+}
+//------------------------------------------------------------
+//! The core class for working with strings. The SubString never owns the data it points to.
+void SubString::EatRawChars(Int32 count)
+{
+    if (count < 0 || count >= Length()) {
+        _begin = _end;
+    } else {
+#if defined(VIREO_ASCII_ONLY)
+        _begin = _begin + count;
+#else
+        while ((_begin < _end) && (count > 0)) {
+            _begin = _begin + CharLength(_begin);
+            count--;
+        }
+        // If the last character is malformed
+        // then _begin may end up past _end, fix it.
+        if (_begin > _end) {
+            _begin = _end;
+        }
+#endif
+    }
 }
 //------------------------------------------------------------
 void SubString::EatLeadingSpaces()
@@ -637,135 +701,37 @@ void SubString::TrimQuotedString()
 //------------------------------------------------------------
 IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase)
 {
-    IntIndex length = Length();
     IntIndex searchStringLength = searchString->Length();
-    
-    // TODO There is much opportuity to optimize this.
-    for (; offset + searchStringLength <= length; offset++) {
-        if (searchString->Compare(_begin + offset, searchStringLength, ignoreCase))
-            return offset;
+    if (searchStringLength > Length())
+        return -1;
+   
+    const Utf8Char* pStart = _begin;
+    const Utf8Char* pEnd = _end - searchStringLength;    
+    for (; pStart < pEnd; ) {
+        if (searchString->Compare(pStart, searchStringLength, ignoreCase)) {
+            return (IntIndex)(pStart - _begin);
+        } else {
+            pStart = pStart + CharLength(pStart);
+        }
     }
     return -1;
 }
-//------------------------------------------------------------
 #if 0
-Utf16Char ToUpperInvariant(Utf16Char c)
+//------------------------------------------------------------
+//! A tool for debugging UTF8 encodings
+void PrintUTF8ArrayHex(const char* buffer, Int32 length)
 {
-#ifdef VIREO_UNICODE_BASIC_MULTILINGUAL_PLANE
-    if (c <= 0x24e9)
-    {
-        return ToUpperDataLow[c];
+    for (; length;) {
+        Int32 x = SubString::NextChar((const Utf8Char*) buffer) - buffer;
+        for(; x; x--) {
+            printf("%02X",  (UInt8)(*buffer));
+            buffer++;
+            length--;
+        }
+        printf(" ");
     }
-    if (c >= 0xff21)
-    {
-        return ToUpperDataHigh[c - 0xff21];
-    }
-#endif
-    return c;
-}
-
-Utf16Char ToUpper(Utf8Char* c)
-{
-    // Quick ASCII range check
-    if (c < 0x60)
-        return c;
-    else if ('a' <= c && c <= 'z')
-        return  (c - 0x20);
-    
-    switch (c)
-    {
-        case L'\u01c5': // LATIN CAPITAL LETTER D WITH SMALL LETTER Z WITH CARON
-            return L'\u01c4';
-        case L'\u01c8': // LATIN CAPITAL LETTER L WITH SMALL LETTER J
-            return L'\u01c7';
-        case L'\u01cb': // LATIN CAPITAL LETTER N WITH SMALL LETTER J
-            return L'\u01ca';
-        case L'\u01f2': // LATIN CAPITAL LETTER D WITH SMALL LETTER Z
-            return L'\u01f1';
-        case L'\u0390': // GREEK SMALL LETTER IOTA WITH DIALYTIKA AND TONOS
-            return L'\u03aa'; // it is not in ICU
-        case L'\u03b0': // GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS
-            return L'\u03ab'; // it is not in ICU
-        case L'\u03d0': // GREEK BETA
-            return L'\u0392';
-        case L'\u03d1': // GREEK THETA
-            return L'\u0398';
-        case L'\u03d5': // GREEK PHI
-            return L'\u03a6';
-        case L'\u03d6': // GREEK PI
-            return L'\u03a0';
-        case L'\u03f0': // GREEK KAPPA
-            return L'\u039a';
-        case L'\u03f1': // GREEK RHO
-            return L'\u03a1';
-    }
-    return ToUpperInvariant(c);
-}
-
-Utf16Char ToLowerInvariant(Utf16Char c)
-{
-#ifdef VIREO_UNICODE_BASIC_MULTILINGUAL_PLANE
-    if (c <= 0x24cf)
-    {
-        return ToLowerDataLow[c];
-    }
-    if (c >= 0xff21)
-    {
-        return ToLowerDataHigh[c - 0xff21];
-    }
-#else
-#endif
-    return c;
-}
-
-Utf16Char ToLower(Utf16Char c)
-{
-    // Quick ASCII range check
-    if (c < 0x40 || (0x60 < c && c < 128))
-        return c;
-    else if ('A' <= c && c <= 'Z')
-        return (c + 0x20);
-    
-    switch (c)
-    {
-        case L'\u01c5': // LATIN CAPITAL LETTER D WITH SMALL LETTER Z WITH CARON
-            return L'\u01c6';
-        case L'\u01c8': // LATIN CAPITAL LETTER L WITH SMALL LETTER J
-            return L'\u01c9';
-        case L'\u01cb': // LATIN CAPITAL LETTER N WITH SMALL LETTER J
-            return L'\u01cc';
-        case L'\u01f2': // LATIN CAPITAL LETTER D WITH SMALL LETTER Z
-            return L'\u01f3';
-        case L'\u03d2':  // ? it is not in ICU
-            return L'\u03c5';
-        case L'\u03d3':  // ? it is not in ICU
-            return L'\u03cd';
-        case L'\u03d4':  // ? it is not in ICU
-            return L'\u03cb';
-    }
-    return ToLowerInvariant(c);
-}
-void Utf16toAscii (Int32 count, Utf16Char* stringIn, char* stringOut)
-{
-    Utf16Char* stringEnd = stringIn + count;
-    
-    while (stringIn < stringEnd)
-    {
-        Utf16Char utf16Char = *stringIn++;
-        *stringOut++ = (utf16Char > 127) ? '*' : utf16Char & 0xff;
-    }
-}
-
-void AsciiToUtf16 (Int32 count, ConstCStr stringIn, Utf16Char* stringOut)
-{
-    ConstCStr stringEnd = stringIn + count;
-    
-    while (stringIn < stringEnd)
-    {
-        *stringOut++ = (AsciiChar) *stringIn++;   // TODO simple expansion of lower 127 ascii
-    }
+    printf("\n");
 }
 #endif
-
 } // namespace Vireo
 

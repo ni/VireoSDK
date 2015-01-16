@@ -1,5 +1,5 @@
  Total number of types 3
-(.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .AsciiChar .Time .Type .TypeManager .VI .Clump .BranchTarget .Instruction .InstructionBlock .Array .Object)
+(.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .Utf32Char .Time .Type .TypeManager .VI .Clump .BranchTarget .Instruction .InstructionBlock .Array .Object)
  e(.Boolean)  // encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:f generic:f
  e(.Int8)  // encoding:10 usage:0 baseType:c(e(bb(8 SInt))) dv:f generic:f
  e(.Int16)  // encoding:10 usage:0 baseType:c(e(bb(16 SInt))) dv:f generic:f
@@ -15,7 +15,7 @@
  e(.ComplexDouble)  // encoding: 1 usage:0 baseType:c(e(.Double real)e(.Double imaginary)) dv:f generic:f
  e(.String)  // encoding: 3 usage:0 baseType:.Utf8Array1D dv:f generic:f
  e(.Utf8Char)  // encoding:14 usage:0 baseType:c(e(bb(8 <TODO>))) dv:f generic:f
- e(.AsciiChar)  // encoding:13 usage:0 baseType:c(e(bb(8 Ascii))) dv:f generic:f
+ e(.Utf32Char)  // encoding:10 usage:0 baseType:.Int32 dv:f generic:f
  e(.Time)  // encoding: 1 usage:0 baseType:c(e(.Int64 seconds)e(.UInt64 fractions)) dv:f generic:f
  e(.Type)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f
  e(.TypeManager)  // encoding:15 usage:0 baseType:.DataPointer dv:f generic:f

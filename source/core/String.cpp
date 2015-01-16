@@ -242,12 +242,21 @@ VIREO_FUNCTION_SIGNATURE2(StringLength, StringRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(StringIndexChar, StringRef, Int32, Utf32Char)
+{
+    SubString ss = _Param(0)->MakeSubStringAlias();
+    ss.EatRawChars(_Param(1));
+    ss.ReadUtf32(_ParamPointer(2));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
 {
-    IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
+    IntIndex targetLength = _Param(0)->Length();
     
     _Param(1)->Resize1D(targetLength);
 
+    // TODO only works for U+0000 .. U+007F
     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
     Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
@@ -267,6 +276,11 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
     
     _Param(1)->Resize1D(targetLength);
+    
+    // TODO only works for U+0000 .. U+007F
+    // Adding Latin/Russian/Greek/Armenian not "too" hard
+    // http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+    // ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
     
     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
@@ -296,7 +310,6 @@ VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
     return _NextInstruction();
 }
 #endif
-
 //------------------------------------------------------------
 struct StringConcatenateParamBlock : public VarArgInstruction
 {
@@ -393,6 +406,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
     DEFINE_VIREO_FUNCTION(StringLength, "p(i(.String) o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StringIndexChar, "p(i(.String) i(.Int32) o(.Utf32Char))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
     // StringConcatenate input can be string, or array of string.

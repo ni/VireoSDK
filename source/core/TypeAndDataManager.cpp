@@ -12,6 +12,7 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include "VirtualInstrument.h"
 
 namespace Vireo
 {
@@ -221,6 +222,20 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     }
 }
 //------------------------------------------------------------
+TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic)
+{
+    // The TypeManager should not care about VIs (ideally)
+    // but this is better in the TM  than the EggShell
+    
+    VirtualInstrument *vi;
+    FindNamedObject(objectName, (void**)&vi);
+
+    if (vi == null)
+        return null;
+    
+    return vi->GetVIElementAddressFromPath(path, ppData, allowDynamic);
+}
+//------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
 TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType, ConstCStr cName)
 #else
@@ -365,22 +380,20 @@ NamedTypeRef TypeManager::FindType(const SubString* name)
     return type;
 }
 //------------------------------------------------------------
-// Look up the pointer to a default value of a type.
-void* TypeManager::FindNamedTypedBlock(SubString* name, PointerAccessEnum mode)
-{    
-    TypeRef t = FindType(name);
-    return t ? t->Begin(mode) : null;
-}
-//------------------------------------------------------------
 // Look up the pointer to a default object's avalue. This Method
 // digs through the ZDA wrapper and returns a pointer to the element.
-void* TypeManager::FindNamedObject(SubString* name)
+TypeRef TypeManager::FindNamedObject(SubString* name, void** ppData)
 {
-    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) FindNamedTypedBlock(name, kPARead);
+    TypeRef t = FindType(name);
+    void* pData = t ? t->Begin(kPARead) : null;
+
+    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) pData;
     if (pObj)
-        return (*pObj)->RawObj();
+        *ppData = (*pObj)->RawObj();
     else
-        return null;
+        *ppData = null;
+        
+    return t;
 }
 //------------------------------------------------------------
 NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
@@ -684,31 +697,31 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 }
 //------------------------------------------------------------
 //! Walk down a dotted cluster field path
-TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* name, Int32* offset)
+TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* path, Int32* offset)
 {
     SubString pathElement;
     TypeRef currentRef = this;
-    SubString path(name); // local copy we can edit
+    SubString path2(path); // local copy we can edit
     *offset = 0;
-    while(path.Length() > 0 )
+    while(path2.Length() > 0 )
     {
-        path.SplitString(&pathElement, &path, '.');	
+        path2.SplitString(&pathElement, &path2, '.');
         currentRef = currentRef->GetSubElementByName(&pathElement);
         if (null == currentRef)
             break;   
         *offset += currentRef->ElementOffset();
-        path.ReadChar('.');
+        path2.ReadChar('.');
     }
     return currentRef;
 }
 //------------------------------------------------------------
 //! Walk down a dotted path inlcuding hops through arrays
-TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
     TypeRef subType;
     if (!IsArray()) {
         Int32 offset = 0;
-        subType = GetSubElementOffsetFromPath(name, &offset);
+        subType = GetSubElementOffsetFromPath(path, &offset);
         if (subType && subType->IsValid()) {
             *end = (AQBlock1*)start + offset;
         } else {
@@ -719,7 +732,7 @@ TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* name, void *
         TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
         subType = array->ElementType();
         void* newStart = array->RawObj();
-        subType = subType->GetSubElementInstancePointerFromPath(name, newStart, end, allowDynamic);
+        subType = subType->GetSubElementInstancePointerFromPath(path, newStart, end, allowDynamic);
     } else {
         // TODO parse indexes.
         // Variable sized arrays can only be indexed if allowDynamic is true.

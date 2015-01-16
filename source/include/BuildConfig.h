@@ -65,6 +65,12 @@ SDG
 
     #define VIREO_TYPE_ATime 1
 
+ // Vireo can be configured to assume all strings are 7 bit ASCII
+ // This means String ArrayLength will alwasy equal StringLength
+ // Note that even when Utf8 is used StringLength may be longer that
+ // The number of graphemes due to combining codepoints
+ // #define VIREO_ASCII_ONLY 1
+
     #define VIREO_TYPE_VARIANT 1
 
     // Track internal unique C function names for primitive functions.

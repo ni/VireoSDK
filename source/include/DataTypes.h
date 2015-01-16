@@ -44,6 +44,7 @@ typedef double              Double;
 
 typedef Int64               IntMax;
 typedef UInt64              UIntMax;
+typedef Int32               Utf32Char;
 
 //! Poiner to generic data
 typedef void*               DataPointer;

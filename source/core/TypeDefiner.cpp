@@ -168,16 +168,12 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 #endif
     // Time
     Define(tm, "Time",          "c(e(.Int64 seconds) e(.UInt64 fractions))");
+    
     // String and character types
-    Define(tm, "AsciiChar", "c(e(bb(8 Ascii)))");
-    Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");
-    
-    Define(tm, "AsciiArray1D", "a(.AsciiChar *)");   // beware multibyte encodings
-    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");     // beware multibyte encodings
-    
+    Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
+    Define(tm, "Utf32Char", ".Int32");              // A single Unicode codepoint (no special encoding or escapes)
+    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should bevalid UTF-8 encoding. No partial or overlong elements
     Define(tm, "String", ".Utf8Array1D");
-    Define(tm, "AsciiString", ".AsciiArray1D");
-    
     Define(tm, "StringArray1D", "a(.String *)");
     
     // Special types for the execution system.

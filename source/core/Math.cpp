@@ -76,8 +76,6 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, ".UnOp"#TYPE)
     
 //------------------------------------------------------------
-
-//Integer Math 	TODO: Add rotate, shift
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) / _Param(1)) : 0 ) ) */ \

@@ -241,8 +241,7 @@ public:
     NamedTypeRef FindType(ConstCStr name);
     NamedTypeRef FindType(const SubString* name);
     NamedTypeRef* FindTypeConstRef(const SubString* name);
-    void*   FindNamedTypedBlock(SubString* name, PointerAccessEnum mode);
-    void*   FindNamedObject(SubString* name);
+    TypeRef FindNamedObject(SubString* name, void** ppData);
     TypeRef BadType();
 
     Int32   AQAlignment(Int32 size);
@@ -252,6 +251,8 @@ public:
     Int32   AQBitSize() {return _aqBitCount; }
     
 public:
+    //! Parse through a path, digging through Aggregate element names, references and array indexes.
+    TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
 	TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);

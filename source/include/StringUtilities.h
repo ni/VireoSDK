@@ -197,7 +197,8 @@ public:
     static Boolean IsLetterChar(char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Letter); }
     static Boolean IsIdentifierChar(char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
     static Boolean IsSymbolChar(char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
-    static Int32   Utf8CharByteSequenceLength(const Utf8Char*);
+    static Int32   CharLength(const Utf8Char* begin);
+    
     
 public:
     SubString()                         {}
@@ -209,6 +210,8 @@ public:
     void EatToEol();
     void EatLeadingSpaces();
     void EatOptionalComma();
+    void EatRawChars(Int32 count);
+
     Int32 ReadEscapeToken(SubString* token);
     bool SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
@@ -222,6 +225,7 @@ public:
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
     Boolean ReadRawChar(char* token);
+    Boolean ReadUtf32(Utf32Char* value);
     Boolean ReadChar(char token);
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);

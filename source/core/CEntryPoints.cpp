@@ -69,32 +69,15 @@ VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContextRef pContext, 
     return pContext->ExecuteSlices(numSlices, 1);
 }
 //------------------------------------------------------------
-VirtualInstrument* EggShell_FindVI(EggShell* pShell, const char* viName)
-{
-    if (pShell == null)
-        return null;
-    
-    SubString viNameString(viName);
-    return (VirtualInstrument *) pShell->TheExecutionContext()->TheTypeManager()->FindNamedObject(&viNameString);
-}
-//------------------------------------------------------------
-TypeRef EggShell_FindVIEltAddress(EggShell* pShell, const char* viName, const char* eltName, void** ppData)
-{
-    VirtualInstrument *vi  = EggShell_FindVI(pShell, viName);
-    
-    if (vi == null)
-        return null;
-    
-    SubString eltNameString(eltName);
-    return vi->GetVIElementAddressFromPath(&eltNameString, ppData);
-}
-//------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     memset(buffer, 0, bufferSize);
     
     void *pData = null;
-    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+    
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
         return -1;
 
@@ -114,7 +97,10 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
 VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     void *pData = null;
-    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
         return -1;
     
@@ -132,7 +118,10 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
 VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
 {
     void *pData = null;
-    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+    
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
         return;
     
@@ -142,13 +131,41 @@ VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, cons
 VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, const char* eltName)
 {
     void *pData = null;
-    TypeRef actualType = EggShell_FindVIEltAddress(pShell, viName, eltName, &pData);
+
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
         return -1;
 
     Double d;
     ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, &d);
     return d;
+}
+
+//------------------------------------------------------------
+VIREO_EXPORT void EggShell_PokeString(EggShell* pShell, const char* viName, const char* eltName, const char* value)
+{
+    void *pData = null;
+    
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if(actualType == null)
+        return;
+    // TODO
+}
+//------------------------------------------------------------
+VIREO_EXPORT void EggShell_PeekString(EggShell* pShell, const char* viName, char* eltName)
+{
+    void *pData = null;
+    
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if(actualType == null)
+        return;
+    // TODO
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
