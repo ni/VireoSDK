@@ -472,7 +472,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
 
     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
-    TypeRef GetSubElementOffsetFromPath(SubString* name, Int32 *offset);
+    TypeRef GetSubElementOffsetFromPath(SubString* name, void *start, void **end, Int32 *offset, Boolean allowDynamic);
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     

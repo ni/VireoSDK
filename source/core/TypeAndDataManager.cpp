@@ -228,12 +228,25 @@ TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubS
     // but this is better in the TM  than the EggShell
     
     VirtualInstrument *vi;
-    FindNamedObject(objectName, (void**)&vi);
+    TypeRef t = FindNamedObject(objectName, (void**)&vi);
 
-    if (vi == null)
+    if (vi /* && Is VI */) {
+          // Vis are a bit of a wrinkle, the internal implimentation
+          // is hidden so vi.a means vi.dataspace.a or vi.paramblock.a
+          // and just how should clumps and and other elements be accessed?
+          // TODO, this type acessor is rare, but could be a method on the object.
+          // it can be used to hide fields as well, The reslover coudl be one of the custom data procs perhaps?
+        return vi->GetVIElementAddressFromPath(path, ppData, allowDynamic);
+    } else if (t) {
+        // start looking the value of the type ( begin, right???)
+        // I thingk end should realy be ppData, this is the element found.
+        void* begin = t->Begin(kPARead);
+        return t->GetSubElementInstancePointerFromPath(path, begin, ppData, allowDynamic);
+    } else {
+        *ppData = null;
         return null;
+    }
     
-    return vi->GetVIElementAddressFromPath(path, ppData, allowDynamic);
 }
 //------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
@@ -697,38 +710,48 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 }
 //------------------------------------------------------------
 //! Walk down a dotted cluster field path
-TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* path, Int32* offset)
+TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
     SubString pathElement;
     TypeRef currentRef = this;
     SubString path2(path); // local copy we can edit
-    *offset = 0;
+    *end = start;
     while(path2.Length() > 0 )
     {
         path2.SplitString(&pathElement, &path2, '.');
+        // Drill down, pass the offset, it will be ooched along as needed.
+        //
         currentRef = currentRef->GetSubElementByName(&pathElement);
         if (null == currentRef)
             break;   
-        *offset += currentRef->ElementOffset();
+        *end = *(AQBlock1**)end + currentRef->ElementOffset();
         path2.ReadChar('.');
     }
+    if (!currentRef || !currentRef->IsValid()) {
+        *end = 0;
+        }
     return currentRef;
 }
 //------------------------------------------------------------
 //! Walk down a dotted path inlcuding hops through arrays
 TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
+
+    //   filed.field.field.field            // standard
+    //   filed%20name%20with%20spaces.      // special names
+    //   filed.1.1.2                        // ordinals       symbols with leading numbes need to escaped??
+    //   "field with spaces".1.2.3          // alternate encoding quotes need to be escaped then \n  %20 still works as well
+    //   1potatoe.2potatoe                  // nota  good name, tokens starting with numbers is not a good thing.
+    //   3.4potatoe                         // symbols cannot be simple numbers confused wiht oridnals, they are predefined symbols. that have theid own name
+    //   IsDefined"4" -> true, all numbers are defined
+    
     TypeRef subType;
     if (!IsArray()) {
-        Int32 offset = 0;
-        subType = GetSubElementOffsetFromPath(path, &offset);
-        if (subType && subType->IsValid()) {
-            *end = (AQBlock1*)start + offset;
-        } else {
-            subType = null;
-            *end = null;
-        }
+        // Treat as indexing a cluster field
+        // TODO this should be a virtual methods
+        subType = GetSubElementOffsetFromPath(path, start, end, allowDynamic);
     } else if (Rank() == 0) {
+        // Its a ZDA, dive into the object
         TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
         subType = array->ElementType();
         void* newStart = array->RawObj();

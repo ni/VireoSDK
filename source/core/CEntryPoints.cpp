@@ -257,12 +257,6 @@ VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef)
     return typeRef->SubElementCount();
 }
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeRef_GetSubElementByPath(TypeRef typeRef, char* buffer, Int32 *offset)
-{
-    SubString string(buffer);
-    return typeRef->GetSubElementOffsetFromPath(&string, offset);
-}
-//------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByName(TypeRef typeRef, char* buffer)
 {
     SubString string(buffer);

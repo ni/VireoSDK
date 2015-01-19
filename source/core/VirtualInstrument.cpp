@@ -83,21 +83,14 @@ void VirtualInstrument::ClearTopVIParamBlock()
 //------------------------------------------------------------
 TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData, Boolean allowDynamic)
 {
+    // Search the dataSpace and paramBlock for the desired element
     TypedObjectRef dataSpace = this->DataSpace();
     TypedObjectRef paramBlock = this->ParamBlock();
     
-    // Search the dataSpace and paramBlock for the desired element
-    Int32 offset = 0;
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(eltPath, &offset);
-    
-    if (actualType != null) {
-        *ppData = dataSpace->RawBegin() + offset;
-    } else if (paramBlock) {
-        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(eltPath, &offset);
-        if (actualType != null)
-            *ppData = paramBlock->RawBegin() + offset;
+    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(eltPath, dataSpace->RawBegin(), ppData, allowDynamic);
+    if (actualType == null && paramBlock) {
+        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(eltPath, paramBlock->RawBegin(), ppData, allowDynamic);
     }
-    
     return actualType;
 }
 //------------------------------------------------------------
