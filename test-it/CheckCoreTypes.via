@@ -2,7 +2,7 @@ define (TypesToCheck dv(a(.Type *) (
     .Boolean
     .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64
     .Single .Double .ComplexSingle .ComplexDouble
-    .String .Utf8Char .AsciiChar
+    .String .Utf8Char .Utf32Char
     .Time
     .Type .TypeManager
     .VI .Clump

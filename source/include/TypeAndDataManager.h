@@ -466,15 +466,10 @@ public:
     virtual TypeRef BaseType()                          { return null; }
     //! How many element in an Aggregate, 0 if the type is not an Aggregate.
     virtual Int32   SubElementCount()                   { return 0; }
-    //! Get an element of an Aggregate using the elements field name.
-    virtual TypeRef GetSubElementByName(SubString* name){ return null; }
     //! Get an element of an Aggregate using it index.
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
-
     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
-    TypeRef GetSubElementOffsetFromPath(SubString* name, void *start, void **end, Int32 *offset, Boolean allowDynamic);
-    //! Parse through a path, digging through Aggregate element names, references and array indexes.
-    TypeRef GetSubElementInstancePointerFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
+    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     
     //! Set the SubString to the name if the type is not anonymous.
     virtual SubString GetName()                         { return SubString(null, null); }
@@ -514,8 +509,6 @@ public:
     
     //! Size of the type in bits including padding. If the type is bit level it s the raw bit size wiht no padding.
     virtual Int32   BitSize()  {return _topAQSize*8;}  // TODO defer to type manager for scale factor;
-    
-
 };
 
 //------------------------------------------------------------
@@ -534,8 +527,9 @@ public:
     // Type operations
     virtual TypeRef BaseType()                          { return _wrapped; }
     virtual Int32   SubElementCount()                   { return _wrapped->SubElementCount(); }
-    virtual TypeRef GetSubElementByName(SubString* name){ return _wrapped->GetSubElementByName(name); }
     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped->GetSubElement(index); }
+    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+        { return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
     virtual Int32   BitSize()                           { return _wrapped->BitSize(); }
     virtual SubString GetName()                         { return _wrapped->GetName(); }
     virtual IntIndex* GetDimensionLengths()             { return _wrapped->GetDimensionLengths(); }
@@ -645,7 +639,7 @@ protected:
 public:
     virtual ~AggregateType() {};
     virtual Int32   SubElementCount();
-    virtual TypeRef GetSubElementByName(SubString* name);
+    virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual TypeRef GetSubElement(Int32 index);
 };
 //------------------------------------------------------------
@@ -786,8 +780,8 @@ public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.
     virtual Int32   SubElementCount()                   { return 1; }
-    virtual TypeRef GetSubElementByName(SubString* name){ return Rank() == 0 ? _wrapped->GetSubElementByName(name) : null ; }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString GetName()                         { return SubString("Array"); }
     virtual IntIndex* GetDimensionLengths()             { return &_dimensionLengths[0]; }
 
@@ -823,7 +817,7 @@ public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitPointer(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
-    virtual TypeRef GetSubElementByName(SubString* name){ return null; }
+    // TODO Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example the address to a C function.
@@ -851,6 +845,8 @@ public:
     virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern = null)  { return type->InitData(pData, pattern); }
     virtual NIError CopyData(TypeRef type, const void* pData, void* pDataCopy) { return type->CopyData(pData, pDataCopy); }
     virtual NIError ClearData(TypeRef type, void* pData) { return type->ClearData(pData); }
+    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* name, void *start, void **end, Boolean allowDynamic)
+        { return type->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
 };
 //------------------------------------------------------------
 //! A type that has custom Init/Copy/Clear functions
@@ -861,10 +857,16 @@ protected:
     IDataProcs*    _pDataProcs;
 public:
     static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
-    virtual void    Accept(TypeVisitor *tv)             { tv->VisitCustomDataProc(this); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)   { return _pDataProcs->InitData(_wrapped, pData, pattern ? pattern : this); }
-    virtual NIError CopyData(const void* pData, void* pDataCopy) { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
-    virtual NIError ClearData(void* pData)              { return _pDataProcs->ClearData(_wrapped, pData); }
+    virtual void    Accept(TypeVisitor *tv)
+        { tv->VisitCustomDataProc(this); }
+    virtual NIError InitData(void* pData, TypeRef pattern = null)
+        { return _pDataProcs->InitData(_wrapped, pData, pattern ? pattern : this); }
+    virtual NIError CopyData(const void* pData, void* pDataCopy)
+        { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
+    virtual NIError ClearData(void* pData)
+        { return _pDataProcs->ClearData(_wrapped, pData); }
+    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* name, void *start, void **end, Boolean allowDynamic)
+        { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
 };
 
 //------------------------------------------------------------

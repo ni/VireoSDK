@@ -56,7 +56,7 @@ public :
     NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
-    TypeRef GetVIElementAddressFromPath(SubString* elementPath, void** pData, Boolean allowDynamic);
+    TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
 
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);

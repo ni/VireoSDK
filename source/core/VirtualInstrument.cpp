@@ -81,15 +81,15 @@ void VirtualInstrument::ClearTopVIParamBlock()
     }
 }
 //------------------------------------------------------------
-TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void** ppData, Boolean allowDynamic)
+TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void* pStart, void** ppData, Boolean allowDynamic)
 {
     // Search the dataSpace and paramBlock for the desired element
     TypedObjectRef dataSpace = this->DataSpace();
     TypedObjectRef paramBlock = this->ParamBlock();
     
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementOffsetFromPath(eltPath, dataSpace->RawBegin(), ppData, allowDynamic);
+    TypeRef actualType = dataSpace->ElementType()->GetSubElementAddressFromPath(eltPath, dataSpace->RawBegin(), ppData, allowDynamic);
     if (actualType == null && paramBlock) {
-        actualType = paramBlock->ElementType()->GetSubElementOffsetFromPath(eltPath, paramBlock->RawBegin(), ppData, allowDynamic);
+        actualType = paramBlock->ElementType()->GetSubElementAddressFromPath(eltPath, paramBlock->RawBegin(), ppData, allowDynamic);
     }
     return actualType;
 }
@@ -529,7 +529,8 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, (void**)ppData, false);
+    // See if it is in the VI's locals or paramblock
+    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
     if(_actualArgumentType) {
         _argumentState = kArgumentResolvedToVIElement;
         return;
@@ -564,11 +565,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
 
         // If there is a dot after the head, then there is more to parse.
         if (pathTail.ReadChar('.')) {
-            // If the top type is a cluster then the remainder should be a simple field name qualifier
-            // Array drill down not yet supported. (it would not be hard for fixed sized arrays)
-            // but blunded or variabel aray element addresses are dynamic.
+            // If the top type is a cluster then the remainder is field name qualifier path.
             void* pDataStart = pData;
-            _actualArgumentType = _actualArgumentType->GetSubElementInstancePointerFromPath(&pathTail, pDataStart, (void**) &pData, false);
+            _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, (void**)&pData, false);
         }
         if (_actualArgumentType) {
             *ppData = pData;
@@ -1140,6 +1139,14 @@ class VIDataProcsClass : public IDataProcs
         
         return type->ClearData(pData);
     }
+    //------------------------------------------------------------
+    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic)
+    {
+        VirtualInstrumentObject *vio = *(VirtualInstrumentObject**) pStart;
+        VirtualInstrument* vi = vio->ObjBegin();
+        return vi->GetVIElementAddressFromPath(path, pStart, ppData, allowDynamic);
+    }
+
 };
 VIDataProcsClass gVIDataProcs;
 //------------------------------------------------------------

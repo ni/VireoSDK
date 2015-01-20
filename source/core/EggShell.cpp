@@ -123,7 +123,7 @@ void EggShell::ParseEnqueueVI(TDViaParser* parser)
 
     VirtualInstrument *vi;
     TypeRef t = _execContext->TheTypeManager()->FindNamedObject(&viName, (void**)&vi);
-    
+    // What if it is not a VI????
     if (vi != null) {
         vi->PressGo();
     } else {

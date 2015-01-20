@@ -12,7 +12,6 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
-#include "VirtualInstrument.h"
 
 namespace Vireo
 {
@@ -21,7 +20,7 @@ namespace Vireo
 // Optional header added to blocks allocated from the system
 struct MallocInfo {
     size_t          _length;        // how big the block is
-    TypeManagerRef  _manager;       // which TypeManaer was sued to allocate it.
+    TypeManagerRef  _manager;       // which TypeManaer was used to allocate it.
 };
 #endif
 
@@ -224,29 +223,14 @@ void TypeManager::DeleteTypes(Boolean finalTime)
 //------------------------------------------------------------
 TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic)
 {
-    // The TypeManager should not care about VIs (ideally)
-    // but this is better in the TM  than the EggShell
-    
-    VirtualInstrument *vi;
-    TypeRef t = FindNamedObject(objectName, (void**)&vi);
-
-    if (vi /* && Is VI */) {
-          // Vis are a bit of a wrinkle, the internal implimentation
-          // is hidden so vi.a means vi.dataspace.a or vi.paramblock.a
-          // and just how should clumps and and other elements be accessed?
-          // TODO, this type acessor is rare, but could be a method on the object.
-          // it can be used to hide fields as well, The reslover coudl be one of the custom data procs perhaps?
-        return vi->GetVIElementAddressFromPath(path, ppData, allowDynamic);
-    } else if (t) {
-        // start looking the value of the type ( begin, right???)
-        // I thingk end should realy be ppData, this is the element found.
-        void* begin = t->Begin(kPARead);
-        return t->GetSubElementInstancePointerFromPath(path, begin, ppData, allowDynamic);
+    TypeRef t = FindType(objectName);
+    void* pData = t ? t->Begin(kPARead) : null;
+    if (pData) {
+        return t->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
     } else {
         *ppData = null;
         return null;
     }
-    
 }
 //------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
@@ -401,11 +385,11 @@ TypeRef TypeManager::FindNamedObject(SubString* name, void** ppData)
     void* pData = t ? t->Begin(kPARead) : null;
 
     TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) pData;
-    if (pObj)
+    if (pObj) {
         *ppData = (*pObj)->RawObj();
-    else
+    } else {
         *ppData = null;
-        
+    }
     return t;
 }
 //------------------------------------------------------------
@@ -709,62 +693,12 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
     return false;
 }
 //------------------------------------------------------------
-//! Walk down a dotted cluster field path
-TypeRef TypeCommon::GetSubElementOffsetFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
+//! Parse an element path by name. Base class knows nothing about sub elements.
+TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    SubString pathElement;
-    TypeRef currentRef = this;
-    SubString path2(path); // local copy we can edit
-    *end = start;
-    while(path2.Length() > 0 )
-    {
-        path2.SplitString(&pathElement, &path2, '.');
-        // Drill down, pass the offset, it will be ooched along as needed.
-        //
-        currentRef = currentRef->GetSubElementByName(&pathElement);
-        if (null == currentRef)
-            break;   
-        *end = *(AQBlock1**)end + currentRef->ElementOffset();
-        path2.ReadChar('.');
-    }
-    if (!currentRef || !currentRef->IsValid()) {
-        *end = 0;
-        }
-    return currentRef;
+    *end = null;
+    return null;
 }
-//------------------------------------------------------------
-//! Walk down a dotted path inlcuding hops through arrays
-TypeRef TypeCommon::GetSubElementInstancePointerFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
-{
-
-    //   filed.field.field.field            // standard
-    //   filed%20name%20with%20spaces.      // special names
-    //   filed.1.1.2                        // ordinals       symbols with leading numbes need to escaped??
-    //   "field with spaces".1.2.3          // alternate encoding quotes need to be escaped then \n  %20 still works as well
-    //   1potatoe.2potatoe                  // nota  good name, tokens starting with numbers is not a good thing.
-    //   3.4potatoe                         // symbols cannot be simple numbers confused wiht oridnals, they are predefined symbols. that have theid own name
-    //   IsDefined"4" -> true, all numbers are defined
-    
-    TypeRef subType;
-    if (!IsArray()) {
-        // Treat as indexing a cluster field
-        // TODO this should be a virtual methods
-        subType = GetSubElementOffsetFromPath(path, start, end, allowDynamic);
-    } else if (Rank() == 0) {
-        // Its a ZDA, dive into the object
-        TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
-        subType = array->ElementType();
-        void* newStart = array->RawObj();
-        subType = subType->GetSubElementInstancePointerFromPath(path, newStart, end, allowDynamic);
-    } else {
-        // TODO parse indexes.
-        // Variable sized arrays can only be indexed if allowDynamic is true.
-        subType = null;
-        *end = null;
-    }
-    return subType;
-}
-
 //------------------------------------------------------------
 // WrappedType
 //------------------------------------------------------------
@@ -832,23 +766,32 @@ Int32 AggregateType::SubElementCount()
     return _elements.Length();
 }
 //------------------------------------------------------------
-TypeRef AggregateType::GetSubElementByName(SubString* name)
+TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    // Find first part of string (look for '.')
-    // find element in collection
-    // if more in string repeat find on part found
+    TypeRef subType = null;
+    *end = null;
     
-    if (name->Length() == 0)
-        return null;
+    if (path->Length() == 0)
+        return this;
     
-    for (ElementType** pType = _elements.Begin(); pType != _elements.End(); pType++)
-    {
-        if ( name->Compare((*pType)->_elementName.Begin(), (*pType)->_elementName.Length()) )
-        {
-            return (*pType);
+    SubString pathHead;
+    SubString pathTail;
+    path->SplitString(&pathHead, &pathTail, '.');
+
+    // If the head matches one of the AggregateType's elements, add the offset.
+    for (ElementType** pType = _elements.Begin(); pType != _elements.End(); pType++) {
+        if ( pathHead.Compare((*pType)->_elementName.Begin(), (*pType)->_elementName.Length()) ) {
+            subType = (*pType);
+            *end = (AQBlock1*)start + ((*pType)->ElementOffset());
+            
+            // If there is a tail recurse, repin start and recurse.
+            if (pathTail.ReadChar('.')) {
+                return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
         }
+            break;
     }
-    return null;
+    }
+    return subType;
 }
 //------------------------------------------------------------
 TypeRef AggregateType::GetSubElement(Int32 index)
@@ -1405,6 +1348,43 @@ void* ArrayType::Begin(PointerAccessEnum mode)
     } else {
         return null;
     }
+}
+//------------------------------------------------------------
+TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
+{
+    TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
+    TypeRef subType = null;
+    *end = null;
+    
+    if (Rank() == 0) {
+        // ZDAs automatically hop into the object. That means an empty path will
+        // still dereference the pointer and get an address to the element itself
+        subType = array->ElementType();
+        *end = array->RawObj();
+        
+        // If there is a path it applies to the object it self,  Repin start and recurse.
+        if (path->Length() > 0) {
+            subType = subType->GetSubElementAddressFromPath(path, *end, end, allowDynamic);
+        }
+    } else {
+        // Split the path into a head & tail
+        SubString pathHead;
+        SubString pathTail;
+        path->SplitString(&pathHead, &pathTail, '.');
+
+        printf(" Using array indexes in paths\n");
+        // If the path has a tail it needs to index the array.
+        // There may be more than one way to do so raw1d indexes, or multidim
+        // may allow end point relative as well ???
+        if (pathTail.ReadChar('.')) {
+            subType = GetSubElementAddressFromPath(path, start, end, allowDynamic);
+        }
+        // TODO parse indexes.
+        // Variable sized arrays can only be indexed if allowDynamic is true.
+        subType = null;
+        *end = null;
+    }
+    return subType;
 }
 //------------------------------------------------------------
 // ParamBlockType
@@ -2274,13 +2254,6 @@ VIREO_FUNCTION_SIGNATURE2(TypeSubElementCount, TypeRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(TypeGetSubElementByName, TypeRef, StringRef,  TypeRef)
-{
-    SubString name = _Param(1)->MakeSubStringAlias();
-    _Param(2) = _Param(0)->GetSubElementByName(&name);
-    return _NextInstruction();
-}
-//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
 {
     _Param(2) = _Param(0)->GetSubElement(_Param(1));
@@ -2477,7 +2450,6 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(.Type) i(.Int32) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeGetSubElementByName, "p(i(.Type) i(.String) o(.Type))");
 
 #if defined(VIREO_TYPE_CONSTRUCTION)
     DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(.TypeManager) o(.Type) i(.Type) i(.Int32))");

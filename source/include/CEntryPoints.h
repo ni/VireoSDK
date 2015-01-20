@@ -66,10 +66,7 @@ VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef);
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByPath(TypeRef typeRef, char* buffer, Int32 *offset);
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef TypeRef_GetSubElementByName(TypeRef typeRef, char* buffer);
-//------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index);
-//------------------------------------------------------------
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object);
 //------------------------------------------------------------
