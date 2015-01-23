@@ -1,17 +1,47 @@
 size is 8//-------------------------
 class DST_HelloWorld {  
+  VTBoolean _vBool;
+  VTUInt8 _vUInt8;
+  VTInt8 _vInt8;
+  VTUInt16 _vUInt16;
+  VTInt16 _vInt16;
+  VTUInt32 _vUInt32;
   VTInt32 _vInt32;
+  VTSingle _vSingle;
   VTDouble _vDouble;
+  VTComplexSingle _vComplexSingle;
+  VTComplexDouble _vComplexDouble;
 };
 DST_HelloWorld  ds = {  
-  505,
-  505,
+  t,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  3.14,
+  6.28,
+  (3.14 -3.14),
+  (6.28 -6.28),
 };
 Instructions _clump0_instructions = {
    _I3(AddInt32, Int32, Int32Point.y, *pointer-not-found*)
    _I3(AddInt32, Int32Point.x, Int32Point.y, *pointer-not-found*)
    _I3(AddInt32, number_two, number_two, *pointer-not-found*)
    _I3(MulDouble, DoublePoint.x, DoublePoint.y, *pointer-not-found*)
+   _I3(AddUInt8, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddInt8, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddUInt16, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddInt16, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddUInt32, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddInt32, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddComplexDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddComplexSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
    _I2(TypeTopAQSize, .Int32Point, global_int)
    _I2(TypeTopAQSize, .Int32, *pointer-not-found*)
    _I2(TypeTopAQSize, .Double, *pointer-not-found*)

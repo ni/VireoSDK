@@ -127,7 +127,7 @@ define (_VireoScope3%2Evi dv(.VirtualInstrument (
         Perch(4)
         Copy(c10 _v1_Clear )
         Convert(_v8_BackGroundColor _v12_Color)
-        FillStyleAlpha(_v17_Canvas%20refnum _v12_Color _v7_Alpha)
+        FillStyle(_v17_Canvas%20refnum _v12_Color _v7_Alpha)
         FillRect(_v17_Canvas%20refnum c6 c6 c5 c5)
 //--- end case structure
         Perch(5)

@@ -145,14 +145,51 @@ define (DoublePoint
 
 define (HelloWorld dv(.VirtualInstrument (
     c(
-        e(dv(.Int32  505) vInt32)
-        e(dv(.Double  505) vDouble)
+        e(dv(.Boolean  t) vBool)
+        e(dv(.UInt8     1)      vUInt8)
+        e(dv(.Int8      2)      vInt8)
+        e(dv(.UInt16    3)      vUInt16)
+        e(dv(.Int16     4)      vInt16)
+        e(dv(.UInt32    5)      vUInt32)
+        e(dv(.Int32     6)      vInt32)
+        e(dv(.Single  3.14)     vSingle)
+        e(dv(.Double  6.28)     vDouble)
+        e(dv(.ComplexSingle  (3.14 -3.14))     vComplexSingle)
+        e(dv(.ComplexDouble  (6.28 -6.28))     vComplexDouble)
     )
     clump (
+        // Try address from different types of symbols
         Add(Int32 Int32Point.y vInt32)
         Add(Int32Point.x Int32Point.y vInt32)
         Add(number_two number_two vInt32)
         Mul(DoublePoint.x DoublePoint.y vDouble)
+        
+        // Would be very interesting to to have a Meta instruction.
+        // It would be an execution no-op but could still be captured and disassembled
+        // might be for extra assertions etc, and can have argument
+        // immediate or symbolic. Something like: 
+        // Meta("my tag" vInt8 vUInt8 .Int32)
+        
+        // Try operation across different type overloads
+        Add(vUInt8 vUInt8 vUInt8)
+        Add(vInt8 vInt8 vInt8)
+
+        Add(vUInt16 vUInt16 vUInt16)
+        Add(vInt16 vInt16 vInt16)
+
+        Add(vUInt32 vUInt32 vUInt32)
+        Add(vInt32 vInt32 vInt32)
+
+        Add(vDouble vDouble vDouble)
+        Add(vSingle vSingle vSingle)
+
+        Add(vComplexDouble vComplexDouble vComplexDouble)
+        Add(vComplexSingle vComplexSingle vComplexSingle)
+
+        Add(vComplexDouble.real vComplexDouble.real vComplexDouble.real)
+        Add(vComplexSingle.imaginary vComplexSingle.imaginary vComplexSingle.imaginary)
+        
+        // Try type-types        
         TypeTopAQSize(.Int32Point global_int)
         TypeTopAQSize(.Int32 vInt32)
         TypeTopAQSize(.Double vInt32)
