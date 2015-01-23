@@ -67,7 +67,10 @@ typedef String *StringRef;
 // Instead of a TypeRef*
 typedef TypeCommon StaticType;
 
+//------------------------------------------------------------
 class TypedArrayCore;
+typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock; // TODO get rid of TypedBlock   ->TypeBlock ObjectRef??
+typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
 
 template <class T>
 class TypedArray1D;
@@ -241,7 +244,7 @@ public:
     NamedTypeRef FindType(ConstCStr name);
     NamedTypeRef FindType(const SubString* name);
     NamedTypeRef* FindTypeConstRef(const SubString* name);
-    TypeRef FindNamedObject(SubString* name, void** ppData);
+    TypedObjectRef FindObject(SubString* name);
     TypeRef BadType();
 
     Int32   AQAlignment(Int32 size);
@@ -289,6 +292,12 @@ public:
     static void* GlobalMalloc(size_t countAQ);
     static void GlobalFree(void* pBuffer);
     
+    // Read or write values accessible to this TM as described by a symbolic path
+    NIError ReadValue(SubString* objectName, SubString* path, Double *value);
+    NIError WriteValue(SubString* objectName, SubString* path, Double value);
+    NIError ReadValue(SubString* objectName, SubString* path, StringRef);
+    NIError WriteValue(SubString* objectName, SubString* path, SubString*);
+
 #ifdef VIREO_PERF_COUNTERS
 private:
     Int64 _lookUpsFound;
@@ -300,6 +309,13 @@ public:
     Int64 LookUpsRoutedToOwner()    { return _lookUpsRoutedToOwner;}
 #endif
 };
+
+//------------------------------------------------------------
+// Utility functions to read and write numbers to non aligned memory based on size and encoding
+NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax* pValue);
+NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
+NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
+NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
@@ -417,17 +433,19 @@ public:
     //! How the data as a whole is encoded, either a simple encoding like "2s compliment binary" or an Aggregate encoding.
     EncodingEnum BitEncoding()      { return (EncodingEnum) _encoding; }
     //! Memory alignment required for values of this type.
-    Int32   AQAlignment()             { return _aqAlignment; }
+    Int32   AQAlignment()           { return _aqAlignment; }
     //! Amount of memory needed for the top level data structure for the type including any padding if needed.
     Int32   TopAQSize()             { return _topAQSize; }
     //! True if the initial value for data of this type is not just zeroed out memory.
     Boolean HasCustomDefault()      { return _hasCustomDefault != 0; }
     //! True if the initial value can be changed.
-    Boolean IsMutableValue()       { return _isMutableValue != 0; }
+    Boolean IsMutableValue()        { return _isMutableValue != 0; }
     //! Dimensionality of the type. Simple Scalars are Rank 0, arrays can be rank 0 as well.
     Int32   Rank()                  { return _rank; }
     //! True if the type is an indexable container that contains another type.
     Boolean IsArray()               { return BitEncoding() == kEncoding_Array; }
+    //! True if the type is an indexable container that contains another type.
+    Boolean IsZDA()                 { return (IsArray() && Rank() ==0); }
     //! True if the type is an aggregate of other types.
     Boolean IsCluster()              { return BitEncoding() == kEncoding_Cluster; }
     //! True if data can be copied by a simple block copy.
@@ -482,7 +500,7 @@ public:
     virtual IntIndex ElementOffset()                    { return 0; }
 
     // Methods for working with individual elements
-    virtual void*   Begin(PointerAccessEnum mode)       { return null; }
+    virtual void*    Begin(PointerAccessEnum mode)      { return null; }
     
     //! Zero out a buffer that will hold a value of the type without consideration for the existing bits.
     void ZeroOutTop(void* pData);
@@ -507,7 +525,7 @@ public:
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     
-    //! Size of the type in bits including padding. If the type is bit level it s the raw bit size wiht no padding.
+    //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual Int32   BitSize()  {return _topAQSize*8;}  // TODO defer to type manager for scale factor;
 };
 
@@ -536,7 +554,7 @@ public:
     // Data operations
     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped->Begin(mode); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
-    { return _wrapped->InitData(pData, pattern ? pattern : this); }
+        { return _wrapped->InitData(pData, pattern ? pattern : this); }
     virtual NIError CopyData(const void* pData, void* pDataCopy)  { return _wrapped->CopyData(pData, pDataCopy); }
     virtual NIError ClearData(void* pData)              { return _wrapped->ClearData(pData); }
 };
@@ -865,13 +883,9 @@ public:
         { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
     virtual NIError ClearData(void* pData)
         { return _pDataProcs->ClearData(_wrapped, pData); }
-    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* name, void *start, void **end, Boolean allowDynamic)
+    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
         { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
 };
-
-//------------------------------------------------------------
-typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock; // TODO get rid of TypedBlock   ->TypeBlock ObjectRef??
-typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
 
 //! The core C++ implimentation for ArrayType typed data's value.
 class TypedArrayCore
@@ -1046,13 +1060,6 @@ public:
     : TempStackCString(string->Begin(), string->Length())
     { }
 };
-
-//------------------------------------------------------------
-// Utility functions to read and write numbers to non aligned memory based on size and encoding
-NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax* pValue);
-NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
-NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
-NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
 
 //------------------------------------------------------------
 TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, SubVector<TypeRef>*);
