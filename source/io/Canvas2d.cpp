@@ -29,8 +29,8 @@ extern void jsBeginPath(Int32);
 extern void jsClosePath(Int32);
 extern void jsStroke(Int32);
 extern void jsFill(Int32);
-extern void jsMoveTo(Int32, double, double);
-extern void jsLineTo(Int32, double, double);
+extern void jsMoveTo(Int32, double x, double y);
+extern void jsLineTo(Int32, double x, double y);
 extern void jsArc(Int32, double, double, double, double, double, bool);
 extern void jsBezierCurveTo(Int32, double, double, double, double, double, double);
 extern void jsFillStyle(Int32, const char*);
@@ -39,7 +39,7 @@ extern void jsLineWidth(Int32, Int32);
 extern void jsFillRect(Int32, double, double, double, double);
 extern void jsFillText(Int32, const char*, int, double, double, double);
 extern void jsStrokeText(Int32, const char*, int, double, double, double);
-extern void jsFont(Int32, const char*, int);
+extern void jsFont(Int32, const char* name, int length);
 }
 #endif
 

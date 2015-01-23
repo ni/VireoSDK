@@ -837,9 +837,9 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
             // If there is a tail recurse, repin start and recurse.
             if (pathTail.ReadChar('.')) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
-        }
+            }
             break;
-    }
+        }
     }
     return subType;
 }
