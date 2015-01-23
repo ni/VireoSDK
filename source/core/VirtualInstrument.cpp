@@ -725,7 +725,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
         
         // Reentrant VI clones exist in TM the caller VI is in.
         DefaultValueType *cdt = DefaultValueType::New(tm, viType, false);
-        VirtualInstrumentObject* pVICopy = *(VirtualInstrumentObject**)cdt->Begin(kPARead);
+        VirtualInstrumentObjectRef pVICopy = *(VirtualInstrumentObjectRef*)cdt->Begin(kPARead);
         vi = (VirtualInstrument*) pVICopy->RawObj();
     } else {
         // Non reentrant VIs use the original type
@@ -1083,10 +1083,10 @@ void ClumpParseState::CommitClump()
     }
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObject*)
+VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObjectRef)
 {
-    VirtualInstrumentObject *pVI = _Param(0);
-    pVI->ObjBegin()->PressGo();
+    if (_Param(0))
+        _Param(0)->ObjBegin()->PressGo();
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1106,7 +1106,7 @@ class VIDataProcsClass : public IDataProcs
         // First copy the basics, then fix up a few things.
         type->CopyData(pDataSource, pDataCopy);
 
-        VirtualInstrumentObject *vioCopy = *(VirtualInstrumentObject**) pDataCopy;
+        VirtualInstrumentObjectRef vioCopy = *(VirtualInstrumentObjectRef*) pDataCopy;
         VirtualInstrument* viCopy = vioCopy->ObjBegin();
         VIClump *pClump = viCopy->Clumps()->Begin();
         VIClump *pClumpEnd = viCopy->Clumps()->End();
@@ -1123,7 +1123,7 @@ class VIDataProcsClass : public IDataProcs
     }
     virtual NIError ClearData(TypeRef type, void* pData)
     {
-        VirtualInstrumentObject *vio = *(VirtualInstrumentObject**) pData;
+        VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pData;
         VirtualInstrument* vi = vio->ObjBegin();
         
         VIClump *pClump = vi->Clumps()->Begin();
@@ -1142,9 +1142,17 @@ class VIDataProcsClass : public IDataProcs
     //------------------------------------------------------------
     virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic)
     {
-        VirtualInstrumentObject *vio = *(VirtualInstrumentObject**) pStart;
+        VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pStart;
         VirtualInstrument* vi = vio->ObjBegin();
-        return vi->GetVIElementAddressFromPath(path, pStart, ppData, allowDynamic);
+        
+        // Check of DS and PB alias'
+        TypeRef subType = vi->GetVIElementAddressFromPath(path, pStart, ppData, allowDynamic);
+        
+        // Check for ful path symbols
+        if (!subType) {
+            subType = type->GetSubElementAddressFromPath(path, pStart, ppData, allowDynamic);
+        }
+        return subType;
     }
 
 };

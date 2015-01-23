@@ -121,11 +121,9 @@ void EggShell::ParseEnqueueVI(TDViaParser* parser)
     if (! parser->TheString()->ReadChar(')'))
         return parser->LogEvent(EventLog::kHardDataError, "')' missing");
 
-    VirtualInstrument *vi;
-    TypeRef t = _execContext->TheTypeManager()->FindNamedObject(&viName, (void**)&vi);
-    // What if it is not a VI????
-    if (vi != null) {
-        vi->PressGo();
+    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_execContext->TheTypeManager()->FindObject(&viName);
+    if (vio && vio->ObjBegin()) {
+        vio->ObjBegin()->PressGo();
     } else {
         return parser->LogEvent(EventLog::kHardDataError, "VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
     }

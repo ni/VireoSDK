@@ -223,10 +223,10 @@ void TypeManager::DeleteTypes(Boolean finalTime)
 //------------------------------------------------------------
 TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic)
 {
-    TypeRef t = FindType(objectName);
-    void* pData = t ? t->Begin(kPARead) : null;
-    if (pData) {
-        return t->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
+    TypeRef type = FindType(objectName);
+    if (type) {
+        void* pData = type->Begin(kPARead);
+        return type->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
     } else {
         *ppData = null;
         return null;
@@ -377,20 +377,17 @@ NamedTypeRef TypeManager::FindType(const SubString* name)
     return type;
 }
 //------------------------------------------------------------
-// Look up the pointer to a default object's avalue. This Method
-// digs through the ZDA wrapper and returns a pointer to the element.
-TypeRef TypeManager::FindNamedObject(SubString* name, void** ppData)
+// A value stored in a ZDA is a bit more of a traditional "object"
+// that is, it is an entity with an address that multiple observers
+// can access and it has a name. FindNamedObject returns a pointer to
+// the inner value. TODO add access mode
+TypedObjectRef TypeManager::FindObject(SubString* name)
 {
-    TypeRef t = FindType(name);
-    void* pData = t ? t->Begin(kPARead) : null;
-
-    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) pData;
-    if (pObj) {
-        *ppData = (*pObj)->RawObj();
-    } else {
-        *ppData = null;
+    TypeRef type = FindType(name);
+    if (type && type->IsZDA()) {
+        return *(TypedObjectRef*) type->Begin(kPARead);
     }
-    return t;
+    return null;
 }
 //------------------------------------------------------------
 NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
@@ -470,6 +467,57 @@ Int32 TypeManager::BitCountToAQSize(Int32 bitCount)
 {
     return (bitCount + (_aqBitCount-1)) / _aqBitCount;
 }
+//------------------------------------------------------------
+NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *pValue)
+{
+    void *pData = null;
+    TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
+    if(actualType == null) {
+        *pValue = 0;
+        return kNIError_kResourceNotFound;
+    }
+    
+    ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, pValue);
+    return kNIError_Success;
+}
+//------------------------------------------------------------
+NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double value)
+{
+    void *pData = null;
+    TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
+    if(actualType == null) {
+        return kNIError_kResourceNotFound;
+    }
+    
+    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, value);
+    return kNIError_Success;
+}
+//------------------------------------------------------------
+NIError TypeManager::ReadValue(SubString* objectName, SubString* path, StringRef)
+{
+    void *pData = null;
+    TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
+    if(actualType == null) {
+//        *pValue = 0;
+        return kNIError_kResourceNotFound;
+    }
+    
+//    ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, pValue);
+    return kNIError_Success;
+}
+//------------------------------------------------------------
+NIError TypeManager::WriteValue(SubString* objectName, SubString* path, SubString* value)
+{
+    void *pData = null;
+    TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
+    if(actualType == null) {
+        return kNIError_kResourceNotFound;
+    }
+    
+//    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, value);
+    return kNIError_Success;
+}
+
 //------------------------------------------------------------
 // TypeCommon
 //------------------------------------------------------------
@@ -771,8 +819,10 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
     TypeRef subType = null;
     *end = null;
     
-    if (path->Length() == 0)
+    if (path->Length() == 0) {
+        *end = start;
         return this;
+    }
     
     SubString pathHead;
     SubString pathTail;
@@ -2164,6 +2214,24 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(TypeManagerReadValueDouble, TypeManagerRef, StringRef, StringRef, Double)
+{
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+    SubString objectName = _Param(1)->MakeSubStringAlias();
+    SubString path = _Param(2)->MakeSubStringAlias();
+    tm->ReadValue(&objectName, &path, _ParamPointer(3));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef, StringRef, Double)
+{
+    TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+    SubString objectName = _Param(1)->MakeSubStringAlias();
+    SubString path = _Param(2)->MakeSubStringAlias();
+    tm->WriteValue(&objectName, &path, _Param(3));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
 {
     // Return the static type.
@@ -2420,6 +2488,11 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerRootTypeManager, "p(i(.TypeManager) o(.TypeManager))");
     DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
+ //   DEFINE_VIREO_FUNCTION(TypeManagerWriteString, "p(i(.TypeManager) i(.String) i(.String))");
+ //   DEFINE_VIREO_FUNCTION(TypeManagerReadString, "p(i(.TypeManager) i(.String) o(.String))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");

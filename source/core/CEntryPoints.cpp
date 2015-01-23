@@ -131,7 +131,6 @@ VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, cons
 VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, const char* eltName)
 {
     void *pData = null;
-
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
