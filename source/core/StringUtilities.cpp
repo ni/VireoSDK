@@ -469,6 +469,43 @@ Boolean SubString::ReadToken(SubString* token)
     return tokenFound;
 }
 //------------------------------------------------------------
+// ! Read an integer or one of the special symbolic numbers formats
+Boolean SubString::ReadMetaInt(IntIndex *pValue)
+{
+    // Three formats are supported
+    // 1. nnn  Simple integers negative or positive
+    // 2. '*'  Which means roughtly variable or wild card
+    // 3  $nn  Which also means variable but is identifies as a template parameter
+    // Meta ints can only be used where the reasonable range of value does not
+    // include extreme negative numbers.
+    
+    EatLeadingSpaces();
+    if (_begin < _end) {
+        if (*_begin == '*') {
+            _begin++;
+            *pValue = kArrayVariableSizeSentinel;
+            return true;
+        } else if (*_begin == '$') {
+            IntMax templateIndex;
+            SubString innerString(_begin+1, _end);
+            if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimSizes ) {
+                _begin = innerString.Begin();
+                *pValue = kArrayVariableSizeSentinel + (IntIndex)templateIndex + 1;
+                return true;
+            }
+        } else {
+            IntMax temp;
+            Boolean bNumber = ReadInt(&temp);
+            if (bNumber && (temp > kArrayFirstTemplatedDimSize) && (temp < kArrayIndexMax)) {
+                *pValue = (IntIndex)temp;
+                return true;
+            }
+        }
+    }
+    *pValue = 0;
+    return false;
+}
+//------------------------------------------------------------
 Boolean SubString::ReadInt(IntMax *pValue)
 {
     IntMax value = 0;
@@ -476,52 +513,46 @@ Boolean SubString::ReadInt(IntMax *pValue)
     Boolean bNumberFound = false;
     
     EatLeadingSpaces();
-    
     const Utf8Char* begin = _begin;
     
-    if (!(begin < _end)) {
-        value = 0;
-    } else if (*begin == '*') {
-        begin++;
-        value = kVariableSizeSentinel;
-        bNumberFound = true;
+    Boolean bFirstChar = true;
+    IntMax base = 10;
+    if(ComparePrefixCStr("0x")) {
+        begin += 2;
+        base = 16;
     } else {
-        Boolean bFirstChar = true;
-        IntMax base = 10;
-        if(ComparePrefixCStr("0x")) {
-            begin += 2;
-            base = 16;
-        } else {
-            base = 10;
-        }
-        while(begin < _end) {
-            Utf8Char oneChar = *begin;
-            Int32 cValue = -1;
-            if (IsNumberChar(oneChar)) {
-                cValue = (oneChar - '0');
-            } else if ( bFirstChar && ((oneChar == '-') || (oneChar == '+')) ) {
-                begin++;
-                if (oneChar == '-') {
-                    sign = -1;
-                }
-            } else if (base == 16) {
-                if (oneChar >= 'a' && oneChar <= 'f') {
-                    cValue = 10 + (oneChar - 'a');
-                } else if (oneChar >= 'A' && oneChar <= 'F')  {
-                    cValue = 10 + (oneChar - 'A');
-                } else {
-                    break;  //No more hex number characters
-                }
+        base = 10;
+    } // Any need for octal?
+    
+    while(begin < _end) {
+        Utf8Char oneChar = *begin;
+        Int32 cValue = -1;
+        if (IsNumberChar(oneChar)) {
+            cValue = (oneChar - '0');
+        } else if ( bFirstChar && ((oneChar == '-') || (oneChar == '+')) ) {
+            begin++;
+            if (oneChar == '-') {
+                sign = -1;
+            }
+        } else if (base == 16) {
+            if (oneChar >= 'a' && oneChar <= 'f') {
+                cValue = 10 + (oneChar - 'a');
+            } else if (oneChar >= 'A' && oneChar <= 'F')  {
+                cValue = 10 + (oneChar - 'A');
             } else {
-                break; //No more number characters
+                //No more hex number characters
+                break;
             }
-            if (cValue >= 0) {
-                begin++;
-                value = (value * base) + cValue;
-                bNumberFound = true;
-            }
-            bFirstChar = false;
+        } else {
+            //No more number characters
+            break;
         }
+        if (cValue >= 0) {
+            begin++;
+            value = (value * base) + cValue;
+            bNumberFound = true;
+        }
+        bFirstChar = false;
     }
     
     if (bNumberFound) {

@@ -1,0 +1,76 @@
+// An Initial test of UT8 strings
+//
+// VIA files are encoded in utf-8 by definition.
+//
+// Since continuation bytes that follow the lead byte have the high bit set
+// they are never 7bit ASCII characters. This means a simple scanner looking
+// for a ascii characters does not need to be UTF-8 aware. It can still look
+// byte by byte which is generally faster.
+ 
+define (PrintLengths  dv(.VirtualInstrument (
+ c(
+    i(.String string)
+  )
+ c(
+    e(.Int32 sLen)
+    e(.Int32 aLen)
+    e(.Utf32Char char)
+  )
+  clump(1 
+    StringIndexChar(string 0 char)
+    Printf("First character's CodePoint(%05d) (U+%04X) -%s-\n" char char string)
+   )
+ )))
+
+define (HelloBiggerWorld dv(.VirtualInstrument (
+    c(
+        // Translations by Google
+        e(dv(.String "Hello, world. I can fly.") vEnglish)
+        e(dv(.String "Hallo Welt. Ich kann fliegen.") vGerman)
+        e(dv(.String "こんにちは世界。私は飛べる。") vJapanese)
+        e(dv(.String "Hola Mundo. Puedo volar.") vSpanish)
+        e(dv(.String "שלום , העולם . אני יכול לעוף") vHebrew)
+        e(dv(.String "مرحبا بالعالم. يمكنني الطيران.") vArabic)
+        e(dv(.String "你好世界。我能飛。") vChinese_Traditional)
+        e(dv(.String "你好世界。我能飞。") vChinese_Simplified)
+        e(dv(.String "Hej , World. Jeg kan flyve .") vDanish)
+        e(dv(.String "Hello, Dunia. Siwezi kuruka.") vSwahili)
+        e(dv(.String "हैलो वर्ल्ड। मैं उड़ सकता है।") vHindi)
+        e(dv(.String "안녕하세요, 세계 . 나는 비행 할 수있다 .") vKorean)
+        e(dv(.String "Bonjour Le Monde. Je peux voler.") vFrench)
+        e(dv(.String "Привет, Мир. Я могу летать.") vRussian)
+        e(dv(.String "Բարեւ , աշխարհ . Ես կարող եմ թռչել.") vArmenian)
+        e(dv(.String "হ্যালো, দুনিয়া. আমি উড়ে আসা করতে পারেন.") vBengali)
+        e(dv(.String "હેલો, વિશ્વ. હું ઉડી શકે છે.") vGujarati)
+        e(dv(.String "Сәлем Әлем. Мен ұша аламын.") vKazakh)
+        e(dv(.String "ສະບາຍດີ, ໂລກ. ຂ້າພະເຈົ້າ ສາມາດບິນ.") vLao)
+        e(dv(.String "Γεια σας, τον κόσμο. Μπορώ να πετάξω.") vGreek)
+        e(dv(.String "העלא , וועלט . איך קענען פליען .") vYiddish)
+    )
+    clump (
+//       Println("Greet a bigger world, still just s small subset")
+       PrintLengths(vEnglish) 
+       PrintLengths(vGerman)
+       PrintLengths(vJapanese)
+       PrintLengths(vSpanish)
+       PrintLengths(vHebrew)
+       PrintLengths(vArabic)
+       PrintLengths(vChinese_Traditional)
+       PrintLengths(vChinese_Simplified)
+       PrintLengths(vDanish)
+       PrintLengths(vSwahili)
+       PrintLengths(vHindi)
+       PrintLengths(vKorean)
+       PrintLengths(vFrench)
+       PrintLengths(vRussian)
+       PrintLengths(vArmenian)
+       PrintLengths(vBengali)
+       PrintLengths(vGujarati)
+       PrintLengths(vKazakh)
+       PrintLengths(vLao)
+       PrintLengths(vGreek)
+       PrintLengths(vYiddish)
+    )
+) ) )
+
+enqueue (HelloBiggerWorld)

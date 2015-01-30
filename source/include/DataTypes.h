@@ -73,11 +73,10 @@ namespace Vireo
 
 //------------------------------------------------------------
 #ifdef __cplusplus
-#define null 0
+    #define null 0
 #else
-#define null ((void *)0)
+    #define null ((void *)0)
 #endif
-
 
 //------------------------------------------------------------
 //! Int that can be used for small counts could be In8 for very small targets.
@@ -88,19 +87,45 @@ namespace Vireo
 #endif
 
 //------------------------------------------------------------
-//! Type used for indexing arrays.
-typedef VIREO_ARRAY_INDEX_TYPE        IntIndex;
+//! Types used for array indexes and dimensions
+typedef Int32        IntIndex;
+enum {
+
+    // MetaInt encided as "*"
+    kArrayVariableSizeSentinel = INT32_MIN,
     
-enum { kVariableSizeSentinel = VIREO_ARRAY_VARIABLE_SENTINEL };
-enum { kMaximumRank = 15 };
-typedef IntIndex  ArrayDimensionVector[kMaximumRank];
+    // MetaInt encoded as template parameters $0 .. $255
+    kArrayMaxTemplatedDimSizes = 256,
+    
+    kArrayFirstTemplatedDimSize = kArrayVariableSizeSentinel + kArrayMaxTemplatedDimSizes,
+    kArrayIndexMax = INT32_MAX,
+    kArrayMaxRank = 15,
+    };
+
+//------------------------------------------------------------
+//! Some core token grammar items core to Vireo. Others are in TDCodecVia.h
+#define tsTypeType         "Type"
+#define tsWildCard         "*"
+#define tsTemplatePrefix   "$"
+
+typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
+
+inline Boolean IsVariableSizeDim(IntIndex dim)
+{
+    return dim <= kArrayFirstTemplatedDimSize;
+}
+
+inline Boolean DimTemplateIndex(IntIndex dim)
+{
+    return IsVariableSizeDim(dim) ? kArrayFirstTemplatedDimSize - dim : -1;
+}
 
 //------------------------------------------------------------
 typedef enum {
     kNIError_Success = 0,
     kNIError_kInsufficientResources = 1,// Typically memory
     kNIError_kResourceNotFound = 2,
-    kNIError_kArrayRankMismatch = 3,    // Arrays ranks do not fir function requirements (typically they must be the same)
+    kNIError_kArrayRankMismatch = 3,    // Arrays ranks do not fit function requirements (typically they must be the same)
     kNIError_kCantDecode = 4,           // Data in stream does not fit grammar
     kNIError_kCantEncode = 5,           // Data type not supported by encoder
     kNIError_kLogicFailure = 6,

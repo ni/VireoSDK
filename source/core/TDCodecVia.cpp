@@ -237,14 +237,13 @@ TypeRef TDViaParser::ParseArray()
     _string.ReadToken(&token);
     while (!token.CompareCStr(")")) {
         
-
-        IntMax dimensionLength;
-        if (!token.ReadInt(&dimensionLength)) {
+        IntIndex dimensionLength;
+        if (!token.ReadMetaInt(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension '%.*s'",  FMT_LEN_BEGIN(&token));
             return BadType();
         }
 
-        if (rank >= kMaximumRank) {
+        if (rank >= kArrayMaxRank) {
             LOG_EVENT(kSoftDataError, "Too many dimensions");
         } else {
             dimensionLengths[rank] = (IntIndex) dimensionLength;
@@ -261,7 +260,7 @@ TypeRef TDViaParser::ParseArray()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitBlock()
 {
-    IntMax    bitCount;
+    IntIndex    bitCount;
     SubString bitCountToken;
     SubString encoding;
     
@@ -273,7 +272,7 @@ TypeRef TDViaParser::ParseBitBlock()
     
     if (bitCountToken.CompareCStr(tsHostPointerSize)) {
         bitCount = _typeManager->PointerToAQSize() * _typeManager->AQBitSize();
-    } else if (!bitCountToken.ReadInt(&bitCount)) {
+    } else if (!bitCountToken.ReadMetaInt(&bitCount)) {
             return BadType();        
     }
     
@@ -284,7 +283,7 @@ TypeRef TDViaParser::ParseBitBlock()
         return BadType();
     
     EncodingEnum enc = ParseEncoding(&encoding);
-    BitBlockType *type = BitBlockType::New(_typeManager, (Int32)bitCount, enc);
+    BitBlockType *type = BitBlockType::New(_typeManager, bitCount, enc);
     return type;
 }
 //------------------------------------------------------------
@@ -381,7 +380,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     Int32 depth = 0;
     
     ArrayDimensionVector tempDimensionLengths;
-    for (Int32 i = 0; i < kMaximumRank; i++) {
+    for (Int32 i = 0; i < kArrayMaxRank; i++) {
         dimensionLengths[i] = 0;
         tempDimensionLengths[i] = 0;
         }
@@ -638,7 +637,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     return;
                 } else if (type->IsA(&strExecutionContextType)) {
                     _string.ReadToken(&token);
-                    if (token.CompareCStr("*")) {
+                    if (token.CompareCStr(tsWildCard)) {
                         // If a generic is specified then the default for the type should be
                         // used. For some pointer types this may be a process or thread global, etc.
                         // TODO this is at too low a level, it could be done at
@@ -732,11 +731,11 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VIREO_ASSERT(dataSpaceType != null)
     
     _string.EatLeadingSpaces();
-    clumpCount = kVariableSizeSentinel;
+    clumpCount = kArrayVariableSizeSentinel;
     
 #if defined(VIREO_ALLOW_DEPRECATED_CLUMP_COUNT)
     if (_string.ComparePrefixCStr("clump")) {
-        clumpCount = kVariableSizeSentinel;
+        clumpCount = kArrayVariableSizeSentinel;
     } else {
         if (!_string.ReadInt(&clumpCount)) {
             return LOG_EVENT(kHardDataError, "VI Clump count missing");
@@ -767,7 +766,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             break;
         }
     }
-    if (clumpCount != kVariableSizeSentinel && actualClumpCount != clumpCount) {
+    if (clumpCount != kArrayVariableSizeSentinel && actualClumpCount != clumpCount) {
         return LOG_EVENT(kSoftDataError, "VI Clump count incorrect");
     }
 
@@ -1072,8 +1071,8 @@ private:
     virtual void VisitBitBlock(BitBlockType* type)
     {
         _pFormatter->_string->AppendCStr("bb(");
-        Int32 bitCount = type->BitSize();
-        _pFormatter->FormatInt(kEncoding_SInt, sizeof(Int32), &bitCount);
+        IntIndex bitCount = type->BitSize();
+        _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(bitCount), &bitCount);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1118,11 +1117,7 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            if (*pDimension == kVariableSizeSentinel) {
-                _pFormatter->_string->Append('*');
-            } else {
-                _pFormatter->FormatInt(kEncoding_SInt, sizeof(IntIndex), pDimension++);
-            }
+            _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(IntIndex), pDimension++);
         }
         _pFormatter->_string->AppendCStr(")");
     }
@@ -1156,7 +1151,7 @@ private:
     //------------------------------------------------------------
     virtual void VisitPointer(PointerType* type)
     {
-        _pFormatter->_string->AppendCStr("*");
+        _pFormatter->_string->AppendCStr("^");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
@@ -1230,15 +1225,26 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = null;
     
+    IntMax value;
+    ReadIntFromMemory(encoding, aqSize, pData, &value);
+    
     if (encoding == kEncoding_SInt) {
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
+    } else if (encoding == kEncoding_MetaInt) {
+        if (value == kArrayVariableSizeSentinel) {
+            format = tsWildCard;
+        } else if (IsVariableSizeDim((IntIndex)value)) {
+            value = value - kArrayVariableSizeSentinel - 1;
+            format = tsTemplatePrefix "%*lld";
+        } else {
+            format = "%*lld";
+        }
     } else {
         format = "**unsuported type**";
     }
-    IntMax value;
-    ReadIntFromMemory(encoding, aqSize, pData, &value);
+    
     Int32 len = snprintf(buffer, sizeof(buffer), format, _fieldWidth, value);
     _string->Append(len, (Utf8Char*)buffer);
 }
@@ -1388,6 +1394,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     switch (encoding) {
         case kEncoding_UInt:
         case kEncoding_SInt:
+        case kEncoding_MetaInt:
             FormatInt(encoding, type->TopAQSize(), pData);
             break;
         case kEncoding_IEEE754Binary:

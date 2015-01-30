@@ -68,7 +68,7 @@ public:
 
 //------------------------------------------------------------
 //! A ZDA that contains a VirtualInstrument
-typedef TypedObject<VirtualInstrument> *VirtualInstrumentObjectRef;
+typedef TypedObject<VirtualInstrument>  *VirtualInstrumentObjectRef;
 
 class FunctionClump
 {

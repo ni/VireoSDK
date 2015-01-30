@@ -135,7 +135,8 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
     SubString name = type->GetName();
     
-    if(name.CompareCStr("$1")) {
+    // TODO support more than one parameter
+    if(name.CompareCStr(tsTemplatePrefix "1")) {
         _newType = *_parameters->Begin();
         return;
     }

@@ -1,0 +1,33 @@
+define (ConstantDouble dv(.Double 42.42)) 
+define (GlobalDouble var(.Double 42.43))
+
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "Hello, world. I can fly.") v1)
+        e(dv(.Double 6.28) v2)
+        e(.Double v)
+    )
+    clump (
+        TypeManagerReadValue(* "GlobalDouble" "" v)
+        Println(v)
+        TypeManagerReadValue(* "ConstantDouble" "" v)
+        Println(v)
+      
+        // VI let DS and BP fields alise to the top.
+        // More chance of collision though 
+        TypeManagerReadValue(* "HelloWorld" "v2" v)
+        Println(v)
+        // Driil through the VI definition
+        TypeManagerReadValue(* "HelloWorld" "DataSpace.v2" v)
+        Println(v)
+/*
+       Println(variable1)
+       Println(Process.pid)
+       Println(Process)
+       Println(HelloWorld.DataSpace.variable1)
+       Println(HelloWorld.DataSpace)
+    */
+    )
+) ) )
+
+enqueue (HelloWorld)

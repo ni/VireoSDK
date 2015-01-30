@@ -367,10 +367,10 @@ NamedTypeRef TypeManager::FindType(const SubString* name)
     NamedTypeRef *pType = FindTypeConstRef(name);
     NamedTypeRef type = pType ? *pType : null;
     
-    if (!type && name->ComparePrefixCStr("$")) {
+    if (!type && name->ComparePrefixCStr(tsTemplatePrefix)) {
         // Names that start with $ are parameters.
         // They are all direct derivatives of "*" and are allocated as needed.
-        NamedTypeRef genericType = FindType("*");
+        NamedTypeRef genericType = FindType(tsWildCard);
         type = NewNamedType(name, genericType, null);
     }
     
@@ -463,9 +463,14 @@ Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)
     return offset;
 }
 //------------------------------------------------------------
-Int32 TypeManager::BitCountToAQSize(Int32 bitCount)
+Int32 TypeManager::BitCountToAQSize(IntIndex bitCount)
 {
-    return (bitCount + (_aqBitCount-1)) / _aqBitCount;
+    if (IsVariableSizeDim(bitCount)) {
+        // All templates turn into anonymous variable sizes
+        return kArrayVariableSizeSentinel;
+    } else {
+        return (bitCount + (_aqBitCount-1)) / _aqBitCount;
+    }
 }
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *pValue)
@@ -735,7 +740,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
         t = t->BaseType();
     }
     
-    if (otherTypeName->CompareCStr("*")) {
+    if (otherTypeName->CompareCStr(tsWildCard)) {
         return true;
     }
     return false;
@@ -853,22 +858,17 @@ TypeRef AggregateType::GetSubElement(Int32 index)
 //------------------------------------------------------------
 // BitBlockType
 //------------------------------------------------------------
-BitBlockType* BitBlockType::New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding)
+BitBlockType* BitBlockType::New(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding)
 {
     return TADM_NEW_PLACEMENT(BitBlockType)(typeManager, size, encoding);
 }
 //------------------------------------------------------------
-BitBlockType::BitBlockType(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding)
+BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding)
 : TypeCommon(typeManager)
 {
-    if (size == kVariableSizeSentinel) {
-        size = 0;       // Variable means generic-size, 0 by definition
-    } else if (size < 0) {
-        size = -size;   // Bounded get treated as fixed
-    }
     _bitSize = size;
     _isFlat = true;
-    _aqAlignment = 0;         // BitBlocks are not addressable, no alignment
+    _aqAlignment = 0;   // BitBlocks are not addressable, no alignment
     _isValid = true;
     _isBitLevel = true;
     _hasGenericType = false;
@@ -900,13 +900,20 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     Boolean isValid = true;
     Boolean hasCustomValue = false;
     Boolean hasGenericType = false;
+    Boolean isVariableSize = false;
     EncodingEnum encoding = kEncoding_None;
     
     for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
         ElementType* element = *pType;
         
         element->_offset = bitCount;
-        bitCount += element->BitSize();
+        IntIndex ebc = element->BitSize();
+        if (IsVariableSizeDim(ebc) || isVariableSize) {
+            bitCount = kArrayVariableSizeSentinel;
+            isVariableSize = true;
+        } else {
+            bitCount += ebc;
+        }
         isFlat  &= element->IsFlat();
         isValid  |= element->IsValid();
         hasCustomValue |= element->HasCustomDefault();
@@ -970,6 +977,8 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
         // determine the size of the addressable block that can contain it
         // since Clusters are alwasy addressable.
         subAQCount = _tm->BitCountToAQSize(element->BitSize());
+        if (IsVariableSizeDim(subAQCount))
+            subAQCount = 0;
         
         // Alignment for BitBlocks/BitClusters assumes block will
         // be read/written as one atomic operation
@@ -1848,7 +1857,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
             dimCapactiy = typesDimLength;
             dimLength = dimCapactiy;
             // TODO ignore excessive request or flag as error
-        } else if (typesDimLength != kVariableSizeSentinel) {
+        } else if (!IsVariableSizeDim(typesDimLength)) {
             // Capacity is bounded length
             // Length is request, but clipped at bounded length
             dimCapactiy = -typesDimLength;
@@ -2036,7 +2045,7 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
 NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax *pValue)
 {
     IntMax value;
-    if (encoding == kEncoding_SInt) {
+    if (encoding == kEncoding_SInt || encoding == kEncoding_MetaInt) {
         // Use signed int casts to get sign extension
         switch(aqSize) {
             case 1:
@@ -2234,6 +2243,12 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
 {
+    // TODO Using the static StaticTypeAndData may cause the the
+    // parameter to allocate a default value if one does not already exist
+    // in corner cases such as very large array types.
+    // This function does not need the value
+    // so perhaps a StaticType argument type is in order.
+    
     // Return the static type.
     TypeRef staticType = (TypeRef)_ParamPointer(0);
     _Param(2) = staticType;

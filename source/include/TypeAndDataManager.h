@@ -86,8 +86,6 @@ class TypedArray1D;
 #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
     
-#define tsTypeType         "Type"
-
 // EncodingEnum defines the base set of encodings used to annotate the underlying semantics
 // of a low level bit block. It is the key for serialization to and from binary, ASCII
 // or other formats.
@@ -105,16 +103,17 @@ enum EncodingEnum {
     kEncoding_Bits,
     kEncoding_Enum,
     kEncoding_UInt,
-    kEncoding_SInt,
-    kEncoding_Int1sCompliment,
+    kEncoding_SInt,             // 2s compliment
+    kEncoding_MetaInt,          // Includes variable (*) and template ($n) sentinels
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
     kEncoding_Unicode,
     kEncoding_Pointer,          // Some systems may have more than one pointer type cdoe/data
-    kEncoding_Q,
-    kEncoding_Q1,
+    kEncoding_Q,                // 0.bbb fixed point
+    kEncoding_Q1,               // 1.bbb fixed point
     kEncoding_IntBiased,
     kEncoding_ZigZag,           // For future use
+    kEncoding_Int1sCompliment,  // In case we ever run on a CDC 170 Cyber mainframe ;)
     
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
@@ -249,7 +248,7 @@ public:
 
     Int32   AQAlignment(Int32 size);
     Int32   AlignAQOffset(Int32 offset, Int32 size);
-    Int32   BitCountToAQSize(Int32 bitCount);
+    Int32   BitCountToAQSize(IntIndex bitCount);
     Int32   PointerToAQSize() {return sizeof(void*); }
     Int32   AQBitSize() {return _aqBitCount; }
     
@@ -526,7 +525,7 @@ public:
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
-    virtual Int32   BitSize()  {return _topAQSize*8;}  // TODO defer to type manager for scale factor;
+    virtual IntIndex   BitSize()  {return _topAQSize * 8;}  // TODO defer to type manager for scale factor;
 };
 
 //------------------------------------------------------------
@@ -548,7 +547,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped->GetSubElement(index); }
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
         { return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
-    virtual Int32   BitSize()                           { return _wrapped->BitSize(); }
+    virtual IntIndex BitSize()                          { return _wrapped->BitSize(); }
     virtual SubString GetName()                         { return _wrapped->GetName(); }
     virtual IntIndex* GetDimensionLengths()             { return _wrapped->GetDimensionLengths(); }
     // Data operations
@@ -616,12 +615,12 @@ public:
 class BitBlockType : public TypeCommon
 {
 private:
-    Int32   _bitSize;
-    BitBlockType(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
+    IntIndex   _bitSize;
+    BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding);
 public:
     static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitBitBlock(this); }
-    virtual Int32   BitSize() {return _bitSize;};
+    virtual IntIndex BitSize()                      { return _bitSize; };
 };
 //------------------------------------------------------------
 //! A type that is a collection of sub types.
@@ -630,7 +629,7 @@ class AggregateType : public TypeCommon
 protected:
     /// Since this class is variable size, classes that derive from it can not
     /// have member variables  as they would be stompped on.
-    Int32 _bitSize;  // only used by BitCluster
+    IntIndex _bitSize;  // only used by BitCluster
     
 protected:
     // The default value for the type, may be used
@@ -671,7 +670,7 @@ public:
     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitBitCluster(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
-    virtual Int32 BitSize()                 { return _bitSize; }
+    virtual IntIndex BitSize()                 { return _bitSize; }
 };
 //------------------------------------------------------------
 //! A type that permits its data to be looked at though more than one perspective.

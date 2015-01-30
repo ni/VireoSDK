@@ -126,7 +126,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 {
     // Numeric types and Boolean
     Define(tm, "Boolean",       "c(e(bb(1 Boolean)))");
-    Define(tm, "*",             "c(e(bb(* Generic)))");
+    Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
     // Integer
     Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
     Define(tm, "Int8",          "c(e(bb(8 SInt)))");
