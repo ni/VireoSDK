@@ -215,7 +215,7 @@ private:
     std::map<void*, CPrimtitiveInfo>  _cPrimitiveDictionary;
 #endif
 
-    Int32   _aqBitCount;
+    Int32   _aqBitLength;
     MUTEX_CLASS_MEMBER
     TypeRef _badType;
     TypeRef _typeList;                  // List of all Types allocated by this TypeManager
@@ -248,9 +248,9 @@ public:
 
     Int32   AQAlignment(Int32 size);
     Int32   AlignAQOffset(Int32 offset, Int32 size);
-    Int32   BitCountToAQSize(IntIndex bitCount);
-    Int32   PointerToAQSize() {return sizeof(void*); }
-    Int32   AQBitSize() {return _aqBitCount; }
+    Int32   BitLengthToAQSize(IntIndex length);
+    Int32   HostPointerToAQSize() { return sizeof(void*); }
+    Int32   AQBitLength() { return _aqBitLength; }
     
 public:
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
@@ -285,8 +285,6 @@ public:
     Int32 TotalAllocations()        { return _totalAllocations; }
     size_t MaxAllocated()           { return _maxAllocated; }
     
-    Int32 AQBitCount() {return 8;}
-
 public:
     static void* GlobalMalloc(size_t countAQ);
     static void GlobalFree(void* pBuffer);
@@ -525,7 +523,7 @@ public:
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
-    virtual IntIndex   BitSize()  {return _topAQSize * 8;}  // TODO defer to type manager for scale factor;
+    virtual IntIndex BitLength()  {return _topAQSize * _typeManager->AQBitLength(); }  // TODO defer to type manager for scale factor;
 };
 
 //------------------------------------------------------------
@@ -547,7 +545,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped->GetSubElement(index); }
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
         { return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
-    virtual IntIndex BitSize()                          { return _wrapped->BitSize(); }
+    virtual IntIndex BitLength()                        { return _wrapped->BitLength(); }
     virtual SubString GetName()                         { return _wrapped->GetName(); }
     virtual IntIndex* GetDimensionLengths()             { return _wrapped->GetDimensionLengths(); }
     // Data operations
@@ -615,12 +613,12 @@ public:
 class BitBlockType : public TypeCommon
 {
 private:
-    IntIndex   _bitSize;
+    IntIndex   _blockLength;
     BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding);
 public:
     static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitBitBlock(this); }
-    virtual IntIndex BitSize()                      { return _bitSize; };
+    virtual IntIndex BitLength()                    { return _blockLength; };
 };
 //------------------------------------------------------------
 //! A type that is a collection of sub types.
@@ -629,7 +627,7 @@ class AggregateType : public TypeCommon
 protected:
     /// Since this class is variable size, classes that derive from it can not
     /// have member variables  as they would be stompped on.
-    IntIndex _bitSize;  // only used by BitCluster
+    IntIndex _blockLength;  // only used by BitCluster
     
 protected:
     // The default value for the type, may be used
@@ -670,7 +668,7 @@ public:
     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitBitCluster(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
-    virtual IntIndex BitSize()                 { return _bitSize; }
+    virtual IntIndex BitLength()            { return _blockLength; }
 };
 //------------------------------------------------------------
 //! A type that permits its data to be looked at though more than one perspective.

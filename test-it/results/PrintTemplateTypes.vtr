@@ -1,12 +1,14 @@
-.t1_0
-a(.Int32 $0)
-.t1_1
-a(.Int32 $1)
-.t1_254
-a(.Int32 $254)
-.t1_255
-a(.Int32 $255)
+Name '.t1_star' value '()' structure 'a(.Int32 *)' 
+Name '.t1_0' value '()' structure 'a(.Int32 $0)' 
+Name '.t1_1' value '()' structure 'a(.Int32 $1)' 
+Name '.t1_254' value '()' structure 'a(.Int32 $254)' 
+Name '.t1_255' value '()' structure 'a(.Int32 $255)' 
+Name '.bb_i0' value '0' AQSize 0 structure 'c(e(bb(0 UInt)))' 
+Name '.bb_i1' value '0' AQSize 1 structure 'c(e(bb(1 UInt)))' 
+Name '.bb_0' value '0' AQSize 0 structure 'c(e(bb($0 UInt)))' 
+Name '.bb_1' value '0' AQSize 0 structure 'c(e(bb($1 UInt)))' 
+Name '.bb_255' value '0' AQSize 0 structure 'c(e(bb($255 UInt)))' 
 .bb_0
-c(e(bb($1 UInt)))
+c(e(bb($0 UInt)))
 .bb_255
 c(e(bb($255 UInt)))

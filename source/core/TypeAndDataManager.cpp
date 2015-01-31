@@ -72,7 +72,7 @@ TypeManager::TypeManager(TypeManagerRef rootTypeManager)
     
     _typeList = null;
     _rootTypeManager = rootTypeManager;
-    _aqBitCount = AQBitCount();
+    _aqBitLength = 8;
     
     // Once the object is constructed set up the source temporarily
     // and create the bad-type singleton
@@ -463,13 +463,13 @@ Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)
     return offset;
 }
 //------------------------------------------------------------
-Int32 TypeManager::BitCountToAQSize(IntIndex bitCount)
+Int32 TypeManager::BitLengthToAQSize(IntIndex length)
 {
-    if (IsVariableSizeDim(bitCount)) {
+    if (IsVariableLengthDim(length)) {
         // All templates turn into anonymous variable sizes
-        return kArrayVariableSizeSentinel;
+        return kArrayVariableLengthSentinel;
     } else {
-        return (bitCount + (_aqBitCount-1)) / _aqBitCount;
+        return (length + (_aqBitLength-1)) / _aqBitLength;
     }
 }
 //------------------------------------------------------------
@@ -858,15 +858,15 @@ TypeRef AggregateType::GetSubElement(Int32 index)
 //------------------------------------------------------------
 // BitBlockType
 //------------------------------------------------------------
-BitBlockType* BitBlockType::New(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding)
+BitBlockType* BitBlockType::New(TypeManagerRef typeManager, IntIndex length, EncodingEnum encoding)
 {
-    return TADM_NEW_PLACEMENT(BitBlockType)(typeManager, size, encoding);
+    return TADM_NEW_PLACEMENT(BitBlockType)(typeManager, length, encoding);
 }
 //------------------------------------------------------------
-BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding)
+BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, EncodingEnum encoding)
 : TypeCommon(typeManager)
 {
-    _bitSize = size;
+    _blockLength = length;
     _isFlat = true;
     _aqAlignment = 0;   // BitBlocks are not addressable, no alignment
     _isValid = true;
@@ -876,7 +876,8 @@ BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEn
 
     if (encoding == kEncoding_Generic) {
         _hasGenericType = true;
-    } else if (encoding == kEncoding_None && size > 0) {
+    } else if (encoding == kEncoding_None && length > 0) {
+        // TODO revisit interms of bounded and template
         _isValid = false;
     }
 }
@@ -895,7 +896,7 @@ BitClusterType* BitClusterType::New(TypeManagerRef typeManager, TypeRef elements
 BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : AggregateType(typeManager, elements, count)
 {
-    Int32 bitCount = 0;
+    Int32   bitLength = 0;
     Boolean isFlat = true;
     Boolean isValid = true;
     Boolean hasCustomValue = false;
@@ -906,13 +907,13 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
         ElementType* element = *pType;
         
-        element->_offset = bitCount;
-        IntIndex ebc = element->BitSize();
-        if (IsVariableSizeDim(ebc) || isVariableSize) {
-            bitCount = kArrayVariableSizeSentinel;
+        element->_offset = bitLength;
+        IntIndex elementLength = element->BitLength();
+        if (IsVariableLengthDim(elementLength) || isVariableSize) {
+            bitLength = kArrayVariableLengthSentinel;
             isVariableSize = true;
         } else {
-            bitCount += ebc;
+            bitLength += elementLength;
         }
         isFlat  &= element->IsFlat();
         isValid  |= element->IsValid();
@@ -925,7 +926,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     _topAQSize = 0;
     _aqAlignment = 0;
     _rank = 0;
-    _bitSize = bitCount;
+    _blockLength = bitLength;
     _isFlat = isFlat;
     _isValid = isValid;
     _isBitLevel = true;
@@ -968,21 +969,21 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     Int32 elementAlignment = 0;
     Int32 elementOffset = 0;
 
-    Int32 subAQCount = element->TopAQSize();
+    Int32 subAQSize = element->TopAQSize();
     IncludesPadding |= element->HasPadding();
     IsFlat &= element->IsFlat();
 
-    if (subAQCount == 0) {
+    if (subAQSize == 0) {
         // For subtypes that have not been promoted to being addressable
         // determine the size of the addressable block that can contain it
         // since Clusters are alwasy addressable.
-        subAQCount = _tm->BitCountToAQSize(element->BitSize());
-        if (IsVariableSizeDim(subAQCount))
-            subAQCount = 0;
+        subAQSize = _tm->BitLengthToAQSize(element->BitLength());
+        if (IsVariableLengthDim(subAQSize))
+            subAQSize = 0;
         
         // Alignment for BitBlocks/BitClusters assumes block will
         // be read/written as one atomic operation
-        elementAlignment = _tm->AQAlignment(subAQCount);
+        elementAlignment = _tm->AQAlignment(subAQSize);
     } else {
         elementAlignment = element->AQAlignment();
     }
@@ -994,7 +995,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     _aqOffset = elementOffset;
     
     // Now move to offset for next element
-    _aqOffset += subAQCount;
+    _aqOffset += subAQSize;
     return elementOffset;
 }
 //------------------------------------------------------------
@@ -1284,7 +1285,7 @@ ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIn
 ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
     : WrappedType(typeManager, elementType)
 {
-    _topAQSize = TheTypeManager()->PointerToAQSize();
+    _topAQSize = TheTypeManager()->HostPointerToAQSize();
     _aqAlignment = TheTypeManager()->AQAlignment(sizeof(void*));
     _rank = rank;
     _isFlat = false;  // TODO allow fixed / bounded arrays may be inlined
@@ -1857,7 +1858,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
             dimCapactiy = typesDimLength;
             dimLength = dimCapactiy;
             // TODO ignore excessive request or flag as error
-        } else if (!IsVariableSizeDim(typesDimLength)) {
+        } else if (!IsVariableLengthDim(typesDimLength)) {
             // Capacity is bounded length
             // Length is request, but clipped at bounded length
             dimCapactiy = -typesDimLength;

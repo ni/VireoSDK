@@ -260,19 +260,19 @@ TypeRef TDViaParser::ParseArray()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitBlock()
 {
-    IntIndex    bitCount;
-    SubString bitCountToken;
+    IntIndex    length;
+    SubString   lengthToken;
     SubString encoding;
     
     if (!_string.ReadChar('('))
         return BadType();
     
-    if (!_string.ReadToken(&bitCountToken))
+    if (!_string.ReadToken(&lengthToken))
         return BadType();
     
-    if (bitCountToken.CompareCStr(tsHostPointerSize)) {
-        bitCount = _typeManager->PointerToAQSize() * _typeManager->AQBitSize();
-    } else if (!bitCountToken.ReadMetaInt(&bitCount)) {
+    if (lengthToken.CompareCStr(tsHostPointerSize)) {
+        length = _typeManager->HostPointerToAQSize() * _typeManager->AQBitLength();
+    } else if (!lengthToken.ReadMetaInt(&length)) {
             return BadType();        
     }
     
@@ -283,7 +283,7 @@ TypeRef TDViaParser::ParseBitBlock()
         return BadType();
     
     EncodingEnum enc = ParseEncoding(&encoding);
-    BitBlockType *type = BitBlockType::New(_typeManager, bitCount, enc);
+    BitBlockType *type = BitBlockType::New(_typeManager, length, enc);
     return type;
 }
 //------------------------------------------------------------
@@ -731,11 +731,11 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VIREO_ASSERT(dataSpaceType != null)
     
     _string.EatLeadingSpaces();
-    clumpCount = kArrayVariableSizeSentinel;
+    clumpCount = kArrayVariableLengthSentinel;
     
 #if defined(VIREO_ALLOW_DEPRECATED_CLUMP_COUNT)
     if (_string.ComparePrefixCStr("clump")) {
-        clumpCount = kArrayVariableSizeSentinel;
+        clumpCount = kArrayVariableLengthSentinel;
     } else {
         if (!_string.ReadInt(&clumpCount)) {
             return LOG_EVENT(kHardDataError, "VI Clump count missing");
@@ -766,7 +766,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             break;
         }
     }
-    if (clumpCount != kArrayVariableSizeSentinel && actualClumpCount != clumpCount) {
+    if (clumpCount != kArrayVariableLengthSentinel && actualClumpCount != clumpCount) {
         return LOG_EVENT(kSoftDataError, "VI Clump count incorrect");
     }
 
@@ -1071,8 +1071,8 @@ private:
     virtual void VisitBitBlock(BitBlockType* type)
     {
         _pFormatter->_string->AppendCStr("bb(");
-        IntIndex bitCount = type->BitSize();
-        _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(bitCount), &bitCount);
+        IntIndex length = type->BitLength();
+        _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(length), &length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1233,10 +1233,10 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
     } else if (encoding == kEncoding_MetaInt) {
-        if (value == kArrayVariableSizeSentinel) {
+        if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
-        } else if (IsVariableSizeDim((IntIndex)value)) {
-            value = value - kArrayVariableSizeSentinel - 1;
+        } else if (IsVariableLengthDim((IntIndex)value)) {
+            value = value - kArrayVariableLengthSentinel - 1;
             format = tsTemplatePrefix "%*lld";
         } else {
             format = "%*lld";

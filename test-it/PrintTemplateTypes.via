@@ -1,5 +1,6 @@
 // Array dimensions
 // Simple base cases for parameterized dimensions
+define (t1_star a(.Int32 *))
 define (t1_0 a(.Int32 $0))
 define (t1_1 a(.Int32 $1))
 
@@ -10,12 +11,16 @@ define (t1_255 a(.Int32 $255))
 // (Line nnn HardError "Invalid array dimension '$256'.")
 //define (t1_256 a(.Int32 $256))
 
-// BitBlock size
-define(bb_0  c(e(bb($1 UInt))))
-define(bb_255  c(e(bb($255 UInt))))
+// BitBlock size - generic size will inflate to a zero bit structure
+
+define(bb_star  c(e(bb(*    UInt))))
+define(bb_i0     c(e(bb(0   UInt))))
+define(bb_i1     c(e(bb(1   UInt))))
+define(bb_0     c(e(bb($0   UInt))))
+define(bb_1     c(e(bb($1   UInt))))
+define(bb_255   c(e(bb($255 UInt))))
 
 // TODO BitBlock encodings, very meta, need enums
-
 
 define (t1 a(.Int32 $1))
 //define (t2 a($1 $1))
@@ -32,32 +37,46 @@ define (t2_Double .t1<.Double>)
 define (Test dv(.VirtualInstrument (
  c(
     e(.Type                 vType)
-    e(a(.Double * * *)      a4)
-    e(a(.Double 1 2 3)      a5)
-    e(a(.Double -1 -2 -3)   a6)
+    e(.Int32                size)
   ) 
   clump(1 
     // Array dimensions
     //----
-    TypeOf(t1_0 vType) 
-    Println(vType)
-    TypeBaseType(vType vType)
-    Println(vType)    
+    TypeBaseType(.t1_star vType)
+    Printf("Name '%s' value '%s' structure '%s' \n" .t1_star t1_star vType)    
+
+    TypeBaseType(.t1_0 vType)
+    Printf("Name '%s' value '%s' structure '%s' \n" .t1_0 t1_0 vType)    
     
-    TypeOf(t1_1 vType) 
-    Println(vType)
-    TypeBaseType(vType vType)
-    Println(vType)    
+    TypeBaseType(.t1_1 vType)
+    Printf("Name '%s' value '%s' structure '%s' \n" .t1_1 t1_1 vType)    
 
-    TypeOf(t1_254 vType) 
-    Println(vType)
-    TypeBaseType(vType vType)
-    Println(vType)    
+    TypeBaseType(.t1_254 vType)
+    Printf("Name '%s' value '%s' structure '%s' \n" .t1_254 t1_254 vType)    
 
-    TypeOf(t1_255 vType) 
-    Println(vType)
-    TypeBaseType(vType vType)
-    Println(vType)    
+    TypeBaseType(.t1_255 vType)
+    Printf("Name '%s' value '%s' structure '%s' \n" .t1_255 t1_255 vType)    
+
+    // Bit Blocks
+    TypeBaseType(.bb_i0 vType)
+    TypeTopAQSize(.bb_i0 size)
+    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_i0 bb_i0 size vType)    
+
+    TypeBaseType(.bb_i1 vType)
+    TypeTopAQSize(.bb_i1 size)
+    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_i1 bb_i1 size vType)    
+
+    TypeBaseType(.bb_0 vType)
+    TypeTopAQSize(.bb_0 size)
+    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_0 bb_0 size vType)    
+
+    TypeBaseType(.bb_1 vType)
+    TypeTopAQSize(.bb_1 size)
+    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_1 bb_1 size vType)    
+
+    TypeBaseType(.bb_255 vType)
+    TypeTopAQSize(.bb_255 size)
+    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_255 bb_255 size vType)    
 
     // Bit Blocks
     TypeOf(bb_0 vType) 
@@ -70,10 +89,6 @@ define (Test dv(.VirtualInstrument (
     TypeBaseType(vType vType)
     Println(vType)    
 
-    
-    //----
- //   TypeOf(t2 vType) 
-  //  Println(vType)
    )
  ) ) )
 enqueue (Test)

@@ -91,13 +91,13 @@ namespace Vireo
 typedef Int32        IntIndex;
 enum {
 
-    // MetaInt encided as "*"
-    kArrayVariableSizeSentinel = INT32_MIN,
+    // MetaInt encoded as "*"
+    kArrayVariableLengthSentinel = INT32_MIN,
     
     // MetaInt encoded as template parameters $0 .. $255
-    kArrayMaxTemplatedDimSizes = 256,
+    kArrayMaxTemplatedDimLengths = 256,
     
-    kArrayFirstTemplatedDimSize = kArrayVariableSizeSentinel + kArrayMaxTemplatedDimSizes,
+    kArrayFirstTemplatedDimLength = kArrayVariableLengthSentinel + kArrayMaxTemplatedDimLengths,
     kArrayIndexMax = INT32_MAX,
     kArrayMaxRank = 15,
     };
@@ -110,14 +110,14 @@ enum {
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
 
-inline Boolean IsVariableSizeDim(IntIndex dim)
+inline Boolean IsVariableLengthDim(IntIndex dim)
 {
-    return dim <= kArrayFirstTemplatedDimSize;
+    return dim <= kArrayFirstTemplatedDimLength;
 }
 
 inline Boolean DimTemplateIndex(IntIndex dim)
 {
-    return IsVariableSizeDim(dim) ? kArrayFirstTemplatedDimSize - dim : -1;
+    return IsVariableLengthDim(dim) ? kArrayFirstTemplatedDimLength - dim : -1;
 }
 
 //------------------------------------------------------------

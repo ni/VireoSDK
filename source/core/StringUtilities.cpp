@@ -483,20 +483,20 @@ Boolean SubString::ReadMetaInt(IntIndex *pValue)
     if (_begin < _end) {
         if (*_begin == '*') {
             _begin++;
-            *pValue = kArrayVariableSizeSentinel;
+            *pValue = kArrayVariableLengthSentinel;
             return true;
         } else if (*_begin == '$') {
             IntMax templateIndex;
             SubString innerString(_begin+1, _end);
-            if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimSizes ) {
+            if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths ) {
                 _begin = innerString.Begin();
-                *pValue = kArrayVariableSizeSentinel + (IntIndex)templateIndex + 1;
+                *pValue = kArrayVariableLengthSentinel + (IntIndex)templateIndex + 1;
                 return true;
             }
         } else {
             IntMax temp;
             Boolean bNumber = ReadInt(&temp);
-            if (bNumber && (temp > kArrayFirstTemplatedDimSize) && (temp < kArrayIndexMax)) {
+            if (bNumber && (temp > kArrayFirstTemplatedDimLength) && (temp < kArrayIndexMax)) {
                 *pValue = (IntIndex)temp;
                 return true;
             }
