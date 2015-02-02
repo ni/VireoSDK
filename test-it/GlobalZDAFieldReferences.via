@@ -31,9 +31,9 @@ define (HelloWorld dv(.VirtualInstrument (
         Printf("Clump count %s\n" x)
         
         // Array length of an object is one
-        ArrayLength(HelloWorldSub.ParamBlock x)
+        ArrayLength(HelloWorldSub.Params x)
         Printf("ParamBlock count %s\n" x)
-        ArrayLength(HelloWorldSub.DataSpace x)
+        ArrayLength(HelloWorldSub.Locals x)
         Printf("DataSpace count %s\n" x)
         
         // This is not legal yet

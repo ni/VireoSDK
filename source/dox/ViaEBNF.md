@@ -75,13 +75,13 @@ data_collection          := '(' data_element* ')'
 
 ~~~{.ebnf}
 data_vi	                 := '('
-                                parameter_type? dataspace_type
+                                params_type? locals_type
                                 data_clump*
                              ')'
 
-parameter_type          := type
+params_type             := type
 
-dataspace_type          := type
+locals_type             := type
 
 data_clump              := 'clump' '(' data_instruction* ')'
 

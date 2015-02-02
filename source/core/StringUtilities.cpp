@@ -410,6 +410,7 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
     return tokenTraits;
 }
 //------------------------------------------------------------
+//! Read an expression that may be a single token or nested expression
 Boolean SubString::ReadSubexpressionToken(SubString* token)
 {
     EatLeadingSpaces();
@@ -427,12 +428,31 @@ Boolean SubString::ReadSubexpressionToken(SubString* token)
         }
     } while (tokenFound && (depth>0));
     
-    
     // The loop has reached an end state, go back and
     // add tokens that were skipped over to get to this point.
     token->AliasAssign(begin, this->Begin());
     
     return tokenFound;
+}
+//------------------------------------------------------------
+//! Read an optional "Name:" prefix to a value.
+Boolean SubString::ReadNameToken(SubString* token)
+{
+    EatLeadingSpaces();
+    SubString tempString(this);
+
+    if (tempString.ReadToken(token)) {
+        tempString.EatLeadingSpaces();
+        if (tempString.ReadChar(*tsNameSuffix)) {
+            // Name was found, its removed from the front of 'this'
+            // along with the colon
+            _begin = tempString.Begin();
+            return true;
+        }
+    }
+    // Its not a name prefix, leave all as is
+    token->AliasAssign(null, null);
+    return false;
 }
 //------------------------------------------------------------
 Boolean SubString::ReadToken(SubString* token)

@@ -1,4 +1,5 @@
 define (HelloWorld dv(.VirtualInstrument (
+    Locals: 
     c(
         e(dv(.String "Hello, world. I can fly.") variable1)
     )

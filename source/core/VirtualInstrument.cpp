@@ -21,7 +21,7 @@ namespace Vireo
 //------------------------------------------------------------
 // VirtualInstrument
 //------------------------------------------------------------
-NIError VirtualInstrument::Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* clumpSource)
+NIError VirtualInstrument::Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* clumpSource)
 {
     VIREO_ASSERT(_executionContext == null)
     VIREO_ASSERT( sizeof(VIClump) == _clumps->ElementType()->TopAQSize() )
@@ -29,8 +29,8 @@ NIError VirtualInstrument::Init(ExecutionContextRef context, Int32 clumpCount, T
     // The preliminary initialization defines a generic VI
     // finish it out by defining its type.
     _executionContext = context;
-    _paramBlock->SetElementType(paramBlockType, false);
-    _dataSpace->SetElementType(dataSpaceType, false);
+    _params->SetElementType(paramsType, false);
+    _locals->SetElementType(localsType, false);
     _clumps->Resize1D(clumpCount);
     _lineNumberBase = lineNumberBase;
     _clumpSource = clumpSource;
@@ -50,7 +50,7 @@ void VirtualInstrument::InitParamBlock()
 {
     // Since there is no caller, the param block needs to be filled out
     // as if there is one.
-    TypedObjectRef viParamBlock = this->ParamBlock();
+    TypedObjectRef viParamBlock = this->Params();
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
     
@@ -65,7 +65,7 @@ void VirtualInstrument::InitParamBlock()
 void VirtualInstrument::ClearTopVIParamBlock()
 {
     // Since there is no caller, elements param block needs to be cleared out.
-    TypedObjectRef viParamBlock = this->ParamBlock();
+    TypedObjectRef viParamBlock = this->Params();
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
     
@@ -83,11 +83,11 @@ void VirtualInstrument::ClearTopVIParamBlock()
 //------------------------------------------------------------
 TypeRef VirtualInstrument::GetVIElementAddressFromPath(SubString* eltPath, void* pStart, void** ppData, Boolean allowDynamic)
 {
-    // Search the dataSpace and paramBlock for the desired element
-    TypedObjectRef dataSpace = this->DataSpace();
-    TypedObjectRef paramBlock = this->ParamBlock();
+    // Search the locals and paramBlock for the desired element
+    TypedObjectRef locals = this->Locals();
+    TypedObjectRef paramBlock = this->Params();
     
-    TypeRef actualType = dataSpace->ElementType()->GetSubElementAddressFromPath(eltPath, dataSpace->RawBegin(), ppData, allowDynamic);
+    TypeRef actualType = locals->ElementType()->GetSubElementAddressFromPath(eltPath, locals->RawBegin(), ppData, allowDynamic);
     if (actualType == null && paramBlock) {
         actualType = paramBlock->ElementType()->GetSubElementAddressFromPath(eltPath, paramBlock->RawBegin(), ppData, allowDynamic);
     }
@@ -446,7 +446,7 @@ TypeRef ClumpParseState::StartNextOverload()
         _bIsVI = true;
         VirtualInstrument* vi = AddSubVITargetArgument(t);
         _instructionPointerType = t;
-        _instructionType = vi->ParamBlock()->ElementType();
+        _instructionType = vi->Params()->ElementType();
     }
     return _instructionType;
 }
@@ -873,7 +873,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     CallVIInstruction* callInstruction  = (CallVIInstruction*) EmitInstruction();
     
     VirtualInstrument* vi =targetVIClump->OwningVI();
-    TypedObjectRef viParamBlock = vi->ParamBlock();
+    TypedObjectRef viParamBlock = vi->Params();
     
     TypeRef viParamType = viParamBlock->ElementType();
     AQBlock1* pParamData = viParamBlock->RawBegin();
@@ -1095,7 +1095,7 @@ class VIDataProcsClass : public IDataProcs
 {
     virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern)
     {
-        // The Proto-VI has a generic DS/PB and no clumps. The Pattern type still has that type,
+        // The Proto-VI has a generic Param/Locals with no clumps. The Pattern type still has that type,
         // but will have a custom default value for the underlying type. This means the
         // InitData method will detect the default value and will copy the pattern's value
         // once the core structure is set up. Look in ArrayType::InitData() for more details.
@@ -1145,10 +1145,10 @@ class VIDataProcsClass : public IDataProcs
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pStart;
         VirtualInstrument* vi = vio->ObjBegin();
         
-        // Check of DS and PB alias'
+        // Check of Params and Locals alias'
         TypeRef subType = vi->GetVIElementAddressFromPath(path, pStart, ppData, allowDynamic);
         
-        // Check for ful path symbols
+        // Check for full path symbols
         if (!subType) {
             subType = type->GetSubElementAddressFromPath(path, pStart, ppData, allowDynamic);
         }

@@ -87,8 +87,8 @@ Internal types used in Vireo also have type definitions. Though the details are 
 define (VirtualInstrument 
     a(c(                               
         e(.ExecutionContext Context)   
-        e(a(.*) ParamBlock)             
-        e(a(.*) DataSpace)              
+        e(a(.*) Params)             
+        e(a(.*) Locals)              
         e(a(.VIClump *) Clumps)     // An array of clumps, see definition below.      
         e(.Int32 lineNumberBase)    // Internal fields for maping back to souce code    
         e(.SubString ClumpSource)

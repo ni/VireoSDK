@@ -684,7 +684,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
 //
 // When a VI is first parsed two things have to be done in the first pass.
 // 1. The the root type for the VI must be defined with the initial copy of the
-// PB and the DS.
+// params and locals.
 // 2. The initial clump must be set-up. This is the clump that callers will
 // point to.
 // for reentrant VIs each caller  will get its own copy of the VI.
@@ -709,26 +709,42 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
         return LOG_EVENT(kHardDataError, "'(' missing");
     }
         
-    TypeRef parameterBlockType = null;
-    TypeRef dataSpaceType = null;
+    TypeRef emptyVIParamList =  _typeManager->FindType("EmptyParameterList");
+    TypeRef paramsType = emptyVIParamList;
+    TypeRef localsType = emptyVIParamList;
     
+    SubString name;
+    Boolean hasName = _string.ReadNameToken(&name);
+    if (hasName) {
+        while (hasName) {
+            // An initial experiment for named fields in a VI
+            TypeRef type = this->ParseType();
+            if (name.CompareCStr("Locals")) {
+                localsType = type;
+            } else if (name.CompareCStr("Params")) {
+                paramsType = type;
+            } else {
+                LOG_EVENTV(kSoftDataError, "Field does not exist '%.*s'", FMT_LEN_BEGIN(&name));
+            }
+            hasName = _string.ReadNameToken(&name);
+        }
+    } else {
     TypeRef type1 = this->ParseType();
+
+        // Old school way of loading VIs
     _string.EatLeadingSpaces();
     
     if (_string.ComparePrefixCStr("c") && !_string.ComparePrefixCStr("clump")) {
         // If there are two clusters the first was actually the parameter block,
         // The next will be the data space
-        parameterBlockType = type1;
-        dataSpaceType = this->ParseType();
+            paramsType = type1;
+            localsType = this->ParseType();
     } else {
-        // TODO when VIs are inflated from their parent type this will be done automatically.
-        // empty clusters should all end up with the singleton empty cluster
-        TypeRef emptyVIParamList =  _typeManager->FindType("EmptyParameterList");
-        parameterBlockType = emptyVIParamList;
-        dataSpaceType = type1;
+            localsType = type1;
+        }
     }
-    VIREO_ASSERT(parameterBlockType != null)
-    VIREO_ASSERT(dataSpaceType != null)
+    VIREO_ASSERT(paramsType != null)
+    VIREO_ASSERT(localsType != null)
     
     _string.EatLeadingSpaces();
     clumpCount = kArrayVariableLengthSentinel;
@@ -778,7 +794,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
     
-    vi->Init(ExecutionContextScope::Current(), (Int32)actualClumpCount, parameterBlockType, dataSpaceType, lineNumberBase, &clumpSource);
+    vi->Init(ExecutionContextScope::Current(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
     
     if (_loadVIsImmediatly) {
         TDViaParser::FinalizeVILoad(vi, _pLog);

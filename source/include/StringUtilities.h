@@ -230,6 +230,7 @@ public:
     Boolean ReadMetaInt(IntIndex* value);
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);
+    Boolean ReadNameToken(SubString* token);
     Boolean ReadToken(SubString* token);
     Boolean ReadSubexpressionToken(SubString* token);
     Boolean IdentifierIsNext() const;

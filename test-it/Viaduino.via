@@ -36,7 +36,7 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
         TypeTopAQSize(.Int32Point global_int)
         Printf("size is %s" global_int)
 
-        ArrayElementType(HelloWorld.DataSpace dsType)
+        ArrayElementType(HelloWorld.Locals dsType)
         
         // Print the dataspace type
     

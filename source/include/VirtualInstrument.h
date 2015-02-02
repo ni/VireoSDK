@@ -30,8 +30,8 @@ class VIClump;
 #define VI_TypeString               \
 "a(c(                               \
     e(.ExecutionContext Context)    \
-    e(a(.*) ParamBlock)             \
-    e(a(.*) DataSpace)              \
+    e(a(.*) Params)                 \
+    e(a(.*) Locals)                 \
     e(a(.VIClump *) Clumps)         \
     e(.Int32 lineNumberBase)        \
     e(.SubString ClumpSource)       \
@@ -44,8 +44,8 @@ class VirtualInstrument
     friend class VIDataProcsClass;
 private:
     ExecutionContextRef     _executionContext;
-    TypedObjectRef          _paramBlock;          // All clumps in subVI share the same param block
-    TypedObjectRef          _dataSpace;           // All clumps in subVI share the same data
+    TypedObjectRef          _params;          // All clumps in subVI share the same param block
+    TypedObjectRef          _locals;           // All clumps in subVI share the same data
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
     void ClearTopVIParamBlock();
@@ -53,16 +53,16 @@ public:
     Int32                   _lineNumberBase;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
 public :
-    NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramBlockType, TypeRef dataSpaceType, Int32 lineNumberBase, SubString* source);
+    NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
     TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
 
 public:
-    VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramBlockType, TypeRef dataSpaceType);
-    ExecutionContextRef OwningContext()   {return _executionContext;}
-    TypedObjectRef ParamBlock()         {return _paramBlock;}
-    TypedObjectRef DataSpace()          {return _dataSpace;}
+    VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
+    ExecutionContextRef OwningContext() {return _executionContext;}
+    TypedObjectRef Params()             {return _params;}
+    TypedObjectRef Locals()             {return _locals;}
     TypedArray1D<VIClump>* Clumps()     {return _clumps;}
 };
 
@@ -80,13 +80,13 @@ public:
 //! The VIA definition for a Clump. Must match the C++ definition.
 #define VIClump_TypeString              \
 "c(                                     \
-    e(.InstructionBlock CodeStart)       \
+    e(.InstructionBlock CodeStart)      \
     e(.DataPointer Next)                \
     e(.Int64 WakeUpInfo)                \
     e(.DataPointer Owner)               \
     e(.DataPointer NextWaitingCaller)   \
     e(.DataPointer Caller)              \
-    e(.Instruction SavePC)       \
+    e(.Instruction SavePC)              \
     e(.Int32 FireCount)                 \
     e(.Int32 ShortCount)                \
     e(.Int32 WaitCount)                 \

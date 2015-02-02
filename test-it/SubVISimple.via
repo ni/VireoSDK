@@ -1,56 +1,52 @@
 //trace
 define (SubVI0 dv(.VirtualInstrument (
- c(
-    e(dv(.String 'Inside call') sInside)
-  )
-  clump(1 
-    Println(sInside)
-   )
+    Locals:c( e(dv(.String 'Inside call') sInside) )
+    clump(1 
+        Println(sInside)
+    )
  )))
 
 define (SubVI1  dv(.VirtualInstrument (
- c(i(.Int32 x))
- c(
-    e(dv(.String 'Inside call') sInside)
-  )
-  clump(1 
-    Println(sInside)
-  Println(x)
-   )
+    Params:c(i(.Int32 x))
+    Locals:c(e(dv(.String 'Inside call') sInside))
+    clump(1 
+        Println(sInside)
+        Println(x)
+        )
  )))
 
 define (SubVI2  dv(.VirtualInstrument (
- c(i(.Int32 x) o(.Int32 x_out))
- c(
-    e(dv(.String 'Inside call') sInside)
-    e(dv(.Int32 1) c1)
-  )
-  clump(1 
-    Println(sInside)
-    Printf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>\n" x x_out c1)
-    Add(x c1 x_out)
-    Printf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>\n" x x_out c1)
-    Println(x)
-   )
+    Params:c(i(.Int32 x) o(.Int32 x_out))
+    Locals:c(
+        e(dv(.String 'Inside call') sInside)
+        e(dv(.Int32 1) c1)
+    )
+    clump(1 
+        Println(sInside)
+        Printf("In SubVI2 with in and out parameters initially <%s> <%s>, one is <%s>\n" x x_out c1)
+        Add(x c1 x_out)
+        Printf("In SubVI2 with in and out parameters after add <%s> <%s>, one is <%s>\n" x x_out c1)
+        Println(x)
+    )
  )))
 
 define (SubVI3 dv(.VirtualInstrument (
- c(io(.Int32 x))
- c(
-    e(dv(.String 'Inside call') sInside)
-    e(dv(.Int32 1) c1)
-  )
-  clump(1 
-    Printf("In SubVI3 with in/out parameter initially <%s>, one is <%s>\n" x c1)
-    Add(x c1 x)
-    Printf("In SubVI3 with in/out parameter after add <%s>, one is <%s>\n" x c1)
-   )
+    Params:c(io(.Int32 x))
+    Locals:c(
+        e(dv(.String 'Inside call') sInside)
+        e(dv(.Int32 1) c1)
+    )
+    clump(1 
+        Printf("In SubVI3 with in/out parameter initially <%s>, one is <%s>\n" x c1)
+        Add(x c1 x)
+        Printf("In SubVI3 with in/out parameter after add <%s>, one is <%s>\n" x c1)
+    )
  )))
  
  
 define (SubVI1d dv(.VirtualInstrument (
- c(i(.Double x))
- c(
+ Params: c(i(.Double x))
+ Locals: c(
     e(dv(.String 'Inside call') sInside)
   )
   clump(1 
@@ -89,7 +85,7 @@ define (SubVI3d dv(.VirtualInstrument (
 
 
 define (TopVI dv(.VirtualInstrument (
- c(
+ Locals:c(
    e(dv(.Int32 42) value)
    e(dv(.Double 42.1) dValue)
     e(dv(.String 'Before call') sBefore)

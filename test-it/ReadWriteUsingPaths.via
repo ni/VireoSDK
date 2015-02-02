@@ -18,14 +18,14 @@ define (HelloWorld dv(.VirtualInstrument (
         TypeManagerReadValue(* "HelloWorld" "v2" v)
         Println(v)
         // Driil through the VI definition
-        TypeManagerReadValue(* "HelloWorld" "DataSpace.v2" v)
+        TypeManagerReadValue(* "HelloWorld" "Locals.v2" v)
         Println(v)
 /*
        Println(variable1)
        Println(Process.pid)
        Println(Process)
-       Println(HelloWorld.DataSpace.variable1)
-       Println(HelloWorld.DataSpace)
+       Println(HelloWorld.Locals.variable1)
+       Println(HelloWorld.Locals)
     */
     )
 ) ) )

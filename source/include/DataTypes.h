@@ -106,6 +106,7 @@ enum {
 //! Some core token grammar items core to Vireo. Others are in TDCodecVia.h
 #define tsTypeType         "Type"
 #define tsWildCard         "*"
+#define tsNameSuffix       ":"
 #define tsTemplatePrefix   "$"
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
