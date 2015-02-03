@@ -61,8 +61,6 @@ SDG
     #define VIREO_TYPE_ComplexDouble 1
     #define VIREO_TYPE_ArrayND 1
 
-    #define VIREO_ALLOW_DEPRECATED_CLUMP_COUNT
-
     #define VIREO_TYPE_ATime 1
 
  // Vireo can be configured to assume all strings are 7 bit ASCII

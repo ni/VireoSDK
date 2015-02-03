@@ -2,7 +2,7 @@ define (HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.ZZString "Hello, world. I can fly.") variable1)
     )
-    clump (1
+    clump (
         Println(variable1)
     )
 ) ) )

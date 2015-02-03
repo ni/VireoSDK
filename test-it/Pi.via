@@ -165,7 +165,6 @@ define (videf1 dv(.ReentrantVirtualInstrument (
         e(.Int8 local30)
         e(a(.Int8 *) local31)
     )
-    1
     clump(1
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n1 local3 )                   // unbundle
@@ -312,7 +311,6 @@ define (videf5 dv(.ReentrantVirtualInstrument (
         e(.Int32 local6)   // decimal Ofst
         e(.Int32 local7)   // Array Size
     )
-    1
     clump(1
         IsGT(local2 local3 local4)
 //--- begin case structure
@@ -362,7 +360,6 @@ define (videf6 dv(.ReentrantVirtualInstrument (
         ) local5)   // A rounded to Digits
         e(.Boolean local6)   // Equal
     )
-    2
     clump(1
         Trigger(1)                                // fork
         videf7(local4 local1 local2)
@@ -391,7 +388,6 @@ define (videf4 dv(.ReentrantVirtualInstrument (
         e(.Int32 local6)   // B Position
         e(.Int32 local8)
     )
-    1
     clump(1
         Sub(local1 local3 local4)
         IsGT(local3 c20 local5)
@@ -441,7 +437,6 @@ define (videf9 dv(.ReentrantVirtualInstrument (
         e(.Int8 local14)   // digit
         e(.Boolean local15)
     )
-    1
     clump(1
         IsGT(local1 c20 local2)
         Copy(c20 local3 )
@@ -518,7 +513,6 @@ define (videf10 dv(.ReentrantVirtualInstrument (
         e(.Int8 local7)   // digit
         e(.Boolean local8)
     )
-    1
     clump(1
         ArrayLength(local1 local2 )
         Sub(local2 c42 local2)
@@ -579,7 +573,6 @@ define (videf11 dv(.VirtualInstrument (
         e(.String local9)   // String
         e(.String local10)   // String Out
     )
-    1
     clump(1
         IsGE(local4 c41 local5)
         Sub(local1 c4 local6)
@@ -649,7 +642,6 @@ define (videf16 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local20)   // Normalized A
     )
-    1
     clump(1
         IsEQ(local2 c41 local3)
 //--- begin case structure
@@ -793,7 +785,6 @@ define (videf13 dv(.ReentrantVirtualInstrument (
         ) local27)   // A-B
         e(.Int8 local28)
     )
-    1
     clump(1
         videf20(local2 local3 local4 local5 local6)
         Add(local6 c22 local6)
@@ -987,7 +978,6 @@ define (videf24 dv(.ReentrantVirtualInstrument (
         ) local13)   // A x Scalar
         e(.Int32 local14)
     )
-    1
     clump(1
         Copy(local1 local2 )
 //--- begin while loop
@@ -1097,7 +1087,6 @@ define (videf25 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local18)   // A x Scalar
     )
-    1
     clump(1
         IsGT(local1 c32 local2)
         Copy(local1 local3 )
@@ -1191,7 +1180,6 @@ define (videf15 dv(.VirtualInstrument (
         e(.Int32 local9)
         e(.String local10)   // string
     )
-    1
     clump(1
         Mul(local1 c3 local2)
         Add(local2 c3 local2)
@@ -1258,7 +1246,6 @@ define (videf8 dv(.ReentrantVirtualInstrument (
         e(.Int32 local22)
         e(.Int8 local23)   // digit
     )
-    2
     clump(1
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n1 local3 )                   // unbundle
@@ -1414,7 +1401,6 @@ define (videf2 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local8)   // B
     )
-    1
     clump(1
         videf8(local2 local1 local3 local4)
         Copy(local4 local5 )                      // FP Term
@@ -1468,7 +1454,6 @@ define (videf22 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local7)   // A
     )
-    1
     clump(1
         ArrayLength(local1 local2 )
         IsGE(local3 local2 local4)
@@ -1505,7 +1490,6 @@ define (videf17 dv(.ReentrantVirtualInstrument (
         e(a(.Int8 *) local6)   // Array
         e(.Int8 local7)   // digit
     )
-    1
     clump(1
         ArrayLength(local1 local2 )
         IsGE(local3 local2 local4)
@@ -1568,7 +1552,6 @@ define (videf21 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local8)   // A x Scalar
     )
-    1
     clump(1
         Copy(c27 local5 )                         // Pre-Loop copy into LSR
         Copy(local1 local3 )
@@ -1638,7 +1621,6 @@ define (videf26 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local19)   // Shifted A
     )
-    1
     clump(1
         IsEQ(local1 c20 local2)
 //--- begin case structure
@@ -1804,7 +1786,6 @@ define (videf12 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local46)   // A
     )
-    2
     clump(1
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n2 local3 )                   // unbundle
@@ -1993,7 +1974,6 @@ define (videf29 dv(.ReentrantVirtualInstrument (
         e(.Int8 local3)
         e(.Boolean local4)
     )
-    1
     clump(1
         Add(local1 c19 local2)
         Remainder(local1 c53 local3)
@@ -2039,7 +2019,6 @@ define (videf19 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local14)   // A
     )
-    1
     clump(1
         Copy(local2.n0 local3 )                   // unbundle
         Copy(local2.n1 local4 )                   // unbundle
@@ -2101,7 +2080,6 @@ define (videf27 dv(.ReentrantVirtualInstrument (
         e(.Int8 local7)
         e(.Boolean local8)
     )
-    1
     clump(1
         Copy(local1 local3 )                      // Pre-Loop copy into LSR
         Copy(c31 local5 )                         // Pre-Loop copy into LSR
@@ -2160,7 +2138,6 @@ define (videf14 dv(.VirtualInstrument (
         e(a(.UInt8 *) local21)
         e(.String local22)   // string
     )
-    1
     clump(1
         Convert(c44 local1)
         Copy(local3.n0 local4 )                   // unbundle
@@ -2296,7 +2273,6 @@ define (videf28 dv(.ReentrantVirtualInstrument (
             e(.Int32 n2)   // digit
         ) local10)
     )
-    1
     clump(1
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n1 local3 )                   // unbundle
@@ -2408,7 +2384,6 @@ define (videf20 dv(.ReentrantVirtualInstrument (
         ) local14)   // Smaller
         e(.Int32 local15)   // Decimal Index
     )
-    1
     clump(1
         videf8(local2 local1 local3 local4)
 //--- begin case structure
@@ -2494,7 +2469,6 @@ define (videf18 dv(.VirtualInstrument (
         e(.Int32 local9)
         e(.Int8 local10)
     )
-    1
     clump(1
         ArrayLength(local1 local2 )
         Copy(local2 local3 )                      // FP Term
@@ -2554,7 +2528,7 @@ define (videf7 dv(.ReentrantVirtualInstrument (
         e(a(.Int8 *) local14)   // Array Num
         e(a(.Int8 *) local15)   // Array Num
     )
-    1
+
     clump(1
         videf19(local3 * local2)
         Copy(local3.n0 local4 )                   // unbundle
@@ -2650,7 +2624,6 @@ define (videf23 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local7)   // Normalized A
     )
-    1
     clump(1
 //--- begin case structure
         Copy(local2 local3 )                      // case input tunnel
@@ -2741,7 +2714,6 @@ define (videf30 dv(.VirtualInstrument (
         e(dv(.UInt32 886) local20)   // x-y
         e(dv(.String '3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196442881097566593344612847564823378678316527120190914564856692346034861045432664821339360726024914127372458700660631558817488152092096282925409171536436789259036001133053054882046652138414695194151160943305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912') local21)   // Results
     )
-    4
     clump(1
         GetMillisecondTickCount(local1)
         Add(c4 c0 local2)
@@ -2847,7 +2819,6 @@ define (videf32 dv(.VirtualInstrument (
         ) local12)   // Answer
         e(dv(.Int32 0) local13)
     )
-    2
     clump(1
         Add(local2 c42 local3)
         Trigger(1)                                // fork
@@ -2931,7 +2902,6 @@ define (videf33 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local7)   // A+B
     )
-    1
     clump(1
         Copy(local2.n0 local3 )                   // unbundle
         Copy(local2.n1 local4 )                   // unbundle
@@ -2991,7 +2961,6 @@ define (videf3 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local21)   // A
     )
-    1
     clump(1
         Copy(local1.n0 local2 )                   // unbundle
         Copy(local1.n1 local3 )                   // unbundle
@@ -3107,7 +3076,6 @@ define (videf31 dv(.ReentrantVirtualInstrument (
             e(.Boolean n2)   // stop
         ) local18)   // A x Scalar
     )
-    1
     clump(1
         IsNE(local1 c33 local2)
         Copy(local3 local4 )
