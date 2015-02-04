@@ -16,6 +16,7 @@ SDG
 #include "TypeDefiner.h"
 #include "EggShell.h"
 #include "TDCodecLVFlat.h"
+#include "TDCodecVia.h"
 
 using namespace Vireo;
 
@@ -115,7 +116,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     }
 }
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
+VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
 {
     void *pData = null;
     
@@ -128,7 +129,7 @@ VIREO_EXPORT void EggShell_PokeDouble(EggShell* pShell, const char* viName, cons
     WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, d);
 }
 //------------------------------------------------------------
-VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, const char* eltName)
+VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, const char* eltName)
 {
     void *pData = null;
     SubString objectName(viName);
@@ -143,28 +144,44 @@ VIREO_EXPORT Double EggShell_PeekDouble(EggShell* pShell, const char* viName, co
 }
 
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_PokeString(EggShell* pShell, const char* viName, const char* eltName, const char* value)
+VIREO_EXPORT void EggShell_WriteString(EggShell* pShell, const char* viName, const char* eltName, const char* value)
 {
     void *pData = null;
     
     SubString objectName(viName);
     SubString path(eltName);
+    SubString valueString(value);
+
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
         return;
-    // TODO
+
+    TDViaParser parser(pShell->TheTypeManager(), &valueString, null, 1);
+    parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_PeekString(EggShell* pShell, const char* viName, char* eltName)
+VIREO_EXPORT const char* EggShell_ReadString(EggShell* pShell, const char* viName, char* eltName)
 {
+    TypeManagerScope scope(pShell->TheTypeManager());
+
     void *pData = null;
+    const int kStringBufSize = 1024;
+    static char returnString[kStringBufSize];
     
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if(actualType == null)
-        return;
-    // TODO
+        return null;
+    
+    STACK_VAR(String, tempString);
+    if (tempString.Value) {
+        TDViaFormatter formatter(tempString.Value, false);
+        formatter.FormatData(actualType, pData);
+    }
+    SubString tempSS = tempString.Value->MakeSubStringAlias();
+    tempSS.CopyToBoundedBuffer(kStringBufSize, (Utf8Char*)returnString);
+    return returnString;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)

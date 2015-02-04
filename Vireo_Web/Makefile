@@ -53,9 +53,11 @@ help:
 #  -03 611k+35k  / -Os 571k+35k / -Oz 527k+35k  (all work)
 #  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
 
-EM_OPT= -Os -s NO_EXIT_RUNTIME=1 -fno-exceptions
-EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT) 
+#EM_OPT= -g4 -s NO_EXIT_RUNTIME=1 -fno-exceptions
+EM_OPT= -Os -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
+EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
 EMLIBRARY= --js-library ../source/io/library_canvas2d.js
+EM_WRAP= --pre-js vireo.preamble.js --post-js vireo.postamble.js
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -63,10 +65,10 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_REPL',\
     '_EggShell_ExecuteSlices',\
     '_EggShell_Delete',\
-    '_EggShell_PeekDouble',\
-    '_EggShell_PokeDouble',\
-    '_EggShell_PeekString',\
-    '_EggShell_PokeString'\
+    '_EggShell_ReadDouble',\
+    '_EggShell_WriteDouble',\
+    '_EggShell_ReadString',\
+    '_EggShell_WriteString'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\
@@ -89,13 +91,13 @@ vjs:
 	emcc $(EMFLAGS) ../source/io/FileIO.cpp -o objs/FileIO.bc
 	emcc $(EMFLAGS) ../source/io/Emscripten.cpp -o objs/Emscripten.bc
 	emcc $(EMFLAGS) ../source/core/CEntryPoints.cpp -o objs/CEntryPoints.bc
-	emcc $(EM_OPT) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
+	emcc $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o objs/vireo.js
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically
 
 #emcc $(EM_OPT) $(EM_BC_FILES) -o vireo.html --compression $(EM_DIR)third_party/lzma.js/lzma-native,$(EM_DIR)third_party/lzma.js/lzma-decoder.js,LZMA.decompress
-#emcc $(EM_OPT) $(EM_BC_FILES) -o vireo.js
+#emcc $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
 
 -include $(DEPS)
 

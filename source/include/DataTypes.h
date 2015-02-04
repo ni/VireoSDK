@@ -189,10 +189,12 @@ public:
     //! Construct a wrapper for a raw block of elements.
     IntIndex CopyToBoundedBuffer(IntIndex bufferSize, T* buffer)
     {
+        bufferSize--;  // Make room for null
         IntIndex length = Length();
         if (bufferSize < length)
             length = bufferSize;
         memcpy(buffer, Begin(), length * sizeof(T));
+        buffer[length] = 0;
         return length;
     }
 
