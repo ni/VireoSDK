@@ -144,8 +144,10 @@ VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, co
 }
 
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_WriteString(EggShell* pShell, const char* viName, const char* eltName, const char* value)
+VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format, const char* value)
 {
+    TypeManagerScope scope(pShell->TheTypeManager());
+
     void *pData = null;
     
     SubString objectName(viName);
@@ -156,11 +158,13 @@ VIREO_EXPORT void EggShell_WriteString(EggShell* pShell, const char* viName, con
     if(actualType == null)
         return;
 
-    TDViaParser parser(pShell->TheTypeManager(), &valueString, null, 1);
+    EventLog log(EventLog::DevNull);
+    TDViaParser parser(pShell->TheTypeManager(), &valueString, &log, 1);
     parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
-VIREO_EXPORT const char* EggShell_ReadString(EggShell* pShell, const char* viName, char* eltName)
+//! Single threaded fucntion for reading string value. Beware the global buffer
+VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format)
 {
     TypeManagerScope scope(pShell->TheTypeManager());
 

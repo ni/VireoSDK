@@ -124,33 +124,18 @@ enqueue (HelloWorld)
         <script src="bootstrap/js/bootstrap.min.js"></script>
         <script src="ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
         
-        <script>
-            var editor2;
-            
-            // Add call back for stdio
-            var Module = { 'print': function(text) { editor2.insert(text + "\n") } };
-        </script>
-        
         <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
 
         <script>
-            
+            var editor2;
+            NationalInstruments.Vireo.core.print = function(text){ editor2.insert(text + "\n") };
             var v_state = document.getElementById("in_state")
             var v_address = document.getElementById("in_address")
             var v_link = document.getElementById("link")
 
             // Define global Vireo functions
             // might use embind instead
-            var esh = {};
-            esh.version = Module.cwrap('Vireo_Version', 'number', []);
-            esh.create = Module.cwrap('EggShell_Create', 'number', ['number']);
-            esh.pokeDouble = Module.cwrap('EggShell_PokeDouble', 'void', ['number', 'string', 'string', 'number']);
-            esh.peekDouble = Module.cwrap('EggShell_PeekDouble', 'number', ['number', 'string', 'string']);
-            esh.pokeString = Module.cwrap('EggShell_PokeString', 'void', ['number', 'string', 'string', 'string']);
-
-            esh.REPL = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
-            esh.executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
-            esh._delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
+            var esh = NationalInstruments.Vireo;
             esh.repeat = false;
             esh.pause = false;
             esh.h = 0;
@@ -163,16 +148,14 @@ enqueue (HelloWorld)
             function VRun()
             {
                 if (esh.h != 0 ) {
-                    esh._delete(esh.h);
+                    esh.reset();
                 }
-                esh.h = esh.create(0);
-                esh.REPL(esh.h, editor1.getValue(), -1);
+                esh.loadVia(editor1.getValue());
                 esh.execCount = 0
                 esh.startTime = Date.now();
                 v_state.value = "started";
                 setTimeout(VireoRunProc,0);
                 setTimeout(UpdateFrontPanel,0);
-
             }
             function VRunRun()
             {
@@ -218,7 +201,7 @@ enqueue (HelloWorld)
         function LVDoubleControl(v, varName)
         {
             controlValue = $(v).val();
-            esh.pokeDouble(esh.h, "_VireoScope3%2Evi", varName, controlValue);
+            esh.writeDouble("_VireoScope3%2Evi", varName, controlValue);
             v_state.value = $(v).val();
         }
 
@@ -278,7 +261,7 @@ enqueue (HelloWorld)
             if (esh.pause)
                 return;
             // Estimate of data frame count
-            newFrameCount = esh.peekDouble(esh.h, "_VireoScope3%2Evi", "_v9_FrameCount");
+            newFrameCount = esh.readDouble("_VireoScope3%2Evi", "_v9_FrameCount");
             $("#frameCounter").val((newFrameCount - oldFrameCount)*2);
             oldFrameCount = newFrameCount;
             setTimeout(UpdateFrontPanel, 500);
@@ -291,7 +274,7 @@ enqueue (HelloWorld)
             if (esh.pause)
                 return;
             
-            var x = esh.executeSlices(esh.h, 1000);
+            var x = esh.executeSlices(1000);
             esh.execCount += 1;
             if (x>0) {
                 // periodically sleep for 50 ms or so.

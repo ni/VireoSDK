@@ -10,18 +10,17 @@ SITEDIR=../Documents/gh-pages/playground
 
 clean:
 	rm -f objs/*
-	
+
 dox:
 	cd ../source; doxygen
 
 
-install: 
+install:
 	mkdir -p $(SITEDIR)
 	cp objs/vireo.js $(SITEDIR)/
 	cp SiteSource/*.html $(SITEDIR)/
 	cp SiteSource/*.via $(SITEDIR)/
 	cp SiteSource/*.json $(SITEDIR)/
-	cp objs/vireo.js.mem $(SITEDIR)/
 	@echo '==> website files copied to  $(SITEDIR)'
 
 help:
@@ -34,7 +33,7 @@ help:
 
 
 # Instead of trying fake out make for emscripten just build it explicitly
-# To install the Emscripten SDK 
+# To install the Emscripten SDK
 #   https://github.com/kripken/emscripten/wiki
 
 # Note on debugging:
@@ -67,11 +66,12 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_Delete',\
     '_EggShell_ReadDouble',\
     '_EggShell_WriteDouble',\
-    '_EggShell_ReadString',\
-    '_EggShell_WriteString'\
+    '_EggShell_ReadValueString',\
+    '_EggShell_WriteValueString'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\
+    objs/TypeAndDataManager.Embind.bc\
     objs/EggShell.bc\
     objs/Thread.bc\
     objs/TimeTypes.bc\
@@ -84,6 +84,7 @@ vjs:
 	make clean
 	mkdir -p objs
 	emcc $(EMFLAGS) ../source/core/VireoMerged.cpp -o objs/VireoMerged.bc
+	emcc $(EMFLAGS) ../source/core/TypeAndDataManager.Embind.cpp --bind -o objs/TypeAndDataManager.Embind.bc
 	emcc $(EMFLAGS) ../source/core/EggShell.cpp -o objs/EggShell.bc
 	emcc $(EMFLAGS) ../source/core/Thread.cpp -o objs/Thread.bc
 	emcc $(EMFLAGS) ../source/core/TimeTypes.cpp -o objs/TimeTypes.bc
@@ -100,4 +101,3 @@ vjs:
 #emcc $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
 
 -include $(DEPS)
-

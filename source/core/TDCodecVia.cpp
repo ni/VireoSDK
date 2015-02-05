@@ -801,7 +801,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
 #ifdef VIREO_USING_ASSERTS
             //  Int32 startingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
 #endif
-            EventLog dummyLog(null);
+            EventLog dummyLog(EventLog::DevNull);
             TDViaParser parser(vi->OwningContext()->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
