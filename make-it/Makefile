@@ -18,6 +18,7 @@ DEPS = $(OBJS:%.o=%.d)
 #-O3 high optimization
 #-Os is small (pretty much the same, but smaller and for clang 10/2013 faster)
 
+CFLAGS += $(EXTRACFLAGS)
 ifeq ($(OS),Windows_NT)
     CCFLAGS += -D WIN32
     ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
@@ -99,6 +100,12 @@ lc:
 v32:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
 	make TARGETARCH=-m32 esh
+	$(STRIP)
+
+#========= 32 bit builds host platfrom
+v32mini:
+	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
+	make TARGETARCH=-m32 EXTRACFLAGS=-DVIREO_MINI esh
 	$(STRIP)
 
 #========= 32 bit builds host platfrom

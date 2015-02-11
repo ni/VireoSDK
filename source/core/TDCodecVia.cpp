@@ -692,7 +692,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
 // perhaps no one at first. each call site, and each instance is a new type derived from the original?
 void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
 {
-    IntMax clumpCount;
     SubString token;
     
     if (_string.ComparePrefixCStr(tsNamedTypeToken)) {

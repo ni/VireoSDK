@@ -2223,6 +2223,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     }
     return _NextInstruction();
 }
+#if defined(VIREO_TYPE_Double)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeManagerReadValueDouble, TypeManagerRef, StringRef, StringRef, Double)
 {
@@ -2241,6 +2242,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
     tm->WriteValue(&objectName, &path, _Param(3));
     return _NextInstruction();
 }
+#endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
 {
@@ -2505,8 +2507,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
+#if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
+#endif
  //   DEFINE_VIREO_FUNCTION(TypeManagerWriteString, "p(i(.TypeManager) i(.String) i(.String))");
  //   DEFINE_VIREO_FUNCTION(TypeManagerReadString, "p(i(.TypeManager) i(.String) o(.String))");
 
