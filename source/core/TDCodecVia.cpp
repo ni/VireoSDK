@@ -1431,7 +1431,7 @@ struct FormatOptions {
     Boolean BasePrefix;         // 0, 0x, or 0X
     Boolean ZeroPad;            // 00010
     Boolean VariablePrecision;
-    char    FormatChar;
+    char    FormatChar;         // my affect output 'x' or 'X'
     
     Int32   MinimumFieldWidth;  // If zero no padding
     Int32   Precision;
@@ -1549,14 +1549,16 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 case 'o':
                 case 'x': case 'X':
                 {
-                    // TODO don't assume data type. This just becomes the default format for integer numbers, then use formatter
+                    // To cover the max range formats like %d ned to beturned into %lld                    
                     SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                    TempStackCString tempFormat(&percentFormat);
-                    char asciiReplacementString[100];
-                    //Get the numeric string that will replace the format string
-                    Int32 tempInt = *(Int32*) (arguments[argumentIndex]._pData);
-                    Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempInt);
-                    buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                    TempStackCString tempFormat((Utf8Char*)"%ll", 3);
+                    tempFormat.Append(&fOptions.FmtSubString);
+                    TempStackCString formattedNumber;
+                    TypeRef argType = arguments[argumentIndex]._paramType;
+                    IntMax intValue;
+                    ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                    Int32 length = snprintf(formattedNumber.BeginCStr(), formattedNumber.Capacity(), tempFormat.BeginCStr(), intValue);
+                    buffer->Append(length, (Utf8Char*)formattedNumber.Begin());
                     argumentIndex++;
                 }
                 break;
@@ -1569,7 +1571,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     TDViaFormatter formatter(tempString.Value, false);
                     formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
                     
-                    // TODO:UTF8 field width is characters, not bytes
                     Int32 extraPadding = fOptions.MinimumFieldWidth - tempString.Value->Length();
                     
                     if (fOptions.LeftJustify)
