@@ -128,7 +128,7 @@ Boolean SubString::IdentifierIsNext() const
         // The forms of true and fasle are reserved key words.
         if (CompareCStr("true") || CompareCStr("false"))
             return false;
-        if (IsLetterChar(*_begin) || *_begin == '_' || *_begin == '%')
+        if (IsLetterChar(*_begin) || *_begin == '_' || *_begin == '%' || *_begin == '.')
             return true;
     }
     return false;
