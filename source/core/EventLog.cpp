@@ -10,7 +10,6 @@ SDG
 /*! \file
  */
 
-#include <stdarg.h>
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 

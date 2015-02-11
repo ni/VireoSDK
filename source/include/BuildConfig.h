@@ -82,6 +82,12 @@ SDG
     #define VIREO_INSTRUCTION_LINKAGE static
 
     // #define VIREO_MULTI_THREAD
+    #undef VIREO_FILESYSTEM
+    #undef VIREO_FILESYSTEM_DIRLIST
+    
+    // FILEIO covers read and write operation, perhaps only for stdio.
+    #define VIREO_POSIX_FILEIO 1
+
 #else
 
     // Options for turning off primitives for some types.
@@ -124,6 +130,16 @@ SDG
     #define VIREO_INSTRUCTION_LINKAGE static
 
     #define VIREO_MULTI_THREAD
+
+    // FILEIO covers read and write operation, perhaps only for stdio.
+    #define VIREO_POSIX_FILEIO 1
+
+    // FILESYSTEM covers open/close operations
+    #define VIREO_FILESYSTEM 1
+
+    // FILESYSTEM covers open/close operations
+    #define VIREO_FILESYSTEM_DIRLIST 1
+
 #endif
 
 #define USE_C99_TYPES
@@ -134,15 +150,6 @@ SDG
 
 // TODO allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL
-
-// FILEIO covers read and write operation, perhaps only for stdio.
-#define VIREO_POSIX_FILEIO 1
-
-// FILESYSTEM covers open/close operations
-#define VIREO_FILESYSTEM 1
-
-// FILESYSTEM covers open/close operations
-#define VIREO_FILESYSTEM_DIRLIST 1
 
 #ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY

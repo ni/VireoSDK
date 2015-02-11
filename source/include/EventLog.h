@@ -14,6 +14,7 @@ SDG
 #ifndef EventLog_h
 #define EventLog_h
 
+#include <stdarg.h>
 #include "TypeAndDataManager.h"
 
 namespace Vireo {
