@@ -140,13 +140,14 @@ SDG
     // FILESYSTEM covers open/close operations
     #define VIREO_FILESYSTEM_DIRLIST 1
 
+    #define VIREO_PERF_COUNTERS
+
 #endif
 
 #define USE_C99_TYPES
 
 #define VIVM_BREAKOUT_COUNT 20
 
-#define VIREO_PERF_COUNTERS
 
 // TODO allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL

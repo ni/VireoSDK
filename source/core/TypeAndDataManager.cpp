@@ -50,11 +50,13 @@ void TypeManager::Delete(TypeManagerRef tm)
 //------------------------------------------------------------
 void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
 {
+#ifdef VIREO_PERF_COUNTERS
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
     } else {
         printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
     }
+#endif
 }
 //------------------------------------------------------------
 TypeManager::TypeManager(TypeManagerRef rootTypeManager)
@@ -406,10 +408,14 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
     NamedTypeRef* pFoundTypeRef = (iter != _typeNameDictionary.end()) ? &iter->second : null;
     
     if (pFoundTypeRef == null && _rootTypeManager) {
+#ifdef VIREO_PERF_COUNTERS
         _lookUpsRoutedToOwner++;
+#endif
         pFoundTypeRef = _rootTypeManager->FindTypeConstRef(name);
     } else {
+#ifdef VIREO_PERF_COUNTERS
         _lookUpsFound++;
+#endif
     }
 
     return pFoundTypeRef;
@@ -426,7 +432,9 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
             UntrackLastType(type);
             Free(type);
             type = iter->second;
+#ifdef VIREO_PERF_COUNTERS
             _typesShared++;
+#endif
             return type;
         }
     }
