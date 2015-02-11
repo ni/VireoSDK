@@ -18,6 +18,7 @@ SDG
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 
+#if defined (VIREO_C_ENTRY_POINTS)
 using namespace Vireo;
 
 //------------------------------------------------------------
@@ -396,4 +397,4 @@ VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count,
     VIREO_ASSERT( TypedBlock::ValidateHandle(object));
     memcpy(object->BeginAtAQ(offset), buffer, count);
 }
-
+#endif

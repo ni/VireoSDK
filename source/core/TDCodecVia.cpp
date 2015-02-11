@@ -1050,6 +1050,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 }
 //------------------------------------------------------------
 //------------------------------------------------------------
+#if defined (VIREO_VIA_FORMATTER)
 class TDViaFormatterTypeVisitor : public TypeVisitor
 {
 private:
@@ -1594,6 +1595,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         }
     }
 }
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ToTypeAndDataString, StaticType, void, StringRef)
 {
@@ -1620,6 +1622,8 @@ VIREO_FUNCTION_SIGNATURE4(ToString, StaticType, void, Int16, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+#endif
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
 {
@@ -1745,12 +1749,14 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 }
 
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
+#if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
+    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
+#endif
     DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")
     DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo

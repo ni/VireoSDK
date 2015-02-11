@@ -303,6 +303,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 // express that in the signature. What is really important is that the
 // correct API is used to pick up the parameter.
 
+#if defined(VIREO_VIA_FORMATTER)
 //------------------------------------------------------------
 struct PrintfParamBlock : public VarArgInstruction
 {
@@ -336,6 +337,7 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
     }
     return _NextInstruction();
 }
+#endif
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
     // Types
@@ -346,8 +348,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
     DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle");
     // Primitives
     // Print is like PrintLn
+#if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(Println, "p(i(.StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Printf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))");
+#endif
     //--------
 #ifdef VIREO_FILESYSTEM
     DEFINE_VIREO_FUNCTION(FileOpen, "p(i(.String)i(.String)i(.Int32)i(.Int32)i(.Boolean)i(.FileHandle)i(.Boolean)o(.Int32))");

@@ -82,6 +82,7 @@ private :
     EncodingEnum ParseEncoding(SubString* string);
 };
 
+#if defined (VIREO_VIA_FORMATTER)
 // Questions The type and data formatter is handled as a class similar to the parser
 // not sure it need to be a class. Here is why it seems to help. Mutually recursive functions for type and data
 // are methods on the same class. State and formatting options can be held by the class instead of being passed
@@ -120,7 +121,8 @@ public:
 
 // sprintf style formatting
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
- 
+#endif
+
 #define tsBoolean         "Boolean"
 #define tsGeneric         "Generic"     //!< Generic template place holder
 #define tsBits            "Bits"        // Boolean values, 0 = false, off, 1 = true, on. No numeric significance

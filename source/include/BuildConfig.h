@@ -90,6 +90,8 @@ SDG
 
 #else
 
+    #define VIREO_VIA_FORMATTER 1
+    #define VIREO_C_ENTRY_POINTS 1
     // Options for turning off primitives for some types.
     #define VIREO_TYPE_UInt8  1
     #define VIREO_TYPE_UInt16 1
