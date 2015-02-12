@@ -18,6 +18,7 @@ SDG
 
 //------------------------------------------------------------
 namespace Vireo {
+#if defined(VIREO_VIA_PARSER)
 
 typedef void (*TypeDefinerCallback)(TypeManagerRef typeManager);
 
@@ -56,15 +57,14 @@ public :
     //@}
     
 };
-
+#endif
 }
 
 #define TOKENPASTE(x, y, z)    x ## y ## z
 #define TOKENPASTE2(x, y, z)   TOKENPASTE(x, y, z)
 
 
-#ifdef VIREO_MICRO
-    // The micro verison function does not used dynamic registration.
+#if !defined(VIREO_SYMBOL_TABLE)
     
     #define DEFINE_VIREO_BEGIN(_section_)
     #define DEFINE_VIREO_END()
@@ -72,6 +72,8 @@ public :
     #define DEFINE_VIREO_TYPE(_name_, _type_) \
 
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_)
+
+    #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_)
 
     #define DEFINE_VIREO_FUNCTION_NAME(_symbol_, _name_, _typeTypeString_)
 
@@ -90,11 +92,11 @@ static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm) {
 
 #define DEFINE_VIREO_END()   }
 
-
     #define DEFINE_VIREO_TYPE(_name_, _type_) \
     (TypeDefiner::Define(tm, #_name_, _type_));
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
+
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
     (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction, #_name_));
 
@@ -103,7 +105,9 @@ static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm) {
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
     (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen, #_name_));
+
 #else
+
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
     (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction));
 
@@ -112,11 +116,11 @@ static void TOKENPASTE2(DefineTypes, _section_, __LINE__) (TypeManagerRef tm) {
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
     (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen));
+
 #endif
 
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_) \
     (TypeDefiner::DefineCustomValue(tm, #_name_, value, _typeTypeString_));
-
 
     #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _allocClass_) \
     (TypeDefiner::DefineCustomDataProcs(tm, #_name_, _allocClass_, _type_));

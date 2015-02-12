@@ -31,6 +31,7 @@ SDG
 
 namespace Vireo
 {
+#if defined (VIREO_VIA_PARSER)
 //------------------------------------------------------------
 EggShell* EggShell::Create(EggShell* parent)
 {
@@ -282,6 +283,6 @@ NIError EggShell::ReadStdinLine(SubString *string)
         return ((c == (char)EOF) && (0 == i)) ? kNIError_kResourceNotFound : kNIError_Success;
     }
 }
-    
+#endif
 } // namespace Vireo
 

@@ -12,6 +12,7 @@
 #include "TDCodecVia.h"
 #include "ExecutionContext.h"
 #include "EggShell.h"
+#include "Instruction.h"
 
 #if kVireoOS_emscripten
     #include <emscripten.h>
@@ -19,16 +20,53 @@
 
 using namespace Vireo;
 
+#define VIREO_MINI 1
+
+#if !defined(VIREO_MINI)
 static struct {
     EggShell *_pRootShell;
     EggShell *_pShell;
     ExecutionState _eState;
 } gShells;
-
 void RunExec();
+
+#endif
+
+//extern "C" void AddInt32();
+
+extern VIREO_FUNCTION_SIGNATURE3(AddInt32, Int32, Int32, Int32);
+
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(Foo, Int32, Int32, Int32)
+{
+    return _NextInstruction();
+}
+
+InstructionCore oneInstruction;
+
+Int32 a = 21;
+Int32 b = 2;
+Int32 c = 1;
+
+void* InstrucitonBlock[] =
+{
+    (void*)Foo, &a, &b, &c
+};
+
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
+#if defined(VIREO_MINI)
+    TypeManagerRef tm = TypeManager::New(null);
+    printf("Helo %p\n", tm->TypeList());
+    InstructionCore *ip = (InstructionCore*) InstrucitonBlock;
+    
+    printf("First %p\n", ip);
+    void* next = ip->_function(ip);
+    printf("Last %p\n", next);
+#else
+
     Boolean showStats = false;
     Boolean noShell = false;
     ConstCStr fileName = null;
@@ -98,10 +136,11 @@ int VIREO_MAIN(int argc, const char * argv[])
         gShells._pShell->Delete();
         gShells._pRootShell->Delete();
     }
+#endif
     return 0;
 }
 
-
+#if !defined(VIREO_MINI)
 void RunExec() {
     gShells._eState = gShells._pShell->TheExecutionContext()->ExecuteSlices(400, 10000000);
     // TODO control frame rate based on time till next thing to exec
@@ -115,4 +154,5 @@ void RunExec() {
 #endif
     }
 }
+#endif
 

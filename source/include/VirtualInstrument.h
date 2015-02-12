@@ -165,6 +165,8 @@ struct CallVIInstruction : public InstructionCore
 
     _ParamImmediateDef(InstructionCore*, CopyOutSnippet);
 };
+
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 //! Class used by the ClumpParseState to track memory needed for instructions.
 class InstructionAllocator {
@@ -332,6 +334,7 @@ public:
 
 typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *GenericEmitFunction) (ClumpParseState*);
 
+#endif
 }
 #endif //VirtualInstrument_h
 

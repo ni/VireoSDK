@@ -76,10 +76,10 @@ SDG
     // #define VIREO_INSTRUCTION_REFLECTION 1
     // #define VIREO_TYPE_CONSTRUCTION 1
 
-    // For Vireo-full functions are dynamically registered by each module when loaded
+    // For Vireo-Static Link, functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.
-    #define VIREO_INSTRUCTION_LINKAGE static
+    #define VIREO_INSTRUCTION_LINKAGE
 
     // #define VIREO_MULTI_THREAD
     #undef VIREO_FILESYSTEM
@@ -89,9 +89,10 @@ SDG
     #define VIREO_POSIX_FILEIO 1
 
 #else
-
-    #define VIREO_VIA_FORMATTER 1
-    #define VIREO_C_ENTRY_POINTS 1
+  //  #define VIREO_SYMBOL_TABLE 1
+  //  #define VIREO_VIA_PARSER 1
+  //  #define VIREO_VIA_FORMATTER 1
+  //  #define VIREO_C_ENTRY_POINTS 1
     // Options for turning off primitives for some types.
     #define VIREO_TYPE_UInt8  1
     #define VIREO_TYPE_UInt16 1
@@ -122,14 +123,15 @@ SDG
 
     // Track internal unique C function names for primitive functions.
     // Used for generating C source
-    #define VIREO_INSTRUCTION_REFLECTION 1
+  //  #define VIREO_INSTRUCTION_REFLECTION 1
 
     #define VIREO_TYPE_CONSTRUCTION 1
 
     // For Vireo-full functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.
-    #define VIREO_INSTRUCTION_LINKAGE static
+//    #define VIREO_INSTRUCTION_LINKAGE static
+#define VIREO_INSTRUCTION_LINKAGE
 
     #define VIREO_MULTI_THREAD
 

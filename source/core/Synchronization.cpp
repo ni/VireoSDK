@@ -206,26 +206,26 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 
 DEFINE_VIREO_BEGIN(Synchronization)
 
-//TODO type should be able to derive from observable state base class
-DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$1 *)elements)e(.Int32 insert)e(.Int32 count))")
-DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
+    //TODO type should be able to derive from observable state base class
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$1 *)elements)e(.Int32 insert)e(.Int32 count))")
+    DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
 
-DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
 
-DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
-DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-//DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
-//DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    //DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    //DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-//DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
-//DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
+    //DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
+    //DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
 
-#if 0
-DEFINE_VIREO_FUNCTION(PreviewElement, "")
-DEFINE_VIREO_FUNCTION(Status, "")
-DEFINE_VIREO_FUNCTION(Release, "")
-DEFINE_VIREO_FUNCTION(Flush, "")
-#endif
+    #if 0
+    DEFINE_VIREO_FUNCTION(PreviewElement, "")
+    DEFINE_VIREO_FUNCTION(Status, "")
+    DEFINE_VIREO_FUNCTION(Release, "")
+    DEFINE_VIREO_FUNCTION(Flush, "")
+    #endif
 
 DEFINE_VIREO_END()

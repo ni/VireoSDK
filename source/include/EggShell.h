@@ -16,6 +16,7 @@ SDG
 
 namespace Vireo
 {
+#if defined (VIREO_VIA_PARSER)
  
 class TDViaParser;
 
@@ -46,7 +47,7 @@ private:
     void ParseEnqueueVI(TDViaParser* parser);
     void ParseDefine(TDViaParser* parser);
 };
-
+#endif
 } // namespace Vireo
 
 #endif // EggShell_h

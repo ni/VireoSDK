@@ -37,6 +37,7 @@ ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
         default:    return null;      break;
     }
 }
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -93,6 +94,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
     }
     return pInstruction;
 }
+#endif
 //------------------------------------------------------------
 // Data Init function
 //------------------------------------------------------------
@@ -189,6 +191,7 @@ struct AggregateBinOpInstruction : public InstructionCore
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Next()          { return this->_piNext; }
 };
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -350,6 +353,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     }
     return pInstruction;
 }
+#endif
 //------------------------------------------------------------
 struct AggregateUnOpInstruction : public InstructionCore
 {
@@ -365,6 +369,7 @@ struct AggregateUnOpInstruction : public InstructionCore
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()          { return this->_piNext; }
 };
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -448,6 +453,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     }
     return pInstruction;
 }
+#endif
 //------------------------------------------------------------
 struct Search1DArrayInstruction : public InstructionCore
 {
@@ -459,6 +465,7 @@ struct Search1DArrayInstruction : public InstructionCore
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()      { return this->_piNext; }
 };
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -491,6 +498,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     return pInstruction;
 }
+#endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(Search1DArrayInternal, Search1DArrayInstruction)
 {
@@ -533,6 +541,7 @@ struct VectorOpInstruction : public InstructionCore
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()          { return this->_piNext; }
 };
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
 {
@@ -579,6 +588,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
 
     return (InstructionCore*) vectorOp;
 }
+#endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
 {
@@ -621,6 +631,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
 
     return _NextInstruction();
 }
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -645,6 +656,7 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
 
     return pInstructionBuilder->EmitInstruction();
 }
+#endif
 //------------------------------------------------------------
 struct ArrayConcatenateInternalParamBlock : public VarArgInstruction
 {

@@ -198,6 +198,7 @@ public:
 private:
     TypeManagerRef    _rootTypeManager;   // Root is null when the instance is the root.
 
+#if defined(VIREO_SYMBOL_TABLE)
 #ifdef STL_MAP
     typedef std::map<SubString, NamedTypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
     std::map<SubString, NamedTypeRef, ComapreSubString>  _typeNameDictionary;
@@ -205,6 +206,7 @@ private:
 #else
     typedef DictionaryElt* TypeDictionaryIterator;
     SimpleDictionary       _typeNameDictionary;
+#endif
 #endif
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
@@ -230,10 +232,13 @@ private:
 public:
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
+#if defined(VIREO_INSTRUCTION_REFLECTION)
     TypeRef ResolveToUniqueInstance(TypeRef type, SubString *binaryName);
-
+#endif
     void    UntrackLastType(TypeCommon* type);
+#if defined(VIREO_SYMBOL_TABLE)
     void    GetTypes(TypedArray1D<TypeRef>*);
+#endif
     TypeRef TypeList() { return _typeList; }
     void    PrintMemoryStat(ConstCStr, Boolean last);
     
@@ -255,7 +260,8 @@ public:
 public:
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic);
-#if defined (VIREO_INSTRUCTION_REFLECTION)
+#if defined(VIREO_SYMBOL_TABLE)
+#if defined(VIREO_INSTRUCTION_REFLECTION)
 	TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
@@ -264,6 +270,7 @@ public:
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
 	TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
+#endif
 
 public:
     // Low level allocation functions
@@ -570,7 +577,7 @@ public:
 // the type->InitValue method does. For a variante type this means the type of the value may change
 // but not notiosn that the value is a variant. A bit tenious perhaps. s
 
-
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 //! Gives a type a name ( .e.g "Int32")
 class NamedType : public WrappedType
@@ -589,6 +596,7 @@ public:
     virtual SubString GetName()                     { return SubString(_name.Begin(), _name.End()); }
     virtual SubString GetElementName()              { return SubString(null, null); }
 };
+#endif
 //------------------------------------------------------------
 //! Give a type a field name and offset properties. Used inside an aggregateType
 class ElementType : public WrappedType
@@ -670,6 +678,7 @@ public:
     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
     virtual IntIndex BitLength()            { return _blockLength; }
 };
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 //! A type that permits its data to be looked at though more than one perspective.
 class EquivalenceType : public AggregateType
@@ -685,6 +694,7 @@ public:
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
 };
+#endif
 //------------------------------------------------------------
 //! A type that is an aggregate of other types.
 class ClusterType : public AggregateType
@@ -834,6 +844,7 @@ public:
     virtual Int32   SubElementCount()                   { return 1; }
     // TODO Add GetSubElementAddressFromPath
 };
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example the address to a C function.
 class DefaultPointerType : public PointerType
@@ -853,6 +864,7 @@ public:
     }
     virtual void*   Begin(PointerAccessEnum mode)       { return &_defaultPointerValue; }
 };
+#endif
 //------------------------------------------------------------
 //! An interface used a CustomDataProcType instance.
 class IDataProcs {

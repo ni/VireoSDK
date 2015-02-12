@@ -18,10 +18,10 @@ SDG
 #include "TypeDefiner.h"
 #include "TimeTypes.h"
 
+
 // With non-unique names(AKA overlodaed) only the C entlry points are appended.
 #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
 #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
-
 
 using namespace Vireo;
 

@@ -238,7 +238,8 @@ public:
     }
 };
 #endif
-    
+
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 //! Template class to dynamically create instances of a Vireo typed variable.
 template <class T>
@@ -265,6 +266,7 @@ public:
 
 //! Declare a variable using a Vireo type.
 #define STACK_VAR(_t_, _v_) StackVar<_t_> _v_(#_t_)
+#endif
     
 } // namespace Vireo
 

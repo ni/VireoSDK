@@ -225,7 +225,7 @@ InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* nextInstruction)
         return nextInstruction;
     }
 }
-#ifndef VIREO_MICRO
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 // InstructionAllocator
 //------------------------------------------------------------

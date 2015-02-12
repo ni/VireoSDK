@@ -109,6 +109,12 @@ v32mini:
 	$(STRIP)
 
 #========= 32 bit builds host platfrom
+v32static:
+	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
+	make TARGETARCH=-m32 EXTRACFLAGS=-DVIREO_MINI esh
+	$(STRIP)
+
+#========= 32 bit builds host platfrom
 v64:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
 	make TARGETARCH=-m64 esh

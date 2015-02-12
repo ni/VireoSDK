@@ -15,6 +15,7 @@ SDG
 
 namespace Vireo
 {
+#if defined(VIREO_VIA_PARSER)
 
 TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements);
 
@@ -202,6 +203,6 @@ void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
     VIREO_ASSERT(false);
 }
 
-
+#endif
 }
 

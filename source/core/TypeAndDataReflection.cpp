@@ -14,7 +14,7 @@ SDG
 
 namespace Vireo
 {
-#if defined (VIREO_INSTRUCTION_REFLECTION)
+#if defined(VIREO_INSTRUCTION_REFLECTION)
 
 //------------------------------------------------------------
 /* Create a visitor with a needle being looked for and a TypeRef
@@ -60,6 +60,7 @@ private:
     virtual void VisitDefaultPointer(DefaultPointerType* type);
     virtual void VisitCustomDataProc(CustomDataProcType* type);
 };
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
 {
@@ -76,6 +77,8 @@ TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, S
     }
     return null;
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name)
 {
@@ -91,6 +94,7 @@ Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name
     }
     return false;
 }
+#endif
 //------------------------------------------------------------
 DataReflectionVisitor::DataReflectionVisitor(TypeRef tHaystack, DataPointer pNeedle, StringRef path)
 {

@@ -33,6 +33,7 @@ class InstructionAllocator;
 // 3. Out of memory. Memory will be allocated out of the designated TypeManager
 // if the quota is exceeded parsing will cease.
 
+#if defined (VIREO_VIA_PARSER)
 //! The VIA decoder.
 class TDViaParser
 {
@@ -81,6 +82,7 @@ private :
     TypeRef ParsePointerType(Boolean shortNotation);
     EncodingEnum ParseEncoding(SubString* string);
 };
+#endif
 
 #if defined (VIREO_VIA_FORMATTER)
 // Questions The type and data formatter is handled as a class similar to the parser

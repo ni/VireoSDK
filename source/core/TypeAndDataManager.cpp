@@ -182,6 +182,7 @@ void TypeManager::Free(void* pBuffer)
         return GlobalFree(pBuffer);
     }
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // Delete all types allocated within a TypeManager.
 // no type managers should refere to this instance as their root
@@ -234,7 +235,9 @@ TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubS
         return null;
     }
 }
+#endif
 //------------------------------------------------------------
+#if defined(VIREO_SYMBOL_TABLE)
 #if defined (VIREO_INSTRUCTION_REFLECTION)
 TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef typeRef, PointerTypeEnum pointerType, ConstCStr cName)
 #else
@@ -269,6 +272,7 @@ TypeRef TypeManager::DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProc
         return null;
     }
 }
+#endif
 //------------------------------------------------------------
 void TypeManager::TrackType(TypeRef type)
 {
@@ -300,6 +304,7 @@ void TypeManager::TrackAllocation(void* id, size_t countAQ, Boolean bAlloc)
         _maxAllocated = _totalAQAllocated;
     }
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
 {
@@ -391,6 +396,7 @@ TypedObjectRef TypeManager::FindObject(SubString* name)
     }
     return null;
 }
+
 //------------------------------------------------------------
 NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 {
@@ -441,6 +447,7 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
     _typeInstanceDictionary[*binaryName] = type;
     return type;
 }
+#endif
 //------------------------------------------------------------
 TypeRef TypeManager::BadType()
 {
@@ -480,6 +487,7 @@ Int32 TypeManager::BitLengthToAQSize(IntIndex length)
         return (length + (_aqBitLength-1)) / _aqBitLength;
     }
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *pValue)
 {
@@ -530,7 +538,7 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, SubStrin
 //    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, value);
     return kNIError_Success;
 }
-
+#endif
 //------------------------------------------------------------
 // TypeCommon
 //------------------------------------------------------------
@@ -781,6 +789,7 @@ WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
     _isBitLevel     = _wrapped->IsBitLevel();
     _pointerType    = _wrapped->PointerType();
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // ElementType
 //------------------------------------------------------------
@@ -800,6 +809,8 @@ ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wr
     _elementUsageType = (UInt16)usageType;
     _offset = offset;
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // NamedType
 //------------------------------------------------------------
@@ -817,6 +828,7 @@ NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef 
     }
     _name.Assign(name->Begin(), name->Length());
 }
+#endif
 //------------------------------------------------------------
 // AggregateType
 //------------------------------------------------------------
@@ -863,6 +875,7 @@ TypeRef AggregateType::GetSubElement(Int32 index)
         return null; // element does not exist
     return _elements[index];
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // BitBlockType
 //------------------------------------------------------------
@@ -889,6 +902,8 @@ BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, Encoding
         _isValid = false;
     }
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // BitClusterType
 //------------------------------------------------------------
@@ -947,6 +962,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     
     // TODO figure out total bit size and bit offsets
 }
+#endif
 //------------------------------------------------------------
 // ClusterElementAlignmentCalculator
 //------------------------------------------------------------
@@ -1006,6 +1022,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     _aqOffset += subAQSize;
     return elementOffset;
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // ParamBlockAlignmentCalculator
 //------------------------------------------------------------
@@ -1034,6 +1051,7 @@ Int32 ParamBlockAlignmentCalculator::AlignNextElement(TypeRef element)
     ElementCount++;
     return elementOffset;
 }
+#endif
 //------------------------------------------------------------
 // EquivalenceBlockAlignmentCalculator
 //------------------------------------------------------------
@@ -1053,6 +1071,7 @@ Int32 EquivalenceAlignmentCalculator::AlignNextElement(TypeRef element)
     // All elements are overlayed, so they start where element does, which is at 0
     return 0;
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // ClusterType
 //------------------------------------------------------------
@@ -1105,6 +1124,7 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
         _encoding = kEncoding_Cluster;
     }
 }
+#endif
 //------------------------------------------------------------
 NIError ClusterType::InitData(void* pData, TypeRef pattern)
 {
@@ -1207,6 +1227,7 @@ ClusterType::~ClusterType()
         _pDefault = null;
     }
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // EquivalenceType
 //------------------------------------------------------------
@@ -1246,6 +1267,8 @@ EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[],
     _encoding = encoding;
     _isValid = isValid;
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 void* EquivalenceType::Begin(PointerAccessEnum mode)
 {
@@ -1278,6 +1301,8 @@ NIError EquivalenceType::ClearData(void* pData)
     }
     return kNIError_Success;
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // ArrayType
 //------------------------------------------------------------
@@ -1304,6 +1329,7 @@ ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex r
 
     memcpy(_dimensionLengths, dimensionLengths, rank * sizeof(IntIndex));
 }
+#endif
 //------------------------------------------------------------
 NIError ArrayType::InitData(void* pData, TypeRef pattern)
 {
@@ -1454,6 +1480,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
     }
     return subType;
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // ParamBlockType
 //------------------------------------------------------------
@@ -1506,6 +1533,8 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     _hasGenericType = hasGenericType;
     _encoding = kEncoding_ParameterBlock;
 }
+#endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // DefaultValueType
 //------------------------------------------------------------
@@ -1549,6 +1578,7 @@ DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boo
     _ownsDefDefData = true;
     type->InitData(Begin(kPAInit), type);
 }
+#endif
 //------------------------------------------------------------
 void* DefaultValueType::Begin(PointerAccessEnum mode)
 {
@@ -1585,6 +1615,7 @@ PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type)
 {
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // DefaultPointerType
 //------------------------------------------------------------
@@ -1602,6 +1633,7 @@ DefaultPointerType::DefaultPointerType(TypeManagerRef typeManager, TypeRef type,
     _defaultPointerValue = pointer;
     _pointerType = pointerType;
 }
+#endif
 //------------------------------------------------------------
 // CustomDataProcType
 //------------------------------------------------------------
@@ -2210,6 +2242,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, Alloc
     pStats->_maxAllocated = pTM->MaxAllocated();
     return _NextInstruction();
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(TypeManagerGetTypes, TypeManagerRef, TypedArray1D<TypeRef>*)
 {
@@ -2231,6 +2264,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     }
     return _NextInstruction();
 }
+#endif
 #if defined(VIREO_TYPE_Double)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeManagerReadValueDouble, TypeManagerRef, StringRef, StringRef, Double)
@@ -2380,6 +2414,7 @@ VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
 }
 #endif
 
+#if defined(VIREO_SYMBOL_TABLE)
 #if defined(VIREO_TYPE_VARIANT)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef, TypeRef, Boolean, TypeRef)
@@ -2436,6 +2471,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
     _Param(2) = _Param(0)->GetSubElement(_Param(1));
     return _NextInstruction();
 }
+#endif
 #endif
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)

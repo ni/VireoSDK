@@ -17,6 +17,7 @@ SDG
 
 namespace Vireo {
 
+#if defined(VIREO_VIA_PARSER)
 //------------------------------------------------------------
 // TypeDefiner - class for modules to register types
 //------------------------------------------------------------
@@ -213,7 +214,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 }
-
+#endif
 }
 
  
