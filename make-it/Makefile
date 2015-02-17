@@ -52,7 +52,8 @@ else
             LDFLAGS+= -L. -pie -Wl,-E
         else
             CC=g++
-            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH)
+            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
+            LDFLAGS+= -fdata-sections -ffunction-sections -s -Wl,--gc-sections
         endif
         PROGRAM_DIR = /usr/local/bin
         LIBS = -lrt
