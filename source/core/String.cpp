@@ -27,7 +27,6 @@ SDG
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h" 
-
 using namespace Vireo;
 
 //------------------------------------------------------------
@@ -295,6 +294,66 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     }
     return _NextInstruction();
 }
+//--------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
+{
+	IntIndex targetLength = _Param(0)->Length();
+	const Utf8Char* pSourceChar = (Utf8Char*) _Param(0)->Begin();
+	const Utf8Char* pSourceCharEnd = (Utf8Char*) _Param(0)->End();
+	SubString ss = _Param(0)->MakeSubStringAlias();
+	bool found = false;
+	int leading = 0;
+	int trailing = 0;
+	const Utf8Char* spacePos = null;
+	bool last = false;
+	while(pSourceChar < pSourceCharEnd)
+	{
+		int bytes = ss.CharLength(pSourceChar);
+		if(bytes == 1)
+		{
+			char c = *pSourceChar;
+			if(!found && ss.IsSpaceChar(c))
+			{
+				leading ++;
+			}
+			else
+			{
+				found = true;
+				if(ss.IsSpaceChar(c))
+				{
+					if(spacePos == null || !last)
+					{
+						spacePos = pSourceChar;
+					}
+					last = true;
+					trailing++;
+				}
+				else
+				{
+					last = false;
+					trailing = 0;
+				}
+			}
+		}
+		else
+		{
+			found = true;
+		}
+		pSourceChar += bytes;
+	}
+	// return empty string
+	if(!found)
+	{
+	    _Param(1)->Resize1D(0);
+	    return _NextInstruction();
+	}
+	targetLength = targetLength-leading-trailing;
+    _Param(1)->Resize1D(targetLength);
+    TypeRef elementType = _Param(1)->ElementType();
+	elementType->CopyData(_Param(0)->BeginAt(leading), _Param(1)->Begin(), targetLength);
+    return _NextInstruction();
+}
+
 #if 0
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
