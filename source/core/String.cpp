@@ -330,6 +330,7 @@ VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
 				}
 				else
 				{
+					spacePos = pSourceChar;
 					last = false;
 					trailing = 0;
 				}
@@ -337,6 +338,8 @@ VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
 		}
 		else
 		{
+			last = false;
+			trailing = 0;
 			found = true;
 		}
 		pSourceChar += bytes;
@@ -347,10 +350,13 @@ VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
 	    _Param(1)->Resize1D(0);
 	    return _NextInstruction();
 	}
+
+
 	targetLength = targetLength-leading-trailing;
     _Param(1)->Resize1D(targetLength);
     TypeRef elementType = _Param(1)->ElementType();
 	elementType->CopyData(_Param(0)->BeginAt(leading), _Param(1)->Begin(), targetLength);
+
     return _NextInstruction();
 }
 
