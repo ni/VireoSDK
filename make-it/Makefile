@@ -63,6 +63,7 @@ else
         # CC=g++
         # clang settings (has been about 33% smaller)
         CC=clang++
+        LDFLAGS+= -dead_strip
         CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fno-rtti -fno-exceptions
         PROGRAM_DIR=/Applications/Vireo
     endif
