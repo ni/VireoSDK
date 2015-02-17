@@ -1605,6 +1605,7 @@ NIError DefaultValueType::InitData(void* pData, TypeRef pattern)
     }
     return CopyData(Begin(kPARead), pData);
 }
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // PointerType
 //------------------------------------------------------------
@@ -1617,6 +1618,7 @@ PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type)
 {
 }
+#endif
 #if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // DefaultPointerType
@@ -1636,6 +1638,7 @@ DefaultPointerType::DefaultPointerType(TypeManagerRef typeManager, TypeRef type,
     _pointerType = pointerType;
 }
 #endif
+#if defined(VIREO_SYMBOL_TABLE)
 //------------------------------------------------------------
 // CustomDataProcType
 //------------------------------------------------------------
@@ -1650,6 +1653,7 @@ CustomDataProcType::CustomDataProcType(TypeManagerRef typeManager, TypeRef type,
     _isFlat = false;    // Force calls to the alloc functions
     _pDataProcs = pDataProcs;
 }
+#endif
 //------------------------------------------------------------
 // TypedArrayCore
 //------------------------------------------------------------
@@ -2392,6 +2396,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeGetSubElement, TypeRef, Int32,  TypeRef)
     return _NextInstruction();
 }
 
+#if defined(VIREO_SYMBOL_TABLE)
 #if defined(VIREO_TYPE_CONSTRUCTION)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeMakeVectorType, TypeManagerRef, TypeRef, TypeRef, Int32)
@@ -2417,7 +2422,7 @@ VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
     return _NextInstruction();
 }
 #endif
-
+#endif
 #if defined(VIREO_SYMBOL_TABLE)
 #if defined(VIREO_TYPE_VARIANT)
 //------------------------------------------------------------

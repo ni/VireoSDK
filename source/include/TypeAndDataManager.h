@@ -789,14 +789,15 @@ public:
 //! A type that is a multi-dimension collection of another type.
 class ArrayType : public WrappedType
 {
+#if defined(VIREO_SYMBOL_TABLE)
 private:
     ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
     static IntIndex StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
 
 public:
-    
     static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
-   
+#endif
+public:
     // _pDefault is a singleton for each instance of an ArrayType used as the default
     // value, allocated one demand
     void*   _pDefault;
@@ -839,10 +840,13 @@ public:
 //! A type describes a pointer to another type.
 class PointerType : public WrappedType
 {
+#if defined(VIREO_SYMBOL_TABLE)
 protected:
     PointerType(TypeManagerRef typeManager, TypeRef type);
 public:
     static PointerType* New(TypeManagerRef typeManager, TypeRef type);
+#endif
+public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitPointer(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
@@ -853,9 +857,11 @@ public:
 //! A type describes a pointer with a predefined value. For example the address to a C function.
 class DefaultPointerType : public PointerType
 {
+#if defined(VIREO_SYMBOL_TABLE)
 private:
     DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
     DefaultPointerType();
+#endif
 public:
     void*           _defaultPointerValue;
 public:
