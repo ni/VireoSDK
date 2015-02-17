@@ -297,10 +297,14 @@ public:
     static void GlobalFree(void* pBuffer);
     
     // Read or write values accessible to this TM as described by a symbolic path
+#if defined(VIREO_SYMBOL_TABLE)
+#if defined(VIREO_TYPE_Double)
     NIError ReadValue(SubString* objectName, SubString* path, Double *value);
     NIError WriteValue(SubString* objectName, SubString* path, Double value);
+#endif
     NIError ReadValue(SubString* objectName, SubString* path, StringRef);
     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
+#endif
 
 #ifdef VIREO_PERF_COUNTERS
 private:

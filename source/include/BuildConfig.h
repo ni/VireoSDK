@@ -45,20 +45,20 @@ SDG
 #elif defined(VIREO_MINI)
 
     // Options for turning off primitives for some types.
-    // #define VIREO_TYPE_UInt8  1
-    // #define VIREO_TYPE_UInt16 1
+    #define VIREO_TYPE_UInt8  1
+    #define VIREO_TYPE_UInt16 1
     #define VIREO_TYPE_UInt32 1
-    //  #define VIREO_TYPE_UInt64 1
+    #define VIREO_TYPE_UInt64 1
 
-    // #define VIREO_TYPE_Int8   1
-    // #define VIREO_TYPE_Int16  1
+    #define VIREO_TYPE_Int8   1
+    #define VIREO_TYPE_Int16  1
     #define VIREO_TYPE_Int32  1
-    //  #define VIREO_TYPE_Int64  1
+    #define VIREO_TYPE_Int64  1
 
-    //  #define VIREO_TYPE_Single 1
-    //  #define VIREO_TYPE_Double 1
-    //  #define VIREO_TYPE_ComplexSingle 1
-    //  #define VIREO_TYPE_ComplexDouble 1
+    #define VIREO_TYPE_Single 1
+    #define VIREO_TYPE_Double 1
+    #define VIREO_TYPE_ComplexSingle 1
+    #define VIREO_TYPE_ComplexDouble 1
     #define VIREO_TYPE_ArrayND 1
 
     //  #define VIREO_TYPE_ATime 1
@@ -79,7 +79,7 @@ SDG
     // For Vireo-Static Link, functions are dynamically registered by each module when loaded
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.
-    #define VIREO_INSTRUCTION_LINKAGE
+    #define VIREO_INSTRUCTION_LINKAGE extern "C"
 
     // #define VIREO_MULTI_THREAD
     #undef VIREO_FILESYSTEM
@@ -131,7 +131,7 @@ SDG
     // or when the the app is started for statically linked modules so the symbols
     // are private to each obj.
 //    #define VIREO_INSTRUCTION_LINKAGE static
-#define VIREO_INSTRUCTION_LINKAGE
+#define VIREO_INSTRUCTION_LINKAGE extern "C"
 
     #define VIREO_MULTI_THREAD
 

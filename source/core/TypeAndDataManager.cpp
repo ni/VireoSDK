@@ -488,6 +488,7 @@ Int32 TypeManager::BitLengthToAQSize(IntIndex length)
     }
 }
 #if defined(VIREO_SYMBOL_TABLE)
+#if defined(VIREO_TYPE_Double)
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *pValue)
 {
@@ -513,6 +514,7 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double v
     WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, value);
     return kNIError_Success;
 }
+#endif
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, StringRef)
 {
@@ -2265,6 +2267,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     return _NextInstruction();
 }
 #endif
+#if defined(VIREO_SYMBOL_TABLE)
 #if defined(VIREO_TYPE_Double)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeManagerReadValueDouble, TypeManagerRef, StringRef, StringRef, Double)
@@ -2284,6 +2287,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
     tm->WriteValue(&objectName, &path, _Param(3));
     return _NextInstruction();
 }
+#endif
 #endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)

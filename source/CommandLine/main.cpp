@@ -32,39 +32,48 @@ void RunExec();
 
 #endif
 
-//extern "C" void AddInt32();
-
-extern VIREO_FUNCTION_SIGNATURE3(AddInt32, Int32, Int32, Int32);
-
-
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(Foo, Int32, Int32, Int32)
-{
-    return _NextInstruction();
-}
+//prototype are necessary for functions. However these prototype are
+// stripped down to the bare minimum. which is OK since they are
+// extern "C" exports with no C++ type speciic name mangling.
+VIREO_FUNCTION_SIGNATURE0(AddInt32);
+VIREO_FUNCTION_SIGNATURE0(MulInt32);
+VIREO_FUNCTION_SIGNATURE0(MulSingle);
+VIREO_FUNCTION_SIGNATURE0(AddSingle);
 
 InstructionCore oneInstruction;
 
-Int32 a = 21;
-Int32 b = 2;
-Int32 c = 1;
+struct Vi1_DSType{
+    Int32 a;
+    Int32 b;
+    Int32 c;
+};
+
+Vi1_DSType  ds1 = {21, 2, 1};
 
 void* InstrucitonBlock[] =
 {
-    (void*)Foo, &a, &b, &c
+    (void*)AddInt32, &ds1.a, &ds1.b, &ds1.c,
+    (void*)MulInt32, &ds1.a, &ds1.b, &ds1.c,
+//  If the functions are not referenced they will be stripped by the linker.
+//  (void*)MulSingle, &ds1.a, &ds1.b, &ds1.c,
+//  (void*)AddSingle, &ds1.a, &ds1.b, &ds1.c,
 };
-
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
 #if defined(VIREO_MINI)
+
     TypeManagerRef tm = TypeManager::New(null);
     printf("Helo %p\n", tm->TypeList());
     InstructionCore *ip = (InstructionCore*) InstrucitonBlock;
     
     printf("First %p\n", ip);
-    void* next = ip->_function(ip);
-    printf("Last %p\n", next);
+    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
+    ip = ip->_function(ip);
+    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
+    ip = ip->_function(ip);
+    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
+
 #else
 
     Boolean showStats = false;
