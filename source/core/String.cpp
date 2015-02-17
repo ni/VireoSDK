@@ -309,35 +309,25 @@ VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
 	while(pSourceChar < pSourceCharEnd)
 	{
 		int bytes = ss.CharLength(pSourceChar);
-		if(bytes == 1)
-		{
+		if(bytes == 1) {
 			char c = *pSourceChar;
-			if(!found && ss.IsSpaceChar(c))
-			{
+			if(!found && ss.IsSpaceChar(c)) {
 				leading ++;
-			}
-			else
-			{
+			} else {
 				found = true;
-				if(ss.IsSpaceChar(c))
-				{
-					if(spacePos == null || !last)
-					{
+				if(ss.IsSpaceChar(c)) {
+					if(spacePos == null || !last) {
 						spacePos = pSourceChar;
 					}
 					last = true;
 					trailing++;
-				}
-				else
-				{
+				} else	{
 					spacePos = pSourceChar;
 					last = false;
 					trailing = 0;
 				}
 			}
-		}
-		else
-		{
+		} else {
 			last = false;
 			trailing = 0;
 			found = true;
@@ -350,8 +340,6 @@ VIREO_FUNCTION_SIGNATURE2(StringTrim, StringRef, StringRef)
 	    _Param(1)->Resize1D(0);
 	    return _NextInstruction();
 	}
-
-
 	targetLength = targetLength-leading-trailing;
     _Param(1)->Resize1D(targetLength);
     TypeRef elementType = _Param(1)->ElementType();
