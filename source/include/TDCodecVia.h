@@ -90,6 +90,13 @@ private :
 class TDViaFormatterTypeVisitor;
 
 //! Punctuation and options used by the TDViaFormatter
+enum ViaFormat {
+    kViaFormat_NoFieldNames = 0,
+    kViaFormat_UseFieldNames = 1,
+    kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames + 2,
+    kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames + 4,
+};
+
 struct ViaFormatChars
 {
     ConstCStr   _name;
@@ -98,8 +105,8 @@ struct ViaFormatChars
     Utf8Char    _clusterPre;
     Utf8Char    _clusterPost;
     Utf8Char    _itemSeperator;
-    Utf8Char    _nameSeperator;
     Utf8Char    _quote;
+    ViaFormat   _fieldNameFormat;
 };
 
 struct ViaFormatOptions

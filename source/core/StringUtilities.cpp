@@ -144,19 +144,16 @@ Boolean SubString::ReadRawChar(char* token)
     }
 }
 //------------------------------------------------------------
-Boolean SubString::ReadGraphemeCluster(SubString* token, Int32* count)
+Boolean SubString::ReadGraphemeCluster(SubString* token)
 {
     const Utf8Char* next = _begin;
     const Utf8Char* initialBegin = _begin;
     Boolean characterEnd = false;
     if (_begin >= _end) {
-        *count = -1;
         return false;
     }
-    *count = 0;
     Int32 rule = 0;
     while (_begin < _end && !characterEnd) {
-        *count++;  // Need to review. No side effect here.
         next = _begin + CharLength(_begin);
         if (next >= _end) {
             characterEnd = true;
