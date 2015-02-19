@@ -323,8 +323,7 @@ VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
     Utf8Char* pDestChar = _Param(1)->End();
     TypeRef elementType = _Param(0)->ElementType();
     SubString character;
-    Int32 count = 0;
-    while (ss.ReadGraphemeCluster(&character, &count)){
+    while (ss.ReadGraphemeCluster(&character)){
         pDestChar = pDestChar - character.Length();
         elementType->CopyData(character.Begin(), pDestChar, character.Length());
     }
@@ -338,8 +337,7 @@ VIREO_FUNCTION_SIGNATURE2(StringRotate, StringRef, StringRef)
     Utf8Char* pDestChar = _Param(1)->End();
     TypeRef elementType = _Param(0)->ElementType();
     SubString character;
-    Int32 count = 0;
-    ss.ReadGraphemeCluster(&character, &count);
+    ss.ReadGraphemeCluster(&character);
     pDestChar = pDestChar - character.Length();
     elementType->CopyData(character.Begin(), pDestChar, character.Length());
     elementType->CopyData(ss.Begin(), _Param(1)->Begin(), ss.Length());
