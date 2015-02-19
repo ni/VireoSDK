@@ -692,7 +692,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
 // perhaps no one at first. each call site, and each instance is a new type derived from the original?
 void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
 {
-    IntMax clumpCount;
     SubString token;
     
     if (_string.ComparePrefixCStr(tsNamedTypeToken)) {
@@ -1051,6 +1050,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 }
 //------------------------------------------------------------
 //------------------------------------------------------------
+#if defined (VIREO_VIA_FORMATTER)
 class TDViaFormatterTypeVisitor : public TypeVisitor
 {
 private:
@@ -1177,11 +1177,24 @@ private:
     }
 };
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth)
+TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
+    static ViaFormatChars formatVIA =  {"VIA",     '(',')','(',')',' ',':','\''};
+    static ViaFormatChars formatJSON = {"JSON",    '[',']','{','}',',',':','\''};
+    static ViaFormatChars formatC =    {"C",       '{','}','{','}',',',' ','\"'};
+
+    // Might move all options to format string.
     _string = string;
-    _bQuoteStrings = quoteOnTopString;
-    _fieldWidth = fieldWidth;
+    _options._bQuoteStrings = quoteOnTopString;
+    _options._fieldWidth = fieldWidth;
+    
+    if(!format || format->ComparePrefixCStr(formatVIA._name)) {
+        _options._pChars = &formatVIA;
+    } else if (format->ComparePrefixCStr(formatJSON._name)) {
+        _options._pChars = &formatJSON;
+    } else if (format->ComparePrefixCStr(formatC._name)) {
+        _options._pChars = &formatC;
+    }
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatEncoding(EncodingEnum value)
@@ -1244,7 +1257,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
         format = "**unsuported type**";
     }
     
-    Int32 len = snprintf(buffer, sizeof(buffer), format, _fieldWidth, value);
+    Int32 len = snprintf(buffer, sizeof(buffer), format, _options._fieldWidth, value);
     _string->Append(len, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------
@@ -1323,15 +1336,15 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // not planning on doing UTF16, or 32 at this time
         // These encodings have a special format
         // TODO option for raw or escaped forms need to be covered, sometime in quotes
-        if (_bQuoteStrings) {
-            _string->Append('\'');
+        if (_options._bQuoteStrings) {
+            _string->Append(_options._pChars->_quote);
         }
         _string->Append(pArray->Length(), pArray->RawBegin());
-        if (_bQuoteStrings) {
-            _string->Append('\'');
+        if (_options._bQuoteStrings) {
+            _string->Append(_options._pChars->_quote);
         }
     } else if (rank > 0) {
-        _bQuoteStrings = true;
+        _options._bQuoteStrings = true;
         FormatArrayDataRecurse(elementType, rank, pArray->BeginAt(0),
                                pArray->GetDimensionLengths(),
                                pArray->GetSlabLengths());
@@ -1350,10 +1363,10 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
     AQBlock1 *pElement = pBegin;
 
     Boolean bPastFirst = false;
-    _string->Append('(');
+    _string->Append(_options._pChars->_arrayPre);
     while (dimensionLength-- > 0) {
         if (bPastFirst) {
-            _string->Append(' ');
+            _string->Append(_options._pChars->_itemSeperator);
         }
         if (rank == 0) {
             FormatData(elementType, pElement);
@@ -1363,25 +1376,25 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
         pElement += elementLength;
         bPastFirst = true;
     }
-    _string->Append(')');
+    _string->Append(_options._pChars->_arrayPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
 {
     IntIndex count = type->SubElementCount();
     IntIndex i= 0;
-    _bQuoteStrings = true;
-    _string->Append('(');
+    _options._bQuoteStrings = true;
+    _string->Append(_options._pChars->_arrayPre);
     while (i < count) {
         if (i > 0) {
-            _string->Append(' ');
+            _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
         FormatData(elementType, pElementData);
     }
-    _string->Append(')');
+    _string->Append(_options._pChars->_arrayPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)
@@ -1431,7 +1444,7 @@ struct FormatOptions {
     Boolean BasePrefix;         // 0, 0x, or 0X
     Boolean ZeroPad;            // 00010
     Boolean VariablePrecision;
-    char    FormatChar;
+    char    FormatChar;         // my affect output 'x' or 'X'
     
     Int32   MinimumFieldWidth;  // If zero no padding
     Int32   Precision;
@@ -1549,14 +1562,16 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 case 'o':
                 case 'x': case 'X':
                 {
-                    // TODO don't assume data type. This just becomes the default format for integer numbers, then use formatter
+                    // To cover the max range formats like %d ned to beturned into %lld                    
                     SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                    TempStackCString tempFormat(&percentFormat);
-                    char asciiReplacementString[100];
-                    //Get the numeric string that will replace the format string
-                    Int32 tempInt = *(Int32*) (arguments[argumentIndex]._pData);
-                    Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempInt);
-                    buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                    TempStackCString tempFormat((Utf8Char*)"%ll", 3);
+                    tempFormat.Append(&fOptions.FmtSubString);
+                    TempStackCString formattedNumber;
+                    TypeRef argType = arguments[argumentIndex]._paramType;
+                    IntMax intValue;
+                    ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                    Int32 length = snprintf(formattedNumber.BeginCStr(), formattedNumber.Capacity(), tempFormat.BeginCStr(), intValue);
+                    buffer->Append(length, (Utf8Char*)formattedNumber.Begin());
                     argumentIndex++;
                 }
                 break;
@@ -1569,7 +1584,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     TDViaFormatter formatter(tempString.Value, false);
                     formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
                     
-                    // TODO:UTF8 field width is characters, not bytes
                     Int32 extraPadding = fOptions.MinimumFieldWidth - tempString.Value->Length();
                     
                     if (fOptions.LeftJustify)
@@ -1594,6 +1608,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         }
     }
 }
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ToTypeAndDataString, StaticType, void, StringRef)
 {
@@ -1620,6 +1635,17 @@ VIREO_FUNCTION_SIGNATURE4(ToString, StaticType, void, Int16, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
+{
+    _Param(3)->Resize1D(0);
+    SubString ss = _Param(2)->MakeSubStringAlias();
+    TDViaFormatter formatter(_Param(3), true, 0, &ss);
+    formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
+    return _NextInstruction();
+}
+#endif
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
 {
@@ -1745,12 +1771,15 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 }
 
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
+#if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
+#endif
     DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")
     DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo

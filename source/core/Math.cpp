@@ -652,10 +652,14 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     // TODO remove these once no tergets are no longer relying on current gen LV via emitter
     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
     // branch instructions. These support the ones needed.
+#if defined (VIREO_TYPE_Int32)
     DEFINE_VIREO_FUNCTION(BranchIfGEInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQInt32, "p(i(.BranchTarget) i(.Int32) i(.Int32))" )
+#endif
+#if defined (VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION(BranchIfLTDouble, "p(i(.BranchTarget) i(.Double) i(.Double))" )
     DEFINE_VIREO_FUNCTION(BranchIfLEDouble, "p(i(.BranchTarget) i(.Double) i(.Double))" )
+#endif
 #endif
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)

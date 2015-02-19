@@ -12,6 +12,8 @@
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
+#if defined (VIREO_TYPE_Canvas2D)
+
 #if kVireoOS_emscripten
     #include "Emscripten.h"
 #endif
@@ -267,3 +269,4 @@ DEFINE_VIREO_BEGIN(LabVIEW_Canvas2D)
     DEFINE_VIREO_FUNCTION(FillText, "p(io(.Canvas2D)i(.String)i(.Double)i(.Double)i(.Double))");
     DEFINE_VIREO_FUNCTION(Font, "p(io(.Canvas2D)i(.String))");
 DEFINE_VIREO_END()
+#endif

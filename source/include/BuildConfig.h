@@ -42,8 +42,56 @@ SDG
 
     #define VIREO_TYPE_Int8   1
 
+#elif defined(VIREO_MINI)
+
+    // Options for turning off primitives for some types.
+    // #define VIREO_TYPE_UInt8  1
+    // #define VIREO_TYPE_UInt16 1
+    #define VIREO_TYPE_UInt32 1
+    //  #define VIREO_TYPE_UInt64 1
+
+    // #define VIREO_TYPE_Int8   1
+    // #define VIREO_TYPE_Int16  1
+    #define VIREO_TYPE_Int32  1
+    //  #define VIREO_TYPE_Int64  1
+
+    //  #define VIREO_TYPE_Single 1
+    //  #define VIREO_TYPE_Double 1
+    //  #define VIREO_TYPE_ComplexSingle 1
+    //  #define VIREO_TYPE_ComplexDouble 1
+    #define VIREO_TYPE_ArrayND 1
+
+    //  #define VIREO_TYPE_ATime 1
+
+    // Vireo can be configured to assume all strings are 7 bit ASCII
+    // This means String ArrayLength will alwasy equal StringLength
+    // Note that even when Utf8 is used StringLength may be longer that
+    // The number of graphemes due to combining codepoints
+    // #define VIREO_ASCII_ONLY 1
+
+    // #define VIREO_TYPE_VARIANT 1
+
+    // Track internal unique C function names for primitive functions.
+    // Used for generating C source
+    // #define VIREO_INSTRUCTION_REFLECTION 1
+    // #define VIREO_TYPE_CONSTRUCTION 1
+
+    // For Vireo-full functions are dynamically registered by each module when loaded
+    // or when the the app is started for statically linked modules so the symbols
+    // are private to each obj.
+    #define VIREO_INSTRUCTION_LINKAGE static
+
+    // #define VIREO_MULTI_THREAD
+    #undef VIREO_FILESYSTEM
+    #undef VIREO_FILESYSTEM_DIRLIST
+    
+    // FILEIO covers read and write operation, perhaps only for stdio.
+    #define VIREO_POSIX_FILEIO 1
+
 #else
 
+    #define VIREO_VIA_FORMATTER 1
+    #define VIREO_C_ENTRY_POINTS 1
     // Options for turning off primitives for some types.
     #define VIREO_TYPE_UInt8  1
     #define VIREO_TYPE_UInt16 1
@@ -62,6 +110,7 @@ SDG
     #define VIREO_TYPE_ArrayND 1
 
     #define VIREO_TYPE_ATime 1
+    #define VIREO_TYPE_Canvas2D  1
 
  // Vireo can be configured to assume all strings are 7 bit ASCII
  // This means String ArrayLength will alwasy equal StringLength
@@ -83,25 +132,27 @@ SDG
     #define VIREO_INSTRUCTION_LINKAGE static
 
     #define VIREO_MULTI_THREAD
+
+    // FILEIO covers read and write operation, perhaps only for stdio.
+    #define VIREO_POSIX_FILEIO 1
+
+    // FILESYSTEM covers open/close operations
+    #define VIREO_FILESYSTEM 1
+
+    // FILESYSTEM covers open/close operations
+    #define VIREO_FILESYSTEM_DIRLIST 1
+
+    #define VIREO_PERF_COUNTERS
+
 #endif
 
 #define USE_C99_TYPES
 
 #define VIVM_BREAKOUT_COUNT 20
 
-#define VIREO_PERF_COUNTERS
 
 // TODO allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL
-
-// FILEIO covers read and write operation, perhaps only for stdio.
-#define VIREO_POSIX_FILEIO 1
-
-// FILESYSTEM covers open/close operations
-#define VIREO_FILESYSTEM 1
-
-// FILESYSTEM covers open/close operations
-#define VIREO_FILESYSTEM_DIRLIST 1
 
 #ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY

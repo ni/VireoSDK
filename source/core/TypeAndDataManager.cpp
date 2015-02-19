@@ -50,11 +50,13 @@ void TypeManager::Delete(TypeManagerRef tm)
 //------------------------------------------------------------
 void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
 {
+#ifdef VIREO_PERF_COUNTERS
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
     } else {
         printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
     }
+#endif
 }
 //------------------------------------------------------------
 TypeManager::TypeManager(TypeManagerRef rootTypeManager)
@@ -406,10 +408,14 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
     NamedTypeRef* pFoundTypeRef = (iter != _typeNameDictionary.end()) ? &iter->second : null;
     
     if (pFoundTypeRef == null && _rootTypeManager) {
+#ifdef VIREO_PERF_COUNTERS
         _lookUpsRoutedToOwner++;
+#endif
         pFoundTypeRef = _rootTypeManager->FindTypeConstRef(name);
     } else {
+#ifdef VIREO_PERF_COUNTERS
         _lookUpsFound++;
+#endif
     }
 
     return pFoundTypeRef;
@@ -426,7 +432,9 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
             UntrackLastType(type);
             Free(type);
             type = iter->second;
+#ifdef VIREO_PERF_COUNTERS
             _typesShared++;
+#endif
             return type;
         }
     }
@@ -2223,6 +2231,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeManagerDefineType, TypeManagerRef, StringRef, Type
     }
     return _NextInstruction();
 }
+#if defined(VIREO_TYPE_Double)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(TypeManagerReadValueDouble, TypeManagerRef, StringRef, StringRef, Double)
 {
@@ -2241,6 +2250,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
     tm->WriteValue(&objectName, &path, _Param(3));
     return _NextInstruction();
 }
+#endif
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
 {
@@ -2505,8 +2515,10 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
+#if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
+#endif
  //   DEFINE_VIREO_FUNCTION(TypeManagerWriteString, "p(i(.TypeManager) i(.String) i(.String))");
  //   DEFINE_VIREO_FUNCTION(TypeManagerReadString, "p(i(.TypeManager) i(.String) o(.String))");
 

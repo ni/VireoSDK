@@ -280,6 +280,7 @@ class ComapreSubString
 class TempStackCString : public FixedCArray<Utf8Char, 255>
 {
 public:
+    TempStackCString() {}
     TempStackCString(SubString* string) : FixedCArray(string) {}
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) {}
     

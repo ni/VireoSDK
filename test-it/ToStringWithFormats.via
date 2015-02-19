@@ -1,0 +1,59 @@
+define (HelloWorld dv(.VirtualInstrument (
+    Locals: 
+    c(
+        e(dv(a(.Int32 *) (10 11 12 13)) array1d)
+        e(dv(a(.Int32 * *) ((10 11 12 13)(20 21 22 23))) array2d)
+        e(dv(.String "Hello, World.") hello)
+        e(dv(.Int32  404) number)
+        e(dv(.Double 6.28) real_number)
+
+        e(dv(.String "JSON") json)
+        e(dv(.String "VIA") via)
+        e(dv(.String "C") c)
+        e(.String temp)
+    )
+    clump (
+        // 1D Array
+        ToString(array1d via temp)
+        Printf("VIA : %s\n" temp)
+        ToString(array1d json temp)
+        Printf("JSON: %s\n" temp)
+        ToString(array1d c temp)
+        Printf("C   : %s\n" temp)
+
+        // 2D Array
+        ToString(array2d via temp)
+        Printf("VIA : %s\n" temp)
+        ToString(array2d json temp)
+        Printf("JSON: %s\n" temp)
+        ToString(array2d c temp)
+        Printf("C   : %s\n" temp)
+        
+        // Hello
+        ToString(hello via temp)
+        Printf("VIA : %s\n" temp)
+        ToString(hello json temp)
+        Printf("JSON: %s\n" temp)
+        ToString(hello c temp)
+        Printf("C   : %s\n" temp)
+        
+        // Number
+        ToString(number via temp)
+        Printf("VIA : %s\n" temp)
+        ToString(number json temp)
+        Printf("JSON: %s\n" temp)
+        ToString(number c temp)
+        Printf("C   : %s\n" temp)
+
+        // Real Number
+        ToString(real_number via temp)
+        Printf("VIA : %s\n" temp)
+        ToString(real_number json temp)
+        Printf("JSON: %s\n" temp)
+        ToString(real_number c temp)
+        Printf("C   : %s\n" temp)
+
+    )
+) ) )
+
+enqueue (HelloWorld)
