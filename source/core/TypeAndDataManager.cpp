@@ -12,6 +12,7 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include <math.h>
 
 namespace Vireo
 {
@@ -2032,6 +2033,19 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
 //------------------------------------------------------------
 // Simple numeric conversions
 //------------------------------------------------------------
+inline IntMax RoundToEven(Double value)
+{
+    // By default lrint uses Bankers (aka round to even)
+    // the default for IEEE754 and the one usd by LaBVIEW
+    return (IntMax)lrint(value);
+}
+//------------------------------------------------------------
+inline IntMax RoundToEven(Single value)
+{
+    // See above.
+    return (IntMax)lrintf(value);
+}
+//------------------------------------------------------------
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value)
 {
     if (!((encoding == kEncoding_UInt) || (encoding == kEncoding_SInt)))
@@ -2054,50 +2068,69 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
 NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax *pValue)
 {
     IntMax value;
-    if (encoding == kEncoding_SInt || encoding == kEncoding_MetaInt) {
-        // Use signed int casts to get sign extension
-        switch(aqSize) {
-            case 1:
-                value = *(Int8*) pData;
-                break;
-            case 2:
-                value = *(Int16*) pData;
-                break;
-            case 4:
-                value = *(Int32*) pData;
-                break;
-            case 8:
-                value = *(Int64*) pData;
-                break;
-            default:
-                *pValue = 0;
-                return  kNIError_kCantDecode;
-                break;
+    switch (encoding) {
+        case kEncoding_SInt:
+        case kEncoding_MetaInt:
+            switch(aqSize) {
+                case 1:
+                    value = *(Int8*) pData;
+                    break;
+                case 2:
+                    value = *(Int16*) pData;
+                    break;
+                case 4:
+                    value = *(Int32*) pData;
+                    break;
+                case 8:
+                    value = *(Int64*) pData;
+                    break;
+                default:
+                    *pValue = 0;
+                    return  kNIError_kCantDecode;
+                    break;
+            }
+            break;
+        case kEncoding_UInt:
+            // Use unsigned int casts to avoid sign extension
+            switch(aqSize) {
+                case 1:
+                    value = *(UInt8*) pData;
+                    break;
+                case 2:
+                    value = *(UInt16*) pData;
+                    break;
+                case 4:
+                    value = *(UInt32*) pData;
+                    break;
+                case 8:
+                    value = *(UInt64*) pData;
+                    break;
+                default:
+                    *pValue = 0;
+                    return  kNIError_kCantDecode;
+                    break;
+            }
+            break;
+        case kEncoding_IEEE754Binary:
+            // Use unsigned int casts to avoid sign extension
+            switch(aqSize) {
+                case 4:
+                    value = RoundToEven(*(Single*) pData);
+                    break;
+                case 8:
+                    value = RoundToEven(*(Double*) pData);
+                    break;
+                default:
+                    *pValue = 0;
+                    return  kNIError_kCantDecode;
+                    break;
+            }
+            break;
+        default:
+            *pValue = 0;
+            return  kNIError_kCantDecode;
+            break;
         }
-    } else if (encoding == kEncoding_UInt) {
-        // Use unsigned int casts to avoid sign extension
-        switch(aqSize) {
-            case 1:
-                value = *(UInt8*) pData;
-                break;
-            case 2:
-                value = *(UInt16*) pData;
-                break;
-            case 4:
-                value = *(UInt32*) pData;
-                break;
-            case 8:
-                value = *(UInt64*) pData;
-                break;
-            default:
-                *pValue = 0;
-                return  kNIError_kCantDecode;
-                break;
-        }
-    } else {
-        *pValue = 0;
-        return kNIError_kCantDecode;
-    }
     *pValue = value;
     return kNIError_Success;
 }
