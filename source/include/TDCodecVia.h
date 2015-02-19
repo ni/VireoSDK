@@ -89,20 +89,38 @@ private :
 // as a long list of parameters in recursive functions.
 class TDViaFormatterTypeVisitor;
 
+//! Punctuation and options used by the TDViaFormatter
+struct ViaFormatChars
+{
+    ConstCStr   _name;
+    Utf8Char    _arrayPre;
+    Utf8Char    _arrayPost;
+    Utf8Char    _clusterPre;
+    Utf8Char    _clusterPost;
+    Utf8Char    _itemSeperator;
+    Utf8Char    _nameSeperator;
+    Utf8Char    _quote;
+};
+
+struct ViaFormatOptions
+{
+    //Once formatter digs below top level this will be on. Constructor controls initial value
+    Boolean         _bQuoteStrings;
+    Int32           _fieldWidth;
+    ViaFormatChars  *_pChars;
+};
+
 //! The VIA encoder.
 class TDViaFormatter
 {
     friend class TDViaFormatterTypeVisitor;
 private:
     StringRef       _string;
-    
-    //Once formatter digs below top level this will be on. Constructor controls initial value
-    Boolean         _bQuoteStrings;
-    Int32           _fieldWidth;
+    ViaFormatOptions  _options;
     
     static const Int32 kTempFormattingBufferSize = 100;
 public:
-    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0);
+    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null);
     // Type formatters
     void    FormatType(TypeRef type);
     // Data formatters

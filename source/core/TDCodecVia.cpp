@@ -1177,11 +1177,24 @@ private:
     }
 };
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth)
+TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
+    static ViaFormatChars formatVIA =  {"VIA",     '(',')','(',')',' ',':','\''};
+    static ViaFormatChars formatJSON = {"JSON",    '[',']','{','}',',',':','\''};
+    static ViaFormatChars formatC =    {"C",       '{','}','{','}',',',' ','\"'};
+
+    // Might move all options to format string.
     _string = string;
-    _bQuoteStrings = quoteOnTopString;
-    _fieldWidth = fieldWidth;
+    _options._bQuoteStrings = quoteOnTopString;
+    _options._fieldWidth = fieldWidth;
+    
+    if(!format || format->ComparePrefixCStr(formatVIA._name)) {
+        _options._pChars = &formatVIA;
+    } else if (format->ComparePrefixCStr(formatJSON._name)) {
+        _options._pChars = &formatJSON;
+    } else if (format->ComparePrefixCStr(formatC._name)) {
+        _options._pChars = &formatC;
+    }
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatEncoding(EncodingEnum value)
@@ -1244,7 +1257,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
         format = "**unsuported type**";
     }
     
-    Int32 len = snprintf(buffer, sizeof(buffer), format, _fieldWidth, value);
+    Int32 len = snprintf(buffer, sizeof(buffer), format, _options._fieldWidth, value);
     _string->Append(len, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------
@@ -1323,15 +1336,15 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // not planning on doing UTF16, or 32 at this time
         // These encodings have a special format
         // TODO option for raw or escaped forms need to be covered, sometime in quotes
-        if (_bQuoteStrings) {
-            _string->Append('\'');
+        if (_options._bQuoteStrings) {
+            _string->Append(_options._pChars->_quote);
         }
         _string->Append(pArray->Length(), pArray->RawBegin());
-        if (_bQuoteStrings) {
-            _string->Append('\'');
+        if (_options._bQuoteStrings) {
+            _string->Append(_options._pChars->_quote);
         }
     } else if (rank > 0) {
-        _bQuoteStrings = true;
+        _options._bQuoteStrings = true;
         FormatArrayDataRecurse(elementType, rank, pArray->BeginAt(0),
                                pArray->GetDimensionLengths(),
                                pArray->GetSlabLengths());
@@ -1350,10 +1363,10 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
     AQBlock1 *pElement = pBegin;
 
     Boolean bPastFirst = false;
-    _string->Append('(');
+    _string->Append(_options._pChars->_arrayPre);
     while (dimensionLength-- > 0) {
         if (bPastFirst) {
-            _string->Append(' ');
+            _string->Append(_options._pChars->_itemSeperator);
         }
         if (rank == 0) {
             FormatData(elementType, pElement);
@@ -1363,25 +1376,25 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
         pElement += elementLength;
         bPastFirst = true;
     }
-    _string->Append(')');
+    _string->Append(_options._pChars->_arrayPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
 {
     IntIndex count = type->SubElementCount();
     IntIndex i= 0;
-    _bQuoteStrings = true;
-    _string->Append('(');
+    _options._bQuoteStrings = true;
+    _string->Append(_options._pChars->_arrayPre);
     while (i < count) {
         if (i > 0) {
-            _string->Append(' ');
+            _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
         FormatData(elementType, pElementData);
     }
-    _string->Append(')');
+    _string->Append(_options._pChars->_arrayPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)
@@ -1622,6 +1635,15 @@ VIREO_FUNCTION_SIGNATURE4(ToString, StaticType, void, Int16, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
+{
+    _Param(3)->Resize1D(0);
+    SubString ss = _Param(2)->MakeSubStringAlias();
+    TDViaFormatter formatter(_Param(3), true, 0, &ss);
+    formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
+    return _NextInstruction();
+}
 #endif
 
 //------------------------------------------------------------
@@ -1752,6 +1774,7 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
 #endif
     DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")

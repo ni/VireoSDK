@@ -181,7 +181,8 @@ VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* 
     
     STACK_VAR(String, tempString);
     if (tempString.Value) {
-        TDViaFormatter formatter(tempString.Value, false);
+        SubString formatss(format);
+        TDViaFormatter formatter(tempString.Value, true, 0, &formatss);
         formatter.FormatData(actualType, pData);
     }
     SubString tempSS = tempString.Value->MakeSubStringAlias();
