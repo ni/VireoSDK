@@ -1179,9 +1179,9 @@ private:
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
-    static ViaFormatChars formatVIA =  {"VIA",     '(',')','(',')',' ',':','\''};
-    static ViaFormatChars formatJSON = {"JSON",    '[',']','{','}',',',':','\''};
-    static ViaFormatChars formatC =    {"C",       '{','}','{','}',',',' ','\"'};
+    static ViaFormatChars formatVIA =  {"VIA",  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
+    static ViaFormatChars formatJSON = {"JSON", '[',']','{','}',',','\"', kViaFormat_QuotedFieldNames};
+    static ViaFormatChars formatC =    {"C",    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
 
     // Might move all options to format string.
     _string = string;
@@ -1384,17 +1384,28 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
     IntIndex count = type->SubElementCount();
     IntIndex i= 0;
     _options._bQuoteStrings = true;
-    _string->Append(_options._pChars->_arrayPre);
+    _string->Append(_options._pChars->_clusterPre);
     while (i < count) {
         if (i > 0) {
             _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
+        if(_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
+            SubString ss = elementType->GetElementName();
+            Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
+            if (useQuotes)
+                _string->Append('\"');
+            //TODO use percent encoding when needed
+            _string->Append(ss.Length(), ss.Begin());
+            if (useQuotes)
+                _string->Append('\"');
+            _string->Append(':');
+        }
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
         FormatData(elementType, pElementData);
     }
-    _string->Append(_options._pChars->_arrayPost);
+    _string->Append(_options._pChars->_clusterPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)

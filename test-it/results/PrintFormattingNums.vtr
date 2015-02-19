@@ -1,0 +1,126 @@
+Int8
+Int with default justify    -----------
+Int no field width          -120-
+Int to samll field width    -120-
+Int matching field width    -120-
+Int larger   field width    - 120-
+Int xlarge   field width    -                                               120-
+Int16
+Int with left justify set   -----------
+Int no field width          -121-
+Int to samll field width    -121-
+Int matching field width    -121-
+Int larger   field width    - 121-
+Int xlarge   field width    -                                               121-
+Int32
+Int with left justify set   -----------
+Int no field width          -122-
+Int to samll field width    -122-
+Int matching field width    -122-
+Int larger   field width    - 122-
+Int xlarge   field width    -                                               122-
+Int64
+Int with left justify set   -----------
+Int no field width          -123-
+Int to samll field width    -123-
+Int matching field width    -123-
+Int larger   field width    - 123-
+Int xlarge   field width    -                                               123-
+UInt8
+Int with default justify    -----------
+Int no field width          -124-
+Int to samll field width    -124-
+Int matching field width    -124-
+Int larger   field width    - 124-
+Int xlarge   field width    -                                               124-
+UInt16
+Int with left justify set   -----------
+Int no field width          -125-
+Int to samll field width    -125-
+Int matching field width    -125-
+Int larger   field width    - 125-
+Int xlarge   field width    -                                               125-
+UInt32
+Int with left justify set   -----------
+Int no field width          -126-
+Int to samll field width    -126-
+Int matching field width    -126-
+Int larger   field width    - 126-
+Int xlarge   field width    -                                               126-
+UInt64
+Int with left justify set   -----------
+Int no field width          -127-
+Int to samll field width    -127-
+Int matching field width    -127-
+Int larger   field width    - 127-
+Int xlarge   field width    -                                               127-
+Single 128.5
+Int with left justify set   -----------
+Int no field width          -128-
+Int to samll field width    -128-
+Int matching field width    -128-
+Int larger   field width    - 128-
+Int xlarge   field width    -                                               128-
+Double 129.5
+Int with left justify set   -----------
+Int no field width          -130-
+Int to samll field width    -130-
+Int matching field width    -130-
+Int larger   field width    - 130-
+Int xlarge   field width    -                                               130-
+SingleUp 130.51
+Int with left justify set   -----------
+Int no field width          -131-
+Int to samll field width    -131-
+Int matching field width    -131-
+Int larger   field width    - 131-
+Int xlarge   field width    -                                               131-
+DoubleUp 131.51
+Int with left justify set   -----------
+Int no field width          -132-
+Int to samll field width    -132-
+Int matching field width    -132-
+Int larger   field width    - 132-
+Int xlarge   field width    -                                               132-
+SingleDown 132.49
+Int with left justify set   -----------
+Int no field width          -132-
+Int to samll field width    -132-
+Int matching field width    -132-
+Int larger   field width    - 132-
+Int xlarge   field width    -                                               132-
+DoubleDown 133.49
+Int with left justify set   -----------
+Int no field width          -133-
+Int to samll field width    -133-
+Int matching field width    -133-
+Int larger   field width    - 133-
+Int xlarge   field width    -                                               133-
+NESingleDown -0.5
+Int with left justify set   -----------
+Int no field width          -0-
+Int to samll field width    -0-
+Int matching field width    -  0-
+Int larger   field width    -   0-
+Int xlarge   field width    -                                                 0-
+NEDoubleDown -0.5
+Int with left justify set   -----------
+Int no field width          -0-
+Int to samll field width    -0-
+Int matching field width    -  0-
+Int larger   field width    -   0-
+Int xlarge   field width    -                                                 0-
+NOSingleDown -1.5
+Int with left justify set   -----------
+Int no field width          --2-
+Int to samll field width    --2-
+Int matching field width    - -2-
+Int larger   field width    -  -2-
+Int xlarge   field width    -                                                -2-
+NODoubleDown -1.5
+Int with left justify set   -----------
+Int no field width          --2-
+Int to samll field width    --2-
+Int matching field width    - -2-
+Int larger   field width    -  -2-
+Int xlarge   field width    -                                                -2-
