@@ -297,94 +297,92 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 //---------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
 {
-	SubString ss = _Param(0)->MakeSubStringAlias();
-	_Param(1)->Resize1D(ss.Length());
-	Utf8Char* pDestChar = _Param(1)->End();
-	TypeRef elementType = _Param(0)->ElementType();
-	SubString character;
-	Int32 count = 0;
-	const Utf8Char* pSourceChar = ss.Begin();
-	while (ss.ReadGraphemeCluster(&character, &count)){
-		pDestChar = pDestChar - character.Length();
-		elementType->CopyData(character.Begin(), pDestChar, character.Length());
-	}
+    SubString ss = _Param(0)->MakeSubStringAlias();
+    _Param(1)->Resize1D(ss.Length());
+    Utf8Char* pDestChar = _Param(1)->End();
+    TypeRef elementType = _Param(0)->ElementType();
+    SubString character;
+    Int32 count = 0;
+    while (ss.ReadGraphemeCluster(&character, &count)){
+        pDestChar = pDestChar - character.Length();
+        elementType->CopyData(character.Begin(), pDestChar, character.Length());
+    }
     return _NextInstruction();
 }
 //---------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringRotate, StringRef, StringRef)
 {
-	SubString ss = _Param(0)->MakeSubStringAlias();
-	_Param(1)->Resize1D(ss.Length());
-	Utf8Char* pDestChar = _Param(1)->End();
-	TypeRef elementType = _Param(0)->ElementType();
-	SubString character;
-	Int32 count = 0;
-	const Utf8Char* pSourceChar = ss.Begin();
-	ss.ReadGraphemeCluster(&character, &count);
-	pDestChar = pDestChar - character.Length();
-	elementType->CopyData(character.Begin(), pDestChar, character.Length());
-	elementType->CopyData(ss.Begin(), _Param(1)->Begin(), ss.Length());
+    SubString ss = _Param(0)->MakeSubStringAlias();
+    _Param(1)->Resize1D(ss.Length());
+    Utf8Char* pDestChar = _Param(1)->End();
+    TypeRef elementType = _Param(0)->ElementType();
+    SubString character;
+    Int32 count = 0;
+    ss.ReadGraphemeCluster(&character, &count);
+    pDestChar = pDestChar - character.Length();
+    elementType->CopyData(character.Begin(), pDestChar, character.Length());
+    elementType->CopyData(ss.Begin(), _Param(1)->Begin(), ss.Length());
     return _NextInstruction();
 }
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
 {
-	SubString ss = _Param(0)->MakeSubStringAlias();
-	const Utf8Char* pSourceChar = ss.Begin();
- 	IntIndex targetLength = ss.Length();
-	bool found = false;
-	int leading = 0;
-	int trailing = 0;
-	const Utf8Char* spacePos = null;
-	bool last = false;
-	while (pSourceChar < ss.End()) {
-		int bytes = ss.CharLength(pSourceChar);
-		if (bytes == 1) {
-			char c = *pSourceChar;
-			if (!found && ss.IsSpaceChar(c)) {
-				leading ++;
-			} else {
-				found = true;
-				if (ss.IsSpaceChar(c)) {
-					if(spacePos == null || !last) {
-						spacePos = pSourceChar;
-					}
-					last = true;
-					trailing++;
-				} else {
-					spacePos = pSourceChar;
-					last = false;
-					trailing = 0;
-				}
-			}
-		} else {
-			last = false;
-			trailing = 0;
-			found = true;
-		}
-		pSourceChar += bytes;
-	}
-	// return empty string
-	if (!found) {
-	    _Param(2)->Resize1D(0);
-	    return _NextInstruction();
-	}
-	Int32 location = _Param(1);
-	if (location == 0) {
-		targetLength = targetLength-leading-trailing;
-	}else if (location == 1) {
-		// remove start of string
-		targetLength = targetLength-leading;
- 	}else if (location == 2) {
-		targetLength = targetLength-trailing;
-		leading = 0;
-	} else {
-		// return original string
-		leading = 0;
-	}
-	_Param(2)->Resize1D(targetLength);
-	TypeRef elementType = _Param(0)->ElementType();
-	elementType->CopyData(_Param(0)->BeginAt(leading), _Param(2)->Begin(), targetLength);
+    SubString ss = _Param(0)->MakeSubStringAlias();
+    const Utf8Char* pSourceChar = ss.Begin();
+    IntIndex targetLength = ss.Length();
+    bool found = false;
+    int leading = 0;
+    int trailing = 0;
+    const Utf8Char* spacePos = null;
+    bool last = false;
+    while (pSourceChar < ss.End()) {
+        int bytes = ss.CharLength(pSourceChar);
+        if (bytes == 1) {
+            char c = *pSourceChar;
+            if (!found && ss.IsSpaceChar(c)) {
+                leading ++;
+            } else {
+                found = true;
+                if (ss.IsSpaceChar(c)) {
+                    if(spacePos == null || !last) {
+                        spacePos = pSourceChar;
+                    }
+                    last = true;
+                    trailing++;
+                } else {
+                    spacePos = pSourceChar;
+                    last = false;
+                    trailing = 0;
+                }
+            }
+        } else {
+            last = false;
+            trailing = 0;
+            found = true;
+        }
+        pSourceChar += bytes;
+    }
+    // return empty string
+    if (!found) {
+        _Param(2)->Resize1D(0);
+        return _NextInstruction();
+    }
+    Int32 location = _Param(1);
+    if (location == 0) {
+        targetLength = targetLength-leading-trailing;
+    }else if (location == 1) {
+        // remove start of string
+        targetLength = targetLength-leading;
+    }else if (location == 2) {
+        targetLength = targetLength-trailing;
+        leading = 0;
+    } else {
+        // return original string
+        leading = 0;
+    }
+    _Param(2)->Resize1D(targetLength);
+    TypeRef elementType = _Param(0)->ElementType();
+    elementType->CopyData(_Param(0)->BeginAt(leading), _Param(2)->Begin(), targetLength);
     return _NextInstruction();
 }
 
@@ -499,9 +497,9 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
     DEFINE_VIREO_FUNCTION(StringLength, "p(i(.String) o(.Int32))")
-	DEFINE_VIREO_FUNCTION(StringTrim, "p(i(.String) i(.Int32) o(.String))")
-	DEFINE_VIREO_FUNCTION(StringReverse, "p(i(.String) o(.String))")
-	DEFINE_VIREO_FUNCTION(StringRotate, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringTrim, "p(i(.String) i(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringReverse, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringRotate, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringIndexChar, "p(i(.String) i(.Int32) o(.Utf32Char))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")

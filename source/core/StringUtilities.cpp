@@ -146,53 +146,53 @@ Boolean SubString::ReadRawChar(char* token)
 //------------------------------------------------------------
 Boolean SubString::ReadGraphemeCluster(SubString* token, Int32* count)
 {
-	 const Utf8Char* next = _begin;
-	 const Utf8Char* initialBegin = _begin;
-	 Boolean characterEnd = false;
-	 if (_begin >= _end) {
-		 *count = -1;
-		return false;
-	 }
-	 *count = 0;
-	 Int32 rule = 0;
-	 while (_begin < _end && !characterEnd) {
-		 *count++;
-		 next = _begin + CharLength(_begin);
-		 if (next >= _end) {
-			 characterEnd = true;
-		 } else {
- 			 // don't break the CR X LF 0x0D 0x0A
-			 if (*_begin == 0x0D) {
-				 if(*next == 0x0A) {
-					 characterEnd = false;
-					 rule = 3;
-				 } else {
-					 characterEnd = true;
-					 rule = 4;
-				 }
-			 } else if(*_begin == 0x0A) {
-				 rule = 4;
-				 characterEnd = true;
-			 } else if ( CharLength(next)== 1) {
-				 rule = 10;
-				 characterEnd = true;
-		 	 } else {
-		 		 Int32 firstByte = *next;
-		 		 Int32 secondByte = *next + 1;
-		 		 Int32 code = firstByte * 0x100 + secondByte;
-		 		 // it only support cluster some extending LATIN character
-		 		 if (code >= 0xCC80 && code <= 0xCDAF ){
-		 			characterEnd = false;
-			 		 rule = 9;
- 		 		 } else {
-		 			characterEnd = true;
-		 		 }
-		 	 }
-		 }
-		 _begin = next;
-	 }
-	 token->AliasAssign(initialBegin, _begin);
-	 return characterEnd;
+    const Utf8Char* next = _begin;
+    const Utf8Char* initialBegin = _begin;
+    Boolean characterEnd = false;
+    if (_begin >= _end) {
+        *count = -1;
+        return false;
+    }
+    *count = 0;
+    Int32 rule = 0;
+    while (_begin < _end && !characterEnd) {
+        *count++;  // Need to review. No side effect here.
+        next = _begin + CharLength(_begin);
+        if (next >= _end) {
+            characterEnd = true;
+        } else {
+            // don't break the CR X LF 0x0D 0x0A
+            if (*_begin == 0x0D) {
+                if(*next == 0x0A) {
+                    characterEnd = false;
+                    rule = 3;
+                } else {
+                    characterEnd = true;
+                    rule = 4;
+                }
+            } else if(*_begin == 0x0A) {
+                rule = 4;
+                characterEnd = true;
+            } else if ( CharLength(next)== 1) {
+                rule = 10;
+                characterEnd = true;
+            } else {
+                Int32 firstByte = *next;
+                Int32 secondByte = *next + 1;
+                Int32 code = firstByte * 0x100 + secondByte;
+                // it only support cluster some extending LATIN character
+                if (code >= 0xCC80 && code <= 0xCDAF ){
+                    characterEnd = false;
+                    rule = 9;
+                } else {
+                    characterEnd = true;
+                }
+            }
+        }
+        _begin = next;
+    }
+    token->AliasAssign(initialBegin, _begin);
+    return characterEnd;
 }
 //------------------------------------------------------------
 Boolean SubString::ReadUtf32(Utf32Char* value)
