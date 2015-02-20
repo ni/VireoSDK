@@ -1448,6 +1448,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
 }
 //------------------------------------------------------------
 struct FormatOptions {
+    Int32 ArgumentOrder; // 3$, 2$ negative number means default order
+    Boolean RemoveTrailing; // #
     Boolean Valid;
     Boolean LeftJustify;
     Boolean ShowSign;           // + or - always
@@ -1478,6 +1480,8 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->VariablePrecision = false;
     pOptions->MinimumFieldWidth = 0;
     pOptions->Precision = 0;
+    pOptions->ArgumentOrder = -1;
+    pOptions->RemoveTrailing = false;
     
     Boolean bPrecision = false;
     Boolean bValid = true;
@@ -1486,7 +1490,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     
     while (format->ReadRawChar(&c)) {
         
-        if (strchr("diuoxXfFeEgGaAcsp%", c)) {
+        if (strchr("diuoxXfFeEgGaAcsptTbB%", c)) {
             pOptions->FormatChar = c;
             break;
         } if (c == '+') {
@@ -1528,10 +1532,12 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
 {
     IntIndex argumentIndex = 0;
+    IntIndex argumentPosition = 0;
+
     SubString f(format);            // Make a copy to use locally
     
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
-    
+    int position = 0;
     char c = 0;
     while (f.ReadRawChar(&c))
     {
@@ -1553,6 +1559,18 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             
             switch (fOptions.FormatChar)
             {
+
+                case '0': case '1':
+                case '2': case '3':
+                case '4': case '5':
+                case '6': case '7':
+                case '8': case '9':
+                {
+
+
+                }
+                break;
+
                 case 'g': case 'G':
                 case 'f': case 'F':
                 case 'e': case 'E':
@@ -1566,6 +1584,51 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
                     Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempDouble);
                     buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                    argumentIndex++;
+                }
+                break;
+                case 'b': case 'B':
+                {
+                    SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
+                    TempStackCString formattedNumber;
+                    TypeRef argType = arguments[argumentIndex]._paramType;
+                    IntMax intValue;
+                    Int32 intSize = 8*argType->TopAQSize();
+                    ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                    char BinaryString[66];
+                    char bits [2];
+                    bits[0] = '0';
+                    bits[1] = '1';
+                    Int32 length = 0;
+                    if (intValue < 0) {
+                        intValue = intValue << (64 - intSize);
+                        for (int i = 66-intSize; i<=65; i++) {
+                            if (intValue >= 0) {
+                                BinaryString[i] = '0';
+                            } else {
+                                BinaryString[i] = '1';
+                            }
+                            length ++;
+                            intValue = intValue << 1;
+                        }
+                    } else {
+                        if(intValue == 0) {
+                            BinaryString[65-length] = bits[intValue];
+                            length = 1;
+                        }
+                        while (intValue >= 1) {
+                                BinaryString[65-length] =  bits[intValue%2];
+                                intValue = intValue/2;
+                                length++;
+                        }
+                    }
+                    if (fOptions.ShowSign) {
+                        BinaryString[65-length] = '+';
+                        length ++;
+                        buffer->Append(length, (Utf8Char*)BinaryString+(66-length));
+                    } else {
+                        buffer->Append(length, (Utf8Char*)BinaryString+(66-length));
+                    }
                     argumentIndex++;
                 }
                 break;
