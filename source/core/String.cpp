@@ -27,7 +27,6 @@ SDG
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h" 
-#include <stdio.h>
 using namespace Vireo;
 
 //------------------------------------------------------------

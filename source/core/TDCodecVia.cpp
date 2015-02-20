@@ -1508,17 +1508,15 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         } else if (bPrecision && c == '*') {
             pOptions->VariablePrecision = true;
         } else if (c >= '0' && c <= '9') {
-            SubString numberString(format->Begin()-1, format->End());
+            // Back up and read the whole number.
+            format->AliasAssign(format->Begin()-1, format->End());
             IntMax value = 0;
-            if (numberString.ReadInt(&value)) {
+            if (format->ReadInt(&value)) {
                 if (bPrecision) {
                     pOptions->Precision = (Int32) value;
                 } else {
                     pOptions->MinimumFieldWidth = (Int32) value;
                 }
-            } else {
-                bValid = false;
-                break;
             }
         } else {
             bValid = false;
