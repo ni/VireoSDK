@@ -1460,7 +1460,8 @@ struct FormatOptions {
     char    FormatChar;         // my affect output 'x' or 'X'
     
     Int32   MinimumFieldWidth;  // If zero no padding
-    Int32   Precision;
+    Int32   Precision; //.3
+    Int32   Significant; //_4
     SubString  FmtSubString;
 };
 //------------------------------------------------------------
@@ -1482,6 +1483,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->Precision = 0;
     pOptions->ArgumentOrder = -1;
     pOptions->RemoveTrailing = false;
+    pOptions->Significant = 0;
     
     Boolean bPrecision = false;
     Boolean bValid = true;
@@ -1490,6 +1492,9 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     
     while (format->ReadRawChar(&c)) {
         
+        SubString order("$");
+        SubString percent("%");
+
         if (strchr("diuoxXfFeEgGaAcsptTbB%", c)) {
             pOptions->FormatChar = c;
             break;
@@ -1497,31 +1502,52 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             pOptions->ShowSign = true;
         } else if (c == '-') {
             pOptions->LeftJustify = true;
-        } else if (c == '0') {
-            pOptions->ZeroPad = true;
         } else if (c == '#') {
             pOptions->BasePrefix = true;
         } else if (c == ' ') {
+        	// space flag not used in LabView
             pOptions->SignPad = true;
         } else if (c == '.') {
             bPrecision = true;
-        } else if (bPrecision && c == '*') {
-            pOptions->VariablePrecision = true;
-        } else if (c >= '0' && c <= '9') {
-            // Back up and read the whole number.
-            format->AliasAssign(format->Begin()-1, format->End());
+            format->AliasAssign(format->Begin(), format->End());
             IntMax value = 0;
             if (format->ReadInt(&value)) {
-                if (bPrecision) {
-                    pOptions->Precision = (Int32) value;
-                } else {
-                    pOptions->MinimumFieldWidth = (Int32) value;
-                }
+                pOptions->Precision = value;
             }
+        } else if (c == '_') {
+            bPrecision = true;
+            format->AliasAssign(format->Begin(), format->End());
+            IntMax value = 0;
+            if (format->ReadInt(&value)) {
+                pOptions->Significant = value;
+            }
+        } else if (bPrecision && c == '*') {
+            pOptions->VariablePrecision = true;
+        } else if (c == '$') {
         } else {
-            bValid = false;
-            break;
+            IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
+            IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
+            if ((c >= '0' && c <= '9') && orderIndex>=0 && nextFormat > orderIndex) {
+        	    format->AliasAssign(format->Begin()-1, format->End());
+                IntMax value = 0;
+                if (format->ReadInt(&value)) {
+                    pOptions->ArgumentOrder = value;
+                }
+        	} else if (c == '0') {
+        	    pOptions->ZeroPad = true;
+        	} else if (c >= '0' && c <= '9') {
+        	    // Back up and read the whole number.
+        	    format->AliasAssign(format->Begin()-1, format->End());
+        	    IntMax value = 0;
+        	    if (format->ReadInt(&value)) {
+        	        pOptions->MinimumFieldWidth = (Int32) value;
+        	    }
+        	 } else {
+        	     bValid = false;
+        	     break;
+        	 }
         }
+
     }
     pOptions->Valid = bValid;
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
@@ -1530,12 +1556,15 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
 {
     IntIndex argumentIndex = 0;
-    IntIndex argumentPosition = 0;
-
+    Boolean lastArgumentFixed = false;
+    IntIndex lastArgumentIndex = -1;
+    IntIndex fixPositionArgument = 0;
+    IntIndex defaultPositionArgument = 0;
+    Int32 totalArgument = 0;;
     SubString f(format);            // Make a copy to use locally
     
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
-    int position = 0;
+
     char c = 0;
     while (f.ReadRawChar(&c))
     {
@@ -1554,21 +1583,30 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         } else if (c == '%') {
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
-            
+            totalArgument++;
+            if (lastArgumentIndex == argumentIndex) {
+            	totalArgument --;
+            	if (lastArgumentFixed) {
+            	   fixPositionArgument --;
+                }
+            }
+            argumentIndex = totalArgument-fixPositionArgument-1;
+            if (fOptions.ArgumentOrder>=0) {
+            	if (fOptions.ArgumentOrder > 0 ) {
+                    argumentIndex = fOptions.ArgumentOrder-1;
+                    fixPositionArgument ++;
+                    lastArgumentFixed = true;
+            	}
+                SubString *fmtSubString = &fOptions.FmtSubString;
+                fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End());
+                SubString order("$");
+                IntIndex dollarFlag = fmtSubString->FindFirstMatch(&order, 0, false);
+                fmtSubString->AliasAssign(fmtSubString->Begin()+ dollarFlag + 1, fmtSubString->End());
+            }
+            lastArgumentIndex = argumentIndex;
+            //printf("argument index:%d\n", argumentIndex);
             switch (fOptions.FormatChar)
             {
-
-                case '0': case '1':
-                case '2': case '3':
-                case '4': case '5':
-                case '6': case '7':
-                case '8': case '9':
-                {
-
-
-                }
-                break;
-
                 case 'g': case 'G':
                 case 'f': case 'F':
                 case 'e': case 'E':
@@ -1636,8 +1674,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 {
                     // To cover the max range formats like %d ned to beturned into %lld                    
                     SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                    TempStackCString tempFormat((Utf8Char*)"%ll", 3);
-                    tempFormat.Append(&fOptions.FmtSubString);
+                    TempStackCString tempFormat((Utf8Char*)"%", 1);
+                    SubString *fmtSubString = &fOptions.FmtSubString;
+                    fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-1);
+                    tempFormat.Append(fmtSubString);
+                    char specifier[] = "lld";
+                    specifier[2] = fOptions.FormatChar;
+                    tempFormat.AppendCStr(specifier);
+                   // printf("format code :%s;\n", tempFormat.BeginCStr());
+
                     TempStackCString formattedNumber;
                     TypeRef argType = arguments[argumentIndex]._paramType;
                     IntMax intValue;
