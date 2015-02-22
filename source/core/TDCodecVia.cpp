@@ -1649,6 +1649,7 @@ Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, Utf8Char* buf
 			*(buffer+ numberStart) =  '1';
 		}
 	} else if (exponent+1 < decimalPoint - numberStart) {
+		printf("generate extra bit\n");
 		Int32 width = *pSize;
 		// there is decimal point in the spring and the sprintf may generate another digit when rounding.
 		// need to fix the redundancy digit
@@ -1669,8 +1670,14 @@ Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, Utf8Char* buf
 				*pSize = *pSize - 1;
 			}
 			Int32 newPadding = *pSize - 1 - numberEnd;
-			for (Int32 i = *pSize -1; i > paddingStart ; i--) {
-
+			if (newPadding>0) {
+			    for (Int32 i = numberEnd; i >= numberStart ; i--) {
+				    *(buffer+i+newPadding) = *(buffer+i);
+			    }
+			    numberStart = numberStart + newPadding;
+			    for (Int32 i =1; i <= newPadding; i++) {
+			        *(buffer+numberStart-i) = padChar;
+			    }
 			}
 		}
 	}
