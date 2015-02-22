@@ -1455,10 +1455,12 @@ struct FormatOptions {
     Boolean ShowSign;           // + or - always
     Boolean SignPad;            // ' ' for positive '-' for negative
     Boolean BasePrefix;         // 0, 0x, or 0X
-    Boolean ZeroPad;            // 00010
+    Boolean ZeroPad;            // 00010 '0'
     Boolean VariablePrecision;
     char    FormatChar;         // my affect output 'x' or 'X'
     
+    char DecimalSeparator;
+    Boolean EngineerNotation;
     Int32   MinimumFieldWidth;  // If zero no padding
     Int32   Precision; //.3
     Int32   Significant; //_4
@@ -1480,11 +1482,12 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->SignPad = false;
     pOptions->VariablePrecision = false;
     pOptions->MinimumFieldWidth = 0;
-    pOptions->Precision = 0;
+    pOptions->Precision = -1;
     pOptions->ArgumentOrder = -1;
     pOptions->RemoveTrailing = false;
-    pOptions->Significant = 0;
-    
+    pOptions->Significant = -1;
+    pOptions->EngineerNotation = false;
+
     Boolean bPrecision = false;
     Boolean bValid = true;
     char c;
@@ -1552,7 +1555,127 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->Valid = bValid;
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
+
 //------------------------------------------------------------
+Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, Utf8Char* bufferBegin, Int32* pSize, Int32 exponent, Int32 truncateSignificant)
+{
+
+	char padChar = ' ';
+	if (formatOptions->ZeroPad) {
+		padChar = '0';
+	}
+	Utf8Char* buffer = bufferBegin;
+	Int32 numberStart = -1;
+	Int32 numberEnd = -1;
+	Int32 decimalPoint = -1;
+	Int32 index = 0;
+    Int32 size = *pSize;
+    Int32 paddingStart = -1;
+	if (strchr ("DdoXxbB", formatOptions->FormatChar)) {
+	    decimalPoint = 0;
+	}
+    while (!(numberStart >= 0 && decimalPoint >= 0) && index < size) {
+    	char digit = *(buffer+index);
+    	if (digit == '0') {
+    	    if (index+1 >= size) {
+    	        numberStart = index;
+    	        break;
+    	    }
+    	} else if (digit == '+'|| digit == '-') {
+
+    	} else if (digit == ' ') {
+
+    	} else if (digit == formatOptions->DecimalSeparator) {
+    		decimalPoint = index;
+    		if (numberStart < 0) {
+    			numberStart = index - 1;
+    		}
+    	} else if (digit >= '1' && digit <= '9' && numberStart < 0){
+    		numberStart = index;
+     	}
+    	index++;
+    }
+	if (decimalPoint < 0) {
+		decimalPoint = 0;
+	}
+	paddingStart = numberStart;
+	for (Int32 i = numberStart-1; i>0; i--) {
+		if (*(buffer+i) == padChar) {
+			break;
+		}
+		paddingStart = i;
+	}
+	for (Int32 i = size-1; i >= 0; i--) {
+	    if (!*(buffer+i) != ' '){
+	        numberEnd = i;
+	        break;
+	    }
+	}
+	printf ("need truncate:%d\n", truncateSignificant);
+
+	printf ("start:%d, decimal:%d, end:%d\n", numberStart, decimalPoint, numberEnd);
+	// whether should truncate integer part
+	if (truncateSignificant>0) {
+		// .0 in sprintf. no decimal point,
+		// but still truncate the integer part which is not handled in sprintf
+
+		Int32 trailing = numberStart + formatOptions->Significant;
+		if (decimalPoint > 0 && numberStart + truncateSignificant >= decimalPoint) {
+		    trailing = numberStart + formatOptions->Significant + 1;
+		}
+		Boolean extend = false;
+	    if (*(buffer+trailing) > '5') {
+	    	*(buffer+trailing-1) = *(buffer+trailing-1) + 1;
+	    }
+		for (Int32 i = trailing-1; i >= numberStart; i++) {
+		    if (*(buffer+i) > '9') {
+	    	    *(buffer+i) = '0';
+		    	if (i == numberStart) {
+		    	    extend =true;
+		    	    break;
+		    	}
+		    	*(buffer+i-1) = *(buffer+i-1) +1 ;
+		    } else {
+		    	break;
+		    }
+		}
+		for (Int32 i = trailing; i <= numberEnd; i++) {
+			*(buffer+i) = '0';
+		}
+		if (extend) {
+			for (Int32 i = numberEnd; i > numberStart; i--) {
+				*(buffer+i) = *(buffer+i-1);
+			}
+			*(buffer+ numberStart) =  '1';
+		}
+	} else if (exponent+1 < decimalPoint - numberStart) {
+		Int32 width = *pSize;
+		// there is decimal point in the spring and the sprintf may generate another digit when rounding.
+		// need to fix the redundancy digit
+
+		*(buffer+numberEnd) = ' ';
+		if (*(buffer+numberEnd-1) == '.') {
+			*(buffer+numberEnd-1) = ' ';
+			decimalPoint = 0;
+			numberEnd--;
+		}
+		numberEnd--;
+		if (formatOptions->LeftJustify) {
+			while (numberEnd < (*pSize)-1 && (*pSize) > formatOptions->MinimumFieldWidth) {
+				*pSize = *pSize - 1;
+			}
+		} else {
+			while (numberEnd < (*pSize)-1 && (*pSize) > formatOptions->MinimumFieldWidth) {
+				*pSize = *pSize - 1;
+			}
+			Int32 newPadding = *pSize - 1 - numberEnd;
+			for (Int32 i = *pSize -1; i > paddingStart ; i--) {
+
+			}
+		}
+	}
+}
+
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
 {
     IntIndex argumentIndex = 0;
@@ -1561,10 +1684,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex fixPositionArgument = 0;
     IntIndex defaultPositionArgument = 0;
     Int32 totalArgument = 0;;
+    // char localSeparator = '.';
+    const char decimalPointC = '.';
     SubString f(format);            // Make a copy to use locally
-    
-    buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
 
+    buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
+    
     char c = 0;
     while (f.ReadRawChar(&c))
     {
@@ -1583,6 +1708,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         } else if (c == '%') {
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
+            fOptions.DecimalSeparator = decimalPointC;
             totalArgument++;
             if (lastArgumentIndex == argumentIndex) {
             	totalArgument --;
@@ -1608,7 +1734,83 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             switch (fOptions.FormatChar)
             {
                 case 'g': case 'G':
+                {
+
+                }
+                break;
                 case 'f': case 'F':
+                {
+                	char padding = ' ';
+                    TempStackCString tempFormat((Utf8Char*)"%", 1);
+                    if (fOptions.LeftJustify) {
+                    	tempFormat.AppendCStr("-");
+                    }
+                    if (fOptions.ShowSign) {
+                        tempFormat.AppendCStr("+");
+                    }
+                    if (fOptions.EngineerNotation) {
+                    	// need to do
+                    }
+                    if (fOptions.ZeroPad) {
+                    	padding = '0';
+                        tempFormat.AppendCStr("0");
+                    }
+                	Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
+                	Int32 leadingZero = 0;
+                    Int32 exponent = 0;
+                    Int32 precision = fOptions.Precision;
+                    Int32 truncateSignificant = 0;
+                	// calculate the exponent of the number, it also tell us the number of leading zero.
+                    if (fOptions.Significant >= 0) {
+                        if (!tempDouble == 0) {
+                        	Double absDouble = tempDouble;
+                        	if (tempDouble < 0) {
+                        		absDouble = 0.0 - tempDouble;
+                        	}
+                     	    exponent = floor(log10(absDouble));
+                        }
+                     	// 0.12 has 1 leading zero
+                        leadingZero = (exponent >= 0)? 0 : (0 - exponent);
+                        // 0.0012 has 2 significant digits
+                        precision = (exponent >= 0)? (fOptions.Significant - exponent - 1) : (fOptions.Significant + leadingZero - 1);
+                        if (precision < 0) {
+                        	precision = 0;
+                        	truncateSignificant = exponent + 1 - fOptions.Significant;
+                        	// need refactoring the integer part later
+                        }
+                    }
+                    char precisionAndWidth[64];
+                    Int32 sizeFfFormatCode = -1;
+                    if (fOptions.MinimumFieldWidth > 0) {
+                        sizeFfFormatCode = snprintf(precisionAndWidth, 64, "%d", fOptions.MinimumFieldWidth);
+                    }
+                    if (precision >= 0) {
+                        sizeFfFormatCode += snprintf(precisionAndWidth+sizeFfFormatCode, 64, ".%d", precision);
+                    }
+                    if (sizeFfFormatCode>0) {
+                    	SubString formatCode((Utf8Char*)precisionAndWidth, (Utf8Char*)(precisionAndWidth+sizeFfFormatCode));
+                    	tempFormat.Append(&formatCode);
+                    }
+                    tempFormat.AppendCStr("f");
+                    printf("format code: %s\n", tempFormat.BeginCStr());
+                    //Get the numeric string that will replace the format string
+                    printf("int to double :%f\n",tempDouble);
+                    char asciiReplacementString[100];
+                    Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempDouble);
+
+                    // refactoring the result string.
+                    if (fOptions.BasePrefix) {
+                    	// remove trailing zero and decimal point.
+                    }
+                    if (truncateSignificant) {
+
+                    }
+                    RefactorLabviewNumeric(&fOptions, (Utf8Char*)asciiReplacementString, &sizeOfNumericString, exponent, truncateSignificant);
+                    // replace the decimal point if existing
+                    buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                    argumentIndex++;
+                }
+                break;
                 case 'e': case 'E':
                 case 'a': case 'A':
                 {
