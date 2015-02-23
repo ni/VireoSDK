@@ -1507,9 +1507,12 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             pOptions->LeftJustify = true;
         } else if (c == '#') {
             pOptions->BasePrefix = true;
+            pOptions->RemoveTrailing = true;
         } else if (c == ' ') {
         	// space flag not used in LabView
             pOptions->SignPad = true;
+        } else if (c == '^') {
+        	pOptions->EngineerNotation = true;
         } else if (c == '.') {
             bPrecision = true;
             format->AliasAssign(format->Begin(), format->End());
@@ -1557,130 +1560,227 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 }
 
 //------------------------------------------------------------
-Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, Utf8Char* bufferBegin, Int32* pSize, Int32 exponent, Int32 truncateSignificant)
+Boolean GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, TempStackCString* numberPart, Boolean negative)
+{
+	// the input buffer is pure numeric. will generate the final format numeric with '+' or padding zero.
+    TempStackCString leadingPart;
+	Int32 width = formatOptions->MinimumFieldWidth;
+
+	if (!negative) {
+	    if (formatOptions->ShowSign) {
+		    leadingPart.AppendCStr("+");
+	    } else if(formatOptions->SignPad) {
+		    leadingPart.AppendCStr(" ");
+	    }
+	} else {
+	    leadingPart.AppendCStr("-");
+	}
+	if (formatOptions->LeftJustify) {
+		width = width - leadingPart.Length();
+		width = width>0? width : 0;
+		*pSize = snprintf(bufferBegin, 100, "%s%-*s", leadingPart.BeginCStr(), width, numberPart->BeginCStr());
+	} else {
+		// calculate the padding
+		width = width - leadingPart.Length();
+		width = width - numberPart->Length();
+		if (width <=0 ) {
+			*pSize = snprintf(bufferBegin, 100, "%s%s", leadingPart.BeginCStr(), numberPart->BeginCStr());
+		} else {
+		    if (formatOptions->ZeroPad) {
+			    *pSize = snprintf(bufferBegin, 100, "%s%0*d%s", leadingPart.BeginCStr(), width, 0, numberPart->BeginCStr());
+		    } else {
+			    *pSize = snprintf(bufferBegin, 100, "%*s%s%s", width, " ", leadingPart.BeginCStr(), numberPart->BeginCStr());
+		    }
+ 		}
+	}
+
+}
+
+/* Adjust the numeric string.
+ * 1. truncate the integer part if necessary for %f. %_2f   1345.55
+ * 2. calculate the significant digits to guarantee the correctness.  %_2f 9.9
+ * 3. Apply the engineer notation which means adjust the base and exponent part. %^_3e
+ * 4. Remove the trailing zero if necessary. %#3f 1.0000
+ * 5. Replace the C decimal pointer with the local decimal separator
+ * Input of this function is like "-12.4" "7.450E+043"
+ * This function will not process the sign and padding and the width. It only process the pure number.
+ * */
+Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, Int32 IntDigits, Int32 truncateSignificant)
 {
 
 	char padChar = ' ';
 	if (formatOptions->ZeroPad) {
 		padChar = '0';
 	}
-	Utf8Char* buffer = bufferBegin;
-	Int32 numberStart = -1;
-	Int32 numberEnd = -1;
+	Boolean negative = false;
+	char* buffer = bufferBegin;
+
+	// the positive number string always start from the beginning
+	Int32 numberStart = 0;
+	Int32 numberEnd = *pSize - 1;
 	Int32 decimalPoint = -1;
+	Int32 exponentPos = -1;
 	Int32 index = 0;
     Int32 size = *pSize;
     Int32 paddingStart = -1;
 	if (strchr ("DdoXxbB", formatOptions->FormatChar)) {
 	    decimalPoint = 0;
+	    exponentPos = 0;
 	}
-    while (!(numberStart >= 0 && decimalPoint >= 0) && index < size) {
+	if (strchr ("fF", formatOptions->FormatChar)) {
+	    exponentPos = 0;
+	}
+	if (*(buffer + numberStart) == '-') {
+		negative = true;
+		numberStart++;
+	}
+    while (!(decimalPoint >= 0 && exponentPos >= 0) && index < size) {
     	char digit = *(buffer+index);
-    	if (digit == '0') {
-    	    if (index+1 >= size) {
-    	        numberStart = index;
-    	        break;
-    	    }
-    	} else if (digit == '+'|| digit == '-') {
-
-    	} else if (digit == ' ') {
-
-    	} else if (digit == formatOptions->DecimalSeparator) {
+    	if (digit == '.') {
     		decimalPoint = index;
-    		if (numberStart < 0) {
-    			numberStart = index - 1;
-    		}
-    	} else if (digit >= '1' && digit <= '9' && numberStart < 0){
-    		numberStart = index;
+    	} else if (digit == 'E' || digit == 'e') {
+     		exponentPos = index;
      	}
     	index++;
     }
 	if (decimalPoint < 0) {
 		decimalPoint = 0;
 	}
-	paddingStart = numberStart;
-	for (Int32 i = numberStart-1; i>0; i--) {
-		if (*(buffer+i) == padChar) {
-			break;
-		}
-		paddingStart = i;
-	}
-	for (Int32 i = size-1; i >= 0; i--) {
-	    if (!*(buffer+i) != ' '){
-	        numberEnd = i;
-	        break;
-	    }
-	}
-	printf ("need truncate:%d\n", truncateSignificant);
 
-	printf ("start:%d, decimal:%d, end:%d\n", numberStart, decimalPoint, numberEnd);
-	// whether should truncate integer part
-	if (truncateSignificant>0) {
-		// .0 in sprintf. no decimal point,
-		// but still truncate the integer part which is not handled in sprintf
+    if (formatOptions->FormatChar == 'f' || formatOptions->FormatChar == 'F') {
+    	if (truncateSignificant>0) {
+    		// .0 in sprintf. no decimal point,
+    		// but still truncate the integer part which is not handled in sprintf
 
-		Int32 trailing = numberStart + formatOptions->Significant;
-		if (decimalPoint > 0 && numberStart + truncateSignificant >= decimalPoint) {
-		    trailing = numberStart + formatOptions->Significant + 1;
-		}
-		Boolean extend = false;
-	    if (*(buffer+trailing) > '5') {
-	    	*(buffer+trailing-1) = *(buffer+trailing-1) + 1;
-	    }
-		for (Int32 i = trailing-1; i >= numberStart; i++) {
-		    if (*(buffer+i) > '9') {
-	    	    *(buffer+i) = '0';
-		    	if (i == numberStart) {
-		    	    extend =true;
-		    	    break;
-		    	}
-		    	*(buffer+i-1) = *(buffer+i-1) +1 ;
-		    } else {
-		    	break;
-		    }
-		}
-		for (Int32 i = trailing; i <= numberEnd; i++) {
-			*(buffer+i) = '0';
-		}
-		if (extend) {
-			for (Int32 i = numberEnd; i > numberStart; i--) {
-				*(buffer+i) = *(buffer+i-1);
-			}
-			*(buffer+ numberStart) =  '1';
-		}
-	} else if (exponent+1 < decimalPoint - numberStart) {
-		printf("generate extra bit\n");
-		Int32 width = *pSize;
-		// there is decimal point in the spring and the sprintf may generate another digit when rounding.
-		// need to fix the redundancy digit
+    		Int32 trailing = numberStart + formatOptions->Significant;
+    		if (decimalPoint > 0 && numberStart + truncateSignificant >= decimalPoint) {
+    		    trailing = numberStart + formatOptions->Significant + 1;
+    		}
+    		Boolean extend = false;
+    	    if (*(buffer+trailing) > '5') {
+    	    	// LabVIEW typically uses Bankers rounding, but for
+    	    	// significant digits it always round midpoints down.
+    	    	*(buffer+trailing-1) = *(buffer+trailing-1) + 1;
+    	    }
+    		for (Int32 i = trailing-1; i >= numberStart; i++) {
+    		    if (*(buffer+i) > '9') {
+    	    	    *(buffer+i) = '0';
+    		    	if (i == numberStart) {
+    		    	    extend =true;
+    		    	    break;
+    		    	}
+    		    	*(buffer+i-1) = *(buffer+i-1) +1 ;
+    		    } else {
+    		    	break;
+    		    }
+    		}
+    		// It's guaranteed that the length of the float number doesn't change.
+    		for (Int32 i = trailing; i <= numberEnd; i++) {
+    			*(buffer+i) = '0';
+    		}
+    		if (extend) {
+    			for (Int32 i = numberEnd; i > numberStart; i--) {
+    				*(buffer+i) = *(buffer+i-1);
+    			}
+    			*(buffer+ numberStart) =  '1';
+    		}
+    	} else if (IntDigits+1 < decimalPoint - numberStart && formatOptions->Significant >= 0) {
 
-		*(buffer+numberEnd) = ' ';
-		if (*(buffer+numberEnd-1) == '.') {
-			*(buffer+numberEnd-1) = ' ';
-			decimalPoint = 0;
-			numberEnd--;
-		}
-		numberEnd--;
-		if (formatOptions->LeftJustify) {
-			while (numberEnd < (*pSize)-1 && (*pSize) > formatOptions->MinimumFieldWidth) {
-				*pSize = *pSize - 1;
-			}
-		} else {
-			while (numberEnd < (*pSize)-1 && (*pSize) > formatOptions->MinimumFieldWidth) {
-				*pSize = *pSize - 1;
-			}
-			Int32 newPadding = *pSize - 1 - numberEnd;
-			if (newPadding>0) {
-			    for (Int32 i = numberEnd; i >= numberStart ; i--) {
-				    *(buffer+i+newPadding) = *(buffer+i);
-			    }
-			    numberStart = numberStart + newPadding;
-			    for (Int32 i =1; i <= newPadding; i++) {
-			        *(buffer+numberStart-i) = padChar;
-			    }
+    		// generate extra significant digit at MSB.
+    		Int32 width = *pSize;
+    		// There may be a decimal point in the string and the snprintf may generate another digit when rounding.
+    		// need to fix the redundancy digit
+
+    		*(buffer+numberEnd) = ' ';
+    		if (*(buffer+numberEnd-1) == '.') {
+    			*(buffer+numberEnd-1) = ' ';
+    			decimalPoint = 0;
+    			numberEnd--;
+    		}
+    		numberEnd--;
+    	}
+		if (formatOptions->RemoveTrailing) {
+			while (*(buffer+numberEnd)== '0' || *(buffer+numberEnd)== '.') {
+			    numberEnd--;
 			}
 		}
-	}
+		TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
+		GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+    }
+
+    if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
+    	Int32 numberIndex = numberStart;
+    	Int32 baseIndex = 0;
+    	SubString ScientificFloat((Utf8Char*)buffer+exponentPos+1, (Utf8Char*)buffer+numberEnd+1);
+    	IntMax exponent;
+    	ScientificFloat.ReadInt(&exponent);
+    	Int32 paddingBase = exponent%3;
+    	if (formatOptions->EngineerNotation &&  (paddingBase%3 != 0)) {
+
+    		if (paddingBase < 0) {
+    			paddingBase += 3;
+    		}
+    		char tempNumber[100];
+			exponent = exponent - paddingBase;
+
+	    	// we are lucky, this case will never generate extra significant digit at MSB.
+
+	    	tempNumber[baseIndex] = *(buffer + numberIndex);
+	    	baseIndex++;
+	    	numberIndex ++;
+	    	while (baseIndex <= paddingBase) {
+	    		Utf8Char movedChar = '0';
+	    	    if (*(buffer + numberIndex)== '.') {
+	    	        numberIndex++;
+	    	    }
+	    	    if (*(buffer + numberIndex) != 'e') {
+	    	   	    movedChar = *(buffer + numberIndex);
+	    	   	} else {
+	    	   	    numberIndex--;
+	    	   	}
+	    		tempNumber[baseIndex] = movedChar;
+	    		baseIndex ++;
+	    	    numberIndex++;
+	    	}
+    	    if (*(buffer + numberIndex) != 'e') {
+	    		tempNumber[baseIndex] = formatOptions->DecimalSeparator;
+	    		baseIndex ++;
+    	    }
+
+    	    while (*(buffer + numberIndex) != 'e') {
+                tempNumber[baseIndex] = *(buffer + numberIndex);
+    	    	baseIndex ++;
+    	    	numberIndex++;
+    	    }
+    	    if (formatOptions->RemoveTrailing) {
+    	        while (tempNumber[baseIndex-1]=='0' || tempNumber[baseIndex-1]==formatOptions->DecimalSeparator) {
+    	        	baseIndex --;
+    	        }
+    	    }
+            Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, 100, "E%+d", exponent);
+            baseIndex += sizeOfExpoent;
+
+            TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+
+    	} else {
+            char tempNumber[100];
+    		baseIndex = 0;
+    	    for (Int32 i = numberStart; i<exponentPos; i++) {
+    		    tempNumber[baseIndex] = *(buffer+i);
+    		    baseIndex ++;
+    		}
+    		if (formatOptions->RemoveTrailing) {
+    		    while (tempNumber[baseIndex-1]=='0' || tempNumber[baseIndex-1]==formatOptions->DecimalSeparator) {
+    		        baseIndex --;
+    		    }
+    	    }
+    		Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, 100, "E%+d", exponent);
+    		baseIndex += sizeOfExpoent;
+    		TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+    		GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+    	}
+    }
 }
 
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
@@ -1747,27 +1847,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 break;
                 case 'f': case 'F':
                 {
-                	char padding = ' ';
-                    TempStackCString tempFormat((Utf8Char*)"%", 1);
-                    if (fOptions.LeftJustify) {
-                    	tempFormat.AppendCStr("-");
-                    }
-                    if (fOptions.ShowSign) {
-                        tempFormat.AppendCStr("+");
-                    }
-                    if (fOptions.EngineerNotation) {
-                    	// need to do
-                    }
-                    if (fOptions.ZeroPad) {
-                    	padding = '0';
-                        tempFormat.AppendCStr("0");
-                    }
                 	Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
                 	Int32 leadingZero = 0;
                     Int32 exponent = 0;
                     Int32 precision = fOptions.Precision;
                     Int32 truncateSignificant = 0;
-                	// calculate the exponent of the number, it also tell us the number of leading zero.
+                	// calculate the exponent of the number, it also tell us whether should truncate the integer part.
                     if (fOptions.Significant >= 0) {
                         if (!tempDouble == 0) {
                         	Double absDouble = tempDouble;
@@ -1778,47 +1863,48 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
                      	// 0.12 has 1 leading zero
                         leadingZero = (exponent >= 0)? 0 : (0 - exponent);
-                        // 0.0012 has 2 significant digits
                         precision = (exponent >= 0)? (fOptions.Significant - exponent - 1) : (fOptions.Significant + leadingZero - 1);
                         if (precision < 0) {
                         	precision = 0;
                         	truncateSignificant = exponent + 1 - fOptions.Significant;
-                        	// need refactoring the integer part later
+                        	// need truncate the integer part of the float because the sprintf doesnt do this for us.
                         }
                     }
-                    char precisionAndWidth[64];
-                    Int32 sizeFfFormatCode = -1;
-                    if (fOptions.MinimumFieldWidth > 0) {
-                        sizeFfFormatCode = snprintf(precisionAndWidth, 64, "%d", fOptions.MinimumFieldWidth);
-                    }
-                    if (precision >= 0) {
-                        sizeFfFormatCode += snprintf(precisionAndWidth+sizeFfFormatCode, 64, ".%d", precision);
-                    }
-                    if (sizeFfFormatCode>0) {
-                    	SubString formatCode((Utf8Char*)precisionAndWidth, (Utf8Char*)(precisionAndWidth+sizeFfFormatCode));
-                    	tempFormat.Append(&formatCode);
-                    }
-                    tempFormat.AppendCStr("f");
-                    printf("format code: %s\n", tempFormat.BeginCStr());
-                    //Get the numeric string that will replace the format string
-                    printf("int to double :%f\n",tempDouble);
                     char asciiReplacementString[100];
-                    Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempDouble);
-
-                    // refactoring the result string.
-                    if (fOptions.BasePrefix) {
-                    	// remove trailing zero and decimal point.
+                    Int32 sizeOfFormatCode = -1;
+                    Int32 sizeOfNumericString = -1;
+                    if (precision >= 0) {
+                        sizeOfNumericString = snprintf(asciiReplacementString, 100, "%.*f", precision,tempDouble);
+                    } else {
+                        sizeOfNumericString = snprintf(asciiReplacementString, 100, "%f", tempDouble);
                     }
-                    if (truncateSignificant) {
-
-                    }
-                    RefactorLabviewNumeric(&fOptions, (Utf8Char*)asciiReplacementString, &sizeOfNumericString, exponent, truncateSignificant);
-                    // replace the decimal point if existing
+                    Int32 intDigits = (exponent >= 0)? (exponent): 0 ;
+                    RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, intDigits, truncateSignificant);
                     buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
                     argumentIndex++;
                 }
                 break;
                 case 'e': case 'E':
+                {
+                	Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
+                    Int32 precision = fOptions.Precision;
+                    if (fOptions.Significant >= 0) {
+                        precision =  fOptions.Significant - 1;
+                    }
+                    char asciiReplacementString[100];
+                    Int32 sizeOfNumericString = 0;
+                    if (precision >= 0) {
+                    	sizeOfNumericString += snprintf(asciiReplacementString, 100, "%.*e", precision, tempDouble);
+                    } else {
+                        sizeOfNumericString = snprintf(asciiReplacementString, 100, "%e", tempDouble);
+                    }
+                    RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, 0, 0);
+
+                    buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                    argumentIndex++;
+
+                }
+                break;
                 case 'a': case 'A':
                 {
                     // TODO don't assume data type. This just becomes the default format for real numbers, then use formatter
@@ -1890,7 +1976,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     char specifier[] = "lld";
                     specifier[2] = fOptions.FormatChar;
                     tempFormat.AppendCStr(specifier);
-                   // printf("format code :%s;\n", tempFormat.BeginCStr());
 
                     TempStackCString formattedNumber;
                     TypeRef argType = arguments[argumentIndex]._paramType;
