@@ -1685,7 +1685,6 @@ Boolean RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferB
     			*(buffer+ numberStart) =  '1';
     		}
     	} else if (IntDigits+1 < decimalPoint - numberStart && formatOptions->Significant >= 0) {
-
     		// generate extra significant digit at MSB.
     		Int32 width = *pSize;
     		// There may be a decimal point in the string and the snprintf may generate another digit when rounding.
@@ -1791,7 +1790,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex fixPositionArgument = 0;
     IntIndex defaultPositionArgument = 0;
     Int32 totalArgument = 0;;
-    // char localSeparator = '.';
     const char decimalPointC = '.';
     SubString f(format);            // Make a copy to use locally
 
@@ -1815,6 +1813,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         } else if (c == '%') {
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
+            // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = decimalPointC;
             totalArgument++;
             if (lastArgumentIndex == argumentIndex) {
@@ -1837,12 +1836,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 fmtSubString->AliasAssign(fmtSubString->Begin()+ dollarFlag + 1, fmtSubString->End());
             }
             lastArgumentIndex = argumentIndex;
-            //printf("argument index:%d\n", argumentIndex);
             switch (fOptions.FormatChar)
             {
                 case 'g': case 'G':
                 {
-
                 }
                 break;
                 case 'f': case 'F':
