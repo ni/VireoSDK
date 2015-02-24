@@ -1909,6 +1909,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                     break;
                     case 'e': case 'E':
+                    //	It means the original format code is %p
+                    case 0:
                     {
                         Double tempDouble;
                         TypeRef argType = arguments[argumentIndex]._paramType;
@@ -1929,6 +1931,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
                         argumentIndex++;
 
+                    }
+                    break;
+                    case 'p': case 'P':
+                    {
+                        parseFinished = false;
+                        fOptions.FormatChar = 0;
+                        fOptions.EngineerNotation = true;
                     }
                     break;
                     case 'a': case 'A':
