@@ -30,6 +30,26 @@ SDG
 using namespace Vireo;
 
 //------------------------------------------------------------
+struct StringNFormatStruct : public VarArgInstruction
+{
+	_ParamDef(StringRef, StringOut);
+    _ParamDef(Int32, Max);
+	_ParamDef(StringRef, StringFormat);
+	_ParamImmediateDef(StaticTypeAndData, argument1[1]);
+	NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
+{
+    Int32 count = (_ParamVarArgCount() -3)/2;
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    StringRef buffer = _Param(StringOut);
+    Format(&format, count, arguments, buffer);
+
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
 {
     _ParamDef(StringRef, StringIn);
@@ -491,6 +511,7 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRe
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
+    DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")
