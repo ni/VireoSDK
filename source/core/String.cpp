@@ -34,9 +34,9 @@ struct StringNFormatStruct : public VarArgInstruction
 {
 	_ParamDef(StringRef, StringOut);
     _ParamDef(Int32, Max);
-	_ParamDef(StringRef, StringFormat);
-	_ParamImmediateDef(StaticTypeAndData, argument1[1]);
-	NEXT_INSTRUCTION_METHODV()
+    _ParamDef(StringRef, StringFormat);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
 };
 
 VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
@@ -46,7 +46,6 @@ VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     StringRef buffer = _Param(StringOut);
     Format(&format, count, arguments, buffer);
-
     return _NextInstruction();
 }
 //------------------------------------------------------------

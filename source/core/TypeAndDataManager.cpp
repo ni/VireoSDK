@@ -1162,7 +1162,7 @@ NIError ClusterType::CopyData(const void* pData, void *pDataCopy)
         // For non trivial cases visit each element
         for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++)
         {
-        	// TODO errors
+            // TODO errors
             Int32 offset = (*pType)->_offset;
             (*pType)->CopyData( (((AQBlock1*)pData) + offset), (((AQBlock1*)pDataCopy) + offset) );
         }
