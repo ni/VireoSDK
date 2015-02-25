@@ -109,6 +109,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             // Labview doesn't variable precision, it will mess up with the argument index.
             pOptions->VariablePrecision = true;
         } else if (c == '$') {
+        } else if (c == ';') {
         } else {
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
@@ -153,6 +154,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex explicitPositionArgument = 0;
     Int32 totalArgument = 0;;
     const char decimalPointC = '.';
+    char localDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
@@ -176,7 +178,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
             // We should assign the local decimal point to DecimalSeparator.
-            fOptions.DecimalSeparator = decimalPointC;
+            fOptions.DecimalSeparator = localDecimalPoint;
             totalArgument++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
@@ -726,6 +728,47 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
             }
          }
     }
+}
+
+//---------------------------------------------------------------------------------------------
+void FormatScan(StringRef buffer, SubString *format, Int32 count, StaticTypeAndData arguments[])
+{
+	// the rules for ScanString in Labview is a subset of the sscanf.
+	// p will be treated as f;
+	// binary should be processed.
+	// should be very careful when try to parse a float with local decimal point
+
+    IntIndex argumentIndex = 0;
+    SubString f(format);            // Make a copy to use locally
+    const char decimalPointC = '.';
+    char localDecimalPoint = '.';
+
+    char c = 0;
+
+    while (f.ReadRawChar(&c))
+    {
+        if (c == '\\' && f.ReadRawChar(&c)) {
+            switch (c)
+            {
+                case 'n':       buffer->Append('\n');      break;
+                case 'r':       buffer->Append('\r');      break;
+                case 't':       buffer->Append('\t');      break;
+                case 'b':       buffer->Append('\b');      break;
+                case 'f':       buffer->Append('\f');      break;
+                case 's':       buffer->Append(' ');       break;
+                case '\\':      buffer->Append('\\');      break;
+                default:  break;
+            }
+        } else if (c == ' ') {
+
+        } else if (c == '%') {
+
+        } else {
+
+        }
+    }
+
+
 }
 
 } // namespace Vireo
