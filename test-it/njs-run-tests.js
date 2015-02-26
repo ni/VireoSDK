@@ -5,6 +5,8 @@ fs = require('fs');
 jsdiff = require('diff');
 path = require('path');
 cp = require('child_process');
+vireo = {};
+
 require('colors');
 
 var testFailures = [];
@@ -36,10 +38,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
         process.stdout.write('----------------\n');
         diffs = jsdiff.diffLines(oldResults, cleanNewResults);
         diffs.forEach(function(part){
-            // green for additions, red for deletions
-            // grey for common parts
             var color = part.added ? 'green' : part.removed ? 'red' : 'grey';
-            //process.stdout.write("foo\n");
             process.stdout.write(part.value[color]);
             });
         process.stdout.write('----------------\n');
@@ -49,12 +48,42 @@ function CompareResults(testName, oldResults, newResults, msec) {
     }
 }
 
-function RunTest(testName) {
+function RunVJSTest(testName) {
+    var newResults = '';
+    try {
+        viaCode = fs.readFileSync(testName).toString();
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            viaCode = '';
+        }
+    }
+
+    vireo.loadVia(viaCode);
+    vireo.stdio = '';
+    vireo.executeSlices(1);
+    return vireo.stdout;
+}
+
+/*
+Sample  test log information.
+var x =     {
+        "TestName" : "HelloWorld.via",
+        "OS" : "OSX-Yosemite",
+        "Runtime" : "NativeCLI-32bit-clang-Os",
+        "VireoVersion" : "2.01",
+        "TotalTime" : "4.6ms",
+        "LoadTime" : ".02ms",
+        "ExecTime" : ".00001ms",
+        "Status"   : "OK"
+    };
+*/
+
+//
+function RunTestCore(testName, testFunc)
+{
     var resultsFileName = 'results/' + path.basename(testName, '.via') + '.vtr';
     var oldResults = '';
-    var newResults = '';
     var noOldResults = false;
-    var testCrashed = false;
 
     try {
         oldResults = fs.readFileSync(resultsFileName).toString();
@@ -65,13 +94,8 @@ function RunTest(testName) {
     }
 
     var hrstart = process.hrtime();
-    try {
-        newResults = cp.execFileSync('esh', [ testName ]).toString();
-    } catch (e) {
-        // If Vireo detects an erroro ti will return non zero
-        // and exec will throw an execption, so catch the results.
-        newResults = e.stdout.toString();
-    }
+//    var newResults = RunVJSTest(testName);
+    var newResults = RunCmdLineTest(testName);
     var hrend = process.hrtime(hrstart);
     var msec = hrend[1]/1000000;
 
@@ -83,11 +107,31 @@ function RunTest(testName) {
     }
 }
 
+function RunCmdLineTest(testName) {
+    var newResults = '';
+    try {
+        newResults = cp.execFileSync('esh', [ testName ]).toString();
+    } catch (e) {
+        // If Vireo detects an erroro ti will return non zero
+        // and exec will throw an execption, so catch the results.
+        newResults = e.stdout.toString();
+    }
+    return newResults;
+}
+
+function SetupVJS()
+{
+    vireo = require('../Vireo_Web/objs/vireo.js');
+    vireo.stdout = '';
+    vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
+}
+
+SetupVJS();
 if (process.argv.length < 3) {
      var filelist = fs.readdirSync('.');
      var testFiles = filelist.filter(IsViaFile);
      console.log("command line batch mode");
-     testFiles.map(RunTest);
+     testFiles.map(RunTestCore);
 
      if (testFailures.length > 0) {
          console.log("failures");
@@ -95,6 +139,6 @@ if (process.argv.length < 3) {
      }
 } else if (IsViaFile(process.argv[2])) {
      console.log("command line single mode");
-     RunTest(process.argv[2]);
+     RunTestCore(process.argv[2]);
 }
 console.log("Vireo test run complete. Total TestVectors = " + totalResultLines);
