@@ -9,8 +9,10 @@ vireo = {};
 
 require('colors');
 
-var testFailures = [];
-var totalResultLines = 0;
+var app = {};
+
+app.testFailures = [];
+app.totalResultLines = 0;
 
 function IsViaFile(name) {
     return path.extname(name) === '.via';
@@ -28,7 +30,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
            lineCount += 1;
         }
     }
-    totalResultLines += lineCount;
+    app.totalResultLines += lineCount;
 
     if (oldResults === cleanNewResults) {
         console.log('Test for "' + testName + '" passed. (' + msec + 'ms)' );
@@ -48,22 +50,6 @@ function CompareResults(testName, oldResults, newResults, msec) {
     }
 }
 
-function RunVJSTest(testName) {
-    var newResults = '';
-    try {
-        viaCode = fs.readFileSync(testName).toString();
-    } catch (e) {
-        if (e.code === 'ENOENT') {
-            viaCode = '';
-        }
-    }
-
-    vireo.loadVia(viaCode);
-    vireo.stdio = '';
-    vireo.executeSlices(1);
-    return vireo.stdout;
-}
-
 /*
 Sample  test log information.
 var x =     {
@@ -74,13 +60,15 @@ var x =     {
         "TotalTime" : "4.6ms",
         "LoadTime" : ".02ms",
         "ExecTime" : ".00001ms",
-        "Status"   : "OK"
+        "Status"   : "OK",
+        "PanelValues" : {"Foo": true}
     };
 */
 
-//
-function RunTestCore(testName, testFunc)
+//------------------------------------------------------------
+function RunTestCore(testName, tester)
 {
+    console.log('yoe' + testName);
     var resultsFileName = 'results/' + path.basename(testName, '.via') + '.vtr';
     var oldResults = '';
     var noOldResults = false;
@@ -94,8 +82,7 @@ function RunTestCore(testName, testFunc)
     }
 
     var hrstart = process.hrtime();
-//    var newResults = RunVJSTest(testName);
-    var newResults = RunCmdLineTest(testName);
+    var newResults = tester(testName);
     var hrend = process.hrtime(hrstart);
     var msec = hrend[1]/1000000;
 
@@ -107,7 +94,23 @@ function RunTestCore(testName, testFunc)
     }
 }
 
-function RunCmdLineTest(testName) {
+function RunVJSTest(testName) {
+    var newResults = '';
+    try {
+        viaCode = fs.readFileSync(testName).toString();
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            viaCode = '';
+        }
+    }
+
+    vireo.stdout = '';
+    vireo.loadVia(viaCode);
+    vireo.executeSlices(1000000);
+    return vireo.stdout;
+}
+
+function RunNativeTest(testName) {
     var newResults = '';
     try {
         newResults = cp.execFileSync('esh', [ testName ]).toString();
@@ -119,6 +122,7 @@ function RunCmdLineTest(testName) {
     return newResults;
 }
 
+//------------------------------------------------------------
 function SetupVJS()
 {
     vireo = require('../Vireo_Web/objs/vireo.js');
@@ -126,19 +130,41 @@ function SetupVJS()
     vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
 }
 
-SetupVJS();
-if (process.argv.length < 3) {
-     var filelist = fs.readdirSync('.');
-     var testFiles = filelist.filter(IsViaFile);
-     console.log("command line batch mode");
-     testFiles.map(RunTestCore);
+//------------------------------------------------------------
+function JSTester(testName) { RunTestCore(testName, RunVJSTest); }
+function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
-     if (testFailures.length > 0) {
-         console.log("failures");
-         console.log(testFailures);
-     }
-} else if (IsViaFile(process.argv[2])) {
-     console.log("command line single mode");
-     RunTestCore(process.argv[2]);
-}
-console.log("Vireo test run complete. Total TestVectors = " + totalResultLines);
+//------------------------------------------------------------
+(function Main() {
+    var testFiles = [];
+    var argv = process.argv.slice();
+    argv.shift(); // node path
+    argv.shift(); // script path
+    var tester = function(){};
+
+    while(argv.length > 0) {
+        var arg = argv[0];
+        if  (arg === '-j') {
+            SetupVJS();
+            tester = JSTester;
+        } else if (arg === '-n') {
+            tester = NativeTester;
+        } else if (arg === '-all') {
+            testFiles = fs.readdirSync('.');
+            testFiles = filelist.filter(IsViaFile);
+        } else {
+            testFiles.push(arg);
+        }
+        argv.shift();
+    }
+
+    if (testFiles.length > 0) {
+        testFiles.map(tester);
+        console.log("Total test vectors :" + app.totalResultLines);
+        if (app.testFailures.length > 0) {
+            console.log(app.testFailures);
+        }
+    } else {
+        console.log("Nothing to test.");
+    }
+})();
