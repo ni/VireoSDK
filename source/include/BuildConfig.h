@@ -33,10 +33,16 @@ SDG
 // ARM uses registers always, and clang x86/x64 uses registers
 #define VIVM_FASTCALL
 
+
+#ifdef VIREO_STATIC_LINK
+    #define VIREO_INSTRUCTION_LINKAGE extern "C"
+#else
+    #define VIREO_INSTRUCTION_LINKAGE static
+#endif
+
 #ifdef VIREO_MICRO
     // For Vireo-micro there is a dispatch table statically linked at build time
     // In this case the functions need to neeed to be linkable across obj files
-    #define VIREO_INSTRUCTION_LINKAGE extern "C"
     #define VIREO_SINGLE_GLOBAL_CONTEXT
     //#define VIREO_USING_ASSERTS
 
@@ -75,11 +81,6 @@ SDG
     // Used for generating C source
     // #define VIREO_INSTRUCTION_REFLECTION 1
     // #define VIREO_TYPE_CONSTRUCTION 1
-
-    // For Vireo-full functions are dynamically registered by each module when loaded
-    // or when the the app is started for statically linked modules so the symbols
-    // are private to each obj.
-    #define VIREO_INSTRUCTION_LINKAGE static
 
     // #define VIREO_MULTI_THREAD
     #undef VIREO_FILESYSTEM
@@ -125,11 +126,6 @@ SDG
     #define VIREO_INSTRUCTION_REFLECTION 1
 
     #define VIREO_TYPE_CONSTRUCTION 1
-
-    // For Vireo-full functions are dynamically registered by each module when loaded
-    // or when the the app is started for statically linked modules so the symbols
-    // are private to each obj.
-    #define VIREO_INSTRUCTION_LINKAGE static
 
     #define VIREO_MULTI_THREAD
 

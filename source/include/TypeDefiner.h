@@ -63,9 +63,11 @@ public :
 #define TOKENPASTE2(x, y, z)   TOKENPASTE(x, y, z)
 
 
-#ifdef VIREO_MICRO
-    // The micro verison function does not used dynamic registration.
-    
+#ifdef VIREO_STATIC_LINK
+
+    // In static link mode there is no symbol table so all the symbol table registration
+    // code disappears.
+
     #define DEFINE_VIREO_BEGIN(_section_)
     #define DEFINE_VIREO_END()
 
@@ -73,7 +75,7 @@ public :
 
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_)
 
-    #define DEFINE_VIREO_FUNCTION_NAME(_symbol_, _name_, _typeTypeString_)
+    #define DEFINE_VIREO_FUNCTION_CUSTOM(_symbol_, _name_, _typeTypeString_)
 
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_)
 

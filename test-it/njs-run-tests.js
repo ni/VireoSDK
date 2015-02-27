@@ -50,25 +50,9 @@ function CompareResults(testName, oldResults, newResults, msec) {
     }
 }
 
-/*
-Sample  test log information.
-var x =     {
-        "TestName" : "HelloWorld.via",
-        "OS" : "OSX-Yosemite",
-        "Runtime" : "NativeCLI-32bit-clang-Os",
-        "VireoVersion" : "2.01",
-        "TotalTime" : "4.6ms",
-        "LoadTime" : ".02ms",
-        "ExecTime" : ".00001ms",
-        "Status"   : "OK",
-        "PanelValues" : {"Foo": true}
-    };
-*/
-
 //------------------------------------------------------------
 function RunTestCore(testName, tester)
 {
-    console.log('yoe' + testName);
     var resultsFileName = 'results/' + path.basename(testName, '.via') + '.vtr';
     var oldResults = '';
     var noOldResults = false;
