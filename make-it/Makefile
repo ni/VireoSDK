@@ -48,7 +48,7 @@ else
         ifeq ($(TARGETARCH),ARMv5)
             # Build a library for an ARMv5 target
             CC=arm-none-linux-gnueabi-g++
-            CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB 
+            CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB
             LDFLAGS+= -L. -pie -Wl,-E
         else
             CC=g++
@@ -152,6 +152,13 @@ esh: $(OBJDIR) $(OBJS)
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 
+slmicro: $(OBJDIR) ../source/micro/StaticMicroMain.cpp ../source/core/Math.cpp
+	rm -f $(OBJDIR)/*.o
+	rm -f $(OBJDIR)/*.d
+	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/micro/StaticMicroMain.cpp -o $(OBJDIR)/StaticMicroMain.o
+	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/core/Math.cpp -o $(OBJDIR)/Math.o
+	$(CC) -o $@ $(LDFLAGS) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(LIBS)
+
 $(OBJDIR):
 	mkdir -p $@
 
@@ -165,4 +172,3 @@ $(IOOBJS): $(OBJDIR)/%.o: ../source/io/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 -include $(DEPS)
-
