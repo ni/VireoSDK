@@ -44,11 +44,7 @@ Vi1_DSType  ds1 = {21, 2, 1};
 void* InstrucitonBlock[] =
 {
     I3(AddInt32, a, b, c)
-    (void*)AddInt32, &ds1.a, &ds1.b, &ds1.c,
-    (void*)MulInt32, &ds1.a, &ds1.b, &ds1.c,
-    //  If the functions are not referenced they will be stripped by the linker.
-    //  (void*)MulSingle, &ds1.a, &ds1.b, &ds1.c,
-    //  (void*)AddSingle, &ds1.a, &ds1.b, &ds1.c,
+    I3(MulInt32, a, b, c)
 };
 
 extern "C" int main(int argc, const char * argv[])

@@ -52,7 +52,9 @@ else
             LDFLAGS+= -L. -pie -Wl,-E
         else
             CC=g++
-            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH)
+            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
+			LDFLAGS+= -s -Wl,--gc-sections
+			# LDSTATIC+= -static
         endif
         PROGRAM_DIR = /usr/local/bin
         LIBS = -lrt
@@ -157,7 +159,7 @@ slmicro: $(OBJDIR) ../source/micro/StaticMicroMain.cpp ../source/core/Math.cpp
 	rm -f $(OBJDIR)/*.d
 	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/micro/StaticMicroMain.cpp -o $(OBJDIR)/StaticMicroMain.o
 	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/core/Math.cpp -o $(OBJDIR)/Math.o
-	$(CC) -o $@ $(LDFLAGS) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(LIBS)
+	$(CC) -o $@ $(LDFLAGS) $(LDSTATIC) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(LIBS)
 
 $(OBJDIR):
 	mkdir -p $@
