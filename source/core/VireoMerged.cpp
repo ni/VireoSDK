@@ -32,6 +32,7 @@ SDG
 //#include "TDCodecVib.cpp"
 #include "TDCodecLVFlat.cpp"
 #include "StringUtilities.cpp"
+#include "NumericStringUtilities.cpp"
 #include "EventLog.cpp"
 #include "Assert.cpp"
 
