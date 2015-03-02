@@ -13,9 +13,9 @@ SDG
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
-//#include "TypeAndDataManager.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
@@ -82,16 +82,16 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             break;
         }
         if (c == '[') {
-        	// only used for scan from string related function
+            // only used for scan from string related function
             SubString charSet("]");
             IntIndex charSetIndex = format->FindFirstMatch(&charSet, 0, false);
             if (charSetIndex < 0) {
-            	bValid = false;
+                bValid = false;
             } else {
                 format->AliasAssign(format->Begin()+charSetIndex+1, format->End());
-            	pOptions->FormatChar = '[';
+                pOptions->FormatChar = '[';
             }
-        	break;
+            break;
         }
         if (c == '+') {
             pOptions->ShowSign = true;
@@ -124,7 +124,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             pOptions->VariablePrecision = true;
         } else if (c == '$') {
         } else if (c == ';') {
-        	// local conversion code
+            // local conversion code
         } else {
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
@@ -645,7 +645,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             }
             if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
 
-            	// Attention: -2 --- +2 will not be used
+                // Attention: -2 --- +2 will not be used
                 if (siPrefixesTable[(exponent+24)/3] != '0' ){
                     tempNumber[baseIndex] = siPrefixesTable[exponent+24];
                     baseIndex ++;
@@ -698,203 +698,350 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
     }
 }
 //--------------------------------------------------------------------------------------------
-Boolean GenerateScanFormatString(const SubString* inputString, char** endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
-{
-	char c = formatOptions->FormatChar;
-	char* inp = inputString->Begin();
-	char* endPointer = inp;
-	TypeRef argumentType = argument->_paramType;
-	EncodingEnum encoding = argumentType->BitEncoding();
-	switch (encoding) {
-	case kEncoding_UInt: {
-		IntMax intValue;
-		switch (c) {
-		case 'x' : {
-			intValue = strtoull(inp, &endPointer, 16);
-		}
-			break;
-		case 'd' : case 'u' :{
-			intValue = strtoull(inp, &endPointer, 10);
-		}
-			break;
-		case 'b' : {
-			intValue = strtoull(inp, &endPointer, 2);
-		}
-			break;
-		case 'o' : {
-			intValue = strtoull(inp, &endPointer, 8);
-		}
-			break;
-		default:
-			intValue = strtoull(inp, &endPointer, 10);
-			break;
-		}
-		WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
-	}
-	break;
-	case kEncoding_SInt:
-	case kEncoding_MetaInt: {
-		IntMax intValue;
-		switch (c) {
-		case 'x' : {
-			intValue = strtoll(inp, &endPointer, 16);
-		}
-			break;
-		case 'd' : case 'u' :{
-			intValue = strtoll(inp, &endPointer, 10);
-		}
-			break;
-		case 'b' : case 'B' : {
-			intValue = strtoll(inp, &endPointer, 2);
-		}
-			break;
-		case 'o' : {
-			intValue = strtoll(inp, &endPointer, 8);
-		}
-			break;
-		default:
-			intValue = strtoll(inp, &endPointer, 10);
-			break;
-		}
-		WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
-	}
-	break;
-	case kEncoding_IEEE754Binary: {
-		double doubleValue;
-		doubleValue = strtold(inp, &endPointer);
-		WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
-	}
-	break;
-	case kEncoding_Array: {
+Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
+    if(charSet->Length() == 0) {
+        return false;
+    }
+    IntIndex i = 0;
+    Utf8Char* begin = (Utf8Char*)charSet->Begin();
+    while (i< charSet->Length()) {
+        if (i+2< charSet->Length() && (*(begin + 1 + i)=='-')) {
+            IntIndex range = *(begin + 2 + i) - *(begin+i);
 
-		TypedArrayCoreRef* pArray = argument->_pData;
-		TypeRef elementType = (*pArray)->ElementType();
-		EncodingEnum elementEncoding = elementType->BitEncoding();
-		if (argumentType->Rank()==1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
-			if (formatOptions->FormatChar == '[') {
-				SubString* charSet = &(formatOptions->FmtSubString);
-				formatString->Append(charSet);
-			} else {
-				formatString->AppendCStr("s");
-			}
-			TempStackCString inp(inputString);
-			char temp[300];
-			sscanf(inp.BeginCStr(), formatString->BeginCStr(), temp);
-			sprintf(pArray->, "%s", temp);
-		} else {
-			//doesn't suppot more complex array type
-			return false;
-		}
-	}
-	break;
-	default:
-		// doesn't support this kind of data type yet.
-		return false;
-	break;
-	}
-	if (endPointer-inp <= 0) {
-		return false;
-	}
-	*endToken = endPointer;
-	return true;
+            for( IntIndex j = 0; j<= range; j++) {
+                Utf8Char rangeChar = *(begin + i)+j;
+                if (candidate == rangeChar) {
+                    return true;
+                } else {
+                }
+            }
+            i= i+3;
+        } else {
+            Utf8Char c = *(charSet->Begin()+i);
+            if (c == candidate) {
+                return true;
+            }
+            i++;
+        }
+    }
+    return false;
+}
+//----------------------------------------------------------------------------------------------------
+Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
+{
+    char c = formatOptions->FormatChar;
+    SubString in(inputString);
+    TempStackCString truncateInput;
+    if (formatOptions->MinimumFieldWidth > 0) {
+        IntIndex leadingSpace = 0;
+        for (IntIndex i =0; i< in.Length(); i++) {
+            if(isspace(*(in.Begin()+i))) {
+                leadingSpace++;
+            } else {
+                break;
+            }
+        }
+        in.AliasAssign(in.Begin(), in.Begin()+formatOptions->MinimumFieldWidth+leadingSpace);
+    }
+    truncateInput.Append(&in);
+    char* inpBegin = truncateInput.BeginCStr();
+    char* endPointer = null;
+    TypeRef argumentType = argument->_paramType;
+    EncodingEnum encoding = argumentType->BitEncoding();
+    switch (encoding) {
+    case kEncoding_UInt: {
+        IntMax intValue;
+        switch (c) {
+        case 'x' : {
+            intValue = strtoull(inpBegin, &endPointer, 16);
+        }
+            break;
+        case 'd' : case 'u' :{
+            intValue = strtoull(inpBegin, &endPointer, 10);
+        }
+            break;
+        case 'b' : {
+            intValue = strtoull(inpBegin, &endPointer, 2);
+        }
+            break;
+        case 'o' : {
+            intValue = strtoull(inpBegin, &endPointer, 8);
+        }
+            break;
+        default:
+            intValue = strtoull(inpBegin, &endPointer, 10);
+            break;
+        }
+        WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+    }
+    break;
+    case kEncoding_SInt:
+    case kEncoding_MetaInt: {
+        IntMax intValue = 0;
+        switch (c) {
+        case 'x' : {
+            intValue = strtoll(inpBegin, &endPointer, 16);
+        }
+            break;
+        case 'd' : case 'u' :{
+            intValue = strtoll(inpBegin, &endPointer, 10);
+        }
+            break;
+        case 'b' : case 'B' : {
+            intValue = strtoll(inpBegin, &endPointer, 2);
+        }
+            break;
+        case 'o' : {
+            intValue = strtoll(inpBegin, &endPointer, 8);
+        }
+            break;
+        default:
+            intValue = strtoll(inpBegin, &endPointer, 10);
+            break;
+        }
+        WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+    }
+    break;
+    case kEncoding_IEEE754Binary: {
+        double doubleValue;
+        doubleValue = strtold(inpBegin, &endPointer);
+        WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
+    }
+    break;
+    case kEncoding_Array: {
+
+        TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(argument->_pData);
+        TypeRef elementType = (*pArray)->ElementType();
+        EncodingEnum elementEncoding = elementType->BitEncoding();
+        if (argumentType->Rank()==1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
+
+            if (formatOptions->FormatChar == 's') {
+                Boolean found = false;
+                char* start = (char*)in.Begin();
+                IntIndex stringStart = -1;
+                IntIndex i = 0;
+                for ( i=0; i< in.Length();i++) {
+                    char c = *(start + i);
+                    if (found && isspace(c)) {
+                        i--;
+                        break;
+                    }
+                    if (!found && !isspace(c)) {
+                        found = true;
+                        stringStart = i;
+                    }
+                }
+                if (!found) {
+                    return false;
+                } else {
+                    if (i==in.Length()){
+                        // reach the end of the input
+                        i--;
+                    }
+                    if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                        i = stringStart + formatOptions->MinimumFieldWidth - 1;
+                    }
+                    endPointer = inpBegin + i+1;
+                    (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+
+                }
+            } else if (formatOptions->FormatChar == '[') {
+                SubString* charSet = (SubString*) &(formatOptions->FmtSubString);
+                charSet->AliasAssign(charSet->Begin()+1,charSet->End()-1);
+                if(charSet->Length() == 0) {
+                    return false;
+                } else if (*((char *)charSet->Begin()) == '^'){
+                    if (charSet->Length() == 1) {
+                        return false;
+                    } else {
+                        Boolean found = false;
+                        char* start = (char*)in.Begin();
+                        IntIndex stringStart = -1;
+                        IntIndex i = 0;
+                        for ( i=0; i< in.Length();i++) {
+                            Utf8Char c = *(start + i);
+                            if (found && BelongtoCharSet(charSet, c)) {
+                                i--;
+                                break;
+                            }
+                            if (!found && !BelongtoCharSet(charSet, c)) {
+                                found = true;
+                                stringStart = i;
+                            }
+                        }
+                        if (!found) {
+                            return false;
+                        } else {
+                            if (i==in.Length()){
+                            // reach the end of the input
+                                i--;
+                            }
+                            if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                                i = stringStart + formatOptions->MinimumFieldWidth - 1;
+                            }
+                            endPointer = inpBegin + i+1;
+                            (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+                        }
+                    }
+                } else {
+                    Boolean found = false;
+                    char* start = (char*)in.Begin();
+                    IntIndex stringStart = -1;
+                    IntIndex i = 0;
+                    for ( i=0; i< in.Length();i++) {
+                        Utf8Char c = *(start + i);
+                        if (found && !BelongtoCharSet(charSet, c)) {
+                            i--;
+                            break;
+                        }
+                        if (!found && BelongtoCharSet(charSet, c)) {
+                            found = true;
+                            stringStart = i;
+                        }
+                    }
+                    if (!found) {
+                        return false;
+                    } else {
+                        if (i==in.Length()){
+                        // reach the end of the input
+                            i--;
+                        }
+                        if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                            i = stringStart + formatOptions->MinimumFieldWidth - 1;
+                        }
+                        endPointer = inpBegin + i+1;
+                        (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+                    }
+                }
+            }
+        } else {
+            //doesn't support more complex array type
+            return false;
+        }
+    }
+    break;
+    default:
+        // doesn't support this kind of data type yet.
+        return false;
+    break;
+    }
+    if (endPointer == null || (endPointer == inpBegin)) {
+        return false;
+    }
+    *endToken = (endPointer-inpBegin);
+    return true;
 }
 //---------------------------------------------------------------------------------------------
 /*
  * The return value is the offset of the input string after the scan.
  * */
-Int32 FormatScan(SubString *input, SubString *format, Int32 count, StaticTypeAndData arguments[])
+Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData arguments[])
 {
-	// the rules for ScanString in Labview is a subset of the sscanf.
-	// p will be treated as f;
-	// binary should be processed.
-	// should be very careful when try to parse a float with local decimal point
+    // the rules for ScanString in Labview is a subset of the sscanf.
+    // p will be treated as f;
+    // binary should be processed.
+    // should be very careful when try to parse a float with local decimal point
 
     IntIndex argumentIndex = 0;
     IntIndex filledItems = 0;
-    SubString f(format);            // Make a copy to use locally
-    SubString in(input);            // Make a copy to use locally
     const char decimalPointC = '.';
     char localDecimalPoint = '.';
     TempStackCString tempFormat((Utf8Char*)"%", 1);
     char c = 0;
     char inputChar = 0;
     Boolean canScan = true;
-   // Utf8Char* inpPosition  = null;
-   // Utf8Char* formatPosition  = null;
+    SubString f(format);
     while (canScan && f.ReadRawChar(&c))
     {
         if (isspace(c)) {
-        	format->AliasAssign(format->Begin()+1, format->End());
-        	tempFormat.AppendCStr(" ");
+            format->AliasAssign(format->Begin()+1, format->End());
+            tempFormat.AppendCStr(" ");
         } else if (c == '%') {
-        	 FormatOptions fOptions;
-        	 ReadPercentFormatOptions(&f, &fOptions);
+             FormatOptions fOptions;
+             ReadPercentFormatOptions(&f, &fOptions);
              // We should assign the local decimal point to DecimalSeparator.
-        	 fOptions.DecimalSeparator = localDecimalPoint;
-        	 Boolean parseFinished = false;
-        	 if (!fOptions.Valid) {
-        		 parseFinished = true;
-        		 canScan = false;
+             fOptions.DecimalSeparator = localDecimalPoint;
+             Boolean parseFinished = false;
+             if (!fOptions.Valid || input->Length() == 0) {
+                 parseFinished = true;
+                 canScan = false;
              }
-    		 TempStackCString formatString;
-    		 char* endPointer;
+             TempStackCString formatString;
+             IntIndex endPointer;
              while (!parseFinished){
-            	 parseFinished = true;
-            	 switch (fOptions.FormatChar) {
-            	 case 'b': case 'B':
-            	 {
-            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-            		 if (canScan) {
-            			 input->AliasAssign((Utf8Char*)endPointer, input->End());
-            		 }
-            	 }
-            	 break;
-            	 case 'd': case 'D':
-            	 {
-            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-        			 input->AliasAssign((Utf8Char*)endPointer, input->End());
-
-            	 }
-            	 break;
-            	 case 'g':
-            	 case 'e': case 'E':
-            	 case 'f': case 'F':
-            	 {
-            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-        			 input->AliasAssign((Utf8Char*)endPointer, input->End());
-            	 }
-            	 break;
-            	 case 's': {
-
-            	 }
-            	 break;
-            	 case '%': {    //%%
-            		 in.ReadRawChar(&inputChar);
-            		 if (inputChar == '%') {
-            			 input->AliasAssign(input->Begin()+1,input->End());
-       		         	} else{
-       		         		canScan = false;
-       		         	}
-            	 }
-            	 break;
-            	 default:
-            		 canScan = false;
-            	 break;
-            	 }
+                 parseFinished = true;
+                 switch (fOptions.FormatChar) {
+                 case 'b': case 'B':
+                 {
+                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                     if (canScan) {
+                         filledItems++;
+                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                     }
+                     argumentIndex++;
+                 }
+                 break;
+                 case 'd':
+                 case 'o': case 'u':
+                 case 'x': case 'X':
+                 {
+                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                     if  (canScan) {
+                         filledItems++;
+                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                     }
+                     argumentIndex++;
+                 }
+                 break;
+                 case 'g': case 'p':
+                 case 'e': case 'E':
+                 case 'f': case 'F':
+                 {
+                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                     if (canScan) {
+                         filledItems++;
+                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                     }
+                     argumentIndex++;
+                 }
+                 break;
+                 case 's': case '[':
+                 {
+                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                     if (canScan) {
+                         filledItems++;
+                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                     }
+                     argumentIndex++;
+                 }
+                 break;
+                 case '%': {    //%%
+                     input->ReadRawChar(&inputChar);
+                     if (inputChar == '%') {
+                         input->AliasAssign(input->Begin()+1,input->End());
+                         format->AliasAssign(format->Begin()+1, format->End());
+                            } else{
+                                canScan = false;
+                            }
+                 }
+                 break;
+                 default:
+                     canScan = false;
+                 break;
+                 }
              }
         } else {
-        	in.ReadRawChar(&inputChar);
-        	if (inputChar == c) {
-        		input->AliasAssign(input->Begin()+1,input->End());
-        	} else{
-        		canScan = false;
-        	}
+            input->ReadRawChar(&inputChar);
+            if (inputChar == c) {
+                input->AliasAssign(input->Begin()+1,input->End());
+                format->AliasAssign(format->Begin()+1, format->End());
+            } else{
+                canScan = false;
+            }
         }
     }
     // update the remaining string.
-   // input->AliasAssign(inpPosition, input->End());
-   // format->AliasAssign(formatPosition, format->End());
-    return input->Length();
+    return filledItems;
 }
 
 } // namespace Vireo
