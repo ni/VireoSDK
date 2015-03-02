@@ -2072,18 +2072,10 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
         case kEncoding_SInt:
         case kEncoding_MetaInt:
             switch(aqSize) {
-                case 1:
-                    value = *(Int8*) pData;
-                    break;
-                case 2:
-                    value = *(Int16*) pData;
-                    break;
-                case 4:
-                    value = *(Int32*) pData;
-                    break;
-                case 8:
-                    value = *(Int64*) pData;
-                    break;
+                case 1: value = *(Int8*) pData;  break;
+                case 2: value = *(Int16*) pData; break;
+                case 4: value = *(Int32*) pData; break;
+                case 8: value = *(Int64*) pData; break;
                 default:
                     *pValue = 0;
                     return  kNIError_kCantDecode;
@@ -2093,33 +2085,19 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
         case kEncoding_UInt:
             // Use unsigned int casts to avoid sign extension
             switch(aqSize) {
-                case 1:
-                    value = *(UInt8*) pData;
-                    break;
-                case 2:
-                    value = *(UInt16*) pData;
-                    break;
-                case 4:
-                    value = *(UInt32*) pData;
-                    break;
-                case 8:
-                    value = *(UInt64*) pData;
-                    break;
-                default:
-                    *pValue = 0;
-                    return  kNIError_kCantDecode;
-                    break;
+                case 1:  value = *(UInt8*) pData;   break;
+                case 2:  value = *(UInt16*) pData;  break;
+                case 4:  value = *(UInt32*) pData;  break;
+                case 8:  value = *(UInt64*) pData;  break;
+                default: *pValue = 0; return  kNIError_kCantDecode;
+                	break;
             }
             break;
         case kEncoding_IEEE754Binary:
             // Use unsigned int casts to avoid sign extension
             switch(aqSize) {
-                case 4:
-                    value = RoundToEven(*(Single*) pData);
-                    break;
-                case 8:
-                    value = RoundToEven(*(Double*) pData);
-                    break;
+                case 4: value = RoundToEven(*(Single*) pData);  break;
+                case 8: value = RoundToEven(*(Double*) pData);  break;
                 default:
                     *pValue = 0;
                     return  kNIError_kCantDecode;

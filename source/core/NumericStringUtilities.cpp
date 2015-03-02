@@ -12,6 +12,7 @@ SDG
  */
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 //#include "TypeAndDataManager.h"
@@ -79,7 +80,20 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         if (strchr("diuoxXfFeEgGaAcsptTbB%", c)) {
             pOptions->FormatChar = c;
             break;
-        } if (c == '+') {
+        }
+        if (c == '[') {
+        	// only used for scan from string related function
+            SubString charSet("]");
+            IntIndex charSetIndex = format->FindFirstMatch(&charSet, 0, false);
+            if (charSetIndex < 0) {
+            	bValid = false;
+            } else {
+                format->AliasAssign(format->Begin()+charSetIndex+1, format->End());
+            	pOptions->FormatChar = '[';
+            }
+        	break;
+        }
+        if (c == '+') {
             pOptions->ShowSign = true;
         } else if (c == '-') {
             pOptions->LeftJustify = true;
@@ -110,6 +124,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             pOptions->VariablePrecision = true;
         } else if (c == '$') {
         } else if (c == ';') {
+        	// local conversion code
         } else {
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
@@ -549,6 +564,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
     }
 
     if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
+        char siPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y'};
         Int32 numberIndex = numberStart;
         Int32 baseIndex = 0;
         // baseIndex used to traverse the tempNumber char array.
@@ -600,33 +616,9 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             }
             // add support for %p
             if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
-                char siPrefixesTable [50];
-                for (Int32 i = 0 ; i<= 48; i++) {
-                    siPrefixesTable[i] = ' ';
-                }
+
                 // Attention: -2 --- +2 will not be used
-                siPrefixesTable[-24+24] = 'y';
-                siPrefixesTable[-21+24] = 'z';
-                siPrefixesTable[-18+24] = 'a';
-                siPrefixesTable[-15+24] = 'f';
-                siPrefixesTable[-12+24] = 'p';
-                siPrefixesTable[-9+24]  = 'n';
-                siPrefixesTable[-6+24]  = 'u';
-                siPrefixesTable[-3+24]  = 'm';
-                siPrefixesTable[-2+24]  = 'c';
-                siPrefixesTable[-1+24]  = 'd';
-                siPrefixesTable[0+24]   = '0';
-                siPrefixesTable[+1+24]  = '1'; // 'da'
-                siPrefixesTable[+2+24]  = 'h';
-                siPrefixesTable[+3+24]  = 'k';
-                siPrefixesTable[+6+24]  = 'M';
-                siPrefixesTable[+9+24]  = 'G';
-                siPrefixesTable[+12+24] = 'T';
-                siPrefixesTable[+15+24] = 'P';
-                siPrefixesTable[+18+24] = 'E';
-                siPrefixesTable[+21+24] = 'Z';
-                siPrefixesTable[+24+24] = 'Y';
-                if (siPrefixesTable[exponent+24] != '0' ){
+                if (siPrefixesTable[(exponent+24)/3] != '0' ){
                     tempNumber[baseIndex] = siPrefixesTable[exponent+24];
                     baseIndex ++;
                 }
@@ -652,33 +644,9 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 }
             }
             if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
-                char siPrefixesTable [50];
-                for (Int32 i = 0 ; i<= 48; i++) {
-                    siPrefixesTable[i] = ' ';
-                }
-                // Attention: -2 --- +2 will not be used
-                siPrefixesTable[-24+24] = 'y';
-                siPrefixesTable[-21+24] = 'z';
-                siPrefixesTable[-18+24] = 'a';
-                siPrefixesTable[-15+24] = 'f';
-                siPrefixesTable[-12+24] = 'p';
-                siPrefixesTable[-9+24]  = 'n';
-                siPrefixesTable[-6+24]  = 'u';
-                siPrefixesTable[-3+24]  = 'm';
-                siPrefixesTable[-2+24]  = 'c';
-                siPrefixesTable[-1+24]  = 'd';
-                siPrefixesTable[0+24]   = '0';
-                siPrefixesTable[+1+24]  = '1'; // 'da'
-                siPrefixesTable[+2+24]  = 'h';
-                siPrefixesTable[+3+24]  = 'k';
-                siPrefixesTable[+6+24]  = 'M';
-                siPrefixesTable[+9+24]  = 'G';
-                siPrefixesTable[+12+24] = 'T';
-                siPrefixesTable[+15+24] = 'P';
-                siPrefixesTable[+18+24] = 'E';
-                siPrefixesTable[+21+24] = 'Z';
-                siPrefixesTable[+24+24] = 'Y';
-                if (siPrefixesTable[exponent+24] != '0' ){
+
+            	// Attention: -2 --- +2 will not be used
+                if (siPrefixesTable[(exponent+24)/3] != '0' ){
                     tempNumber[baseIndex] = siPrefixesTable[exponent+24];
                     baseIndex ++;
                 }
@@ -729,9 +697,112 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
          }
     }
 }
+//--------------------------------------------------------------------------------------------
+Boolean GenerateScanFormatString(const SubString* inputString, char** endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
+{
+	char c = formatOptions->FormatChar;
+	char* inp = inputString->Begin();
+	char* endPointer = inp;
+	TypeRef argumentType = argument->_paramType;
+	EncodingEnum encoding = argumentType->BitEncoding();
+	switch (encoding) {
+	case kEncoding_UInt: {
+		IntMax intValue;
+		switch (c) {
+		case 'x' : {
+			intValue = strtoull(inp, &endPointer, 16);
+		}
+			break;
+		case 'd' : case 'u' :{
+			intValue = strtoull(inp, &endPointer, 10);
+		}
+			break;
+		case 'b' : {
+			intValue = strtoull(inp, &endPointer, 2);
+		}
+			break;
+		case 'o' : {
+			intValue = strtoull(inp, &endPointer, 8);
+		}
+			break;
+		default:
+			intValue = strtoull(inp, &endPointer, 10);
+			break;
+		}
+		WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+	}
+	break;
+	case kEncoding_SInt:
+	case kEncoding_MetaInt: {
+		IntMax intValue;
+		switch (c) {
+		case 'x' : {
+			intValue = strtoll(inp, &endPointer, 16);
+		}
+			break;
+		case 'd' : case 'u' :{
+			intValue = strtoll(inp, &endPointer, 10);
+		}
+			break;
+		case 'b' : case 'B' : {
+			intValue = strtoll(inp, &endPointer, 2);
+		}
+			break;
+		case 'o' : {
+			intValue = strtoll(inp, &endPointer, 8);
+		}
+			break;
+		default:
+			intValue = strtoll(inp, &endPointer, 10);
+			break;
+		}
+		WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+	}
+	break;
+	case kEncoding_IEEE754Binary: {
+		double doubleValue;
+		doubleValue = strtold(inp, &endPointer);
+		WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
+	}
+	break;
+	case kEncoding_Array: {
 
+		TypedArrayCoreRef* pArray = argument->_pData;
+		TypeRef elementType = (*pArray)->ElementType();
+		EncodingEnum elementEncoding = elementType->BitEncoding();
+		if (argumentType->Rank()==1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
+			if (formatOptions->FormatChar == '[') {
+				SubString* charSet = &(formatOptions->FmtSubString);
+				formatString->Append(charSet);
+			} else {
+				formatString->AppendCStr("s");
+			}
+			TempStackCString inp(inputString);
+			char temp[300];
+			sscanf(inp.BeginCStr(), formatString->BeginCStr(), temp);
+			sprintf(pArray->, "%s", temp);
+		} else {
+			//doesn't suppot more complex array type
+			return false;
+		}
+	}
+	break;
+	default:
+		// doesn't support this kind of data type yet.
+		return false;
+	break;
+	}
+	if (endPointer-inp <= 0) {
+		return false;
+	}
+	*endToken = endPointer;
+	return true;
+}
 //---------------------------------------------------------------------------------------------
-void FormatScan(StringRef buffer, SubString *format, Int32 count, StaticTypeAndData arguments[])
+/*
+ * The return value is the offset of the input string after the scan.
+ * */
+Int32 FormatScan(SubString *input, SubString *format, Int32 count, StaticTypeAndData arguments[])
 {
 	// the rules for ScanString in Labview is a subset of the sscanf.
 	// p will be treated as f;
@@ -739,36 +810,91 @@ void FormatScan(StringRef buffer, SubString *format, Int32 count, StaticTypeAndD
 	// should be very careful when try to parse a float with local decimal point
 
     IntIndex argumentIndex = 0;
+    IntIndex filledItems = 0;
     SubString f(format);            // Make a copy to use locally
+    SubString in(input);            // Make a copy to use locally
     const char decimalPointC = '.';
     char localDecimalPoint = '.';
-
+    TempStackCString tempFormat((Utf8Char*)"%", 1);
     char c = 0;
-
-    while (f.ReadRawChar(&c))
+    char inputChar = 0;
+    Boolean canScan = true;
+   // Utf8Char* inpPosition  = null;
+   // Utf8Char* formatPosition  = null;
+    while (canScan && f.ReadRawChar(&c))
     {
-        if (c == '\\' && f.ReadRawChar(&c)) {
-            switch (c)
-            {
-                case 'n':       buffer->Append('\n');      break;
-                case 'r':       buffer->Append('\r');      break;
-                case 't':       buffer->Append('\t');      break;
-                case 'b':       buffer->Append('\b');      break;
-                case 'f':       buffer->Append('\f');      break;
-                case 's':       buffer->Append(' ');       break;
-                case '\\':      buffer->Append('\\');      break;
-                default:  break;
-            }
-        } else if (c == ' ') {
-
+        if (isspace(c)) {
+        	format->AliasAssign(format->Begin()+1, format->End());
+        	tempFormat.AppendCStr(" ");
         } else if (c == '%') {
+        	 FormatOptions fOptions;
+        	 ReadPercentFormatOptions(&f, &fOptions);
+             // We should assign the local decimal point to DecimalSeparator.
+        	 fOptions.DecimalSeparator = localDecimalPoint;
+        	 Boolean parseFinished = false;
+        	 if (!fOptions.Valid) {
+        		 parseFinished = true;
+        		 canScan = false;
+             }
+    		 TempStackCString formatString;
+    		 char* endPointer;
+             while (!parseFinished){
+            	 parseFinished = true;
+            	 switch (fOptions.FormatChar) {
+            	 case 'b': case 'B':
+            	 {
+            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+            		 if (canScan) {
+            			 input->AliasAssign((Utf8Char*)endPointer, input->End());
+            		 }
+            	 }
+            	 break;
+            	 case 'd': case 'D':
+            	 {
+            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+        			 input->AliasAssign((Utf8Char*)endPointer, input->End());
 
+            	 }
+            	 break;
+            	 case 'g':
+            	 case 'e': case 'E':
+            	 case 'f': case 'F':
+            	 {
+            		 canScan = GenerateScanFormatString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+        			 input->AliasAssign((Utf8Char*)endPointer, input->End());
+            	 }
+            	 break;
+            	 case 's': {
+
+            	 }
+            	 break;
+            	 case '%': {    //%%
+            		 in.ReadRawChar(&inputChar);
+            		 if (inputChar == '%') {
+            			 input->AliasAssign(input->Begin()+1,input->End());
+       		         	} else{
+       		         		canScan = false;
+       		         	}
+            	 }
+            	 break;
+            	 default:
+            		 canScan = false;
+            	 break;
+            	 }
+             }
         } else {
-
+        	in.ReadRawChar(&inputChar);
+        	if (inputChar == c) {
+        		input->AliasAssign(input->Begin()+1,input->End());
+        	} else{
+        		canScan = false;
+        	}
         }
     }
-
-
+    // update the remaining string.
+   // input->AliasAssign(inpPosition, input->End());
+   // format->AliasAssign(formatPosition, format->End());
+    return input->Length();
 }
 
 } // namespace Vireo
