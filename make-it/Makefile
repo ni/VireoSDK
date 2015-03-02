@@ -51,13 +51,24 @@ else
             CFLAGS+= $(CCOPT) -fPIE -DVIREO_DYNAMIC_LIB
             LDFLAGS+= -L. -pie -Wl,-E
         else
-            CC=g++
-            CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
-			LDFLAGS+= -s -Wl,--gc-sections
-			# LDSTATIC+= -static
+            ifeq ($(TARGETARCH),XuBlaze)
+                # Build a library for an ARMv5 target
+                CC=mb-g++
+                CFLAGS+= $(CCOPT)  -DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections
+                LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
+            else
+                CC=g++
+                CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
+                LDFLAGS+= -s -Wl,--gc-sections
+                # LDSTATIC+= -static
+            endif
         endif
-        PROGRAM_DIR = /usr/local/bin
-        LIBS = -lrt
+        ifeq ($(TARGETARCH),XuBlaze)
+            LIBs = -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib
+        else
+             PROGRAM_DIR = /usr/local/bin
+             LIBS = -lrt
+        endif
     endif
     ifeq ($(UNAME_S),Darwin)
         # gcc settings
@@ -115,6 +126,12 @@ v32mini:
 v64:
 	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
 	make TARGETARCH=-m64 esh
+	$(STRIP)
+
+#========= uBlaze
+uBlaze:
+	# Experimental static link target
+	make TARGETARCH=XuBlaze slmicro
 	$(STRIP)
 
 #========= 32 ARMv5
