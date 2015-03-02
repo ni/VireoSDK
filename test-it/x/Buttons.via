@@ -1,0 +1,51 @@
+
+define (RoundRect dv(.VirtualInstrument (
+ c(
+    i(.Canvas2D theCanvas)   
+    i(.Double x)   
+    i(.Double y)   
+    i(.Double w)   
+    i(.Double h)   
+    i(.Double r)   
+   )
+ c(
+    e(.Double  xpr)   
+    e(.Double  ypr)   
+    e(.Double  xpwmr)   
+    e(.Double  yphmr)   
+    e(.Double  t3)   
+    e(.Double  t4)   
+ )
+ clump(1
+     BeginPath(theCanvas)
+     Add(x r xpr)  
+     Add(y r ypr)     
+     Add(x w xpwmr)   Sub(xpwmr r xpwmr)
+     Add(y h yphmr)   Sub(yphmr r yphmr)
+
+     Mul(Pi 1.5 t3)
+     Arc(theCanvas xpr ypr r Pi t3 false) 
+      
+     Mul(Pi 2.0 t4)
+     Arc(theCanvas xpwmr ypr r t3 t4  false)  
+     
+     Mul(Pi 0.5 t3)     
+     Arc(theCanvas xpwmr yphmr r 0.0 t3 false)  
+     
+     Arc(theCanvas xpr yphmr r t3 Pi false)  
+     ClosePath(theCanvas)
+   )
+)))
+
+define (DrawCanvas dv(.VirtualInstrument (
+ c(
+    i(.Canvas2D canvas)   
+   )
+ clump(1
+    ObtainCanvas2D(canvas "theCanvas")
+    RoundRect(canvas 20 50 100 30 15)
+    FillStyle(canvas 0x0000FF00)
+    Fill(canvas)
+   )
+)))
+enqueue (DrawCanvas)

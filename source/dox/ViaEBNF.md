@@ -14,7 +14,7 @@ type                    := ( named_type
                              | array 
                              | cluster | bit_cluster | equivalence | param_block 
                              | var_type | default_value_type
-                           ) { template_parameters } 
+                           ) [ template_parameters ] 
 
 named_type              := '.'  type_in_dictionary
 
@@ -66,7 +66,7 @@ template_parameters     := '<' type* '>'
 ### Grammar for data values {#DataValue_EBNF}
 
 ~~~{.ebnf}
-data_element             := token | data_collection | data_vi
+data_element             := [ element_name ':'] ( token | data_collection | data_vi )
 
 data_collection          := '(' data_element* ')'
 ~~~
@@ -75,19 +75,15 @@ data_collection          := '(' data_element* ')'
 
 ~~~{.ebnf}
 data_vi	                 := '('
-                                params_type? locals_type
+                                data_element*
                                 data_clump*
                              ')'
-
-params_type             := type
-
-locals_type             := type
 
 data_clump              := 'clump' '(' data_instruction* ')'
 
 data_instruction        := instruction_name '(' instruction_argument* ')'
 
-instruction_name        := 'Perch' | type_name
+instruction_name        := 'Perch' | 'FireCount' | type_name
 
 instruction_argument    := token | wild_card
 ~~~

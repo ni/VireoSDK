@@ -46,7 +46,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
         process.stdout.write('----------------\n');
 
         // When will all the test be done?
-        testFailures.push(testName);
+        app.testFailures.push(testName);
     }
 }
 
@@ -79,6 +79,7 @@ function RunTestCore(testName, tester)
 }
 
 function RunVJSTest(testName) {
+    vireo.reboot();
     var newResults = '';
     try {
         viaCode = fs.readFileSync(testName).toString();
@@ -90,7 +91,9 @@ function RunVJSTest(testName) {
 
     vireo.stdout = '';
     vireo.loadVia(viaCode);
-    vireo.executeSlices(1000000);
+
+    while (vireo.executeSlices(1000000)) {}
+
     return vireo.stdout;
 }
 
@@ -109,7 +112,7 @@ function RunNativeTest(testName) {
 //------------------------------------------------------------
 function SetupVJS()
 {
-    vireo = require('../Vireo_Web/objs/vireo.js');
+    vireo = require('../target-support/js/vireo.js');
     vireo.stdout = '';
     vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
 }
@@ -124,7 +127,7 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
     var argv = process.argv.slice();
     argv.shift(); // node path
     argv.shift(); // script path
-    var tester = function(){};
+    var tester = false;
 
     while(argv.length > 0) {
         var arg = argv[0];
@@ -135,14 +138,20 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
             tester = NativeTester;
         } else if (arg === '-all') {
             testFiles = fs.readdirSync('.');
-            testFiles = filelist.filter(IsViaFile);
+            testFiles = testFiles.filter(IsViaFile);
         } else {
             testFiles.push(arg);
         }
         argv.shift();
     }
 
+    if (!tester) {
+        SetupVJS();
+        tester = JSTester;
+    }
+
     if (testFiles.length > 0) {
+        testFiles.map(tester);
         testFiles.map(tester);
         console.log("Total test vectors :" + app.totalResultLines);
         if (app.testFailures.length > 0) {

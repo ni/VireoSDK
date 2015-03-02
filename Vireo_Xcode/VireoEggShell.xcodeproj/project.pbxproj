@@ -69,7 +69,6 @@
 		47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */; };
 		47EEBCC21A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
 		47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
-		47F551FA1A3A581100735FD5 /* SampleStaticLinkProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F551F91A3A581100735FD5 /* SampleStaticLinkProgram.cpp */; };
 		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
 		DA8261B817145DA9002A5EF8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */; };
 		DA8261BA171464E2002A5EF8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA8261B9171464E2002A5EF8 /* AppKit.framework */; };
@@ -275,7 +274,7 @@
 		47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi_NonReentrant.via; path = "../test-it/Pi_NonReentrant.via"; sourceTree = "<group>"; };
 		47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = StringByteArrayConversion.via; path = "../test-it/StringByteArrayConversion.via"; sourceTree = "<group>"; };
 		47F4E66119DC9BBD009DCC77 /* SineWave.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SineWave.via; path = ../Vireo_Web/SiteSource/SineWave.via; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
-		47F551F91A3A581100735FD5 /* SampleStaticLinkProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SampleStaticLinkProgram.cpp; path = ../source/micro/SampleStaticLinkProgram.cpp; sourceTree = "<group>"; };
+		47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StaticMicroMain.cpp; path = ../source/micro/StaticMicroMain.cpp; sourceTree = "<group>"; };
 		47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShabangHelloWorld.via; path = "../test-it/ShabangHelloWorld.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47FDAF5618039C48002C7851 /* Mandelbrot.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Mandelbrot.via; path = "../test-it/Mandelbrot.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		DA8261B717145DA9002A5EF8 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -627,7 +626,7 @@
 			isa = PBXGroup;
 			children = (
 				47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */,
-				47F551F91A3A581100735FD5 /* SampleStaticLinkProgram.cpp */,
+				47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */,
 			);
 			name = Micro;
 			sourceTree = "<group>";
@@ -827,7 +826,6 @@
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
-				47F551FA1A3A581100735FD5 /* SampleStaticLinkProgram.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
 				474A5EF4199D48A40013F8C5 /* LINX.cpp in Sources */,
 				4786297E19270C9900141666 /* Canvas2d.cpp in Sources */,

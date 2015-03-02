@@ -1,0 +1,28 @@
+define (HelloWorld dv(.VirtualInstrument (
+    c(
+        e (dv(a(.String *) ("Red" "Blue" "Green" "Yellow"))  v1)
+     //   al(.String v2)
+        e (.String v2)
+        e (.String v3)
+        e (dv(.Int32 2)v4)
+        e (dv(.String "Violet")v5)
+    )
+    clump (1
+        Printf("Before\n")
+        Printf("v1 <%s>\n" v1)
+        Copy(v5 v2)
+        Printf("v2 <%s>\n" v2)
+        Printf("v3 <%s>\n" v3)
+        Printf("Index\n")
+   //   ArrayIndexElt(v1 v4 v2)     // alais
+        ArrayIndexElt(v1 v4 v3)     // full copy
+        Printf("Change Array look for element change\n")
+        Printf("v1 <%s>\n" v1)
+   //   Printf("v2 <%s>\n" v2)
+        Printf("v3 <%s>\n" v3)
+        Printf("Change element look for array change\n")
+                
+        )
+)))
+
+enqueue (HelloWorld)

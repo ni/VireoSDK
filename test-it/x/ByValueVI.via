@@ -1,0 +1,47 @@
+define (TicTock  dv(.VirtualInstrument  (
+ c(
+   e(dv(.String 'Tic')  sTic)
+   ) 
+ clump(1
+    Println(sTic)
+   )
+)))
+
+define (HelloWorld dv(.VirtualInstrument (
+    c( 
+        //----------------------------------------------
+        e(dv(.UInt32 5000) delay)
+        
+        //Refer to a VI already defined
+      //  e(.Type                 v00)
+        e(.VirtualInstrument    v0)
+     //   e(.TicTock vi1)  
+             
+        //Refer to a VI defined inline
+        /*
+        e(dv(.VirtualInstrument (        
+            c(
+                e(dv(.Int32 505) variable10)
+                e(dv(.String 'a by-value hello world') variable1)
+            )
+            clump (1
+                Printf("a by-value hello world")
+            )))
+            vi2)
+        */
+    )
+    clump (1
+//    Printf("-------\n")    
+
+//      There is somewhat of a differece between fields and types.
+//      fields have types as well Hmm lets think about this. 
+       // Copy(TicTock v0)
+      //  EnqueueRunQueue(v0)  //this works fine
+        EnqueueRunQueue(TicTock)  //this works fine
+//      EnqueueRunQueue(vi1)      // crash  
+//      EnqueueRunQueue(vi2)      // crash  
+//      Printf("-------\n")  
+//      WaitMilliseconds(delay)
+    )
+) ) )
+enqueue (HelloWorld)

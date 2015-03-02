@@ -1,0 +1,132 @@
+
+define (Rectangle c(
+    e(.Int32 Top)
+    e(.Int32 Left)
+    e(.Int32 Bottom)
+    e(.Int32 Right)
+)
+
+// Positional 
+define (Box1 dv(.Rectangle (0 0 20 30)))
+
+// Named  JSON like data Initializers
+define (Box2 dv(.Rectangle (Bottom:20 Right:30 Foo:45)))
+define (Box3 dv(.Dictionary (Bottom:20 Right:30 Foo:45 Right:70)))
+
+/*
+Rectangle<(Bottom:20 Right:30 Foo:45)>
+dv(.Rectangle(..value..))
+dv(c(......)(..value..))
+*/
+
+define (Box4 Dictionary(("Bottom" 20) Right:30 Foo:45 Right:70)> )
+define (Box4 Dictionary<(Bottom:20 Right:30 Foo:45 Right:70)> )
+
+
+// Named JSON arbitrary order
+define (Box3 dv(.Rectangle (Right:30 Bottom:20 )))
+
+/*
+
+1. Symbols are Values
+
+2. Values have structure (like every thing in nature)
+
+3. Any thing that has a structure may be perceived as a value
+
+3.5 any thing that has structure can be measured.
+
+4. Pure data as in an idea has not structure, it does not exist until spoken, then it has structure. ( see point 3) 
+
+5. Some times the value encode in the structure is interesting
+
+6. Some times the the structure itself is interesting.
+
+7. Every thing currently starts from a single bit.
+
+8. Symbols have names
+
+9. There are structure with out names, thus they are anonymous. 
+If you can describe them you will find them. Then, if you choose you can give them a name
+
+10. Some Symbol examples "2" is a symbol guess what its value is. Pi is a symbol.
+Int32 is a symbol guess what its value is. 
+
+
+
+
+
+
+
+
+Capturing the structure of a value as a value is a TypeValue
+
+Values can have "closed" concrete discrete values (.e.g 5 stored in 32 bit ins 2s compliment format)
+Values can be "open" that is thre is something that is not so fixed 
+ an array of something TBD
+ 
+*/
+
+
+define (Hw2 dv(.VirtualInstrument ( Locals:c(e(.Int32 v1))
+    clump (
+       Println(variable1)
+    )
+) ) )
+
+define (Hw2 dv(.VirtualInstrument ( c(e(.Int32 v1))
+    clump (
+       Println(variable1)
+    )
+) ) )
+
+
+define (Hw3 dv(.VirtualInstrument ( Locals:.Rectangle)
+    clump (
+       Println(variable1)
+    )
+) ) )
+
+
+define (Hw3 dv(.VirtualInstrument (
+    Locals:.Rectangle)
+    Clumps:(
+        (
+            Println(variable1)
+        )
+        ( /* clump2*/)
+        ( /* clump3 */)    
+    )
+) ) )
+
+
+
+
+define (HelloWorld dv(.VirtualInstrument {
+    Locals : {
+        e(dv(.String "Hello, world. I can fly.") variable1)
+    }
+    clump (
+       Println(variable1)
+       Add(10 20 i)
+     //  Add(X:10 Y:20 Sum:i)
+       
+    )
+} ) )
+
+
+
+
+define (HelloWorld dv(.VirtualInstrument (
+    Locals: c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+    )
+    clump (
+       Println(variable1)
+       Add(10 20 i)
+     //  Add(X:10 Y:20 Sum:i)
+       
+    )
+) ) )
+
+enqueue (HelloWorld)

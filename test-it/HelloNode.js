@@ -1,4 +1,4 @@
-vireo = require('./objs/vireo.js');
+vireo = require('../target-support/js/vireo.js');
 
 var text =
     'define (HelloWorld dv(.VirtualInstrument (\n' +

@@ -1,0 +1,47 @@
+
+define (TestProgram dv(.VirtualInstrument (
+    c(
+        e(.Queue<.Double 10> qDouble)
+        e(dv(.Double 6.28) x)
+        e(.Double y)
+
+        e(.Queue<.Int32 10> qInt32)
+        e(dv(.Int32 505)  i)
+        e(.Int32  j)
+
+        e(.Boolean timedOut)
+    )
+    clump (
+        // Put an elements in each queue
+        EnqueueElement(qDouble x 10 timedOut)
+        Printf("Enqueued Value %s, timed out %s\n" x timedOut)
+        EnqueueElement(qInt32  i 10 timedOut)
+        Printf("Enqueued Value %s, timed out %s\n" i timedOut)
+
+        // Pull them out
+        DequeueElement(qDouble y 10 timedOut)
+        Printf("Dequeued Value %s, timed out %s\n" y timedOut)
+
+        DequeueElement(qInt32 j 10 timedOut)
+        Printf("Dequeued Value %s, timed out %s\n" j timedOut)
+
+        // Try again, these call will time out
+        DequeueElement(qDouble y 10 timedOut)
+        Printf("Dequeued Value %s, timed out %s\n" y timedOut)
+
+        DequeueElement(qInt32 j 10 timedOut)
+        Printf("Dequeued Value %s, timed out %s\n" j timedOut)
+    )
+) ) )
+
+/*
+
+
+c(
+    e(.DataPointer firstState)      // Scheduler state
+    e(a(.$1 *)elements)             // Array of elements
+    e(.Int32 insert)                // Insertion point
+    e(.Int32 count)                 // Current size
+)
+*/
+enqueue (TestProgram)
