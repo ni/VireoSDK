@@ -8,14 +8,14 @@
                     <meta name="description" content="">
                         <meta name="author" content="">
                             <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
-                                
+
                                 <title>Starter Template for Bootstrap</title>
-                                
+
                                 <!-- Bootstrap core CSS -->
                                 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-                                    
+
                                     </head>
-    
+
     <body>
         <div class="container-fluid" style="padding:9px" >
             <div class="row">
@@ -27,7 +27,7 @@
                                 <span class="glyphicon glyphicon-th-list"></span>
                                 <span class="caret"></span>
                             </button>
-                            
+
                             <ul class="dropdown-menu">
                                 <li><a id="ParallelSample">Parallel</a></li>
                                 <li><a id="MandelbrotSample">Mandelbrot</a></li>
@@ -50,11 +50,11 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-default" id="LVLink"><span class="glyphicon glyphicon-transfer"></span></button>
                         </div>
-                    </div>                    
+                    </div>
 <pre id="VireoSource" style="height:500px">
 define (HelloWorld dv(.VirtualInstrument (
   c(
-    e(dv(.String "Hello, World!") message)
+    e(dv(.String "Hello, Sky! I can fly.") message)
   )
   clump (1
     Println(message)
@@ -72,7 +72,7 @@ enqueue (HelloWorld)
                         <li><a href="#Canvas" data-toggle="tab">Canvas</a></li>
                         <li><a href="#Explore" data-toggle="tab">Explore</a></li>
                     </ul>
-                    
+
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div class="tab-pane active" id="StdOut">
@@ -123,7 +123,7 @@ enqueue (HelloWorld)
         <script src="jquery/jquery.min.js"></script>
         <script src="bootstrap/js/bootstrap.min.js"></script>
         <script src="ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
-        
+
         <script src="vireo.js" type="text/javascript" charset="utf-8"></script>
 
         <script>
@@ -229,7 +229,7 @@ enqueue (HelloWorld)
         function JSONP_ViaLoadCode(text, name)
         {
             // If we get a time-out, then retry for few time then give up.
-            
+
             v_link.value = "load";
 
             if ( typeof JSONP_ViaLoadCode.counter == 'undefined' ) {
@@ -237,7 +237,7 @@ enqueue (HelloWorld)
             } else {
                 JSONP_ViaLoadCode.counter++;
             }
-            
+
             v_state.value = "got new code" + JSONP_ViaLoadCode.counter;
             if (text != "") {
                 editor1.setValue(text)
@@ -273,7 +273,7 @@ enqueue (HelloWorld)
             // Then restart soon, else restart when it makes sense.
             if (esh.pause)
                 return;
-            
+
             var x = esh.executeSlices(1000);
             esh.execCount += 1;
             if (x>0) {

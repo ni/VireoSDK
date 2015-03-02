@@ -33,8 +33,10 @@ return {
         function(slices)
         { return Module.v_executeSlices(Module.v_shell, slices); },
     reboot:
-        function()
-        { return Module.v_executeSlices(Module.v_shell, slices); },
+        function() {
+            Module.v_delete(Module.v_shell);
+            Module.v_shell = Module.v_create(0);
+        },
     core: Module
 };
 

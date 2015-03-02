@@ -3,6 +3,7 @@
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
+SITESOURCEDIR=../source/dox/playground
 SITEDIR=../Documents/gh-pages/playground
 
 .PHONY: clean install help vjs dox
@@ -18,9 +19,9 @@ dox:
 install:
 	mkdir -p $(SITEDIR)
 	cp objs/vireo.js $(SITEDIR)/
-	cp SiteSource/*.html $(SITEDIR)/
-	cp SiteSource/*.via $(SITEDIR)/
-	cp SiteSource/*.json $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.html $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.via $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.json $(SITEDIR)/
 	@echo '==> website files copied to  $(SITEDIR)'
 
 help:
