@@ -75,7 +75,7 @@ EM_BC_FILES = objs/VireoMerged.bc\
     objs/EggShell.bc\
     objs/Thread.bc\
     objs/TimeTypes.bc\
-    objs/Canvas2D.bc\
+    objs/Canvas2d.bc\
     objs/FileIO.bc\
     objs/Emscripten.bc\
     objs/CEntryPoints.bc
@@ -89,7 +89,7 @@ vjs:
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/EggShell.cpp -o objs/EggShell.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/Thread.cpp -o objs/Thread.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/TimeTypes.cpp -o objs/TimeTypes.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/Canvas2D.cpp -o objs/Canvas2D.bc
+	emcc $(EMFLAGS) $(IOSOURCEDIR)/Canvas2d.cpp -o objs/Canvas2d.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/FileIO.cpp -o objs/FileIO.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/Emscripten.cpp -o objs/Emscripten.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/CEntryPoints.cpp -o objs/CEntryPoints.bc
