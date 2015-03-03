@@ -614,11 +614,12 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 }
             }
             // add support for %p
-            if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
+            if (exponent >= -24 && exponent <= 24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
 
+                Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[(exponent+24)/3] != '0' ){
-                    tempNumber[baseIndex] = siPrefixesTable[exponent+24];
+                if (siPrefixesTable[siIndex] != '0' ){
+                    tempNumber[baseIndex] = siPrefixesTable[siIndex];
                     baseIndex ++;
                 }
 
@@ -644,9 +645,10 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             }
             if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
 
+                Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[(exponent+24)/3] != '0' ){
-                    tempNumber[baseIndex] = siPrefixesTable[exponent+24];
+                if (siPrefixesTable[siIndex] != '0' ){
+                    tempNumber[baseIndex] = siPrefixesTable[siIndex];
                     baseIndex ++;
                 }
             } else {
