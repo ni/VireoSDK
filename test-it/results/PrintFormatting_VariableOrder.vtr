@@ -6,6 +6,7 @@ Test variable order-------------------------
 74 73 72 71 
 Test variable order-------------------------
 %d %4$d %d %1$d %s => 71 72 你好 73 74 
-71 73 % %isiserror 73 74on 71 ***TODO pointer type
+71 73 % isiserror 72 on 71 你好
 %d %d %5$d %4$d %3$s=>71 72 abcde 162 90 
-71 72 90 +000000000000m 162 0] 162.346
+71 72 90 m 162  abcde
+special error character [
