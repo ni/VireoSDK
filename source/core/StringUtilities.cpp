@@ -803,8 +803,10 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
     IntIndex searchStringLength = searchString->Length();
     if (searchStringLength > Length())
         return -1;
-   
-    const Utf8Char* pStart = _begin;
+    if (offset < 0) {
+    	offset = 0;
+    }
+    const Utf8Char* pStart = _begin + offset;
     const Utf8Char* pEnd = _end - searchStringLength;    
     for (; pStart < pEnd; ) {
         if (searchString->Compare(pStart, searchStringLength, ignoreCase)) {

@@ -1264,12 +1264,12 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
 void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
-	ConstCStr pBuff = buffer;
+    ConstCStr pBuff = buffer;
 
     Double value;
     ReadDoubleFromMemory(kEncoding_IEEE754Binary, aqSize, pData, &value);
 
-	Int32 len;
+    Int32 len;
     if (isnan(value)) {
 #if 0
         // TODO unit tests are getting different -NaNs in different cases.
@@ -1444,177 +1444,6 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             Int32 len = snprintf(buffer, sizeof(buffer), "***TODO pointer type");
             _string->Append(len, (Utf8Char*)buffer);
             break;
-    }
-}
-//------------------------------------------------------------
-struct FormatOptions {
-    Boolean Valid;
-    Boolean LeftJustify;
-    Boolean ShowSign;           // + or - always
-    Boolean SignPad;            // ' ' for positive '-' for negative
-    Boolean BasePrefix;         // 0, 0x, or 0X
-    Boolean ZeroPad;            // 00010
-    Boolean VariablePrecision;
-    char    FormatChar;         // my affect output 'x' or 'X'
-    
-    Int32   MinimumFieldWidth;  // If zero no padding
-    Int32   Precision;
-    SubString  FmtSubString;
-};
-//------------------------------------------------------------
-void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
-{
-    // Derived on the specification found here.
-    // http://www.cplusplus.com/reference/cstdio/printf/
-    // There will be some allowances for LabVIEW and since
-    // data is typed codes that identify type size like
-    // (hh, ll j, z, r, and L) are not needed.
-    
-    pOptions->ShowSign = false;
-    pOptions->LeftJustify = false;
-    pOptions->ZeroPad = false;
-    pOptions->BasePrefix = false;
-    pOptions->SignPad = false;
-    pOptions->VariablePrecision = false;
-    pOptions->MinimumFieldWidth = 0;
-    pOptions->Precision = 0;
-    
-    Boolean bPrecision = false;
-    Boolean bValid = true;
-    char c;
-    const Utf8Char* pBegin = format->Begin();
-    
-    while (format->ReadRawChar(&c)) {
-        
-        if (strchr("diuoxXfFeEgGaAcsp%", c)) {
-            pOptions->FormatChar = c;
-            break;
-        } if (c == '+') {
-            pOptions->ShowSign = true;
-        } else if (c == '-') {
-            pOptions->LeftJustify = true;
-        } else if (c == '0') {
-            pOptions->ZeroPad = true;
-        } else if (c == '#') {
-            pOptions->BasePrefix = true;
-        } else if (c == ' ') {
-            pOptions->SignPad = true;
-        } else if (c == '.') {
-            bPrecision = true;
-        } else if (bPrecision && c == '*') {
-            pOptions->VariablePrecision = true;
-        } else if (c >= '0' && c <= '9') {
-            // Back up and read the whole number.
-            format->AliasAssign(format->Begin()-1, format->End());
-            IntMax value = 0;
-            if (format->ReadInt(&value)) {
-                if (bPrecision) {
-                    pOptions->Precision = (Int32) value;
-                } else {
-                    pOptions->MinimumFieldWidth = (Int32) value;
-                }
-            }
-        } else {
-            bValid = false;
-            break;
-        }
-    }
-    pOptions->Valid = bValid;
-    pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
-}
-//------------------------------------------------------------
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
-{
-    IntIndex argumentIndex = 0;
-    SubString f(format);            // Make a copy to use locally
-    
-    buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
-    
-    char c = 0;
-    while (f.ReadRawChar(&c))
-    {
-        if (c == '\\' && f.ReadRawChar(&c)) {
-            switch (c)
-            {
-                case 'n':       buffer->Append('\n');      break;
-                case 'r':       buffer->Append('\r');      break;
-                case 't':       buffer->Append('\t');      break;
-                case 'b':       buffer->Append('\b');      break;
-                case 'f':       buffer->Append('\f');      break;
-                case 's':       buffer->Append(' ');       break;
-                case '\\':      buffer->Append('\\');      break;
-                default:  break;
-            }
-        } else if (c == '%') {
-            FormatOptions fOptions;
-            ReadPercentFormatOptions(&f, &fOptions);
-            
-            switch (fOptions.FormatChar)
-            {
-                case 'g': case 'G':
-                case 'f': case 'F':
-                case 'e': case 'E':
-                case 'a': case 'A':
-                {
-                    // TODO don't assume data type. This just becomes the default format for real numbers, then use formatter
-                    SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                    TempStackCString tempFormat(&percentFormat);
-                    char asciiReplacementString[100];
-                    //Get the numeric string that will replace the format string
-                    Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
-                    Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempDouble);
-                    buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
-                    argumentIndex++;
-                }
-                break;
-                case 'd':
-                case 'o':
-                case 'x': case 'X':
-                {
-                    // To cover the max range formats like %d ned to beturned into %lld                    
-                    SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                    TempStackCString tempFormat((Utf8Char*)"%ll", 3);
-                    tempFormat.Append(&fOptions.FmtSubString);
-                    TempStackCString formattedNumber;
-                    TypeRef argType = arguments[argumentIndex]._paramType;
-                    IntMax intValue;
-                    ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                    Int32 length = snprintf(formattedNumber.BeginCStr(), formattedNumber.Capacity(), tempFormat.BeginCStr(), intValue);
-                    buffer->Append(length, (Utf8Char*)formattedNumber.Begin());
-                    argumentIndex++;
-                }
-                break;
-                case '%':      //%%
-                buffer->Append('%');
-                break;
-                case 's':      //%s
-                {
-                    STACK_VAR(String, tempString);
-                    TDViaFormatter formatter(tempString.Value, false);
-                    formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
-                    
-                    Int32 extraPadding = fOptions.MinimumFieldWidth - tempString.Value->Length();
-                    
-                    if (fOptions.LeftJustify)
-                    buffer->Append(tempString.Value);
-                    if (extraPadding > 0) {
-                        for (Int32 i = extraPadding; i >0; i--) {
-                            buffer->Append(' ');
-                        }
-                    }
-                    if (!fOptions.LeftJustify)
-                    buffer->Append(tempString.Value);
-                    
-                    argumentIndex++;
-                }
-                break;
-                default:
-                // This is just part of the format specifier, let it become part of the percent format
-                break;
-            }
-        } else {
-            buffer->Append(c);
-        }
     }
 }
 

@@ -288,6 +288,9 @@ public:
     {
         return FixedCArray::Append(string->Begin(), (size_t)string->Length());
     }
+    // Append a Null Terminated String
+    Boolean AppendCStr(ConstCStr cstr) { return FixedCArray::Append((Utf8Char*)cstr, (IntIndex)strlen(cstr)); }
+
     char* BeginCStr()
     {
         return (char*) _buffer;
