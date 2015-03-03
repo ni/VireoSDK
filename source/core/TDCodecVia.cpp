@@ -1176,6 +1176,12 @@ private:
         _pFormatter->_string->AppendCStr(")");
     }
 };
+
+//------------------------------------------------------------
+// If formatting options specify to use the locale's default seperator
+// then this variable should be used.
+char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
+
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {

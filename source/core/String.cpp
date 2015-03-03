@@ -30,50 +30,6 @@ SDG
 using namespace Vireo;
 
 //------------------------------------------------------------
-struct StringNFormatStruct : public VarArgInstruction
-{
-	_ParamDef(StringRef, StringOut);
-    _ParamDef(Int32, Max);
-    _ParamDef(StringRef, StringFormat);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
-
-VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
-{
-    //Int32 count = (_ParamVarArgCount() -3)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    StringRef buffer = _Param(StringOut);
-    Format(&format, _Param(Max), arguments, buffer);
-    return _NextInstruction();
-}
-
-//------------------------------------------------------------
-struct StringScanStruct : public VarArgInstruction
-{
-	_ParamDef(StringRef, StringInput);
-	_ParamDef(StringRef, StringRemaining);
-    _ParamDef(StringRef, StringFormat);
-	_ParamDef(Int32, Filled);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
-
-VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
-{
-    //Int32 count = (_ParamVarArgCount() -4)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    SubString input = _Param(StringInput)->MakeSubStringAlias();
-    Int32 filled = FormatScan(&input, &format, arguments);
-    _Param(Filled) = filled;
-    _Param(StringRemaining)->Resize1D(input.Length());
-    TypeRef elementType = _Param(StringRemaining)->ElementType();
-    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
-    return _NextInstruction();
-}
-//------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
 {
     _ParamDef(StringRef, StringIn);
@@ -535,8 +491,6 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRe
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
-    DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount)  i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")

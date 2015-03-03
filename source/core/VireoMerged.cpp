@@ -32,7 +32,6 @@ SDG
 //#include "TDCodecVib.cpp"
 #include "TDCodecLVFlat.cpp"
 #include "StringUtilities.cpp"
-#include "NumericStringUtilities.cpp"
 #include "EventLog.cpp"
 #include "Assert.cpp"
 
@@ -48,6 +47,7 @@ SDG
 #include "Array.cpp"
 #include "Math.cpp"
 #include "String.cpp"
+#include "NumericString.cpp"
 #include "GenericFunctions.cpp"
 #include "Synchronization.cpp"
 

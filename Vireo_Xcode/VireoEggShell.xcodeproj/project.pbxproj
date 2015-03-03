@@ -15,6 +15,8 @@
 		470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470E20771A36A5DB006FEACC /* TypeTemplates.cpp */; };
 		470F626C1886F53F003146BF /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		4727170F1828B8F300238283 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4737987517D0EBBB00C3BC2A /* main.cpp */; };
+		472A078A1AA6204A008109FA /* NumericString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A07891AA6204A008109FA /* NumericString.cpp */; };
+		472A078B1AA6204A008109FA /* NumericString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A07891AA6204A008109FA /* NumericString.cpp */; };
 		472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */; };
 		472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE317D0E1E800201196 /* TDCodecVia.cpp */; };
 		472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
@@ -126,6 +128,7 @@
 		47271717183A8CA800238283 /* ArrayDemo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayDemo.via; path = "../test-it/ArrayDemo.via"; sourceTree = "<group>"; };
 		47271718183AC7AC00238283 /* SubVIParallelCalls.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SubVIParallelCalls.via; path = "../test-it/SubVIParallelCalls.via"; sourceTree = "<group>"; };
 		47271719183BC64B00238283 /* TypeValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = TypeValues.via; path = "../test-it/TypeValues.via"; sourceTree = "<group>"; };
+		472A07891AA6204A008109FA /* NumericString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NumericString.cpp; path = ../source/core/NumericString.cpp; sourceTree = "<group>"; };
 		472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericFunctions.cpp; path = ../source/core/GenericFunctions.cpp; sourceTree = "<group>"; };
 		472B7BE317D0E1E800201196 /* TDCodecVia.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TDCodecVia.cpp; path = ../source/core/TDCodecVia.cpp; sourceTree = "<group>"; };
 		472B7BE717D0E1FC00201196 /* FileIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileIO.cpp; path = ../source/io/FileIO.cpp; sourceTree = "<group>"; };
@@ -557,6 +560,7 @@
 				47D84DE117C2A271009053DB /* Queue.cpp */,
 				47D84DE217C2A271009053DB /* String.cpp */,
 				47D84DE317C2A271009053DB /* StringUtilities.cpp */,
+				472A07891AA6204A008109FA /* NumericString.cpp */,
 				47D84DE417C2A271009053DB /* TimeTypes.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
 				4744A9DA1818486000E1F7D9 /* VireoMerged.cpp */,
@@ -791,6 +795,7 @@
 				474A5F75199E72130013F8C5 /* TDCodecVia.cpp in Sources */,
 				474A5F79199E72130013F8C5 /* EggShell.cpp in Sources */,
 				474A5F7E199E72130013F8C5 /* Thread.cpp in Sources */,
+				472A078B1AA6204A008109FA /* NumericString.cpp in Sources */,
 				474A5F77199E72130013F8C5 /* TypeAndDataManager.cpp in Sources */,
 				474A5F7B199E72130013F8C5 /* ExecutionContext.cpp in Sources */,
 				47E180591A083769007A8DB4 /* Synchronization.cpp in Sources */,
@@ -825,6 +830,7 @@
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
+				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
 				474A5EF4199D48A40013F8C5 /* LINX.cpp in Sources */,

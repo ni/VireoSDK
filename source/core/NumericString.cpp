@@ -110,14 +110,14 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             format->AliasAssign(format->Begin(), format->End());
             IntMax value = 0;
             if (format->ReadInt(&value)) {
-                pOptions->Precision = value;
+                pOptions->Precision = (Int32)value;
             }
         } else if (c == '_') {
             bPrecision = true;
             format->AliasAssign(format->Begin(), format->End());
             IntMax value = 0;
             if (format->ReadInt(&value)) {
-                pOptions->Significant = value;
+                pOptions->Significant = (Int32)value;
             }
         } else if (bPrecision && c == '*') {
             // Labview doesn't variable precision, it will mess up with the argument index.
@@ -132,7 +132,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                 format->AliasAssign(format->Begin()-1, format->End());
                 IntMax value = 0;
                 if (format->ReadInt(&value)) {
-                    pOptions->ArgumentOrder = value;
+                    pOptions->ArgumentOrder = (Int32)value;
                 }
             } else if (c == '0') {
                 pOptions->ZeroPad = true;
@@ -168,8 +168,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex lastArgumentIndex = -1;
     IntIndex explicitPositionArgument = 0;
     Int32 totalArgument = 0;;
-    const char decimalPointC = '.';
-    char localDecimalPoint = '.';
+    char activeDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
@@ -193,7 +192,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
             // We should assign the local decimal point to DecimalSeparator.
-            fOptions.DecimalSeparator = localDecimalPoint;
+            fOptions.DecimalSeparator = activeDecimalPoint;
             totalArgument++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
@@ -236,7 +235,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                // 6 is the default value;
                                precision = 6;
                         }
-                        if (!tempDouble == 0) {
+                        if (tempDouble != 0.0) {
                             Double absDouble = tempDouble;
                             if (tempDouble < 0) {
                             absDouble = 0.0 - tempDouble;
@@ -267,7 +266,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 truncateSignificant = 0;
                         // calculate the exponent of the number, it also tell us whether should truncate the integer part.
                         if (fOptions.Significant >= 0) {
-                            if (!tempDouble == 0) {
+                            if (tempDouble != 0) {
                                 Double absDouble = tempDouble;
                                 if (tempDouble < 0) {
                                     absDouble = 0.0 - tempDouble;
@@ -304,7 +303,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 precision = fOptions.Precision;
                         if (precision>0 && fOptions.EngineerNotation) {
                             Int32 exponent = 0;
-                            if (!tempDouble == 0) {
+                            if (tempDouble != 0) {
                                 Double absDouble = tempDouble;
                                 if (tempDouble < 0) {
                                     absDouble = 0.0 - tempDouble;
@@ -928,7 +927,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     if (endPointer == null || (endPointer == inpBegin)) {
         return false;
     }
-    *endToken = (endPointer-inpBegin);
+    *endToken = (IntIndex)(endPointer-inpBegin);
     return true;
 }
 //---------------------------------------------------------------------------------------------
@@ -944,8 +943,7 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
 
     IntIndex argumentIndex = 0;
     IntIndex filledItems = 0;
-    const char decimalPointC = '.';
-    char localDecimalPoint = '.';
+    char activeDecimalPoint = '.';
     TempStackCString tempFormat((Utf8Char*)"%", 1);
     char c = 0;
     char inputChar = 0;
@@ -957,78 +955,78 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
             format->AliasAssign(format->Begin()+1, format->End());
             tempFormat.AppendCStr(" ");
         } else if (c == '%') {
-             FormatOptions fOptions;
-             ReadPercentFormatOptions(&f, &fOptions);
+            FormatOptions fOptions;
+            ReadPercentFormatOptions(&f, &fOptions);
              // We should assign the local decimal point to DecimalSeparator.
-             fOptions.DecimalSeparator = localDecimalPoint;
-             Boolean parseFinished = false;
-             if (!fOptions.Valid || input->Length() == 0) {
-                 parseFinished = true;
-                 canScan = false;
-             }
-             TempStackCString formatString;
-             IntIndex endPointer;
-             while (!parseFinished){
-                 parseFinished = true;
-                 switch (fOptions.FormatChar) {
-                 case 'b': case 'B':
-                 {
-                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-                     if (canScan) {
-                         filledItems++;
-                         input->AliasAssign(input->Begin()+endPointer, input->End());
-                     }
-                     argumentIndex++;
-                 }
-                 break;
-                 case 'd':
-                 case 'o': case 'u':
-                 case 'x': case 'X':
-                 {
-                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-                     if  (canScan) {
-                         filledItems++;
-                         input->AliasAssign(input->Begin()+endPointer, input->End());
-                     }
-                     argumentIndex++;
-                 }
-                 break;
-                 case 'g': case 'p':
-                 case 'e': case 'E':
-                 case 'f': case 'F':
-                 {
-                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-                     if (canScan) {
-                         filledItems++;
-                         input->AliasAssign(input->Begin()+endPointer, input->End());
-                     }
-                     argumentIndex++;
-                 }
-                 break;
-                 case 's': case '[':
-                 {
-                     canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
-                     if (canScan) {
-                         filledItems++;
-                         input->AliasAssign(input->Begin()+endPointer, input->End());
-                     }
-                     argumentIndex++;
-                 }
-                 break;
-                 case '%': {    //%%
-                     input->ReadRawChar(&inputChar);
-                     if (inputChar == '%') {
-                         input->AliasAssign(input->Begin()+1,input->End());
-                         format->AliasAssign(format->Begin()+1, format->End());
-                            } else{
-                                canScan = false;
-                            }
-                 }
-                 break;
-                 default:
-                     canScan = false;
-                 break;
-                 }
+            fOptions.DecimalSeparator = activeDecimalPoint;
+            Boolean parseFinished = false;
+            if (!fOptions.Valid || input->Length() == 0) {
+                parseFinished = true;
+                canScan = false;
+            }
+            TempStackCString formatString;
+            IntIndex endPointer;
+            while (!parseFinished){
+                parseFinished = true;
+                switch (fOptions.FormatChar) {
+                case 'b': case 'B':
+                {
+                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    if (canScan) {
+                        filledItems++;
+                        input->AliasAssign(input->Begin()+endPointer, input->End());
+                    }
+                    argumentIndex++;
+                }
+                break;
+                case 'd':
+                case 'o': case 'u':
+                case 'x': case 'X':
+                {
+                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    if  (canScan) {
+                        filledItems++;
+                        input->AliasAssign(input->Begin()+endPointer, input->End());
+                    }
+                    argumentIndex++;
+                }
+                break;
+                case 'g': case 'p':
+                case 'e': case 'E':
+                case 'f': case 'F':
+                {
+                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    if (canScan) {
+                        filledItems++;
+                        input->AliasAssign(input->Begin()+endPointer, input->End());
+                    }
+                    argumentIndex++;
+                }
+                break;
+                case 's': case '[':
+                {
+                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    if (canScan) {
+                        filledItems++;
+                        input->AliasAssign(input->Begin()+endPointer, input->End());
+                    }
+                    argumentIndex++;
+                }
+                break;
+                case '%': {    //%%
+                    input->ReadRawChar(&inputChar);
+                    if (inputChar == '%') {
+                        input->AliasAssign(input->Begin()+1,input->End());
+                        format->AliasAssign(format->Begin()+1, format->End());
+                        } else{
+                            canScan = false;
+                        }
+                }
+                break;
+                default:
+                    canScan = false;
+                break;
+                }
              }
         } else {
             input->ReadRawChar(&inputChar);
@@ -1043,5 +1041,55 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
     // update the remaining string.
     return filledItems;
 }
+
+//------------------------------------------------------------
+struct StringNFormatStruct : public VarArgInstruction
+{
+    _ParamDef(StringRef, StringOut);
+    _ParamDef(Int32, Max);
+    _ParamDef(StringRef, StringFormat);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
+{
+    //Int32 count = (_ParamVarArgCount() -3)/2;
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    StringRef buffer = _Param(StringOut);
+    Format(&format, _Param(Max), arguments, buffer);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+struct StringScanStruct : public VarArgInstruction
+{
+    _ParamDef(StringRef, StringInput);
+    _ParamDef(StringRef, StringRemaining);
+    _ParamDef(StringRef, StringFormat);
+    _ParamDef(Int32, Filled);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
+{
+    //Int32 count = (_ParamVarArgCount() -4)/2;
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    SubString input = _Param(StringInput)->MakeSubStringAlias();
+    Int32 filled = FormatScan(&input, &format, arguments);
+    _Param(Filled) = filled;
+    _Param(StringRemaining)->Resize1D(input.Length());
+    TypeRef elementType = _Param(StringRemaining)->ElementType();
+    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
+    return _NextInstruction();
+}
+
+DEFINE_VIREO_BEGIN(LabVIEW_String)
+    DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount)  i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
+DEFINE_VIREO_END()
+
 
 } // namespace Vireo
