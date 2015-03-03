@@ -15,6 +15,10 @@ SDG
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 
+#if kVireoOS_emscripten
+#include "Emscripten.h"
+#endif
+
 namespace Vireo
 {
 
@@ -136,6 +140,17 @@ VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
 VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 {
     _ParamPointer(0)->Trigger();
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+// Trigger - Decrement target fire count (may cause target to be activated)
+VIREO_FUNCTION_SIGNATURE0(FPSync)
+{
+#if kVireoOS_emscripten
+    EM_ASM(
+           Module.fpSync();
+           );
+#endif
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -446,6 +461,7 @@ void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr mess
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
+    DEFINE_VIREO_FUNCTION(FPSync, "p()")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(.BranchTarget) i(.Int32) o(.Int32))")

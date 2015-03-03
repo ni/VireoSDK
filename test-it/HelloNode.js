@@ -7,10 +7,12 @@ var text =
         ')\n' +
         'clump (' +
             'Println(variable1)' +
+            'FPSync()' +
         ')' +
     ') ) )\n'  +
     'enqueue (HelloWorld)\n';
 
+vireo.core.fpSync = function() {console.log("***fpSync() Called***"); };
 vireo.loadVia(text);
 vireo.executeSlices(1);
 
