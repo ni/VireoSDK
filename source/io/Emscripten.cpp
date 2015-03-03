@@ -12,7 +12,7 @@
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
-#include "Emscripten.h"
+#include "emscripten.h"
 
 using namespace Vireo;
 

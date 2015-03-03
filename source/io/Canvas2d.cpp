@@ -15,7 +15,7 @@
 #if defined (VIREO_TYPE_Canvas2D)
 
 #if kVireoOS_emscripten
-    #include "Emscripten.h"
+    #include "emscripten.h"
 #endif
 
 using namespace Vireo;
