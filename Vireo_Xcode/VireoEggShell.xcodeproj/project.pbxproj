@@ -9,14 +9,16 @@
 /* Begin PBXBuildFile section */
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
-		4700BD781949017000794482 /* MicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4700BD771949017000794482 /* MicroMain.cpp */; };
-		4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* TimeTypes.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
 		470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470E20771A36A5DB006FEACC /* TypeTemplates.cpp */; };
 		470F626C1886F53F003146BF /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		4727170F1828B8F300238283 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4737987517D0EBBB00C3BC2A /* main.cpp */; };
 		472A078A1AA6204A008109FA /* NumericString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A07891AA6204A008109FA /* NumericString.cpp */; };
 		472A078B1AA6204A008109FA /* NumericString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A07891AA6204A008109FA /* NumericString.cpp */; };
+		472A078D1AA67EAE008109FA /* JavaScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078C1AA67EAE008109FA /* JavaScript.cpp */; };
+		472A078E1AA67EAE008109FA /* JavaScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078C1AA67EAE008109FA /* JavaScript.cpp */; };
+		472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078F1AA67EF8008109FA /* DebugGPIO.cpp */; };
+		472A07911AA67EF8008109FA /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078F1AA67EF8008109FA /* DebugGPIO.cpp */; };
 		472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */; };
 		472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE317D0E1E800201196 /* TDCodecVia.cpp */; };
 		472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
@@ -47,6 +49,8 @@
 		474A5F85199E72260013F8C5 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
 		474A5F87199E72EC0013F8C5 /* Vireo.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 474A5F4D199E71810013F8C5 /* Vireo.framework */; };
 		4750F17019C378D600FA80B8 /* library_canvas2d.js in Sources */ = {isa = PBXBuildFile; fileRef = 4750F16F19C378D600FA80B8 /* library_canvas2d.js */; };
+		476646EF1AA7B3F800D4F305 /* StaticMicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */; };
+		476646F01AA7B5D300D4F305 /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078F1AA67EF8008109FA /* DebugGPIO.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
 		479AFEBC170DD22C002C0FF0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479AFEBB170DD22C002C0FF0 /* Accelerate.framework */; };
 		47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */; };
@@ -65,10 +69,8 @@
 		47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
 		47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E180571A083769007A8DB4 /* Synchronization.cpp */; };
 		47E180591A083769007A8DB4 /* Synchronization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E180571A083769007A8DB4 /* Synchronization.cpp */; };
-		47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
 		47E220B11950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
 		47E220B21950C1F700988185 /* Assert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B01950C1F700988185 /* Assert.cpp */; };
-		47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47E220B41950E92E00988185 /* MicroDefinition_Sample.cpp */; };
 		47EEBCC21A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
 		47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */; };
 		47F60B81194A553A00DB1399 /* VireoEggShell in Copy Files */ = {isa = PBXBuildFile; fileRef = 479AFE75170DCD49002C0FF0 /* VireoEggShell */; };
@@ -129,13 +131,14 @@
 		47271718183AC7AC00238283 /* SubVIParallelCalls.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SubVIParallelCalls.via; path = "../test-it/SubVIParallelCalls.via"; sourceTree = "<group>"; };
 		47271719183BC64B00238283 /* TypeValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = TypeValues.via; path = "../test-it/TypeValues.via"; sourceTree = "<group>"; };
 		472A07891AA6204A008109FA /* NumericString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NumericString.cpp; path = ../source/core/NumericString.cpp; sourceTree = "<group>"; };
+		472A078C1AA67EAE008109FA /* JavaScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScript.cpp; path = ../source/io/JavaScript.cpp; sourceTree = "<group>"; };
+		472A078F1AA67EF8008109FA /* DebugGPIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugGPIO.cpp; path = ../source/io/DebugGPIO.cpp; sourceTree = "<group>"; };
 		472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericFunctions.cpp; path = ../source/core/GenericFunctions.cpp; sourceTree = "<group>"; };
 		472B7BE317D0E1E800201196 /* TDCodecVia.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TDCodecVia.cpp; path = ../source/core/TDCodecVia.cpp; sourceTree = "<group>"; };
 		472B7BE717D0E1FC00201196 /* FileIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileIO.cpp; path = ../source/io/FileIO.cpp; sourceTree = "<group>"; };
 		472B7BE917D0E43D00201196 /* TDCodecVia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TDCodecVia.h; path = ../source/include/TDCodecVia.h; sourceTree = "<group>"; };
 		472B7BEA17D0E43D00201196 /* TDCodecVib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TDCodecVib.h; path = ../source/include/TDCodecVib.h; sourceTree = "<group>"; };
 		472D7ACC18C683A10023C688 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = "<group>"; };
-		472FF18919FACD5300401059 /* Parallel.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Parallel.via; path = ../Vireo_Web/SiteSource/Parallel.via; sourceTree = "<group>"; };
 		4730015E19AFCAF400B3F4CA /* Internals */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Internals; path = ../source/dox/Internals; sourceTree = "<group>"; };
 		4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DoxygenLayout.xml; path = ../source/dox/DoxygenLayout.xml; sourceTree = "<group>"; };
 		4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleCountMain.cpp; path = ../source/CommandLine/SimpleCountMain.cpp; sourceTree = "<group>"; };
@@ -164,7 +167,6 @@
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* TimeTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeTypes.h; path = ../source/include/TimeTypes.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
-		4786297C19254DAD00141666 /* Editor.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Editor.html; path = ../Vireo_Web/SiteSource/Editor.html; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.html; };
 		4786297D1927064300141666 /* Canvas2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas2d.cpp; path = ../source/io/Canvas2d.cpp; sourceTree = "<group>"; };
 		47937177191049BE00DF942B /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Doxyfile; path = ../source/Doxyfile; sourceTree = "<group>"; };
 		47937178191186BF00DF942B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -223,9 +225,6 @@
 		47CAD29517FDFD4200DDDB46 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "../make-it/Makefile"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.sh; };
 		47CAD29617FDFD4200DDDB46 /* make.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = make.bat; path = "../make-it/make.bat"; sourceTree = "<group>"; };
 		47CAD29717FDFD4200DDDB46 /* HelloWorld.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloWorld.via; path = "../make-it/HelloWorld.via"; sourceTree = "<group>"; };
-		47CF0E7F192E8E4800BE5C85 /* Mandelbrot.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Mandelbrot.via; path = ../Vireo_Web/SiteSource/Mandelbrot.via; sourceTree = "<group>"; };
-		47CF0E80192E8E4800BE5C85 /* Pi.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi.via; path = ../Vireo_Web/SiteSource/Pi.via; sourceTree = "<group>"; };
-		47CF0E81192E8E4800BE5C85 /* TicTock.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = TicTock.via; path = ../Vireo_Web/SiteSource/TicTock.via; sourceTree = "<group>"; };
 		47D1884118A93EC9008AB15D /* CopyingVIs.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CopyingVIs.via; path = "../test-it/CopyingVIs.via"; sourceTree = "<group>"; };
 		47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CalVIMultipleTimesObserveOldValues.via; path = "../test-it/CalVIMultipleTimesObserveOldValues.via"; sourceTree = "<group>"; };
 		47D1AE5518122F5F003B850F /* Generics.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Generics.via; path = "../test-it/Generics.via"; sourceTree = "<group>"; };
@@ -276,7 +275,6 @@
 		47F1285518BFACFB000DA4E1 /* Pi.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi.via; path = "../test-it/Pi.via"; sourceTree = "<group>"; };
 		47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Pi_NonReentrant.via; path = "../test-it/Pi_NonReentrant.via"; sourceTree = "<group>"; };
 		47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = StringByteArrayConversion.via; path = "../test-it/StringByteArrayConversion.via"; sourceTree = "<group>"; };
-		47F4E66119DC9BBD009DCC77 /* SineWave.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SineWave.via; path = ../Vireo_Web/SiteSource/SineWave.via; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.markdown; };
 		47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StaticMicroMain.cpp; path = ../source/micro/StaticMicroMain.cpp; sourceTree = "<group>"; };
 		47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ShabangHelloWorld.via; path = "../test-it/ShabangHelloWorld.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47FDAF5618039C48002C7851 /* Mandelbrot.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Mandelbrot.via; path = "../test-it/Mandelbrot.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
@@ -468,6 +466,8 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
+				472A078C1AA67EAE008109FA /* JavaScript.cpp */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
 				4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */,
 				474A5EF2199D48A40013F8C5 /* LINX.cpp */,
@@ -480,23 +480,9 @@
 		47862975191D2EA500141666 /* Vireo_Web */ = {
 			isa = PBXGroup;
 			children = (
-				4786297B19254D7E00141666 /* SiteSource */,
 				47862976191D2EDE00141666 /* Makefile */,
 			);
 			name = Vireo_Web;
-			sourceTree = "<group>";
-		};
-		4786297B19254D7E00141666 /* SiteSource */ = {
-			isa = PBXGroup;
-			children = (
-				472FF18919FACD5300401059 /* Parallel.via */,
-				47F4E66119DC9BBD009DCC77 /* SineWave.via */,
-				47CF0E7F192E8E4800BE5C85 /* Mandelbrot.via */,
-				47CF0E80192E8E4800BE5C85 /* Pi.via */,
-				47CF0E81192E8E4800BE5C85 /* TicTock.via */,
-				4786297C19254DAD00141666 /* Editor.html */,
-			);
-			name = SiteSource;
 			sourceTree = "<group>";
 		};
 		479AFE6C170DCD49002C0FF0 = {
@@ -763,14 +749,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4700BD781949017000794482 /* MicroMain.cpp in Sources */,
 				4700BD751948FC0400794482 /* Math.cpp in Sources */,
-				4700BD79194A08C700794482 /* TimeTypes.cpp in Sources */,
 				4700BD7A194A08E500794482 /* Queue.cpp in Sources */,
+				476646EF1AA7B3F800D4F305 /* StaticMicroMain.cpp in Sources */,
+				476646F01AA7B5D300D4F305 /* DebugGPIO.cpp in Sources */,
 				47E220B21950C1F700988185 /* Assert.cpp in Sources */,
 				4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */,
-				47E220AF1950B02500988185 /* VirtualInstrument.cpp in Sources */,
-				47E220B51950E92E00988185 /* MicroDefinition_Sample.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -778,6 +762,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				472A07911AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
 				474A5F58199E71810013F8C5 /* Vireo.m in Sources */,
 				474A5F74199E71FC0013F8C5 /* TDCodecLVFlat.cpp in Sources */,
 				47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */,
@@ -790,6 +775,7 @@
 				474A5F72199E71F00013F8C5 /* Array.cpp in Sources */,
 				474A5F7A199E72130013F8C5 /* EventLog.cpp in Sources */,
 				474A5F81199E72130013F8C5 /* StringUtilities.cpp in Sources */,
+				472A078E1AA67EAE008109FA /* JavaScript.cpp in Sources */,
 				474A5F83199E72130013F8C5 /* VirtualInstrument.cpp in Sources */,
 				474A5F82199E72130013F8C5 /* TimeTypes.cpp in Sources */,
 				474A5F75199E72130013F8C5 /* TDCodecVia.cpp in Sources */,
@@ -831,7 +817,9 @@
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
+				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
+				472A078D1AA67EAE008109FA /* JavaScript.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
 				474A5EF4199D48A40013F8C5 /* LINX.cpp in Sources */,
 				4786297E19270C9900141666 /* Canvas2d.cpp in Sources */,
@@ -862,10 +850,10 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"VIREO_MICRO=1",
-					"DEBUG=1",
+					"VIREO_STATIC_LINK=1",
 					"$(inherited)",
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -886,9 +874,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"VIREO_MICRO=1",
+					"VIREO_STATIC_LINK-1",
 					"VIREO_LEAN=1",
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
