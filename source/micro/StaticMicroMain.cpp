@@ -45,6 +45,7 @@ VIREO_FUNCTION_C_PROTO(Branch);
 
 InstructionCore oneInstruction;
 
+// Struct for VI's dataspace
 struct Vi1_DSType{
     Int32 a;
     Int32 b;
@@ -52,19 +53,26 @@ struct Vi1_DSType{
     Boolean bit;
 };
 
-Vi1_DSType  ds1 = {21, 2, 1, true};
+// Initializer for VI's dataspace
+Vi1_DSType  ds1 = {
+    21,     // a
+    2,      // b
+    1,      // c
+    true    // bit
+};
 
+//Instructions for VI
 #undef _DS
 #define _DS ds1
 void* InstrucitonBlock[] =
 {
-    #define Perch_Start (8)
-    I3(AddInt32, a, b, c)
-    I3(MulInt32, a, b, c)
-    #define Perch_B (8)             // Raw perch offsets are voi* index of the InstructionBlock
-    I1(DebugLED, bit)
-    I2(NotBoolean, bit, bit)
-    IBranch(Perch_B)
+/* Clump 0 ----------------------*/
+/* 0000 */    I3(AddInt32, a, b, c)
+/* 0004 */    I3(MulInt32, a, b, c)
+/* 0008 */    I1(DebugLED, bit)
+/* 000A */    I2(NotBoolean, bit, bit)
+/* 000D */    IBranch(0x0008)
+/* 000F */  //I0(Done) Not quite ready.
 };
 
 // Break out flag.
