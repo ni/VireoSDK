@@ -238,8 +238,6 @@ SDG
     #undef VIREO_FILESYSTEM
     #undef VIREO_FILESYSTEM_DIRLIST
 
-#else
-    #error : need to define this platfrom
 #endif
 
 #ifndef VIVM_ENABLE_TRACE
