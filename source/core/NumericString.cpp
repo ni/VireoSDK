@@ -333,6 +333,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'p': case 'P':
                     {
                         parseFinished = false;
+                        fOptions.OriginalFormatChar = 'p';
                         fOptions.FormatChar = 'e';
                         fOptions.EngineerNotation = true;
                     }
@@ -614,7 +615,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 }
             }
             // add support for %p
-            if (exponent >= -24 && exponent <= 24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
+            if (exponent >= -24 && exponent <= 24 && (formatOptions->OriginalFormatChar == 'p')) {
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
@@ -643,7 +644,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                     baseIndex --;
                 }
             }
-            if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p' || formatOptions->OriginalFormatChar == 'P')) {
+            if (exponent>=-24 && exponent<=24 && (formatOptions->OriginalFormatChar == 'p')) {
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
@@ -935,6 +936,8 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
 //---------------------------------------------------------------------------------------------
 /*
  * The return value is the offset of the input string after the scan.
+ * Several Special Scan rules:
+ * 1. scanned value only stored in the short int
  * */
 Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData arguments[])
 {
@@ -951,18 +954,26 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
     char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
-    while (canScan && f.ReadRawChar(&c))
+    while (canScan && input->Length()>0 && f.ReadRawChar(&c))
     {
         if (isspace(c)) {
-            format->AliasAssign(format->Begin()+1, format->End());
-            tempFormat.AppendCStr(" ");
+            // eat all spaces
+            const Utf8Char* begin = input->Begin();
+            while (begin < input->End()) {
+                if (isspace(*((char*)begin))) {
+                    begin++;
+                } else {
+                    break;
+                }
+            }
+            input->AliasAssign((Utf8Char*)begin, input->End());
         } else if (c == '%') {
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
              // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
             Boolean parseFinished = false;
-            if (!fOptions.Valid || input->Length() == 0) {
+            if (!fOptions.Valid || input->Length() <= 0) {
                 parseFinished = true;
                 canScan = false;
             }
@@ -1031,11 +1042,12 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
                 }
              }
         } else {
-            input->ReadRawChar(&inputChar);
-            if (inputChar == c) {
-                input->AliasAssign(input->Begin()+1,input->End());
-                format->AliasAssign(format->Begin()+1, format->End());
-            } else{
+            if (input->ReadRawChar(&inputChar)) {
+                if (inputChar != c) {
+                    canScan = false;
+                    input->AliasAssign(input->Begin()-1, input->End());
+                }
+            } else {
                 canScan = false;
             }
         }
