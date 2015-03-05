@@ -190,13 +190,13 @@ const UInt8 AsciiCharTraits[] =
 class SubString : public SubVector<Utf8Char>
 {
 public:
-    static Boolean IsAscii(char c)      { return !(c & 0x10); }
-    static Boolean IsEolChar(char c)    { return (c == '\r') || (c == '\n'); }
-    static Boolean IsSpaceChar(char c)  { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space); }
-    static Boolean IsNumberChar(char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Number); }
-    static Boolean IsLetterChar(char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Letter); }
-    static Boolean IsIdentifierChar(char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
-    static Boolean IsSymbolChar(char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
+    static Boolean IsAscii(Utf8Char c)      { return !(c & 0x10); }
+    static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
+    static Boolean IsSpaceChar(Utf8Char c)  { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space); }
+    static Boolean IsNumberChar(Utf8Char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Number); }
+    static Boolean IsLetterChar(Utf8Char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Letter); }
+    static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
+    static Boolean IsSymbolChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
     static Int32   CharLength(const Utf8Char* begin);
     
     
@@ -216,7 +216,7 @@ public:
     bool SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
     Int32 LengthAferProcessingEscapes();
-    void ProcessEscapes(char* begin, char* end);
+    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
     
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
@@ -224,7 +224,7 @@ public:
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
-    Boolean ReadRawChar(char* token);
+    Boolean ReadRawChar(Utf8Char* token);
     Boolean ReadUtf32(Utf32Char* value);
     Boolean ReadChar(char token);
     Boolean ReadGraphemeCluster(SubString* token);

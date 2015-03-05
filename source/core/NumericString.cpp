@@ -69,7 +69,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 
     Boolean bPrecision = false;
     Boolean bValid = true;
-    char c;
+    Utf8Char c;
     const Utf8Char* pBegin = format->Begin();
 
     while (format->ReadRawChar(&c)) {
@@ -173,7 +173,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
 
-    char c = 0;
+    Utf8Char c = 0;
     while (f.ReadRawChar(&c))
     {
         if (c == '\\' && f.ReadRawChar(&c)) {
@@ -730,7 +730,6 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
 //----------------------------------------------------------------------------------------------------
 Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
 {
-    char c = formatOptions->FormatChar;
     SubString in(inputString);
     TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
@@ -752,7 +751,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     switch (encoding) {
     case kEncoding_UInt: {
         IntMax intValue;
-        switch (c) {
+        switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoull(inpBegin, &endPointer, 16);
         }
@@ -779,7 +778,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     case kEncoding_SInt:
     case kEncoding_MetaInt: {
         IntMax intValue = 0;
-        switch (c) {
+        switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoll(inpBegin, &endPointer, 16);
         }
@@ -947,8 +946,8 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
     IntIndex filledItems = 0;
     char activeDecimalPoint = '.';
     TempStackCString tempFormat((Utf8Char*)"%", 1);
-    char c = 0;
-    char inputChar = 0;
+    Utf8Char c = 0;
+    Utf8Char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
     while (canScan && f.ReadRawChar(&c))

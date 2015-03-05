@@ -473,7 +473,7 @@ DECLARE_VIREO_COMPARISON_PRIMITIVES(Utf8Char)
 //------------------------------------------------------------
 
 //TODO: Make this into a macro and move to INTEGER_MATH
-VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, UInt32, Int32)
+VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
 {
     Int32 shift = _Param(1);
     if ( shift < 0) {

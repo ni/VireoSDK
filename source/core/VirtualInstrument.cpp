@@ -475,7 +475,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     if (argument->ComparePrefixCStr(".")) {
         // If it is to be passed as an input then that is OK. Elements in the
         // type dictionary can not be used as an output.
-        char dot;
+        Utf8Char dot;
         argument->ReadRawChar(&dot);
         *ppData = (AQBlock1*) _clump->TheTypeManager()->FindTypeConstRef(argument);
         if (*ppData != null) {
@@ -813,19 +813,15 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }
             break;
-        case kArgumentNotOptional:                      simpleMessage = "Argument not optional";    break;
-        case kArgumentNotMutable:                       simpleMessage = "Argument not mutable";     break;
+        case kArgumentNotOptional:          simpleMessage = "Argument not optional";    break;
+        case kArgumentNotMutable:           simpleMessage = "Argument not mutable";     break;
         // Good states
-        case kArgumentResolvedToClump:                  simpleMessage = "Argument is clump";        break;
-        case kArgumentResolvedToVIElement:              simpleMessage = "Argument is VI element";   break;
-        case kArgumentResolvedToPerch:                  simpleMessage = "Argument is perch";        break;
-        case kArgumentResolvedToParameter:              simpleMessage = "Argument is parameter";    break;
-        case kArgumentResolvedToDefault:                simpleMessage = "Argument is default";      break;
-            simpleMessage = "Argument is clump";
-            break;
-        default:
-            simpleMessage = "Unknown argument type";
-            break;
+        case kArgumentResolvedToClump:      simpleMessage = "Argument is clump";        break;
+        case kArgumentResolvedToVIElement:  simpleMessage = "Argument is VI element";   break;
+        case kArgumentResolvedToPerch:      simpleMessage = "Argument is perch";        break;
+        case kArgumentResolvedToParameter:  simpleMessage = "Argument is parameter";    break;
+        case kArgumentResolvedToDefault:    simpleMessage = "Argument is default";      break;
+        default:                            simpleMessage = "Unknown argument type";          break;
     }
     if (simpleMessage) {
         LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_actualArgumentName));

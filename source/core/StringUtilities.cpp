@@ -134,7 +134,7 @@ Boolean SubString::IdentifierIsNext() const
     return false;
 }
 //------------------------------------------------------------
-Boolean SubString::ReadRawChar(char* token)
+Boolean SubString::ReadRawChar(Utf8Char* token)
 {
     if (_begin < _end) {
         *token = *_begin++;
@@ -152,7 +152,6 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
     if (_begin >= _end) {
         return false;
     }
-    Int32 rule = 0;
     while (_begin < _end && !characterEnd) {
         next = _begin + CharLength(_begin);
         if (next >= _end) {
@@ -162,16 +161,12 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
             if (*_begin == 0x0D) {
                 if(*next == 0x0A) {
                     characterEnd = false;
-                    rule = 3;
                 } else {
                     characterEnd = true;
-                    rule = 4;
                 }
             } else if(*_begin == 0x0A) {
-                rule = 4;
                 characterEnd = true;
             } else if ( CharLength(next)== 1) {
-                rule = 10;
                 characterEnd = true;
             } else {
                 Int32 firstByte = *next;
@@ -180,7 +175,6 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
                 // it only support cluster some extending LATIN character
                 if (code >= 0xCC80 && code <= 0xCDAF ){
                     characterEnd = false;
-                    rule = 9;
                 } else {
                     characterEnd = true;
                 }
@@ -194,7 +188,7 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
 //------------------------------------------------------------
 Boolean SubString::ReadUtf32(Utf32Char* value)
 {
-    Utf32Char uChar = 0;
+    Utf32Char codePoint = 0;
 #if defined(VIREO_ASCII_ONLY)
     if (_begin < _end) {
         uChar = *_begin++
@@ -203,32 +197,32 @@ Boolean SubString::ReadUtf32(Utf32Char* value)
         }
     }
 #else
-    static Utf32Char LeadByteMasks[] = {0x0000007F, 0x0000001F, 0x0000000F, 0x00000007};
+    static UInt32 LeadByteMasks[] = {0x0000007F, 0x0000001F, 0x0000000F, 0x00000007};
     
     if (_begin < _end) {
         Int32 continuationOctets = CharLength(_begin) - 1;
-        Int32 octet = (*_begin++);
+        UInt32 octet = (*_begin++);
 
         if ((octet & 0xFFFFFF80) && (continuationOctets == 0)) {
             // Invalid lead octet (5 and 6 octet patterns are not supported.)
-            uChar = 0;
+            codePoint = 0;
         } else  {
-            uChar = octet & LeadByteMasks[continuationOctets];
+            codePoint = (Utf32Char) (octet & LeadByteMasks[continuationOctets]);
             while (continuationOctets--) {
                 octet = (*_begin++);
                 if ((octet & 0xFFFFFFC0) == 0x00000080) {
-                    uChar = (uChar << 6) | (octet & 0x0000003F);
+                    codePoint = (Utf32Char) (((UInt32)codePoint << 6) | (octet & 0x0000003F));
                 } else {
                     // Invalid continuation octet
-                    uChar = 0;
+                    codePoint = 0;
                     break;
                 }
             }
         }
      }
 #endif
-    *value = uChar;
-    return uChar != 0;
+    *value = codePoint;
+    return codePoint != 0;
 }
 //------------------------------------------------------------
 Boolean SubString::ReadChar(char token)
@@ -294,7 +288,7 @@ Int32 SubString::LengthAferProcessingEscapes()
     Int32 FinalLength = 0;
     
     while(temp._begin < temp._end) {
-        char c = *temp._begin++;
+        Utf8Char c = *temp._begin++;
         if (c == '\\') {
             FinalLength += temp.ReadEscapeToken(&escapeToken);
         } else {
@@ -304,18 +298,18 @@ Int32 SubString::LengthAferProcessingEscapes()
     return FinalLength;
 }
 
-void SubString::ProcessEscapes(char* dest, char* end)
+void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 {    
     SubString temp(this);
     
     while(temp._begin < temp._end) {
-        char c = *temp._begin++;
+        Utf8Char c = *temp._begin++;
         if (c == '\\') {
             SubString escapeToken;
             temp.ReadEscapeToken(&escapeToken);
             Int32 escapeTokenLength = escapeToken.Length();
             if (escapeTokenLength == 1) {
-                char escapeChar = *escapeToken.Begin();
+                Utf8Char escapeChar = *escapeToken.Begin();
                 switch (escapeChar) {
                     case 'n':   *dest = '\n';       break;
                     case 'r':   *dest = '\r';       break;
@@ -351,8 +345,8 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
     if (!(_begin < _end))
         return tokenTraits;
     
-    char c = *_begin++;
-    char cPeek = (_begin < _end) ? *_begin : 0;
+    Utf8Char c = *_begin++;
+    Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
     if ((allowedTraits && TokenTraits_DoubleQuotedString) && (('"' == c) || (('@' == c) && (cPeek == '"')) )) {
         tokenTraits = TokenTraits_DoubleQuotedString;
@@ -362,7 +356,7 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
             allowEscapes = false; 
         }
         while (_begin < _end) {
-            char c = *_begin++;
+            c = *_begin++;
             if (c == '\\' && allowEscapes) {
                 SubString escapToken;
                 ReadEscapeToken(&escapToken);
@@ -382,7 +376,7 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
             allowEscapes = false; 
         }
         while (_begin < _end) {
-            char c = *_begin++;
+            c = *_begin++;
             if (c == '\\' && allowEscapes) {
                 SubString escapToken;
                 ReadEscapeToken(&escapToken);
@@ -420,7 +414,7 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
             Boolean foundExponent = false;
             while (_begin < _end) {
                 // TODO further refine the parsing
-                char c = *_begin;
+                c = *_begin;
                 if ('.' == c && !foundDecimalSeperatorSign) {
                     foundDecimalSeperatorSign = true;
                     tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_RealNumber);

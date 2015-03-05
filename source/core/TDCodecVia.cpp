@@ -77,7 +77,7 @@ TypeRef TDViaParser::ParseType()
     _string.ReadToken(&typeFunction);
     
     if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
-        char dot;
+        Utf8Char dot;
         typeFunction.ReadRawChar(&dot);
         
         pType = _typeManager->FindType(&typeFunction);
@@ -441,9 +441,9 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 // Copy/convert into array
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
-                    token.ProcessEscapes((char*)pArray->RawBegin(), (char*)pArray->RawBegin());
+                    token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
-                    token.ProcessEscapes((char*)pArray->RawBegin(), (char*)pArray->RawBegin());
+                    token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 }
             } else {
                 // Copy/convert into array
@@ -652,7 +652,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-            SubString  token;
             _string.ReadValueToken(&token, TokenTraits_Any);
             if (token.CompareCStr("(")) {
                 // List of values (a b c)
