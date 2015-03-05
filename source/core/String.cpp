@@ -342,7 +342,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
             } else {
                 found = true;
                 if (ss.IsSpaceChar(c)) {
-                    if(spacePos == null || !last) {
+                    if (spacePos == null || !last) {
                         spacePos = pSourceChar;
                     }
                     last = true;

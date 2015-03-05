@@ -179,7 +179,7 @@ void VIClump::AppendToWaitList(VIClump* elt)
 WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickType tickCount)
 {
     VIREO_ASSERT(_waitCount == 0);
-    if(count <= 2) {
+    if (count <= 2) {
         _waitCount = count;
         _waitStates[0]._clump = this;
         _waitStates[1]._clump = this;
@@ -531,7 +531,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     
     // See if it is in the VI's locals or paramblock
     _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
-    if(_actualArgumentType) {
+    if (_actualArgumentType) {
         _argumentState = kArgumentResolvedToVIElement;
         return;
     }

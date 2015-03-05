@@ -40,7 +40,10 @@ VIREO_FUNCTION_SIGNATURE1(DebugLED, Boolean)
 #if defined (VIREO_DEBUG_GPIO_STDIO)
     
     const char* s = _Param(0) ? "t\n" : "f\n";
-    POSIX_NAME(write)(STDOUT_FILENO, s, 2);
+    
+    if (POSIX_NAME(write)(STDOUT_FILENO, s, 2)) {
+        /* Ignore return value */
+    }
     
 #elif defined(kVireoOS_ZynqARM)
 	if (!_gpGPIOPsConfig)

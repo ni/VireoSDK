@@ -159,12 +159,12 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
         } else {
             // don't break the CR X LF 0x0D 0x0A
             if (*_begin == 0x0D) {
-                if(*next == 0x0A) {
+                if (*next == 0x0A) {
                     characterEnd = false;
                 } else {
                     characterEnd = true;
                 }
-            } else if(*_begin == 0x0A) {
+            } else if (*_begin == 0x0A) {
                 characterEnd = true;
             } else if ( CharLength(next)== 1) {
                 characterEnd = true;
@@ -579,7 +579,7 @@ Boolean SubString::ReadInt(IntMax *pValue)
     
     Boolean bFirstChar = true;
     IntMax base = 10;
-    if(ComparePrefixCStr("0x")) {
+    if (ComparePrefixCStr("0x")) {
         begin += 2;
         base = 16;
     } else {

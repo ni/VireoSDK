@@ -372,7 +372,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
 
-    TypeRef suffixType = sourceXType;
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficent copy
         SubString destTypeName = destType->GetName();
@@ -382,7 +381,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
             return pInstructionBuilder->EmitInstruction();
         }
-        suffixType = destType;
     }
 
     switch(destType->BitEncoding())

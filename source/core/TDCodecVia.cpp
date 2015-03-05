@@ -891,7 +891,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             return LOG_EVENT(kHardDataError, "'(' missing");
 
         _string.ReadToken(&token);
-        if(!token.ReadInt(&fireCount)) {
+        if (!token.ReadInt(&fireCount)) {
             return LOG_EVENT(kHardDataError, "fire count error");
         }
 
@@ -1193,7 +1193,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _options._bQuoteStrings = quoteOnTopString;
     _options._fieldWidth = fieldWidth;
     
-    if(!format || format->ComparePrefixCStr(formatVIA._name)) {
+    if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._pChars = &formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._pChars = &formatJSON;
@@ -1395,7 +1395,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
-        if(_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
+        if (_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
             SubString ss = elementType->GetElementName();
             Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
             if (useQuotes)

@@ -375,7 +375,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 intValue = intValue << 1;
                             }
                         } else {
-                            if(intValue == 0) {
+                            if (intValue == 0) {
                                 BinaryString[65-length] = bits[intValue];
                                 length = 1;
                             }
@@ -673,7 +673,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
     if (!negative) {
         if (formatOptions->ShowSign) {
             leadingPart.AppendCStr("+");
-        } else if(formatOptions->SignPad) {
+        } else if (formatOptions->SignPad) {
             leadingPart.AppendCStr(" ");
         }
     } else {
@@ -700,7 +700,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
 }
 //--------------------------------------------------------------------------------------------
 Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
-    if(charSet->Length() == 0) {
+    if (charSet->Length() == 0) {
         return false;
     }
     IntIndex i = 0;
@@ -735,7 +735,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     if (formatOptions->MinimumFieldWidth > 0) {
         IntIndex leadingSpace = 0;
         for (IntIndex i =0; i< in.Length(); i++) {
-            if(isspace(*(in.Begin()+i))) {
+            if (isspace(*(in.Begin()+i))) {
                 leadingSpace++;
             } else {
                 break;
@@ -848,7 +848,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             } else if (formatOptions->FormatChar == '[') {
                 SubString* charSet = (SubString*) &(formatOptions->FmtSubString);
                 charSet->AliasAssign(charSet->Begin()+1,charSet->End()-1);
-                if(charSet->Length() == 0) {
+                if (charSet->Length() == 0) {
                     return false;
                 } else if (*((char *)charSet->Begin()) == '^'){
                     if (charSet->Length() == 1) {
