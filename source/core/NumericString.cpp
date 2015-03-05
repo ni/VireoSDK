@@ -937,7 +937,6 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
 /*
  * The return value is the offset of the input string after the scan.
  * Several Special Scan rules:
- * 1. scanned value only stored in the short int
  * */
 Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData arguments[])
 {
@@ -1055,7 +1054,64 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
     // update the remaining string.
     return filledItems;
 }
-
+//-------------------------------------------------------------
+/**
+ *case 1 The format length is 0:
+ * 		In labview FormatValue function:
+ * 			print the value as %f no matter what the data type it is.
+ * 		In Format into String function:
+ * 		   print the value with the proper format code according to the data type.
+ * 				%f for float, %d for int. etc.
+ *case 2 The format contains only non-foramt code character. e.g. "  asvasd ":
+ * 		In labview FormatValue function:
+ * 			append the format string to the output no value String is printed.
+ * 		In Format into String function:
+ * 			will get the too few specifier error!.
+ *case 3 The first format code is not valid:
+ * 		In labview Format Value function:
+ * 			skip the invalid format code and print the value as in case 1.
+ * 		In labview Format into String function:
+ * 			throw the error. Report which argument the parsing has stopped at.
+ *case 4 The format string contains more format code that needed. The needed format code is correct.
+ *		In labview Format Value function:
+ *			Only recognize the first format code and append the entire remaining format string to the printed value string.
+ *		In labview Format Into String function:
+ *			Whether the extra format codes is valid ot not, the function doesn't output anything, Just throw the error.
+ *case 5 The format code and the type of the input value doesn't match
+ *		In labview Format Value function:
+ *			Use the Type conversion to convert the input value to the correct data type. Then print it.
+ *		In labview Format intoString function:
+ *		case 5.1 complex double
+ *			same as the Format Value function
+ *case 6 The length speicfier
+ *
+ *
+ * */
+VIREO_FUNCTION_SIGNATURE3(StringFormatValue, StringRef, StringRef, StaticTypeAndData)
+{
+    StringRef output = _Param(0);
+    SubString format = _Param(1)->MakeSubStringAlias();
+    StaticTypeAndData Value[] = {(_Param(2))};
+    char c = 0;
+    if(format empty) {
+    	create double;
+    }
+    while (format.ReadRawChar(&c))
+    {
+    	if (c == '%') {
+              FormatOptions fOptions;
+              ReadPercentFormatOptions(&format, &fOptions);
+              if (!fOptions.Valid) {
+            	  switch()
+            	  break;
+              }
+    	} else {
+    		// continue
+    	}
+    }
+    Format(&format, 0, Value, _Param(0));
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 struct StringNFormatStruct : public VarArgInstruction
 {
@@ -1101,6 +1157,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
+	DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount)  i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
 DEFINE_VIREO_END()
