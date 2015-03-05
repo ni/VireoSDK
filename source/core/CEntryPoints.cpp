@@ -80,7 +80,7 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return -1;
 
     ExecutionContextScope scope(pShell->TheExecutionContext());
@@ -103,7 +103,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return -1;
     
     ExecutionContextScope scope(pShell->TheExecutionContext());
@@ -124,7 +124,7 @@ VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, con
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return;
     
     WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, d);
@@ -136,7 +136,7 @@ VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, co
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return -1;
 
     Double d;
@@ -156,7 +156,7 @@ VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName
     SubString valueString(value);
 
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return;
 
     EventLog log(EventLog::DevNull);
@@ -176,7 +176,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* 
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if(actualType == null)
+    if (actualType == null)
         return null;
     
     STACK_VAR(String, tempString);

@@ -215,5 +215,3 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 }
 
 }
-
- 

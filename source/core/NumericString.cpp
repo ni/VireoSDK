@@ -69,7 +69,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 
     Boolean bPrecision = false;
     Boolean bValid = true;
-    char c;
+    Utf8Char c;
     const Utf8Char* pBegin = format->Begin();
 
     while (format->ReadRawChar(&c)) {
@@ -173,7 +173,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
 
-    char c = 0;
+    Utf8Char c = 0;
     while (f.ReadRawChar(&c))
     {
         if (c == '\\' && f.ReadRawChar(&c)) {
@@ -376,7 +376,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 intValue = intValue << 1;
                             }
                         } else {
-                            if(intValue == 0) {
+                            if (intValue == 0) {
                                 BinaryString[65-length] = bits[intValue];
                                 length = 1;
                             }
@@ -674,7 +674,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
     if (!negative) {
         if (formatOptions->ShowSign) {
             leadingPart.AppendCStr("+");
-        } else if(formatOptions->SignPad) {
+        } else if (formatOptions->SignPad) {
             leadingPart.AppendCStr(" ");
         }
     } else {
@@ -701,7 +701,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
 }
 //--------------------------------------------------------------------------------------------
 Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
-    if(charSet->Length() == 0) {
+    if (charSet->Length() == 0) {
         return false;
     }
     IntIndex i = 0;
@@ -731,13 +731,12 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
 //----------------------------------------------------------------------------------------------------
 Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
 {
-    char c = formatOptions->FormatChar;
     SubString in(inputString);
     TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
         IntIndex leadingSpace = 0;
         for (IntIndex i =0; i< in.Length(); i++) {
-            if(isspace(*(in.Begin()+i))) {
+            if (isspace(*(in.Begin()+i))) {
                 leadingSpace++;
             } else {
                 break;
@@ -753,7 +752,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     switch (encoding) {
     case kEncoding_UInt: {
         IntMax intValue;
-        switch (c) {
+        switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoull(inpBegin, &endPointer, 16);
         }
@@ -780,7 +779,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     case kEncoding_SInt:
     case kEncoding_MetaInt: {
         IntMax intValue = 0;
-        switch (c) {
+        switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoll(inpBegin, &endPointer, 16);
         }
@@ -850,7 +849,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             } else if (formatOptions->FormatChar == '[') {
                 SubString* charSet = (SubString*) &(formatOptions->FmtSubString);
                 charSet->AliasAssign(charSet->Begin()+1,charSet->End()-1);
-                if(charSet->Length() == 0) {
+                if (charSet->Length() == 0) {
                     return false;
                 } else if (*((char *)charSet->Begin()) == '^'){
                     if (charSet->Length() == 1) {
@@ -949,8 +948,8 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
     IntIndex filledItems = 0;
     char activeDecimalPoint = '.';
     TempStackCString tempFormat((Utf8Char*)"%", 1);
-    char c = 0;
-    char inputChar = 0;
+    Utf8Char c = 0;
+    Utf8Char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
     while (canScan && input->Length()>0 && f.ReadRawChar(&c))

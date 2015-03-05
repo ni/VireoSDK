@@ -17,107 +17,77 @@
 using namespace Vireo;
 
 
-//prototype are necessary for functions. However these prototype are
+// Prototype are necessary for functions. However these prototype are
 // stripped down to the bare minimum. which is OK since they are
 // extern "C" exports with no C++ type speciic name mangling.
-VIREO_FUNCTION_SIGNATURE0(AddInt32);
-VIREO_FUNCTION_SIGNATURE0(MulInt32);
-VIREO_FUNCTION_SIGNATURE0(MulSingle);
-VIREO_FUNCTION_SIGNATURE0(AddSingle);
+// The prototype could be generated with the source.
 
+VIREO_FUNCTION_C_PROTO(AddInt32);
+VIREO_FUNCTION_C_PROTO(MulInt32);
+VIREO_FUNCTION_C_PROTO(MulSingle);
+VIREO_FUNCTION_C_PROTO(AddSingle);
+VIREO_FUNCTION_C_PROTO(NotBoolean);
 
-#define I3(_I, _A1, _A2, _A3)  ((void*)_I) , (&_DS._A1) , (&_DS._A2), (&_DS._A3),
+VIREO_FUNCTION_C_PROTO(DebugLED);
+VIREO_FUNCTION_C_PROTO(DebugButton);
+
+VIREO_FUNCTION_C_PROTO(Branch);
+
+// Now if a nice variadic macro can be figured out this would look nicer
+#define I0(_I)                          ((void*)_I),
+#define I1(_I, _A1)                     I0(_I) (&_DS._A1),
+#define I2(_I, _A1, _A2)                I1(_I, _A1) (&_DS._A2),
+#define I3(_I, _A1, _A2, _A3)           I2(_I, _A1, _A2) (&_DS._A3),
+#define I4(_I, _A1, _A2, _A3, _A4)      I3(_I, _A1, _A2, _A3) (&_DS._A4),
+
+#define IBranch(_perch_)               ((void*)Branch), &InstrucitonBlock[_perch_],
 
 
 InstructionCore oneInstruction;
 
+// Struct for VI's dataspace
 struct Vi1_DSType{
     Int32 a;
     Int32 b;
     Int32 c;
+    Boolean bit;
 };
 
-Vi1_DSType  ds1 = {21, 2, 1};
+// Initializer for VI's dataspace
+Vi1_DSType  ds1 = {
+    21,     // a
+    2,      // b
+    1,      // c
+    true    // bit
+};
 
+//Instructions for VI
 #undef _DS
 #define _DS ds1
 void* InstrucitonBlock[] =
 {
-    I3(AddInt32, a, b, c)
-    I3(MulInt32, a, b, c)
+/* Clump 0 ----------------------*/
+/* 0000 */    I3(AddInt32, a, b, c)
+/* 0004 */    I3(MulInt32, a, b, c)
+/* 0008 */    I1(DebugLED, bit)
+/* 000A */    I2(NotBoolean, bit, bit)
+/* 000D */    IBranch(0x0008)
+/* 000F */  //I0(Done) Not quite ready.
 };
+
+// Break out flag.
+Boolean gKeepRunning = true;
 
 extern "C" int main(int argc, const char * argv[])
 {
-
-//    TypeManagerRef tm = TypeManager::New(null);
-//    printf("Helo %p\n", tm->TypeList());
     InstructionCore *ip = (InstructionCore*) InstrucitonBlock;
 
-    printf("First %p\n", ip);
-    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
-    ip = ip->_function(ip);
-    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
-    ip = ip->_function(ip);
-    printf("IP:%p A<%d> B<%d> C<%d>\n", ip,  ds1.a, ds1.b, ds1.c);
-
+    while (gKeepRunning) {
+        // Unrolled execution loop;
+        ip = ip->_function(ip);
+        ip = ip->_function(ip);
+        ip = ip->_function(ip);
+        ip = ip->_function(ip);
+    }
+    return 0;
 }
-
-
-#if 0
-
-//VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
-extern void StringToUpper();
-extern void AddInt32();
-extern void AddInt16();
-
-typedef struct  {
-    Int32 a;
-    Int32 b;
-    Int32 c;
-    Boolean b;
-    Double d;
-    Double *pD;
-} DSType;
-
-DSType ds = {
-    4,
-    5,
-    6,
-    true,
-    56.2,
-    &ds.d;
-    };
-
-
-#define I3(_I, _A1, _A2, _A3)  ((void*)_I) , (&ds. _A1) , (&ds. _A2), (&ds. _A3)
-
-void* GlobalInstructions[] = {
-    I3(AddInt32, a, b, c),
-    I3(AddInt16, a, b, c),
-    I3(AddInt32, a, b, c),
-    I3(StringToUpper, a, b, c),
-    I3(AddInt32, a, b, c),
-};
-
-
-int main()
-{
-
-}
-/*
- 0,
- 0,
- (void*) StringToUpper,
- ((void*) AddInt32),
- (&ds.a),
- &ds.b,
- &ds.c,
- (void*) AddInt16,
- GlobalData,
- GlobalData +2,
- &ds,
- GlobalInstructions+4,
- (void*) 1,*/
-
-#endif

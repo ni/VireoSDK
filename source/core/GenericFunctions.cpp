@@ -218,10 +218,9 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     {
     case kEncoding_Array:
         {
-            
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
-            SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+            savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
             ConstCStr pVectorBinOpName = null;
             // TODO: Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
@@ -276,7 +275,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         }
         case kEncoding_Cluster:
         {
-            SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+            savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
             ConstCStr pClusterBinOpName = "ClusterBinaryOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
@@ -373,8 +372,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
 
-    TypeRef prefixType = null;
-    TypeRef suffixType = sourceXType;
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficent copy
         SubString destTypeName = destType->GetName();
@@ -384,8 +381,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
             return pInstructionBuilder->EmitInstruction();
         }
-        prefixType = sourceXType; //convert has two types(pre & post) unlike other UnOps
-        suffixType = destType;
     }
 
     switch(destType->BitEncoding())

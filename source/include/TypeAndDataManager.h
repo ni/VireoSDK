@@ -352,7 +352,7 @@ private:
     IntIndex _length;
     T _array[1];
 public:
-    static IntIndex ExtraStructSize(Int32 count){ return (count - 1) * sizeof(T); }
+    static size_t ExtraStructSize(Int32 count){ return (count - 1) * sizeof(T); }
     InlineArray(Int32 length)                   { _length = length; }
     T* Begin()                                  { return _array; }
     T* End()                                    { return &_array[_length]; }
@@ -580,7 +580,7 @@ private:
     InlineArray<Utf8Char>   _name;
     NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
 public:
-    static IntIndex StructSize(const SubString* name)
+    static size_t   StructSize(const SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
     
@@ -601,7 +601,7 @@ public:
     InlineArray<Utf8Char>   _elementName;
 
 public:
-    static IntIndex StructSize(SubString* name) { return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
+    static size_t   StructSize(SubString* name) { return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
     
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitElement(this); }
@@ -646,7 +646,7 @@ protected:
         _pDefault = null;
         _elements.Assign((ElementType**)elements, count);
     }
-    static IntIndex StructSize(Int32 count)
+    static size_t   StructSize(Int32 count)
     {
         return sizeof(AggregateType) + InlineArray<ElementType*>::ExtraStructSize(count);
     }
@@ -663,7 +663,7 @@ class BitClusterType : public AggregateType
 {
 private:
     BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
+    static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitBitCluster(this); }
@@ -676,7 +676,7 @@ class EquivalenceType : public AggregateType
 {
 private:
     EquivalenceType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
+    static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static EquivalenceType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitEquivalence(this); }
@@ -692,7 +692,7 @@ class ClusterType : public AggregateType
 private:
     ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual ~ClusterType();
-    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
+    static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitCluster(this); }
@@ -753,7 +753,7 @@ class ParamBlockType : public AggregateType
 {
 private:
     ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
-    static IntIndex StructSize(Int32 count) { return AggregateType::StructSize(count); }
+    static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }
 public:
     static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitParamBlock(this); }
@@ -771,13 +771,14 @@ public:
             return kNIError_kInsufficientResources;
         }
 };
+
 //------------------------------------------------------------
 //! A type that is a multi-dimension collection of another type.
 class ArrayType : public WrappedType
 {
 private:
     ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
-    static IntIndex StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
+    static size_t   StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
 
 public:
     
@@ -812,7 +813,7 @@ class DefaultValueType : public WrappedType
 {
 private:
     DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
-    static IntIndex StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
+    static size_t   StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
     DefaultValueType* FinalizeConstant();
@@ -913,7 +914,7 @@ public:
     IntIndex* GetSlabLengths()      { return &_dimensionAndSlabLengths[0] + Rank(); }
     
 protected:
-    static IntIndex StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
+    static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     TypedArrayCore(TypeRef type);
 public:
     static TypedArrayCoreRef New(TypeRef type);

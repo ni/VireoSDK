@@ -486,7 +486,7 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *p
 {
     void *pData = null;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if(actualType == null) {
+    if (actualType == null) {
         *pValue = 0;
         return kNIError_kResourceNotFound;
     }
@@ -499,7 +499,7 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double v
 {
     void *pData = null;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if(actualType == null) {
+    if (actualType == null) {
         return kNIError_kResourceNotFound;
     }
     
@@ -511,7 +511,7 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, StringRef
 {
     void *pData = null;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if(actualType == null) {
+    if (actualType == null) {
 //        *pValue = 0;
         return kNIError_kResourceNotFound;
     }
@@ -524,7 +524,7 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, SubStrin
 {
     void *pData = null;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if(actualType == null) {
+    if (actualType == null) {
         return kNIError_kResourceNotFound;
     }
     

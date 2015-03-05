@@ -1,34 +1,51 @@
 #include "TypeDefiner.h"
 #include "Instruction.h"
 
-#if kVireoOS_ZynqARM
-#include "xgpiops.h"
-#define kuZED_LED_PIN 47
-#define kuZED_Button_PIN 51
+#if defined (VIREO_DEBUG_GPIO_STDIO)
 
-static XGpioPs _gGPIO;
-static XGpioPs_Config *_gpGPIOPsConfig = null;
+    #include <unistd.h>
+    #include <stdlib.h>
 
-void InitGPIO()
-{
-	int status;
-	_gpGPIOPsConfig = XGpioPs_LookupConfig(XPAR_PS7_GPIO_0_DEVICE_ID);
-	status = XGpioPs_CfgInitialize(&_gGPIO, _gpGPIOPsConfig, _gpGPIOPsConfig->BaseAddr);
-	if (status != XST_SUCCESS) {
-		printf(" Zynq GPIO init failure\n");
-	}
+    #define POSIX_NAME(_name_) _name_
+//#include "stdio.h"
 
-	 XGpioPs_SetDirectionPin(&_gGPIO, kuZED_LED_PIN, 1);
-	 XGpioPs_SetOutputEnablePin(&_gGPIO, kuZED_LED_PIN, 1);
-	 XGpioPs_SetDirectionPin(&_gGPIO, kuZED_Button_PIN, 0x0);
-}
+#elif defined (kVireoOS_ZynqARM)
+
+    #include "xgpiops.h"
+    #define kuZED_LED_PIN 47
+    #define kuZED_Button_PIN 51
+
+    static XGpioPs _gGPIO;
+    static XGpioPs_Config *_gpGPIOPsConfig = null;
+
+    void InitGPIO()
+    {
+        int status;
+        _gpGPIOPsConfig = XGpioPs_LookupConfig(XPAR_PS7_GPIO_0_DEVICE_ID);
+        status = XGpioPs_CfgInitialize(&_gGPIO, _gpGPIOPsConfig, _gpGPIOPsConfig->BaseAddr);
+        if (status != XST_SUCCESS) {
+            printf(" Zynq GPIO init failure\n");
+        }
+
+         XGpioPs_SetDirectionPin(&_gGPIO, kuZED_LED_PIN, 1);
+         XGpioPs_SetOutputEnablePin(&_gGPIO, kuZED_LED_PIN, 1);
+         XGpioPs_SetDirectionPin(&_gGPIO, kuZED_Button_PIN, 0x0);
+    }
 #endif
 
 using namespace Vireo;
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(DebugLED, Boolean)
 {
-#if kVireoOS_ZynqARM
+#if defined (VIREO_DEBUG_GPIO_STDIO)
+    
+    const char* s = _Param(0) ? "t\n" : "f\n";
+    
+    if (POSIX_NAME(write)(STDOUT_FILENO, s, 2)) {
+        /* Ignore return value */
+    }
+    
+#elif defined(kVireoOS_ZynqARM)
 	if (!_gpGPIOPsConfig)
 		InitGPIO();
 
@@ -40,7 +57,12 @@ VIREO_FUNCTION_SIGNATURE1(DebugLED, Boolean)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(DebugButton, Boolean)
 {
-#if kVireoOS_ZynqARM
+#if defined (VIREO_DEBUG_GPIO_STDIO)
+
+//    int value = getc();
+//    _Param(0) = (value == 't');
+    
+#elif defined(kVireoOS_ZynqARM)
 	if (!_gpGPIOPsConfig)
 		InitGPIO();
 
