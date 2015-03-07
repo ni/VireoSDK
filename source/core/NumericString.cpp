@@ -161,6 +161,10 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 void GenerateFinalNumeric (const FormatOptions* , char* , Int32* , TempStackCString* , Boolean );
 void RefactorLabviewNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32 );
 
+Int32 DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], )
+{
+}
+
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
 {
     IntIndex argumentIndex = 0;
@@ -172,9 +176,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     SubString f(format);            // Make a copy to use locally
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
-
+    printf("temp stack string:(%s)\n", format->Length());
     Utf8Char c = 0;
-    while (f.ReadRawChar(&c))
+    if(f.Length()<= 0)
+    {
+
+    }
+    while (false && f.ReadRawChar(&c))
     {
         if (c == '\\' && f.ReadRawChar(&c)) {
             switch (c)
@@ -1068,7 +1076,8 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
  * 			will get the too few specifier error!.
  *case 3 The first format code is not valid:
  * 		In labview Format Value function:
- * 			skip the invalid format code and print the value as in case 1.
+ * 			Parse the format code end stop at the invalid position. then print the value as in case 1.
+ * 			And append the remaining part of the format code.
  * 		In labview Format into String function:
  * 			throw the error. Report which argument the parsing has stopped at.
  *case 4 The format string contains more format code that needed. The needed format code is correct.
@@ -1080,54 +1089,98 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
  *		In labview Format Value function:
  *			Use the Type conversion to convert the input value to the correct data type. Then print it.
  *		In labview Format intoString function:
- *		case 5.1 complex double
- *			same as the Format Value function
+ *		case 5.1 complex double as the numeric
+ *			If the  data type of the input value is complex, the print value should print both the real part and imaginary part.
+ *		case 5.2 string as numeric %d , %f
+ *			Will not accept this case, throw the error.
  *case 6 The length speicfier
- *
- *
+ *		In lbivew Format Value function:
+ *			'h' 'l' is supported for %d and %f .. numeric type.
+ *		In labview Format into String function:
+ *			'h' is not supported.
  * */
-VIREO_FUNCTION_SIGNATURE3(StringFormatValue, StringRef, StringRef, StaticTypeAndData)
+VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
+	//exit(1);
+	printf("running\n");
     StringRef output = _Param(0);
-    SubString format = _Param(1)->MakeSubStringAlias();
-    StaticTypeAndData Value[] = {(_Param(2))};
-    char c = 0;
-    if(format empty) {
-    	create double;
+    SubString ss = _Param(0)->MakeSubStringAlias();
+
+   SubString format = _Param(1)->MakeSubStringAlias();
+    StaticTypeAndData Value  = {_ParamPointer(2), _ParamPointer(3)};
+    Utf8Char c = 0;
+   // Utf8Char defaultFormat[90] ={"%falb"};
+   printf("original length %d\n",format.Length());
+
+    if(format.Length() == 0) {
+        Utf8Char defaultFormat[] ={"%falb"};
+
+        format.AliasAssign(defaultFormat, defaultFormat+5);
+        printf("realians length %d\n",format.Length());
+    } else {
+		while (format.ReadRawChar(&c))
+		{
+			if (c == '%') {
+				  FormatOptions fOptions;
+				  ReadPercentFormatOptions(&format, &fOptions);
+				  if (!fOptions.Valid) {
+
+				  }
+			} else {
+				// continue
+			}
+		}
     }
-    while (format.ReadRawChar(&c))
+    int stackint = 12;
+    char stack[355];
+    for (int i = 0; i<333; i++)
     {
-    	if (c == '%') {
-              FormatOptions fOptions;
-              ReadPercentFormatOptions(&format, &fOptions);
-              if (!fOptions.Valid) {
-            	  switch()
-            	  break;
-              }
-    	} else {
-    		// continue
-    	}
-    }
-    Format(&format, 0, Value, _Param(0));
+    	stack[i] = 'A';
+    }/**/
+    Format(&format, 1, &Value, _Param(0));
     return _NextInstruction();
 }
 //------------------------------------------------------------
-struct StringNFormatStruct : public VarArgInstruction
+struct StringFormatStruct : public VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
-    _ParamDef(Int32, Max);
     _ParamDef(StringRef, StringFormat);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
+VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 {
-    //Int32 count = (_ParamVarArgCount() -3)/2;
+    Int32 count = (_ParamVarArgCount() -2)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     StringRef buffer = _Param(StringOut);
-    Format(&format, _Param(Max), arguments, buffer);
+    Format(&format, count, arguments, buffer);
+    return _NextInstruction();
+}
+
+/*
+ * The scan function:
+ * 		case 1: length of input format code is 0
+ * 			use default behaviour
+ * 		case 2: invalid input format code
+ * 			scan value will use the default format code
+ * 			scan string will throw the error.
+ * 		case 3: The format code and the output value doesn't match.
+ *			Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
+ *			The labview will automatically change the output value when your wire a input with the different input.
+ *			e.g."10.85" %f -> int 11.0
+ *				"10.85" %d -> int 10
+ *				"10.85" %d ->double 10
+ *			be careful, the conversion means different from the conversion in C++.
+ *			It only reach the max value or min value.
+ *			Be careful, complex double only sipport %f,
+ *			if you use the %d, it only read the int.
+ *
+ * */
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, StaticType, void)
+{
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1136,7 +1189,7 @@ struct StringScanStruct : public VarArgInstruction
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);
     _ParamDef(StringRef, StringFormat);
-    _ParamDef(Int32, Filled);
+    _ParamDef(Int32, OffsetPast);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
@@ -1148,7 +1201,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     Int32 filled = FormatScan(&input, &format, arguments);
-    _Param(Filled) = filled;
+    _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
@@ -1157,8 +1210,9 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
 	DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount)  i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
 DEFINE_VIREO_END()
 
 
