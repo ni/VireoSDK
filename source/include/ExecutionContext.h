@@ -37,7 +37,7 @@ public:
     //! Any async operations waiting on this queue
     WaitableState* _next;
 
-    //! Any async operations waiting on this queue
+    //! Which clump owns this WS object.
     VIClump* _clump;
     
     //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
