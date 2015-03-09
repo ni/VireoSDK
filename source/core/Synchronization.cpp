@@ -84,9 +84,18 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
 //------------------------------------------------------------
 void QueueCore::ChangeCount(Int32 amount)
 {
-    for (WaitableState* pWS = _waitingList; pWS; pWS = pWS->_next) {
+    WaitableState *pNext = null;
+    WaitableState ** ppPrevious = &_waitingList;
+    
+    for (WaitableState* pWS = _waitingList; pWS; pWS = pNext) {
+        pNext = pWS->_next;
         if (amount == pWS->_info) {
             THREAD_EXEC()->EnqueueRunQueue(pWS->_clump);
+            // Remove the waiter from the list and enqueue it.
+            *ppPrevious = pNext;
+            pWS->_next = null;
+        } else {
+            ppPrevious = &pWS->_next;
         }
     }
 }
