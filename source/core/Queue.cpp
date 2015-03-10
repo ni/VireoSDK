@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -13,8 +13,7 @@ SDG
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 
-namespace Vireo
-{
+namespace Vireo {
 
 VIClumpQueue::VIClumpQueue()
 {
