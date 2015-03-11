@@ -443,6 +443,129 @@ VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
     _Param(1) = _Param(0).ToDouble();
     return _NextInstruction();
 }
+
+Int64 getYear(Int64 wholeSeconds, Int64* yearSeconds)
+{
+	// Labview don't consider the leap second
+	Int64 secondsInyear = 31536000;
+	Int64 secondsInLeap = 31622400;
+	Int64 startYear = 1903;
+
+	Int64 baseYear = 1903;
+	Int64 currentYear = baseYear;
+	Int64 yearMax = wholeSeconds/secondsInyear;
+	Int64 yearMin = wholeSeconds/secondsInLeap;
+
+	if (wholeSeconds>=0) {
+		for (Int64 i = yearMin; i <= yearMax; i++) {
+			Int64 year = startYear + i;
+			Int64 numberOfLeap = 0;
+			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
+			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
+			Int64 nextyear = startYear + i +1;
+			numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
+			Int64 totalSecondsNext = numberOfLeap*secondsInLeap + (i+1-numberOfLeap)*secondsInyear;
+
+			if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
+				currentYear = nextyear;
+				*yearSeconds = wholeSeconds - totalSeconds;
+				break;
+			}
+		}
+	} else if (wholeSeconds<0) {
+		for (Int64 i = yearMax; i <= yearMin; i++) {
+			Int64 year = startYear + i;
+			Int64 numberOfLeap = 0;
+			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
+			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
+			Int64 previousyear = startYear + i - 1;
+			numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400) - (baseYear/4-baseYear/100+baseYear/400);
+			Int64 totalSecondsPrevious = numberOfLeap*secondsInLeap + (i-1-numberOfLeap)*secondsInyear;
+
+			if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
+				currentYear = year;
+				// this will make sure the *yearSeconds is always positive
+				*yearSeconds = wholeSeconds - totalSecondsPrevious;
+				break;
+			}
+
+		}
+	} else {
+		*yearSeconds = 0;
+		currentYear = 1904;
+	}
+	return currentYear;
+}
+
+void getDate(Int64 wholeSecond, Int64* yearPtr, Int64* monthPtr = NULL, Int64* dayPtr = NULL, Int64* hourPtr = NULL, Int64* minPtr = NULL, Int64* secondPtr = NULL)
+{
+	Int64 secondsofYear;
+	Int64 year = getYear(wholeSecond, &secondsofYear);
+	if (yearPtr!= NULL) {
+		*yearPtr = year;
+	}
+	printf("seconds of year %d\n", secondsofYear);
+	Int64 currentMonth = -2;
+	Int64 secondsofMonth = -2;
+	if(year%4==0 && (year%100 != 0 || year%400 == 0)) {
+		// leap year
+		int dayofMonth[]={31, 29,31,30,31,30,31,31,30,31,30,31};
+		Int64 seconds=0;
+		for (Int64 i = 0;i<12;i++) {
+			secondsofMonth = seconds;
+			seconds+=24*3600*dayofMonth[i];
+			if (seconds > secondsofYear) {
+				currentMonth = i;
+				secondsofMonth = secondsofYear - secondsofMonth;
+				break;
+			}
+		}
+	} else {
+		int dayofMonth[]={31, 28,31,30,31,30,31,31,30,31,30,31};
+		Int64 seconds=0;
+		for (Int64 i = 0;i<12;i++) {
+			secondsofMonth = seconds;
+			seconds+=24*3600*dayofMonth[i];
+			if (seconds > secondsofYear) {
+				currentMonth = i;
+				secondsofMonth = secondsofYear - secondsofMonth;
+				break;
+			}
+		}
+	}
+	Int64 days = secondsofMonth/(24*3600);
+	Int64 secondsofHour = secondsofMonth%(24*3600);
+	Int64 hours = secondsofHour/3600;
+	Int64 secondsofMinutes = secondsofHour%(3600);
+	Int64 minutes = secondsofMinutes/60;
+	Int64 seconds= secondsofMinutes%60;
+	if (monthPtr!=NULL) {
+		*monthPtr = currentMonth;
+	}
+	if (dayPtr != NULL) {
+		*dayPtr = days;
+	}
+	if (hourPtr!=NULL) {
+		*hourPtr = hours;
+	}
+	if (minPtr!=NULL) {
+		*minPtr = minutes;
+	}
+	if (secondPtr !=NULL) {
+		*secondPtr = seconds;
+	}
+ }
+
+VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
+{
+	Int64 wholeSeconds = _Param(2).Integer();
+	printf("wholeSeconds :%d\n", wholeSeconds);
+	UInt64 fraction = _Param(2).Fraction();
+	Int64 year, month, day, hour, min, second;
+	getDate(wholeSeconds, &year, &month, &day, &hour, &min, & second);
+	printf("year:%d, month %d, day %d, hour%d, min %d, second %d\n", year,month+1, day,hour,min,second);
+	return _NextInstruction();
+}
 #endif
 
 
@@ -451,6 +574,7 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
+    DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
 
 #if defined(VIREO_TYPE_Timestamp)
     DEFINE_VIREO_TYPE(Timestamp, "c(e(.Int64 seconds) e(.UInt64 fraction))")
