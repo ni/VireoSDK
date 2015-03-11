@@ -166,8 +166,6 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "ComplexDouble", "c(e(.Double real) e(.Double imaginary))");
 #endif
 #endif
-    // Time
-    Define(tm, "Time",          "c(e(.Int64 seconds) e(.UInt64 fractions))");
 
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet

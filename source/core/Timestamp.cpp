@@ -11,7 +11,7 @@ SDG
  */
 
 #include "TypeDefiner.h"
-#include "TimeTypes.h"
+#include "Timestamp.h"
 
 #include <math.h> /* fabs */
 #include <float.h> /* DBL_EPSILON */
@@ -251,7 +251,7 @@ VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
     return _NextInstruction();
 }
 
-#if defined(VIREO_TYPE_ATime)
+#if defined(VIREO_TYPE_Timestamp)
 /* Localize the warnings for float comparison to one place
  see http://www.codeguru.com/forum/showthread.php?t=323835 */
 enum FloatComparisonMethod {
@@ -260,20 +260,20 @@ enum FloatComparisonMethod {
 };
 
 // January 1, 1904 (the epoch of AbsTime128) in FILETIME
-static const ATime128 k_1904FileTime = ATime128(0x0153b281e0fb4000ull, 0);
+static const Timestamp k_1904FileTime = Timestamp(0x0153b281e0fb4000ull, 0);
 #if 0
-ATime128 ATime128FromHILOTime(const uInt32 &high,const uInt32 &low)
+Timestamp ATime128FromHILOTime(const uInt32 &high,const uInt32 &low)
 {
 	NITime temp(high,low, 0,0);
 	temp -= k_1904FileTime;
-	return ATime128(temp /1E7);
+	return Timestamp(temp /1E7);
 }
 #endif
 
 /**
- Functions for getting TimeStamp
- */
-void GetCurrentATime128(ATime128 *t)
+ Functions for getting Timestamps
+  */
+void GetCurrentTimestamp(Timestamp *t)
 {
 #if WIN32
 	struct timeval tv;
@@ -289,7 +289,7 @@ void GetCurrentATime128(ATime128 *t)
 
 	stdTime -= 11644473600000000Ui64;	// DELTA_EPOCH_IN_MICROSECS
 	stdTime /= 10;						// Convert to microseconds
-	*t = ATime128( (Double) (stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
+	*t = Timestamp( (Double) (stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
 
 #elif defined(VIREO_DATE_TIME_STDLIB)
 	struct timeval tv;
@@ -297,11 +297,11 @@ void GetCurrentATime128(ATime128 *t)
  
 	retval = gettimeofday(&tv, null);
 	if (retval == -1)
-		*t = ATime128(0,0);
+		*t = Timestamp(0,0);
 	else {
 	//	uInt32 tempTime = (uInt32) tv.tv_sec;
 	//	TToStd(&tempTime);
-		*t = ATime128( (Double) tv.tv_sec, tv.tv_usec / 1E6);
+		*t = Timestamp( (Double) tv.tv_sec, tv.tv_usec / 1E6);
 	}
 #elif defined(VIREO_DATE_TIME_VXWORKS)
     struct timespec ts;
@@ -309,119 +309,167 @@ void GetCurrentATime128(ATime128 *t)
 
     retval = clock_gettime(CLOCK_REALTIME, &ts);
     if (retval == -1)
-    *t = ATime128(0.0);
+    *t = Timestamp(0.0);
     else {
         uInt32 tempTime = static_cast<uInt32>(ts.tv_sec);
         TToStd(&tempTime);
-        *t = ATime128( static_cast<Double>(tempTime), ts.tv_nsec / 1E9);
+        *t = Timestamp( static_cast<Double>(tempTime), ts.tv_nsec / 1E9);
 
 #endif
 }
-
-/*
-DECLARE_VIREO_PRIMITIVE3( AddTime,    Fixed128f64, Fixed128f64, Fixed128f64, (_Param(2) = _Param(0) + _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( SubTime,    Fixed128f64, Fixed128f64, Fixed128f64, (_Param(2) = _Param(0) - _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( LTTime,     Fixed128f64, Fixed128f64, bool,        (_Param(2) = _Param(0) < _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( LTEQTime,   Fixed128f64, Fixed128f64, bool,        (_Param(2) = _Param(0) <= _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( EQTime,     Fixed128f64, Fixed128f64, bool,        (_Param(2) = _Param(0) == _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( GTTime,     Fixed128f64, Fixed128f64, bool,        (_Param(2) = _Param(0) > _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( GTEQTime,   Fixed128f64, Fixed128f64, bool,        (_Param(2) = _Param(0) >= _Param(1)) )
-*/
-
-VIREO_FUNCTION_SIGNATURE1(ATimeGetCurrent, ATime128)
+//------------------------------------------------------------
+Timestamp::Timestamp(double seconds)
 {
-    GetCurrentATime128(_ParamPointer(0));
+    if (seconds > 0) {
+        Double wholeSeconds = floor(seconds);
+        _integer = (Int64)wholeSeconds;
+        // Conceptually is 2^65 * fractional part though the double will only have ~15 digits
+        _fraction = (UInt64) (18446744073709551616.0 * (seconds - wholeSeconds));
+    } else {
+        Double wholeSeconds = ceil(seconds);
+        _integer = (Int64)wholeSeconds;
+        _fraction = (UInt64) (18446744073709551616.0 * (seconds - wholeSeconds));
+    }
+}
+//------------------------------------------------------------
+Double Timestamp::ToDouble() const
+{
+    Double wholeSeconds = (Double)this->Integer();
+    Double fractionalSeconds = (Double)this->_fraction * (1.0 / 18446744073709551616.0);
+    return wholeSeconds + fractionalSeconds;
+}
+//------------------------------------------------------------
+Timestamp const Timestamp::operator+(const Int64& value)
+{
+    Timestamp answer;
+    answer._integer = _integer + value;
+    answer._fraction = _fraction;
+    return answer;
+}
+//------------------------------------------------------------
+Timestamp const Timestamp::operator+(const Timestamp& value)
+{
+    Timestamp answer;
+    answer._integer = _integer + value._integer;
+    answer._fraction = _fraction + value._fraction;
+    if (answer._fraction < _fraction) {
+        answer._integer++;
+    }
+    return answer;
+}
+//------------------------------------------------------------
+Timestamp const Timestamp::operator-(const Timestamp& value)
+{
+    Timestamp answer;
+    answer._integer = _integer - value._integer;
+    answer._fraction = _fraction - value._fraction;
+    if (answer._fraction > _fraction) {
+        answer._integer--;
+    }
+    return answer;
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(SubTimestamp, Timestamp, Timestamp, Double)
+{
+    Timestamp diff = _Param(0) - _Param(1);
+    _Param(2) = diff.ToDouble();
     return _NextInstruction();
 }
-
-#if defined(VIREO_TYPE_Double)
-VIREO_FUNCTION_SIGNATURE3(ATimeFromDoubleDouble, Double, Double, ATime128)
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleR, Timestamp, Double, Timestamp)
 {
-    _Param(2) = ATime128(_Param(0), _Param(1));
+    Timestamp delta(_Param(1));
+    _Param(2) = _Param(0) + delta;
     return _NextInstruction();
 }
-
-VIREO_FUNCTION_SIGNATURE2(ATimeGetSecondsDouble, ATime128, Double)
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleL, Double, Timestamp, Timestamp)
 {
-    _Param(1) = _Param(0).Seconds();
+    Timestamp delta(_Param(0));
+    _Param(2) = delta + _Param(1);
     return _NextInstruction();
 }
-
-VIREO_FUNCTION_SIGNATURE2(ATimeGetFractionDouble, ATime128, Double)
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32R, Timestamp, Int32, Timestamp)
 {
-    _Param(1) = _Param(0).FractionOfSecond();
+    _Param(2) = _Param(0) + _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32L, Int32, Timestamp, Timestamp)
+{
+    _Param(2) = _Param(1) + _Param(0);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(IsLTTimestamp, Timestamp, Timestamp, Boolean)
+{
+    _Param(2) = _Param(0) < _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(IsLETimestamp, Timestamp, Timestamp, Boolean)
+{
+    _Param(2) = _Param(0) <= _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(IsEQTimestamp, Timestamp, Timestamp, Boolean)
+{
+    _Param(2) = _Param(0) == _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(IsGTTimestamp, Timestamp, Timestamp, Boolean)
+{
+    _Param(2) = _Param(0) > _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(IsGETimestamp, Timestamp, Timestamp, Boolean)
+{
+    _Param(2) = _Param(0) >= _Param(1);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetTimestamp, Timestamp)
+{
+    GetCurrentTimestamp(_ParamPointer(0));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
+{
+    _Param(1) = _Param(0).ToDouble();
     return _NextInstruction();
 }
 #endif
 
-VIREO_FUNCTION_SIGNATURE3(ATimeFromInt64UInt64, Int64, UInt64, ATime128)
-{
-    _Param(2) = ATime128(_Param(0), _Param(1));
-    return _NextInstruction();
-}
-#if 0
-VIREO_FUNCTION_SIGNATURE1(ATimeIncrementLSB, ATime128)
-{
-   _Param(0).IncrementLSB();
-    return _NextInstruction();
-}
-#endif
-    
-VIREO_FUNCTION_SIGNATURE2(ATimeGetSecondsInt64, ATime128, Int64)
-{
-    _Param(1) = _Param(0).SecondsInt64();
-    return _NextInstruction();
-}
 
-
-VIREO_FUNCTION_SIGNATURE2(ATimeGetFractionUInt64, ATime128, UInt64)
-{
-    _Param(1) = _Param(0).FractionUIn64();
-    return _NextInstruction();
-}
-
-VIREO_FUNCTION_SIGNATURE2(ATimeSetSecondsInt64, ATime128, Int64)
-{
-   // _Param(0).SetInt64Seconds(_Param(1));
-    return _NextInstruction();
-}
-
-VIREO_FUNCTION_SIGNATURE2(ATimeSetFractionUInt64, ATime128, UInt64)
-{
-   // _Param(0).SetUInt64Fraction(_Param(1));
-    return _NextInstruction();
-}
-#endif
-
-DEFINE_VIREO_BEGIN(Time)
-/*
-    DEFINE_VIREO_FUNCTION(AddTime, "p(i(.Time) i(.Time) o(.Time))")
-    DEFINE_VIREO_FUNCTION(SubTime, "p(i(.Time) i(.Time) o(.Time))")
-    DEFINE_VIREO_FUNCTION(LTTime, "p(i(.Time) i(.Time) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION(LTEQTime, "p(i(.Time) i(.Time) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION(EQTime, "p(i(.Time) i(.Time) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION(GTTime, "p(i(.Time) i(.Time) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION(GTEQTime, "p(i(.Time) i(.Time) o(.Boolean))")
-*/
-
+DEFINE_VIREO_BEGIN(Timestamp)
+    // Low level time functions
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
-#if defined(VIREO_TYPE_ATime)
-#if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION(ATimeFromDoubleDouble, "p(i(.Double) i(.Double) o(.Time))")
-    DEFINE_VIREO_FUNCTION(ATimeGetSecondsDouble, "p(i(.Time) o(.Double))")
-    DEFINE_VIREO_FUNCTION(ATimeGetFractionDouble, "p(i(.Time) o(.Double))")
-#endif
+#if defined(VIREO_TYPE_Timestamp)
+    DEFINE_VIREO_TYPE(Timestamp, "c(e(.Int64 seconds) e(.UInt64 fraction))")
 
-    DEFINE_VIREO_FUNCTION(ATimeFromInt64UInt64, "p(i(.Int64) i(.UInt64) o(.Time))")
-    DEFINE_VIREO_FUNCTION(ATimeGetCurrent, "p(o(.Time))")
- // DEFINE_VIREO_FUNCTION(ATimeIncrementLSB, "p(e(.Time))")  //TODO input instead of inplace
-    DEFINE_VIREO_FUNCTION(ATimeGetSecondsInt64, "p(i(.Time) o(.Int64))")
-    DEFINE_VIREO_FUNCTION(ATimeGetFractionUInt64, "p(i(.Time) o(.UInt64))")
-    DEFINE_VIREO_FUNCTION(ATimeSetSecondsInt64, "p(i(.Time) o(.Int64))")
-    DEFINE_VIREO_FUNCTION(ATimeSetFractionUInt64, "p(i(.Time) o(.UInt64))")
+    DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(.Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsLE, IsLETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsGE, IsGETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsGT, IsGTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32R, "p(i(.Timestamp) i(.Int32) o(.Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32L, "p(i(.Int32) i(.Timestamp) o(.Timestamp))")
+#if defined(VIREO_TYPE_Double)
+    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestamp, "p(i(.Timestamp) i(.Timestamp)o(.Double))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(.Double)i(.Timestamp)o(.Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(.Timestamp)i(.Double)o(.Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(.Timestamp) o(.Double))")
+#endif
 #endif
 
 DEFINE_VIREO_END()
