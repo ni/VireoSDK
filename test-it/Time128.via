@@ -1,36 +1,99 @@
 define (HelloTime dv(.VirtualInstrument (
     c(
-     e(dv(.String "Hello world. I can fly.") variable1)
-     e(.Time t0)
-     e(.Time t1)
-     e(.Time t2)
-     e(.Time t3)
-     
-     e(.Double d0)
-     e(.Int64 i0)
-     e(.Int64 ui0)
+     e(.Timestamp t0)
+     e(dv(.Timestamp(1 0x8000000000000001)) t1)    // 1.5 seconds
+     e(dv(.Timestamp(1 0)) t2)                     // 1.0 seconds
+     e(.Timestamp t3)
+     e(.Timestamp t4)
 
-     e(dv(.Double 1000) d1000)
-     e(dv(.Double 50) d50)
-     e(dv(.Int64 1000) i1000)
-     e(dv(.UInt64 50) ui50)
+     e(dv(.Int32 4) i4)
+
+     e(.Double d0)
+     e(.Boolean b1)
+     e(.Boolean b2)
+     e(.Boolean b3)
+     e(.Boolean b4)
+     e(.Boolean b5)
      )
     clump (1
-        ATimeGetCurrent(t1)
-        //----------------------------
-        ATimeFromDoubleDouble(d1000 d50 t0)
-        Printf(" ATimeFromDoubleDouble %s\n" t0)
+        GetTimestamp(t0)
+        Printf("// Current time is %s\n" t0)
 
-        ATimeGetSecondsDouble(t0 d0)
-        Printf(" ATimeGetSecondsDouble %s\n" t0)
-        
-        ATimeGetSecondsInt64(t0 i0)
-        Printf(" ATimeGetSecondsInt64 %s\n" t0)
+        Printf("1.5 is  %s\n" t1)
 
-        //----------------------------
-        ATimeFromInt64UInt64(i0 ui50 t0)
-        Printf(" ATimeFromInt64UInt64 %s\n" t0)
+        Sub(t1 t2 d0)
+        Printf("Diff (1.5 - 1.0) => %s %s %s\n" t1 t2 d0)
+
+        Add(t1 d0 t3)
+        Printf("Add is %s %s %s\n" t1 d0 t3)
+
+        Add(d0 t1 t4)
+        Printf("Add is %s %s %s\n" t1 d0 t4)
+
+        Add(t1 i4 t3)
+        Printf("Add is %s %s %s\n" t1 i4 t3)
+
+        Add(i4 t1 t4)
+        Printf("Add is %s %s %s\n" t1 i4 t4)
+
+        FromString("(0x7000000000000000 0x0000000000000001)" t1 *)
+        Convert(t1 d0)
+        Printf("Full Range %s %s\n" t1 d0)
+
+        FromString("(0x7FFFFFFFFFFFFFFF 0xFFFFFFFFFFFFFFFF)" t1 *)
+        Convert(t1 d0)
+        Printf("Max ts %s %s\n" t1 d0)
+
+        FromString("(0 1)" t1 *)
+        Convert(t1 d0)
+        Printf("Min+ ts %s %s\n" t1 d0)
+
+        FromString("(0x8000000000000000 0xFFFFFFFFFFFFFFFF)" t1 *)
+        Convert(t1 d0)
+        Printf("Min- ts %s %s\n" t1 d0)
+
+
+        FromString("(0x000000D000000000 0x0000000000000003)" t1 *)
+        FromString("(0x000000D000000000 0x0000000000000004)" t2 *)
+        FromString("(0x000000D000000000 0x0000000000000005)" t3 *)
+
+        IsLT(t1 t2 b1)
+        IsLE(t1 t2 b2)
+        IsEQ(t1 t2 b3)
+        IsGE(t1 t2 b4)
+        IsGT(t1 t2 b5)
+        Printf("comparison %s %s\n" t1 t2)
+        Printf("IsLT %s\n" b1)
+        Printf("IsLE %s\n" b2)
+        Printf("IsEQ %s\n" b3)
+        Printf("IsGE %s\n" b4)
+        Printf("IsGT %s\n" b5)
+
+        IsLT(t2 t2 b1)
+        IsLE(t2 t2 b2)
+        IsEQ(t2 t2 b3)
+        IsGE(t2 t2 b4)
+        IsGT(t2 t2 b5)
+        Printf("comparison %s %s\n" t2 t2)
+        Printf("IsLT %s\n" b1)
+        Printf("IsLE %s\n" b2)
+        Printf("IsEQ %s\n" b3)
+        Printf("IsGE %s\n" b4)
+        Printf("IsGT %s\n" b5)
+
+        IsLT(t3 t2 b1)
+        IsLE(t3 t2 b2)
+        IsEQ(t3 t2 b3)
+        IsGE(t3 t2 b4)
+        IsGT(t3 t2 b5)
+        Printf("comparison %s %s\n" t3 t2)
+        Printf("IsLT %s\n" b1)
+        Printf("IsLE %s\n" b2)
+        Printf("IsEQ %s\n" b3)
+        Printf("IsGE %s\n" b4)
+        Printf("IsGT %s\n" b5)
+
 
     )
 ) ) )
-//enqueue (HelloWorld)
+enqueue (HelloTime)

@@ -1,5 +1,5 @@
-size is 8//-------------------------
 class DST_HelloWorld {  
+  VTInt32 _vInt32;
   VTBoolean _vBool;
   VTUInt8 _vUInt8;
   VTInt8 _vInt8;
@@ -13,6 +13,7 @@ class DST_HelloWorld {
   VTComplexDouble _vComplexDouble;
 };
 DST_HelloWorld  ds = {  
+  6,
   t,
   1,
   2,
@@ -25,25 +26,27 @@ DST_HelloWorld  ds = {
   (3.14 -3.14),
   (6.28 -6.28),
 };
+
 Instructions _clump0_instructions = {
-   _I3(AddInt32, Int32, Int32Point.y, *pointer-not-found*)
-   _I3(AddInt32, Int32Point.x, Int32Point.y, *pointer-not-found*)
-   _I3(AddInt32, number_two, number_two, *pointer-not-found*)
-   _I3(MulDouble, DoublePoint.x, DoublePoint.y, *pointer-not-found*)
-   _I3(AddUInt8, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddInt8, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddUInt16, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddInt16, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddUInt32, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddInt32, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddComplexDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddComplexSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddDouble, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
-   _I3(AddSingle, *pointer-not-found*, *pointer-not-found*, *pointer-not-found*)
+   _I3(AddInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32)
+   _I3(AddInt32, Int32, Int32Point.y, HelloWorld.Locals.vInt32)
+   _I3(AddInt32, Int32Point.x, Int32Point.y, HelloWorld.Locals.vInt32)
+   _I3(AddInt32, number_two, number_two, HelloWorld.Locals.vInt32)
+   _I3(MulDouble, DoublePoint.x, DoublePoint.y, HelloWorld.Locals.vDouble)
+   _I3(AddUInt8, HelloWorld.Locals.vUInt8, HelloWorld.Locals.vUInt8, HelloWorld.Locals.vUInt8)
+   _I3(AddInt8, HelloWorld.Locals.vInt8, HelloWorld.Locals.vInt8, HelloWorld.Locals.vInt8)
+   _I3(AddUInt16, HelloWorld.Locals.vUInt16, HelloWorld.Locals.vUInt16, HelloWorld.Locals.vUInt16)
+   _I3(AddInt16, HelloWorld.Locals.vInt16, HelloWorld.Locals.vInt16, HelloWorld.Locals.vInt16)
+   _I3(AddUInt32, HelloWorld.Locals.vUInt32, HelloWorld.Locals.vUInt32, HelloWorld.Locals.vUInt32)
+   _I3(AddInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32)
+   _I3(AddDouble, HelloWorld.Locals.vDouble, HelloWorld.Locals.vDouble, HelloWorld.Locals.vDouble)
+   _I3(AddSingle, HelloWorld.Locals.vSingle, HelloWorld.Locals.vSingle, HelloWorld.Locals.vSingle)
+   _I3(AddComplexDouble, HelloWorld.Locals.vComplexDouble, HelloWorld.Locals.vComplexDouble, HelloWorld.Locals.vComplexDouble)
+   _I3(AddComplexSingle, HelloWorld.Locals.vComplexSingle, HelloWorld.Locals.vComplexSingle, HelloWorld.Locals.vComplexSingle)
+   _I3(AddDouble, HelloWorld.Locals.vComplexDouble.real, HelloWorld.Locals.vComplexDouble.real, HelloWorld.Locals.vComplexDouble.real)
+   _I3(AddSingle, HelloWorld.Locals.vComplexSingle.imaginary, HelloWorld.Locals.vComplexSingle.imaginary, HelloWorld.Locals.vComplexSingle.imaginary)
    _I2(TypeTopAQSize, .Int32Point, global_int)
-   _I2(TypeTopAQSize, .Int32, *pointer-not-found*)
-   _I2(TypeTopAQSize, .Double, *pointer-not-found*)
+   _I2(TypeTopAQSize, .Int32, HelloWorld.Locals.vInt32)
+   _I2(TypeTopAQSize, .Double, HelloWorld.Locals.vInt32)
    _I0(Done)
 };

@@ -1,0 +1,11 @@
+>>Added1 new nothing (^DataPointer_null (*) 1 1)
+Dequeued1 (^DataPointer_null (*) 1 0) is to:f
+>>Added1 new nothing  (^DataPointer_null (* *) 2 2)
+Dequeued2 (^DataPointer_null (* *) 2 1) is to:f
+Dequeued3 (^DataPointer_null (* *) 2 0) is to:f
+>>Added1 new nothing  (^DataPointer_null (* *) 1 1)
+Dequeued4 (^DataPointer_null (* *) 1 0) is to:f
+>>Added1 new nothing (^DataPointer_null (* *) 2 1)
+Dequeued5 (^DataPointer_null (* *) 2 0) is to:f
+Dequeued5 (^DataPointer_null (* *) 2 0) is to:t
+ Reader/Writer done

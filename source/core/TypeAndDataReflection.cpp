@@ -109,7 +109,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
 #if 0
         // helpful section of development
         SubString ss = type->GetName();
-        if (ss.CompareCStr("your-type")) {
+        if (ss.CompareCStr("VirtualInstrument")) {
             printf("found");
         }
 #endif
@@ -205,6 +205,16 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
 {
     if (_pHayStack == null)
         return;
+    
+    TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)_pHayStack;
+    TypeRef elementType = pArray->ElementType();
+    
+    if (type->IsZDA()) {
+        // ZDA's have one element.
+        Accept(elementType, pArray->RawBegin());
+    } else {
+        
+    }
 #if 0
     // still in work
     TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)_pHayStack;
@@ -255,6 +265,7 @@ void DataReflectionVisitor::VisitDefaultPointer(DefaultPointerType* type)
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitCustomDataProc(CustomDataProcType* type)
 {
+    Accept(type->BaseType(), _pHayStack);
 }
 #endif
 }
