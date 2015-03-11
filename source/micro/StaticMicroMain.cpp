@@ -33,46 +33,56 @@ VIREO_FUNCTION_C_PROTO(DebugButton);
 
 VIREO_FUNCTION_C_PROTO(Branch);
 
-// Now if a nice variadic macro can be figured out this would look nicer
-#define I0(_I)                          ((void*)_I),
-#define I1(_I, _A1)                     I0(_I) (&_DS._A1),
-#define I2(_I, _A1, _A2)                I1(_I, _A1) (&_DS._A2),
-#define I3(_I, _A1, _A2, _A3)           I2(_I, _A1, _A2) (&_DS._A3),
-#define I4(_I, _A1, _A2, _A3, _A4)      I3(_I, _A1, _A2, _A3) (&_DS._A4),
-
-#define IBranch(_perch_)               ((void*)Branch), &InstrucitonBlock[_perch_],
-
+#define I(_I, ...)      ((void*)_I), __VA_ARGS__
+#define G(_a_)          // Global TBD ...
 
 InstructionCore oneInstruction;
 
 // Struct for VI's dataspace
 struct Vi1_DSType{
-    Int32 a;
-    Int32 b;
-    Int32 c;
-    Boolean bit;
+    struct {
+        Int32 in1;
+        Int32 out1;
+    } Params;
+    struct {
+        Int32 a;
+        Int32 b;
+        Int32 c;
+        Boolean bit;
+    } Locals;
 };
 
 // Initializer for VI's dataspace
 Vi1_DSType  ds1 = {
-    21,     // a
-    2,      // b
-    1,      // c
-    true    // bit
+    {   // Params
+        0,      // in1
+        0,      // out1
+    },
+    {   // Locals
+        21,     // a
+        2,      // b
+        1,      // c
+        true    // bit
+    },
 };
 
 //Instructions for VI
-#undef _DS
-#define _DS ds1
+
+#undef P
+#undef L
+#define P(_a_) (&ds1.Params._a_)
+#define L(_a_) (&ds1.Locals._a_)
+#define PERCH(_a_)  (&InstrucitonBlock[_a_])
+
 void* InstrucitonBlock[] =
 {
-/* Clump 0 ----------------------*/
-/* 0000 */    I3(AddInt32, a, b, c)
-/* 0004 */    I3(MulInt32, a, b, c)
-/* 0008 */    I1(DebugLED, bit)
-/* 000A */    I2(NotBoolean, bit, bit)
-/* 000D */    IBranch(0x0008)
-/* 000F */  //I0(Done) Not quite ready.
+ /* Clump 0 ----------------------*/
+ /* 0000 */    I(AddInt32, P(in1), L(b), P(out1)),
+ /* 0004 */    I(MulInt32, L(a), L(b), L(c)),
+ /* 0008 */    I(DebugLED, L(bit)),
+ /* 000A */    I(NotBoolean, L(bit), L(bit)),
+ /* 000D */    I(Branch, PERCH(0x0008)),
+ ///* 000F */    I(Done) //Not quite ready.
 };
 
 // Break out flag.

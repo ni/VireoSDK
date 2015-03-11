@@ -1,0 +1,59 @@
+
+define (TestProgram dv(.VirtualInstrument (
+    c(
+        // The queue type can be used in its open form
+        // That means it is a queue of 'nothing'
+        e(.Queue q)
+        e(dv(.Double 42.5) x)
+        e(.Double y)
+        e(.* nothing)
+        e(.Boolean timedOut)
+    )
+
+    clump (
+        Trigger(1)
+        Trigger(2)
+        Wait(1)
+        Wait(2)
+        Printf(" Reader/Writer done\n")
+    )
+
+    clump (
+        WaitMilliseconds(50)
+        EnqueueElement(q * 1000 timedOut)
+        Printf(">>Added1 new nothing %s\n" q)
+
+        WaitMilliseconds(51)
+        EnqueueElement(q * 1000 timedOut)
+        EnqueueElement(q * 1000 timedOut)
+        Printf(">>Added1 new nothing  %s\n" q)
+
+        WaitMilliseconds(52)
+        EnqueueElement(q * 1000 timedOut)
+        Printf(">>Added1 new nothing  %s\n" q)
+
+        WaitMilliseconds(53)
+        EnqueueElement(q * 1000 timedOut)
+        Printf(">>Added1 new nothing %s\n" q)
+    )
+
+    clump (
+        WaitMilliseconds(61)
+        DequeueElement(q * 55 timedOut)
+        Printf("Dequeued1 %s is to:%s\n" q timedOut)
+        DequeueElement(q * 70 timedOut)
+        Printf("Dequeued2 %s is to:%s\n" q timedOut)
+        DequeueElement(q * 72 timedOut)
+        Printf("Dequeued3 %s is to:%s\n" q timedOut)
+        DequeueElement(q * 73 timedOut)
+        Printf("Dequeued4 %s is to:%s\n" q timedOut)
+        DequeueElement(q * 73 timedOut)
+        Printf("Dequeued5 %s is to:%s\n" q timedOut)
+        DequeueElement(q * 73 timedOut)
+        Printf("Dequeued5 %s is to:%s\n" q timedOut)
+    )
+
+) ) )
+
+
+enqueue (TestProgram)
