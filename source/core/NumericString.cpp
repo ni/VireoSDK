@@ -45,6 +45,7 @@ struct FormatOptions {
     Int32   Precision; //.3
     Int32   Significant; //_4
     SubString  FmtSubString;
+    Boolean ConsumeArgument;
 };
 //------------------------------------------------------------
 void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
@@ -70,7 +71,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->NumericLength[1] = '\0';
     pOptions->NumericLength[2] = '\0';
     pOptions->EngineerNotation = false;
-
+    pOptions->ConsumeArgument = true;
     Boolean bPrecision = false;
     Boolean bValid = true;
     Utf8Char c;
@@ -130,18 +131,18 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         } else if (c == ';') {
             // local conversion code
         } else if (strchr("hl", c)) {
-        	if(format->Length()<=0) {
-        		bValid = false;
-        		break;
-        	} else {
-        		Utf8Char nextC = *(format->Begin());
-        		if (strchr("duoxXfFeEgGpbB", nextC)) {
-        			pOptions->NumericLength[0] = c;
-        		} else {
-        			bValid = false;
-        			break;
-        		}
-        	}
+            if(format->Length()<=0) {
+                bValid = false;
+                break;
+            } else {
+                Utf8Char nextC = *(format->Begin());
+                if (strchr("duoxXfFeEgGpbB", nextC)) {
+                    pOptions->NumericLength[0] = c;
+                } else {
+                    bValid = false;
+                    break;
+                }
+            }
         } else {
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
@@ -170,6 +171,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     if (!pOptions->Valid) {
         pOptions->FormatChar = '0';
     }
+    pOptions->ConsumeArgument = (pOptions->FormatChar != '%') && (pOptions->FormatChar != ';');
     pOptions->OriginalFormatChar = pOptions->FormatChar;
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
@@ -177,43 +179,82 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 void GenerateFinalNumeric (const FormatOptions* , char* , Int32* , TempStackCString* , Boolean );
 void RefactorLabviewNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32 );
 
-Int32 DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], )
+void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
 {
+    Int32 index = 0;
+    for (Int32 i=0; i< count; i++) {
+        if(i!=0) {
+            buffer->AppendCStr(" ");
+            index++;
+        }
+        TypeRef argType = arguments[i]._paramType;
+        switch(argType->BitEncoding()) {
+
+        case kEncoding_UInt: {
+            buffer->AppendCStr("%u");
+        }
+        break;
+        case kEncoding_SInt:
+        case kEncoding_MetaInt: {
+            buffer->AppendCStr("%d");
+        }
+        break;
+        case kEncoding_IEEE754Binary: {
+            buffer->AppendCStr("%f");
+        }
+        break;
+        case kEncoding_Array: {
+            TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(arguments[i]._pData);
+            TypeRef elementType = (*pArray)->ElementType();
+            EncodingEnum elementEncoding = elementType->BitEncoding();
+            if (argType->Rank()==1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
+                buffer->AppendCStr("%s");
+            } else {
+                // doesn't support yet
+                buffer->AppendCStr("%Z");
+            }
+        }
+        break;
+        default:
+            buffer->AppendCStr("%Z");
+        break;
+        }
+    }
 }
 /*
  * Handle the Integer overflow in Labview.
  * */
 void ConvertNumericType(Int32 size, Boolean unsign, IntMax input, IntMax* output)
 {
-	IntMax NumericLimit[12] = {0, 255, -127, 128, 0, 65536, -32768, 32767, 0, 4294967295, -2147483648, 2147483647};
-	int limitIndex = 0;
-	if (size < 8) {
-		switch (size) {
-		case 1:
-			limitIndex = 0;
-		break;
-		case 2:
-			limitIndex = 1;
-		break;
-		case 4:
-			limitIndex = 2;
-		break;
-		default:
-			limitIndex = 0;
-		}
-		if (!unsign) {
-			limitIndex = limitIndex*4 + 2;
-		} else {
-			limitIndex = limitIndex*4;
-		}
-		if (input<NumericLimit[limitIndex]) {
-			input = NumericLimit[limitIndex];
-		} else if (input>NumericLimit[limitIndex+1]) {
-			input = NumericLimit[limitIndex+1];
-		}
-		*output = input;
-	}
-	// do nothing for int64 and uint64. We may not reach the max uint64 now.
+    IntMax NumericLimit[12] = {0, 255, -127, 128, 0, 65536, -32768, 32767, 0, 4294967295, -2147483648, 2147483647};
+    int limitIndex = 0;
+    if (size < 8) {
+        switch (size) {
+        case 1:
+            limitIndex = 0;
+        break;
+        case 2:
+            limitIndex = 1;
+        break;
+        case 4:
+            limitIndex = 2;
+        break;
+        default:
+            limitIndex = 0;
+        }
+        if (!unsign) {
+            limitIndex = limitIndex*4 + 2;
+        } else {
+            limitIndex = limitIndex*4;
+        }
+        if (input<NumericLimit[limitIndex]) {
+            input = NumericLimit[limitIndex];
+        } else if (input>NumericLimit[limitIndex+1]) {
+            input = NumericLimit[limitIndex+1];
+        }
+        *output = input;
+    }
+    // do nothing for int64 and uint64. We may not reach the max uint64 now.
 }
 
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
@@ -229,6 +270,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
     Boolean validFormatString = true;
     Utf8Char c = 0;
+
     while (validFormatString && f.ReadRawChar(&c))
     {
         if (c == '\\' && f.ReadRawChar(&c)) {
@@ -244,6 +286,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 default:  break;
             }
         } else if (c == '%') {
+
             FormatOptions fOptions;
             ReadPercentFormatOptions(&f, &fOptions);
             // We should assign the local decimal point to DecimalSeparator.
@@ -275,10 +318,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             if (!fOptions.Valid) {
                 parseFinished = true;
                 validFormatString = false;
-            } else if (argumentIndex > count-1 && fOptions.FormatChar != '%') {
+            } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 validFormatString = false;
                 parseFinished = true;
             }
+
             while (!parseFinished){
                 parseFinished = true;
                 switch (fOptions.FormatChar)
@@ -341,19 +385,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 // need truncate the integer part of the float because the sprintf doesnt do this for us.
                             }
                         }
-                        char asciiReplacementString[100];
+                        char asciiReplacementString[2*stringBufferSize];
                         Int32 sizeOfNumericString = -1;
                         char formatCode[10];
                         if (precision >= 0) {
-                            sprintf(formatCode, "%%.*(%s)f", fOptions.NumericLength);
+                            sprintf(formatCode, "%%.*%sf", fOptions.NumericLength);
                             // formatCode : %.*hf
-                        	sizeOfNumericString = snprintf(asciiReplacementString, 100, formatCode, precision,tempDouble);
+                            sizeOfNumericString = snprintf(asciiReplacementString, stringBufferSize, formatCode, precision,tempDouble);
                         } else {
-                            sprintf(formatCode, "%%(%s)f", fOptions.NumericLength);
+                            sprintf(formatCode, "%%%sf", fOptions.NumericLength);
                             // formatCode: %hf
-                            sizeOfNumericString = snprintf(asciiReplacementString, 100, formatCode, tempDouble);
+                            sizeOfNumericString = snprintf(asciiReplacementString, stringBufferSize, formatCode, tempDouble);
                         }
                         Int32 intDigits = (exponent >= 0)? (exponent): 0 ;
+                        TempStackCString paddingPart;
                         RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, intDigits, truncateSignificant);
                         buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
                         argumentIndex++;
@@ -381,17 +426,17 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (fOptions.Significant >= 0) {
                             precision =  fOptions.Significant - 1;
                         }
-                        char asciiReplacementString[100];
+                        char asciiReplacementString[2*stringBufferSize];
                         Int32 sizeOfNumericString = 0;
                         char formatCode[10];
                         if (precision >= 0) {
-                        	sprintf(formatCode, "%%.*(%s)e", fOptions.NumericLength);
+                            sprintf(formatCode, "%%.*%se", fOptions.NumericLength);
                             // formatCode : %.*he
-                            sizeOfNumericString += snprintf(asciiReplacementString, 100, "%.*e", precision, tempDouble);
+                            sizeOfNumericString = snprintf(asciiReplacementString, stringBufferSize, "%.*e", precision, tempDouble);
                         } else {
-                        	sprintf(formatCode, "%%(%s)e", fOptions.NumericLength);
-                        	// formatCode : %he
-                            sizeOfNumericString = snprintf(asciiReplacementString, 100, "%e", tempDouble);
+                            sprintf(formatCode, "%%%se", fOptions.NumericLength);
+                            // formatCode : %he
+                            sizeOfNumericString = snprintf(asciiReplacementString, stringBufferSize, "%e", tempDouble);
                         }
                         RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, 0, 0);
 
@@ -412,59 +457,55 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         // TODO don't assume data type. This just becomes the default format for real numbers, then use formatter
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString tempFormat(&percentFormat);
-                        char asciiReplacementString[100];
+                        char asciiReplacementString[stringBufferSize];
                         //Get the numeric string that will replace the format string
                         Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
-                        Int32 sizeOfNumericString = snprintf(asciiReplacementString, 100, tempFormat.BeginCStr(), tempDouble);
+                        Int32 sizeOfNumericString = snprintf(asciiReplacementString, stringBufferSize, tempFormat.BeginCStr(), tempDouble);
                         buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
                         argumentIndex++;
                     }
                     break;
                     case 'b': case 'B':
                     {
+                        fOptions.FormatChar = 'B';
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString formattedNumber;
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
                         Int32 intSize = 8*argType->TopAQSize();
 
-                        ReadIntFromMemory(argType->BitEncoding(), 8, arguments[argumentIndex]._pData, &intValue);
-                        IntMax TypedValue;
-                        ConvertNumericType(intSize, intValue, &TypedValue);
-                        char BinaryString[66];
+                        ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                        char BinaryString[2*stringBufferSize];
                         char bits [2];
                         bits[0] = '0';
                         bits[1] = '1';
                         Int32 length = 0;
                         if (intValue < 0) {
-                            intValue = intValue << (64 - intSize);
-                            for (int i = 66-intSize; i<=65; i++) {
-                                if (intValue >= 0) {
+                            for (int i = intSize-1; i >=0; i--) {
+                                if (intValue%2 == 0) {
                                     BinaryString[i] = '0';
                                 } else {
                                     BinaryString[i] = '1';
                                 }
-                                length ++;
-                                intValue = intValue << 1;
+                                length++;
+                                intValue = intValue >> 1;
                             }
                         } else {
                             if (intValue == 0) {
-                                BinaryString[65-length] = bits[intValue];
+                                BinaryString[0] = bits[intValue];
                                 length = 1;
                             }
                             while (intValue >= 1) {
-                                    BinaryString[65-length] =  bits[intValue%2];
+                                    BinaryString[intSize-1-length] =  bits[intValue%2];
                                     intValue = intValue/2;
                                     length++;
                             }
                         }
-                        if (fOptions.ShowSign) {
-                            BinaryString[65-length] = '+';
-                            length ++;
-                            buffer->Append(length, (Utf8Char*)BinaryString+(66-length));
-                        } else {
-                            buffer->Append(length, (Utf8Char*)BinaryString+(66-length));
-                        }
+                        char* binaryindex = BinaryString;
+                        Int32 binaryStringLength = length;
+
+                        RefactorLabviewNumeric(&fOptions, binaryindex, &binaryStringLength, 0, 0);
+                        buffer->Append(binaryStringLength, (Utf8Char*)binaryindex);
                         argumentIndex++;
                     }
                     break;
@@ -480,7 +521,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         tempFormat.Append(fmtSubString);
                         char specifier[] = "d";
                         if (fOptions.FormatChar == 'x') {
-                        	fOptions.FormatChar = 'X';
+                            fOptions.FormatChar = 'X';
+                        }
+                        if (fOptions.FormatChar == 'U') {
+                            fOptions.FormatChar = 'u';
                         }
                         specifier[0] = fOptions.FormatChar;
                         tempFormat.AppendCStr(specifier);
@@ -488,9 +532,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TempStackCString formattedNumber;
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
-                        ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                        if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
+                            if(fOptions.FormatChar == 'u') {
+                                ReadIntFromMemory(argType->BitEncoding(), 8, arguments[argumentIndex]._pData, &intValue);
+                                ConvertNumericType(4, true, intValue, &intValue);
+                            } else {
+                                ReadIntFromMemory(argType->BitEncoding(), 8, arguments[argumentIndex]._pData, &intValue);
+                                ConvertNumericType(4, false, intValue, &intValue);
+                            }
+                        } else {
+                            ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                        }
                         Int32 length = snprintf(formattedNumber.BeginCStr(), formattedNumber.Capacity(), tempFormat.BeginCStr(), intValue);
                         buffer->Append(length, (Utf8Char*)formattedNumber.Begin());
+
                         argumentIndex++;
                     }
                     break;
@@ -633,9 +688,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
         }
         TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
         GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-    }
-
-    if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
+    } else if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
         char siPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y'};
         Int32 numberIndex = numberStart;
         Int32 baseIndex = 0;
@@ -649,7 +702,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             if (paddingBase < 0) {
                 paddingBase += 3;
             }
-            char tempNumber[100];
+            char tempNumber[stringBufferSize];
             exponent = exponent - paddingBase;
 
             // we are lucky, this case will never generate extra significant digit at MSB.
@@ -698,14 +751,14 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
             } else {
                 // we can use %d safely, because the exponent part is never long than Int32 in double
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, 100, "E%+d", (Int32)exponent);
+                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, stringBufferSize-baseIndex, "E%+d", (Int32)exponent);
                 baseIndex += sizeOfExpoent;
             }
             TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
 
         } else {
-            char tempNumber[100];
+            char tempNumber[stringBufferSize];
             baseIndex = 0;
             for (Int32 i = numberStart; i<exponentPos; i++) {
                 tempNumber[baseIndex] = *(buffer+i);
@@ -725,12 +778,15 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                     baseIndex ++;
                 }
             } else {
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, 100, "E%+d", (Int32)exponent);
+                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, stringBufferSize-baseIndex, "E%+d", (Int32)exponent);
                 baseIndex += sizeOfExpoent;
             }
             TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
+    } else if (formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'b') {
+        TempStackCString numberPart((Utf8Char*)bufferBegin, *pSize);
+        GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
     }
 }
 
@@ -750,23 +806,27 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
             leadingPart.AppendCStr(" ");
         }
     } else {
-        leadingPart.AppendCStr("-");
+        if(formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'X') {
+            leadingPart.AppendCStr("+");
+        } else {
+            leadingPart.AppendCStr("-");
+        }
     }
     if (formatOptions->LeftJustify) {
         width = width - leadingPart.Length();
         width = width>0? width : 0;
-        *pSize = snprintf(bufferBegin, 100, "%s%-*s", leadingPart.BeginCStr(), width, numberPart->BeginCStr());
+        *pSize = snprintf(bufferBegin, stringBufferSize, "%s%-*s", leadingPart.BeginCStr(), width, numberPart->BeginCStr());
     } else {
         // calculate the padding
         width = width - leadingPart.Length();
         width = width - numberPart->Length();
         if (width <=0 ) {
-            *pSize = snprintf(bufferBegin, 100, "%s%s", leadingPart.BeginCStr(), numberPart->BeginCStr());
+            *pSize = snprintf(bufferBegin, stringBufferSize, "%s%s", leadingPart.BeginCStr(), numberPart->BeginCStr());
         } else {
             if (formatOptions->ZeroPad) {
-                *pSize = snprintf(bufferBegin, 100, "%s%0*d%s", leadingPart.BeginCStr(), width, 0, numberPart->BeginCStr());
+                *pSize = snprintf(bufferBegin, stringBufferSize, "%s%0*d%s", leadingPart.BeginCStr(), width, 0, numberPart->BeginCStr());
             } else {
-                *pSize = snprintf(bufferBegin, 100, "%*s%s%s", width, " ", leadingPart.BeginCStr(), numberPart->BeginCStr());
+                *pSize = snprintf(bufferBegin, stringBufferSize, "%*s%s%s", width, " ", leadingPart.BeginCStr(), numberPart->BeginCStr());
             }
          }
     }
@@ -1122,86 +1182,89 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
             }
         }
     }
-    // update the remaining string.
     return filledItems;
 }
 //-------------------------------------------------------------
 /**
  *case 1 The format length is 0:
- * 		In labview FormatValue function:
- * 			print the value as %f no matter what the data type it is.
- * 		In Format into String function:
- * 		   print the value with the proper format code according to the data type.
- * 				%f for float, %d for int. etc.
+ *         In labview FormatValue function:
+ *             print the value as %f no matter what the data type it is.
+ *         In Format into String function:
+ *            print the value with the proper format code according to the data type.
+ *                 %f for float, %d for int. etc.
  *case 2 The format contains only non-foramt code character. e.g. "  asvasd ":
- * 		In labview FormatValue function:
- * 			append the format string to the output no value String is printed.
- * 		In Format into String function:
- * 			will get the too few specifier error!.
+ *         In labview FormatValue function:
+ *             append the format string to the output no value String is printed.
+ *         In Format into String function:
+ *             will get the too few specifier error!.
  *case 3 The first format code is not valid:
- * 		In labview Format Value function:
- * 			Parse the format code end stop at the invalid position. then print the value as in case 1.
- * 			And append the remaining part of the format code.
- * 		In labview Format into String function:
- * 			throw the error. Report which argument the parsing has stopped at.
+ *         In labview Format Value function:
+ *             Parse the format code end stop at the invalid position. then print the value as in case 1.
+ *             And append the remaining part of the format code.
+ *         In labview Format into String function:
+ *             throw the error. Report which argument the parsing has stopped at.
  *case 4 The format string contains more format code that needed. The needed format code is correct.
- *		In labview Format Value function:
- *			Only recognize the first format code and append the entire remaining format string to the printed value string.
- *		In labview Format Into String function:
- *			Whether the extra format codes is valid ot not, the function doesn't output anything, Just throw the error.
+ *        In labview Format Value function:
+ *            Only recognize the first format code and append the entire remaining format string to the printed value string.
+ *        In labview Format Into String function:
+ *            Whether the extra format codes is valid ot not, the function doesn't output anything, Just throw the error.
  *case 5 The format code and the type of the input value doesn't match
- *		In labview Format Value function:
- *			Use the Type conversion to convert the input value to the correct data type. Then print it.
- *		In labview Format intoString function:
- *		case 5.1 complex double as the numeric
- *			If the  data type of the input value is complex, the print value should print both the real part and imaginary part.
- *		case 5.2 string as numeric %d , %f
- *			Will not accept this case, throw the error.
+ *        In labview Format Value function:
+ *            Use the Type conversion to convert the input value to the correct data type. Then print it.
+ *        In labview Format intoString function:
+ *        case 5.1 complex double as the numeric
+ *            If the  data type of the input value is complex, the print value should print both the real part and imaginary part.
+ *        case 5.2 string as numeric %d , %f
+ *            Will not accept this case, throw the error.
  *case 6 The length speicfier
- *		In lbivew Format Value function:
- *			'h' 'l' is supported for %d and %f .. numeric type.
- *		In labview Format into String function:
- *			'h' is not supported.
+ *        In lbivew Format Value function:
+ *            'h' 'l' is supported for %d and %f .. numeric type.
+ *        In labview Format into String function:
+ *            'h' is not supported.
  * */
 VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
-	//exit(1);
-	printf("running\n");
     StringRef output = _Param(0);
-    SubString ss = _Param(0)->MakeSubStringAlias();
+    StringRef formatString = _Param(1);
 
-   SubString format = _Param(1)->MakeSubStringAlias();
+    SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value  = {_ParamPointer(2), _ParamPointer(3)};
     Utf8Char c = 0;
-   // Utf8Char defaultFormat[90] ={"%falb"};
-   printf("original length %d\n",format.Length());
+    Utf8Char defaultFormat[stringBufferSize];
+    SubString remainingFormat;
+    TempStackCString tempformat;
 
     if(format.Length() == 0) {
-        Utf8Char defaultFormat[] ={"%falb"};
-
-        format.AliasAssign(defaultFormat, defaultFormat+5);
-        printf("realians length %d\n",format.Length());
+        DefaultFormatCode(1,&Value, &tempformat);
     } else {
-		while (format.ReadRawChar(&c))
-		{
-			if (c == '%') {
-				  FormatOptions fOptions;
-				  ReadPercentFormatOptions(&format, &fOptions);
-				  if (!fOptions.Valid) {
-
-				  }
-			} else {
-				// continue
-			}
-		}
+        Boolean foundFirst = false;
+        Utf8Char* index = NULL;
+        while (format.ReadRawChar(&c))
+        {
+            index = (Utf8Char*)format.Begin();
+            if (c == '%') {
+                FormatOptions fOptions;
+                ReadPercentFormatOptions(&format, &fOptions);
+                if (!fOptions.Valid) {
+                    remainingFormat.AliasAssign(format.Begin(), format.End());
+                    format.AliasAssign(formatString->Begin(), index);
+                    tempformat.Append(&format);
+                    DefaultFormatCode(1,&Value, &tempformat);
+                    break;
+                } else if (fOptions.ConsumeArgument){
+                    remainingFormat.AliasAssign(format.Begin(), format.End());
+                    format.AliasAssign(formatString->Begin(), format.Begin());
+                    tempformat.Append(&format);
+                    break;
+                }
+            } else {
+            }
+        }
     }
-    int stackint = 12;
-    char stack[355];
-    for (int i = 0; i<333; i++)
-    {
-    	stack[i] = 'A';
-    }/**/
-    Format(&format, 1, &Value, _Param(0));
+    format.AliasAssign(tempformat.Begin(), tempformat.End());
+    Format(&format, 1, &Value, output);
+    output->AppendSubString(&remainingFormat);
+
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1218,6 +1281,11 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
     Int32 count = (_ParamVarArgCount() -2)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    TempStackCString tempformat;
+    if(format.Length() == 0) {
+        DefaultFormatCode(count,arguments, &tempformat);
+        format.AliasAssign(tempformat.Begin(), tempformat.End());
+    }
     StringRef buffer = _Param(StringOut);
     Format(&format, count, arguments, buffer);
     return _NextInstruction();
@@ -1225,21 +1293,21 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 
 /*
  * The scan function:
- * 		case 1: length of input format code is 0
- * 			use default behaviour
- * 		case 2: invalid input format code
- * 			scan value will use the default format code
- * 			scan string will throw the error.
- * 		case 3: The format code and the output value doesn't match.
- *			Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
- *			The labview will automatically change the output value when your wire a input with the different input.
- *			e.g."10.85" %f -> int 11.0
- *				"10.85" %d -> int 10
- *				"10.85" %d ->double 10
- *			be careful, the conversion means different from the conversion in C++.
- *			It only reach the max value or min value.
- *			Be careful, complex double only sipport %f,
- *			if you use the %d, it only read the int.
+ *         case 1: length of input format code is 0
+ *             use default behaviour
+ *         case 2: invalid input format code
+ *             scan value will use the default format code
+ *             scan string will throw the error.
+ *         case 3: The format code and the output value doesn't match.
+ *            Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
+ *            The labview will automatically change the output value when your wire a input with the different input.
+ *            e.g."10.85" %f -> int 11.0
+ *                "10.85" %d -> int 10
+ *                "10.85" %d ->double 10
+ *            be careful, the conversion means different from the conversion in C++.
+ *            It only reach the max value or min value.
+ *            Be careful, complex double only sipport %f,
+ *            if you use the %d, it only read the int.
  *
  * */
 //------------------------------------------------------------
@@ -1253,6 +1321,7 @@ struct StringScanStruct : public VarArgInstruction
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);
     _ParamDef(StringRef, StringFormat);
+    _ParamDef(Int32, InitialPos);
     _ParamDef(Int32, OffsetPast);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
@@ -1264,6 +1333,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     SubString input = _Param(StringInput)->MakeSubStringAlias();
+    input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
     Int32 filled = FormatScan(&input, &format, arguments);
     _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
     _Param(StringRemaining)->Resize1D(input.Length());
@@ -1273,11 +1343,10 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
-	DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) i(.UInt32) o(.UInt32) o(.StaticTypeAndData))")
 DEFINE_VIREO_END()
-
 
 } // namespace Vireo

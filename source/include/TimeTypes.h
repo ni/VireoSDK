@@ -145,5 +145,7 @@ public:
     ATime128(Int64 integer, UInt64 fraction) : Fixed128f64(integer,fraction) { }
 };
 
+void getDate(Int64 wholeSecond, Int64* yearPtr, Int64* monthPtr, Int64* dayPtr, Int64* hourPtr, Int64* minPtr, Int64* secondPtr);
+
 }
 #endif // TimeTypes_h

@@ -317,7 +317,7 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     STACK_VAR(String, tempString);
     
     // Ignore begin & end, then div 2 since each argument is passed via two arguments.
-    Int32       count = (_ParamVarArgCount() - 2) / 2;
+    Int32       count = (_ParamVarArgCount() - 1) / 2;
     SubString   format = _Param(format)->MakeSubStringAlias();
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
