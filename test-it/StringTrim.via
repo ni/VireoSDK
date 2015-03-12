@@ -1,0 +1,131 @@
+define (HelloStringTrim dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "Hello, sky. I can fly.") v1)
+        e(dv(.String " a string2 ") v2)
+        e(dv(.String "             a string3                 ") v3)
+        e(dv(.String "\r\n\t         a string4               \r\n\t") v4)
+        e(dv(.String "\r\n\ta string5\r\n\t") v5)
+        e(dv(.String "\na string6\n.\n") v6)
+        e(dv(.String "\na string6 你好世界。我能飛。\n ") v7)
+        e(dv(.String " 你好世界。我能飛。 ") v8)
+        e(dv(.String "你好世界。我能飛。") v9)
+        e(dv(.String "") v10)
+        e(dv(.String "  ") v11)
+
+        e(.String result)
+    )
+    clump (
+        Printf("--Trim both---------------------------------\n")
+        StringTrim(v1 0 result)
+        Printf("Before <%s> after <%s>\n" v1 result)
+
+        StringTrim(v2 0 result)
+        Printf("Before <%s> after <%s>\n" v2 result)
+
+        StringTrim(v3 0 result)
+        Printf("Before <%s> after <%s>\n" v3 result)
+
+        StringTrim(v4 0 result)
+        Printf("Before <%s> after <%s>\n" v4 result)
+
+        StringTrim(v5 0 result)
+        Printf("Before <%s> after <%s>\n" v5 result)
+
+        StringTrim(v6 0 result)
+        Printf("Before <%s> after <%s>\n" v6 result)
+
+        StringTrim(v7 0 result)
+        Printf("Before <%s> after <%s>\n" v7 result)
+
+        StringTrim(v8 0 result)
+        Printf("Before <%s> after <%s>\n" v8 result)
+
+        StringTrim(v9 0 result)
+        Printf("Before <%s> after <%s>\n" v9 result)
+
+        StringTrim(v10 0 result)
+        Printf("Before <%s> after <%s>\n" v10 result)
+
+        StringTrim(v11 0 result)
+        Printf("Before <%s> after <%s>\n" v11 result)
+
+        Printf("--Trim front only---------------------------------\n")
+        StringTrim(v1 1 result)
+        Printf("Before <%s> after <%s>\n" v1 result)
+
+        StringTrim(v2 1 result)
+        Printf("Before <%s> after <%s>\n" v2 result)
+
+        StringTrim(v3 1 result)
+        Printf("Before <%s> after <%s>\n" v3 result)
+
+        StringTrim(v4 1 result)
+        Printf("Before <%s> after <%s>\n" v4 result)
+
+        StringTrim(v5 1 result)
+        Printf("Before <%s> after <%s>\n" v5 result)
+
+        StringTrim(v6 1 result)
+        Printf("Before <%s> after <%s>\n" v6 result)
+
+        StringTrim(v7 1 result)
+        Printf("Before <%s> after <%s>\n" v7 result)
+
+        StringTrim(v8 1 result)
+        Printf("Before <%s> after <%s>\n" v8 result)
+
+        StringTrim(v9 1 result)
+        Printf("Before <%s> after <%s>\n" v9 result)
+
+        StringTrim(v10 1 result)
+        Printf("Before <%s> after <%s>\n" v10 result)
+
+        StringTrim(v11 1 result)
+        Printf("Before <%s> after <%s>\n" v11 result)
+
+        Printf("--Trim end only---------------------------------\n")
+        StringTrim(v1 2 result)
+        Printf("Before <%s> after <%s>\n" v1 result)
+
+        StringTrim(v2 2 result)
+        Printf("Before <%s> after <%s>\n" v2 result)
+
+        StringTrim(v3 2 result)
+        Printf("Before <%s> after <%s>\n" v3 result)
+
+        StringTrim(v4 2 result)
+        Printf("Before <%s> after <%s>\n" v4 result)
+
+        StringTrim(v5 2 result)
+        Printf("Before <%s> after <%s>\n" v5 result)
+
+        StringTrim(v6 2 result)
+        Printf("Before <%s> after <%s>\n" v6 result)
+
+        StringTrim(v7 2 result)
+        Printf("Before <%s> after <%s>\n" v7 result)
+
+        StringTrim(v8 2 result)
+        Printf("Before <%s> after <%s>\n" v8 result)
+
+        StringTrim(v9 2 result)
+        Printf("Before <%s> after <%s>\n" v9 result)
+
+        StringTrim(v10 2 result)
+        Printf("Before <%s> after <%s>\n" v10 result)
+
+        StringTrim(v11 2 result)
+        Printf("Before <%s> after <%s>\n" v11 result)
+
+        Printf("--Trim invalid option---------------------------------\n")
+        StringTrim(v2 -1 result)
+        Printf("Before(-1) <%s> after <%s>\n" v2 result)
+
+        StringTrim(v2 3 result)
+        Printf("Before(3) <%s> after <%s>\n" v2 result)
+
+        )
+) ) )
+
+enqueue (HelloStringTrim)
