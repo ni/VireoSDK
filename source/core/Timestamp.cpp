@@ -414,12 +414,6 @@ VIREO_FUNCTION_SIGNATURE3(IsLETimestamp, Timestamp, Timestamp, Boolean)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(IsEQTimestamp, Timestamp, Timestamp, Boolean)
-{
-    _Param(2) = _Param(0) == _Param(1);
-    return _NextInstruction();
-}
-//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(IsGTTimestamp, Timestamp, Timestamp, Boolean)
 {
     _Param(2) = _Param(0) > _Param(1);
@@ -458,7 +452,6 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(.Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsLE, IsLETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsGE, IsGETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsGT, IsGTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
 
