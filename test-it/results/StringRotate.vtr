@@ -1,0 +1,10 @@
+--Trim both---------------------------------
+Before <Hello, sky. I can fly.> after <ello, sky. I can fly.H>
+Before < a string1 > after <a string1  >
+Before <a string2> after < string2a>
+Before <a string6 你好世界。我能飛。> after < string6 你好世界。我能飛。a>
+Before <你好世界。我能飛。a string6 > after <好世界。我能飛。a string6 你>
+Before <你好世界> after <好世界你>
+Before <> after <>
+Before <a> after <a>
+Before <ab> after <ba>

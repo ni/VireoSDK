@@ -1,0 +1,10 @@
+--Trim both---------------------------------
+Before <Hello, sky. I can fly.> after <.ylf nac I .yks ,olleH>
+Before < a string1 > after < 1gnirts a >
+Before <a string2> after <2gnirts a>
+Before <a string6 你好世界。我能飛。> after <。飛能我。界世好你 6gnirts a>
+Before <你好世界。我能飛。a string6 > after < 6gnirts a。飛能我。界世好你>
+Before <你好世界> after <界世好你>
+Before <> after <>
+Before <a> after <a>
+Before <ab> after <ba>
