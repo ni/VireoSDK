@@ -116,6 +116,8 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             IntMax value = 0;
             if (format->ReadInt(&value)) {
                 pOptions->Precision = (Int32)value;
+            } else {
+            	bValid = false;
             }
         } else if (c == '_') {
             bPrecision = true;
@@ -145,8 +147,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             }
         } else {
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
-            IntIndex nextFormat = format->FindFirstMatch(&percent, 0, false);
-            if ((c >= '0' && c <= '9') && orderIndex>=0 && nextFormat > orderIndex) {
+            if ((c >= '0' && c <= '9') && orderIndex>=0) {
                 format->AliasAssign(format->Begin()-1, format->End());
                 IntMax value = 0;
                 if (format->ReadInt(&value)) {
