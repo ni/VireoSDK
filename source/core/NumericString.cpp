@@ -1231,14 +1231,12 @@ VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, v
     SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value  = {_ParamPointer(2), _ParamPointer(3)};
     Utf8Char c = 0;
-    Utf8Char defaultFormat[stringBufferSize];
     SubString remainingFormat;
     TempStackCString tempformat;
 
     if(format.Length() == 0) {
         DefaultFormatCode(1,&Value, &tempformat);
     } else {
-        Boolean foundFirst = false;
         Utf8Char* index = NULL;
         while (format.ReadRawChar(&c))
         {
@@ -1331,11 +1329,8 @@ struct StringScanStruct : public VarArgInstruction
 VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 {
     //Int32 count = (_ParamVarArgCount() -4)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
-    Int32 filled = FormatScan(&input, &format, arguments);
     _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();

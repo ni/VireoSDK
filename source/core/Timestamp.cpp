@@ -438,7 +438,7 @@ VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
     _Param(1) = _Param(0).ToDouble();
     return _NextInstruction();
 }
-
+//------------------------------------------------------------
 Int64 SecondsFromBaseYear (Int64 year, Int64 baseYear)
 {
 	Int64 secondsInyear = 31536000;
@@ -447,48 +447,49 @@ Int64 SecondsFromBaseYear (Int64 year, Int64 baseYear)
 	Int64 totalSeconds = numberOfLeap*secondsInLeap + (year - baseYear - numberOfLeap)*secondsInyear;
 	return totalSeconds;
 }
-Int64 getYear(Int64 wholeSeconds, Int64 fractions, Int64* yearSeconds, Int32* weekDays)
+//------------------------------------------------------------
+Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* weekDays)
 {
-	// Labview don't consider the leap second
-	Int64 secondsInyear = 31536000;
-	Int64 secondsInLeap = 31622400;
-	Int64 baseYear = 1903;
-	Int64 baseWeek = 3;// Thursday, January 01, 1903
-	Int64 currentYear = baseYear;
-	Int64 yearMax = wholeSeconds/secondsInyear;
-	Int64 yearMin = wholeSeconds/secondsInLeap;
-	printf(" whole seconds:  %lld\n", wholeSeconds);
+    // Does not account for leap seconds.
+	Int32 secondsInyear = 31536000;
+	Int32 secondsInLeap = 31622400;
+	Int32 baseYear = 1903;
+	Int32 baseWeek = 3;// Thursday, January 01, 1903
+	Int32 currentYear = baseYear;
+	Int32 yearMax = (Int32)(wholeSeconds/secondsInyear);
+	Int32 yearMin = (Int32)(wholeSeconds/secondsInLeap);
+//	printf(" whole seconds:  %lld\n", wholeSeconds);
 
 	if (wholeSeconds>=0) {
-		for (Int64 i = yearMin; i <= yearMax; i++) {
-			Int64 year = baseYear + i;
-			Int64 numberOfLeap = 0;
+		for (Int32 i = yearMin; i <= yearMax; i++) {
+			Int32 year = baseYear + i;
+			Int32 numberOfLeap = 0;
 			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
-			Int64 nextyear = baseYear + i +1;
+			Int32 nextyear = baseYear + i +1;
 			numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSecondsNext = numberOfLeap*secondsInLeap + (i+1-numberOfLeap)*secondsInyear;
 			printf("total seconds %lld, total seconds next %lld\n", totalSeconds, totalSecondsNext);
 			if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
 				currentYear = nextyear;
-				*yearSeconds = wholeSeconds - totalSeconds;
+				*yearSeconds = (Int32)(wholeSeconds - totalSeconds);
 				break;
 			}
 		}
 	} else if (wholeSeconds<0) {
-		for (Int64 i = yearMax; i <= yearMin; i++) {
-			Int64 year = baseYear + i;
-			Int64 numberOfLeap = 0;
+		for (Int32 i = yearMax; i <= yearMin; i++) {
+			Int32 year = baseYear + i;
+			Int32 numberOfLeap = 0;
 			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
-			Int64 previousyear = baseYear + i - 1;
+			Int32 previousyear = baseYear + i - 1;
 			numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400) - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSecondsPrevious = numberOfLeap*secondsInLeap + (i-1-numberOfLeap)*secondsInyear;
-			printf ("year %d, previous %d\n", year, previousyear);
+//			printf ("year %d, previous %d\n", year, previousyear);
 			if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
 				currentYear = year;
 				// this will make sure the *yearSeconds is always positive
-				*yearSeconds = wholeSeconds - totalSecondsPrevious;
+				*yearSeconds = (Int32)(wholeSeconds - totalSecondsPrevious);
 				break;
 			}
 
@@ -499,22 +500,20 @@ Int64 getYear(Int64 wholeSeconds, Int64 fractions, Int64* yearSeconds, Int32* we
 	}
 	Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
 	Int64 totalSeconds = numberOfLeap*secondsInLeap + (currentYear - baseYear - numberOfLeap)*secondsInyear;
-	 Int64 howmanydays = totalSeconds/(24*3600) ;
-	 printf("how many days from current year%d to 1903 :%lld\n",currentYear,howmanydays);
-	Int64 weekdaysOfyear = (totalSeconds/(24*3600) + baseWeek)%7;
+//	Int64 howmanydays = totalSeconds/(24*3600) ;
+//	printf("how many days from current year%d to 1903 :%lld\n",currentYear,howmanydays);
+	Int32 weekdaysOfyear = (totalSeconds/(24*3600) + baseWeek)%7;
 	weekdaysOfyear = weekdaysOfyear<0? weekdaysOfyear+7 : weekdaysOfyear;
 	*weekDays = weekdaysOfyear;
 	return currentYear;
 }
-
-void getDate(Int64 wholeSecond, Int64 fraction, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
+//------------------------------------------------------------
+void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
 {
-	Int32 baseWeek = 4;
-	Int64 secondsofYear;
-	Int32 baseYear = 1903;
+	Int32 secondsofYear;
 	Int32 firstweekDay = 0;
 
-	Int32 year = (Int32)getYear(wholeSecond, fraction, &secondsofYear, &firstweekDay);
+	Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsofYear, &firstweekDay);
 	printf("this year %d first week day:%d\n", year, firstweekDay);
 	if (yearPtr!= NULL) {
 		*yearPtr = year;
@@ -525,14 +524,14 @@ void getDate(Int64 wholeSecond, Int64 fraction, Int64* secondofYearPtr, Int32* y
 	if (secondofYearPtr != NULL) {
 		*secondofYearPtr = secondsofYear;
 	}
-	printf("seconds of year %lld\n", secondsofYear);
-	Int64 currentMonth = -2;
-	Int64 secondsofMonth = -2;
+//	printf("seconds of year %lld\n", secondsofYear);
+	Int32 currentMonth = -2;
+	Int32 secondsofMonth = -2;
 	if(year%4==0 && (year%100 != 0 || year%400 == 0)) {
 		// leap year
 		int dayofMonth[]={31, 29,31,30,31,30,31,31,30,31,30,31};
-		Int64 seconds=0;
-		for (Int64 i = 0;i<12;i++) {
+		Int32 seconds=0;
+		for (Int32 i = 0;i<12;i++) {
 			secondsofMonth = seconds;
 			seconds+=24*3600*dayofMonth[i];
 			if (seconds > secondsofYear) {
@@ -578,31 +577,22 @@ void getDate(Int64 wholeSecond, Int64 fraction, Int64* secondofYearPtr, Int32* y
 	if (weekPtr != NULL) {
 		*weekPtr = (secondsofYear/(24*3600)+firstweekDay)%7;
 	}
-	//if (weekofyear != NULL) {
-	//}
-
  }
 Int32 Date::_SystemLocaletimeZone = 0;
 
-
-Date ::Date(Int64 wholeSecond, UInt64 fraction, Int32 timeZone)
+//------------------------------------------------------------
+Date::Date(Timestamp timestamp, Int32 timeZone)
 {
-	_integer = wholeSecond;
-	_fraction = fraction;
-	_fractionalsecond =  Timestamp(0, _fraction).ToDouble();
-
 	_timeZoneOffset = timeZone;
-
-
-	getDate(wholeSecond, fraction, &_secondsofYear, &_year, &_month, &_day, &_hour, &_minute, &_second, &_weekday, &_firstWeekDay);
+	getDate(timestamp, &_secondsofYear, &_year, &_month, &_day, &_hour,
+            &_minute, &_second, &_weekday, &_firstWeekDay);
 	_DTS = isDTS();
 }
-
+//------------------------------------------------------------
 Int32 Date::isDTS()
 {
 	return 0;
 }
-
 //------------------------------------------------------------
 struct TimeFormatOptions {
     Boolean RemoveLeading; // #
@@ -615,9 +605,7 @@ struct TimeFormatOptions {
     Boolean ConsumeArgument;
 };
 
-
 //------------------------------------------------------------
-
 void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
 {
 	pOption->RemoveLeading = false;
@@ -669,7 +657,7 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
-
+//------------------------------------------------------------
 Boolean Date::ToString(StringRef output, SubString* format)
 {
     TempStackCString formatString;
@@ -762,12 +750,15 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					}
 					break;
 				case 'c':
+                    {
 				    TempStackCString localeFormatString;
 				    localeFormatString.AppendCStr("%m/%d/%Y %#I:%M:%S %p");
 					SubString localformat(localeFormatString.Begin(), localeFormatString.End());
 					validFormatString = this->ToString(output, &localformat);
+                    }
 					break;
 				case 'd':
+                    {
 					char days[10];
 					Int32 size = 0;
 					if (fOption.RemoveLeading) {
@@ -776,8 +767,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(days, "%02d", this->_day+1);
 					}
 					output->Append(size, (Utf8Char*)days);
-					break;
+					}
+                    break;
 				case 'H':
+                    {
 					char hours[10];
 					Int32 size = 0;
 					if (fOption.RemoveLeading) {
@@ -787,8 +780,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					}
 					hourFormat = 24;
 					output->Append(size, (Utf8Char*)hours);
+                    }
 					break;
 				case 'I':
+                    {
 					char hours12String[10];
 					Int32 size = 0;
 					Int32 hour12 = this->_hour > 12? this->_hour-12 : this->_hour;
@@ -800,19 +795,23 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					}
 					hourFormat = 12;
 					output->Append(size, (Utf8Char*)hours12String);
+                    }
 					break;
 				case 'j':
+                    {
 					char dayNumberString[10];
 					Int32 size = 0;
-					Int32 daynumber = 1+this->_secondsofYear/(24*3600);
+					Int32 daynumber = (Int32) (1+this->_secondsofYear/(24*3600));
 					if (fOption.RemoveLeading) {
 						size = sprintf(dayNumberString, "%d", daynumber);
 					} else {
 						size = sprintf(dayNumberString, "%03d", daynumber);
 					}
 					output->Append(size, (Utf8Char*)dayNumberString);
+                    }
 					break;
 				case 'm':
+                    {
 					char monthString[10];
 					Int32 size = 0;
 					Int32 monthofYear = 1+this->_month;
@@ -822,8 +821,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(monthString, "%02d", monthofYear);
 					}
 					output->Append(size, (Utf8Char*)monthString);
+                    }
 					break;
 				case 'M':
+                    {
 					char minuteString[10];
 					Int32 size = 0;
 					Int32 minute = this->_minute;
@@ -833,6 +834,7 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(minuteString, "%02d", minute);
 					}
 					output->Append(size, (Utf8Char*)minuteString);
+                    }
 					break;
 				case 'p':
 					if (hourFormat == 12) {
@@ -840,6 +842,7 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					}
 					break;
 				case 'S':
+                    {
 					char minuteString[10];
 					Int32 size = 0;
 					Int32 minute = this->_minute;
@@ -849,8 +852,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(minuteString, "%02d", minute);
 					}
 					output->Append(size, (Utf8Char*)minuteString);
+                    }
 					break;
 				case 'u':
+                    {
 					char fractionString[10];
 					Int32 size = 0;
 					if (fOption.MinimumFieldWidth<=0) {
@@ -859,27 +864,33 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(fractionString, "%.*f",fOption.MinimumFieldWidth, this->_fractionalsecond);
 						output->Append(size-1, (Utf8Char*)fractionString+1);
 					}
+                    }
 					break;
 				case 'W':
+                    {
 					char weekNumberString[10];
 					Int32 size = 0;
 					Int32 weekofyear = 0;
 					// First Monday as week one.
-					weekofyear = (this->_secondsofYear/(24*3600)+ 7-this->_firstWeekDay)/7;
+					weekofyear = (Int32) ((this->_secondsofYear/(24*3600)+ 7-this->_firstWeekDay)/7);
 					if (fOption.RemoveLeading) {
 						size = sprintf(weekNumberString, "%d", weekofyear);
 					} else {
 						size = sprintf(weekNumberString, "%02d", weekofyear);
 					}
 					output->Append(size, (Utf8Char*)weekNumberString);
+                    }
 					break;
 				case 'w':
+                    {
 					char weekday[10];
 					Int32 size = 0;
 					size = sprintf(weekday, "%d", (this->_weekday+1)%7);
 					output->Append(size, (Utf8Char*)weekday);
+                    }
 					break;
 				case 'U':
+                    {
 					char weekNumberString[10];
 					Int32 size = 0;
 					Int32 weekofyear = 0;
@@ -887,7 +898,7 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					if (this->_secondsofYear/(24*3600) < (6 - this->_firstWeekDay)) {
 						weekofyear = 0;
 					} else {
-						weekofyear = 1+(this->_secondsofYear/(24*3600) - (6 - this->_firstWeekDay))/7;
+						weekofyear = (Int32) (1 + (this->_secondsofYear/(24*3600) - (6 - this->_firstWeekDay))/7);
 					}
 					if (fOption.RemoveLeading) {
 						size = sprintf(weekNumberString, "%d", weekofyear);
@@ -895,8 +906,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(weekNumberString, "%02d", weekofyear);
 					}
 					output->Append(size, (Utf8Char*)weekNumberString);
+                    }
 					break;
 				case 'x':
+                    {
 					TempStackCString localeFormatString;
 
 					if (fOption.Precision == 1) {
@@ -908,14 +921,18 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					}
 					SubString localformat(localeFormatString.Begin(), localeFormatString.End());
 					validFormatString = this->ToString(output, &localformat);
+                    }
 					break;
 				case 'X':
+                    {
 					TempStackCString localeFormatString;
 					localeFormatString.AppendCStr("%#I:%M:%S %p");
 					SubString localformat(localeFormatString.Begin(), localeFormatString.End());
 					validFormatString = this->ToString(output, &localformat);
+                    }
 					break;
 				case 'y':
+                    {
 					char yearString[64];
 					Int32 size = 0;
 					Int32 year = this->_year%100;
@@ -925,8 +942,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(yearString, "%02d", year);
 					}
 					output->Append(size, (Utf8Char*)yearString);
+                    }
 					break;
 				case 'Y':
+                    {
 					char yearString[64];
 					Int32 size = 0;
 					Int32 year = this->_year;
@@ -936,8 +955,10 @@ Boolean Date::ToString(StringRef output, SubString* format)
 						size = sprintf(yearString, "%04d", year);
 					}
 					output->Append(size, (Utf8Char*)yearString);
+                    }
 					break;
 				case 'z':
+                    {
 					Int32 hourdiff = this->_timeZoneOffset/(3600);
 					Int32 totalSeconds = this->_timeZoneOffset%(3600);
 					totalSeconds = totalSeconds < 0? 0 - totalSeconds : totalSeconds;
@@ -947,12 +968,11 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					Int32 size = 0;
 					size = sprintf(difference, "%02d:%02d:%02d", hourdiff, mindiff, seconddiff);
 					output->Append(size, (Utf8Char*)difference);
+                    }
 					break;
 				case 'Z':
-					switch (this->_SystemLocaletimeZone)
-					{
+					switch (this->_SystemLocaletimeZone) {
 					default:
-
 						output->AppendCStr("time zone");
 					}
 					break;
@@ -960,7 +980,6 @@ Boolean Date::ToString(StringRef output, SubString* format)
 					break;
 
 				}
-
 			}
 		} else {
 			output->Append(c);
@@ -971,14 +990,14 @@ Boolean Date::ToString(StringRef output, SubString* format)
 
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {
-	Int64 wholeSeconds = _Param(2).Integer();
+//  Int64 wholeSeconds = _Param(2).Integer();
 	Boolean isUTC = _Param(3);
 	Int32 timeZoneOffset = isUTC? 0 : Date::_SystemLocaletimeZone;
-	printf("wholeSeconds :%d\n", wholeSeconds);
-	UInt64 fraction = _Param(2).Fraction();
-	Int64 year, month, day, hour, min, second, week;
+//	printf("wholeSeconds :%d\n", wholeSeconds);
+//	UInt64 fraction = _Param(2).Fraction();
+//	Int64 year, month, day, hour, min, second, week;
 	// getDate(wholeSeconds, fraction, &year, &month, &day, &hour, &min, & second, &week);
-	printf("year:%d, month %d, day %d, hour%d, min %d, second %d, week %d\n", year,month+1, day+1,hour,min,second, week);
+//	printf("year:%d, month %d, day %d, hour%d, min %d, second %d, week %d\n", year,month+1, day+1,hour,min,second, week);
 	SubString format = _Param(1)->MakeSubStringAlias();
 	Date date(_Param(2), timeZoneOffset);
     StringRef output = _Param(0);
