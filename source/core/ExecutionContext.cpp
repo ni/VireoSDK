@@ -219,24 +219,16 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
     }
 }
 //------------------------------------------------------------
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
-{
-    ExecutionContext::ClassInit();
-
-    _theTypeManager = typeManager;
-    _breakoutCount = 0;
-    _runningQueueElt = (VIClump*) null;
-    _timer._waitingList = null;
-}
-#endif
-//------------------------------------------------------------
-void ExecutionContext::ClassInit()
 {
     if (!_classInited) {
         _classInited = true;
         _culDeSac._function = (InstructionFunction) CulDeSac;
     }
+    _theTypeManager = typeManager;
+    _breakoutCount = 0;
+    _runningQueueElt = (VIClump*) null;
+    _timer._waitingList = null;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT

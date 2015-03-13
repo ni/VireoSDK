@@ -147,9 +147,7 @@ typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
 public:
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
     ExecutionContext(TypeManagerRef typeManager);
-#endif
 
 private:
     ECONTEXT    TypeManagerRef _theTypeManager;
@@ -193,8 +191,6 @@ private:
 public:
     static inline Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {return pInstruciton->_function != (InstructionFunction)CulDeSac;};
     static inline Boolean IsDone(InstructionCore* pInstruciton) {return pInstruciton->_function == (InstructionFunction)Done;};
-
-    static void ClassInit();
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT

@@ -1447,10 +1447,11 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         // may allow end point relative as well ???
         if (pathTail.ReadChar('.')) {
             subType = GetSubElementAddressFromPath(path, start, end, allowDynamic);
+        } else {
+            // TODO parse indexes.
+            // Variable sized arrays can only be indexed if allowDynamic is true.
+            subType = null;
         }
-        // TODO parse indexes.
-        // Variable sized arrays can only be indexed if allowDynamic is true.
-        subType = null;
         *end = null;
     }
     return subType;
@@ -2171,6 +2172,7 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
                 case 1:  value = (*(UInt8*)pData) ? 1.0:0.0;break;
                 default: err = kNIError_kCantDecode;        break;
             }
+            break;
         default: err = kNIError_kCantDecode; break;
     }
     *pValue = value;
