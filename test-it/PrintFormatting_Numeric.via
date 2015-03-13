@@ -18,6 +18,8 @@ Locals: c(
 	  e(dv(.String "abcde") s1) 
 	  e(dv(.String "Hello") s3) 
 	  e(dv(.String "你好") s4) 
+	 e(dv(.String " ") variable5) 
+	 e(dv(.String "") variable6) 
 	) 
 	clump (
 	  Printf("Test Integer %d-------------------------\n")
@@ -105,6 +107,11 @@ Locals: c(
 	  Printf("%%0_5p    %1$f  => *%0_5p*\n" db8  )
 	  Printf("%%p  %1$f => *%p*\n" db9)
 	  Printf("%%^10.2p  %1$f => *%^10.6p*\n" db9)
+	  Printf("Empty format code input\n")
+	  StringFormat(variable5  variable6 num1 db1 s1 )
+	  Printf("Default formatted: (%s)\n" variable5)
+	  StringFormat(variable5  * num1 db1 s1 )
+	  Printf("Default formatted: (%s)\n" variable5)
 	 
  	)
 ) ) )
