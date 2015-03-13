@@ -1,10 +1,10 @@
  // test different format code
 define (HelloWorld dv(.VirtualInstrument (
-Locals: c( 
-	  e(dv (.Int32 71) num1) 
-	  e(dv (.Int32 64) num2) 
-	  e(dv (.Int32 -73) num3) 
-	  e(dv (.Int32 74) num4) 
+Locals: c(
+	  e(dv (.Int32 71) num1)
+	  e(dv (.Int32 64) num2)
+	  e(dv (.Int32 -73) num3)
+	  e(dv (.Int32 74) num4)
      	  e(dv (.Double 162.34630) db1)
   	  e(dv (.Double 9.96)db2)
 	  e(dv (.Double 999.9996)db3)
@@ -13,22 +13,22 @@ Locals: c(
      	  e(dv (.Double 0.0199360) db6)
      	  e(dv (.Double -0.000197960) db7)
      	  e(dv (.Double 0.000000000000000123) db8)
-     	  e(dv (.Double 893545675713456343412) db9) 
-	  e(dv (.Double 0) db0)
-	  e(dv(.String "abcde") s1) 
-	  e(dv(.String "Hello") s3) 
-	  e(dv(.String "你好") s4) 
-	 e(dv(.String " ") variable5) 
-	 e(dv(.String "") variable6) 
-	) 
+    e(dv (.Double 893545675713456343412) db9)
+    e(dv (.Double 0) db0)
+    e(dv(.String "abcde") s1)
+    e(dv(.String "Hello") s3)
+    e(dv(.String "你好") s4)
+    e(dv(.String " ") variable5)
+    e(dv(.String "") variable6)
+	)
 	clump (
-	  Printf("Test Integer %d-------------------------\n")
+	  Printf("Test Integer %d-------------------------\n" num1)
 	  Printf("%%020d %1$d=> %020d\n" num1)
 	  Printf("%%020d %1$d=> %020d\n" db1)
 	  Printf("%%+020x %1$d=> %020x\n" num4)
 	  Printf("%%#020x %1$d=> %#020x\n" db3)
 
-	  Printf("\nTest Binary %d-------------------------\n")
+	  Printf("\nTest Binary %b -------------------------\n" num1)
 	  Printf("%%b %1$d=> %b\n" num1)
 	  Printf("%%b %1$d=> %b\n" num2)
 	  Printf("%%b %1$d=> %b\n" num3)
@@ -112,7 +112,7 @@ Locals: c(
 	  Printf("Default formatted: (%s)\n" variable5)
 	  StringFormat(variable5  * num1 db1 s1 )
 	  Printf("Default formatted: (%s)\n" variable5)
-	 
+
  	)
 ) ) )
 enqueue (HelloWorld)

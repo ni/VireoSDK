@@ -48,7 +48,6 @@
 		474A5F84199E721B0013F8C5 /* LINX.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 474A5EF2199D48A40013F8C5 /* LINX.cpp */; };
 		474A5F85199E72260013F8C5 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
 		474A5F87199E72EC0013F8C5 /* Vireo.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 474A5F4D199E71810013F8C5 /* Vireo.framework */; };
-		4750F17019C378D600FA80B8 /* library_canvas2d.js in Sources */ = {isa = PBXBuildFile; fileRef = 4750F16F19C378D600FA80B8 /* library_canvas2d.js */; };
 		476646EF1AA7B3F800D4F305 /* StaticMicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */; };
 		476646F01AA7B5D300D4F305 /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078F1AA67EF8008109FA /* DebugGPIO.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
@@ -163,7 +162,7 @@
 		474A5F56199E71810013F8C5 /* Vireo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vireo.h; sourceTree = "<group>"; };
 		474A5F57199E71810013F8C5 /* Vireo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vireo.m; sourceTree = "<group>"; };
 		4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Emscripten.cpp; path = ../source/io/Emscripten.cpp; sourceTree = "<group>"; };
-		4750F16F19C378D600FA80B8 /* library_canvas2d.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_canvas2d.js; path = ../source/io/library_canvas2d.js; sourceTree = "<group>"; };
+		4750F16F19C378D600FA80B8 /* library_canvas2d.js */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; name = library_canvas2d.js; path = ../source/io/library_canvas2d.js; sourceTree = "<group>"; };
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Timestamp.h; path = ../source/include/Timestamp.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
@@ -799,7 +798,6 @@
 				47D84DE817C2A271009053DB /* CEntryPoints.cpp in Sources */,
 				47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */,
 				47D84DEE17C2A271009053DB /* EggShell.cpp in Sources */,
-				4750F17019C378D600FA80B8 /* library_canvas2d.js in Sources */,
 				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
 				47D84DF317C2A271009053DB /* Math.cpp in Sources */,

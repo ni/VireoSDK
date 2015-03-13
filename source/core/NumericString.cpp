@@ -1274,7 +1274,7 @@ struct StringFormatStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 {
     Int32 count = (_ParamVarArgCount() -2)/2;
@@ -1325,7 +1325,7 @@ struct StringScanStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 {
     //Int32 count = (_ParamVarArgCount() -4)/2;
@@ -1337,12 +1337,425 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
     return _NextInstruction();
 }
+//------------------------------------------------------------
+struct TimeFormatOptions {
+    Boolean RemoveLeading; // #
+    Boolean Valid;
+    char    FormatChar;         // my affect output 'x' or 'X'
+    char OriginalFormatChar;
+    Int32   MinimumFieldWidth;  // If zero no padding
+    Int32   Precision; //.3
+    SubString  FmtSubString;
+    Boolean ConsumeArgument;
+};
+
+//------------------------------------------------------------
+void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
+{
+    pOption->RemoveLeading = false;
+    pOption->Valid = true;
+    pOption->MinimumFieldWidth = -1;
+    pOption->Precision = -1;
+    pOption->ConsumeArgument = true;
+    Boolean bValid = true;
+    Utf8Char c;
+    const Utf8Char* pBegin = format->Begin();
+    
+    while (bValid && format->ReadRawChar(&c)) {
+        
+        if (strchr("aAbBcdHIjmMpSuUwWxXyYzZ%", c)) {
+            pOption->FormatChar = c;
+            break;
+        }
+        if (c == '#') {
+            pOption->RemoveLeading = true;
+        } else if (c == '.') {
+            IntMax value = 0;
+            if (format->ReadInt(&value)) {
+                pOption->Precision = (Int32)value;
+                if (format->Length() == 0) {
+                    bValid = false;
+                }
+            } else {
+                bValid = false;
+            }
+        } else {
+            if (c >= '0' && c <= '9') {
+                // Back up and read the whole number.
+                format->AliasAssign(format->Begin()-1, format->End());
+                IntMax value = 0;
+                if (format->ReadInt(&value)) {
+                    pOption->MinimumFieldWidth = (Int32) value;
+                }
+            } else {
+                bValid = false;
+                break;
+            }
+        }
+    }
+    pOption->Valid = bValid;
+    if (!pOption->Valid) {
+        pOption->FormatChar = '0';
+    }
+    pOption->ConsumeArgument = (pOption->FormatChar != '%');
+    pOption->OriginalFormatChar = pOption->FormatChar;
+    pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
+}
+//------------------------------------------------------------
+Boolean ToString(const Date& date, SubString* format, StringRef output)
+{
+    TempStackCString formatString;
+    SubString tempFormat(format);
+    if (format == NULL || format->Length() == 0) {
+        formatString.AppendCStr("%x %X");
+        tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+    }
+    Utf8Char c = 0;
+    Boolean validFormatString = true;
+    Int32 hourFormat = 0;
+    while (validFormatString && tempFormat.ReadRawChar(&c))
+    {
+        if(c == '%') {
+            TimeFormatOptions fOption;
+            ReadTimeFormatOptions(&tempFormat, &fOption);
+            Boolean parseFinished = !fOption.Valid;
+            while(!parseFinished)
+            {
+                parseFinished = true;
+                switch (fOption.FormatChar)
+                {
+                    case 'a' : case 'A':
+                        switch (date.WeekDay()) {
+                            case 0:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Mon") : output->AppendCStr("Monday");
+                                break;
+                            case 1:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Tue") : output->AppendCStr("Tuesday");
+                                break;
+                            case 2:
+                                fOption.FormatChar == 'a'?  output->AppendCStr("Wed"): output->AppendCStr("Wednesday");
+                                break;
+                            case 3:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Thu") : output->AppendCStr("Thursday");
+                                break;
+                            case 4:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Fri") : output->AppendCStr("Friday");
+                                break;
+                            case 5:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Sat") : output->AppendCStr("Saturday");
+                                break;
+                            case 6:
+                                fOption.FormatChar == 'a'? output->AppendCStr("Sun") : output->AppendCStr("Sunday");
+                                break;
+                            default:
+                                return false;
+                        }
+                        break;
+                    case 'b': case 'B':
+                        switch (date.Month()) {
+                            case 0:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Jan") : output->AppendCStr("January");
+                                break;
+                            case 1:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Feb") : output->AppendCStr("February");
+                                break;
+                            case 2:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Mar") : output->AppendCStr("March");
+                                break;
+                            case 3:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Apr") : output->AppendCStr("April");
+                                break;
+                            case 4:
+                                fOption.FormatChar == 'b'? output->AppendCStr("May") : output->AppendCStr("May");
+                                break;
+                            case 5:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Jun") : output->AppendCStr("June");
+                                break;
+                            case 6:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Jul") : output->AppendCStr("July");
+                                break;
+                            case 7:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Aug") : output->AppendCStr("August");
+                                break;
+                            case 8:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Sep") : output->AppendCStr("September");
+                                break;
+                            case 9:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Oct") : output->AppendCStr("October");
+                                break;
+                            case 10:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Nov") : output->AppendCStr("November");
+                                break;
+                            case 11:
+                                fOption.FormatChar == 'b'? output->AppendCStr("Dec") : output->AppendCStr("December");
+                                break;
+                            default:
+                                return false;
+                        }
+                        break;
+                    case 'c':
+                    {
+                        TempStackCString localeFormatString;
+                        localeFormatString.AppendCStr("%m/%d/%Y %#I:%M:%S %p");
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = ToString(date, &localformat, output);
+                    }
+                        break;
+                    case 'd':
+                    {
+                        char days[10];
+                        Int32 size = 0;
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(days, "%d", date.Day() + 1);
+                        } else {
+                            size = sprintf(days, "%02d", date.Day() + 1);
+                        }
+                        output->Append(size, (Utf8Char*)days);
+                    }
+                        break;
+                    case 'H':
+                    {
+                        char hours[10];
+                        Int32 size = 0;
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(hours, "%d", date.Hour());
+                        } else {
+                            size = sprintf(hours, "%02d", date.Hour());
+                        }
+                        hourFormat = 24;
+                        output->Append(size, (Utf8Char*)hours);
+                    }
+                        break;
+                    case 'I':
+                    {
+                        char hours12String[10];
+                        Int32 size = 0;
+                        Int32 hour12 = (date.Hour() > 12) ? (date.Hour() - 12) : date.Hour();
+                        hour12 = hour12 == 0? 12:hour12;
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(hours12String, "%d", hour12);
+                        } else {
+                            size = sprintf(hours12String, "%02d", hour12);
+                        }
+                        hourFormat = 12;
+                        output->Append(size, (Utf8Char*)hours12String);
+                    }
+                        break;
+                    case 'j':
+                    {
+                        char dayNumberString[10];
+                        Int32 size = 0;
+                        Int32 daynumber = (Int32) (1+date.SecondsOfYear()/(24*3600));
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(dayNumberString, "%d", daynumber);
+                        } else {
+                            size = sprintf(dayNumberString, "%03d", daynumber);
+                        }
+                        output->Append(size, (Utf8Char*)dayNumberString);
+                    }
+                        break;
+                    case 'm':
+                    {
+                        char monthString[10];
+                        Int32 size = 0;
+                        Int32 monthofYear = 1 + date.Month();
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(monthString, "%d", monthofYear);
+                        } else {
+                            size = sprintf(monthString, "%02d", monthofYear);
+                        }
+                        output->Append(size, (Utf8Char*)monthString);
+                    }
+                        break;
+                    case 'M':
+                    {
+                        char minuteString[10];
+                        Int32 size = 0;
+                        Int32 minute = date.Minute();
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(minuteString, "%d", minute);
+                        } else {
+                            size = sprintf(minuteString, "%02d", minute);
+                        }
+                        output->Append(size, (Utf8Char*)minuteString);
+                    }
+                        break;
+                    case 'p':
+                        if (hourFormat == 12) {
+                            (date.Hour() < 12) ? output->AppendCStr("AM") : output->AppendCStr("PM");
+                        }
+                        break;
+                    case 'S':
+                    {
+                        char minuteString[10];
+                        Int32 size = 0;
+                        Int32 minute = date.Minute();
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(minuteString, "%d", minute);
+                        } else {
+                            size = sprintf(minuteString, "%02d", minute);
+                        }
+                        output->Append(size, (Utf8Char*)minuteString);
+                    }
+                        break;
+                    case 'u':
+                    {
+                        char fractionString[10];
+                        Int32 size = 0;
+                        if (fOption.MinimumFieldWidth<=0) {
+                            output->AppendCStr(".");
+                        } else {
+                            size = sprintf(fractionString, "%.*f",fOption.MinimumFieldWidth, date.FractionSecond());
+                            output->Append(size-1, (Utf8Char*)fractionString+1);
+                        }
+                    }
+                        break;
+                    case 'W':
+                    {
+                        char weekNumberString[10];
+                        Int32 size = 0;
+                        Int32 weekofyear = 0;
+                        // First Monday as week one.
+                        weekofyear = (Int32) ((date.SecondsOfYear()/(24*3600)+ 7-date.FirstWeekDay())/7);
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(weekNumberString, "%d", weekofyear);
+                        } else {
+                            size = sprintf(weekNumberString, "%02d", weekofyear);
+                        }
+                        output->Append(size, (Utf8Char*)weekNumberString);
+                    }
+                        break;
+                    case 'w':
+                    {
+                        char weekday[10];
+                        Int32 size = 0;
+                        size = sprintf(weekday, "%d", (date.WeekDay()+1)%7);
+                        output->Append(size, (Utf8Char*)weekday);
+                    }
+                        break;
+                    case 'U':
+                    {
+                        char weekNumberString[10];
+                        Int32 size = 0;
+                        Int32 weekofyear = 0;
+                        // First Sunday as week one.
+                        if (date.SecondsOfYear()/(24*3600) < (6 - date.FirstWeekDay())) {
+                            weekofyear = 0;
+                        } else {
+                            weekofyear = (Int32) (1 + (date.SecondsOfYear()/(24*3600) - (6 - date.FirstWeekDay()))/7);
+                        }
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(weekNumberString, "%d", weekofyear);
+                        } else {
+                            size = sprintf(weekNumberString, "%02d", weekofyear);
+                        }
+                        output->Append(size, (Utf8Char*)weekNumberString);
+                    }
+                        break;
+                    case 'x':
+                    {
+                        TempStackCString localeFormatString;
+                        
+                        if (fOption.Precision == 1) {
+                            localeFormatString.AppendCStr("%A, %B %d, %Y");
+                        } else if (fOption.Precision == 2) {
+                            localeFormatString.AppendCStr("%a, %b %d, %Y");
+                        } else {
+                            localeFormatString.AppendCStr("%#m/%#d/%Y");
+                        }
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = ToString(date, &localformat, output);
+                    }
+                        break;
+                    case 'X':
+                    {
+                        TempStackCString localeFormatString;
+                        localeFormatString.AppendCStr("%#I:%M:%S %p");
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = ToString(date, &localformat, output);
+                    }
+                        break;
+                    case 'y':
+                    {
+                        char yearString[64];
+                        Int32 size = 0;
+                        Int32 year = date.Year() % 100;
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(yearString, "%d", year);
+                        } else {
+                            size = sprintf(yearString, "%02d", year);
+                        }
+                        output->Append(size, (Utf8Char*)yearString);
+                    }
+                        break;
+                    case 'Y':
+                    {
+                        char yearString[64];
+                        Int32 size = 0;
+                        Int32 year = date.Year();
+                        if (fOption.RemoveLeading) {
+                            size = sprintf(yearString, "%d", year);
+                        } else {
+                            size = sprintf(yearString, "%04d", year);
+                        }
+                        output->Append(size, (Utf8Char*)yearString);
+                    }
+                        break;
+                    case 'z':
+                    {
+                        Int32 hourdiff = date.TimeZoneOffset() / (3600);
+                        Int32 totalSeconds = date.TimeZoneOffset() % (3600);
+                        totalSeconds = totalSeconds < 0? 0 - totalSeconds : totalSeconds;
+                        Int32 mindiff = totalSeconds/60;
+                        Int32 seconddiff = totalSeconds%60;
+                        char difference[64];
+                        Int32 size = 0;
+                        size = sprintf(difference, "%02d:%02d:%02d", hourdiff, mindiff, seconddiff);
+                        output->Append(size, (Utf8Char*)difference);
+                    }
+                        break;
+                    case 'Z':
+                        // TODO
+                        output->AppendCStr("TODO-TMZ");
+                        break;
+                    default:
+                        break;
+                        
+                }
+            }
+        } else {
+            output->Append(c);
+        }
+    }
+    return validFormatString;
+}
+
+
+VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
+{
+    //  Int64 wholeSeconds = _Param(2).Integer();
+    Boolean isUTC = _Param(3);
+    Int32 timeZoneOffset = isUTC? 0 : Date::_SystemLocaletimeZone;
+    //	printf("wholeSeconds :%d\n", wholeSeconds);
+    //	UInt64 fraction = _Param(2).Fraction();
+    //	Int64 year, month, day, hour, min, second, week;
+    // getDate(wholeSeconds, fraction, &year, &month, &day, &hour, &min, & second, &week);
+    //	printf("year:%d, month %d, day %d, hour%d, min %d, second %d, week %d\n", year,month+1, day+1,hour,min,second, week);
+    SubString format = _Param(1)->MakeSubStringAlias();
+    Date date(_Param(2), timeZoneOffset);
+    StringRef output = _Param(0);
+    if (output != NULL) {
+        ToString(date, &format, output);
+    }
+    return _NextInstruction();
+}
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) i(.UInt32) o(.UInt32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo

@@ -2056,7 +2056,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
             switch(aqSize) {
                 case 4: value = RoundToEven(*(Single*)pData);  break;
                 case 8: value = RoundToEven(*(Double*)pData);  break;
-                default: err = kNIError_kCantDecode;            break;
+                default: err = kNIError_kCantDecode;           break;
             }
             break;
         case kEncoding_SInt:
@@ -2072,10 +2072,10 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
         case kEncoding_UInt:
             // Use unsigned int casts to avoid sign extension
             switch(aqSize) {
-                case 1:  value = *(UInt8*)pData;               break;
-                case 2:  value = *(UInt16*)pData;              break;
-                case 4:  value = *(UInt32*)pData;              break;
-                case 8:  value = *(UInt64*)pData;              break;
+                case 1:  value = *(UInt8*)pData;                break;
+                case 2:  value = *(UInt16*)pData;               break;
+                case 4:  value = *(UInt32*)pData;               break;
+                case 8:  value = *(UInt64*)pData;               break;
                 default: err = kNIError_kCantDecode;            break;
             }
             break;

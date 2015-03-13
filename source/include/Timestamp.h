@@ -93,18 +93,18 @@ class Timestamp
 class Date
 {
  private:
-    Int32 _year;
-    Int32 _month;
-    Int32 _day;
-    Int32 _weekday;
-    Int32 _firstWeekDay;
-    Int32 _hour;
-    Int32 _minute;
+    Double _fractionalSecond;
     Int32 _second;
+    Int32 _minute;
+    Int32 _hour;
+    Int32 _day;
+    Int32 _month;
+    Int32 _year;
+    Int32 _weekday;
+    Int64 _secondsOfYear;
+    Int32 _firstWeekDay;
     Int32 _timeZoneOffset;
     Int32 _DTS;
-    Int64 _secondsofYear;
-    Double _fractionalsecond;
  public:
         static Int32 _SystemLocaletimeZone;
         Date(Timestamp timestamp, Int32 timeZone);
@@ -116,13 +116,11 @@ class Date
         Int32 Second() const { return _second; };
         Int32 WeekDay() const { return _weekday; };
         Int32 FirstWeekDay() const { return _firstWeekDay; };
-        Int64 SecondsofYear() const {return _secondsofYear;};
+        Int64 SecondsOfYear() const {return _secondsOfYear;};
         Int32 TimeZoneOffset() const {return _timeZoneOffset;};
         Int32 DTS() const {return _DTS;}
         Int32 isDTS();
-        Double FractionSecond() const {return  _fractionalsecond;};
-        // output the string representation of the Date according to the input format string
-        Boolean ToString(StringRef output,SubString* format);
+        Double FractionSecond() const {return  _fractionalSecond;};
         // return a new date object at other time zone
         Date AtTimeZone(Int32 timeZone);
 };
