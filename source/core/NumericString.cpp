@@ -98,6 +98,24 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             }
             break;
         }
+        if (c == '<') {
+            SubString charSet(">");
+			IntIndex charSetIndex = format->FindFirstMatch(&charSet, 0, false);
+			if (charSetIndex < 0) {
+				bValid = false;
+			} else {
+				char timeCode = *(format->Begin()+charSetIndex + 1);
+                format->AliasAssign(format->Begin()+charSetIndex+2, format->End());
+				if (timeCode == 't') {
+					pOptions->FormatChar = 't';
+				} else if (timeCode == 'T') {
+					pOptions->FormatChar = 'T';
+				} else {
+					bValid = false;
+				}
+			}
+            break;
+        }
         if (c == '+') {
             pOptions->ShowSign = true;
         } else if (c == '-') {
@@ -179,6 +197,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 //---------------------------------------------------------------------------------------------
 void GenerateFinalNumeric (const FormatOptions* , char* , Int32* , TempStackCString* , Boolean );
 void RefactorLabviewNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32 );
+Boolean ToString(const Date& date, SubString* format, StringRef output);
 
 void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
 {
@@ -370,6 +389,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 truncateSignificant = 0;
                         // calculate the exponent of the number, it also tell us whether should truncate the integer part.
                         if (fOptions.Significant >= 0) {
+                        	if (fOptions.Significant == 0) {
+                        		fOptions.Significant = 1;
+                        	}
                             if (tempDouble != 0) {
                                 Double absDouble = tempDouble;
                                 if (tempDouble < 0) {
@@ -481,6 +503,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         bits[0] = '0';
                         bits[1] = '1';
                         Int32 length = 0;
+                        char* binaryindex = BinaryString;
                         if (intValue < 0) {
                             for (int i = intSize-1; i >=0; i--) {
                                 if (intValue%2 == 0) {
@@ -501,8 +524,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                     intValue = intValue/2;
                                     length++;
                             }
+                            binaryindex = BinaryString + (intSize -length);
                         }
-                        char* binaryindex = BinaryString;
+
                         Int32 binaryStringLength = length;
 
                         RefactorLabviewNumeric(&fOptions, binaryindex, &binaryStringLength, 0, 0);
@@ -528,25 +552,41 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             fOptions.FormatChar = 'u';
                         }
                         specifier[0] = fOptions.FormatChar;
+                        if(fOptions.NumericLength[0] == '\0') {
+                        	tempFormat.AppendCStr("ll");
+                        }
                         tempFormat.AppendCStr(specifier);
 
-                        TempStackCString formattedNumber;
+                        char formattedNumber[2*stringBufferSize];
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
                         if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
                             if(fOptions.FormatChar == 'u') {
-                                ReadIntFromMemory(argType->BitEncoding(), 8, arguments[argumentIndex]._pData, &intValue);
+                                ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
                                 ConvertNumericType(4, true, intValue, &intValue);
                             } else {
-                                ReadIntFromMemory(argType->BitEncoding(), 8, arguments[argumentIndex]._pData, &intValue);
+                                ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
                                 ConvertNumericType(4, false, intValue, &intValue);
                             }
+                           // printf("dou to int :%lld\n", intValue);
+
                         } else {
                             ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
                         }
-                        Int32 length = snprintf(formattedNumber.BeginCStr(), formattedNumber.Capacity(), tempFormat.BeginCStr(), intValue);
-                        buffer->Append(length, (Utf8Char*)formattedNumber.Begin());
 
+                        Int32 length = snprintf(formattedNumber, stringBufferSize, tempFormat.BeginCStr(), intValue);
+                        if (fOptions.FormatChar == 'd') {
+                        	if (fOptions.Significant == 0) {
+                        		fOptions.Significant++;
+                        	}
+                        	if (fOptions.Significant > 0){
+                                fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-strlen(fOptions.NumericLength));
+                                tempFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
+                                length = snprintf(formattedNumber, stringBufferSize, "%lld", intValue);
+                                RefactorLabviewNumeric(&fOptions, formattedNumber, &length, 0, 0);
+                        	}
+                        }
+                        buffer->Append(length, (Utf8Char*)formattedNumber);
                         argumentIndex++;
                     }
                     break;
@@ -574,6 +614,72 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         argumentIndex++;
                     }
                     break;
+                    case 't':
+                    {
+                        TempStackCString timeFormat;
+
+                        argumentIndex++;
+                    }
+                    	break;
+                    case 'T':
+                    {
+                    	Int32 timezone = Date::_SystemLocaletimeZone;
+                    	if (!fOptions.EngineerNotation) {
+                    		 timezone = 0;
+                    	}
+                        SubString strDateType("Timestamp");
+                        TypeRef argType = arguments[argumentIndex]._paramType;
+
+                    	SubString datetimeFormat;
+                    	TempStackCString defaultTimeFormat;
+                    	SubString tempFormat(&fOptions.FmtSubString);
+                    	Utf8Char c;
+
+                		char defaultFormatString[stringBufferSize];
+
+                    	while(tempFormat.ReadRawChar(&c)) {
+                    		if (c == '^') {
+                    			timezone = 0;
+                    		} else if (c == '<') {
+                    			datetimeFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
+                    		} else if (c == '>') {
+                    			datetimeFormat.AliasAssign(datetimeFormat.Begin(), tempFormat.Begin()-1);
+                    		}
+                    	}
+                    	if (datetimeFormat.Length() == 0) {
+                    		Int32 fractionLen = -1;
+							if (fOptions.MinimumFieldWidth >= 0)
+							{
+								fractionLen = fOptions.MinimumFieldWidth;
+							}
+							if (fOptions.Precision >= 0) {
+								fractionLen = fOptions.Precision;
+							}
+							if (fractionLen < 0) {
+								fractionLen = 3;
+							}
+                    		if (fractionLen>0) {
+                    			sprintf(defaultFormatString, "%%#I:%%M:%%S%du %%p %%m/%%d/%%Y", fractionLen);
+                    		} else {
+                    			sprintf(defaultFormatString, "%%#I:%%M:%%S %%p %%m/%%d/%%Y");
+                    		}
+							defaultTimeFormat.AppendCStr(defaultFormatString);
+							datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
+                    	}
+                    	if (argType->IsA(&strDateType)) {
+							Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+							Date date(time, timezone);
+							validFormatString = ToString(date, &datetimeFormat, buffer);
+						} else {
+							Double tempDouble;
+							ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
+							Timestamp time(tempDouble);
+							Date date(time, timezone);
+							validFormatString = ToString(date, &datetimeFormat, buffer);
+						}
+                    	 argumentIndex++;
+                    }
+                    	break;
                     default:
                     printf("special error character %c\n",fOptions.FormatChar );
                     // This is just part of the format specifier, let it become part of the percent format
@@ -646,7 +752,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 // significant digits it always round midpoints down.
                 *(buffer+trailing-1) = *(buffer+trailing-1) + 1;
             }
-            for (Int32 i = trailing-1; i >= numberStart; i++) {
+            for (Int32 i = trailing-1; i >= numberStart; i--) {
                 if (*(buffer+i) > '9') {
                     *(buffer+i) = '0';
                     if (i == numberStart) {
@@ -663,6 +769,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 *(buffer+i) = '0';
             }
             if (extend) {
+            	numberEnd++;
                 for (Int32 i = numberEnd; i > numberStart; i--) {
                     *(buffer+i) = *(buffer+i-1);
                 }
@@ -786,8 +893,54 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
     } else if (formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'b') {
-        TempStackCString numberPart((Utf8Char*)bufferBegin, *pSize);
+    	Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+        TempStackCString numberPart(tempNumber, *pSize);
         GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
+    } else if (formatOptions->FormatChar == 'd') {
+    	Boolean extend = false;
+    	buffer = bufferBegin;
+    	Int32 significant = formatOptions->Significant;
+    	if (significant < *pSize - numberStart) {
+    		if (*(buffer + significant + numberStart) < '5') {
+    			for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
+    				*(buffer+i) = '0';
+    			}
+    		} else {
+    			for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
+					*(buffer+i) = '0';
+				}
+    			(*(buffer+significant+numberStart-1))++;
+				for (Int32 i = significant + numberStart -1; i >= numberStart; i--) {
+					if (*(buffer+i) > '9') {
+						*(buffer+i) = '0';
+						if (i == numberStart) {
+							extend =true;
+							break;
+						}
+						*(buffer+i-1) = *(buffer+i-1) +1 ;
+					} else {
+						break;
+					}
+				}
+    		}
+			Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+    		if (extend) {
+    			numberEnd++;
+				for (Int32 i = numberEnd; i > numberStart; i--) {
+					*(buffer+i) = *(buffer+i-1);
+				}
+				*(buffer+ numberStart) =  '1';
+				TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
+				GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+			} else {
+				TempStackCString numberPart(tempNumber, *pSize - numberStart);
+				GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+			}
+    	} else {
+	    	Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+            TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
+    		GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+    	}
     }
 }
 
@@ -1401,6 +1554,11 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
+char abbrWeekDayName[7][10] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+char weekDayName[7][10] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+char abbrMonthName[12][10] = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"};
+char monthName[12][10] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
 //------------------------------------------------------------
 Boolean ToString(const Date& date, SubString* format, StringRef output)
 {
@@ -1425,74 +1583,17 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                 switch (fOption.FormatChar)
                 {
                     case 'a' : case 'A':
-                        switch (date.WeekDay()) {
-                            case 0:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Mon") : output->AppendCStr("Monday");
-                                break;
-                            case 1:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Tue") : output->AppendCStr("Tuesday");
-                                break;
-                            case 2:
-                                fOption.FormatChar == 'a'?  output->AppendCStr("Wed"): output->AppendCStr("Wednesday");
-                                break;
-                            case 3:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Thu") : output->AppendCStr("Thursday");
-                                break;
-                            case 4:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Fri") : output->AppendCStr("Friday");
-                                break;
-                            case 5:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Sat") : output->AppendCStr("Saturday");
-                                break;
-                            case 6:
-                                fOption.FormatChar == 'a'? output->AppendCStr("Sun") : output->AppendCStr("Sunday");
-                                break;
-                            default:
-                                return false;
-                        }
-                        break;
+                    {
+                    	Int32 index = date.WeekDay();
+                    	fOption.FormatChar == 'a' ? output->AppendCStr(abbrWeekDayName[index]) : output->AppendCStr(weekDayName[index]);
+                    }
+                    break;
                     case 'b': case 'B':
-                        switch (date.Month()) {
-                            case 0:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Jan") : output->AppendCStr("January");
-                                break;
-                            case 1:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Feb") : output->AppendCStr("February");
-                                break;
-                            case 2:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Mar") : output->AppendCStr("March");
-                                break;
-                            case 3:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Apr") : output->AppendCStr("April");
-                                break;
-                            case 4:
-                                fOption.FormatChar == 'b'? output->AppendCStr("May") : output->AppendCStr("May");
-                                break;
-                            case 5:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Jun") : output->AppendCStr("June");
-                                break;
-                            case 6:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Jul") : output->AppendCStr("July");
-                                break;
-                            case 7:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Aug") : output->AppendCStr("August");
-                                break;
-                            case 8:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Sep") : output->AppendCStr("September");
-                                break;
-                            case 9:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Oct") : output->AppendCStr("October");
-                                break;
-                            case 10:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Nov") : output->AppendCStr("November");
-                                break;
-                            case 11:
-                                fOption.FormatChar == 'b'? output->AppendCStr("Dec") : output->AppendCStr("December");
-                                break;
-                            default:
-                                return false;
-                        }
-                        break;
+                    {
+                    	Int32 index = date.Month();
+                    	fOption.FormatChar == 'b' ? output->AppendCStr(abbrMonthName[index]) : output->AppendCStr(monthName[index]);
+                    }
+                    break;
                     case 'c':
                     {
                         TempStackCString localeFormatString;
@@ -1602,7 +1703,15 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                     {
                         char fractionString[10];
                         Int32 size = 0;
-                        if (fOption.MinimumFieldWidth<=0) {
+                        Int32 fractionLen = 0;
+                        if (fOption.MinimumFieldWidth >= 0)
+                        {
+                        	fractionLen = fOption.MinimumFieldWidth;
+                        }
+					    if (fOption.Precision >= 0) {
+					    	fractionLen = fOption.Precision;
+					    }
+                        if (fractionLen<=0) {
                             output->AppendCStr(".");
                         } else {
                             size = sprintf(fractionString, "%.*f",fOption.MinimumFieldWidth, date.FractionSecond());
@@ -1670,7 +1779,21 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                     case 'X':
                     {
                         TempStackCString localeFormatString;
-                        localeFormatString.AppendCStr("%#I:%M:%S %p");
+                        Int32 fractionLen = 0;
+                        if (fOption.MinimumFieldWidth >= 0)
+                        {
+                        	fractionLen = fOption.MinimumFieldWidth;
+                        }
+                        if (fOption.Precision >= 0) {
+                        	fractionLen = fOption.Precision;
+                        }
+                        localeFormatString.AppendCStr("%#I:%M:%S");
+                        if (fractionLen > 0) {
+                        	char fractionPart[stringBufferSize];
+                        	sprintf(fractionPart, "%%.%du", fractionLen);
+                        	localeFormatString.AppendCStr(fractionPart);
+                        }
+                        localeFormatString.AppendCStr(" %p");
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = ToString(date, &localformat, output);
                     }
