@@ -1,14 +1,22 @@
 var searchData=
 [
-  ['_5fbitsize',['_bitSize',['../class_vireo_1_1_aggregate_type.html#ab7f4dc732144a94d7fabdcc2fe4b564a',1,'Vireo::AggregateType']]],
+  ['_5fblocklength',['_blockLength',['../class_vireo_1_1_aggregate_type.html#a4442cd89f6dbea0cfa4a1eb7a5ddc198',1,'Vireo::AggregateType']]],
   ['_5fbreakoutcount',['_breakoutCount',['../class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a',1,'Vireo::ExecutionContext']]],
   ['_5fcaller',['_caller',['../class_vireo_1_1_v_i_clump.html#a4dc118d0c7b032027f559b36833d3d4a',1,'Vireo::VIClump']]],
+  ['_5fclump',['_clump',['../class_vireo_1_1_waitable_state.html#abaa7dea43d74de6b50e8877cb82022ee',1,'Vireo::WaitableState']]],
+  ['_5fcount',['_count',['../class_queue_core.html#ac53c6e31b57d43d784361dbc0341bf43',1,'QueueCore']]],
   ['_5ffirecount',['_fireCount',['../class_vireo_1_1_v_i_clump.html#ad49c0d494549e4c1d4239b374e14db79',1,'Vireo::VIClump']]],
+  ['_5finfo',['_info',['../class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209',1,'Vireo::WaitableState']]],
+  ['_5finsert',['_insert',['../class_queue_core.html#ad578a403f925f9b82260f718837a11a9',1,'QueueCore']]],
+  ['_5fnext',['_next',['../class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56',1,'Vireo::WaitableState']]],
+  ['_5fobject',['_object',['../class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01',1,'Vireo::WaitableState']]],
   ['_5fowningvi',['_owningVI',['../class_vireo_1_1_v_i_clump.html#ac5da68ff60f0aed26ec986c271d5e34b',1,'Vireo::VIClump']]],
   ['_5fsavepc',['_savePc',['../class_vireo_1_1_v_i_clump.html#a9ddc8cad6853110db6d2c4e16f8ecf14',1,'Vireo::VIClump']]],
   ['_5fshortcount',['_shortCount',['../class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff',1,'Vireo::VIClump']]],
-  ['_5fsleepinglist',['_sleepingList',['../class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04',1,'Vireo::ExecutionContext']]],
+  ['_5ftimer',['_timer',['../class_vireo_1_1_execution_context.html#a097ad147ae8da59d61dd708d8b162b43',1,'Vireo::ExecutionContext']]],
   ['_5ftm',['_tm',['../class_vireo_1_1_aggregate_alignment_calculator.html#a230e57a8f9b1a12d2e8d4704746770c4',1,'Vireo::AggregateAlignmentCalculator']]],
+  ['_5fwaitcount',['_waitCount',['../class_vireo_1_1_v_i_clump.html#a4a32f99853e0fc7696361beabc14a31a',1,'Vireo::VIClump']]],
   ['_5fwaitingclumps',['_waitingClumps',['../class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482',1,'Vireo::VIClump']]],
+  ['_5fwaitstates',['_waitStates',['../class_vireo_1_1_v_i_clump.html#a9e417974a5d1db42f4f82deda506fc8e',1,'Vireo::VIClump']]],
   ['_5fwakeupinfo',['_wakeUpInfo',['../class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51',1,'Vireo::VIClump']]]
 ];

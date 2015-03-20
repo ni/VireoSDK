@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,6 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">TDCodecVia.h File Reference</div>  </div>
@@ -108,12 +109,19 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_t_d_via_parser.html">Vireo::TDViaParser</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The VIA decoder.  <a href="class_vireo_1_1_t_d_via_parser.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_vireo_1_1_via_format_chars.html">Vireo::ViaFormatChars</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_vireo_1_1_via_format_options.html">Vireo::ViaFormatOptions</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_t_d_via_formatter.html">Vireo::TDViaFormatter</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The VIA encoder.  <a href="class_vireo_1_1_t_d_via_formatter.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:ac5fa175b020fbb7951ad8f7ef2dd4c04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5fa175b020fbb7951ad8f7ef2dd4c04"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>stringBufferSize</b>&#160;&#160;&#160;250</td></tr>
+<tr class="separator:ac5fa175b020fbb7951ad8f7ef2dd4c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5180caa3b119f3b26a7926140c46b552"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5180caa3b119f3b26a7926140c46b552"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>tsBoolean</b>&#160;&#160;&#160;&quot;Boolean&quot;</td></tr>
 <tr class="separator:a5180caa3b119f3b26a7926140c46b552"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,12 +257,22 @@ Macros</h2></td></tr>
 <tr class="memitem:a16677709b00f8397c5a2843b38b548a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16677709b00f8397c5a2843b38b548a6"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>tsPerchOpToken</b>&#160;&#160;&#160;&quot;Perch&quot;</td></tr>
 <tr class="separator:a16677709b00f8397c5a2843b38b548a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b760fe5d046dd9ebbaf77fd662804b9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b760fe5d046dd9ebbaf77fd662804b9"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>tsTypeType</b>&#160;&#160;&#160;&quot;Type&quot;</td></tr>
-<tr class="separator:a8b760fe5d046dd9ebbaf77fd662804b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1cf523daa29ff7fea9d1aa5e6a268c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1cf523daa29ff7fea9d1aa5e6a268c7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>tsFireCountOpToken</b>&#160;&#160;&#160;&quot;FireCount&quot;</td></tr>
+<tr class="separator:ac1cf523daa29ff7fea9d1aa5e6a268c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cdd2b043d7dc506c99c630deff81529"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3cdd2b043d7dc506c99c630deff81529"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>tsExecutionContextType</b>&#160;&#160;&#160;&quot;ExecutionContext&quot;</td></tr>
 <tr class="separator:a3cdd2b043d7dc506c99c630deff81529"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a92cfa16efcbcf12ccc7857a474a1ad8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a92cfa16efcbcf12ccc7857a474a1ad8c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ViaFormat</b> { <b>kViaFormat_NoFieldNames</b> = 0, 
+<b>kViaFormat_UseFieldNames</b> = 1, 
+<b>kViaFormat_QuotedFieldNames</b> = kViaFormat_UseFieldNames + 2, 
+<b>kViaFormat_PercentEncodeFieldNames</b> = kViaFormat_UseFieldNames + 4
+ }</td></tr>
+<tr class="memdesc:a92cfa16efcbcf12ccc7857a474a1ad8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Punctuation and options used by the TDViaFormatter. <br/></td></tr>
+<tr class="separator:a92cfa16efcbcf12ccc7857a474a1ad8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>

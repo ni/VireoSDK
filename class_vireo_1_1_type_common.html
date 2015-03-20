@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -232,6 +232,14 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">IsArray</a> ()</td></tr>
 <tr class="memdesc:ade73aaae403ead6e2fb6fe0e02c9155b"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an indexable container that contains another type. <br/></td></tr>
 <tr class="separator:ade73aaae403ead6e2fb6fe0e02c9155b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a203fd9f13c00afe4b645616325a36222"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a203fd9f13c00afe4b645616325a36222"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a203fd9f13c00afe4b645616325a36222">IsZDA</a> ()</td></tr>
+<tr class="memdesc:a203fd9f13c00afe4b645616325a36222"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an indexable container that contains another type. <br/></td></tr>
+<tr class="separator:a203fd9f13c00afe4b645616325a36222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b63e5fac8439c27acb28947454f2146"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b63e5fac8439c27acb28947454f2146"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a3b63e5fac8439c27acb28947454f2146">IsCluster</a> ()</td></tr>
+<tr class="memdesc:a3b63e5fac8439c27acb28947454f2146"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an aggregate of other types. <br/></td></tr>
+<tr class="separator:a3b63e5fac8439c27acb28947454f2146"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad370d8e780fed73af3378b4c3cb62582"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad370d8e780fed73af3378b4c3cb62582"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">IsFlat</a> ()</td></tr>
 <tr class="memdesc:ad370d8e780fed73af3378b4c3cb62582"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if data can be copied by a simple block copy. <br/></td></tr>
@@ -283,9 +291,9 @@ UsageTypeEnum&#160;</td><td class="memItemRight" valign="bottom"><b>ElementUsage
 PointerTypeEnum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a36b9e1f82d6c3b14c7af694ba198f72e">PointerType</a> ()</td></tr>
 <tr class="memdesc:a36b9e1f82d6c3b14c7af694ba198f72e"><td class="mdescLeft">&#160;</td><td class="mdescRight">What type of internal pointer is this type. Only used for CustomValuePointers. <br/></td></tr>
 <tr class="separator:a36b9e1f82d6c3b14c7af694ba198f72e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bb268b08f3b974944bd3d1b6253bec3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0bb268b08f3b974944bd3d1b6253bec3"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Visit</b> (<a class="el" href="class_vireo_1_1_type_visitor.html">TypeVisitor</a> *tv)</td></tr>
-<tr class="separator:a0bb268b08f3b974944bd3d1b6253bec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3bbfd17709fa87bc58d255c65218d2a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3bbfd17709fa87bc58d255c65218d2a"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Accept</b> (<a class="el" href="class_vireo_1_1_type_visitor.html">TypeVisitor</a> *tv)</td></tr>
+<tr class="separator:ae3bbfd17709fa87bc58d255c65218d2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57f0b5d8ac7df9addb449db289daac5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57f0b5d8ac7df9addb449db289daac5f"></a>
 virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a57f0b5d8ac7df9addb449db289daac5f">BaseType</a> ()</td></tr>
 <tr class="memdesc:a57f0b5d8ac7df9addb449db289daac5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a wrapped type, return the type that was wrapped, null otherwise. <br/></td></tr>
@@ -294,28 +302,21 @@ virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;<
 virtual Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a898f158e2b0b4a5e57c0b7487f85e74e">SubElementCount</a> ()</td></tr>
 <tr class="memdesc:a898f158e2b0b4a5e57c0b7487f85e74e"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many element in an Aggregate, 0 if the type is not an Aggregate. <br/></td></tr>
 <tr class="separator:a898f158e2b0b4a5e57c0b7487f85e74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af1f97291d0ea48ddd2fefbbcdd8381ab"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af1f97291d0ea48ddd2fefbbcdd8381ab"></a>
-virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#af1f97291d0ea48ddd2fefbbcdd8381ab">GetSubElementByName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:af1f97291d0ea48ddd2fefbbcdd8381ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an element of an Aggregate using the elements field name. <br/></td></tr>
-<tr class="separator:af1f97291d0ea48ddd2fefbbcdd8381ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6feb2c9071de68d24143c936bb8c20ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6feb2c9071de68d24143c936bb8c20ae"></a>
 virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a6feb2c9071de68d24143c936bb8c20ae">GetSubElement</a> (Int32 index)</td></tr>
 <tr class="memdesc:a6feb2c9071de68d24143c936bb8c20ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an element of an Aggregate using it index. <br/></td></tr>
 <tr class="separator:a6feb2c9071de68d24143c936bb8c20ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a314282ed773032e92ca26c04b050d9d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a314282ed773032e92ca26c04b050d9d7">GetSubElementOffsetFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, Int32 *offset)</td></tr>
-<tr class="memdesc:a314282ed773032e92ca26c04b050d9d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.  <a href="#a314282ed773032e92ca26c04b050d9d7">More...</a><br/></td></tr>
-<tr class="separator:a314282ed773032e92ca26c04b050d9d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55226c289d67481615e664013c96f633"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a55226c289d67481615e664013c96f633">GetSubElementInstancePointerFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, void *start, void **end, Boolean allowDynamic)</td></tr>
-<tr class="memdesc:a55226c289d67481615e664013c96f633"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names, references and array indexes.  <a href="#a55226c289d67481615e664013c96f633">More...</a><br/></td></tr>
-<tr class="separator:a55226c289d67481615e664013c96f633"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74d080dcda9f8b5ac1ffe6f3bf9a59a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74d080dcda9f8b5ac1ffe6f3bf9a59a5"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a74d080dcda9f8b5ac1ffe6f3bf9a59a5">GetName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:a74d080dcda9f8b5ac1ffe6f3bf9a59a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the name if the type is not anonymous. <br/></td></tr>
-<tr class="separator:a74d080dcda9f8b5ac1ffe6f3bf9a59a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dcd9f7b6fefee6ea695e771b5589a69"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3dcd9f7b6fefee6ea695e771b5589a69"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a3dcd9f7b6fefee6ea695e771b5589a69">GetElementName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:a3dcd9f7b6fefee6ea695e771b5589a69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the aggregates elements field name. <br/></td></tr>
-<tr class="separator:a3dcd9f7b6fefee6ea695e771b5589a69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d8ff941f6ab7b479767828c712bf74d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a6d8ff941f6ab7b479767828c712bf74d">GetSubElementAddressFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, void *start, void **end, Boolean allowDynamic)</td></tr>
+<tr class="memdesc:a6d8ff941f6ab7b479767828c712bf74d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.  <a href="#a6d8ff941f6ab7b479767828c712bf74d">More...</a><br/></td></tr>
+<tr class="separator:a6d8ff941f6ab7b479767828c712bf74d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16f1fc490b076e0a9d0d9409080ed18f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16f1fc490b076e0a9d0d9409080ed18f"></a>
+virtual <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a16f1fc490b076e0a9d0d9409080ed18f">GetName</a> ()</td></tr>
+<tr class="memdesc:a16f1fc490b076e0a9d0d9409080ed18f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the name if the type is not anonymous. <br/></td></tr>
+<tr class="separator:a16f1fc490b076e0a9d0d9409080ed18f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5ed4f69fa70f49def2ef2ebb344a67"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a5ed4f69fa70f49def2ef2ebb344a67"></a>
+virtual <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a4a5ed4f69fa70f49def2ef2ebb344a67">GetElementName</a> ()</td></tr>
+<tr class="memdesc:a4a5ed4f69fa70f49def2ef2ebb344a67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the aggregates elements field name. <br/></td></tr>
+<tr class="separator:a4a5ed4f69fa70f49def2ef2ebb344a67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83c3179a8b3655332a11749bdf09b7e0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a83c3179a8b3655332a11749bdf09b7e0"></a>
 virtual IntIndex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a83c3179a8b3655332a11749bdf09b7e0">GetDimensionLengths</a> ()</td></tr>
 <tr class="memdesc:a83c3179a8b3655332a11749bdf09b7e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pointer to the raw vector of dimension lengths. <br/></td></tr>
@@ -362,16 +363,19 @@ NIError&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a4bedd2f0f876c0ab9c385101354afe9a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bedd2f0f876c0ab9c385101354afe9a"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>CompareType</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType)</td></tr>
 <tr class="separator:a4bedd2f0f876c0ab9c385101354afe9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dc70cb768d3306af717aaf521d484e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7dc70cb768d3306af717aaf521d484e2"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (const <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="separator:a7dc70cb768d3306af717aaf521d484e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a612799aeab768289388712076c85829b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a612799aeab768289388712076c85829b"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (const <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *otherTypeName)</td></tr>
+<tr class="separator:a612799aeab768289388712076c85829b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408fef51459e99f4a765f33275053af5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a408fef51459e99f4a765f33275053af5"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType)</td></tr>
+<tr class="separator:a408fef51459e99f4a765f33275053af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23f249f10ff942628afc37a262457d99"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23f249f10ff942628afc37a262457d99"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType, Boolean compatibleArrays)</td></tr>
 <tr class="separator:a23f249f10ff942628afc37a262457d99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5426744e43c3362156c64dd346e1f3f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5426744e43c3362156c64dd346e1f3f7"></a>
-virtual Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a5426744e43c3362156c64dd346e1f3f7">BitSize</a> ()</td></tr>
-<tr class="memdesc:a5426744e43c3362156c64dd346e1f3f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the type in bits including padding. If the type is bit level it s the raw bit size wiht no padding. <br/></td></tr>
-<tr class="separator:a5426744e43c3362156c64dd346e1f3f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a080bbc0c8b5208700d60744cbb467bb9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a080bbc0c8b5208700d60744cbb467bb9"></a>
+virtual IntIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a080bbc0c8b5208700d60744cbb467bb9">BitLength</a> ()</td></tr>
+<tr class="memdesc:a080bbc0c8b5208700d60744cbb467bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding. <br/></td></tr>
+<tr class="separator:a080bbc0c8b5208700d60744cbb467bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4feb5f6cca4e9c87045c6e9f1592e218"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4feb5f6cca4e9c87045c6e9f1592e218"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a4feb5f6cca4e9c87045c6e9f1592e218">OwnsDefDefData</a> ()</td></tr>
 <tr class="memdesc:a4feb5f6cca4e9c87045c6e9f1592e218"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type owns data that needs to be freed when the <a class="el" href="class_vireo_1_1_type_manager.html" title="Keeps track of Types used within a ExecutionContext. ">TypeManager</a> is cleared. <br/></td></tr>
@@ -380,12 +384,15 @@ Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for all type definition types. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a55226c289d67481615e664013c96f633"></a>
+<a class="anchor" id="a6d8ff941f6ab7b479767828c712bf74d"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> Vireo::TypeCommon::GetSubElementInstancePointerFromPath </td>
+          <td class="memname"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> Vireo::TypeCommon::GetSubElementAddressFromPath </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *&#160;</td>
           <td class="paramname"><em>name</em>, </td>
@@ -414,39 +421,17 @@ Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
           <td></td><td></td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-<p>Parse through a path, digging through Aggregate element names, references and array indexes. </p>
-<p>Walk down a dotted path inlcuding hops through arrays. </p>
-
-</div>
-</div>
-<a class="anchor" id="a314282ed773032e92ca26c04b050d9d7"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> Vireo::TypeCommon::GetSubElementOffsetFromPath </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Int32 *&#160;</td>
-          <td class="paramname"><em>offset</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Parse through a path, digging through Aggregate element names. Calculates the cumulative offset. </p>
-<p>Walk down a dotted cluster field path. </p>
+<p>Parse an element path by name. Base class knows nothing about sub elements. </p>
+
+<p>Reimplemented in <a class="el" href="class_vireo_1_1_custom_data_proc_type.html#aab26dd2657ea79182822bb2f7fa5b74b">Vireo::CustomDataProcType</a>, <a class="el" href="class_vireo_1_1_array_type.html#a1a8d743457debab02bd95a559c3c0db9">Vireo::ArrayType</a>, <a class="el" href="class_vireo_1_1_aggregate_type.html#a6a17022a2d7eab59a86391686ba8614d">Vireo::AggregateType</a>, and <a class="el" href="class_vireo_1_1_wrapped_type.html#ada488bdff1bbf24e78ac44f06280c107">Vireo::WrappedType</a>.</p>
 
 </div>
 </div>

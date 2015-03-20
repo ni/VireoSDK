@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -95,9 +95,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">TypeAndDataManager.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;stdlib.h&gt;</code><br/>
-<code>#include &quot;<a class="el" href="_execution_context_8h_source.html">ExecutionContext.h</a>&quot;</code><br/>
+<div class="textblock"><code>#include &quot;<a class="el" href="_execution_context_8h_source.html">ExecutionContext.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_type_and_data_manager_8h_source.html">TypeAndDataManager.h</a>&quot;</code><br/>
+<code>#include &lt;math.h&gt;</code><br/>
 <code>#include &quot;<a class="el" href="_type_definer_8h_source.html">TypeDefiner.h</a>&quot;</code><br/>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -113,21 +113,24 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a00a9c9ca0e45edd6a41c7ac8b91c6ffd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00a9c9ca0e45edd6a41c7ac8b91c6ffd"></a>
-NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::WriteIntToMemory</b> (EncodingEnum encoding, Int32 aqSize, void *pData, IntMax value)</td></tr>
-<tr class="separator:a00a9c9ca0e45edd6a41c7ac8b91c6ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af648427130e16256c7475a80bfb88a9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af648427130e16256c7475a80bfb88a9e"></a>
+IntMax&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::RoundToEven</b> (Double value)</td></tr>
+<tr class="separator:af648427130e16256c7475a80bfb88a9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8dca37472816702094be7e7aba3a948"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8dca37472816702094be7e7aba3a948"></a>
+IntMax&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::RoundToEven</b> (Single value)</td></tr>
+<tr class="separator:ac8dca37472816702094be7e7aba3a948"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07f7b063ea64dae283bdd2389369e21e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07f7b063ea64dae283bdd2389369e21e"></a>
 NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::ReadIntFromMemory</b> (EncodingEnum encoding, Int32 aqSize, void *pData, IntMax *pValue)</td></tr>
 <tr class="separator:a07f7b063ea64dae283bdd2389369e21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00a9c9ca0e45edd6a41c7ac8b91c6ffd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a00a9c9ca0e45edd6a41c7ac8b91c6ffd"></a>
+NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::WriteIntToMemory</b> (EncodingEnum encoding, Int32 aqSize, void *pData, IntMax value)</td></tr>
+<tr class="separator:a00a9c9ca0e45edd6a41c7ac8b91c6ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee652ffb48db14bed65cf26922738ac8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee652ffb48db14bed65cf26922738ac8"></a>
 NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::ReadDoubleFromMemory</b> (EncodingEnum encoding, Int32 aqSize, void *pData, Double *pValue)</td></tr>
 <tr class="separator:aee652ffb48db14bed65cf26922738ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac81402e771f2e627283387b77ba57ba9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac81402e771f2e627283387b77ba57ba9"></a>
 NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::WriteDoubleToMemory</b> (EncodingEnum encoding, Int32 aqSize, void *pData, Double value)</td></tr>
 <tr class="separator:ac81402e771f2e627283387b77ba57ba9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1a03d7023293a2fc0c4f0a7c5fd9d31"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1a03d7023293a2fc0c4f0a7c5fd9d31"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::PrintType</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type, const char *message)</td></tr>
-<tr class="separator:ad1a03d7023293a2fc0c4f0a7c5fd9d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ffb2ef9fcaa9967bcbe1b247aa0057d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ffb2ef9fcaa9967bcbe1b247aa0057d"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE1</b> (TypeManagerCurrentTypeManager, <a class="el" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a>)</td></tr>
 <tr class="separator:a9ffb2ef9fcaa9967bcbe1b247aa0057d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,9 +146,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::PrintType</b> 
 <tr class="memitem:a05984e453047e8c85b6a02323fcc096c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05984e453047e8c85b6a02323fcc096c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE3</b> (TypeManagerDefineType, <a class="el" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a>, <a class="el" href="class_vireo_1_1_string.html">StringRef</a>, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>)</td></tr>
 <tr class="separator:a05984e453047e8c85b6a02323fcc096c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a47d3f21e10eb689d7364656319cd80de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a47d3f21e10eb689d7364656319cd80de"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE3</b> (TypeOf, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, <a class="el" href="class_vireo_1_1_typed_array_core.html">TypedArrayCoreRef</a>, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>)</td></tr>
-<tr class="separator:a47d3f21e10eb689d7364656319cd80de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af89ec2742ac534a1ca642b3bd579c7d6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af89ec2742ac534a1ca642b3bd579c7d6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE3</b> (TypeOf, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, void, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>)</td></tr>
+<tr class="separator:af89ec2742ac534a1ca642b3bd579c7d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15cba987e36d25b80706eafe90910e5b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15cba987e36d25b80706eafe90910e5b"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE2</b> (TypeTopAQSize, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, Int32)</td></tr>
 <tr class="separator:a15cba987e36d25b80706eafe90910e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,9 +188,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::PrintType</b> 
 <tr class="memitem:a522dc7b0aa9000af70869f454ae4eb1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a522dc7b0aa9000af70869f454ae4eb1c"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE2</b> (TypeSubElementCount, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, Int32)</td></tr>
 <tr class="separator:a522dc7b0aa9000af70869f454ae4eb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fcfc1d877c793697dc4867dec76d9a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fcfc1d877c793697dc4867dec76d9a8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE3</b> (TypeGetSubElementByName, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, <a class="el" href="class_vireo_1_1_string.html">StringRef</a>, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>)</td></tr>
-<tr class="separator:a2fcfc1d877c793697dc4867dec76d9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5081a4e0561ab3d99cedd86f6365178e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5081a4e0561ab3d99cedd86f6365178e"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::VIREO_FUNCTION_SIGNATURE3</b> (TypeGetSubElement, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, Int32, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>)</td></tr>
 <tr class="separator:a5081a4e0561ab3d99cedd86f6365178e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -254,12 +254,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::PrintType</b> 
 <tr class="memitem:a3fc2e2052e650f14dedd263e19e6e104"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3fc2e2052e650f14dedd263e19e6e104"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION</b> (TypeGetSubElement,&quot;p(i(.Type) i(.Int32) o(.Type))&quot;)</td></tr>
 <tr class="separator:a3fc2e2052e650f14dedd263e19e6e104"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87b56194672ccde7677bceff2184e363"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87b56194672ccde7677bceff2184e363"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION</b> (TypeGetSubElementByName,&quot;p(i(.Type) i(.<a class="el" href="class_vireo_1_1_string.html">String</a>) o(.Type))&quot;)</td></tr>
-<tr class="separator:a87b56194672ccde7677bceff2184e363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Copyright (c) 2014 National Instruments Corp.</p>
+<div class="textblock"><p>Copyright (c) 2015 National Instruments Corp.</p>
 <p>This software is subject to the terms described in the LICENSE.TXT file</p>
 <p>SDG </p>
 </div></div><!-- contents -->

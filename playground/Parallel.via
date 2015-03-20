@@ -16,13 +16,13 @@ define (Parallel dv(.VirtualInstrument (
     )
     clump(         // Clump 1
         Perch(0)       
-        Print(sHead)
+        Println(sHead)
         WaitMilliseconds(oneSecond)
         Branch(0)
     )
     clump(         // Clump 2
         Perch(0)
-        Print(sTummy)
+        Println(sTummy)
         WaitMilliseconds(oneSecond)
         Branch(0)
     )

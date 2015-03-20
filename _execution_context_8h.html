@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -102,15 +102,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="_type_and_data_manager_8h_source.html">TypeAndDataManager.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_instruction_8h_source.html">Instruction.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_time_types_8h_source.html">TimeTypes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="_timestamp_8h_source.html">Timestamp.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_event_log_8h_source.html">EventLog.h</a>&quot;</code><br/>
 </div>
 <p><a href="_execution_context_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_queue.html">Vireo::Queue</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="class_vireo_1_1_queue.html" title="Queue of clumps. ">Queue</a> of clumps.  <a href="class_vireo_1_1_queue.html#details">More...</a><br/></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_waitable_state.html">Vireo::WaitableState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_observable_object.html">Vireo::ObservableObject</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_timer.html">Vireo::Timer</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump_queue.html">Vireo::VIClumpQueue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue of clumps.  <a href="class_vireo_1_1_v_i_clump_queue.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_execution_context.html">Vireo::ExecutionContext</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,6 +135,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ac3f851b26ab8d325e4bf80af9dd0fc10"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac3f851b26ab8d325e4bf80af9dd0fc10"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>THREAD_EXEC</b>()&#160;&#160;&#160;ExecutionContextScope::Current()</td></tr>
 <tr class="separator:ac3f851b26ab8d325e4bf80af9dd0fc10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2e3310e5b26e052ed36d873f8000ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f2e3310e5b26e052ed36d873f8000ec"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>THREAD_CLUMP</b>()&#160;&#160;&#160;ExecutionContextScope::Current()-&gt;CurrentClump()</td></tr>
+<tr class="separator:a6f2e3310e5b26e052ed36d873f8000ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0163e3c887c070011f2310685936f3c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0163e3c887c070011f2310685936f3c0"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_execution_context_8h.html#a0163e3c887c070011f2310685936f3c0">STACK_VAR</a>(_t_, _v_)&#160;&#160;&#160;StackVar&lt;_t_&gt; _v_(#_t_)</td></tr>
 <tr class="memdesc:a0163e3c887c070011f2310685936f3c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declare a variable using a Vireo type. <br/></td></tr>
@@ -159,6 +168,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab03c2f9d7a2240db9fe35a02a3e4c37a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab03c2f9d7a2240db9fe35a02a3e4c37a"></a>
 InstructionCore *VIVM_FASTCALL&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::CulDeSac</b> (Instruction0 *_this _PROGMEM)</td></tr>
 <tr class="separator:ab03c2f9d7a2240db9fe35a02a3e4c37a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52226240542a1bf6f8cf4a17d8ca5b3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52226240542a1bf6f8cf4a17d8ca5b3d"></a>
+InstructionCore *VIVM_FASTCALL&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::Done</b> (Instruction0 *_this _PROGMEM)</td></tr>
+<tr class="separator:a52226240542a1bf6f8cf4a17d8ca5b3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Tools to imliment a ExecutionContext that can run/evaluate VIs. </p>

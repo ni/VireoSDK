@@ -84,7 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -95,8 +95,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <div class="contents">
 &#160;<ul>
-<li>_bitSize
-: <a class="el" href="class_vireo_1_1_aggregate_type.html#ab7f4dc732144a94d7fabdcc2fe4b564a">Vireo::AggregateType</a>
+<li>_blockLength
+: <a class="el" href="class_vireo_1_1_aggregate_type.html#a4442cd89f6dbea0cfa4a1eb7a5ddc198">Vireo::AggregateType</a>
 </li>
 <li>_breakoutCount
 : <a class="el" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">Vireo::ExecutionContext</a>
@@ -104,8 +104,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>_caller
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#a4dc118d0c7b032027f559b36833d3d4a">Vireo::VIClump</a>
 </li>
+<li>_clump
+: <a class="el" href="class_vireo_1_1_waitable_state.html#abaa7dea43d74de6b50e8877cb82022ee">Vireo::WaitableState</a>
+</li>
+<li>_count
+: <a class="el" href="class_queue_core.html#ac53c6e31b57d43d784361dbc0341bf43">QueueCore</a>
+</li>
 <li>_fireCount
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#ad49c0d494549e4c1d4239b374e14db79">Vireo::VIClump</a>
+</li>
+<li>_info
+: <a class="el" href="class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209">Vireo::WaitableState</a>
+</li>
+<li>_insert
+: <a class="el" href="class_queue_core.html#ad578a403f925f9b82260f718837a11a9">QueueCore</a>
+</li>
+<li>_next
+: <a class="el" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">Vireo::WaitableState</a>
+</li>
+<li>_object
+: <a class="el" href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">Vireo::WaitableState</a>
 </li>
 <li>_owningVI
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#ac5da68ff60f0aed26ec986c271d5e34b">Vireo::VIClump</a>
@@ -116,14 +134,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>_shortCount
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff">Vireo::VIClump</a>
 </li>
-<li>_sleepingList
-: <a class="el" href="class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">Vireo::ExecutionContext</a>
+<li>_timer
+: <a class="el" href="class_vireo_1_1_execution_context.html#a097ad147ae8da59d61dd708d8b162b43">Vireo::ExecutionContext</a>
 </li>
 <li>_tm
 : <a class="el" href="class_vireo_1_1_aggregate_alignment_calculator.html#a230e57a8f9b1a12d2e8d4704746770c4">Vireo::AggregateAlignmentCalculator</a>
 </li>
+<li>_waitCount
+: <a class="el" href="class_vireo_1_1_v_i_clump.html#a4a32f99853e0fc7696361beabc14a31a">Vireo::VIClump</a>
+</li>
 <li>_waitingClumps
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482">Vireo::VIClump</a>
+</li>
+<li>_waitStates
+: <a class="el" href="class_vireo_1_1_v_i_clump.html#a9e417974a5d1db42f4f82deda506fc8e">Vireo::VIClump</a>
 </li>
 <li>_wakeUpInfo
 : <a class="el" href="class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51">Vireo::VIClump</a>

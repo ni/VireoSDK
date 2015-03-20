@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -84,8 +84,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><p>The VIA grammar is based on simple parentesized lists and are closely related to <a href="http://en.wikipedia.org/wiki/S-expressions">s-expressions</a> used in the LISP programming language and many of its derivatives. The similarity is strongest for <a href="#DataValue_EBNF">data sets</a> since they can nest arbitrarily deep. <a class="el" href="md_dox__via_e_b_n_f.html#VI_EBNF">VIs</a> are distictly different though using a common format makes it easier to treat them as data as well</p>
 <p>For clarity, the following EBNF grammar goes a bit further and defines the core elements for type, data and VI definitions. Note that terminal expressions for core types such as Int32 are not included since they are typically defined using lower level primitives.</p>
 <h3>Grammar for types</h3>
-<div class="fragment"><div class="line">type                    := named_type | array | cluster | default_value_type</div>
-<div class="line">                         | bit_cluster | equivalence | param_block | var_type</div>
+<div class="fragment"><div class="line">type                    := ( named_type </div>
+<div class="line">                             | array </div>
+<div class="line">                             | cluster | bit_cluster | equivalence | param_block </div>
+<div class="line">                             | var_type | default_value_type</div>
+<div class="line">                           ) [ template_parameters ] </div>
 <div class="line"></div>
 <div class="line">named_type              := <span class="charliteral">&#39;.&#39;</span>  type_in_dictionary</div>
 <div class="line"></div>
@@ -129,25 +132,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><span class="stringliteral">default_value_type      := &#39;</span>dv<span class="charliteral">&#39; &#39;</span>(<span class="stringliteral">&#39; type { data_element } &#39;</span>)<span class="stringliteral">&#39;</span></div>
 <div class="line"><span class="stringliteral"></span></div>
 <div class="line"><span class="stringliteral">var_type                := &#39;</span>var<span class="charliteral">&#39; &#39;</span>(<span class="stringliteral">&#39; type { data_element } &#39;</span>)<span class="stringliteral">&#39;</span></div>
-</div><!-- fragment --><div class="fragment"><div class="line">data_element             := token | data_collection | data_vi</div>
+<div class="line"><span class="stringliteral"></span></div>
+<div class="line"><span class="stringliteral">template_parameters     := &#39;</span>&lt;<span class="stringliteral">&#39; type* &#39;</span>&gt;<span class="stringliteral">&#39;</span></div>
+</div><!-- fragment --><div class="fragment"><div class="line">data_element             := [ element_name <span class="charliteral">&#39;:&#39;</span>] ( token | data_collection | data_vi )</div>
 <div class="line"></div>
 <div class="line">data_collection          := <span class="charliteral">&#39;(&#39;</span> data_element* <span class="charliteral">&#39;)&#39;</span></div>
 </div><!-- fragment --><div class="fragment"><div class="line">data_vi                  := <span class="charliteral">&#39;(&#39;</span></div>
-<div class="line">                                parameter_type? dataspace_type</div>
+<div class="line">                                data_element*</div>
 <div class="line">                                data_clump*</div>
 <div class="line">                             <span class="charliteral">&#39;)&#39;</span></div>
 <div class="line"></div>
-<div class="line">parameter_type          := type</div>
-<div class="line"></div>
-<div class="line">dataspace_type          := type</div>
-<div class="line"></div>
-<div class="line">data_clump              := <span class="stringliteral">&#39;clump&#39;</span> <span class="charliteral">&#39;(&#39;</span> fire_count data_instruction* <span class="charliteral">&#39;)&#39;</span></div>
-<div class="line"></div>
-<div class="line">fire_count              := whole_number_token</div>
+<div class="line">data_clump              := <span class="stringliteral">&#39;clump&#39;</span> <span class="charliteral">&#39;(&#39;</span> data_instruction* <span class="charliteral">&#39;)&#39;</span></div>
 <div class="line"></div>
 <div class="line">data_instruction        := instruction_name <span class="charliteral">&#39;(&#39;</span> instruction_argument* <span class="charliteral">&#39;)&#39;</span></div>
 <div class="line"></div>
-<div class="line">instruction_name        := <span class="stringliteral">&#39;Perch&#39;</span> | type_name</div>
+<div class="line">instruction_name        := <span class="stringliteral">&#39;Perch&#39;</span> | <span class="stringliteral">&#39;FireCount&#39;</span> | type_name</div>
 <div class="line"></div>
 <div class="line">instruction_argument    := token | wild_card</div>
 </div><!-- fragment --><h3>Grammar rules for low level tokens</h3>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['replacesubstringstruct',['ReplaceSubstringStruct',['../struct_replace_substring_struct.html',1,'']]]
+  ['queuecore',['QueueCore',['../class_queue_core.html',1,'']]]
 ];

@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -120,16 +120,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a131f8ed0ee299fc20c5e6106c8487d96"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a131f8ed0ee299fc20c5e6106c8487d96"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>CopyFromSubString</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *string)</td></tr>
 <tr class="separator:a131f8ed0ee299fc20c5e6106c8487d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9959729bffe736edc11b491b971b9d81"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9959729bffe736edc11b491b971b9d81"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AppendCStr</b> (const char *cstr)</td></tr>
-<tr class="separator:a9959729bffe736edc11b491b971b9d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cbf8d52de5672028a1b0138108fb581"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2cbf8d52de5672028a1b0138108fb581"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>AppendCStr</b> (<a class="el" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> cstr)</td></tr>
+<tr class="separator:a2cbf8d52de5672028a1b0138108fb581"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23a0194a817ab393d1b4cf4f3e65c18e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23a0194a817ab393d1b4cf4f3e65c18e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AppendSubString</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *string)</td></tr>
 <tr class="separator:a23a0194a817ab393d1b4cf4f3e65c18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b77b11cf2c2a2b7b407aa9a1ab2168f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b77b11cf2c2a2b7b407aa9a1ab2168f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>InsertCStr</b> (IntIndex position, <a class="el" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> cstr)</td></tr>
+<tr class="separator:a5b77b11cf2c2a2b7b407aa9a1ab2168f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abae57b94f602715b36db8133c8903c5c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abae57b94f602715b36db8133c8903c5c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>InsertSubString</b> (IntIndex position, <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *string)</td></tr>
+<tr class="separator:abae57b94f602715b36db8133c8903c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_vireo_1_1_typed_array1_d"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_vireo_1_1_typed_array1_d')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_vireo_1_1_typed_array1_d.html">Vireo::TypedArray1D&lt; Utf8Char &gt;</a></td></tr>
-<tr class="memitem:a01ca42c0156b526a579b8fb6ac2e4270 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01ca42c0156b526a579b8fb6ac2e4270"></a>
-Utf8Char *&#160;</td><td class="memItemRight" valign="bottom"><b>Obj</b> ()</td></tr>
-<tr class="separator:a01ca42c0156b526a579b8fb6ac2e4270 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87e03b1abc662ac3895187d81d088703 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87e03b1abc662ac3895187d81d088703"></a>
 Utf8Char *&#160;</td><td class="memItemRight" valign="bottom"><b>Begin</b> ()</td></tr>
 <tr class="separator:a87e03b1abc662ac3895187d81d088703 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,10 +160,16 @@ NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Append</b> (IntInd
 <tr class="memitem:aec257a974914242f13b11f7c9257dd73 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aec257a974914242f13b11f7c9257dd73"></a>
 NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Append</b> (<a class="el" href="class_vireo_1_1_typed_array1_d.html">TypedArray1D</a> *array)</td></tr>
 <tr class="separator:aec257a974914242f13b11f7c9257dd73 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a185c8b0db4207fef258d658f4c855485 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a185c8b0db4207fef258d658f4c855485"></a>
+NIError&#160;</td><td class="memItemRight" valign="bottom"><b>Insert</b> (IntIndex position, IntIndex count, const Utf8Char *pElements)</td></tr>
+<tr class="separator:a185c8b0db4207fef258d658f4c855485 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23ce238ba83f4e2b2d6c847d4b076109 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23ce238ba83f4e2b2d6c847d4b076109"></a>
 NIError&#160;</td><td class="memItemRight" valign="bottom"><b>CopyFrom</b> (IntIndex count, const Utf8Char *pElements)</td></tr>
 <tr class="separator:a23ce238ba83f4e2b2d6c847d4b076109 inherit pub_methods_class_vireo_1_1_typed_array1_d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_vireo_1_1_typed_array_core"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_vireo_1_1_typed_array_core')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_vireo_1_1_typed_array_core.html">Vireo::TypedArrayCore</a></td></tr>
+<tr class="memitem:af0360a05686947bfcfae074e35a1bf11 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af0360a05686947bfcfae074e35a1bf11"></a>
+IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>Rank</b> ()</td></tr>
+<tr class="separator:af0360a05686947bfcfae074e35a1bf11 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a392db5a436128bb61b55d429bf329ca6 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a392db5a436128bb61b55d429bf329ca6"></a>
 IntIndex *&#160;</td><td class="memItemRight" valign="bottom"><b>GetDimensionLengths</b> ()</td></tr>
 <tr class="separator:a392db5a436128bb61b55d429bf329ca6 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,17 +188,19 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><b>RawObj</b> ()</td><
 <tr class="memitem:a8288dcd59e68f0f65af53e3e0760cd8e inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8288dcd59e68f0f65af53e3e0760cd8e"></a>
 AQBlock1 *&#160;</td><td class="memItemRight" valign="bottom"><b>RawBegin</b> ()</td></tr>
 <tr class="separator:a8288dcd59e68f0f65af53e3e0760cd8e inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafe24b95933cbc5d1b61b9aca9b7cf8e inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aafe24b95933cbc5d1b61b9aca9b7cf8e"></a>
-AQBlock1 *&#160;</td><td class="memItemRight" valign="bottom"><b>RawEnd</b> ()</td></tr>
-<tr class="separator:aafe24b95933cbc5d1b61b9aca9b7cf8e inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54b62880b2cdc2487a4fab32a9665933 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54b62880b2cdc2487a4fab32a9665933"></a>
 void *&#160;</td><td class="memItemRight" valign="bottom"><b>BeginAtAQ</b> (IntIndex index)</td></tr>
 <tr class="separator:a54b62880b2cdc2487a4fab32a9665933 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a53516d1c99fc523c44436b0cc5a33d inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a53516d1c99fc523c44436b0cc5a33d"></a>
+<a class="el" href="class_vireo_1_1_block_itr.html">BlockItr</a>&#160;</td><td class="memItemRight" valign="bottom"><b>RawItr</b> ()</td></tr>
+<tr class="separator:a2a53516d1c99fc523c44436b0cc5a33d inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa842d9550a4a1170c44717617c657a84 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa842d9550a4a1170c44717617c657a84"></a>
-<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Type</b> ()</td></tr>
+<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#aa842d9550a4a1170c44717617c657a84">Type</a> ()</td></tr>
+<tr class="memdesc:aa842d9550a4a1170c44717617c657a84 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array's type. <br/></td></tr>
 <tr class="separator:aa842d9550a4a1170c44717617c657a84 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d78f3a88d74f266484964156e71b1f8 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3d78f3a88d74f266484964156e71b1f8"></a>
-<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ElementType</b> ()</td></tr>
+<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a3d78f3a88d74f266484964156e71b1f8">ElementType</a> ()</td></tr>
+<tr class="memdesc:a3d78f3a88d74f266484964156e71b1f8 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">The element type of this array instance. This type may be more specific than the element in Array's Type. <br/></td></tr>
 <tr class="separator:a3d78f3a88d74f266484964156e71b1f8 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84980c66ce67a6d8556cfdfa58d0f067 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a84980c66ce67a6d8556cfdfa58d0f067"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>SetElementType</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>, Boolean preserveElements)</td></tr>
@@ -197,20 +208,28 @@ Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>SetElementType</b>
 <tr class="memitem:a222f061deeb9e8275f1cd9e48abb41d1 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a222f061deeb9e8275f1cd9e48abb41d1"></a>
 IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>GetLength</b> (IntIndex i)</td></tr>
 <tr class="separator:a222f061deeb9e8275f1cd9e48abb41d1 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addbc1f32be7a3e9dbcc72ec83e76b01c inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="addbc1f32be7a3e9dbcc72ec83e76b01c"></a>
+IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>InternalCalculateLength</b> ()</td></tr>
+<tr class="separator:addbc1f32be7a3e9dbcc72ec83e76b01c inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48f87f8ec6302cce9e59535c9230ba23 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48f87f8ec6302cce9e59535c9230ba23"></a>
 IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>Length</b> ()</td></tr>
 <tr class="separator:a48f87f8ec6302cce9e59535c9230ba23 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96d23da644cbe447a78d9fb5f0f3b844 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96d23da644cbe447a78d9fb5f0f3b844"></a>
-IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>Capacity</b> ()</td></tr>
+IntIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a96d23da644cbe447a78d9fb5f0f3b844">Capacity</a> ()</td></tr>
+<tr class="memdesc:a96d23da644cbe447a78d9fb5f0f3b844 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the maximum number of elements the current underlying storage could hold. <br/></td></tr>
 <tr class="separator:a96d23da644cbe447a78d9fb5f0f3b844 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b099ba1a8cadc4e2b45da7c068dece5 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b099ba1a8cadc4e2b45da7c068dece5"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a2b099ba1a8cadc4e2b45da7c068dece5">Reserve</a> (IntIndex length)</td></tr>
+<tr class="memdesc:a2b099ba1a8cadc4e2b45da7c068dece5 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to grow the capacity of the array so that resizing the dimensions will not need. <br/></td></tr>
+<tr class="separator:a2b099ba1a8cadc4e2b45da7c068dece5 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7eaeb38ec9c5b5e9c7ffe04af26993ee inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7eaeb38ec9c5b5e9c7ffe04af26993ee"></a>
 IntIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a7eaeb38ec9c5b5e9c7ffe04af26993ee">AQBlockLength</a> (IntIndex count)</td></tr>
 <tr class="memdesc:a7eaeb38ec9c5b5e9c7ffe04af26993ee inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the length of a contigious chunk of elements. <br/></td></tr>
 <tr class="separator:a7eaeb38ec9c5b5e9c7ffe04af26993ee inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a371a4f718bef9e63f409e826ed6b2905 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a371a4f718bef9e63f409e826ed6b2905"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a371a4f718bef9e63f409e826ed6b2905">ResizeDimensions</a> (Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean init)</td></tr>
-<tr class="memdesc:a371a4f718bef9e63f409e826ed6b2905 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize for multi dim arrays. <br/></td></tr>
-<tr class="separator:a371a4f718bef9e63f409e826ed6b2905 inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8becfa9df04132a01fe86906ed482bb inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8becfa9df04132a01fe86906ed482bb"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#ac8becfa9df04132a01fe86906ed482bb">ResizeDimensions</a> (Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld)</td></tr>
+<tr class="memdesc:ac8becfa9df04132a01fe86906ed482bb inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resize for multi dim arrays. <br/></td></tr>
+<tr class="separator:ac8becfa9df04132a01fe86906ed482bb inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ffb7e8d994d14760de2037df1e7b01c inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8ffb7e8d994d14760de2037df1e7b01c"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_typed_array_core.html#a8ffb7e8d994d14760de2037df1e7b01c">ResizeToMatchOrEmpty</a> (<a class="el" href="class_vireo_1_1_typed_array_core.html">TypedArrayCoreRef</a> pReference)</td></tr>
 <tr class="memdesc:a8ffb7e8d994d14760de2037df1e7b01c inherit pub_methods_class_vireo_1_1_typed_array_core"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make this array match the shape of the reference type. <br/></td></tr>
@@ -260,22 +279,22 @@ Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>AQRealloc</b> (Int
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AQFree</b> ()</td></tr>
 <tr class="separator:a6a0852a2aff3a6c8e792a3134060a294 inherit pro_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_static_methods_class_vireo_1_1_typed_array_core"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_class_vireo_1_1_typed_array_core')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="class_vireo_1_1_typed_array_core.html">Vireo::TypedArrayCore</a></td></tr>
-<tr class="memitem:a87b495e0dad559180c625b0c2d156749 inherit pro_static_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87b495e0dad559180c625b0c2d156749"></a>
-static IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>StructSize</b> (Int32 rank)</td></tr>
-<tr class="separator:a87b495e0dad559180c625b0c2d156749 inherit pro_static_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0854d27536c68bd88c50e8d8028376e inherit pro_static_methods_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0854d27536c68bd88c50e8d8028376e"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>StructSize</b> (Int32 rank)</td></tr>
+<tr class="separator:ac0854d27536c68bd88c50e8d8028376e inherit pro_static_methods_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_vireo_1_1_typed_array_core"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_vireo_1_1_typed_array_core')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_vireo_1_1_typed_array_core.html">Vireo::TypedArrayCore</a></td></tr>
 <tr class="memitem:a77fef869145112bc301f83e8d88ea5e7 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77fef869145112bc301f83e8d88ea5e7"></a>
 AQBlock1 *&#160;</td><td class="memItemRight" valign="bottom"><b>_pRawBufferBegin</b></td></tr>
 <tr class="separator:a77fef869145112bc301f83e8d88ea5e7 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42bf54289acdf82062de8712fe31c866 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42bf54289acdf82062de8712fe31c866"></a>
-AQBlock1 *&#160;</td><td class="memItemRight" valign="bottom"><b>_pRawBufferEnd</b></td></tr>
-<tr class="separator:a42bf54289acdf82062de8712fe31c866 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3def160cd26fb4cd189aae8f0a333514 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3def160cd26fb4cd189aae8f0a333514"></a>
 <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_typeRef</b></td></tr>
 <tr class="separator:a3def160cd26fb4cd189aae8f0a333514 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a87592ee07b329157147628622331f94b inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a87592ee07b329157147628622331f94b"></a>
 <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_eltTypeRef</b></td></tr>
 <tr class="separator:a87592ee07b329157147628622331f94b inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8db37047416e8e005b22423789c1eb68 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8db37047416e8e005b22423789c1eb68"></a>
+IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>_capacity</b></td></tr>
+<tr class="separator:a8db37047416e8e005b22423789c1eb68 inherit pro_attribs_class_vireo_1_1_typed_array_core"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Vireo string type. Must be allocated by <a class="el" href="class_vireo_1_1_type_manager.html" title="Keeps track of Types used within a ExecutionContext. ">TypeManager</a> not raw C++. </p>

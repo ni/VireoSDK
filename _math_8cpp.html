@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -101,16 +101,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="textblock"><code>#include &lt;cstdlib&gt;</code><br/>
 <code>#include &lt;cmath&gt;</code><br/>
 <code>#include &lt;limits&gt;</code><br/>
+<code>#include &quot;<a class="el" href="_timestamp_8h_source.html">Timestamp.h</a>&quot;</code><br/>
 <code>#include &quot;<a class="el" href="_type_definer_8h_source.html">TypeDefiner.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="_time_types_8h_source.html">TimeTypes.h</a>&quot;</code><br/>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a48c39f11b45a83ee9441020fe9bc1592"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a48c39f11b45a83ee9441020fe9bc1592"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION_TYPED</b>(_root_, _type_, _proto_)&#160;&#160;&#160;DEFINE_VIREO_FUNCTION(_root_##_type_, _proto_)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION_TYPED</b>(_root_, _type_, _proto_)&#160;&#160;&#160;DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)</td></tr>
 <tr class="separator:a48c39f11b45a83ee9441020fe9bc1592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a640283d328d8843fa19f2b122ba4d5d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a640283d328d8843fa19f2b122ba4d5d2"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION_2TYPED</b>(_root_, _type1_, _type2_, _proto_)&#160;&#160;&#160;DEFINE_VIREO_FUNCTION(_type1_##_root_##_type2_, _proto_)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION_2TYPED</b>(_root_, _type1_, _type2_, _proto_)&#160;&#160;&#160;DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)</td></tr>
 <tr class="separator:a640283d328d8843fa19f2b122ba4d5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b5b79484d3f146106311641ff9c21b7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>DECLARE_VIREO_MATH_PRIMITIVES</b>(TYPE)</td></tr>
 <tr class="separator:a9b5b79484d3f146106311641ff9c21b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,21 +212,27 @@ Int64&#160;</td><td class="memItemRight" valign="bottom"><b>IntAbs</b> (Int64 va
 <tr class="memitem:ac638da34d6472472af0eba5cf17ec409"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac638da34d6472472af0eba5cf17ec409"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DECLARE_VIREO_CONDITIONAL_BRANCH1</b> (BranchIfTrue, Boolean,(_Param(1))) DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfFalse</td></tr>
 <tr class="separator:ac638da34d6472472af0eba5cf17ec409"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a918c265f9a15a394b3c94962b89521c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a918c265f9a15a394b3c94962b89521c9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>!_Param</b> (1))) DECLARE_VIREO_PRIMITIVE3(AndBoolean</td></tr>
-<tr class="separator:a918c265f9a15a394b3c94962b89521c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade7698d332755a53f0abe6812d427456"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ade7698d332755a53f0abe6812d427456"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>_Param</b> (2)</td></tr>
-<tr class="separator:ade7698d332755a53f0abe6812d427456"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b2ecbfde40364a939a80e6b0e27715f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b2ecbfde40364a939a80e6b0e27715f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>!_Param</b> (1))) DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNull</td></tr>
+<tr class="separator:a2b2ecbfde40364a939a80e6b0e27715f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf90232c6d023cdcd6d5870704d3b279"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf90232c6d023cdcd6d5870704d3b279"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION</b> (BranchIfFalse,&quot;p(i(.BranchTarget) i(.Boolean))&quot;)</td></tr>
 <tr class="separator:acf90232c6d023cdcd6d5870704d3b279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3337ea7b4b2d0886c47246fcefa629c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3337ea7b4b2d0886c47246fcefa629c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION</b> (BranchIfNull,&quot;p(i(.BranchTarget) i(.<a class="el" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a>))&quot;)</td></tr>
+<tr class="separator:aa3337ea7b4b2d0886c47246fcefa629c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add9fe7c30c3ed391354abce12832d58e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add9fe7c30c3ed391354abce12832d58e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_VIREO_FUNCTION</b> (BranchIfNotNull,&quot;p(i(.BranchTarget) i(.<a class="el" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a>))&quot;)</td></tr>
+<tr class="separator:add9fe7c30c3ed391354abce12832d58e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ae7d38601dfbd73adbe5c1b3ec34e0e13"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae7d38601dfbd73adbe5c1b3ec34e0e13"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Boolean</b></td></tr>
 <tr class="separator:ae7d38601dfbd73adbe5c1b3ec34e0e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad380ee5aac29b1db19347980089ba5bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad380ee5aac29b1db19347980089ba5bc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>null</b></td></tr>
+<tr class="separator:ad380ee5aac29b1db19347980089ba5bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Native Vireo maths functions for core types. </p>

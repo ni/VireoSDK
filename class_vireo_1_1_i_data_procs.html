@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -107,8 +107,8 @@ Inheritance diagram for Vireo::IDataProcs:</div>
  <div class="center">
   <img src="class_vireo_1_1_i_data_procs.png" usemap="#Vireo::IDataProcs_map" alt=""/>
   <map id="Vireo::IDataProcs_map" name="Vireo::IDataProcs_map">
-<area href="class_vireo_1_1_instruction_list_data_procs_class.html" title="Custom data methods needed to free up instruction lists. " alt="Vireo::InstructionListDataProcsClass" shape="rect" coords="0,56,216,80"/>
-<area href="class_vireo_1_1_v_i_data_procs_class.html" title="Custom data methods needed to Copy a VI. " alt="Vireo::VIDataProcsClass" shape="rect" coords="226,56,442,80"/>
+<area href="class_vireo_1_1_instruction_block_data_procs_class.html" title="Custom data methods needed to free up instruction lists. " alt="Vireo::InstructionBlockDataProcsClass" shape="rect" coords="0,56,228,80"/>
+<area href="class_vireo_1_1_v_i_data_procs_class.html" title="Custom data methods needed to Copy a VI. " alt="Vireo::VIDataProcsClass" shape="rect" coords="238,56,466,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -123,6 +123,9 @@ virtual NIError&#160;</td><td class="memItemRight" valign="bottom"><b>CopyData</
 <tr class="memitem:a5870e21796c04ca947b22a1429d9a8cb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5870e21796c04ca947b22a1429d9a8cb"></a>
 virtual NIError&#160;</td><td class="memItemRight" valign="bottom"><b>ClearData</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type, void *pData)</td></tr>
 <tr class="separator:a5870e21796c04ca947b22a1429d9a8cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99695ec531429539f48127a29403f581"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a99695ec531429539f48127a29403f581"></a>
+virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetSubElementAddressFromPath</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type, <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, void *start, void **end, Boolean allowDynamic)</td></tr>
+<tr class="separator:a99695ec531429539f48127a29403f581"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>An interface used a <a class="el" href="class_vireo_1_1_custom_data_proc_type.html" title="A type that has custom Init/Copy/Clear functions. ">CustomDataProcType</a> instance. </p>

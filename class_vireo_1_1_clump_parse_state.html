@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -93,9 +93,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
-<a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="class_vireo_1_1_clump_parse_state-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Vireo::ClumpParseState Class Reference</div>  </div>
@@ -126,9 +126,7 @@ Public Types</h2></td></tr>
 <b>kArgumentResolvedToClump</b>, 
 <br/>
 &#160;&#160;<b>kArgumentResolvedToPerch</b>, 
-<b>kArgumentResolvedToStaticString</b>, 
-<b>kArgumentResolvedToInstructionFunction</b>, 
-<b>kArgumentResolved_LastGood</b> = kArgumentResolvedToStaticString
+<b>kArgumentResolved_LastGood</b> = kArgumentResolvedToPerch
 <br/>
  }</td></tr>
 <tr class="separator:a072d402db760d343c25bcb7930a5c42e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,6 +166,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetClumpFireCount</b>
 <tr class="memitem:a28dc7ff79c99ed89d499baa84ec16d40"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28dc7ff79c99ed89d499baa84ec16d40"></a>
 <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>StartInstruction</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *opName)</td></tr>
 <tr class="separator:a28dc7ff79c99ed89d499baa84ec16d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebd2113561097853bb3a622126a93be0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebd2113561097853bb3a622126a93be0"></a>
+<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>StartNextOverload</b> ()</td></tr>
+<tr class="separator:aebd2113561097853bb3a622126a93be0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835880bc51eadc2e7e7285c9004a5db5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a835880bc51eadc2e7e7285c9004a5db5"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>HasMultipleDefinitions</b> ()</td></tr>
+<tr class="separator:a835880bc51eadc2e7e7285c9004a5db5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5d29825db2f945401f5d181ab0475f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5d29825db2f945401f5d181ab0475f3"></a>
 <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ReresolveInstruction</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *opName, bool allowErrors)</td></tr>
 <tr class="separator:aa5d29825db2f945401f5d181ab0475f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,9 +181,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ResolveActualArgument
 <tr class="memitem:acf5f48b7b55b897d94881d7b40b3f77a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acf5f48b7b55b897d94881d7b40b3f77a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddDataTargetArgument</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *argument, Boolean prependType)</td></tr>
 <tr class="separator:acf5f48b7b55b897d94881d7b40b3f77a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34bfe281166bf9476364cff0cb45cc1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34bfe281166bf9476364cff0cb45cc1c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddStaticString</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *argument)</td></tr>
-<tr class="separator:a34bfe281166bf9476364cff0cb45cc1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa17f172a151b95638580adbd1a9739f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa17f172a151b95638580adbd1a9739f2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>InternalAddArg</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> actualType, void *arg)</td></tr>
 <tr class="separator:aa17f172a151b95638580adbd1a9739f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,18 +205,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>AddBranchTargetArgume
 <tr class="memitem:a741aa4106894dec8ab378a79fd5df2e2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a741aa4106894dec8ab378a79fd5df2e2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddClumpTargetArgument</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *clumpIndexToken)</td></tr>
 <tr class="separator:a741aa4106894dec8ab378a79fd5df2e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b36aacd636f4e2822ed8e1536d6d350"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b36aacd636f4e2822ed8e1536d6d350"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddInstructionFunctionArgument</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *instructionNameToken)</td></tr>
-<tr class="separator:a0b36aacd636f4e2822ed8e1536d6d350"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a248c190c477a73d14a1463e0b7243351"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a248c190c477a73d14a1463e0b7243351"></a>
-<a class="el" href="class_vireo_1_1_virtual_instrument.html">VirtualInstrument</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>AddSubVITargetArgument</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *subVIName)</td></tr>
-<tr class="separator:a248c190c477a73d14a1463e0b7243351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c8410d6a45931f06074bdd413aff85c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c8410d6a45931f06074bdd413aff85c"></a>
+<a class="el" href="class_vireo_1_1_virtual_instrument.html">VirtualInstrument</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>AddSubVITargetArgument</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> viType)</td></tr>
+<tr class="separator:a2c8410d6a45931f06074bdd413aff85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ae8801e23753b4105f84a358c8dc1d9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ae8801e23753b4105f84a358c8dc1d9"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>AddSubSnippet</b> ()</td></tr>
 <tr class="separator:a6ae8801e23753b4105f84a358c8dc1d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa372432000bd287af8e077bb695e4f9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa372432000bd287af8e077bb695e4f9b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>LogEvent</b> (<a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">EventLog::EventSeverity</a> severity, Int32 lineNumber, const char *message,...)</td></tr>
-<tr class="separator:aa372432000bd287af8e077bb695e4f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafb5c737370069f96675d2a96d3f933c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aafb5c737370069f96675d2a96d3f933c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>LogEvent</b> (<a class="el" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">EventLog::EventSeverity</a> severity, Int32 lineNumber, <a class="el" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> message,...)</td></tr>
+<tr class="separator:aafb5c737370069f96675d2a96d3f933c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a921dd7cacdc6f8cb440b68a9441d2179"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a921dd7cacdc6f8cb440b68a9441d2179"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>LogArgumentProcessing</b> (Int32 lineNumber)</td></tr>
 <tr class="separator:a921dd7cacdc6f8cb440b68a9441d2179"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -225,9 +223,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>LogArgumentProcessing
 <tr class="memitem:ab5a58dbbf2c801f745b724f2cbda0834"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab5a58dbbf2c801f745b724f2cbda0834"></a>
 <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>EmitInstruction</b> ()</td></tr>
 <tr class="separator:ab5a58dbbf2c801f745b724f2cbda0834"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa2f74791c5f79d4da71534628528bdb3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa2f74791c5f79d4da71534628528bdb3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>EmitSimpleInstruction</b> (const char *opName)</td></tr>
-<tr class="separator:aa2f74791c5f79d4da71534628528bdb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b580c467fdebc61dbddf062b8306424"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b580c467fdebc61dbddf062b8306424"></a>
+<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>EmitInstruction</b> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *opName, Int32 argCount,...)</td></tr>
+<tr class="separator:a7b580c467fdebc61dbddf062b8306424"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2e0f83cb1105d0c53a63333d0efd17e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2e0f83cb1105d0c53a63333d0efd17e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>EmitSimpleInstruction</b> (<a class="el" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> opName)</td></tr>
+<tr class="separator:ae2e0f83cb1105d0c53a63333d0efd17e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad26566d2e1553d5c3fd90e92515cee57"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad26566d2e1553d5c3fd90e92515cee57"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>CommitSubSnippet</b> ()</td></tr>
 <tr class="separator:ad26566d2e1553d5c3fd90e92515cee57"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -307,6 +308,18 @@ size_t *&#160;</td><td class="memItemRight" valign="bottom"><b>_pVarArgCount</b>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>_bIsVI</b></td></tr>
 <tr class="separator:a19ed60d5cc1292d4d8cb094afa977d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a558b2b2508f3b9483119b2a3eb3fb641"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a558b2b2508f3b9483119b2a3eb3fb641"></a>
+static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxPerches</b> = 200</td></tr>
+<tr class="separator:a558b2b2508f3b9483119b2a3eb3fb641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16449e5bc3840e0514d27fe92c5137ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16449e5bc3840e0514d27fe92c5137ed"></a>
+static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxArguments</b> = 100</td></tr>
+<tr class="separator:a16449e5bc3840e0514d27fe92c5137ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58beca51673844b08dc4ed60ff62fa47"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58beca51673844b08dc4ed60ff62fa47"></a>
+static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxPatchInfos</b> = 100</td></tr>
+<tr class="separator:a58beca51673844b08dc4ed60ff62fa47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:a5114c9cfa3e9b515ea420c40684762b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5114c9cfa3e9b515ea420c40684762b8"></a>
@@ -330,6 +343,15 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_totalInstructionCou
 <tr class="memitem:a7f876d796e1a498932c5e241ce623c1a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f876d796e1a498932c5e241ce623c1a"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_totalInstructionPointerCount</b></td></tr>
 <tr class="separator:a7f876d796e1a498932c5e241ce623c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a44fc48edd1c5eef3c635d8f0da81f3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a44fc48edd1c5eef3c635d8f0da81f3"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>_hasMultipleDefinitions</b></td></tr>
+<tr class="separator:a0a44fc48edd1c5eef3c635d8f0da81f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab79a682e7f646a9bf32ea6d7b3293b10"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab79a682e7f646a9bf32ea6d7b3293b10"></a>
+<a class="el" href="class_vireo_1_1_named_type.html">NamedTypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_nextFuncitonDefinition</b></td></tr>
+<tr class="separator:ab79a682e7f646a9bf32ea6d7b3293b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae49306a983d0aa89b2a2cb8590850a46"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae49306a983d0aa89b2a2cb8590850a46"></a>
+<a class="el" href="class_vireo_1_1_named_type.html">NamedTypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_genericFuncitonDefinition</b></td></tr>
+<tr class="separator:ae49306a983d0aa89b2a2cb8590850a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0473d7bd8b0ddaca7ed1a4fca1eb82d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0473d7bd8b0ddaca7ed1a4fca1eb82d2"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_formalParameterIndex</b></td></tr>
 <tr class="separator:a0473d7bd8b0ddaca7ed1a4fca1eb82d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -339,18 +361,12 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_formalParameterInde
 <tr class="memitem:a5abd44a83474db14fdbf54462e8ff110"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5abd44a83474db14fdbf54462e8ff110"></a>
 <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_actualArgumentType</b></td></tr>
 <tr class="separator:a5abd44a83474db14fdbf54462e8ff110"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
-Static Private Attributes</h2></td></tr>
-<tr class="memitem:a558b2b2508f3b9483119b2a3eb3fb641"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a558b2b2508f3b9483119b2a3eb3fb641"></a>
-static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxPerches</b> = 200</td></tr>
-<tr class="separator:a558b2b2508f3b9483119b2a3eb3fb641"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a16449e5bc3840e0514d27fe92c5137ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16449e5bc3840e0514d27fe92c5137ed"></a>
-static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxArguments</b> = 100</td></tr>
-<tr class="separator:a16449e5bc3840e0514d27fe92c5137ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a58beca51673844b08dc4ed60ff62fa47"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58beca51673844b08dc4ed60ff62fa47"></a>
-static const Int32&#160;</td><td class="memItemRight" valign="bottom"><b>kMaxPatchInfos</b> = 100</td></tr>
-<tr class="separator:a58beca51673844b08dc4ed60ff62fa47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8bbb75d4873b37afb44ab4ca9ed6f8c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8bbb75d4873b37afb44ab4ca9ed6f8c"></a>
+<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_baseViType</b></td></tr>
+<tr class="separator:af8bbb75d4873b37afb44ab4ca9ed6f8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fcc33f840d4b5bd9557ce66056271c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fcc33f840d4b5bd9557ce66056271c0"></a>
+<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_baseReentrantViType</b></td></tr>
+<tr class="separator:a2fcc33f840d4b5bd9557ce66056271c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utility class used by decoders that can decode VIs and Clumps. </p>

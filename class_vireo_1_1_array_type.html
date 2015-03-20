@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -118,9 +118,9 @@ Inheritance diagram for Vireo::ArrayType:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abd232e563e4b9c6f9adf84fbee09013a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd232e563e4b9c6f9adf84fbee09013a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Visit</b> (<a class="el" href="class_vireo_1_1_type_visitor.html">TypeVisitor</a> *tv)</td></tr>
-<tr class="separator:abd232e563e4b9c6f9adf84fbee09013a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ff2c386872785abdf96161a397c5215"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ff2c386872785abdf96161a397c5215"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Accept</b> (<a class="el" href="class_vireo_1_1_type_visitor.html">TypeVisitor</a> *tv)</td></tr>
+<tr class="separator:a4ff2c386872785abdf96161a397c5215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae09dcf9babec8763d75c9aeb026efa47"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae09dcf9babec8763d75c9aeb026efa47"></a>
 virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#ae09dcf9babec8763d75c9aeb026efa47">BaseType</a> ()</td></tr>
 <tr class="memdesc:ae09dcf9babec8763d75c9aeb026efa47"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a wrapped type, return the type that was wrapped, null otherwise. <br/></td></tr>
@@ -129,18 +129,17 @@ virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;<
 virtual Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#a2c6c7f265675b03001a3441bf60ca8e2">SubElementCount</a> ()</td></tr>
 <tr class="memdesc:a2c6c7f265675b03001a3441bf60ca8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many element in an Aggregate, 0 if the type is not an Aggregate. <br/></td></tr>
 <tr class="separator:a2c6c7f265675b03001a3441bf60ca8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff38f8f3fbd9b4b13a06d046bdffc00b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aff38f8f3fbd9b4b13a06d046bdffc00b"></a>
-virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#aff38f8f3fbd9b4b13a06d046bdffc00b">GetSubElementByName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:aff38f8f3fbd9b4b13a06d046bdffc00b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an element of an Aggregate using the elements field name. <br/></td></tr>
-<tr class="separator:aff38f8f3fbd9b4b13a06d046bdffc00b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27f0628f8807d4f57e0b3d9c160bbff8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27f0628f8807d4f57e0b3d9c160bbff8"></a>
 virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#a27f0628f8807d4f57e0b3d9c160bbff8">GetSubElement</a> (Int32 index)</td></tr>
 <tr class="memdesc:a27f0628f8807d4f57e0b3d9c160bbff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get an element of an Aggregate using it index. <br/></td></tr>
 <tr class="separator:a27f0628f8807d4f57e0b3d9c160bbff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8ddc4679cdb4914b7d3421da35a767e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8ddc4679cdb4914b7d3421da35a767e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#aa8ddc4679cdb4914b7d3421da35a767e">GetName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:aa8ddc4679cdb4914b7d3421da35a767e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the name if the type is not anonymous. <br/></td></tr>
-<tr class="separator:aa8ddc4679cdb4914b7d3421da35a767e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a8d743457debab02bd95a559c3c0db9"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#a1a8d743457debab02bd95a559c3c0db9">GetSubElementAddressFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *path, void *start, void **end, Boolean allowDynamic)</td></tr>
+<tr class="memdesc:a1a8d743457debab02bd95a559c3c0db9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.  <a href="#a1a8d743457debab02bd95a559c3c0db9">More...</a><br/></td></tr>
+<tr class="separator:a1a8d743457debab02bd95a559c3c0db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8626c5de18ecab3d36c4ddd3b071173b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8626c5de18ecab3d36c4ddd3b071173b"></a>
+virtual <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#a8626c5de18ecab3d36c4ddd3b071173b">GetName</a> ()</td></tr>
+<tr class="memdesc:a8626c5de18ecab3d36c4ddd3b071173b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the name if the type is not anonymous. <br/></td></tr>
+<tr class="separator:a8626c5de18ecab3d36c4ddd3b071173b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f35fa01781caaec90e00b8d1a618f44"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f35fa01781caaec90e00b8d1a618f44"></a>
 virtual IntIndex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_array_type.html#a7f35fa01781caaec90e00b8d1a618f44">GetDimensionLengths</a> ()</td></tr>
 <tr class="memdesc:a7f35fa01781caaec90e00b8d1a618f44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a pointer to the raw vector of dimension lengths. <br/></td></tr>
@@ -161,10 +160,10 @@ virtual NIError&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memdesc:a9e7ced8a67ed6aaca5b22743dfa473ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Free up any storage and put value to null/zero state. <br/></td></tr>
 <tr class="separator:a9e7ced8a67ed6aaca5b22743dfa473ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_vireo_1_1_wrapped_type"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_vireo_1_1_wrapped_type')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_vireo_1_1_wrapped_type.html">Vireo::WrappedType</a></td></tr>
-<tr class="memitem:a7ebff2314fb0068fb52b28b0163e141f inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7ebff2314fb0068fb52b28b0163e141f"></a>
-virtual Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_wrapped_type.html#a7ebff2314fb0068fb52b28b0163e141f">BitSize</a> ()</td></tr>
-<tr class="memdesc:a7ebff2314fb0068fb52b28b0163e141f inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the type in bits including padding. If the type is bit level it s the raw bit size wiht no padding. <br/></td></tr>
-<tr class="separator:a7ebff2314fb0068fb52b28b0163e141f inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd04e96dcc80a19a6cdebe6dccfeb6de inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd04e96dcc80a19a6cdebe6dccfeb6de"></a>
+virtual IntIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_wrapped_type.html#afd04e96dcc80a19a6cdebe6dccfeb6de">BitLength</a> ()</td></tr>
+<tr class="memdesc:afd04e96dcc80a19a6cdebe6dccfeb6de inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding. <br/></td></tr>
+<tr class="separator:afd04e96dcc80a19a6cdebe6dccfeb6de inherit pub_methods_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_vireo_1_1_type_common"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_vireo_1_1_type_common')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_vireo_1_1_type_common.html">Vireo::TypeCommon</a></td></tr>
 <tr class="memitem:a7eca138952b5c5883de9363d1bc8d959 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7eca138952b5c5883de9363d1bc8d959"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TypeCommon</b> (<a class="el" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> typeManager)</td></tr>
@@ -203,6 +202,14 @@ Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">IsArray</a> ()</td></tr>
 <tr class="memdesc:ade73aaae403ead6e2fb6fe0e02c9155b inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an indexable container that contains another type. <br/></td></tr>
 <tr class="separator:ade73aaae403ead6e2fb6fe0e02c9155b inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a203fd9f13c00afe4b645616325a36222 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a203fd9f13c00afe4b645616325a36222"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a203fd9f13c00afe4b645616325a36222">IsZDA</a> ()</td></tr>
+<tr class="memdesc:a203fd9f13c00afe4b645616325a36222 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an indexable container that contains another type. <br/></td></tr>
+<tr class="separator:a203fd9f13c00afe4b645616325a36222 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b63e5fac8439c27acb28947454f2146 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b63e5fac8439c27acb28947454f2146"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a3b63e5fac8439c27acb28947454f2146">IsCluster</a> ()</td></tr>
+<tr class="memdesc:a3b63e5fac8439c27acb28947454f2146 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if the type is an aggregate of other types. <br/></td></tr>
+<tr class="separator:a3b63e5fac8439c27acb28947454f2146 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad370d8e780fed73af3378b4c3cb62582 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad370d8e780fed73af3378b4c3cb62582"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">IsFlat</a> ()</td></tr>
 <tr class="memdesc:ad370d8e780fed73af3378b4c3cb62582 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">True if data can be copied by a simple block copy. <br/></td></tr>
@@ -254,16 +261,10 @@ UsageTypeEnum&#160;</td><td class="memItemRight" valign="bottom"><b>ElementUsage
 PointerTypeEnum&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a36b9e1f82d6c3b14c7af694ba198f72e">PointerType</a> ()</td></tr>
 <tr class="memdesc:a36b9e1f82d6c3b14c7af694ba198f72e inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">What type of internal pointer is this type. Only used for CustomValuePointers. <br/></td></tr>
 <tr class="separator:a36b9e1f82d6c3b14c7af694ba198f72e inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a314282ed773032e92ca26c04b050d9d7 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a314282ed773032e92ca26c04b050d9d7">GetSubElementOffsetFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, Int32 *offset)</td></tr>
-<tr class="memdesc:a314282ed773032e92ca26c04b050d9d7 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.  <a href="#a314282ed773032e92ca26c04b050d9d7">More...</a><br/></td></tr>
-<tr class="separator:a314282ed773032e92ca26c04b050d9d7 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55226c289d67481615e664013c96f633 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a55226c289d67481615e664013c96f633">GetSubElementInstancePointerFromPath</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name, void *start, void **end, Boolean allowDynamic)</td></tr>
-<tr class="memdesc:a55226c289d67481615e664013c96f633 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse through a path, digging through Aggregate element names, references and array indexes.  <a href="#a55226c289d67481615e664013c96f633">More...</a><br/></td></tr>
-<tr class="separator:a55226c289d67481615e664013c96f633 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3dcd9f7b6fefee6ea695e771b5589a69 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3dcd9f7b6fefee6ea695e771b5589a69"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a3dcd9f7b6fefee6ea695e771b5589a69">GetElementName</a> (<a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="memdesc:a3dcd9f7b6fefee6ea695e771b5589a69 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the aggregates elements field name. <br/></td></tr>
-<tr class="separator:a3dcd9f7b6fefee6ea695e771b5589a69 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a5ed4f69fa70f49def2ef2ebb344a67 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a5ed4f69fa70f49def2ef2ebb344a67"></a>
+virtual <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a4a5ed4f69fa70f49def2ef2ebb344a67">GetElementName</a> ()</td></tr>
+<tr class="memdesc:a4a5ed4f69fa70f49def2ef2ebb344a67 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the <a class="el" href="class_vireo_1_1_sub_string.html" title="The core class for working with strings. The SubString never owns the data it points to...">SubString</a> to the aggregates elements field name. <br/></td></tr>
+<tr class="separator:a4a5ed4f69fa70f49def2ef2ebb344a67 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c4eaefdbd80f4928d45b23a4b5f6f05 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8c4eaefdbd80f4928d45b23a4b5f6f05"></a>
 virtual IntIndex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_type_common.html#a8c4eaefdbd80f4928d45b23a4b5f6f05">ElementOffset</a> ()</td></tr>
 <tr class="memdesc:a8c4eaefdbd80f4928d45b23a4b5f6f05 inherit pub_methods_class_vireo_1_1_type_common"><td class="mdescLeft">&#160;</td><td class="mdescRight">Offset in AQs in the containing aggregate. <br/></td></tr>
@@ -291,9 +292,12 @@ NIError&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:a4bedd2f0f876c0ab9c385101354afe9a inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bedd2f0f876c0ab9c385101354afe9a"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>CompareType</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType)</td></tr>
 <tr class="separator:a4bedd2f0f876c0ab9c385101354afe9a inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dc70cb768d3306af717aaf521d484e2 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7dc70cb768d3306af717aaf521d484e2"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (const <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *name)</td></tr>
-<tr class="separator:a7dc70cb768d3306af717aaf521d484e2 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a612799aeab768289388712076c85829b inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a612799aeab768289388712076c85829b"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (const <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *otherTypeName)</td></tr>
+<tr class="separator:a612799aeab768289388712076c85829b inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a408fef51459e99f4a765f33275053af5 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a408fef51459e99f4a765f33275053af5"></a>
+Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType)</td></tr>
+<tr class="separator:a408fef51459e99f4a765f33275053af5 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23f249f10ff942628afc37a262457d99 inherit pub_methods_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a23f249f10ff942628afc37a262457d99"></a>
 Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>IsA</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> otherType, Boolean compatibleArrays)</td></tr>
 <tr class="separator:a23f249f10ff942628afc37a262457d99 inherit pub_methods_class_vireo_1_1_type_common"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -321,9 +325,9 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-methods"></a>
 Static Private Member Functions</h2></td></tr>
-<tr class="memitem:aac5eef6aa0311ac0cb5471e7a5c99f79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aac5eef6aa0311ac0cb5471e7a5c99f79"></a>
-static IntIndex&#160;</td><td class="memItemRight" valign="bottom"><b>StructSize</b> (Int32 rank)</td></tr>
-<tr class="separator:aac5eef6aa0311ac0cb5471e7a5c99f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bab3545699ca5a318165671bef034c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bab3545699ca5a318165671bef034c2"></a>
+static size_t&#160;</td><td class="memItemRight" valign="bottom"><b>StructSize</b> (Int32 rank)</td></tr>
+<tr class="separator:a5bab3545699ca5a318165671bef034c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -332,16 +336,16 @@ Additional Inherited Members</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>WrappedType</b> (<a class="el" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> typeManager, <a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)</td></tr>
 <tr class="separator:a1421564c8263e8b70b2b54b5d4792071 inherit pro_methods_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_vireo_1_1_wrapped_type"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_vireo_1_1_wrapped_type')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_vireo_1_1_wrapped_type.html">Vireo::WrappedType</a></td></tr>
-<tr class="memitem:a6333fa0e0cbf0e33d4bbde2c0a724765 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="a6333fa0e0cbf0e33d4bbde2c0a724765"></a>
+<tr class="memitem:a2c3c21fdb53e4252c2d033320b00c2b3 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="a2c3c21fdb53e4252c2d033320b00c2b3"></a>
 union {</td></tr>
-<tr class="memitem:a4f8cd78730e1db48f170a045277eaebb inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="adc9f31220b5a83a3e0fa6b0bd9cee137"></a>
+<tr class="memitem:a313f9c95b3473d16df89db75cc85dc0e inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="adc9f31220b5a83a3e0fa6b0bd9cee137"></a>
 &#160;&#160;&#160;<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a>&#160;&#160;&#160;<b>_wrapped</b></td></tr>
-<tr class="separator:a4f8cd78730e1db48f170a045277eaebb inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae76ceaa5cc8e79f67d493656699de977 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="aa3e3c48cdcaf8d6b386b61d3c9515a1e"></a>
+<tr class="separator:a313f9c95b3473d16df89db75cc85dc0e inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88c50f042e240583bcef505fa144f852 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" ><a class="anchor" id="aa3e3c48cdcaf8d6b386b61d3c9515a1e"></a>
 &#160;&#160;&#160;<a class="el" href="union_max_aligned_type.html">MaxAlignedType</a>&#160;&#160;&#160;<b>_alignent</b></td></tr>
-<tr class="separator:ae76ceaa5cc8e79f67d493656699de977 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6333fa0e0cbf0e33d4bbde2c0a724765 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr class="separator:a6333fa0e0cbf0e33d4bbde2c0a724765 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a88c50f042e240583bcef505fa144f852 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c3c21fdb53e4252c2d033320b00c2b3 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
+<tr class="separator:a2c3c21fdb53e4252c2d033320b00c2b3 inherit pro_attribs_class_vireo_1_1_wrapped_type"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_class_vireo_1_1_type_common"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_vireo_1_1_type_common')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_vireo_1_1_type_common.html">Vireo::TypeCommon</a></td></tr>
 <tr class="memitem:a51d75baa37ac2aeb3dc9254e440305a4 inherit pro_attribs_class_vireo_1_1_type_common"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a51d75baa37ac2aeb3dc9254e440305a4"></a>
 Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_topAQSize</b></td></tr>
@@ -388,7 +392,59 @@ UInt16&#160;</td><td class="memItemRight" valign="bottom"><b>_ownsDefDefData</b>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A type that is a multi-dimension collection of another type. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a1a8d743457debab02bd95a559c3c0db9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> Vireo::ArrayType::GetSubElementAddressFromPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Boolean&#160;</td>
+          <td class="paramname"><em>allowDynamic</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse through a path, digging through Aggregate element names. Calculates the cumulative offset. </p>
+<p>Parse an element path by name. Base class knows nothing about sub elements. </p>
+
+<p>Reimplemented from <a class="el" href="class_vireo_1_1_wrapped_type.html#ada488bdff1bbf24e78ac44f06280c107">Vireo::WrappedType</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>include/<a class="el" href="_type_and_data_manager_8h_source.html">TypeAndDataManager.h</a></li>
 <li>core/<a class="el" href="_type_and_data_manager_8cpp.html">TypeAndDataManager.cpp</a></li>
 </ul>

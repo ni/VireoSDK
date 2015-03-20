@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <p>Suport for the higest resolution timer available on the target platfrom.  
  <a href="class_vireo_1_1_platform_time.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_time_types_8h_source.html">TimeTypes.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_timestamp_8h_source.html">Timestamp.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -110,18 +110,27 @@ static PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><b>Ti
 <tr class="memitem:a28cca2036564daf75fcd3f06ea3c330e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28cca2036564daf75fcd3f06ea3c330e"></a>
 static PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><b>MicrosecondsToTickCount</b> (Int64 microseconds)</td></tr>
 <tr class="separator:a28cca2036564daf75fcd3f06ea3c330e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6117cbe0a3105580436deb0fad9fe049"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6117cbe0a3105580436deb0fad9fe049"></a>
+static PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><b>SecondsToTickCount</b> (Double seconds)</td></tr>
+<tr class="separator:a6117cbe0a3105580436deb0fad9fe049"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaaaec5de1b928c417902354e8b0bc328"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaaec5de1b928c417902354e8b0bc328"></a>
 static Int64&#160;</td><td class="memItemRight" valign="bottom"><b>TickCountToMilliseconds</b> (PlatformTickType)</td></tr>
 <tr class="separator:aaaaec5de1b928c417902354e8b0bc328"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82e4866b3dd8bb9070d4acefe408daf1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82e4866b3dd8bb9070d4acefe408daf1"></a>
 static Int64&#160;</td><td class="memItemRight" valign="bottom"><b>TickCountToMicroseconds</b> (PlatformTickType)</td></tr>
 <tr class="separator:a82e4866b3dd8bb9070d4acefe408daf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab1ed3bbaeb992ef4e574b399b10cda"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afab1ed3bbaeb992ef4e574b399b10cda"></a>
+static PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><b>MillisecondsFromNowToTickCount</b> (Int64 milliseconds)</td></tr>
+<tr class="separator:afab1ed3bbaeb992ef4e574b399b10cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a79a7d5b20cbdf564ac5fed3d15636f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a79a7d5b20cbdf564ac5fed3d15636f"></a>
+static PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><b>MicrosecondsFromNowToTickCount</b> (Int64 microseconds)</td></tr>
+<tr class="separator:a5a79a7d5b20cbdf564ac5fed3d15636f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Suport for the higest resolution timer available on the target platfrom. </p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>include/<a class="el" href="_time_types_8h_source.html">TimeTypes.h</a></li>
-<li>core/<a class="el" href="_time_types_8cpp.html">TimeTypes.cpp</a></li>
+<li>include/<a class="el" href="_timestamp_8h_source.html">Timestamp.h</a></li>
+<li>core/<a class="el" href="_timestamp_8cpp.html">Timestamp.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

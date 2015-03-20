@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -97,7 +97,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_type_and_data_manager_8h.html">TypeAndDataManager.h</a>&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_instruction_8h.html">Instruction.h</a>&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_time_types_8h.html">TimeTypes.h</a>&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_timestamp_8h.html">Timestamp.h</a>&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_event_log_8h.html">EventLog.h</a>&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>Vireo</div>
@@ -106,195 +106,254 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span>VIClump;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span>FunctionClump;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span>EventLog;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="class_vireo_1_1_queue.html">   44</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_queue.html">Queue</a></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;{</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span> :</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* _head;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* _tail;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">class </span>ObservableObject;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="class_vireo_1_1_waitable_state.html">   31</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">   35</a></span>&#160;    <a class="code" href="class_vireo_1_1_observable_object.html">ObservableObject</a>* <a class="code" href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">_object</a>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">   38</a></span>&#160;    <a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* <a class="code" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">_next</a>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="class_vireo_1_1_waitable_state.html#abaa7dea43d74de6b50e8877cb82022ee">   41</a></span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* <a class="code" href="class_vireo_1_1_waitable_state.html#abaa7dea43d74de6b50e8877cb82022ee">_clump</a>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    </div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209">   44</a></span>&#160;    Int64 <a class="code" href="class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209">_info</a>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="class_vireo_1_1_observable_object.html">   47</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_observable_object.html">ObservableObject</a></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;{</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="class_vireo_1_1_queue.html">Queue</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="class_vireo_1_1_queue.html#a13105622aa13315b0af158570c7cfa03">   52</a></span>&#160;    Boolean <a class="code" href="class_vireo_1_1_queue.html#a13105622aa13315b0af158570c7cfa03">IsEmpty</a>() { <span class="keywordflow">return</span> (this-&gt;_head == null); }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* <a class="code" href="class_vireo_1_1_queue.html#af71f03573c0d5bdf013f28c8ba6f5c8b">Dequeue</a>();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_vireo_1_1_queue.html#a263459d2c8d6f50349210a902d09fccc">Enqueue</a>(<a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">enum</span> ExecutionState</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    kExecutionState_None = 0,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    kExecutionState_ClumpsInRunQueue = 0x01,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    kExecutionState_ClumpsWaitingOnTime = 0x02,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    kExecutionState_ClumpsWaitingOnQueues = 0x04,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    kExecutionState_ClumpsWaitingOnISRs = 0x08,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">// Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="comment">// cooperatively with other thread operations much like a message pump does. ECs</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">// may be the only tasks a thread has. </span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">// All access to the outside , graphics, time, IO</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">// needs to be derived from an object connected to the context.</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#ifdef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">    #define ECONTEXT static</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">    #define ECONTEXT </span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">// CulDeSac prototype is visable ( e.g. not static) so the</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">// IsNotCulDeSac method on ExecutionContext can inline it better.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment"></span><span class="keyword">typedef</span> ExecutionContext* ExecutionContextRef;</div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html">   88</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContext</a></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;{</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> _theTypeManager;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> TheTypeManager()    { <span class="keywordflow">return</span> _theTypeManager; }</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_queue.html">Queue</a>           _runQueue;          </div>
-<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">   98</a></span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*        <a class="code" href="class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">_sleepingList</a>;      </div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">   99</a></span>&#160;    ECONTEXT    IntSmall        <a class="code" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">_breakoutCount</a>;     </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#ifndef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="class_vireo_1_1_execution_context.html#a5b9885f511dc2c8cee9cb6dc36e8cc07">ExecutionContext</a>(<a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> typeManager);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    ECONTEXT    PlatformTickType PlatformTickCount();</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor">#ifdef VIREO_SUPPORTS_ISR</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*        _triggeredIsrList;               <span class="comment">// Elts waiting for something external to wake them up</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            IsrEnqueue(QueueElt* elt);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*        RunngQueueElt() {<span class="keywordflow">return</span> _runningQueueElt;}</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            CheckOccurrences(PlatformTickType t);       <span class="comment">// Will put items on the run queue if it is time. or ready bit is set.</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="comment">// Run a string of instructions to completion, no concurrency. </span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            ExecuteFunction(<a class="code" href="class_vireo_1_1_function_clump.html">FunctionClump</a>* fclump);  <span class="comment">// Run a simple function to completion.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="comment">// Run the concurrent execution system for a short period of time</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    ECONTEXT    <a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* SuspendRunningQueueElt(<a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* whereToWakeUp);</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    ECONTEXT    <a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* Stop();</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            ClearBreakout() { <a class="code" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">_breakoutCount</a> = 0; }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    ECONTEXT    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            EnqueueRunQueue(VIClump* elt);</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    ECONTEXT    VIClump*        _runningQueueElt;       <span class="comment">// Element actually running</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  </div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="comment">// Method for runtime errors to be routined through.</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            LogEvent(<a class="code" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">EventLog::EventSeverity</a> severity, <span class="keyword">const</span> <span class="keywordtype">char</span>* message, ...);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keyword">static</span> Boolean _classInited;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keyword">static</span> Instruction0 _culDeSac;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {<span class="keywordflow">return</span> pInstruciton-&gt;_function != (InstructionFunction)CulDeSac;};</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> ClassInit();</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;};</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor">#ifdef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="comment">// A single global instance allows allows all field references</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="comment">// to resolver to a fixed global address. This avoid pointer+offset</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="comment">// instructions that are costly on small MCUs</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keyword">extern</span> ExecutionContext gSingleExecutionContext;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="preprocessor">    #define THREAD_EXEC()   (&amp;gSingleExecutionContext)</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">    #define THREAD_EXEC() ExecutionContextScope::Current()</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#ifndef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html">  153</a></span>&#160;<span class="comment"></span><span class="keyword">class </span><a class="code" href="class_vireo_1_1_execution_context_scope.html">ExecutionContextScope</a></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;{</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> _saveExec;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <a class="code" href="class_vireo_1_1_type_manager_scope.html">TypeManagerScope</a>  _typeManagerScope;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    VIVM_THREAD_LOCAL <span class="keyword">static</span> <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> _threadsExecutionContext;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00161"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">  161</a></span>&#160;    <a class="code" href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">ExecutionContextScope</a>(<a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> context)</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    : _typeManagerScope(context-&gt;TheTypeManager())</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        _saveExec = _threadsExecutionContext;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        _threadsExecutionContext = context;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    }</div>
-<div class="line"><a name="l00168"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">  168</a></span>&#160;    <a class="code" href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">~ExecutionContextScope</a>()</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    {</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        _threadsExecutionContext = _saveExec;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    }</div>
-<div class="line"><a name="l00173"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">  173</a></span>&#160;    <span class="keyword">static</span> <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> <a class="code" href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">Current</a>()</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    {</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="keywordflow">return</span> (<a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a>) _threadsExecutionContext;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    }</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;};</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    </div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="class_vireo_1_1_stack_var.html">  183</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;{</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    T *Value;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* tName)</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        <a class="code" href="class_vireo_1_1_sub_string.html">SubString</a> stringTypeName(tName);</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        <a class="code" href="class_vireo_1_1_type_common.html">TypeRef</a> type = THREAD_EXEC()-&gt;TheTypeManager()-&gt;FindType(&amp;stringTypeName);</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        VIREO_ASSERT(type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">IsArray</a>() &amp;&amp; !type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">IsFlat</a>());</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        Value = null;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordflow">if</span> (type) {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#aa64b3ddc7542095b5a3258f55fa59294">InitData</a>(&amp;Value);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        }</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    }</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    ~<a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a>()</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    {</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keywordflow">if</span> (Value) {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            Value-&gt;Type()-&gt;ClearData(&amp;Value);</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        }</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    };</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;};</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
-<div class="line"><a name="l00206"></a><span class="lineno"><a class="line" href="_execution_context_8h.html#a0163e3c887c070011f2310685936f3c0">  206</a></span>&#160;<span class="preprocessor">#define STACK_VAR(_t_, _v_) StackVar&lt;_t_&gt; _v_(#_t_)</span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;} <span class="comment">// namespace Vireo</span></div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="preprocessor">#endif //ExecutionContext_h</span></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_html_a480f18f7b2e3df90fa7e5ae790670d04"><div class="ttname"><a href="class_vireo_1_1_execution_context.html#a480f18f7b2e3df90fa7e5ae790670d04">Vireo::ExecutionContext::_sleepingList</a></div><div class="ttdeci">ECONTEXT VIClump * _sleepingList</div><div class="ttdoc">Clumps ready to run. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:98</div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_ac0ce411ba9622a34af36a9afc8ac753e"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">Vireo::ExecutionContextScope::ExecutionContextScope</a></div><div class="ttdeci">ExecutionContextScope(ExecutionContextRef context)</div><div class="ttdoc">Constructor saves the currect context (if it exists) and begins a new one. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:161</div></div>
-<div class="ttc" id="class_vireo_1_1_v_i_clump_html"><div class="ttname"><a href="class_vireo_1_1_v_i_clump.html">Vireo::VIClump</a></div><div class="ttdoc">A Clump owns an instruction list its execution state. </div><div class="ttdef"><b>Definition:</b> VirtualInstrument.h:96</div></div>
-<div class="ttc" id="class_vireo_1_1_queue_html_a13105622aa13315b0af158570c7cfa03"><div class="ttname"><a href="class_vireo_1_1_queue.html#a13105622aa13315b0af158570c7cfa03">Vireo::Queue::IsEmpty</a></div><div class="ttdeci">Boolean IsEmpty()</div><div class="ttdoc">True when the Queue is empty. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:52</div></div>
-<div class="ttc" id="class_vireo_1_1_function_clump_html"><div class="ttname"><a href="class_vireo_1_1_function_clump.html">Vireo::FunctionClump</a></div><div class="ttdef"><b>Definition:</b> VirtualInstrument.h:74</div></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* _waitingList;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> Remove(<a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* pWSEltToRemove)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        VIREO_ASSERT(pWSEltToRemove != null);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        VIREO_ASSERT(pWSEltToRemove-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">_object</a> == <span class="keyword">this</span>);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* pTemp;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>** pFix = &amp;(_waitingList); <span class="comment">// previous next pointer to patch when removing element.</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* pVisitor = *pFix;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordflow">while</span>(pVisitor) {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            pTemp = pVisitor;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            <span class="keywordflow">if</span> (pTemp == pWSEltToRemove) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                *pFix = pTemp-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">_next</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                pFix = &amp;pVisitor-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">_next</a>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            pVisitor = *pFix;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        pWSEltToRemove-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209">_info</a> = 0;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        pWSEltToRemove-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">_object</a> = null;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        pWSEltToRemove-&gt;<a class="code" href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">_next</a> = null;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="class_vireo_1_1_timer.html">   79</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_timer.html">Timer</a> : <span class="keyword">public</span> <a class="code" href="class_vireo_1_1_observable_object.html">ObservableObject</a></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;{</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    Boolean AnythingWaiting()                   { <span class="keywordflow">return</span> _waitingList != null; }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">void</span> QuickCheckTimers(PlatformTickType t)   { <span class="keywordflow">if</span> (_waitingList) { CheckTimers(t); } }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordtype">void</span> CheckTimers(PlatformTickType t);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> InitWaitableTimerState(<a class="code" href="class_vireo_1_1_waitable_state.html">WaitableState</a>* pWS, PlatformTickType tickCount);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="class_vireo_1_1_v_i_clump_queue.html">  103</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_v_i_clump_queue.html">VIClumpQueue</a></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;{</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">public</span> :</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* _head;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* _tail;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump_queue.html">VIClumpQueue</a>();</div>
+<div class="line"><a name="l00111"></a><span class="lineno"><a class="line" href="class_vireo_1_1_v_i_clump_queue.html#a2633897036889c79b416b0eba98642fe">  111</a></span>&#160;    Boolean <a class="code" href="class_vireo_1_1_v_i_clump_queue.html#a2633897036889c79b416b0eba98642fe">IsEmpty</a>() { <span class="keywordflow">return</span> (this-&gt;_head == null); }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>* <a class="code" href="class_vireo_1_1_v_i_clump_queue.html#a0223132d3e76acaaaaa50a450b2b98c7">Dequeue</a>();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="class_vireo_1_1_v_i_clump_queue.html#aa1bb44b43fd002847300b8db0da145d9">Enqueue</a>(<a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="keyword">enum</span> ExecutionState</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;{</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    kExecutionState_None = 0,</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    kExecutionState_ClumpsInRunQueue = 0x01,</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    kExecutionState_ClumpsWaitingOnTime = 0x02,</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    kExecutionState_ClumpsWaitingOnQueues = 0x04,</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    kExecutionState_ClumpsWaitingOnISRs = 0x08,</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;};</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;<span class="comment">// Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="comment">// cooperatively with other thread operations much like a message pump does. ECs</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="comment">// may be the only tasks a thread has. </span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="comment">//</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="comment">// All access to the outside , graphics, time, IO</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="comment">// needs to be derived from an object connected to the context.</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="preprocessor">#ifdef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor">    #define ECONTEXT static</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="preprocessor">    #define ECONTEXT </span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="comment">// CulDeSac prototype is visable ( e.g. not static) so the</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="comment">// IsNotCulDeSac method on ExecutionContext can inline it better.</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;InstructionCore* VIVM_FASTCALL Done (Instruction0* _this _PROGMEM);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="comment"></span><span class="keyword">typedef</span> ExecutionContext* ExecutionContextRef;</div>
+<div class="line"><a name="l00147"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html">  147</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContext</a></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;{</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContext</a>(<a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> typeManager);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> _theTypeManager;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a> TheTypeManager()    { <span class="keywordflow">return</span> _theTypeManager; }</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump_queue.html">VIClumpQueue</a>    _runQueue;          </div>
+<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">  159</a></span>&#160;    ECONTEXT    IntSmall        <a class="code" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">_breakoutCount</a>;     </div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00162"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context.html#a097ad147ae8da59d61dd708d8b162b43">  162</a></span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_timer.html">Timer</a>           <a class="code" href="class_vireo_1_1_execution_context.html#a097ad147ae8da59d61dd708d8b162b43">_timer</a>;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="preprocessor">#ifdef VIREO_SUPPORTS_ISR</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*        _triggeredIsrList;               <span class="comment">// Elts waiting for something external to wake them up</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            IsrEnqueue(QueueElt* elt);</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    ECONTEXT    <a class="code" href="class_vireo_1_1_v_i_clump.html">VIClump</a>*        CurrentClump() { <span class="keywordflow">return</span> _runningQueueElt; }</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            CheckOccurrences(PlatformTickType t);       <span class="comment">// Will put items on the run queue if it is time. or ready bit is set.</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="comment">// Run a string of instructions to completion, no concurrency. </span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            ExecuteFunction(<a class="code" href="class_vireo_1_1_function_clump.html">FunctionClump</a>* fclump);  <span class="comment">// Run a simple function to completion.</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    </div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="comment">// Run the concurrent execution system for a short period of time</span></div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    ECONTEXT    <a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* SuspendRunningQueueElt(<a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* whereToWakeUp);</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    ECONTEXT    <a class="code" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a>* Stop();</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            ClearBreakout() { <a class="code" href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">_breakoutCount</a> = 0; }</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            EnqueueRunQueue(VIClump* elt);</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    ECONTEXT    VIClump*        _runningQueueElt;       <span class="comment">// Element actually running</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  </div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="comment">// Method for runtime errors to be routined through.</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    ECONTEXT    <span class="keywordtype">void</span>            LogEvent(<a class="code" href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">EventLog::EventSeverity</a> severity, <a class="code" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> message, ...);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keyword">static</span> Boolean _classInited;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keyword">static</span> Instruction0 _culDeSac;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    </div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {<span class="keywordflow">return</span> pInstruciton-&gt;_function != (InstructionFunction)CulDeSac;};</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keyword">static</span> <span class="keyword">inline</span> Boolean IsDone(InstructionCore* pInstruciton) {<span class="keywordflow">return</span> pInstruciton-&gt;_function == (InstructionFunction)Done;};</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;};</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="preprocessor">#ifdef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="comment">// A single global instance allows allows all field references</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="comment">// to resolver to a fixed global address. This avoid pointer+offset</span></div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="comment">// instructions that are costly on small MCUs</span></div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keyword">extern</span> ExecutionContext gSingleExecutionContext;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="preprocessor">    #define THREAD_EXEC()   (&amp;gSingleExecutionContext)</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;<span class="preprocessor">    #define THREAD_CLUMP() gSingleExecutionContext.CurrentClump();</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="preprocessor">    #define THREAD_EXEC() ExecutionContextScope::Current()</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="preprocessor">    #define THREAD_CLUMP() ExecutionContextScope::Current()-&gt;CurrentClump()</span></div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="preprocessor">#ifndef VIREO_SINGLE_GLOBAL_CONTEXT</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html">  211</a></span>&#160;<span class="comment"></span><span class="keyword">class </span><a class="code" href="class_vireo_1_1_execution_context_scope.html">ExecutionContextScope</a></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;{</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> _saveExec;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <a class="code" href="class_vireo_1_1_type_manager_scope.html">TypeManagerScope</a>  _typeManagerScope;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    VIVM_THREAD_LOCAL <span class="keyword">static</span> <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> _threadsExecutionContext;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00219"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">  219</a></span>&#160;    <a class="code" href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">ExecutionContextScope</a>(<a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> context)</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    : _typeManagerScope(context-&gt;TheTypeManager())</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        _saveExec = _threadsExecutionContext;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        _threadsExecutionContext = context;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    }</div>
+<div class="line"><a name="l00226"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">  226</a></span>&#160;    <a class="code" href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">~ExecutionContextScope</a>()</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    {</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        _threadsExecutionContext = _saveExec;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    }</div>
+<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">  231</a></span>&#160;    <span class="keyword">static</span> <a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a> <a class="code" href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">Current</a>()</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="keywordflow">return</span> (<a class="code" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a>) _threadsExecutionContext;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;};</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">//------------------------------------------------------------</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00241"></a><span class="lineno"><a class="line" href="class_vireo_1_1_stack_var.html">  241</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;{</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    T *Value;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a>(<a class="code" href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a> name)</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    {</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <a class="code" href="class_vireo_1_1_type_common.html">TypeRef</a> type = TypeManagerScope::Current()-&gt;FindType(name);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        VIREO_ASSERT(type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">IsArray</a>() &amp;&amp; !type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">IsFlat</a>());</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        Value = null;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordflow">if</span> (type) {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            type-&gt;<a class="code" href="class_vireo_1_1_type_common.html#aa64b3ddc7542095b5a3258f55fa59294">InitData</a>(&amp;Value);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    }</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    ~<a class="code" href="class_vireo_1_1_stack_var.html">StackVar</a>()</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    {</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="keywordflow">if</span> (Value) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;            Value-&gt;Type()-&gt;ClearData(&amp;Value);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    };</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;};</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno"><a class="line" href="_execution_context_8h.html#a0163e3c887c070011f2310685936f3c0">  263</a></span>&#160;<span class="preprocessor">#define STACK_VAR(_t_, _v_) StackVar&lt;_t_&gt; _v_(#_t_)</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    </div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;} <span class="comment">// namespace Vireo</span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">#endif //ExecutionContext_h</span></div>
+<div class="ttc" id="class_vireo_1_1_waitable_state_html"><div class="ttname"><a href="class_vireo_1_1_waitable_state.html">Vireo::WaitableState</a></div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:31</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_ac0ce411ba9622a34af36a9afc8ac753e"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#ac0ce411ba9622a34af36a9afc8ac753e">Vireo::ExecutionContextScope::ExecutionContextScope</a></div><div class="ttdeci">ExecutionContextScope(ExecutionContextRef context)</div><div class="ttdoc">Constructor saves the currect context (if it exists) and begins a new one. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:219</div></div>
+<div class="ttc" id="class_vireo_1_1_v_i_clump_html"><div class="ttname"><a href="class_vireo_1_1_v_i_clump.html">Vireo::VIClump</a></div><div class="ttdoc">A Clump owns an instruction list its execution state. </div><div class="ttdef"><b>Definition:</b> VirtualInstrument.h:120</div></div>
+<div class="ttc" id="class_vireo_1_1_function_clump_html"><div class="ttname"><a href="class_vireo_1_1_function_clump.html">Vireo::FunctionClump</a></div><div class="ttdef"><b>Definition:</b> VirtualInstrument.h:73</div></div>
 <div class="ttc" id="_event_log_8h_html"><div class="ttname"><a href="_event_log_8h.html">EventLog.h</a></div><div class="ttdoc">A mechanism for Vireo sub systems to report errors. </div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_html"><div class="ttname"><a href="class_vireo_1_1_execution_context.html">Vireo::ExecutionContext</a></div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:88</div></div>
-<div class="ttc" id="class_vireo_1_1_sub_string_html"><div class="ttname"><a href="class_vireo_1_1_sub_string.html">Vireo::SubString</a></div><div class="ttdoc">The core class for working with strings. The SubString never owns the data it points to...</div><div class="ttdef"><b>Definition:</b> StringUtilities.h:190</div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_a22e6874cca2d8921fcdcffc30f582ee4"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">Vireo::ExecutionContextScope::~ExecutionContextScope</a></div><div class="ttdeci">~ExecutionContextScope()</div><div class="ttdoc">Destructor restores previous context. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:168</div></div>
-<div class="ttc" id="class_vireo_1_1_queue_html"><div class="ttname"><a href="class_vireo_1_1_queue.html">Vireo::Queue</a></div><div class="ttdoc">Queue of clumps. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:44</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_html"><div class="ttname"><a href="class_vireo_1_1_execution_context.html">Vireo::ExecutionContext</a></div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:147</div></div>
+<div class="ttc" id="class_vireo_1_1_v_i_clump_queue_html"><div class="ttname"><a href="class_vireo_1_1_v_i_clump_queue.html">Vireo::VIClumpQueue</a></div><div class="ttdoc">Queue of clumps. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:103</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_a22e6874cca2d8921fcdcffc30f582ee4"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#a22e6874cca2d8921fcdcffc30f582ee4">Vireo::ExecutionContextScope::~ExecutionContextScope</a></div><div class="ttdeci">~ExecutionContextScope()</div><div class="ttdoc">Destructor restores previous context. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:226</div></div>
+<div class="ttc" id="class_vireo_1_1_waitable_state_html_a808c3c629961d9c9bde46ab44ddf2c01"><div class="ttname"><a href="class_vireo_1_1_waitable_state.html#a808c3c629961d9c9bde46ab44ddf2c01">Vireo::WaitableState::_object</a></div><div class="ttdeci">ObservableObject * _object</div><div class="ttdoc">What object is the clump waiting on? </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:35</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_html_a097ad147ae8da59d61dd708d8b162b43"><div class="ttname"><a href="class_vireo_1_1_execution_context.html#a097ad147ae8da59d61dd708d8b162b43">Vireo::ExecutionContext::_timer</a></div><div class="ttdeci">ECONTEXT Timer _timer</div><div class="ttdoc">Inner execution loop "breaks out" when this gets to 0. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:162</div></div>
 <div class="ttc" id="_type_and_data_manager_8h_html"><div class="ttname"><a href="_type_and_data_manager_8h.html">TypeAndDataManager.h</a></div><div class="ttdoc">Tools to define data types, manage their data, and a TypeManager to manage those types. </div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_a39f1ac14cee3fdb69a0cc464b6e2746f"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">Vireo::ExecutionContextScope::Current</a></div><div class="ttdeci">static ExecutionContextRef Current()</div><div class="ttdoc">Static method returns the current active ExecutionContext. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:173</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_scope_html_a39f1ac14cee3fdb69a0cc464b6e2746f"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html#a39f1ac14cee3fdb69a0cc464b6e2746f">Vireo::ExecutionContextScope::Current</a></div><div class="ttdeci">static ExecutionContextRef Current()</div><div class="ttdoc">Static method returns the current active ExecutionContext. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:231</div></div>
 <div class="ttc" id="_instruction_8h_html"><div class="ttname"><a href="_instruction_8h.html">Instruction.h</a></div><div class="ttdoc">Tools for defining Vireo functions in C++. </div></div>
-<div class="ttc" id="class_vireo_1_1_queue_html_a263459d2c8d6f50349210a902d09fccc"><div class="ttname"><a href="class_vireo_1_1_queue.html#a263459d2c8d6f50349210a902d09fccc">Vireo::Queue::Enqueue</a></div><div class="ttdeci">void Enqueue(VIClump *)</div><div class="ttdoc">Add a clump to a Queue. The clump should not be in any other queue. </div><div class="ttdef"><b>Definition:</b> Queue.cpp:26</div></div>
-<div class="ttc" id="class_vireo_1_1_type_common_html_ade73aaae403ead6e2fb6fe0e02c9155b"><div class="ttname"><a href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">Vireo::TypeCommon::IsArray</a></div><div class="ttdeci">Boolean IsArray()</div><div class="ttdoc">True if the type is an indexable container that contains another type. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:387</div></div>
-<div class="ttc" id="class_vireo_1_1_event_log_html_a590f5a040d0e9c80a9559a03b95e11b1"><div class="ttname"><a href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">Vireo::EventLog::EventSeverity</a></div><div class="ttdeci">EventSeverity</div><div class="ttdef"><b>Definition:</b> EventLog.h:30</div></div>
-<div class="ttc" id="_time_types_8h_html"><div class="ttname"><a href="_time_types_8h.html">TimeTypes.h</a></div><div class="ttdoc">Tools to working with relative, absolute and tic-count times. </div></div>
-<div class="ttc" id="class_vireo_1_1_type_common_html"><div class="ttname"><a href="class_vireo_1_1_type_common.html">Vireo::TypeCommon</a></div><div class="ttdoc">Base class for all type definition types. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:330</div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_html_a3f63cb3c872d96d9d0207b567f0e9a3a"><div class="ttname"><a href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">Vireo::ExecutionContext::_breakoutCount</a></div><div class="ttdeci">ECONTEXT IntSmall _breakoutCount</div><div class="ttdoc">Clumps waiting for a point in time wake them up. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:99</div></div>
-<div class="ttc" id="class_vireo_1_1_type_common_html_ad370d8e780fed73af3378b4c3cb62582"><div class="ttname"><a href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">Vireo::TypeCommon::IsFlat</a></div><div class="ttdeci">Boolean IsFlat()</div><div class="ttdoc">True if data can be copied by a simple block copy. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:389</div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_html_a5b9885f511dc2c8cee9cb6dc36e8cc07"><div class="ttname"><a href="class_vireo_1_1_execution_context.html#a5b9885f511dc2c8cee9cb6dc36e8cc07">Vireo::ExecutionContext::ExecutionContext</a></div><div class="ttdeci">ExecutionContext(TypeManagerRef typeManager)</div><div class="ttdoc">Inner execution loop "breaks out" when this gets to 0. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.cpp:247</div></div>
-<div class="ttc" id="class_vireo_1_1_queue_html_af71f03573c0d5bdf013f28c8ba6f5c8b"><div class="ttname"><a href="class_vireo_1_1_queue.html#af71f03573c0d5bdf013f28c8ba6f5c8b">Vireo::Queue::Dequeue</a></div><div class="ttdeci">VIClump * Dequeue()</div><div class="ttdoc">Get a clump from a Queue, null returned if none. </div><div class="ttdef"><b>Definition:</b> Queue.cpp:47</div></div>
-<div class="ttc" id="class_vireo_1_1_execution_context_scope_html"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html">Vireo::ExecutionContextScope</a></div><div class="ttdoc">Stack based class to manage a threads active TypeManager and ExecutionContext. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:153</div></div>
-<div class="ttc" id="class_vireo_1_1_stack_var_html"><div class="ttname"><a href="class_vireo_1_1_stack_var.html">Vireo::StackVar</a></div><div class="ttdoc">Template class to dynamically create instances of a Vireo typed variable. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:183</div></div>
+<div class="ttc" id="class_vireo_1_1_type_common_html_ade73aaae403ead6e2fb6fe0e02c9155b"><div class="ttname"><a href="class_vireo_1_1_type_common.html#ade73aaae403ead6e2fb6fe0e02c9155b">Vireo::TypeCommon::IsArray</a></div><div class="ttdeci">Boolean IsArray()</div><div class="ttdoc">True if the type is an indexable container that contains another type. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:443</div></div>
+<div class="ttc" id="class_vireo_1_1_event_log_html_a590f5a040d0e9c80a9559a03b95e11b1"><div class="ttname"><a href="class_vireo_1_1_event_log.html#a590f5a040d0e9c80a9559a03b95e11b1">Vireo::EventLog::EventSeverity</a></div><div class="ttdeci">EventSeverity</div><div class="ttdef"><b>Definition:</b> EventLog.h:31</div></div>
+<div class="ttc" id="class_vireo_1_1_observable_object_html"><div class="ttname"><a href="class_vireo_1_1_observable_object.html">Vireo::ObservableObject</a></div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:47</div></div>
+<div class="ttc" id="class_vireo_1_1_timer_html"><div class="ttname"><a href="class_vireo_1_1_timer.html">Vireo::Timer</a></div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:79</div></div>
+<div class="ttc" id="class_vireo_1_1_type_common_html"><div class="ttname"><a href="class_vireo_1_1_type_common.html">Vireo::TypeCommon</a></div><div class="ttdoc">Base class for all type definition types. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:386</div></div>
+<div class="ttc" id="class_vireo_1_1_v_i_clump_queue_html_a0223132d3e76acaaaaa50a450b2b98c7"><div class="ttname"><a href="class_vireo_1_1_v_i_clump_queue.html#a0223132d3e76acaaaaa50a450b2b98c7">Vireo::VIClumpQueue::Dequeue</a></div><div class="ttdeci">VIClump * Dequeue()</div><div class="ttdoc">Get a clump from a Queue, null returned if none. </div><div class="ttdef"><b>Definition:</b> Queue.cpp:45</div></div>
+<div class="ttc" id="class_vireo_1_1_waitable_state_html_a275ad16688e401f2b5d8e841be148a56"><div class="ttname"><a href="class_vireo_1_1_waitable_state.html#a275ad16688e401f2b5d8e841be148a56">Vireo::WaitableState::_next</a></div><div class="ttdeci">WaitableState * _next</div><div class="ttdoc">Any async operations waiting on this queue. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:38</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_html_a3f63cb3c872d96d9d0207b567f0e9a3a"><div class="ttname"><a href="class_vireo_1_1_execution_context.html#a3f63cb3c872d96d9d0207b567f0e9a3a">Vireo::ExecutionContext::_breakoutCount</a></div><div class="ttdeci">ECONTEXT IntSmall _breakoutCount</div><div class="ttdoc">Clumps ready to run. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:159</div></div>
+<div class="ttc" id="class_vireo_1_1_type_common_html_ad370d8e780fed73af3378b4c3cb62582"><div class="ttname"><a href="class_vireo_1_1_type_common.html#ad370d8e780fed73af3378b4c3cb62582">Vireo::TypeCommon::IsFlat</a></div><div class="ttdeci">Boolean IsFlat()</div><div class="ttdoc">True if data can be copied by a simple block copy. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:449</div></div>
+<div class="ttc" id="class_vireo_1_1_waitable_state_html_abaa7dea43d74de6b50e8877cb82022ee"><div class="ttname"><a href="class_vireo_1_1_waitable_state.html#abaa7dea43d74de6b50e8877cb82022ee">Vireo::WaitableState::_clump</a></div><div class="ttdeci">VIClump * _clump</div><div class="ttdoc">Which clump owns this WS object. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:41</div></div>
+<div class="ttc" id="class_vireo_1_1_execution_context_scope_html"><div class="ttname"><a href="class_vireo_1_1_execution_context_scope.html">Vireo::ExecutionContextScope</a></div><div class="ttdoc">Stack based class to manage a threads active TypeManager and ExecutionContext. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:211</div></div>
+<div class="ttc" id="class_vireo_1_1_stack_var_html"><div class="ttname"><a href="class_vireo_1_1_stack_var.html">Vireo::StackVar</a></div><div class="ttdoc">Template class to dynamically create instances of a Vireo typed variable. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:241</div></div>
 <div class="ttc" id="struct_vireo_1_1_instruction_core_html"><div class="ttname"><a href="struct_vireo_1_1_instruction_core.html">Vireo::InstructionCore</a></div><div class="ttdef"><b>Definition:</b> Instruction.h:45</div></div>
-<div class="ttc" id="class_vireo_1_1_type_manager_html"><div class="ttname"><a href="class_vireo_1_1_type_manager.html">Vireo::TypeManager</a></div><div class="ttdoc">Keeps track of Types used within a ExecutionContext. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:163</div></div>
-<div class="ttc" id="class_vireo_1_1_type_manager_scope_html"><div class="ttname"><a href="class_vireo_1_1_type_manager_scope.html">Vireo::TypeManagerScope</a></div><div class="ttdoc">Stack based class to manage a threads active TypeManager. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:263</div></div>
-<div class="ttc" id="class_vireo_1_1_type_common_html_aa64b3ddc7542095b5a3258f55fa59294"><div class="ttname"><a href="class_vireo_1_1_type_common.html#aa64b3ddc7542095b5a3258f55fa59294">Vireo::TypeCommon::InitData</a></div><div class="ttdeci">virtual NIError InitData(void *pData, TypeRef pattern=null)</div><div class="ttdoc">Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed...</div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.cpp:478</div></div>
+<div class="ttc" id="class_vireo_1_1_type_manager_html"><div class="ttname"><a href="class_vireo_1_1_type_manager.html">Vireo::TypeManager</a></div><div class="ttdoc">Keeps track of Types used within a ExecutionContext. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:192</div></div>
+<div class="ttc" id="class_vireo_1_1_v_i_clump_queue_html_a2633897036889c79b416b0eba98642fe"><div class="ttname"><a href="class_vireo_1_1_v_i_clump_queue.html#a2633897036889c79b416b0eba98642fe">Vireo::VIClumpQueue::IsEmpty</a></div><div class="ttdeci">Boolean IsEmpty()</div><div class="ttdoc">True when the VIClumpQueue is empty. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:111</div></div>
+<div class="ttc" id="class_vireo_1_1_v_i_clump_queue_html_aa1bb44b43fd002847300b8db0da145d9"><div class="ttname"><a href="class_vireo_1_1_v_i_clump_queue.html#aa1bb44b43fd002847300b8db0da145d9">Vireo::VIClumpQueue::Enqueue</a></div><div class="ttdeci">void Enqueue(VIClump *)</div><div class="ttdoc">Add a clump to a Queue. The clump should not be in any other queue. </div><div class="ttdef"><b>Definition:</b> Queue.cpp:25</div></div>
+<div class="ttc" id="_data_types_8h_html_a6fdb272e5b24c0df146840a4a93f3e49"><div class="ttname"><a href="_data_types_8h.html#a6fdb272e5b24c0df146840a4a93f3e49">ConstCStr</a></div><div class="ttdeci">const char * ConstCStr</div><div class="ttdoc">Pointer to read only null terminated string. </div><div class="ttdef"><b>Definition:</b> DataTypes.h:55</div></div>
+<div class="ttc" id="class_vireo_1_1_waitable_state_html_ab4744b570b59db83b293abbe162c0209"><div class="ttname"><a href="class_vireo_1_1_waitable_state.html#ab4744b570b59db83b293abbe162c0209">Vireo::WaitableState::_info</a></div><div class="ttdeci">Int64 _info</div><div class="ttdoc">What it is waiting for: > 1, elts in the queus, <1 room in the queue. </div><div class="ttdef"><b>Definition:</b> ExecutionContext.h:44</div></div>
+<div class="ttc" id="_timestamp_8h_html"><div class="ttname"><a href="_timestamp_8h.html">Timestamp.h</a></div><div class="ttdoc">Tools to working with relative, absolute and tic-count times. </div></div>
+<div class="ttc" id="class_vireo_1_1_type_manager_scope_html"><div class="ttname"><a href="class_vireo_1_1_type_manager_scope.html">Vireo::TypeManagerScope</a></div><div class="ttdoc">Stack based class to manage a threads active TypeManager. </div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.h:319</div></div>
+<div class="ttc" id="class_vireo_1_1_type_common_html_aa64b3ddc7542095b5a3258f55fa59294"><div class="ttname"><a href="class_vireo_1_1_type_common.html#aa64b3ddc7542095b5a3258f55fa59294">Vireo::TypeCommon::InitData</a></div><div class="ttdeci">virtual NIError InitData(void *pData, TypeRef pattern=null)</div><div class="ttdoc">Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed...</div><div class="ttdef"><b>Definition:</b> TypeAndDataManager.cpp:562</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

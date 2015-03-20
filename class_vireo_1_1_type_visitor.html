@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -107,7 +107,7 @@ Inheritance diagram for Vireo::TypeVisitor:</div>
  <div class="center">
   <img src="class_vireo_1_1_type_visitor.png" usemap="#Vireo::TypeVisitor_map" alt=""/>
   <map id="Vireo::TypeVisitor_map" name="Vireo::TypeVisitor_map">
-<area href="class_vireo_1_1_t_d_via_formatter_type_visitor.html" alt="Vireo::TDViaFormatterTypeVisitor" shape="rect" coords="0,56,202,80"/>
+<area href="class_vireo_1_1_type_template_visitor.html" alt="Vireo::TypeTemplateVisitor" shape="rect" coords="0,56,163,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -116,42 +116,42 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a8913b98bf2029413531d914954edbc38"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8913b98bf2029413531d914954edbc38"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitBad</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
 <tr class="separator:a8913b98bf2029413531d914954edbc38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82d12871d33fdf3c76248210c62a5db8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82d12871d33fdf3c76248210c62a5db8"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitBitBlock</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a82d12871d33fdf3c76248210c62a5db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44b9e336ab9a15a7af949277d446a93b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a44b9e336ab9a15a7af949277d446a93b"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitBitCluster</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a44b9e336ab9a15a7af949277d446a93b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f32d76981ae963db79d458f7c35cc7c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f32d76981ae963db79d458f7c35cc7c"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitCluster</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a8f32d76981ae963db79d458f7c35cc7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a242c041afa266abe03ec0a7192aa6a70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a242c041afa266abe03ec0a7192aa6a70"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitParamBlock</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a242c041afa266abe03ec0a7192aa6a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50df21aa5e4f04fc595d4fed843594d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a50df21aa5e4f04fc595d4fed843594d2"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitEquivalence</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a50df21aa5e4f04fc595d4fed843594d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a308d957cc0ec8ff2477077a811de43a7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a308d957cc0ec8ff2477077a811de43a7"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitArray</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a308d957cc0ec8ff2477077a811de43a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b68f50b257ec68cbc6334f5baa9a3b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b68f50b257ec68cbc6334f5baa9a3b0"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitElement</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a0b68f50b257ec68cbc6334f5baa9a3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a675601ebd17836e2ae17a7f222c778b0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a675601ebd17836e2ae17a7f222c778b0"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitNamed</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a675601ebd17836e2ae17a7f222c778b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01dc8f72f5ac4c0faf021dd5571f6557"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01dc8f72f5ac4c0faf021dd5571f6557"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitPointer</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a01dc8f72f5ac4c0faf021dd5571f6557"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed79a13819588af4bb062c8a27d9fe6e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed79a13819588af4bb062c8a27d9fe6e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitDefaultValue</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:aed79a13819588af4bb062c8a27d9fe6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8f0e44d3b127420e3953ed88adf315de"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f0e44d3b127420e3953ed88adf315de"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitCustomDefaultPointer</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a8f0e44d3b127420e3953ed88adf315de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f6c5f721fa39d585573510a807a4244"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9f6c5f721fa39d585573510a807a4244"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitCustomDataProc</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)=0</td></tr>
-<tr class="separator:a9f6c5f721fa39d585573510a807a4244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39c9ccd5eb071a0d118f988c67f6b50c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a39c9ccd5eb071a0d118f988c67f6b50c"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitBitBlock</b> (<a class="el" href="class_vireo_1_1_bit_block_type.html">BitBlockType</a> *type)=0</td></tr>
+<tr class="separator:a39c9ccd5eb071a0d118f988c67f6b50c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7506e229b9de0b26934af57a62a1d1ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7506e229b9de0b26934af57a62a1d1ba"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitBitCluster</b> (<a class="el" href="class_vireo_1_1_bit_cluster_type.html">BitClusterType</a> *type)=0</td></tr>
+<tr class="separator:a7506e229b9de0b26934af57a62a1d1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64f650dc68c29fe27b4aa01de8614c78"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64f650dc68c29fe27b4aa01de8614c78"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitCluster</b> (<a class="el" href="class_vireo_1_1_cluster_type.html">ClusterType</a> *type)=0</td></tr>
+<tr class="separator:a64f650dc68c29fe27b4aa01de8614c78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a1b2c0cdf74b6b455576a05977ddaae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a1b2c0cdf74b6b455576a05977ddaae"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitParamBlock</b> (<a class="el" href="class_vireo_1_1_param_block_type.html">ParamBlockType</a> *type)=0</td></tr>
+<tr class="separator:a8a1b2c0cdf74b6b455576a05977ddaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf7beb6dcfacd98ed5c8d4cb8b17c1b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf7beb6dcfacd98ed5c8d4cb8b17c1b8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitEquivalence</b> (<a class="el" href="class_vireo_1_1_equivalence_type.html">EquivalenceType</a> *type)=0</td></tr>
+<tr class="separator:adf7beb6dcfacd98ed5c8d4cb8b17c1b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe14068c037fae7953e914b03a936c1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe14068c037fae7953e914b03a936c1b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitArray</b> (<a class="el" href="class_vireo_1_1_array_type.html">ArrayType</a> *type)=0</td></tr>
+<tr class="separator:abe14068c037fae7953e914b03a936c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac889d34e1d99ade0a2ce00fa04998260"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac889d34e1d99ade0a2ce00fa04998260"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitElement</b> (<a class="el" href="class_vireo_1_1_element_type.html">ElementType</a> *type)=0</td></tr>
+<tr class="separator:ac889d34e1d99ade0a2ce00fa04998260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f0cddcce3fcde143cbe981da8e7fa83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f0cddcce3fcde143cbe981da8e7fa83"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitNamed</b> (<a class="el" href="class_vireo_1_1_named_type.html">NamedType</a> *type)=0</td></tr>
+<tr class="separator:a2f0cddcce3fcde143cbe981da8e7fa83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af64c181e4535c5a742f43445bcc1382c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af64c181e4535c5a742f43445bcc1382c"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitPointer</b> (<a class="el" href="class_vireo_1_1_pointer_type.html">PointerType</a> *type)=0</td></tr>
+<tr class="separator:af64c181e4535c5a742f43445bcc1382c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acae1ef0b0b43a5548bef6d3b2de2fe41"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acae1ef0b0b43a5548bef6d3b2de2fe41"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitDefaultValue</b> (<a class="el" href="class_vireo_1_1_default_value_type.html">DefaultValueType</a> *type)=0</td></tr>
+<tr class="separator:acae1ef0b0b43a5548bef6d3b2de2fe41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab34abded20278171ad8dfd26ddd4698b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab34abded20278171ad8dfd26ddd4698b"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitDefaultPointer</b> (<a class="el" href="class_vireo_1_1_default_pointer_type.html">DefaultPointerType</a> *type)=0</td></tr>
+<tr class="separator:ab34abded20278171ad8dfd26ddd4698b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb9c4df6f055d69b113b2e95b737e0a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb9c4df6f055d69b113b2e95b737e0a3"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>VisitCustomDataProc</b> (<a class="el" href="class_vireo_1_1_custom_data_proc_type.html">CustomDataProcType</a> *type)=0</td></tr>
+<tr class="separator:adb9c4df6f055d69b113b2e95b737e0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Visitor class for types. </p>

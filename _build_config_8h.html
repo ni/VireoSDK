@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -110,6 +110,15 @@ Macros</h2></td></tr>
 <tr class="memitem:a8f59cf7c27bb3a78b777faf77c842fbb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f59cf7c27bb3a78b777faf77c842fbb"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIVM_FASTCALL</b></td></tr>
 <tr class="separator:a8f59cf7c27bb3a78b777faf77c842fbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a283ea01bb4ed42520086114c56d00660"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a283ea01bb4ed42520086114c56d00660"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_INSTRUCTION_LINKAGE</b>&#160;&#160;&#160;static</td></tr>
+<tr class="separator:a283ea01bb4ed42520086114c56d00660"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a116919bdd299e6d6be58b3391df478c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a116919bdd299e6d6be58b3391df478c9"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_VIA_FORMATTER</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a116919bdd299e6d6be58b3391df478c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8e8d77fc762c6a145eed7931c5adcfe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8e8d77fc762c6a145eed7931c5adcfe"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_C_ENTRY_POINTS</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:ad8e8d77fc762c6a145eed7931c5adcfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0737c6ddb054145053049f571fd05111"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0737c6ddb054145053049f571fd05111"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_UInt8</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a0737c6ddb054145053049f571fd05111"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,39 +158,24 @@ Macros</h2></td></tr>
 <tr class="memitem:afd345c031fe0381048d6b4a2f7d496a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd345c031fe0381048d6b4a2f7d496a2"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_ArrayND</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:afd345c031fe0381048d6b4a2f7d496a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5c38b16c596c36c0ddad5e37c4cf378a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5c38b16c596c36c0ddad5e37c4cf378a"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_ATime</b>&#160;&#160;&#160;1</td></tr>
-<tr class="separator:a5c38b16c596c36c0ddad5e37c4cf378a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf2afa4568a66c35cdfba65596f924a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abf2afa4568a66c35cdfba65596f924a4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_Timestamp</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:abf2afa4568a66c35cdfba65596f924a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aba0c03e128d435038528c840d73f1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2aba0c03e128d435038528c840d73f1c"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_Canvas2D</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a2aba0c03e128d435038528c840d73f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ec40687f7a3f52d6e5aedc4afc2de8d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ec40687f7a3f52d6e5aedc4afc2de8d"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_VARIANT</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a5ec40687f7a3f52d6e5aedc4afc2de8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6fbdb4024e2101c8cfd4ffdbc59e246"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa6fbdb4024e2101c8cfd4ffdbc59e246"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_INSTRUCTION_REFLECTION</b>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:aa6fbdb4024e2101c8cfd4ffdbc59e246"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac57620998a6cff038f66863fe0d01b79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac57620998a6cff038f66863fe0d01b79"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_TYPE_CONSTRUCTION</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:ac57620998a6cff038f66863fe0d01b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a283ea01bb4ed42520086114c56d00660"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a283ea01bb4ed42520086114c56d00660"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_INSTRUCTION_LINKAGE</b>&#160;&#160;&#160;static</td></tr>
-<tr class="separator:a283ea01bb4ed42520086114c56d00660"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8c1fc567940d0c8e4e18bdfdc759e73"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af8c1fc567940d0c8e4e18bdfdc759e73"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_MULTI_THREAD</b></td></tr>
 <tr class="separator:af8c1fc567940d0c8e4e18bdfdc759e73"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e580697eb8622e3ad16641947ed6876"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8e580697eb8622e3ad16641947ed6876"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_ARRAY_INDEX_TYPE</b>&#160;&#160;&#160;Int32</td></tr>
-<tr class="separator:a8e580697eb8622e3ad16641947ed6876"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d74c00323470e733b27ebd27eeefc0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4d74c00323470e733b27ebd27eeefc0e"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_ARRAY_VARIABLE_SENTINEL</b>&#160;&#160;&#160;INT32_MIN</td></tr>
-<tr class="separator:a4d74c00323470e733b27ebd27eeefc0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57af425a6fbf6de0a757236a471d6f83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57af425a6fbf6de0a757236a471d6f83"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>USE_C99_TYPES</b></td></tr>
-<tr class="separator:a57af425a6fbf6de0a757236a471d6f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba6c187616424246f9310fbc6b372e80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba6c187616424246f9310fbc6b372e80"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIVM_BREAKOUT_COUNT</b>&#160;&#160;&#160;20</td></tr>
-<tr class="separator:aba6c187616424246f9310fbc6b372e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad1d149ffb702827d31d6439d7a2f98b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad1d149ffb702827d31d6439d7a2f98b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_PERF_COUNTERS</b></td></tr>
-<tr class="separator:aad1d149ffb702827d31d6439d7a2f98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a064ce6d725136e0e873c8bb316b6ea9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a064ce6d725136e0e873c8bb316b6ea9b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIVM_THREAD_LOCAL</b></td></tr>
-<tr class="separator:a064ce6d725136e0e873c8bb316b6ea9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad410a0dc28691ca72ca8642ebecdf394"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad410a0dc28691ca72ca8642ebecdf394"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_POSIX_FILEIO</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:ad410a0dc28691ca72ca8642ebecdf394"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,6 +185,18 @@ Macros</h2></td></tr>
 <tr class="memitem:a3a07fd83e22b4cad47c77ea6e060fce5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a07fd83e22b4cad47c77ea6e060fce5"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_FILESYSTEM_DIRLIST</b>&#160;&#160;&#160;1</td></tr>
 <tr class="separator:a3a07fd83e22b4cad47c77ea6e060fce5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad1d149ffb702827d31d6439d7a2f98b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad1d149ffb702827d31d6439d7a2f98b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_PERF_COUNTERS</b></td></tr>
+<tr class="separator:aad1d149ffb702827d31d6439d7a2f98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57af425a6fbf6de0a757236a471d6f83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57af425a6fbf6de0a757236a471d6f83"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>USE_C99_TYPES</b></td></tr>
+<tr class="separator:a57af425a6fbf6de0a757236a471d6f83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba6c187616424246f9310fbc6b372e80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba6c187616424246f9310fbc6b372e80"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIVM_BREAKOUT_COUNT</b>&#160;&#160;&#160;20</td></tr>
+<tr class="separator:aba6c187616424246f9310fbc6b372e80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a064ce6d725136e0e873c8bb316b6ea9b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a064ce6d725136e0e873c8bb316b6ea9b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIVM_THREAD_LOCAL</b></td></tr>
+<tr class="separator:a064ce6d725136e0e873c8bb316b6ea9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27636e991419cbe2c728ebf8d3bfb08e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27636e991419cbe2c728ebf8d3bfb08e"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_ISR_DISABLE</b></td></tr>
 <tr class="separator:a27636e991419cbe2c728ebf8d3bfb08e"><td class="memSeparator" colspan="2">&#160;</td></tr>

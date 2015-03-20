@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,7 +116,7 @@ Inheritance diagram for Vireo::VIClump:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a88310b666d389e144145a6d0f67b23a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88310b666d389e144145a6d0f67b23a6"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#a88310b666d389e144145a6d0f67b23a6">Trigger</a> ()</td></tr>
-<tr class="memdesc:a88310b666d389e144145a6d0f67b23a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greater than 0 is not in run queue, when it goes to zero it gets enqueued. <br/></td></tr>
+<tr class="memdesc:a88310b666d389e144145a6d0f67b23a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed set of waits states, maximum is 2. <br/></td></tr>
 <tr class="separator:a88310b666d389e144145a6d0f67b23a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a542999fe512d8dcdbe6c1c5a53baba24"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a542999fe512d8dcdbe6c1c5a53baba24"></a>
 IntSmall&#160;</td><td class="memItemRight" valign="bottom"><b>FireCount</b> ()</td></tr>
@@ -133,6 +133,24 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>AppendToWaitList</b> 
 <tr class="memitem:a2609264d6ed4a830182ec8dcf0592833"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2609264d6ed4a830182ec8dcf0592833"></a>
 <a class="el" href="class_vireo_1_1_virtual_instrument.html">VirtualInstrument</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>OwningVI</b> ()</td></tr>
 <tr class="separator:a2609264d6ed4a830182ec8dcf0592833"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae002bd40ca6bb108d2eb6d05d9027bb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae002bd40ca6bb108d2eb6d05d9027bb6"></a>
+<a class="el" href="class_vireo_1_1_waitable_state.html">WaitableState</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>GetWaitStates</b> (Int32)</td></tr>
+<tr class="separator:ae002bd40ca6bb108d2eb6d05d9027bb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbd19fae3a7f27d6d7779ddb034949bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afbd19fae3a7f27d6d7779ddb034949bc"></a>
+<a class="el" href="class_vireo_1_1_waitable_state.html">WaitableState</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>ReserveWaitStatesWithTimeout</b> (Int32, PlatformTickType count)</td></tr>
+<tr class="separator:afbd19fae3a7f27d6d7779ddb034949bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3ec76b2d5b9d09c8eddf2ab13825468"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3ec76b2d5b9d09c8eddf2ab13825468"></a>
+<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>WaitUntilTickCount</b> (PlatformTickType count, <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *next)</td></tr>
+<tr class="separator:ab3ec76b2d5b9d09c8eddf2ab13825468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accd92c42428826eb8ad80c6fc4fd9243"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="accd92c42428826eb8ad80c6fc4fd9243"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearWaitStates</b> ()</td></tr>
+<tr class="separator:accd92c42428826eb8ad80c6fc4fd9243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a199157df76fe231893e0e37234cbb50e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a199157df76fe231893e0e37234cbb50e"></a>
+<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>WaitOnWaitStates</b> (<a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *)</td></tr>
+<tr class="separator:a199157df76fe231893e0e37234cbb50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd43d829bba5c5a23d4d2e99062b0ab7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd43d829bba5c5a23d4d2e99062b0ab7"></a>
+<a class="el" href="class_vireo_1_1_execution_context.html">ExecutionContextRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>OwningContext</b> ()</td></tr>
+<tr class="separator:acd43d829bba5c5a23d4d2e99062b0ab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a160c3a3922f4d40ee11e6f43d3ef5c28"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a160c3a3922f4d40ee11e6f43d3ef5c28"></a>
 <a class="el" href="class_vireo_1_1_type_manager.html">TypeManagerRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>TheTypeManager</b> ()</td></tr>
 <tr class="separator:a160c3a3922f4d40ee11e6f43d3ef5c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -142,9 +160,13 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a499c8c57a0c68742eeb2884407f79966"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a499c8c57a0c68742eeb2884407f79966"></a>
 <a class="el" href="class_vireo_1_1_v_i_clump.html">VIClump</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_next</b></td></tr>
 <tr class="separator:a499c8c57a0c68742eeb2884407f79966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe55a6268fee39beea9a56253fb26a51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe55a6268fee39beea9a56253fb26a51"></a>
+PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51">_wakeUpInfo</a></td></tr>
+<tr class="memdesc:abe55a6268fee39beea9a56253fb26a51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Next clump if this one is in a list or queue, null other wise. <br/></td></tr>
+<tr class="separator:abe55a6268fee39beea9a56253fb26a51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5da68ff60f0aed26ec986c271d5e34b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5da68ff60f0aed26ec986c271d5e34b"></a>
 <a class="el" href="class_vireo_1_1_virtual_instrument.html">VirtualInstrument</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#ac5da68ff60f0aed26ec986c271d5e34b">_owningVI</a></td></tr>
-<tr class="memdesc:ac5da68ff60f0aed26ec986c271d5e34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Next clump if this one is in a list or queue, null other wise. <br/></td></tr>
+<tr class="memdesc:ac5da68ff60f0aed26ec986c271d5e34b"><td class="mdescLeft">&#160;</td><td class="mdescRight">If clump is suspended, used to determine if wake up condition exists (e.g. time) <br/></td></tr>
 <tr class="separator:ac5da68ff60f0aed26ec986c271d5e34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6d9d71f8b3e4c06aba2d74be56ee482"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa6d9d71f8b3e4c06aba2d74be56ee482"></a>
 <a class="el" href="class_vireo_1_1_v_i_clump.html">VIClump</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#aa6d9d71f8b3e4c06aba2d74be56ee482">_waitingClumps</a></td></tr>
@@ -158,18 +180,22 @@ Public Attributes</h2></td></tr>
 <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#a9ddc8cad6853110db6d2c4e16f8ecf14">_savePc</a></td></tr>
 <tr class="memdesc:a9ddc8cad6853110db6d2c4e16f8ecf14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used for sub vi calls, clump to restart once done. <br/></td></tr>
 <tr class="separator:a9ddc8cad6853110db6d2c4e16f8ecf14"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe55a6268fee39beea9a56253fb26a51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe55a6268fee39beea9a56253fb26a51"></a>
-PlatformTickType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#abe55a6268fee39beea9a56253fb26a51">_wakeUpInfo</a></td></tr>
-<tr class="memdesc:abe55a6268fee39beea9a56253fb26a51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save when paused either due to sub vi call, or time slicing. <br/></td></tr>
-<tr class="separator:abe55a6268fee39beea9a56253fb26a51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad49c0d494549e4c1d4239b374e14db79"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad49c0d494549e4c1d4239b374e14db79"></a>
 IntSmall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#ad49c0d494549e4c1d4239b374e14db79">_fireCount</a></td></tr>
-<tr class="memdesc:ad49c0d494549e4c1d4239b374e14db79"><td class="mdescLeft">&#160;</td><td class="mdescRight">If clump is suspended, used to determine if wake up condition exists (e.g. time) <br/></td></tr>
+<tr class="memdesc:ad49c0d494549e4c1d4239b374e14db79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save when paused either due to sub vi call, or time slicing. <br/></td></tr>
 <tr class="separator:ad49c0d494549e4c1d4239b374e14db79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49f689f4f5b66eedc0d3a39816ce5fff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a49f689f4f5b66eedc0d3a39816ce5fff"></a>
 IntSmall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#a49f689f4f5b66eedc0d3a39816ce5fff">_shortCount</a></td></tr>
 <tr class="memdesc:a49f689f4f5b66eedc0d3a39816ce5fff"><td class="mdescLeft">&#160;</td><td class="mdescRight">What to reset _shortCount to when the clump is done. <br/></td></tr>
 <tr class="separator:a49f689f4f5b66eedc0d3a39816ce5fff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a32f99853e0fc7696361beabc14a31a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a32f99853e0fc7696361beabc14a31a"></a>
+Int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#a4a32f99853e0fc7696361beabc14a31a">_waitCount</a></td></tr>
+<tr class="memdesc:a4a32f99853e0fc7696361beabc14a31a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greater than 0 is not in run queue, when it goes to zero it gets enqueued. <br/></td></tr>
+<tr class="separator:a4a32f99853e0fc7696361beabc14a31a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e417974a5d1db42f4f82deda506fc8e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9e417974a5d1db42f4f82deda506fc8e"></a>
+<a class="el" href="class_vireo_1_1_waitable_state.html">WaitableState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_vireo_1_1_v_i_clump.html#a9e417974a5d1db42f4f82deda506fc8e">_waitStates</a> [2]</td></tr>
+<tr class="memdesc:a9e417974a5d1db42f4f82deda506fc8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">How many waitSates are active? <br/></td></tr>
+<tr class="separator:a9e417974a5d1db42f4f82deda506fc8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_class_vireo_1_1_function_clump"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_class_vireo_1_1_function_clump')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_vireo_1_1_function_clump.html">Vireo::FunctionClump</a></td></tr>
 <tr class="memitem:ae838fa2f58005634b1c2372703359dbe inherit pub_attribs_class_vireo_1_1_function_clump"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae838fa2f58005634b1c2372703359dbe"></a>
 <a class="el" href="struct_vireo_1_1_instruction_core.html">InstructionCore</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>_codeStart</b></td></tr>

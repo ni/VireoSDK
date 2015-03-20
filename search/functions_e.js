@@ -1,5 +1,14 @@
 var searchData=
 [
-  ['simplesubvector',['SimpleSubVector',['../class_vireo_1_1_simple_sub_vector.html#ae3840433bddf2aa2b4513ff9fa68b904',1,'Vireo::SimpleSubVector::SimpleSubVector()'],['../class_vireo_1_1_simple_sub_vector.html#aca7ab09b597ab307ff123ac6e42df933',1,'Vireo::SimpleSubVector::SimpleSubVector(const T *begin, const T *end)']]],
-  ['subelementcount',['SubElementCount',['../class_vireo_1_1_type_common.html#a898f158e2b0b4a5e57c0b7487f85e74e',1,'Vireo::TypeCommon::SubElementCount()'],['../class_vireo_1_1_wrapped_type.html#a59c7b6f16db04767507da93260c2b0a9',1,'Vireo::WrappedType::SubElementCount()'],['../class_vireo_1_1_aggregate_type.html#a5dca69feffcbf5ed9ec6b576524d7240',1,'Vireo::AggregateType::SubElementCount()'],['../class_vireo_1_1_array_type.html#a2c6c7f265675b03001a3441bf60ca8e2',1,'Vireo::ArrayType::SubElementCount()'],['../class_vireo_1_1_pointer_type.html#a64cfd6ae8e60796f4b1b3ab495719d0e',1,'Vireo::PointerType::SubElementCount()']]]
+  ['rank',['Rank',['../class_vireo_1_1_type_common.html#a6ab4653c90b9388041736c61ba46074b',1,'Vireo::TypeCommon']]],
+  ['read',['Read',['../class_vireo_1_1_itr.html#af1f830d70b88747af9c4968ec4133c0b',1,'Vireo::Itr']]],
+  ['readnametoken',['ReadNameToken',['../class_vireo_1_1_sub_string.html#a87305f33b1d3eea50eb9bbda0d82e8bd',1,'Vireo::SubString']]],
+  ['readp',['ReadP',['../class_vireo_1_1_itr.html#abeb9ffbce2c160d168042df8106fd8c6',1,'Vireo::Itr::ReadP()'],['../class_vireo_1_1_block_itr.html#a2b1a375911482f417c02f512d475e441',1,'Vireo::BlockItr::ReadP()']]],
+  ['readsubexpressiontoken',['ReadSubexpressionToken',['../class_vireo_1_1_sub_string.html#a1d6231558f18590068e5170a4b418540',1,'Vireo::SubString']]],
+  ['reserve',['Reserve',['../class_vireo_1_1_typed_array_core.html#a2b099ba1a8cadc4e2b45da7c068dece5',1,'Vireo::TypedArrayCore']]],
+  ['resize1d',['Resize1D',['../class_vireo_1_1_typed_array_core.html#a9235e0e92184a563da46c1a6e49e0a0e',1,'Vireo::TypedArrayCore']]],
+  ['resize1dorempty',['Resize1DOrEmpty',['../class_vireo_1_1_typed_array_core.html#a249e8fa5d44d83dabae986374c419a2d',1,'Vireo::TypedArrayCore']]],
+  ['resizecapacity',['ResizeCapacity',['../class_vireo_1_1_typed_array_core.html#aa051975e7a9b53a2b5e7c9e117a2075b',1,'Vireo::TypedArrayCore']]],
+  ['resizedimensions',['ResizeDimensions',['../class_vireo_1_1_typed_array_core.html#ac8becfa9df04132a01fe86906ed482bb',1,'Vireo::TypedArrayCore']]],
+  ['resizetomatchorempty',['ResizeToMatchOrEmpty',['../class_vireo_1_1_typed_array_core.html#a8ffb7e8d994d14760de2037df1e7b01c',1,'Vireo::TypedArrayCore']]]
 ];

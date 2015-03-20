@@ -72,7 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,7 +90,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Instruction.h File Reference</div>  </div>
 </div><!--header-->
@@ -204,6 +205,9 @@ Macros</h2></td></tr>
 <tr class="memitem:a32350e31cd3552961b9853be6dd09933"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32350e31cd3552961b9853be6dd09933"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_FUNCTION_SIGNATURE7</b>(_name_, t0, t1, t2, t3, t4, t5, t6)&#160;&#160;&#160;VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7&lt;t0, t1, t2, t3, t4, t5, t6&gt;* _this _PROGMEM)</td></tr>
 <tr class="separator:a32350e31cd3552961b9853be6dd09933"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfdceb40fa46f6154c3e79e6117ae477"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acfdceb40fa46f6154c3e79e6117ae477"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>VIREO_FUNCTION_C_PROTO</b>(_name_)&#160;&#160;&#160;VIREO_FUNCTION_SIGNATURE0(_name_)</td></tr>
+<tr class="separator:acfdceb40fa46f6154c3e79e6117ae477"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a591b3a2be24553f0a7a86deeef2601ce"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>DECLARE_VIREO_PRIMITIVE0</b>(_name_, _body_)</td></tr>
 <tr class="separator:a591b3a2be24553f0a7a86deeef2601ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5303d7a5166ef45b8a27c57398ee80d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>DECLARE_VIREO_PRIMITIVE1</b>(_name_, _t0_, _body_)</td></tr>
@@ -221,10 +225,15 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ae4ee90fbeffad41ca174cdbd251e437f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4ee90fbeffad41ca174cdbd251e437f"></a>
-typedef InstructionCore <br class="typebreak"/>
-*VIVM_FASTCALL _PROGMEM *&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::InstructionFunction</b> (InstructionCore *)</td></tr>
-<tr class="separator:ae4ee90fbeffad41ca174cdbd251e437f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27478eae55c3ee700afadf7bbffd0e8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa27478eae55c3ee700afadf7bbffd0e8"></a>
+typedef InstructionCore *&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::InstructionRef</b></td></tr>
+<tr class="separator:aa27478eae55c3ee700afadf7bbffd0e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:acadd6a6af85b1ded365c2852471d3077"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acadd6a6af85b1ded365c2852471d3077"></a>
+typedef&#160;</td><td class="memItemRight" valign="bottom"><b>Vireo::InstructionRef</b> (VIVM_FASTCALL _PROGMEM *InstructionFunction)(InstructionCore *)</td></tr>
+<tr class="separator:acadd6a6af85b1ded365c2852471d3077"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Tools for defining Vireo functions in C++. </p>

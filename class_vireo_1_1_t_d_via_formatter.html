@@ -74,7 +74,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -91,6 +91,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="#pri-static-attribs">Static Private Attributes</a> &#124;
 <a href="#friends">Friends</a> &#124;
@@ -107,9 +108,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8baffb1550e0fa970ec481f631ff9ab9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8baffb1550e0fa970ec481f631ff9ab9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TDViaFormatter</b> (<a class="el" href="class_vireo_1_1_string.html">StringRef</a> string, Boolean quoteOnTopString, Int32 fieldWidth=0)</td></tr>
-<tr class="separator:a8baffb1550e0fa970ec481f631ff9ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a297a5eae196ea6b7bb3c485aa0a5f8ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a297a5eae196ea6b7bb3c485aa0a5f8ac"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TDViaFormatter</b> (<a class="el" href="class_vireo_1_1_string.html">StringRef</a> string, Boolean quoteOnTopString, Int32 fieldWidth=0, <a class="el" href="class_vireo_1_1_sub_string.html">SubString</a> *format=null)</td></tr>
+<tr class="separator:a297a5eae196ea6b7bb3c485aa0a5f8ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a418d46de9afd55d3183c57bd9018a44b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a418d46de9afd55d3183c57bd9018a44b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>FormatType</b> (<a class="el" href="class_vireo_1_1_type_common.html">TypeRef</a> type)</td></tr>
 <tr class="separator:a418d46de9afd55d3183c57bd9018a44b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,17 +142,20 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>FormatInt</b> (Encodi
 void&#160;</td><td class="memItemRight" valign="bottom"><b>FormatIEEE754</b> (EncodingEnum encoding, Int32 aqSize, void *pData)</td></tr>
 <tr class="separator:a9617264bd4b2a63a94443dc6d41eb864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:a96b07466c57cb5e77ea18d69f2cd871d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96b07466c57cb5e77ea18d69f2cd871d"></a>
+static char&#160;</td><td class="memItemRight" valign="bottom"><b>LocaleDefaultDecimalSeperator</b></td></tr>
+<tr class="separator:a96b07466c57cb5e77ea18d69f2cd871d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a978b23a399afb6dcaa7a457a429a6fb2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a978b23a399afb6dcaa7a457a429a6fb2"></a>
 <a class="el" href="class_vireo_1_1_string.html">StringRef</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_string</b></td></tr>
 <tr class="separator:a978b23a399afb6dcaa7a457a429a6fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee04ef4cb76857787623e63788c4b57f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee04ef4cb76857787623e63788c4b57f"></a>
-Boolean&#160;</td><td class="memItemRight" valign="bottom"><b>_bQuoteStrings</b></td></tr>
-<tr class="separator:aee04ef4cb76857787623e63788c4b57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61184aef8cd90c69b5f0457ce8e91f61"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61184aef8cd90c69b5f0457ce8e91f61"></a>
-Int32&#160;</td><td class="memItemRight" valign="bottom"><b>_fieldWidth</b></td></tr>
-<tr class="separator:a61184aef8cd90c69b5f0457ce8e91f61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a393654fef9b723a6309c6e13a64a199b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a393654fef9b723a6309c6e13a64a199b"></a>
+<a class="el" href="struct_vireo_1_1_via_format_options.html">ViaFormatOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><b>_options</b></td></tr>
+<tr class="separator:a393654fef9b723a6309c6e13a64a199b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
@@ -167,9 +171,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>TDViaFormatterTypeVi
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The VIA encoder. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/<a class="el" href="_t_d_codec_via_8h_source.html">TDCodecVia.h</a></li>
-<li>core/<a class="el" href="_t_d_codec_via_8cpp.html">TDCodecVia.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

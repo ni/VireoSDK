@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -145,22 +145,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="fragment"><div class="line">define (VirtualInstrument </div>
 <div class="line">    a(c(                               </div>
 <div class="line">        e(.ExecutionContext Context)   </div>
-<div class="line">        e(a(.*) ParamBlock)             </div>
-<div class="line">        e(a(.*) DataSpace)              </div>
+<div class="line">        e(a(.*) Params)             </div>
+<div class="line">        e(a(.*) Locals)              </div>
 <div class="line">        e(a(.VIClump *) Clumps)     <span class="comment">// An array of clumps, see definition below.      </span></div>
 <div class="line">        e(.Int32 lineNumberBase)    <span class="comment">// Internal fields for maping back to souce code    </span></div>
-<div class="line">        e(.DataPointer ClumpSourceBegin)</div>
-<div class="line">        e(.DataPointer ClumpSourceEnd)  </div>
+<div class="line">        e(.SubString ClumpSource)</div>
 <div class="line">    ))</div>
 <div class="line">)</div>
 <div class="line"></div>
 <div class="line">define (VIClump</div>
 <div class="line">    c(                                     </div>
-<div class="line">        e(.InstructionList CodeStart)         </div>
-<div class="line">        e(.DataPointer Next)                </div>
-<div class="line">        e(.DataPointer Owner)               </div>
-<div class="line">        e(.DataPointer NextWaitingCaller)   </div>
-<div class="line">        e(.DataPointer Caller)              </div>
+<div class="line">        e(.InstructionBlock CodeStart)         </div>
+<div class="line">        e(.<a class="code" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a> Next)                </div>
+<div class="line">        e(.<a class="code" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a> Owner)               </div>
+<div class="line">        e(.<a class="code" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a> NextWaitingCaller)   </div>
+<div class="line">        e(.<a class="code" href="_data_types_8h.html#ab861c19ba786c3c9ffea28ca06543717">DataPointer</a> Caller)              </div>
 <div class="line">        e(.Instruction SavePC)              </div>
 <div class="line">        e(.Int64 WakeUpInfo)                </div>
 <div class="line">        e(.Int32 FireCount)                 </div>

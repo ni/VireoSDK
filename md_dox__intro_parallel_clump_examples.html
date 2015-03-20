@@ -66,7 +66,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -91,20 +91,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line">        e(v(.String <span class="stringliteral">&#39;Pat you head.&#39;</span>) sHead)</div>
 <div class="line">        e(v(.String <span class="stringliteral">&#39;Rub your tummy.&#39;</span>) sTummy)</div>
 <div class="line">    ) </div>
-<div class="line">    clump(1         <span class="comment">// Clump 0 (the root clump)</span></div>
-<div class="line">         Trigger(1)    <span class="comment">// Trigger Clump #1        </span></div>
+<div class="line">    clump(              <span class="comment">// Clump 0 (the root clump)</span></div>
+<div class="line">         Trigger(1)     <span class="comment">// Trigger Clump #1        </span></div>
 <div class="line">         WaitMilliseconds(fiveHundred)</div>
 <div class="line">         Trigger(2)     </div>
 <div class="line">         Wait(1)        <span class="comment">// Wait till clump #1 is complete (will it?)</span></div>
 <div class="line">         Wait(2)</div>
 <div class="line">    )</div>
-<div class="line">    clump(1         <span class="comment">// Clump 1 with a fire count of 1</span></div>
-<div class="line">        Perch(0)    <span class="comment">// Labels are scoped to a clump, this is Label 0</span></div>
+<div class="line">    clump(              <span class="comment">// Clump 1</span></div>
+<div class="line">        Perch(0)        <span class="comment">// Labels are scoped to a clump, this is Label 0</span></div>
 <div class="line">        Print(sHead)</div>
 <div class="line">        WaitMilliseconds(oneThousand)</div>
-<div class="line">        Branch(0)   <span class="comment">// Branch to Perch 0</span></div>
+<div class="line">        Branch(0)       <span class="comment">// Branch to Perch 0</span></div>
 <div class="line">    ) </div>
-<div class="line">    clump(1         <span class="comment">// Clump 2 with a fire count of 1</span></div>
+<div class="line">    clump(              <span class="comment">// Clump 2</span></div>
 <div class="line">        Perch(0)</div>
 <div class="line">        Print(sTummy)</div>
 <div class="line">        WaitMilliseconds(oneThousand)</div>
@@ -125,7 +125,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a href="index.html">Introduction</a></li>
 <li><a href="md_dox__intro_type_examples.html">Some more simple type examples</a></li>
 <li><a href="md_dox__intro_array_examples.html">Some array type examples</a></li>
-<li><a href="md_dox__intro_parallel_clump_examples.html">VIs with parallel execution</a> </li>
+<li><a href="md_dox__intro_parallel_clump_examples.html">VIs with parallel execution</a></li>
+<li><a href="md_dox__type_manager.html">The TypeManager</a> </li>
 </ul>
 </div></div><!-- contents -->
 <!-- start footer part -->
