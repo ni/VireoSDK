@@ -1473,8 +1473,8 @@ struct StringScanStruct : public VarArgInstruction
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);
     _ParamDef(StringRef, StringFormat);
-    _ParamDef(Int32, InitialPos);
-    _ParamDef(Int32, OffsetPast);
+    _ParamDef(UInt32, InitialPos);
+    _ParamDef(UInt32, OffsetPast);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
@@ -1873,12 +1873,88 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
     return _NextInstruction();
 }
 
+struct SyncJSStruct : public VarArgInstruction
+{
+    _ParamDef(StringRef, Function);
+    _ParamImmediateDef(StaticTypeAndData, parameter[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+#if kVireoOS_emscripten
+    #include <emscripten.h>
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATUREV(CallJSSync, SyncJSStruct)
+{
+	char script[stringBufferSize];
+	Int32 count =  (_ParamVarArgCount() -1)/2;
+	StaticTypeAndData *arguments =  _ParamImmediate(parameter);
+	SubString functionName = _Param(Function)->MakeSubStringAlias();
+	TypeRef actualType = NULL;
+	if (arguments[0]._pData) {
+		actualType = arguments[0]._paramType;
+	}
+	TempStackCString jsFunction(&functionName);
+	jsFunction.AppendCStr("(");
+	for (Int32 i =1; i< count; i++) {
+		if (i!=1) {
+			jsFunction.AppendCStr(",");
+		}
+		STACK_VAR(String, jsVariable);
+		SubString formatss("VIA");
+		TDViaFormatter formatter(jsVariable.Value, true, 0, &formatss);
+		formatter.FormatData(arguments[i]._paramType , arguments[i]._pData);
+		SubString jsArgument = jsVariable.Value->MakeSubStringAlias();
+ 		jsFunction.Append(&jsArgument);
+	}
+	jsFunction.AppendCStr(")");
+
+	TempStackCString result;
+
+	if (actualType) {
+		result.AppendCStr(emscripten_run_script_string((char*)jsFunction.Begin()));
+		EventLog log(EventLog::DevNull);
+		SubString valueString(result.Begin(), result.End());
+
+		TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &valueString, &log, 1);
+
+		parser.ParseData(arguments[0]._paramType, arguments[0]._pData);
+	} else {
+		emscripten_run_script_string((char*)jsFunction.Begin());
+	}
+    return _NextInstruction();
+}
+#else
+VIREO_FUNCTION_SIGNATUREV(CallJSSync, SyncJSStruct)
+{
+	return _NextInstruction();
+}
+#endif
+
+
+struct testStruct : public VarArgInstruction
+{
+
+	emscripten_run_script_string();
+    NEXT_INSTRUCTION_METHODV()
+};
+
+
+VIREO_FUNCTION_SIGNATUREV(TestFunction, testStruct)
+{
+
+	return _NextInstruction();
+}
+
+
 DEFINE_VIREO_BEGIN(LabVIEW_String)
+	DEFINE_VIREO_FUNCTION(TestFunction, "p(i(.VarArgCount))")
+
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) i(.UInt32) o(.UInt32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
+    DEFINE_VIREO_FUNCTION(CallJSSync, "p(i(.VarArgCount) i(.String) o(.StaticTypeAndData) i(.StaticTypeAndData))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo
