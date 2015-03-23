@@ -179,7 +179,7 @@ void VIClump::AppendToWaitList(VIClump* elt)
 WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickType tickCount)
 {
     VIREO_ASSERT(_waitCount == 0);
-    if(count <= 2) {
+    if (count <= 2) {
         _waitCount = count;
         _waitStates[0]._clump = this;
         _waitStates[1]._clump = this;
@@ -475,7 +475,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     if (argument->ComparePrefixCStr(".")) {
         // If it is to be passed as an input then that is OK. Elements in the
         // type dictionary can not be used as an output.
-        char dot;
+        Utf8Char dot;
         argument->ReadRawChar(&dot);
         *ppData = (AQBlock1*) _clump->TheTypeManager()->FindTypeConstRef(argument);
         if (*ppData != null) {
@@ -531,7 +531,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
     
     // See if it is in the VI's locals or paramblock
     _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
-    if(_actualArgumentType) {
+    if (_actualArgumentType) {
         _argumentState = kArgumentResolvedToVIElement;
         return;
     }
@@ -813,19 +813,15 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }
             break;
-        case kArgumentNotOptional:                      simpleMessage = "Argument not optional";    break;
-        case kArgumentNotMutable:                       simpleMessage = "Argument not mutable";     break;
+        case kArgumentNotOptional:          simpleMessage = "Argument not optional";    break;
+        case kArgumentNotMutable:           simpleMessage = "Argument not mutable";     break;
         // Good states
-        case kArgumentResolvedToClump:                  simpleMessage = "Argument is clump";        break;
-        case kArgumentResolvedToVIElement:              simpleMessage = "Argument is VI element";   break;
-        case kArgumentResolvedToPerch:                  simpleMessage = "Argument is perch";        break;
-        case kArgumentResolvedToParameter:              simpleMessage = "Argument is parameter";    break;
-        case kArgumentResolvedToDefault:                simpleMessage = "Argument is default";      break;
-            simpleMessage = "Argument is clump";
-            break;
-        default:
-            simpleMessage = "Unknown argument type";
-            break;
+        case kArgumentResolvedToClump:      simpleMessage = "Argument is clump";        break;
+        case kArgumentResolvedToVIElement:  simpleMessage = "Argument is VI element";   break;
+        case kArgumentResolvedToPerch:      simpleMessage = "Argument is perch";        break;
+        case kArgumentResolvedToParameter:  simpleMessage = "Argument is parameter";    break;
+        case kArgumentResolvedToDefault:    simpleMessage = "Argument is default";      break;
+        default:                            simpleMessage = "Unknown argument type";          break;
     }
     if (simpleMessage) {
         LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_actualArgumentName));

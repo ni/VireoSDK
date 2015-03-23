@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -64,7 +64,7 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
 {
     TypeManagerScope scope(tm);
     TypeRef type = ParseAndBuidType(tm, typeString);
-    
+
     if (typeName->Length()) {
         // Use the name if provided, else it an anonymous type.
         type = tm->Define(typeName, type);
@@ -77,7 +77,7 @@ void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr 
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
-    
+
     tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType, cname);
 }
 #else
@@ -85,7 +85,7 @@ void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr 
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
-    
+
     tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
 }
 #endif
@@ -94,22 +94,22 @@ void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IData
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
-    
+
     tm->DefineCustomDataProcs(name, pDataProcs, type);
 }
 //------------------------------------------------------------
 void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString)
 {
     SubString string(typeString);
-    
+
     TDViaParser parser(tm, &string, null, 1);
     TypeRef t = parser.ParseType();
 
     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);
-    
+
     if (cdt->BitEncoding() == kEncoding_SInt && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;
-    
+
         string.AliasAssignCStr(name);
         tm->Define(&string, cdt);
     }
@@ -145,7 +145,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 #if 1
     // TODO These could be moved out of the core once there is a way to order
     // module initialization
-    
+
     // Floating-point Single
 #if defined(VIREO_TYPE_Single)
     Define(tm, "SingleAtomic",  "c(e(bb(32 IEEE754B)))");
@@ -166,54 +166,50 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "ComplexDouble", "c(e(.Double real) e(.Double imaginary))");
 #endif
 #endif
-    // Time
-    Define(tm, "Time",          "c(e(.Int64 seconds) e(.UInt64 fractions))");
-    
+
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
     Define(tm, "Utf32Char", ".Int32");              // A single Unicode codepoint (no special encoding or escapes)
     Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should bevalid UTF-8 encoding. No partial or overlong elements
     Define(tm, "String", ".Utf8Array1D");
     Define(tm, "StringArray1D", "a(.String *)");
-    
+
     // Special types for the execution system.
     Define(tm, "CodePointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "BranchTarget", ".DataPointer");
-    
+
     // Pointer to root clump of a VI
     Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
     Define(tm, "EmptyParameterList", "c()");  // Parameter is name, it gets resolved to first clump for SubVI
-    
+
     // Clump - 0 based index into VIs array of clumps
     Define(tm, "Clump", ".DataPointer");  // Parameter is index
-    
+
     // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
     Define(tm, "Type", ".DataPointer");
     Define(tm, "TypeManager", ".DataPointer");
-    
+
     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
     Define(tm, "StaticType", ".DataPointer");
-    
+
     Define(tm, "Object", ".DataPointer");
-    Define(tm, "Array", ".DataPointer");   // Object with Rank > 0
+    Define(tm, "Array", ".DataPointer");    // Object with Rank > 0
     Define(tm, "Array1D", ".DataPointer");
-    Define(tm, "Variant", ".DataPointer"); // TODO is this any different from the Type type if the type has a default value?
-    
+    Define(tm, "Variant", ".DataPointer");  // TODO is this any different from the Type type if the type has a default value?
+
     // VarArgCount - Used in prototypes for vararg functions.
     // This parameter will be constant number, not a pointer to a number
     Define(tm, "VarArgCount", ".DataPointer");
-    
+
     // StaticTypeAndData - Used in prototypes for polymorphic functions.
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
-    
+
     Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 }
 
-}
-
- 
+}  // namespace Vireo

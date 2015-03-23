@@ -26,53 +26,9 @@ SDG
 #include "ExecutionContext.h"
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
-#include "TDCodecVia.h" 
+#include "TDCodecVia.h"
 using namespace Vireo;
 
-//------------------------------------------------------------
-struct StringNFormatStruct : public VarArgInstruction
-{
-	_ParamDef(StringRef, StringOut);
-    _ParamDef(Int32, Max);
-    _ParamDef(StringRef, StringFormat);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
-
-VIREO_FUNCTION_SIGNATUREV(StringNFormat, StringNFormatStruct)
-{
-    //Int32 count = (_ParamVarArgCount() -3)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    StringRef buffer = _Param(StringOut);
-    Format(&format, _Param(Max), arguments, buffer);
-    return _NextInstruction();
-}
-
-//------------------------------------------------------------
-struct StringScanStruct : public VarArgInstruction
-{
-	_ParamDef(StringRef, StringInput);
-	_ParamDef(StringRef, StringRemaining);
-    _ParamDef(StringRef, StringFormat);
-	_ParamDef(Int32, Filled);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
-
-VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
-{
-    //Int32 count = (_ParamVarArgCount() -4)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    SubString input = _Param(StringInput)->MakeSubStringAlias();
-    Int32 filled = FormatScan(&input, &format, arguments);
-    _Param(Filled) = filled;
-    _Param(StringRemaining)->Resize1D(input.Length());
-    TypeRef elementType = _Param(StringRemaining)->ElementType();
-    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
-    return _NextInstruction();
-}
 //------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
 {
@@ -98,7 +54,7 @@ VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
 
     TypeRef eltType = stringIn->ElementType();
     length = Max(0, Min(length, stringInLength - offset));
-    
+
     // Replace substring only if the offset is not past the end of the string
     if ((offset >= 0) && (offset <= stringInLength)) {
         VIREO_ASSERT(stringIn != resultString && stringIn != replacedSubString);
@@ -121,7 +77,7 @@ VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
                 eltType->CopyData(replacementString->Begin(), resultString->BeginAt(offset), replacementStringLength);
             // Copy the original tail
             Int32 tailLength = (stringInLength - (offset + length));
-            eltType->CopyData(stringIn->BeginAt(offset + length), resultString->BeginAt(offset + replacementStringLength), tailLength);            
+            eltType->CopyData(stringIn->BeginAt(offset + length), resultString->BeginAt(offset + replacementStringLength), tailLength);
         }
     } else {
         if (resultString && (stringIn != resultString))
@@ -167,7 +123,7 @@ VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
     IntIndex searchStringLength = searchString->Length();
     IntIndex replacementStringLength = replacementString ? replacementString->Length() : 0;
     TypeRef eltType = stringIn->ElementType();
-    
+
     offset = Max(0, Min(offset, stringInLength));
 
     IntIndex matchOffset;
@@ -261,7 +217,8 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
             if (stringIn != beforeMatchString)
                 eltType->CopyData(stringIn->Begin(), beforeMatchString->Begin(), matchOffset);
         }
-    } else { // No match is found
+    } else {
+        // No match is found
         if (matchPlusRestString)
             // Copy inString to beforeMatchString
             matchPlusRestString->Resize1D(0);
@@ -296,40 +253,38 @@ VIREO_FUNCTION_SIGNATURE3(StringIndexChar, StringRef, Int32, Utf32Char)
 VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
 {
     IntIndex targetLength = _Param(0)->Length();
-    
+
     _Param(1)->Resize1D(targetLength);
 
     // TODO only works for U+0000 .. U+007F
     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
     Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
-    while (pSourceChar < pSourceCharEnd)
-    {
+    while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('a' <= c && c <= 'z') {
             c =  (c - 0x20);
         }
         *pDestChar++ = c;
-    }    
+    }
     return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 {
-    IntIndex targetLength = _Param(0)->Length(); // TODO only works for Ascii
-    
+    IntIndex targetLength = _Param(0)->Length();  // TODO only works for Ascii
+
     _Param(1)->Resize1D(targetLength);
-    
+
     // TODO only works for U+0000 .. U+007F
     // Adding Latin/Russian/Greek/Armenian not "too" hard
     // http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
     // ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
-    
+
     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
     Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
-    while (pSourceChar < pSourceCharEnd)
-    {
+    while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('A' <= c && c <= 'Z') {
             c =  (c + 0x20);
@@ -346,7 +301,7 @@ VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
     Utf8Char* pDestChar = _Param(1)->End();
     TypeRef elementType = _Param(0)->ElementType();
     SubString character;
-    while (ss.ReadGraphemeCluster(&character)){
+    while (ss.ReadGraphemeCluster(&character)) {
         pDestChar = pDestChar - character.Length();
         elementType->CopyData(character.Begin(), pDestChar, character.Length());
     }
@@ -386,7 +341,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
             } else {
                 found = true;
                 if (ss.IsSpaceChar(c)) {
-                    if(spacePos == null || !last) {
+                    if (spacePos == null || !last) {
                         spacePos = pSourceChar;
                     }
                     last = true;
@@ -412,10 +367,10 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
     Int32 location = _Param(1);
     if (location == 0) {
         targetLength = targetLength-leading-trailing;
-    }else if (location == 1) {
+    } else if (location == 1) {
         // remove start of string
         targetLength = targetLength-leading;
-    }else if (location == 2) {
+    } else if (location == 2) {
         targetLength = targetLength-trailing;
         leading = 0;
     } else {
@@ -438,7 +393,7 @@ VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
 
     Int32 count = _ParamVarArgCount();
     StaticTypeAndData* pArguments = (StaticTypeAndData*) &_ParamPointer(3);
-    
+
     Format(&formatString, count, pArguments, buffer);
     return _NextInstruction();
 }
@@ -453,13 +408,13 @@ struct StringConcatenateParamBlock : public VarArgInstruction
 
 VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
 {
-    //Ignore begin
+    // Ignore begin
     Int32 numInputs = ((_ParamVarArgCount() - 1));
-    
+
     StringRef pDest = _Param(StringOut);
     Int32 originalLength = pDest->Length();
     Int32 totalLength = 0;
-    TypedArrayCoreRef** inputs =  (_ParamImmediate(Element)); 
+    TypedArrayCoreRef** inputs =  (_ParamImmediate(Element));
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
         if (arrayInput->ElementType()->IsArray()) {
@@ -471,16 +426,17 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
         } else {
             totalLength += arrayInput->Length();
         }
-    } 
+    }
     pDest->Resize1D(totalLength);
     // TODO error check
     AQBlock1* pInsert = pDest->BeginAt(0);
 
-    TypeRef elementType = pDest->ElementType(); //flat char type
+    TypeRef elementType = pDest->ElementType();  // Flat char type
 
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
-        if (arrayInput->ElementType()->IsArray())  { // TODO this needs to support N-Dim string arrays
+        if (arrayInput->ElementType()->IsArray())  {
+            // TODO this needs to support N-Dim string arrays
             for (Int32 j = 0; j < arrayInput->Length(); j++) {
                 StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
                 VIREO_ASSERT(stringInput != pDest);
@@ -488,55 +444,57 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
                 elementType->CopyData(stringInput->BeginAt(0), pInsert, length);
                 pInsert += length;
             }
-        } else if (arrayInput != pDest) { // String input that is not the same as dest
+        } else if (arrayInput != pDest) {
+            // String input that is not the same as dest
             IntIndex length = arrayInput->Length();
             elementType->CopyData(arrayInput->BeginAt(0), pInsert, length);
             pInsert += length;
-        } else { // String input that is the same as dest
-        
+        } else {
+            // String input that is the same as dest
             if (i != 0) {
                 THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal StringConcatenate inplaceness");
                 return THREAD_EXEC()->Stop();
             }
-            
+
             pInsert += originalLength;
         }
-    } 
+    }
     return _NextInstruction();
 }
 //------------------------------------------------------------
-DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef, (_Param(1)->Length() == _Param(2)->Length() && ( memcmp(_Param(1)->Begin(), _Param(2)->Begin(), _Param(1)->Length()) == 0) ) )
+DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef,
+    (_Param(1)->Length() == _Param(2)->Length() && (memcmp(_Param(1)->Begin(), _Param(2)->Begin(), _Param(1)->Length()) == 0)))
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRef)
 {
     int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
-    if (cmp < 0) 
+    if (cmp < 0) {
         return _this->_p0;
-    else if (cmp > 0) 
+    } else if (cmp > 0) {
         return  VIVM_TAIL(_NextInstruction());
-    else if (_Param(1)->Length() < _Param(2)->Length())
+    } else if (_Param(1)->Length() < _Param(2)->Length()) {
         return _this->_p0;
-    else
+    } else {
         return VIVM_TAIL(_NextInstruction());
+    }
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRef)
 {
     int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
-    if (cmp > 0) 
+    if (cmp > 0) {
         return _this->_p0;
-    else if (cmp < 0) 
+    } else if (cmp < 0) {
         return  VIVM_TAIL(_NextInstruction());
-    else if (_Param(1)->Length() > _Param(2)->Length())
+    } else if (_Param(1)->Length() > _Param(2)->Length()) {
         return _this->_p0;
-    else
+    } else {
         return VIVM_TAIL(_NextInstruction());
+    }
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
-    DEFINE_VIREO_FUNCTION(StringNFormat, "p(i(.VarArgCount) o(.String) i(.Int32) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount)  i(.String) o(.String) i(.String) o(.Int32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")

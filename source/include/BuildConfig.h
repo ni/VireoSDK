@@ -67,7 +67,7 @@ SDG
     //  #define VIREO_TYPE_ComplexDouble 1
     #define VIREO_TYPE_ArrayND 1
 
-    //  #define VIREO_TYPE_ATime 1
+    //  #define VIREO_TYPE_Timestamp 1
 
     // Vireo can be configured to assume all strings are 7 bit ASCII
     // This means String ArrayLength will alwasy equal StringLength
@@ -110,7 +110,7 @@ SDG
     #define VIREO_TYPE_ComplexDouble 1
     #define VIREO_TYPE_ArrayND 1
 
-    #define VIREO_TYPE_ATime 1
+    #define VIREO_TYPE_Timestamp 1
     #define VIREO_TYPE_Canvas2D  1
 
  // Vireo can be configured to assume all strings are 7 bit ASCII
@@ -238,8 +238,6 @@ SDG
     #undef VIREO_FILESYSTEM
     #undef VIREO_FILESYSTEM_DIRLIST
 
-#else
-    #error : need to define this platfrom
 #endif
 
 #ifndef VIVM_ENABLE_TRACE

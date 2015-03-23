@@ -21,16 +21,16 @@ TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef
 //------------------------------------------------------------
 class TypeTemplateVisitor : public TypeVisitor
 {
-public:
+ public:
     TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* parameters);
     TypeRef Accept(TypeRef type);
 
-private:
+ private:
     TypeManagerRef _typeManager;
     SubVector<TypeRef>* _parameters;
     TypeRef _newType;
-private:
-    
+
+ private:
     virtual void VisitBad(TypeRef type);
     virtual void VisitBitBlock(BitBlockType* type);
     virtual void VisitBitCluster(BitClusterType* type);
@@ -91,7 +91,7 @@ void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitCluster(ClusterType* type)
 {
-    TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
     for (int i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
@@ -116,7 +116,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
     // A type can not currently derived based on dimension size
     TypeRef subType = Accept(type->GetSubElement(0));
     VIREO_ASSERT(subType != type->GetSubElement(0));
-    
+
     _newType = ArrayType::New(_typeManager, subType, type->Rank(), type->GetDimensionLengths());
     VIREO_ASSERT(_newType != type);
 }
@@ -134,16 +134,16 @@ void TypeTemplateVisitor::VisitElement(ElementType* type)
 void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
     SubString name = type->GetName();
-    
+
     // TODO support more than one parameter
-    if(name.CompareCStr(tsTemplatePrefix "1")) {
+    if (name.CompareCStr(tsTemplatePrefix "1")) {
         _newType = *_parameters->Begin();
         return;
     }
     // To get here the named type was generic, and that means the
     // base type is also generic. First ceaate the hyotheitcal new name
     // and see if instance already exists. If not, make one.
-    
+
     // Create a new name, TODO should  really use TDCodecVIA to parse the type
     STACK_VAR(String, tempString);
 
@@ -154,7 +154,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('>');
     name = tempString.Value->MakeSubStringAlias();
-    
+
     // Find an existing instantion, or make one.
     _newType = _typeManager->FindType(&name);
     if (!_newType) {
@@ -203,5 +203,4 @@ void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
 }
 
 
-}
-
+}  // namespace Vireo

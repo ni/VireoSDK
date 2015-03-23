@@ -1,9 +1,9 @@
 /**
- 
+
  Copyright (c) 2014 National Instruments Corp.
- 
+
  This software is subject to the terms described in the LICENSE.TXT file
- 
+
  SDG
  */
 
@@ -22,17 +22,17 @@ using namespace Vireo;
 //
 class QueueCore : public ObservableObject
 {
-private:
+ private:
     TypedArrayCoreRef _elements;
-    
+
     //! Index where the next element will be stored (may be one past end if full)
     IntIndex   _insert;
-    
+
     //! How many elements are in the queue
     IntIndex   _count;
-    
+
     IntIndex RemoveIndex();
-public:
+ public:
     void InitWaitableQueueState(WaitableState* pWS, Int64 elementsAvailable);
     Boolean Compress();
     Boolean TryMakeRoom(IntIndex length);
@@ -68,7 +68,7 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
 {
     IntIndex length = _elements->Length();
     IntIndex space = length - _count;
-    
+
     if (space >= additionalCount) {
         // There is enough room, wrap the insert location as needed.
         if (_insert >= length) {
@@ -84,9 +84,18 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
 //------------------------------------------------------------
 void QueueCore::ChangeCount(Int32 amount)
 {
-    for (WaitableState* pWS = _waitingList; pWS; pWS = pWS->_next) {
+    WaitableState *pNext = null;
+    WaitableState ** ppPrevious = &_waitingList;
+
+    for (WaitableState* pWS = _waitingList; pWS; pWS = pNext) {
+        pNext = pWS->_next;
         if (amount == pWS->_info) {
             THREAD_EXEC()->EnqueueRunQueue(pWS->_clump);
+            // Remove the waiter from the list and enqueue it.
+            *ppPrevious = pNext;
+            pWS->_next = null;
+        } else {
+            ppPrevious = &pWS->_next;
         }
     }
 }
@@ -169,24 +178,24 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 {
     QueueCore *pQV = _Param(0)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
-    
+
     // If the instruction needs to retry it will use two WaitableState records
     // [0] is for the timer and
     // [1] is for the queue
     // These records are reserved if necessary in below. If none are reserved
     // then this is the primary execution of the instruction
-    
+
     // First time or retry either way, attempt to dequeue value
     Boolean done = pQV->Dequeue(_ParamPointer(1));
     _Param(3) = !done;
-    
+
     // If is succeeded or timed out then its time to move to the next instruction.
     WaitableState* pWS = clump->GetWaitStates(2);
     if (done || (pWS && pWS[0]._info == null)) {
         clump->ClearWaitStates();
         return _NextInstruction();
     }
-    
+
     Int32 timeOut = _Param(2);
     if (pWS) {
         // This is a retry and another clump got the element but
@@ -206,7 +215,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 
 DEFINE_VIREO_BEGIN(Synchronization)
 
-//TODO type should be able to derive from observable state base class
+// TODO type should be able to derive from observable state base class
 DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$1 *)elements)e(.Int32 insert)e(.Int32 count))")
 DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
 
@@ -215,11 +224,11 @@ DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String n
 DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
 DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-//DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
-//DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+// DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+// DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-//DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
-//DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
+// DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
+// DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
 
 #if 0
 DEFINE_VIREO_FUNCTION(PreviewElement, "")

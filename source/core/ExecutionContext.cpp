@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -19,8 +19,7 @@ SDG
 #include "emscripten.h"
 #endif
 
-namespace Vireo
-{
+namespace Vireo {
 
 //------------------------------------------------------------
 Boolean ExecutionContext::_classInited;
@@ -28,45 +27,43 @@ _PROGMEM Instruction0 ExecutionContext::_culDeSac;
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
 TypeManagerRef  ExecutionContext::_theTypeManager;
-//VIClump*      ExecutionContext::_triggeredIsrList;    // Elts waiting for something external to wake them up
-VIClumpQueue    ExecutionContext::_runQueue;			// Elts ready To run
-VIClump*        ExecutionContext::_sleepingList;		// Elts waiting for something external to wake them up
-VIClump*        ExecutionContext::_runningQueueElt;		// Elt actually running
+VIClumpQueue    ExecutionContext::_runQueue;            // Elts ready To run
+VIClump*        ExecutionContext::_sleepingList;        // Elts waiting for something external to wake them up
+VIClump*        ExecutionContext::_runningQueueElt;     // Elt actually running
 IntSmall        ExecutionContext::_breakoutCount;
 #endif
 
 
 //------------------------------------------------------------
 // CulDeSac returns itself allowing an unriolled execution loop to complete.
-InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL CulDeSac(Instruction0* _this _PROGMEM)
 {
     return _this;
 }
 //------------------------------------------------------------
 // When the Done instruction is hit the clump is done.
-InstructionCore* VIVM_FASTCALL Done (Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL Done(Instruction0* _this _PROGMEM)
 {
     ExecutionContextRef exec = THREAD_EXEC();
 
     VIClump* runningQueueElt = exec->_runningQueueElt;
-    VIREO_ASSERT( runningQueueElt != null )
-    
+    VIREO_ASSERT(runningQueueElt != null)
+
     // If there was a caller it was a subVI call, restart the caller. If not, a topVI finished.
     VIClump *callerClump = runningQueueElt->_caller;
     if (callerClump) {
-        
         // The return instruction will be the CallInstruction.
         CallVIInstruction *pCallInstruction = (CallVIInstruction*)callerClump->_savePc;
-        VIREO_ASSERT( (pCallInstruction != null) )
-        
+        VIREO_ASSERT(pCallInstruction != null)
+
         InstructionCore* pCopyOut = pCallInstruction->_piCopyOutSnippet;
         while (ExecutionContext::IsNotCulDeSac(pCopyOut)) {
-            pCopyOut = _PROGMEM_PTR(pCopyOut,_function)(pCopyOut);
+            pCopyOut = _PROGMEM_PTR(pCopyOut, _function)(pCopyOut);
         }
-        
+
         // Now that copy out has been done, move caller to next instruction.
         callerClump->_savePc = pCallInstruction->Next();
-        
+
         // Now let the Caller proceed
         runningQueueElt->_caller = null;
         exec->EnqueueRunQueue(callerClump);
@@ -77,26 +74,26 @@ InstructionCore* VIVM_FASTCALL Done (Instruction0* _this _PROGMEM)
         vi->GoIsDone();
 #endif
     }
-    
+
     // Now that any caller that needs to hoist data from the clump has been
     // taken care of, see if there are other clumps that are waiting in line.
     // What they are waiting for is unimportant here, only that they have been added the
     // waiting list for this clump.  (TODO allow prioritization)
-    
+
     // Disconnect the list
     VIClump* waitingClump = runningQueueElt->_waitingClumps;
     runningQueueElt->_waitingClumps = null;
-    
+
     while (null != waitingClump) {
         VIClump* clumpToEnqueue = waitingClump;
         waitingClump = waitingClump->_next;
-        
+
         // null out next so it doesn't look like it is in a list.
         clumpToEnqueue->_next = null;
         exec->EnqueueRunQueue(clumpToEnqueue);
         exec->ClearBreakout();
     }
-    
+
     // Since the clump is done, reset the short count back to
     // its initial value.
     runningQueueElt->_shortCount = runningQueueElt->_fireCount;
@@ -147,9 +144,7 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 VIREO_FUNCTION_SIGNATURE0(FPSync)
 {
 #if kVireoOS_emscripten
-    EM_ASM(
-           Module.fpSync();
-           );
+    EM_ASM(Module.fpSync(););
 #endif
     return _NextInstruction();
 }
@@ -181,29 +176,29 @@ VIREO_FUNCTION_SIGNATURET(CallVI, CallVIInstruction)
         // Triggers left goes to 0; ( indicates we are active
         // Execute copy in code ( might hang from instruction, or from VI)
         // Instruction returned will be first in sub VI.
-        VIREO_ASSERT( (qe->_shortCount == 1) )
-        VIREO_ASSERT( (qe->_caller == null) )
+        VIREO_ASSERT(qe->_shortCount == 1)
+        VIREO_ASSERT(qe->_caller == null)
         qe->_caller = THREAD_EXEC()->_runningQueueElt;
 
         // Copy in parameters
         InstructionCore* currentInstruction = _this->CopyInSnippet();
         while (ExecutionContext::IsNotCulDeSac(currentInstruction)) {
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
         }
-        
+
         // Use Trigger to decrement the target SubVI fire count to 0.
         qe->Trigger();
-        
+
         // The CallVI Instruction is marked as the place to return to.
         // This return location will be found by the "Done" instruction in the callee's code.
         // That instruction will execute the copy-out code. After that, the execution will continue with
         // instruction following this one. That means this instruction is not actually rescheduled.
         return THREAD_EXEC()->SuspendRunningQueueElt(_this);
-   } else {
+    } else {
         // The VI is active so add this caller to the waiting list
         // and set it up to retry later.
         qe->AppendToWaitList(THREAD_EXEC()->_runningQueueElt);
-        return THREAD_EXEC()->SuspendRunningQueueElt(_this);  
+        return THREAD_EXEC()->SuspendRunningQueueElt(_this);
     }
 }
 //------------------------------------------------------------
@@ -224,25 +219,16 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
     }
 }
 //------------------------------------------------------------
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
 ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
 {
-    ExecutionContext::ClassInit();
-    
-    _theTypeManager = typeManager;
-    _breakoutCount = 0;
-	_runningQueueElt = (VIClump*) null;
-    _timer._waitingList = null;
-}
-#endif
-//------------------------------------------------------------
-void ExecutionContext::ClassInit()
-{
-	if (!_classInited)
-    {
+    if (!_classInited) {
         _classInited = true;
         _culDeSac._function = (InstructionFunction) CulDeSac;
     }
+    _theTypeManager = typeManager;
+    _breakoutCount = 0;
+    _runningQueueElt = (VIClump*) null;
+    _timer._waitingList = null;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -250,17 +236,17 @@ void ExecutionContext::ClassInit()
     ExecutionContext gSingleExecutionContext;
 #else
     // Typically there might be just one exec system per thread, however in the case of
-    // UI controls using an exec system,there may be several. It that case they should never be 
+    // UI controls using an exec system,there may be several. It that case they should never be
     // nested. When ExecuteSice is called from a thread this will be set up.
     VIVM_THREAD_LOCAL ExecutionContextRef ExecutionContextScope::_threadsExecutionContext;
 #endif
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)
 {
-	VIREO_ASSERT(null != _runningQueueElt)
- 
+    VIREO_ASSERT(null != _runningQueueElt)
+
     _runningQueueElt->_savePc = nextInClump;
-    
+
     // Is there something else to run?
     _runningQueueElt = _runQueue.Dequeue();
     if (_runningQueueElt == null) {
@@ -279,35 +265,34 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
     ExecutionContextScope scope(this);
 #endif
 
-    VIREO_ASSERT( (_runningQueueElt == null) )
-    
+    VIREO_ASSERT((_runningQueueElt == null))
+
     PlatformTickType currentTime  = PlatformTime::TickCount();
     PlatformTickType breakOutTime = currentTime + tickCount;
-    
+
     _timer.QuickCheckTimers(currentTime);
 
     _runningQueueElt = _runQueue.Dequeue();
     InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
-    
-    while (_runningQueueElt)
-    {
+
+    while (_runningQueueElt) {
         _breakoutCount = numSlices;
 
-        VIREO_ASSERT( (currentInstruction != null) )
-        VIREO_ASSERT( (null == _runningQueueElt->_next) )		// Should not be on queue
-        VIREO_ASSERT( (0 == _runningQueueElt->_shortCount) ) // Should not be running if triggers > 0
+        VIREO_ASSERT((currentInstruction != null))
+        VIREO_ASSERT((null == _runningQueueElt->_next))     // Should not be on queue
+        VIREO_ASSERT((0 == _runningQueueElt->_shortCount))  // Should not be running if triggers > 0
         do {
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-#ifdef VIVM_UNROLL_EXEC            
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction,_function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+#ifdef VIVM_UNROLL_EXEC
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
 #endif
         } while (_breakoutCount-- > 0);
 
@@ -320,7 +305,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
                     // Time left, still working, something else to do, rotate tasks
                     VIREO_ASSERT(currentInstruction != null)
                     VIREO_ASSERT(_runningQueueElt != null)
-                    
+
                     _runningQueueElt->_savePc = currentInstruction;
                     VIClump *eltToReQueue = _runningQueueElt;
                     _runningQueueElt = null;
@@ -349,7 +334,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
             // No time left, nothing running, fine, loop will exit.
         }
     }
-    
+
     ExecutionState reply = kExecutionState_None;
     if (!_runQueue.IsEmpty()) {
         reply = (ExecutionState) (reply | kExecutionState_ClumpsInRunQueue);
@@ -364,13 +349,13 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         reply = kExecutionState_None;
     }
 #endif
-	return reply;
+    return reply;
 }
 //------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
-	VIREO_ASSERT((0 == elt->_shortCount))
-	_runQueue.Enqueue(elt);
+    VIREO_ASSERT((0 == elt->_shortCount))
+    _runQueue.Enqueue(elt);
 }
 //------------------------------------------------------------
 #ifdef VIVM_SUPPORTS_ISR
@@ -378,12 +363,12 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 // so there is no need to add guards inside.
 void ExecutionContext::IsrEnqueue(QueueElt* elt)
 {
-	VIVM_ASSERT((null == elt->_next))
-    if (elt->_wakeUpInfo == 0)
-    {
+    VIVM_ASSERT((null == elt->_next))
+    if (elt->_wakeUpInfo == 0) {
         QueueElt* temp = _triggeredIsrList;
         elt->_next = temp;
-        elt->_wakeUpInfo = 1; // Mark as triggered
+        // Mark as triggered
+        elt->_wakeUpInfo = 1;
         _triggeredIsrList = elt;
     }
 }
@@ -391,42 +376,42 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 //------------------------------------------------------------
 void Timer::CheckTimers(PlatformTickType t)
 {
-	WaitableState* pTemp;
-	WaitableState* elt = _waitingList;
-	WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
+    WaitableState* pTemp;
+    WaitableState* elt = _waitingList;
+    // pFix is previous next pointer to patch when removing element.
+    WaitableState** pFix = &(_waitingList);
 
- 	// Enqueue all elements that are ready to run
-	while(elt) {
-		pTemp = elt;
-		if (pTemp->_info <= t) {
-			// Remove
-			*pFix = pTemp->_next;
-			pTemp->_next = null;
-			pTemp->_info = 0;
+    // Enqueue all elements that are ready to run
+    while (elt) {
+        pTemp = elt;
+        if (pTemp->_info <= t) {
+            // Remove
+            *pFix = pTemp->_next;
+            pTemp->_next = null;
+            pTemp->_info = 0;
             THREAD_EXEC()->EnqueueRunQueue(pTemp->_clump);
-		} else {
+        } else {
             // Items are sorted at insertion, so once a time in the future
             // is found quit the loop.
             break;
-		}
-		elt = *pFix; 
-	}
+        }
+        elt = *pFix;
+    }
 
 #ifdef VIREO_SUPPORTS_ISR
-    if (_triggeredIsrList)
-    {
+    if (_triggeredIsrList) {
         VIREO_ISR_DISABLE
         elt = _triggeredIsrList;
-        while(elt) {
+        while (elt) {
             pClump = elt;
             elt = elt->_next;
             pClump->_next = null;
-            pClump->_wakeUpInfo = 0;    //Put in known state.
-			_runQueue.Enqueue(pClump);
+            pClump->_wakeUpInfo = 0;    // Put in known state.
+            _runQueue.Enqueue(pClump);
         }
         _triggeredIsrList = null;
         VIREO_ISR_ENABLE
-    }    
+    }
 #endif
 }
 //------------------------------------------------------------
@@ -435,7 +420,7 @@ void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCoun
     pWS->_object = this;
     pWS->_info =  tickCount;
     if (_waitingList == null) {
-        VIREO_ASSERT( pWS->_next == null )
+        VIREO_ASSERT(pWS->_next == null)
         // No list, now there is one.
         _waitingList = pWS;
     } else {
@@ -455,9 +440,9 @@ void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr mess
 {
     EventLog tempLog(EventLog::StdOut);
     va_list args;
-    va_start (args, message);
+    va_start(args, message);
     tempLog.LogEventV(severity, -1, message, args);
-    va_end (args);
+    va_end(args);
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
@@ -474,4 +459,4 @@ DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
     DEFINE_VIREO_FUNCTION(Stop, "p(i(.Boolean))")
     DEFINE_VIREO_FUNCTION(CulDeSac, "p(i(.Boolean))")
 DEFINE_VIREO_END()
-} // namespace Vireo
+}  // namespace Vireo

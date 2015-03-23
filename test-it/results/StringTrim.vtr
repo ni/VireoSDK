@@ -1,0 +1,77 @@
+--Trim both---------------------------------
+Before <Hello, sky. I can fly.> after <Hello, sky. I can fly.>
+Before < a string2 > after <a string2>
+Before <             a string3                 > after <a string3>
+Before <
+	         a string4               
+	> after <a string4>
+Before <
+	a string5
+	> after <a string5>
+Before <
+a string6
+.
+> after <a string6
+.>
+Before <
+a string6 你好世界。我能飛。
+ > after <a string6 你好世界。我能飛。>
+Before < 你好世界。我能飛。 > after <你好世界。我能飛。>
+Before <你好世界。我能飛。> after <你好世界。我能飛。>
+Before <> after <>
+Before <  > after <>
+--Trim front only---------------------------------
+Before <Hello, sky. I can fly.> after <Hello, sky. I can fly.>
+Before < a string2 > after <a string2 >
+Before <             a string3                 > after <a string3                 >
+Before <
+	         a string4               
+	> after <a string4               
+	>
+Before <
+	a string5
+	> after <a string5
+	>
+Before <
+a string6
+.
+> after <a string6
+.
+>
+Before <
+a string6 你好世界。我能飛。
+ > after <a string6 你好世界。我能飛。
+ >
+Before < 你好世界。我能飛。 > after <你好世界。我能飛。 >
+Before <你好世界。我能飛。> after <你好世界。我能飛。>
+Before <> after <>
+Before <  > after <>
+--Trim end only---------------------------------
+Before <Hello, sky. I can fly.> after <Hello, sky. I can fly.>
+Before < a string2 > after < a string2>
+Before <             a string3                 > after <             a string3>
+Before <
+	         a string4               
+	> after <
+	         a string4>
+Before <
+	a string5
+	> after <
+	a string5>
+Before <
+a string6
+.
+> after <
+a string6
+.>
+Before <
+a string6 你好世界。我能飛。
+ > after <
+a string6 你好世界。我能飛。>
+Before < 你好世界。我能飛。 > after < 你好世界。我能飛。>
+Before <你好世界。我能飛。> after <你好世界。我能飛。>
+Before <> after <>
+Before <  > after <>
+--Trim invalid option---------------------------------
+Before(-1) < a string2 > after < a string2 >
+Before(3) < a string2 > after < a string2 >

@@ -5,8 +5,8 @@ INCDIR=../source/include
 BIN=../bin
 
 COMMANDLINE = main.cpp
-CORE = EggShell.cpp VireoMerged.cpp Thread.cpp TimeTypes.cpp CEntryPoints.cpp
-IO = FileIO.cpp Canvas2d.cpp
+CORE = EggShell.cpp VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
+IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
 COMMANDLINEOBJS = $(COMMANDLINE:%.cpp=$(OBJDIR)/%.o)
@@ -143,7 +143,7 @@ lARMv5:
 #========= Use makefile designed for emscripten builds
 vjs:
 	# Just buid everything
-	make -f EmMakefile clean vjs
+	make -f EmMakefile clean vjs install
 
 #========= Build documentation
 dox:
@@ -186,8 +186,11 @@ slmicro: $(OBJDIR) ../source/micro/StaticMicroMain.cpp ../source/core/Math.cpp
 	rm -f $(OBJDIR)/*.o
 	rm -f $(OBJDIR)/*.d
 	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/micro/StaticMicroMain.cpp -o $(OBJDIR)/StaticMicroMain.o
+	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -DVIREO_DEBUG_GPIO_STDIO -c ../source/io/DebugGPIO.cpp -o $(OBJDIR)/DebugGPIO.o
 	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/core/Math.cpp -o $(OBJDIR)/Math.o
-	$(CC) -o $@ $(LDFLAGS) $(LDSTATIC) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(LIBS)
+	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/core/Queue.cpp -o $(OBJDIR)/Queue.o
+	$(CC) $(CFLAGS) -DVIREO_STATIC_LINK -c ../source/core/ExecutionContext.cpp -o $(OBJDIR)/ExecutionContext.o
+	$(CC) -o $@ $(LDFLAGS) $(LDSTATIC) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(OBJDIR)/DebugGPIO.o $(LIBS) $(OBJDIR)/Queue.o $(OBJDIR)/ExecutionContext.o $(LIBS)
 
 $(OBJDIR):
 	mkdir -p $@

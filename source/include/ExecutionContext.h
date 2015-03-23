@@ -16,7 +16,7 @@ SDG
 
 #include "TypeAndDataManager.h"
 #include "Instruction.h"
-#include "TimeTypes.h"
+#include "Timestamp.h"
 #include "EventLog.h"
 
 namespace Vireo
@@ -37,7 +37,7 @@ public:
     //! Any async operations waiting on this queue
     WaitableState* _next;
 
-    //! Any async operations waiting on this queue
+    //! Which clump owns this WS object.
     VIClump* _clump;
     
     //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
@@ -147,9 +147,7 @@ typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
 public:
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
     ExecutionContext(TypeManagerRef typeManager);
-#endif
 
 private:
     ECONTEXT    TypeManagerRef _theTypeManager;
@@ -193,8 +191,6 @@ private:
 public:
     static inline Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {return pInstruciton->_function != (InstructionFunction)CulDeSac;};
     static inline Boolean IsDone(InstructionCore* pInstruciton) {return pInstruciton->_function == (InstructionFunction)Done;};
-
-    static void ClassInit();
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT

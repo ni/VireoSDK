@@ -116,11 +116,6 @@ inline Boolean IsVariableLengthDim(IntIndex dim)
     return dim <= kArrayFirstTemplatedDimLength;
 }
 
-inline Boolean DimTemplateIndex(IntIndex dim)
-{
-    return IsVariableLengthDim(dim) ? kArrayFirstTemplatedDimLength - dim : -1;
-}
-
 //------------------------------------------------------------
 typedef enum {
     kNIError_Success = 0,

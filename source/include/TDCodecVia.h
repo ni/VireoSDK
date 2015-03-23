@@ -142,10 +142,13 @@ public:
     void    FormatElementUsageType(UsageTypeEnum value);
     void    FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData);
     void    FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData);
+    
+    static char LocaleDefaultDecimalSeperator;
 };
 
 // sprintf style formatting
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
+#define stringBufferSize 250
 #endif
 
 #define tsBoolean         "Boolean"

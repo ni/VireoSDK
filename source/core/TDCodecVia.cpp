@@ -77,7 +77,7 @@ TypeRef TDViaParser::ParseType()
     _string.ReadToken(&typeFunction);
     
     if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
-        char dot;
+        Utf8Char dot;
         typeFunction.ReadRawChar(&dot);
         
         pType = _typeManager->FindType(&typeFunction);
@@ -441,9 +441,9 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 // Copy/convert into array
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
-                    token.ProcessEscapes((char*)pArray->RawBegin(), (char*)pArray->RawBegin());
+                    token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
-                    token.ProcessEscapes((char*)pArray->RawBegin(), (char*)pArray->RawBegin());
+                    token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 }
             } else {
                 // Copy/convert into array
@@ -652,7 +652,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-            SubString  token;
             _string.ReadValueToken(&token, TokenTraits_Any);
             if (token.CompareCStr("(")) {
                 // List of values (a b c)
@@ -892,7 +891,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             return LOG_EVENT(kHardDataError, "'(' missing");
 
         _string.ReadToken(&token);
-        if(!token.ReadInt(&fireCount)) {
+        if (!token.ReadInt(&fireCount)) {
             return LOG_EVENT(kHardDataError, "fire count error");
         }
 
@@ -1176,6 +1175,12 @@ private:
         _pFormatter->_string->AppendCStr(")");
     }
 };
+
+//------------------------------------------------------------
+// If formatting options specify to use the locale's default seperator
+// then this variable should be used.
+char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
+
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
@@ -1188,7 +1193,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _options._bQuoteStrings = quoteOnTopString;
     _options._fieldWidth = fieldWidth;
     
-    if(!format || format->ComparePrefixCStr(formatVIA._name)) {
+    if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._pChars = &formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._pChars = &formatJSON;
@@ -1390,7 +1395,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
-        if(_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
+        if (_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
             SubString ss = elementType->GetElementName();
             Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
             if (useQuotes)

@@ -1,0 +1,47 @@
+define (HelloStringRotate dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "Hello, sky. I can fly.") v1)
+        e(dv(.String " a string1 ") v2)
+        e(dv(.String "a string2") v3)
+        e(dv(.String "a string6 你好世界。我能飛。") v4)
+        e(dv(.String "你好世界。我能飛。a string6 ") v5)
+        e(dv(.String "你好世界") v6)
+        e(dv(.String "") v7)
+        e(dv(.String "a") v8)
+        e(dv(.String "ab") v9)
+
+        e(.String result)
+    )
+    clump (
+        Printf("--Trim both---------------------------------\n")
+        StringReverse(v1 result)
+        Printf("Before <%s> after <%s>\n" v1 result)
+
+        StringReverse(v2 result)
+        Printf("Before <%s> after <%s>\n" v2 result)
+
+        StringReverse(v3 result)
+        Printf("Before <%s> after <%s>\n" v3 result)
+
+        StringReverse(v4 result)
+        Printf("Before <%s> after <%s>\n" v4 result)
+
+        StringReverse(v5 result)
+        Printf("Before <%s> after <%s>\n" v5 result)
+
+        StringReverse(v6 result)
+        Printf("Before <%s> after <%s>\n" v6 result)
+
+        StringReverse(v7 result)
+        Printf("Before <%s> after <%s>\n" v7 result)
+
+        StringReverse(v8 result)
+        Printf("Before <%s> after <%s>\n" v8 result)
+
+        StringReverse(v9 result)
+        Printf("Before <%s> after <%s>\n" v9 result)
+        )
+) ) )
+
+enqueue (HelloStringRotate)

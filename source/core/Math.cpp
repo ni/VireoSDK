@@ -15,28 +15,27 @@ SDG
 #include <cmath>
 #include <limits>
 
+#include "Timestamp.h"      // For seeding random numbers
 #include "TypeDefiner.h"
-#include "TimeTypes.h"
 
 // With non-unique names(AKA overlodaed) only the C entlry points are appended.
 #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
 #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
 
-
 using namespace Vireo;
 
 #if (kVireoOS_win32U || kVireoOS_win64U)
-#define log2(x) log(x)/log(2.)
-Double rint(Double x)
-{
-    Double fracPart, intPart;
-    fracPart = modf(x, &intPart);
-    if (abs(fracPart) > 0.5)
-        intPart += (x > 0) - (x < 0);
-    else if ((abs(fracPart) == 0.5) && (((long long int) intPart) % 2))
-        intPart += (x > 0) - (x < 0);
-    return intPart;
-}
+    #define log2(x) log(x)/log(2.)
+    Double rint(Double x)
+    {
+        Double fracPart, intPart;
+        fracPart = modf(x, &intPart);
+        if (abs(fracPart) > 0.5)
+            intPart += (x > 0) - (x < 0);
+        else if ((abs(fracPart) == 0.5) && (((long long int) intPart) % 2))
+            intPart += (x > 0) - (x < 0);
+        return intPart;
+    }
 #endif
 
 // Different compilers expose different sets of function signatures for
@@ -473,7 +472,7 @@ DECLARE_VIREO_COMPARISON_PRIMITIVES(Utf8Char)
 //------------------------------------------------------------
 
 //TODO: Make this into a macro and move to INTEGER_MATH
-VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, UInt32, Int32)
+VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
 {
     Int32 shift = _Param(1);
     if ( shift < 0) {

@@ -196,6 +196,9 @@ struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, typ
 #define VIREO_FUNCTION_SIGNATURE7(_name_, t0, t1, t2, t3, t4, t5, t6) \
     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7<t0, t1, t2, t3, t4, t5, t6>* _this _PROGMEM)
 
+// Macro used for static link projects where simple prototypes are needed. 
+#define VIREO_FUNCTION_C_PROTO(_name_) VIREO_FUNCTION_SIGNATURE0(_name_)
+
 //------------------------------------------------------------
 #define DECLARE_VIREO_PRIMITIVE0(_name_, _body_)	\
 VIREO_FUNCTION_SIGNATURE0(_name_)				\

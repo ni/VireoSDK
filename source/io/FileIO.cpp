@@ -317,12 +317,17 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     STACK_VAR(String, tempString);
     
     // Ignore begin & end, then div 2 since each argument is passed via two arguments.
-    Int32       count = (_ParamVarArgCount() - 2) / 2;
+    Int32       count = (_ParamVarArgCount() - 1) / 2;
     SubString   format = _Param(format)->MakeSubStringAlias();
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
     Format(&format, count, arguments, tempString.Value);
-    POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
+    ssize_t result = POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
+    
+    if (result<0) {
+        THREAD_EXEC()->LogEvent(EventLog::kWarning, "Write error");
+    }
+
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -333,7 +338,11 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
         TDViaFormatter formatter(tempString.Value, false);
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
         tempString.Value->Append('\n');
-        POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
+        ssize_t result = POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
+
+        if (result<0) {
+            THREAD_EXEC()->LogEvent(EventLog::kWarning, "Write error");
+        }
     }
     return _NextInstruction();
 }
