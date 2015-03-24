@@ -23,21 +23,21 @@ namespace Vireo {
 //------------------------------------------------------------
 enum TokenTraits
 {
-    TokenTraits_UnRecognized = 0,
-    TokenTraits_SingleQuotedString = 1, //  'abc'
-    TokenTraits_DoubleQuotedString = 2, //  "ABC"
-    TokenTraits_EscapeSequences = 2048, //  "abc\""  escape sequence is not decoded,
-    TokenTraits_AlphaNum = 4,           //  a123
-    TokenTraits_Integer = 8,            //  123
-    TokenTraits_Negative = 16,          //  -123
-    TokenTraits_RealNumber = 32,        //  1.23    also allow for scientific, inf, nan
-    TokenTraits_EmbeddedDots = 64,      //  a.b.c.d  returned as one token
-    TokenTraits_WildCard = 128,         //  *
-    TokenTraits_Parens = 256,           //  ()    typically added to others to allow expressions
-    TokenTraits_Boolean = 512,          //  t or f
-    TokenTraits_Comma = 1024,
+    // in/out traits used to define what is being looked for and what was found
+    TokenTraits_Unrecognized =  0x00,
+    TokenTraits_Boolean =       0x01,  // t, f, true, false
+    TokenTraits_Number =        0x02,  // 123
+    TokenTraits_QuotedString =  0x04,  // 'abc', "abc", @'abc', @"abc"
+    TokenTraits_AlphaNum =      0x08,  // a123
+    TokenTraits_WildCard =      0x10,  // *
+    TokenTraits_Parens =        0x20,  // ()    typically added to others to allow expressions
+    TokenTraits_Any =           0xFF,
     
-    TokenTraits_Any  = 0xFF, // TODO add all the fields above
+    // output traits used to note things found along the way
+    TokenTraits_Escapes =     0x0100,   // "abc\"" includes escape sequences
+    TokenTraits_NonAscii =    0x0200,   // non Ascii in UTF-8 stream
+    TokenTraits_Negative =    0x0400,   // number proceeded by negative sign
+    TokenTraits_IEEE754 =     0x0800,   // number value more complex than integer
 };
 
 //------------------------------------------------------------
@@ -235,6 +235,7 @@ public:
     Boolean ReadToken(SubString* token);
     Boolean ReadSubexpressionToken(SubString* token);
     Boolean IdentifierIsNext() const;
+    TokenTraits ClassifyNextToken() const;
 
     Int32 CountMatches(char value);
     Int32 StringLength();

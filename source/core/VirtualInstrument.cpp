@@ -491,7 +491,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
     
-    // See if actual argument is a default parameter (e.g. '*')
+    // See if actual argument is '*' meaning use the default/unwired behaviour.
     if (argument->CompareCStr(tsWildCard)) {
         _actualArgumentType = FormalParameterType();
         if (!_actualArgumentType->IsFlat()) {

@@ -107,6 +107,44 @@ TypeRef TDViaParser::ParseType()
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
 #endif
+
+/*
+ When looking for a type the most common case we have has been the cases above.
+ For example: a(.Int32 *) Thus a type is a type. 
+ 
+ But value literals imply a type, and more specifically they imply DV type. So
+ instead of dv(.Int32 505) they type could be described simply as 505. For simple 
+ types its based on the token type. 
+ 
+ Simple cases:
+ 
+ simple types:
+ all integers   2345 -> becomes a dv(.Int32 2345)
+ with a dp      2345.0 -> becomes a dv(.Double 2345.0)
+ booleans       true -> becomes dv(.Boolean true)
+ strings        "Hello" -> becomes dv(.String "Hello")
+ composite types:
+ arrays         (1 2 3) -> becomes dv(a(.Int32 3) (1 2 3))
+ arrays         ("Apple" "Kaypro" "Sun") -> becomes dv(a(.String 3) ("Apple" "Kaypro" "Sun"))
+    For arays the first element sets the type. al following elements
+    must match the first type
+                
+If a type has generic parametes those parameters are sued for those.
+If not the the parameter is use for the default value? Doe this make snese.
+            
+ 
+For types beyond these simple types perhaps the tyep could be 
+
+    .Int8<4>
+    
+ The token classification routine takes in a hint and returns a resolved type.
+ Thus integers default to .Int32 but can be used for other types that have a numeric encoging (signed or unsigned) encoding.
+ 
+    .Rect<(0 0 10 10)>  // A rectangle with a default value.
+    .Rect<0 0 10 10>    // Hmmm which one make the most sense?
+ 
+*/
+
         LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
     }
 
@@ -383,7 +421,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     for (Int32 i = 0; i < kArrayMaxRank; i++) {
         dimensionLengths[i] = 0;
         tempDimensionLengths[i] = 0;
-        }
+    }
 
     // The opening "(" has been parsed before this function has been called.
     Int32 dimIndex;
@@ -428,7 +466,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         SubString  token;
         TokenTraits tokenTrait = _string.ReadValueToken(&token, TokenTraits_Any);
 
-        if ((rank == 1) && ((tokenTrait & TokenTraits_DoubleQuotedString) || (tokenTrait & TokenTraits_SingleQuotedString))) {
+        if ((rank == 1) && (tokenTrait & TokenTraits_QuotedString)) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
             token.TrimQuotedString();
             const Utf8Char *pBegin = token.Begin();
@@ -436,7 +474,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             
             // TODO this could be cleaned up a bit, actually do Utf8 conversions etc.
             // If escapes are in the string then allow for them as well.
-            if (tokenTrait & TokenTraits_EscapeSequences) {
+            if (tokenTrait & TokenTraits_Escapes) {
                 charCount = token.LengthAferProcessingEscapes();
                 // Copy/convert into array
                 pArray->Resize1D(charCount);
@@ -471,7 +509,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
 
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact
-                // any changes, but logical  dims can change.
+                // any changes, but logical dims can change.
                 pArray->ResizeDimensions(rank, initializerDimensionLengths, false);
                 
                 VIREO_ASSERT(pFirstEltInSlice == null);
@@ -547,7 +585,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_Array:
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
-      //case kEncoding_Int1sCompliment:
         case kEncoding_UInt:
         case kEncoding_SInt:
             {

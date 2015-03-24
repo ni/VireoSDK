@@ -119,9 +119,18 @@ Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
     return true;
 }
 //------------------------------------------------------------
+TokenTraits SubString::ClassifyNextToken() const
+{
+    SubString temp = *this;
+    SubString token;
+    
+    TokenTraits tt = temp.ReadValueToken(&token, TokenTraits_Any);
+    return tt;
+}
+//------------------------------------------------------------
 Boolean SubString::IdentifierIsNext() const
 {
-    // ID tokens must start with a letter, under score,
+    // ID tokens must start with a letter, underscore,
     // or URL style escaped characer %20. Needs to be
     // extended to UTF8 support
     if (_begin <_end) {
@@ -332,10 +341,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 //------------------------------------------------------------
 // Read a token that represents a value. This includes
 // quoted strings and "*" which is used as a wild card character.
-// TODO refine the options and have test for them all.
 TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTraits)
 {
-    TokenTraits tokenTraits = TokenTraits_UnRecognized;
+    TokenTraits tokenTraits = TokenTraits_Unrecognized;
     Boolean allowEscapes = true;
     Boolean escapeSequencesFound = false;
 
@@ -348,8 +356,8 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
-    if ((allowedTraits && TokenTraits_DoubleQuotedString) && (('"' == c) || (('@' == c) && (cPeek == '"')) )) {
-        tokenTraits = TokenTraits_DoubleQuotedString;
+    if ((allowedTraits && TokenTraits_QuotedString) && (('"' == c) || (('@' == c) && (cPeek == '"')) )) {
+        tokenTraits = TokenTraits_QuotedString;
         //   "abc" or @"abc"
         if ((_begin < _end) && ('@' == c)) {
             _begin++;
@@ -366,10 +374,10 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
             }
         }
         if (escapeSequencesFound) {
-            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_EscapeSequences);
+            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_Escapes);
         }
-    } else if ((allowedTraits && TokenTraits_SingleQuotedString) && (('\'' == c) || (('@' == c) && (cPeek == '\'')) )) {
-        tokenTraits = TokenTraits_SingleQuotedString;
+    } else if ((allowedTraits && TokenTraits_QuotedString) && (('\'' == c) || (('@' == c) && (cPeek == '\'')) )) {
+        tokenTraits = TokenTraits_QuotedString;
         //   'abc' or @'abc'
         if ((_begin < _end) && ('@' == c)) {
             _begin++;
@@ -386,27 +394,26 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
             }
         }
         if (escapeSequencesFound) {
-            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_EscapeSequences);
+            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_Escapes);
         }
     } else if ((allowedTraits && TokenTraits_WildCard) && ('*' == c)) {
         tokenTraits = TokenTraits_WildCard;
     } else if ((allowedTraits && TokenTraits_Boolean) && (('t' == c) || ('f' == c))) {
+        // TODO this is too broad
         while ((_begin < _end) && IsIdentifierChar(*_begin)) {
             _begin++;
         }
         tokenTraits = TokenTraits_Boolean;
     } else if ((allowedTraits && TokenTraits_Parens) && (('(' == c) || (')' == c))) {
         tokenTraits = TokenTraits_Parens;
-    } else if ((allowedTraits && TokenTraits_Comma) && (',' == c)) {
-        tokenTraits = TokenTraits_Comma;
-    } else if (allowedTraits && (TokenTraits_Integer | TokenTraits_RealNumber)) {
+    } else if (allowedTraits && (TokenTraits_Number)) {
         _begin--; // back up a character
         if (ComparePrefixCStr("inf") || ComparePrefixCStr("nan")) {
             _begin+=3;
-            tokenTraits = (TokenTraits) (TokenTraits_RealNumber);
+            tokenTraits = (TokenTraits) (TokenTraits_Number | TokenTraits_IEEE754);
         } else if (ComparePrefixCStr("-inf")) {
             _begin+=4;
-            tokenTraits = (TokenTraits) (TokenTraits_RealNumber | TokenTraits_Negative);
+            tokenTraits = (TokenTraits) (TokenTraits_Number | TokenTraits_Negative);
         } else {
             Boolean foundDigits = false;
             Boolean foundNegaitveSign = false;
@@ -417,25 +424,23 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
                 c = *_begin;
                 if ('.' == c && !foundDecimalSeperatorSign) {
                     foundDecimalSeperatorSign = true;
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_RealNumber);
-                    // TODO remove integer trait
+                    tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_IEEE754);
                 } else if ('-' == c && (_begin == initialBegin) && !foundNegaitveSign) {
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_Negative);
+                    tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_IEEE754 | TokenTraits_Negative);
                     foundNegaitveSign = true;
                 } else if (('E' == c || 'e' == c) && foundDigits && !foundExponent) {
                     _begin++;
                     if ((_begin < _end) && (*_begin == '+')) {
-                        tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_RealNumber);
+                        tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_IEEE754);
                         foundExponent = true;
                     } else if ((_begin < _end) && (*_begin == '-')) {
-                        tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)(TokenTraits_RealNumber | TokenTraits_Negative));
+                        tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_IEEE754);
                         foundExponent = true;
                     } else {
-                        return TokenTraits_UnRecognized;
+                        return TokenTraits_Unrecognized;
                     }
-                    // TODO remove integer trait
                 } else if ((IsNumberChar(c) || ('t'== c) || ('f'== c) || ('x'== c))) {
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits_Integer | TokenTraits_RealNumber));
+                    tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_Number);
                     foundDigits = true;
                 } else {
                     break;
@@ -508,9 +513,8 @@ Boolean SubString::ReadToken(SubString* token)
     if (!(_begin < _end)) {
         tokenFound = false;
     } else if (c == '\'' || c == '"' || c == '@') {
-        // Quoted strings count as simple tokens, partly so that symbols can have special characters in them
-        TokenTraits traits = ReadValueToken(token, (TokenTraits) (TokenTraits_DoubleQuotedString | TokenTraits_SingleQuotedString) );
-        tokenFound = (traits && (TokenTraits_DoubleQuotedString | TokenTraits_SingleQuotedString)) != 0;
+        TokenTraits traits = ReadValueToken(token, TokenTraits_QuotedString );
+        tokenFound = (traits & TokenTraits_QuotedString) != 0;
     } else if (IsSymbolChar(c)) {
         // Single character tokens, checked second so ',", and @ have priority
         _begin++;

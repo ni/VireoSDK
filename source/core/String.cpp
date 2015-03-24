@@ -257,9 +257,9 @@ VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
     _Param(1)->Resize1D(targetLength);
 
     // TODO only works for U+0000 .. U+007F
-    Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
-    Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
-    Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
+    Utf8Char *pSourceChar      = _Param(0)->Begin();
+    Utf8Char *pSourceCharEnd   = _Param(0)->End();
+    Utf8Char *pDestChar        = _Param(1)->Begin();
     while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('a' <= c && c <= 'z') {
