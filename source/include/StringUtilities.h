@@ -24,20 +24,15 @@ namespace Vireo {
 enum TokenTraits
 {
     // in/out traits used to define what is being looked for and what was found
-    TokenTraits_Unrecognized =  0x00,
-    TokenTraits_Boolean =       0x01,  // t, f, true, false
-    TokenTraits_Number =        0x02,  // 123
-    TokenTraits_QuotedString =  0x04,  // 'abc', "abc", @'abc', @"abc"
-    TokenTraits_AlphaNum =      0x08,  // a123
-    TokenTraits_WildCard =      0x10,  // *
-    TokenTraits_Parens =        0x20,  // ()    typically added to others to allow expressions
-    TokenTraits_Any =           0xFF,
-    
-    // output traits used to note things found along the way
-    TokenTraits_Escapes =     0x0100,   // "abc\"" includes escape sequences
-    TokenTraits_NonAscii =    0x0200,   // non Ascii in UTF-8 stream
-    TokenTraits_Negative =    0x0400,   // number proceeded by negative sign
-    TokenTraits_IEEE754 =     0x0800,   // number value more complex than integer
+    TokenTraits_Unrecognized = 0,
+    TokenTraits_Boolean,        // t, f, true, false
+    TokenTraits_Integer,        // 123
+    TokenTraits_IEEE754,        // 123.0
+    TokenTraits_String,         // 'abc', "abc"
+    TokenTraits_VerbatimString, // @'abc', @"abc"
+    TokenTraits_AlphaNum,       // a123
+    TokenTraits_WildCard,       // *
+    TokenTraits_Parens,         // ()    typically added to others to allow expressions
 };
 
 //------------------------------------------------------------
@@ -240,7 +235,7 @@ public:
     Int32 CountMatches(char value);
     Int32 StringLength();
     void TrimQuotedString();
-    TokenTraits ReadValueToken(SubString* token, TokenTraits allowedTraits);
+    TokenTraits ReadValueToken(SubString* token);
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 

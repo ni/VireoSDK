@@ -141,11 +141,36 @@ For types beyond these simple types perhaps the tyep could be
  Thus integers default to .Int32 but can be used for other types that have a numeric encoging (signed or unsigned) encoding.
  
     .Rect<(0 0 10 10)>  // A rectangle with a default value.
-    .Rect<0 0 10 10>    // Hmmm which one make the most sense?
+    .Rect<0 0 10 10>    // Hmmm which one makes the most sense?
  
 */
+        // See if the token fits the rules for a literal.
+        TokenTraits tt = typeFunction.ClassifyNextToken();
+        ConstCStr tName = null;
+        TypeRef t = null;
 
-        LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
+        if (tt == TokenTraits_Integer) {
+            tName = "Int32";
+        } else if (tt == TokenTraits_IEEE754) {
+            tName = "Double";
+        } else if (tt == TokenTraits_Boolean) {
+            tName = "Boolean";
+        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
+            tName = "String";
+        }
+        
+        if (tName) {
+            t = _typeManager->FindType(tName);
+
+            DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
+            TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
+            cdt = cdt->FinalizeConstant();
+            pType = cdt;
+        }
+        
+        if (!t) {
+            LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
+        }
     }
 
     if (_string.ReadChar('<')) {
@@ -464,34 +489,32 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
-        TokenTraits tokenTrait = _string.ReadValueToken(&token, TokenTraits_Any);
+        TokenTraits tokenTrait = _string.ReadValueToken(&token);
 
-        if ((rank == 1) && (tokenTrait & TokenTraits_QuotedString)) {
+        if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
             token.TrimQuotedString();
             const Utf8Char *pBegin = token.Begin();
             Int32 charCount = token.Length();
             
-            // TODO this could be cleaned up a bit, actually do Utf8 conversions etc.
-            // If escapes are in the string then allow for them as well.
-            if (tokenTrait & TokenTraits_Escapes) {
+            if (tokenTrait == TokenTraits_String) {
+                // Adjust count for escapes
                 charCount = token.LengthAferProcessingEscapes();
-                // Copy/convert into array
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
+                    // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 }
             } else {
-                // Copy/convert into array
+                // Treat string bytes verbatim.
                 pArray->Resize1D(charCount);
-                // TODO a bit simplistic right now.
+
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
                     // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
-                    // move Utf8 strings
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 }
             }
@@ -608,7 +631,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Boolean:
             {
-                _string.ReadValueToken(&token, TokenTraits_Any);
+                _string.ReadValueToken(&token);
                 Boolean value = false;
                 if (token.CompareCStr("t") || token.CompareCStr("true")) {
                     value = true;
@@ -629,7 +652,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_IEEE754Binary:
             {
-                _string.ReadValueToken(&token, TokenTraits_Any);
+                _string.ReadValueToken(&token);
                 Double value = 0.0;
                 Boolean readSuccess = token.ParseDouble(&value);
                 if (!readSuccess)
@@ -645,7 +668,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Ascii:
         case kEncoding_Unicode:
-            _string.ReadValueToken(&token, TokenTraits_Any);
+            _string.ReadValueToken(&token);
             token.TrimQuotedString();
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
@@ -689,7 +712,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-            _string.ReadValueToken(&token, TokenTraits_Any);
+            _string.ReadValueToken(&token);
             if (token.CompareCStr("(")) {
                 // List of values (a b c)
                 AQBlock1* baseOffset = (AQBlock1*)pData;
