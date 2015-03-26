@@ -12,6 +12,8 @@ SDG
 
 #include "TypeDefiner.h"
 #include "Timestamp.h"
+#include "TDCodecVia.h"
+#include "ExecutionContext.h"
 
 #include <math.h> /* fabs */
 #include <float.h> /* DBL_EPSILON */
@@ -450,14 +452,13 @@ Int64 SecondsFromBaseYear (Int64 year, Int64 baseYear)
 Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* weekDays)
 {
     // Does not account for leap seconds.
-	Int32 secondsInyear = 31536000;
-	Int32 secondsInLeap = 31622400;
+	Int64 secondsInyear = 31536000;
+	Int64 secondsInLeap = 31622400;
 	Int32 baseYear = 1903;
 	Int32 baseWeek = 3;// Thursday, January 01, 1903
 	Int32 currentYear = baseYear;
 	Int32 yearMax = (Int32)(wholeSeconds/secondsInyear);
 	Int32 yearMin = (Int32)(wholeSeconds/secondsInLeap);
-//	printf(" whole seconds:  %lld\n", wholeSeconds);
 
 	if (wholeSeconds>=0) {
 		for (Int32 i = yearMin; i <= yearMax; i++) {
@@ -468,7 +469,6 @@ Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* w
 			Int32 nextyear = baseYear + i +1;
 			numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSecondsNext = numberOfLeap*secondsInLeap + (i+1-numberOfLeap)*secondsInyear;
-			printf("total seconds %lld, total seconds next %lld\n", totalSeconds, totalSecondsNext);
 			if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
 				currentYear = nextyear;
 				*yearSeconds = (Int32)(wholeSeconds - totalSeconds);
@@ -484,7 +484,6 @@ Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* w
 			Int32 previousyear = baseYear + i - 1;
 			numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400) - (baseYear/4-baseYear/100+baseYear/400);
 			Int64 totalSecondsPrevious = numberOfLeap*secondsInLeap + (i-1-numberOfLeap)*secondsInyear;
-//			printf ("year %d, previous %d\n", year, previousyear);
 			if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
 				currentYear = year;
 				// this will make sure the *yearSeconds is always positive
@@ -499,31 +498,28 @@ Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* w
 	}
 	Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
 	Int64 totalSeconds = numberOfLeap*secondsInLeap + (currentYear - baseYear - numberOfLeap)*secondsInyear;
-//	Int64 howmanydays = totalSeconds/(24*3600) ;
-//	printf("how many days from current year%d to 1903 :%lld\n",currentYear,howmanydays);
 	Int32 weekdaysOfyear = (totalSeconds/(24*3600) + baseWeek)%7;
 	weekdaysOfyear = weekdaysOfyear<0? weekdaysOfyear+7 : weekdaysOfyear;
 	*weekDays = weekdaysOfyear;
 	return currentYear;
 }
 //------------------------------------------------------------
-void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
+void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
 {
 	Int32 secondsOfYear;
 	Int32 firstweekDay = 0;
 
 	Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsOfYear, &firstweekDay);
-	printf("this year %d first week day:%d\n", year, firstweekDay);
 	if (yearPtr!= NULL) {
 		*yearPtr = year;
 	}
 	if (weekOfFirstDay != NULL) {
+		// get the first week day for this year
 		*weekOfFirstDay = firstweekDay;
 	}
 	if (secondofYearPtr != NULL) {
 		*secondofYearPtr = secondsOfYear;
 	}
-//	printf("seconds of year %lld\n", secondsOfYear);
 	Int32 currentMonth = -2;
 	Int32 secondsofMonth = -2;
 	if(year%4==0 && (year%100 != 0 || year%400 == 0)) {
@@ -573,6 +569,9 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32*
 	if (secondPtr !=NULL) {
 		*secondPtr = seconds;
 	}
+	if (fractionPtr != NULL) {
+		*fractionPtr = timestamp.ToDouble() - timestamp.Integer();
+	}
 	if (weekPtr != NULL) {
 		*weekPtr = (secondsOfYear/(24*3600)+firstweekDay)%7;
 	}
@@ -583,10 +582,31 @@ Int32 Date::_SystemLocaletimeZone = 0;
 Date::Date(Timestamp timestamp, Int32 timeZone)
 {
 	_timeZoneOffset = timeZone;
-	getDate(timestamp, &_secondsOfYear, &_year, &_month, &_day, &_hour,
-            &_minute, &_second, &_weekday, &_firstWeekDay);
+	// get date will get the accurate date from the time stamp, so we need minus the timeZone
+	Timestamp local = timestamp - _timeZoneOffset;
+	getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
+            &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay);
 	_DTS = isDTS();
 }
+//------------------------------------------------------------
+Int32 Date::getLocaletimeZone()
+{
+	#if kVireoOS_emscripten
+        	TempStackCString result;
+        	result.AppendCStr(emscripten_run_script_string("new Date().getTimezoneOffset()"));
+        	EventLog log(EventLog::DevNull);
+        	SubString valueString(result.Begin(), result.End());
+        	TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &valueString, &log, 1);
+        	TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Int32");
+        	Int32 minutes;
+        	parser.ParseData(parseType, &minutes);
+        	_SystemLocaletimeZone = minutes * 60;
+	#else
+        	// doesn't support yet
+        	_SystemLocaletimeZone = 0;
+	#endif
+        	return _SystemLocaletimeZone;
+ };
 //------------------------------------------------------------
 Int32 Date::isDTS()
 {

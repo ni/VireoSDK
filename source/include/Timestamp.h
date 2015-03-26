@@ -21,6 +21,7 @@ namespace Vireo {
 #if defined (__ARDUINO__)
     typedef UInt32 PlatformTickType;
 #elif kVireoOS_emscripten
+	#include <emscripten.h>
     typedef Int64 PlatformTickType;
 //  typedef Double PlatformTickType; (slightly more native for JavaScript/emscripten)
 #else
@@ -105,9 +106,10 @@ class Date
     Int32 _firstWeekDay;
     Int32 _timeZoneOffset;
     Int32 _DTS;
+    static Int32 _SystemLocaletimeZone;
  public:
-        static Int32 _SystemLocaletimeZone;
         Date(Timestamp timestamp, Int32 timeZone);
+        static Int32 getLocaletimeZone();
         Int32 Year() const { return _year; };
         Int32 Month() const { return _month; };
         Int32 Day() const { return _day; };

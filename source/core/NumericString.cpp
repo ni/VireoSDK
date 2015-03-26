@@ -623,7 +623,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     	break;
                     case 'T':
                     {
-                    	Int32 timezone = Date::_SystemLocaletimeZone;
+                    	Int32 timezone = Date::getLocaletimeZone();
                     	if (!fOptions.EngineerNotation) {
                     		 timezone = 0;
                     	}
@@ -659,13 +659,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 								fractionLen = 3;
 							}
                     		if (fractionLen>0) {
-                    			sprintf(defaultFormatString, "%%#I:%%M:%%S%du %%p %%m/%%d/%%Y", fractionLen);
+                    			sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", fractionLen);
                     		} else {
                     			sprintf(defaultFormatString, "%%#I:%%M:%%S %%p %%m/%%d/%%Y");
                     		}
 							defaultTimeFormat.AppendCStr(defaultFormatString);
 							datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
                     	}
+
                     	if (argType->IsA(&strDateType)) {
 							Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
 							Date date(time, timezone);
@@ -1568,6 +1569,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
         formatString.AppendCStr("%x %X");
         tempFormat.AliasAssign(formatString.Begin(), formatString.End());
     }
+
     Utf8Char c = 0;
     Boolean validFormatString = true;
     Int32 hourFormat = 0;
@@ -1596,8 +1598,15 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                     break;
                     case 'c':
                     {
+                    	hourFormat = 12;
                         TempStackCString localeFormatString;
-                        localeFormatString.AppendCStr("%m/%d/%Y %#I:%M:%S %p");
+                        SubString format(&fOption.FmtSubString);
+                        format.AliasAssign(format.Begin(), format.End()-1);
+                        localeFormatString.AppendCStr("%");
+                        localeFormatString.Append(&format);
+                        localeFormatString.AppendCStr("x %");
+                        localeFormatString.Append(&format);
+                        localeFormatString.AppendCStr("X");
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = ToString(date, &localformat, output);
                     }
@@ -1688,15 +1697,15 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         break;
                     case 'S':
                     {
-                        char minuteString[10];
+                        char secondString[10];
                         Int32 size = 0;
-                        Int32 minute = date.Minute();
+                        Int32 second = date.Second();
                         if (fOption.RemoveLeading) {
-                            size = sprintf(minuteString, "%d", minute);
+                            size = sprintf(secondString, "%d", second);
                         } else {
-                            size = sprintf(minuteString, "%02d", minute);
+                            size = sprintf(secondString, "%02d", second);
                         }
-                        output->Append(size, (Utf8Char*)minuteString);
+                        output->Append(size, (Utf8Char*)secondString);
                     }
                         break;
                     case 'u':
@@ -1714,7 +1723,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         if (fractionLen<=0) {
                             output->AppendCStr(".");
                         } else {
-                            size = sprintf(fractionString, "%.*f",fOption.MinimumFieldWidth, date.FractionSecond());
+                            size = sprintf(fractionString, "%.*f", fractionLen, date.FractionSecond());
                             output->Append(size-1, (Utf8Char*)fractionString+1);
                         }
                     }
@@ -1770,7 +1779,8 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         } else if (fOption.Precision == 2) {
                             localeFormatString.AppendCStr("%a, %b %d, %Y");
                         } else {
-                            localeFormatString.AppendCStr("%#m/%#d/%Y");
+                        	// to do locale specifi format
+                            localeFormatString.AppendCStr("%m/%d/%Y");
                         }
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = ToString(date, &localformat, output);
@@ -1778,6 +1788,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         break;
                     case 'X':
                     {
+                    	hourFormat = 12;
                         TempStackCString localeFormatString;
                         Int32 fractionLen = 0;
                         if (fOption.MinimumFieldWidth >= 0)
@@ -1858,15 +1869,12 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
 {
     //  Int64 wholeSeconds = _Param(2).Integer();
     Boolean isUTC = _Param(3);
-    Int32 timeZoneOffset = isUTC? 0 : Date::_SystemLocaletimeZone;
-    //	printf("wholeSeconds :%d\n", wholeSeconds);
-    //	UInt64 fraction = _Param(2).Fraction();
-    //	Int64 year, month, day, hour, min, second, week;
-    // getDate(wholeSeconds, fraction, &year, &month, &day, &hour, &min, & second, &week);
-    //	printf("year:%d, month %d, day %d, hour%d, min %d, second %d, week %d\n", year,month+1, day+1,hour,min,second, week);
+    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone();
     SubString format = _Param(1)->MakeSubStringAlias();
     Date date(_Param(2), timeZoneOffset);
     StringRef output = _Param(0);
+    // clear the buffer
+    output->Resize1D(0);
     if (output != NULL) {
         ToString(date, &format, output);
     }
@@ -1900,14 +1908,14 @@ VIREO_FUNCTION_SIGNATUREV(CallJSSync, SyncJSStruct)
 			jsFunction.AppendCStr(",");
 		}
 		STACK_VAR(String, jsVariable);
-		SubString formatss("VIA");
+		SubString formatss("JSON");
 		TDViaFormatter formatter(jsVariable.Value, true, 0, &formatss);
 		formatter.FormatData(arguments[i]._paramType , arguments[i]._pData);
 		SubString jsArgument = jsVariable.Value->MakeSubStringAlias();
  		jsFunction.Append(&jsArgument);
 	}
 	jsFunction.AppendCStr(")");
-
+    printf("js script|%s|\n", jsFunction.Begin());
 	TempStackCString result;
 
 	if (actualType) {
@@ -1930,25 +1938,7 @@ VIREO_FUNCTION_SIGNATUREV(CallJSSync, SyncJSStruct)
 }
 #endif
 
-
-struct testStruct : public VarArgInstruction
-{
-
-	emscripten_run_script_string();
-    NEXT_INSTRUCTION_METHODV()
-};
-
-
-VIREO_FUNCTION_SIGNATUREV(TestFunction, testStruct)
-{
-
-	return _NextInstruction();
-}
-
-
 DEFINE_VIREO_BEGIN(LabVIEW_String)
-	DEFINE_VIREO_FUNCTION(TestFunction, "p(i(.VarArgCount))")
-
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
