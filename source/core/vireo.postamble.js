@@ -10,7 +10,7 @@ Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'numb
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
 Module.v_delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
 Module.v_shell = Module.v_create(0);
-Module.fpSync = function() {};
+Module.fpSync = function(fpId) {};
 
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
