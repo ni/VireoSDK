@@ -23,7 +23,7 @@ namespace Vireo {
 
 //------------------------------------------------------------
 Boolean ExecutionContext::_classInited;
-_PROGMEM Instruction0 ExecutionContext::_culDeSac;
+_PROGMEM InstructionCore ExecutionContext::_culDeSac;
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
 TypeManagerRef  ExecutionContext::_theTypeManager;
@@ -36,13 +36,13 @@ IntSmall        ExecutionContext::_breakoutCount;
 
 //------------------------------------------------------------
 // CulDeSac returns itself allowing an unriolled execution loop to complete.
-InstructionCore* VIVM_FASTCALL CulDeSac(Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL CulDeSac(InstructionCore* _this _PROGMEM)
 {
     return _this;
 }
 //------------------------------------------------------------
 // When the Done instruction is hit the clump is done.
-InstructionCore* VIVM_FASTCALL Done(Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 {
     ExecutionContextRef exec = THREAD_EXEC();
 

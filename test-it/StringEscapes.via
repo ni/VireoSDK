@@ -13,6 +13,7 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "hex-char -\x56- ") s10)
         e(dv(.String "octal-char -\126- ") s11)
         e(dv(.String "unicode-char -\u0056- ") s12)
+        e(dv(.String "form-feed -\f- ") s13)
         e(.Int32  len)
     )
     clump (
@@ -51,6 +52,9 @@ define (HelloWorld dv(.VirtualInstrument (
 
         StringLength(s12 len)
         Printf("Test12: len = %2d, string <%s> \n" len s12)
+
+        StringLength(s13 len)
+        Printf("Test12: len = %2d, string <%s> \n" len s13)
     )
 ) ) )
 

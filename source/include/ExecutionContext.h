@@ -138,8 +138,8 @@ enum ExecutionState
 //------------------------------------------------------------
 // CulDeSac prototype is visable ( e.g. not static) so the
 // IsNotCulDeSac method on ExecutionContext can inline it better.
-InstructionCore* VIVM_FASTCALL CulDeSac (Instruction0* _this _PROGMEM);
-InstructionCore* VIVM_FASTCALL Done (Instruction0* _this _PROGMEM);
+InstructionCore* VIVM_FASTCALL CulDeSac (InstructionCore* _this _PROGMEM);
+InstructionCore* VIVM_FASTCALL Done (InstructionCore* _this _PROGMEM);
 
 //------------------------------------------------------------
 //! System state necessary for executing VI Clumps.
@@ -186,7 +186,7 @@ public:
 
 private:
     static Boolean _classInited;
-    static Instruction0 _culDeSac;
+    static InstructionCore _culDeSac;
     
 public:
     static inline Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {return pInstruciton->_function != (InstructionFunction)CulDeSac;};

@@ -250,10 +250,11 @@ Int32 SubString::ReadEscapeToken(SubString* token)
 {
     // On entry _begin should point to the character after the \
     // Supports escape sequences \n \r \t \b \\ \' \" \000 (octal) \x00(hex)
-    // Utf8 allowing for 4 to 6 hex bytes following \u0000 \u00000 \u000000
-    // If it is recognized then the expanded size will be the number of bytes the sequence will expand to
-    // when encoded in Utf8. If it is not recognized then the expanded size will be 0
-
+    // Unicode \uXXXX is a code point encoded in UTF-16, only BMP is supported
+    //
+    // If sequence is recognized then the expanded size is the number of bytes
+    // the sequence expands to.
+    
     const Utf8Char* newBegin = _begin;
     Int32 expandedSize = 0;
     
@@ -280,7 +281,7 @@ Int32 SubString::ReadEscapeToken(SubString* token)
             expandedSize = 1;
         }
     } else {
-        // else the escape was the last character, ignore it
+        // else the escape was the last character, ignore it.
     }
     
     token->AliasAssign(_begin, newBegin);
