@@ -1,0 +1,57 @@
+define (HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "line feed -\n- ") s1)
+        e(dv(.String "tab -\t- ") s2)
+        e(dv(.String "carriage return -\r- ") s3)
+        e(dv(.String "bslash -\\- ") s4)
+        e(dv(.String "fslash -\/- ") s5)
+        e(dv(.String "quote -\"- ") s6)
+        e(dv(.String "squote -\'- ") s7)
+        e(dv(.String "bogus -\z- ") s8)
+        e(dv(.String "backspace -\b- ") s9)
+        e(dv(.String "hex-char -\x56- ") s10)
+        e(dv(.String "octal-char -\126- ") s11)
+        e(dv(.String "unicode-char -\u0056- ") s12)
+        e(.Int32  len)
+    )
+    clump (
+        StringLength(s1 len)
+        Printf("Test1 : len = %2d, string <%s> \n" len s1)
+
+        StringLength(s2 len)
+        Printf("Test2 : len = %2d, string <%s> \n" len s2)
+
+        StringLength(s3 len)
+        Printf("Test3 : len = %2d, string <%s> \n" len s3)
+
+        StringLength(s4 len)
+        Printf("Test4 : len = %2d, string <%s> \n" len s4)
+
+        StringLength(s5 len)
+        Printf("Test5 : len = %2d, string <%s> \n" len s5)
+
+        StringLength(s6 len)
+        Printf("Test6 : len = %2d, string <%s> \n" len s6)
+
+        StringLength(s7 len)
+        Printf("Test7 : len = %2d, string <%s> \n" len s7)
+
+        StringLength(s8 len)
+        Printf("Test8 : len = %2d, string <%s> \n" len s8)
+
+        StringLength(s9 len)
+        Printf("Test9 : len = %2d, string <%s> \n" len s9)
+
+        StringLength(s10 len)
+        Printf("Test10: len = %2d, string <%s> \n" len s10)
+
+        StringLength(s11 len)
+        Printf("Test11: len = %2d, string <%s> \n" len s11)
+
+        StringLength(s12 len)
+        Printf("Test12: len = %2d, string <%s> \n" len s12)
+    )
+) ) )
+
+enqueue (HelloWorld)

@@ -42,10 +42,11 @@ enum TokenTraits
 enum AsciiCharTraitsEnum {
     kACT_Id          = 0x01,    // Valid part of an identier
     kACT_Symbol      = 0x02,
-    kACT_Number      = 0x04,    // 0-9
-    kACT_Letter      = 0x08,    // A-Z, a-z, utf8 to be added
-    kACT_Space       = 0x10,
-    kACT_Eol         = 0x20,
+    kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
+    kACT_Space       = 0x08,
+    kACT_Decimal     = 0x10,
+    kACT_Oct         = 0x20,
+    kACT_Hex         = 0x40,
 };
 
 const UInt8 AsciiCharTraits[] =
@@ -60,10 +61,10 @@ const UInt8 AsciiCharTraits[] =
     0,
     0,
     /* 09 ht*/  kACT_Space,
-    /* 0A lf*/  kACT_Space | kACT_Eol,
+    /* 0A lf*/  kACT_Space,
     /* 0B vt*/  kACT_Space,
     /* 0C ff*/  kACT_Space,
-    /* 0D cr*/  kACT_Space | kACT_Eol,
+    /* 0D cr*/  kACT_Space,
     0,
     0,
     0,      //16
@@ -98,16 +99,16 @@ const UInt8 AsciiCharTraits[] =
     /* 2D -  */   kACT_Id,
     /* 2E .  */   kACT_Id,
     /* 2F /  */   kACT_Symbol,
-    /* 30 0  */   kACT_Id | kACT_Number,      //48
-    /* 31 1  */   kACT_Id | kACT_Number,
-    /* 32 2  */   kACT_Id | kACT_Number,
-    /* 33 3  */   kACT_Id | kACT_Number,
-    /* 34 4  */   kACT_Id | kACT_Number,
-    /* 35 5  */   kACT_Id | kACT_Number,
-    /* 36 6  */   kACT_Id | kACT_Number,
-    /* 37 7  */   kACT_Id | kACT_Number,
-    /* 38 8  */   kACT_Id | kACT_Number,
-    /* 39 9  */   kACT_Id | kACT_Number,
+    /* 30 0  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,      //48
+    /* 31 1  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 32 2  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 33 3  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 34 4  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 35 5  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 36 6  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 37 7  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
+    /* 38 8  */   kACT_Id | kACT_Decimal | kACT_Hex,
+    /* 39 9  */   kACT_Id | kACT_Decimal | kACT_Hex,
     /* 3A :  */   0,
     /* 3B ;  */   0,
     /* 3C <  */   0,
@@ -115,12 +116,12 @@ const UInt8 AsciiCharTraits[] =
     /* 3E >  */   0,
     /* 3F ?  */   0,
     /* 40 @  */   0,      //64
-    /* 41 A  */   kACT_Id | kACT_Letter,
-    /* 42 B  */   kACT_Id | kACT_Letter,
-    /* 43 C  */   kACT_Id | kACT_Letter,
-    /* 44 D  */   kACT_Id | kACT_Letter,
-    /* 45 E  */   kACT_Id | kACT_Letter,
-    /* 46 F  */   kACT_Id | kACT_Letter,
+    /* 41 A  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 42 B  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 43 C  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 44 D  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 45 E  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 46 F  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 47 G  */   kACT_Id | kACT_Letter,
     /* 48 H  */   kACT_Id | kACT_Letter,
     /* 49 I  */   kACT_Id | kACT_Letter,
@@ -147,12 +148,12 @@ const UInt8 AsciiCharTraits[] =
     /* 5E ^  */   kACT_Symbol,
     /* 5F _  */   kACT_Id,
     /* 60 `  */   0,      //96
-    /* 61 a  */   kACT_Id | kACT_Letter,
-    /* 62 b  */   kACT_Id | kACT_Letter,
-    /* 63 c  */   kACT_Id | kACT_Letter,
-    /* 64 d  */   kACT_Id | kACT_Letter,
-    /* 65 e  */   kACT_Id | kACT_Letter,
-    /* 66 f  */   kACT_Id | kACT_Letter,
+    /* 61 a  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 62 b  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 63 c  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 64 d  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 65 e  */   kACT_Id | kACT_Letter | kACT_Hex,
+    /* 66 f  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 67 g  */   kACT_Id | kACT_Letter,
     /* 68 h  */   kACT_Id | kACT_Letter,
     /* 69 i  */   kACT_Id | kACT_Letter,
@@ -187,9 +188,9 @@ class SubString : public SubVector<Utf8Char>
 public:
     static Boolean IsAscii(Utf8Char c)      { return !(c & 0x10); }
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
-    static Boolean IsSpaceChar(Utf8Char c)  { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space); }
-    static Boolean IsNumberChar(Utf8Char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Number); }
-    static Boolean IsLetterChar(Utf8Char c) { return (AsciiCharTraits[(UInt8)c] & kACT_Letter); }
+    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
+    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
+    static Boolean IsLetterChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Letter)); }
     static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
     static Boolean IsSymbolChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
     static Int32   CharLength(const Utf8Char* begin);
@@ -203,6 +204,7 @@ public:
     void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
     
     void EatToEol();
+    Int32 EatCharsByTrait(UInt8 trait);
     void EatLeadingSpaces();
     void EatOptionalComma();
     void EatRawChars(Int32 count);

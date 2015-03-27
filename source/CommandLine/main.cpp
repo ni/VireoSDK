@@ -32,7 +32,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     Boolean showStats = false;
     Boolean noShell = false;
     ConstCStr fileName = null;
-    
+        
     Int32 i = 1;
     while ( i < argc) {
         if (strcmp(argv[i],"-s") == 0) {
