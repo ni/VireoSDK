@@ -173,9 +173,9 @@ For types beyond these simple types perhaps the tyep could be
         }
     }
 
-    if (_string.ReadChar('<')) {
+    if (_string.EatChar('<')) {
         FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-        for(int i = 0; !_string.ReadChar('>'); i++) {
+        for(int i = 0; !_string.EatChar('>'); i++) {
             templateParameters.Append(ParseType());
         }
         pType = InstantiateTypeTemplate(_typeManager,  pType, &templateParameters);
@@ -250,7 +250,7 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
             return  LOG_EVENTV(kSoftDataError,"Unrecognized element type '%.*s'",  FMT_LEN_BEGIN(&token));
         }
         
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return  LOG_EVENT(kHardDataError, "'(' missing");
         
         TypeRef subType = ParseType();
@@ -292,7 +292,7 @@ TypeRef TDViaParser::ParseArray()
     IntIndex  rank=0;
     ArrayDimensionVector  dimensionLengths;
         
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     TypeRef elementType = ParseType();
@@ -327,7 +327,7 @@ TypeRef TDViaParser::ParseBitBlock()
     SubString   lengthToken;
     SubString encoding;
     
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     if (!_string.ReadToken(&lengthToken))
@@ -342,7 +342,7 @@ TypeRef TDViaParser::ParseBitBlock()
     if (!_string.ReadToken(&encoding))
         return BadType();
     
-    if (!_string.ReadChar(')'))
+    if (!_string.EatChar(')'))
         return BadType();
     
     EncodingEnum enc = ParseEncoding(&encoding);
@@ -354,7 +354,7 @@ TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
 {
     if (!shortNotation)
     {
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return BadType();
     }
     
@@ -363,7 +363,7 @@ TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
 
     if (!shortNotation)
     {
-        if (!_string.ReadChar(')'))
+        if (!_string.EatChar(')'))
             return BadType();
     }
     return pointer;
@@ -406,7 +406,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 {
     //  syntax:   dv ( type value )
 
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     TypeRef subType = ParseType();
@@ -424,7 +424,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     // Perhaps even deeper constant values, let the type system figure it out.
     cdt = cdt->FinalizeConstant();
     
-    if (!_string.ReadChar(')'))
+    if (!_string.EatChar(')'))
         return BadType();
     
     return cdt;
@@ -555,7 +555,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             
-            while (!_string.ReadChar(')') && (_string.Length() > 0) ) {
+            while (!_string.EatChar(')') && (_string.Length() > 0) ) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 
@@ -717,7 +717,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 // List of values (a b c)
                 AQBlock1* baseOffset = (AQBlock1*)pData;
                 int i = 0;
-                while (!_string.ReadChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
                     TypeRef elementType = type->GetSubElement(i);
                     void* elementData = baseOffset;
                     if (elementData != null)
@@ -824,7 +824,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             return;
         
         endClumpSource = _string.Begin();
-        if (_string.ReadChar(')')) {
+        if (_string.EatChar(')')) {
             break;
         }
     }
@@ -895,7 +895,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
     
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
 
     SubString temp = _string;
@@ -936,7 +936,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
 
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
     
 
@@ -947,7 +947,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (token.ReadInt(&fireCount)) {
         _string.ReadToken(&instructionNameToken);
     } else if (token.CompareCStr(tsFireCountOpToken)) {
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return LOG_EVENT(kHardDataError, "'(' missing");
 
         _string.ReadToken(&token);
@@ -956,7 +956,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         }
 
         instructionNameToken = token;
-        if (!_string.ReadChar(')'))
+        if (!_string.EatChar(')'))
             return LOG_EVENT(kHardDataError, "')' missing");
 
         _string.ReadToken(&instructionNameToken);
@@ -976,12 +976,12 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             // Perch instructions are only anchor points
             // for branches to target. They are addressed by
             // their index. First one is perch number 0 , etc
-            if (!_string.ReadChar('('))
+            if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             SubString perchName;
             if (!_string.ReadToken(&perchName))
                 return LOG_EVENT(kHardDataError, "perch label error");
-            if (!_string.ReadChar(')'))
+            if (!_string.EatChar(')'))
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
         } else {
@@ -990,7 +990,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
 
             // Starting reading actual parameters
-            if (!_string.ReadChar('('))
+            if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
             // Parse the arguments once and determine how many were passed to the function.

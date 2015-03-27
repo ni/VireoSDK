@@ -234,7 +234,7 @@ Boolean SubString::ReadUtf32(Utf32Char* value)
     return codePoint != 0;
 }
 //------------------------------------------------------------
-Boolean SubString::ReadChar(char token)
+Boolean SubString::EatChar(char token)
 {
     EatLeadingSpaces();
     
@@ -444,7 +444,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
                     tokenTraits = TokenTraits_Integer;
                     break;
                 }
-                if (!idToken.ReadChar('.')) {
+                if (!idToken.EatChar('.')) {
                     // Error if next char exists but is not '.'
                     break;
                 }
@@ -454,13 +454,13 @@ TokenTraits SubString::ReadValueToken(SubString* token)
                     tokenTraits = TokenTraits_IEEE754;
                     break;
                 }
-                if (!idToken.ReadChar('e') || !idToken.ReadChar('E')) {
+                if (!idToken.EatChar('e') || !idToken.EatChar('E')) {
                     // Error if more characters remain and its not an exponent
                     break;
                 }
                 // Eat any sign (they are optional)
-                if (!idToken.ReadChar('+'))
-                    idToken.ReadChar('-');
+                if (!idToken.EatChar('+'))
+                    idToken.EatChar('-');
                 // make sure there are some digits
                 Int32 exponentDigits = idToken.EatCharsByTrait(kACT_Decimal);
                 if (exponentDigits && idToken.Length() == 0) {
@@ -515,7 +515,7 @@ Boolean SubString::ReadNameToken(SubString* token)
 
     if (tempString.ReadToken(token)) {
         tempString.EatLeadingSpaces();
-        if (tempString.ReadChar(*tsNameSuffix)) {
+        if (tempString.EatChar(*tsNameSuffix)) {
             // Name was found, its removed from the front of 'this'
             // along with the colon
             _begin = tempString.Begin();

@@ -564,7 +564,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
 
         // If there is a dot after the head, then there is more to parse.
-        if (pathTail.ReadChar('.')) {
+        if (pathTail.EatChar('.')) {
             // If the top type is a cluster then the remainder is field name qualifier path.
             void* pDataStart = pData;
             _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, (void**)&pData, false);

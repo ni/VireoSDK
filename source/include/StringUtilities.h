@@ -204,6 +204,7 @@ public:
     void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
     
     void EatToEol();
+    Boolean EatChar(char token);
     Int32 EatCharsByTrait(UInt8 trait);
     void EatLeadingSpaces();
     void EatOptionalComma();
@@ -223,7 +224,6 @@ public:
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
     Boolean ReadRawChar(Utf8Char* token);
     Boolean ReadUtf32(Utf32Char* value);
-    Boolean ReadChar(char token);
     Boolean ReadGraphemeCluster(SubString* token);
     Boolean ReadMetaInt(IntIndex* value);
     Boolean ReadInt(IntMax* value);
