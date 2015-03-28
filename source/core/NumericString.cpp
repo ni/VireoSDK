@@ -1055,11 +1055,17 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case 'o' : {
             intValue = strtoull(inpBegin, &endPointer, 8);
         }
+        case 'f' : case 'e' :{
+        	Double temp = strtold(inpBegin, &endPointer);
+        	// or round to even
+        	intValue = (IntMax)temp;
+        }
             break;
         default:
             intValue = strtoull(inpBegin, &endPointer, 10);
             break;
         }
+        ConvertNumericType(argumentType->TopAQSize(), true, intValue, &intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
@@ -1082,22 +1088,55 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case 'o' : {
             intValue = strtoll(inpBegin, &endPointer, 8);
         }
+        case 'f' : case 'e' :{
+			Double temp = strtold(inpBegin, &endPointer);
+			// or round to even
+			intValue = (IntMax)temp;
+        }
             break;
         default:
             intValue = strtoll(inpBegin, &endPointer, 10);
             break;
         }
+        ConvertNumericType(argumentType->TopAQSize(), false, intValue, &intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
     case kEncoding_IEEE754Binary: {
         double doubleValue;
-        doubleValue = strtold(inpBegin, &endPointer);
+        IntMax intValue = 0;
+        switch (formatOptions->FormatChar) {
+           case 'x' : {
+               intValue = strtoll(inpBegin, &endPointer, 16);
+               doubleValue = intValue;
+           }
+               break;
+           case 'd' : case 'u' :{
+               intValue = strtoll(inpBegin, &endPointer, 10);
+               doubleValue = intValue;
+           }
+               break;
+           case 'b' : case 'B' : {
+               intValue = strtoll(inpBegin, &endPointer, 2);
+               doubleValue = intValue;
+           }
+               break;
+           case 'o' : {
+               intValue = strtoll(inpBegin, &endPointer, 8);
+               doubleValue = intValue;
+           }
+           case 'f' : case 'e' :{
+        	   doubleValue = strtold(inpBegin, &endPointer);
+           }
+               break;
+           default:
+               intValue = strtoll(inpBegin, &endPointer, 10);
+               break;
+           }
         WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
     }
     break;
     case kEncoding_Array: {
-
         TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(argument->_pData);
         TypeRef elementType = (*pArray)->ElementType();
         EncodingEnum elementEncoding = elementType->BitEncoding();
@@ -1377,46 +1416,50 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
  *        In labview Format into String function:
  *            'h' is not supported.
  * */
+//---------------------------------------------------------------------
+void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAndData Value)
+{
+	SubString format = formatString->MakeSubStringAlias();
+	Utf8Char c = 0;
+	SubString remainingFormat;
+	TempStackCString tempformat;
+
+	if(format.Length() == 0) {
+		DefaultFormatCode(1,&Value, &tempformat);
+	} else {
+		Utf8Char* index = NULL;
+		while (format.ReadRawChar(&c))
+		{
+			index = (Utf8Char*)format.Begin();
+			if (c == '%') {
+				FormatOptions fOptions;
+				ReadPercentFormatOptions(&format, &fOptions);
+				if (!fOptions.Valid) {
+					remainingFormat.AliasAssign(format.Begin(), format.End());
+					format.AliasAssign(formatString->Begin(), index);
+					tempformat.Append(&format);
+					DefaultFormatCode(1,&Value, &tempformat);
+					break;
+				} else if (fOptions.ConsumeArgument){
+					remainingFormat.AliasAssign(format.Begin(), format.End());
+					format.AliasAssign(formatString->Begin(), format.Begin());
+					tempformat.Append(&format);
+					break;
+				}
+			} else {
+			}
+		}
+	}
+	format.AliasAssign(tempformat.Begin(), tempformat.End());
+	Format(&format, 1, &Value, output);
+	output->AppendSubString(&remainingFormat);
+}
 VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
     StringRef output = _Param(0);
     StringRef formatString = _Param(1);
-
-    SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value  = {_ParamPointer(2), _ParamPointer(3)};
-    Utf8Char c = 0;
-    SubString remainingFormat;
-    TempStackCString tempformat;
-
-    if(format.Length() == 0) {
-        DefaultFormatCode(1,&Value, &tempformat);
-    } else {
-        Utf8Char* index = NULL;
-        while (format.ReadRawChar(&c))
-        {
-            index = (Utf8Char*)format.Begin();
-            if (c == '%') {
-                FormatOptions fOptions;
-                ReadPercentFormatOptions(&format, &fOptions);
-                if (!fOptions.Valid) {
-                    remainingFormat.AliasAssign(format.Begin(), format.End());
-                    format.AliasAssign(formatString->Begin(), index);
-                    tempformat.Append(&format);
-                    DefaultFormatCode(1,&Value, &tempformat);
-                    break;
-                } else if (fOptions.ConsumeArgument){
-                    remainingFormat.AliasAssign(format.Begin(), format.End());
-                    format.AliasAssign(formatString->Begin(), format.Begin());
-                    tempformat.Append(&format);
-                    break;
-                }
-            } else {
-            }
-        }
-    }
-    format.AliasAssign(tempformat.Begin(), tempformat.End());
-    Format(&format, 1, &Value, output);
-    output->AppendSubString(&remainingFormat);
+    defaultFormatValue(output, formatString, Value);
 
     return _NextInstruction();
 }
@@ -1446,10 +1489,9 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 
 /*
  * The scan function:
- *         case 1: length of input format code is 0
- *             use default behaviour
+ *         case 1: must have format string
  *         case 2: invalid input format code
- *             scan value will use the default format code
+ *             scan value will not influence the output
  *             scan string will throw the error.
  *         case 3: The format code and the output value doesn't match.
  *            Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
@@ -1466,6 +1508,19 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, StaticType, void)
 {
+	StringRef inputString = _Param(0);
+	StringRef remainingString= _Param(1);
+	StringRef formatString = _Param(2);
+	SubString format = formatString->MakeSubStringAlias();
+	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
+	Utf8Char c = 0;
+	SubString input= inputString->MakeSubStringAlias();
+	FormatScan(&input, &format, &Value);
+	if (remainingString!= NULL) {
+		remainingString->Resize1D(input.Length());
+		TypeRef elementType = remainingString->ElementType();
+		elementType->CopyData(input.Begin(), remainingString->Begin(), input.Length());
+	}
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1482,9 +1537,11 @@ struct StringScanStruct : public VarArgInstruction
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 {
-    //Int32 count = (_ParamVarArgCount() -4)/2;
     SubString input = _Param(StringInput)->MakeSubStringAlias();
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
     input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    FormatScan(&input, &format, arguments);
     _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();
@@ -1881,6 +1938,104 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
     return _NextInstruction();
 }
 
+//-------------------------------------------------------------
+/**
+ * recursion function to generate the format string for each element in the (multi - dimension)array.
+ * */
+void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef delimiter, TypedArrayCoreRef array, IntIndex dimension, IntIndex* index)
+{
+	IntIndex rank = array->Rank();
+	STACK_VAR(String, temp);
+	if (dimension == 1) {
+		// generate the value of this 1d array as a row.
+		for (IntIndex i = 0; i< array->GetDimensionLengths()[dimension-1]; i++){
+			index[dimension-1]=i;
+			StaticTypeAndData arrayElem;
+			arrayElem._paramType = array->ElementType();
+			arrayElem._pData =array->BeginAtND(rank, index);
+			defaultFormatValue(temp.Value, formatString, arrayElem);
+			if (i!=0) {
+				output->Append(delimiter);
+			}
+			output->Append(temp.Value);
+		}
+		output->AppendCStr(END_OF_LINE);
+	} else if (dimension >= 2){
+		if (rank >=3 && dimension ==2 && array->GetDimensionLengths()[1]>0) {
+			// generate the first index line
+			output->AppendCStr("[");
+			char temp[10];
+			for (IntIndex i =0; i<array->Rank();i++) {
+				if (i != 0) {
+					output->AppendCStr(",");
+				}
+				sprintf(temp, "%d", index[rank - 1 - i]);
+				output->AppendCStr(temp);
+			}
+			output->AppendCStr("]");
+			output->AppendCStr(END_OF_LINE);
+		}
+		for (IntIndex i = 0; i< array->GetDimensionLengths()[dimension-1]; i++){
+			index[dimension-1]=i;
+			for (IntIndex j=0; j<dimension-1;j++) {
+				index [j] = 0;
+			}
+			SpreadsheetDimension(output, formatString, delimiter, array, dimension-1, index);
+		}
+		if (dimension == 2) {
+			output->AppendCStr(END_OF_LINE);
+		}
+	}
+}
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, TypedArrayCoreRef)
+{
+	TypedArrayCoreRef inputArray = _Param(3);
+	// clear the buffer
+	_Param(0)->Resize1D(0);
+	ArrayDimensionVector  index;
+	if (_Param(2)->Length() ==0) {
+		STACK_VAR(String, delimiter);
+		delimiter.Value->AppendCStr("\t");
+		SpreadsheetDimension(_Param(0), _Param(1), delimiter.Value, inputArray, inputArray->Rank(), index);
+	} else {
+		SpreadsheetDimension(_Param(0), _Param(1), _Param(2), inputArray, inputArray->Rank(), index);
+	}
+	return _NextInstruction();
+}
+//------------------------------------------------------------------------------------------------
+void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiter, TypedArrayCoreRef array)
+{
+	SubString format = formatString->MakeSubStringAlias();
+	Utf8Char c = 0;
+	SubString input= inputString->MakeSubStringAlias();
+	if (array->Rank()<3) {
+
+	} else {
+		readline();
+		// increase dimension
+		array->ResizeDimensions()
+	}
+	for (IntIndex i =0; i<12;i++) {
+
+	}
+	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
+	FormatScan(&input, &format, &Value);
+}
+VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
+{
+	TypedArrayCoreRef outputArray = _Param(3);
+	if (_Param(2)->Length() ==0) {
+		STACK_VAR(String, delimiter);
+		delimiter.Value->AppendCStr("\t");
+		ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray);
+	} else {
+		ScanSpreadsheet(_Param(0), _Param(1), _Param(2), outputArray);
+	}
+	return _NextInstruction();
+}
+
 struct SyncJSStruct : public VarArgInstruction
 {
     _ParamDef(StringRef, Function);
@@ -1941,6 +2096,8 @@ VIREO_FUNCTION_SIGNATUREV(CallJSSync, SyncJSStruct)
 DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(.String) i(.String) i(.String) i(.Array))")
+    DEFINE_VIREO_FUNCTION(SpreadsheetStringtoArray, "p(i(.String) i(.String) i(.String) o(.Array))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) i(.UInt32) o(.UInt32) o(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
