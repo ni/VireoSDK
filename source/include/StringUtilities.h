@@ -228,6 +228,7 @@ public:
     Boolean ReadUtf32(Utf32Char* value);
     Boolean ReadChar(char token);
     Boolean ReadGraphemeCluster(SubString* token);
+    Boolean ReadLine(SubString* line);
     Boolean ReadMetaInt(IntIndex* value);
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);

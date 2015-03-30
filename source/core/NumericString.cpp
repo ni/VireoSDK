@@ -2006,11 +2006,94 @@ VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, Typ
 	return _NextInstruction();
 }
 //------------------------------------------------------------------------------------------------
-void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiter, TypedArrayCoreRef array)
+void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiterString, TypedArrayCoreRef array)
 {
 	SubString format = formatString->MakeSubStringAlias();
 	Utf8Char c = 0;
 	SubString input= inputString->MakeSubStringAlias();
+	SubString delimiter = delimiterString->MakeSubStringAlias();
+
+	ArrayDimensionVector  dimensionLength;
+	IntIndex rank = array->Rank();
+	SubString line;
+	for (IntIndex i = 0;i<rank; i++) {
+		dimensionLength[i] = 0;
+	}
+	if (rank == 1) {
+		IntIndex rowlen = 0;
+		IntIndex split = 0;
+
+		while ((split = input.FindFirstMatch(&delimiter, split, false))>-1) {
+			rowlen++;
+		}
+		if (rowlen>dimensionLength[0]) {
+			dimensionLength[0] = rowlen;
+		}
+
+	} else if (rank == 2) {
+		int i = 0;
+		while(input.ReadLine(&line)) {
+			i++;
+			IntIndex split = 0;
+			IntIndex rowlen = 0;
+			while ((split = line.FindFirstMatch(&delimiter, split, false))>-1) {
+				rowlen++;
+			}
+			if (rowlen>dimensionLength[0]) {
+				dimensionLength[0] = rowlen;
+			}
+		}
+		dimensionLength[1] = i;
+
+	} else {
+		int outputDimension = array->Rank();
+
+		int i = 0;
+		while(input.ReadLine(&line)) {
+			if (line.Length()==0)
+			{
+				i=0;
+				continue;
+			}
+			i++;
+			if (i==1) {
+				Int64 dimensionL = 0;
+				IntIndex d = 0;
+				while (line.ReadInt(&dimensionL)) {
+					line.EatRawChars(1);
+					if (dimensionLength[rank-1-d] < dimensionL) {
+						dimensionLength[rank-1-d]=dimensionL;
+					}
+					d++;
+				}
+			} else {
+				IntIndex split = 0;
+				IntIndex rowlen = 0;
+				while ((split = line.FindFirstMatch(&delimiter, split, false))>-1) {
+					rowlen++;
+				}
+				if (rowlen>dimensionLength[0]) {
+					dimensionLength[0] = rowlen;
+				}
+				if (i-1>dimensionLength[1]){
+					dimensionLength[1] = i;
+				}
+			}
+		}
+		for (IntIndex i = 0;i<rank; i++) {
+			if(dimensionLength[i]<=0) {
+				dimensionLength[i] = 1;
+			}
+		}
+		// increase dimension
+		array->ResizeDimensions(rank, dimen)
+	}
+	for (IntIndex i =0; i<12;i++) {
+
+	}
+	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
+	FormatScan(&input, &format, &Value);
+
 
 }
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)

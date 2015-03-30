@@ -185,6 +185,34 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
     token->AliasAssign(initialBegin, _begin);
     return characterEnd;
 }
+//-------------------------------------------------------
+/**
+ * read a line of text. A line is considered to be terminated by any one of a line feed '0x0a', a carriage return '0x0d',
+ * or a carriage return followed immediately by a line feed
+ * */
+Boolean SubString::ReadLine(SubString* line)
+{
+	 const Utf8Char* initialBegin = _begin;
+	 Boolean characterEnd = false;
+	 if (_begin >= _end) {
+		 return false;
+	 }
+	 Boolean lineFound= false;
+	 while (_begin < _end) {
+		 if (*_begin == 0x0A) {
+			 line->AliasAssign(initialBegin, _begin);
+			 return true;
+		 } else if (*_begin == 0x0D) {
+			 line->AliasAssign(initialBegin, _begin);
+			 if (_begin+1 <_end && *(_begin+1)==0x0A) {
+				 _begin++;
+			 }
+			 return true;
+		 }
+		 _begin++;
+	 }
+	 return true;
+}
 //------------------------------------------------------------
 Boolean SubString::ReadUtf32(Utf32Char* value)
 {
