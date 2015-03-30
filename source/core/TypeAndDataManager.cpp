@@ -1769,7 +1769,7 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
 }
 
 //------------------------------------------------------------
-AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
+AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[])
 {
     // Ignore extra outer dimension if supplied.
     if (rank > Rank()) {

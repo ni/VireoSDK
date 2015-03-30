@@ -277,7 +277,10 @@ class ComapreSubString
 
 //------------------------------------------------------------
 //! A null terminated copy of a SubString. Used for calling OS APIs
-class TempStackCString : public FixedCArray<Utf8Char, 255>
+
+#define kTempCStringLength 255
+ 
+class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 {
 public:
     TempStackCString() {}

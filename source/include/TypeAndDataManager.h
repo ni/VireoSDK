@@ -929,7 +929,7 @@ public:
         return begin;
     }
     AQBlock1* BeginAtND(Int32, IntIndex* );
-    AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex** pDimIndexes);
+    AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes[]);
 
 public:
     void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
