@@ -32,10 +32,8 @@ VIREO_FUNCTION_SIGNATURE2(ArrayLengthN, TypedArrayCoreRef, TypedArray1D<IntIndex
 	IntIndex* pLengths = _Param(0)->GetDimensionLengths();
 	TypeRef elementType = _Param(1)->ElementType();
 	for (IntIndex i =0; i< rank; i++) {
-		IntIndex l = pLengths[rank-1-i];
-		elementType->CopyData(&l, _Param(1)->BeginAt(i));
+		elementType->CopyData(pLengths+(rank-1-i), _Param(1)->BeginAt(i));
 	}
-	//reverse
 	return _NextInstruction();
 }
 
@@ -118,11 +116,6 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
     Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));
     TypedArrayCoreRef array = _Param(Array);
     IntIndex **ppDimensions = _ParamImmediate(Dimension1);
-
-    printf("number of dimenstion %d\n", numDimensionInputs);
-    printf("length of dimenstion 0: %d\n", array->GetDimensionLengths()[0]);
-    printf("length of dimenstion 1: %d\n", array->GetDimensionLengths()[1]);
-
     AQBlock1* pElement = array->BeginAtNDIndirect(numDimensionInputs, ppDimensions);
     TypeRef elementType = array->ElementType();
 
