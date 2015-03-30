@@ -148,7 +148,6 @@ public:
 
 // sprintf style formatting
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
-#define stringBufferSize 250
 #endif
 
 #define tsBoolean         "Boolean"
