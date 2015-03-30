@@ -1131,6 +1131,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                break;
            default:
                intValue = strtoll(inpBegin, &endPointer, 10);
+               doubleValue = intValue;
                break;
            }
         WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
@@ -2010,18 +2011,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
 	SubString format = formatString->MakeSubStringAlias();
 	Utf8Char c = 0;
 	SubString input= inputString->MakeSubStringAlias();
-	if (array->Rank()<3) {
 
-	} else {
-		readline();
-		// increase dimension
-		array->ResizeDimensions()
-	}
-	for (IntIndex i =0; i<12;i++) {
-
-	}
-	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
-	FormatScan(&input, &format, &Value);
 }
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
 {
