@@ -928,6 +928,7 @@ public:
         AQBlock1* begin = (RawBegin() + (index * ElementType()->TopAQSize()));
         return begin;
     }
+    AQBlock1* BeginAtND(Int32, IntIndex* );
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex** pDimIndexes);
 
 public:

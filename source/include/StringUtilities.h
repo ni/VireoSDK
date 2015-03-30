@@ -241,6 +241,7 @@ public:
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
+#define END_OF_LINE "\n"
 //! Macro to help with %.* formats. Example => printf("%.*s", FMT_LEN_BEGIN(arg))
 #define FMT_LEN_BEGIN(_substring_)   (int)(_substring_)->Length(), (_substring_)->Begin()
 
