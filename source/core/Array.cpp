@@ -22,6 +22,21 @@ DECLARE_VIREO_PRIMITIVE2(ArrayLength, TypedArrayCoreRef, Int32, (_Param(1) = _Pa
 DECLARE_VIREO_PRIMITIVE2(ArrayRank, TypedArrayCoreRef, Int32, (_Param(1) = _Param(0)->Rank()))
 DECLARE_VIREO_PRIMITIVE2(ArrayElementType, TypedArrayCoreRef, TypeRef, (_Param(1) = _Param(0)->ElementType()))
 
+//-----------------------------------------------------------
+/**
+ * the order of output dimension size is from the high dimension to low dimension
+ * */
+VIREO_FUNCTION_SIGNATURE2(ArrayLengthN, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
+{
+	Int32 rank = _Param(0)->Rank();
+	IntIndex* pLengths = _Param(0)->GetDimensionLengths();
+	TypeRef elementType = _Param(1)->ElementType();
+	for (IntIndex i =0; i< rank; i++) {
+		elementType->CopyData(pLengths+(rank-1-i), _Param(1)->BeginAt(i));
+	}
+	return _NextInstruction();
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
 {
@@ -101,7 +116,6 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
     Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));
     TypedArrayCoreRef array = _Param(Array);
     IntIndex **ppDimensions = _ParamImmediate(Dimension1);
-
     AQBlock1* pElement = array->BeginAtNDIndirect(numDimensionInputs, ppDimensions);
     TypeRef elementType = array->ElementType();
 
@@ -390,6 +404,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayFill, "p(o(.Array) i(.Int32) i(.*))")
     DEFINE_VIREO_FUNCTION(ArrayCapacity, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayLength, "p(i(.Array) o(.Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayLengthN, "p(i(.Array) o(a(.Int32 *)))")
     DEFINE_VIREO_FUNCTION(ArrayRank, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayElementType, "p(i(.Array) o(.Type))")
     DEFINE_VIREO_FUNCTION(ArrayResize, "p(io(.Array) i(.Int32))")

@@ -1737,7 +1737,7 @@ IntIndex TypedArrayCore::GetLength(IntIndex i)
     }
 }
 //------------------------------------------------------------
-#if 0
+
 // indexing give a vectors seems natural, but with the threaded snippet
 // execution an array of pointers to dimensions is more common.
 // so the BeginAtNDIndirect is used instead.
@@ -1761,14 +1761,12 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
         if ((dim < 0) || (dim >= *pDimLength)) {
             return null;
         }
-        pElt += dim * iSlab.NextV();
-        
+        pElt += dim * iSlab.Read();
         pDimIndexes++;
         pDimLength++;
     }
     return pElt;
 }
-#endif
 
 //------------------------------------------------------------
 AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex** ppDimIndexes)
