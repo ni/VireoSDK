@@ -14,12 +14,12 @@ define (c7 dv(.Single 4294970000) )
 define (c8 dv(.Double 4.29497e-009) )
 define (c9 dv(.Double 4.29497E-009) )
 define (c10 dv(.Double 429497E-014) )
-define (c11 dv(.Double .00000000429497) )
+define (c11 dv(.Double 0.00000000429497) )
 
 define (c12 dv(.Double -4.29497e-009) )
 define (c13 dv(.Double -4.29497E-009) )
 define (c14 dv(.Double -429497E-014) )
-define (c15 dv(.Double -.00000000429497) )
+define (c15 dv(.Double -0.00000000429497) )
 
 //---------------------------------------------------
 //VI Definition: Untitled 7

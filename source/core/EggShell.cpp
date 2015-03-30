@@ -94,14 +94,14 @@ void EggShell::ParseDefine(TDViaParser *parser)
 {
     SubString symbolName;
     
-    if (!parser->TheString()->ReadChar('('))
+    if (!parser->TheString()->EatChar('('))
         return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
     
     parser->TheString()->ReadToken(&symbolName);
     
     TypeRef t = parser->ParseType();
 
-    if (!parser->TheString()->ReadChar(')'))
+    if (!parser->TheString()->EatChar(')'))
         return parser->LogEvent(EventLog::kHardDataError,  "')' missing");
     
     TypeRef namedType = _execContext->TheTypeManager()->Define(&symbolName, t);
@@ -113,12 +113,12 @@ void EggShell::ParseEnqueueVI(TDViaParser* parser)
 {
     SubString viName;
     
-    if (! parser->TheString()->ReadChar('('))
+    if (! parser->TheString()->EatChar('('))
         return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
     
      parser->TheString()->ReadToken(&viName);
     
-    if (! parser->TheString()->ReadChar(')'))
+    if (! parser->TheString()->EatChar(')'))
         return parser->LogEvent(EventLog::kHardDataError, "')' missing");
 
     VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_execContext->TheTypeManager()->FindObject(&viName);

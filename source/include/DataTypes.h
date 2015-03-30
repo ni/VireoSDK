@@ -64,7 +64,6 @@ typedef union {
     void*   _align_Pointer;
 } MaxAlignedType;
 
-
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>
 

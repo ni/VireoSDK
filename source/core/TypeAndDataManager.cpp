@@ -849,7 +849,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
             *end = (AQBlock1*)start + ((*pType)->ElementOffset());
             
             // If there is a tail recurse, repin start and recurse.
-            if (pathTail.ReadChar('.')) {
+            if (pathTail.EatChar('.')) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
             }
             break;
@@ -1445,7 +1445,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         // If the path has a tail it needs to index the array.
         // There may be more than one way to do so raw1d indexes, or multidim
         // may allow end point relative as well ???
-        if (pathTail.ReadChar('.')) {
+        if (pathTail.EatChar('.')) {
             subType = GetSubElementAddressFromPath(path, start, end, allowDynamic);
         } else {
             // TODO parse indexes.

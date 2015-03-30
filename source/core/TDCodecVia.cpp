@@ -107,12 +107,75 @@ TypeRef TDViaParser::ParseType()
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
 #endif
-        LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
+
+/*
+ When looking for a type the most common case we have has been the cases above.
+ For example: a(.Int32 *) Thus a type is a type. 
+ 
+ But value literals imply a type, and more specifically they imply DV type. So
+ instead of dv(.Int32 505) they type could be described simply as 505. For simple 
+ types its based on the token type. 
+ 
+ Simple cases:
+ 
+ simple types:
+ all integers   2345 -> becomes a dv(.Int32 2345)
+ with a dp      2345.0 -> becomes a dv(.Double 2345.0)
+ booleans       true -> becomes dv(.Boolean true)
+ strings        "Hello" -> becomes dv(.String "Hello")
+ composite types:
+ arrays         (1 2 3) -> becomes dv(a(.Int32 3) (1 2 3))
+ arrays         ("Apple" "Kaypro" "Sun") -> becomes dv(a(.String 3) ("Apple" "Kaypro" "Sun"))
+    For arays the first element sets the type. al following elements
+    must match the first type
+                
+If a type has generic parametes those parameters are sued for those.
+If not the the parameter is use for the default value? Doe this make snese.
+            
+ 
+For types beyond these simple types perhaps the tyep could be 
+
+    .Int8<4>
+    
+ The token classification routine takes in a hint and returns a resolved type.
+ Thus integers default to .Int32 but can be used for other types that have a numeric encoging (signed or unsigned) encoding.
+ 
+    .Rect<(0 0 10 10)>  // A rectangle with a default value.
+    .Rect<0 0 10 10>    // Hmmm which one makes the most sense?
+ 
+*/
+        // See if the token fits the rules for a literal.
+        TokenTraits tt = typeFunction.ClassifyNextToken();
+        ConstCStr tName = null;
+        TypeRef t = null;
+
+        if (tt == TokenTraits_Integer) {
+            tName = "Int32";
+        } else if (tt == TokenTraits_IEEE754) {
+            tName = "Double";
+        } else if (tt == TokenTraits_Boolean) {
+            tName = "Boolean";
+        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
+            tName = "String";
+        }
+        
+        if (tName) {
+            t = _typeManager->FindType(tName);
+
+            DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
+            TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
+            cdt = cdt->FinalizeConstant();
+            pType = cdt;
+        }
+        
+        if (!t) {
+            LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
+        }
     }
 
-    if (_string.ReadChar('<')) {
+    if (_string.EatChar('<')) {
         FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-        for(int i = 0; !_string.ReadChar('>'); i++) {
+        for(int i = 0; !_string.EatChar('>'); i++) {
             templateParameters.Append(ParseType());
         }
         pType = InstantiateTypeTemplate(_typeManager,  pType, &templateParameters);
@@ -187,7 +250,7 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
             return  LOG_EVENTV(kSoftDataError,"Unrecognized element type '%.*s'",  FMT_LEN_BEGIN(&token));
         }
         
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return  LOG_EVENT(kHardDataError, "'(' missing");
         
         TypeRef subType = ParseType();
@@ -229,7 +292,7 @@ TypeRef TDViaParser::ParseArray()
     IntIndex  rank=0;
     ArrayDimensionVector  dimensionLengths;
         
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     TypeRef elementType = ParseType();
@@ -264,7 +327,7 @@ TypeRef TDViaParser::ParseBitBlock()
     SubString   lengthToken;
     SubString encoding;
     
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     if (!_string.ReadToken(&lengthToken))
@@ -279,7 +342,7 @@ TypeRef TDViaParser::ParseBitBlock()
     if (!_string.ReadToken(&encoding))
         return BadType();
     
-    if (!_string.ReadChar(')'))
+    if (!_string.EatChar(')'))
         return BadType();
     
     EncodingEnum enc = ParseEncoding(&encoding);
@@ -291,7 +354,7 @@ TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
 {
     if (!shortNotation)
     {
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return BadType();
     }
     
@@ -300,7 +363,7 @@ TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
 
     if (!shortNotation)
     {
-        if (!_string.ReadChar(')'))
+        if (!_string.EatChar(')'))
             return BadType();
     }
     return pointer;
@@ -343,7 +406,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 {
     //  syntax:   dv ( type value )
 
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return BadType();
     
     TypeRef subType = ParseType();
@@ -361,7 +424,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     // Perhaps even deeper constant values, let the type system figure it out.
     cdt = cdt->FinalizeConstant();
     
-    if (!_string.ReadChar(')'))
+    if (!_string.EatChar(')'))
         return BadType();
     
     return cdt;
@@ -383,7 +446,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     for (Int32 i = 0; i < kArrayMaxRank; i++) {
         dimensionLengths[i] = 0;
         tempDimensionLengths[i] = 0;
-        }
+    }
 
     // The opening "(" has been parsed before this function has been called.
     Int32 dimIndex;
@@ -426,34 +489,32 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
-        TokenTraits tokenTrait = _string.ReadValueToken(&token, TokenTraits_Any);
+        TokenTraits tokenTrait = _string.ReadValueToken(&token);
 
-        if ((rank == 1) && ((tokenTrait & TokenTraits_DoubleQuotedString) || (tokenTrait & TokenTraits_SingleQuotedString))) {
+        if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
             token.TrimQuotedString();
             const Utf8Char *pBegin = token.Begin();
             Int32 charCount = token.Length();
             
-            // TODO this could be cleaned up a bit, actually do Utf8 conversions etc.
-            // If escapes are in the string then allow for them as well.
-            if (tokenTrait & TokenTraits_EscapeSequences) {
+            if (tokenTrait == TokenTraits_String) {
+                // Adjust count for escapes
                 charCount = token.LengthAferProcessingEscapes();
-                // Copy/convert into array
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
+                    // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 }
             } else {
-                // Copy/convert into array
+                // Treat string bytes verbatim.
                 pArray->Resize1D(charCount);
-                // TODO a bit simplistic right now.
+
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
                     // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
-                    // move Utf8 strings
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 }
             }
@@ -471,7 +532,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
 
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact
-                // any changes, but logical  dims can change.
+                // any changes, but logical dims can change.
                 pArray->ResizeDimensions(rank, initializerDimensionLengths, false);
                 
                 VIREO_ASSERT(pFirstEltInSlice == null);
@@ -494,7 +555,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             
-            while (!_string.ReadChar(')') && (_string.Length() > 0) ) {
+            while (!_string.EatChar(')') && (_string.Length() > 0) ) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 
@@ -547,7 +608,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_Array:
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
-      //case kEncoding_Int1sCompliment:
         case kEncoding_UInt:
         case kEncoding_SInt:
             {
@@ -571,7 +631,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Boolean:
             {
-                _string.ReadValueToken(&token, TokenTraits_Any);
+                _string.ReadValueToken(&token);
                 Boolean value = false;
                 if (token.CompareCStr("t") || token.CompareCStr("true")) {
                     value = true;
@@ -592,7 +652,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_IEEE754Binary:
             {
-                _string.ReadValueToken(&token, TokenTraits_Any);
+                _string.ReadValueToken(&token);
                 Double value = 0.0;
                 Boolean readSuccess = token.ParseDouble(&value);
                 if (!readSuccess)
@@ -608,7 +668,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Ascii:
         case kEncoding_Unicode:
-            _string.ReadValueToken(&token, TokenTraits_Any);
+            _string.ReadValueToken(&token);
             token.TrimQuotedString();
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
@@ -652,12 +712,12 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-            _string.ReadValueToken(&token, TokenTraits_Any);
+            _string.ReadValueToken(&token);
             if (token.CompareCStr("(")) {
                 // List of values (a b c)
                 AQBlock1* baseOffset = (AQBlock1*)pData;
                 int i = 0;
-                while (!_string.ReadChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
                     TypeRef elementType = type->GetSubElement(i);
                     void* elementData = baseOffset;
                     if (elementData != null)
@@ -764,7 +824,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             return;
         
         endClumpSource = _string.Begin();
-        if (_string.ReadChar(')')) {
+        if (_string.EatChar(')')) {
             break;
         }
     }
@@ -835,7 +895,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
     
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
 
     SubString temp = _string;
@@ -876,7 +936,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
 
-    if (!_string.ReadChar('('))
+    if (!_string.EatChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
     
 
@@ -887,7 +947,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (token.ReadInt(&fireCount)) {
         _string.ReadToken(&instructionNameToken);
     } else if (token.CompareCStr(tsFireCountOpToken)) {
-        if (!_string.ReadChar('('))
+        if (!_string.EatChar('('))
             return LOG_EVENT(kHardDataError, "'(' missing");
 
         _string.ReadToken(&token);
@@ -896,7 +956,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         }
 
         instructionNameToken = token;
-        if (!_string.ReadChar(')'))
+        if (!_string.EatChar(')'))
             return LOG_EVENT(kHardDataError, "')' missing");
 
         _string.ReadToken(&instructionNameToken);
@@ -916,12 +976,12 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             // Perch instructions are only anchor points
             // for branches to target. They are addressed by
             // their index. First one is perch number 0 , etc
-            if (!_string.ReadChar('('))
+            if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             SubString perchName;
             if (!_string.ReadToken(&perchName))
                 return LOG_EVENT(kHardDataError, "perch label error");
-            if (!_string.ReadChar(')'))
+            if (!_string.EatChar(')'))
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
         } else {
@@ -930,7 +990,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
 
             // Starting reading actual parameters
-            if (!_string.ReadChar('('))
+            if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
             // Parse the arguments once and determine how many were passed to the function.

@@ -23,7 +23,7 @@ namespace Vireo {
 
 //------------------------------------------------------------
 Boolean ExecutionContext::_classInited;
-_PROGMEM Instruction0 ExecutionContext::_culDeSac;
+_PROGMEM InstructionCore ExecutionContext::_culDeSac;
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
 TypeManagerRef  ExecutionContext::_theTypeManager;
@@ -36,13 +36,13 @@ IntSmall        ExecutionContext::_breakoutCount;
 
 //------------------------------------------------------------
 // CulDeSac returns itself allowing an unriolled execution loop to complete.
-InstructionCore* VIVM_FASTCALL CulDeSac(Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL CulDeSac(InstructionCore* _this _PROGMEM)
 {
     return _this;
 }
 //------------------------------------------------------------
 // When the Done instruction is hit the clump is done.
-InstructionCore* VIVM_FASTCALL Done(Instruction0* _this _PROGMEM)
+InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 {
     ExecutionContextRef exec = THREAD_EXEC();
 
@@ -141,10 +141,12 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 }
 //------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
-VIREO_FUNCTION_SIGNATURE0(FPSync)
+VIREO_FUNCTION_SIGNATURE1(FPSync, UInt32)
 {
 #if kVireoOS_emscripten
-    EM_ASM(Module.fpSync(););
+    EM_ASM_({
+        Module.fpSync($0);
+    }, _Param(0));
 #endif
     return _NextInstruction();
 }
@@ -446,7 +448,7 @@ void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr mess
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
-    DEFINE_VIREO_FUNCTION(FPSync, "p()")
+    DEFINE_VIREO_FUNCTION(FPSync, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(.BranchTarget) i(.Int32) o(.Int32))")

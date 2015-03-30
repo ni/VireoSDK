@@ -14,10 +14,9 @@ c(
   e(.RectangleWithName   rwn1)
   e(.RectangleWithName   rwn2)
   )
-clump
-(1
+clump (
     Copy(node1 node2)
-    Printf ("initial rectangles<%s> <%s>\n" node1 node2)
+    Printf("initial rectangles<%s> <%s>\n" node1 node2)
     Copy(theAnswer node1.inside.top)
     Copy(theAnswer node1.outside.bottom)
     Printf ("after setting one cooordinate <%s> <%s>\n" node1 node2)

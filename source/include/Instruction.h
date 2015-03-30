@@ -73,15 +73,8 @@ struct VarArgInstruction : public InstructionCore
 #define NEXT_INSTRUCTION_METHOD()   inline InstructionCore* Next() { return this + 1; }
 #define NEXT_INSTRUCTION_METHODV()  inline InstructionCore* Next() { return ( (InstructionCore*) ((size_t*)((VarArgInstruction*)this + 1) + (int)this->_count) ); }
 
-//------------------------------------------------------------
-// Structs for various static argument count instructions
-struct Instruction0 : public InstructionCore
-{
-    NEXT_INSTRUCTION_METHOD()
-};
-
 template <class type0>
-struct Instruction1 : public Instruction0
+struct Instruction1 : public InstructionCore
 {
     type0* _p0;
     NEXT_INSTRUCTION_METHOD()

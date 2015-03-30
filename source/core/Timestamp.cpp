@@ -622,7 +622,6 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
 #if defined(VIREO_TYPE_Timestamp)
-    DEFINE_VIREO_TYPE(Timestamp, "c(e(.Int64 seconds) e(.UInt64 fraction))")
 
     DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(.Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")

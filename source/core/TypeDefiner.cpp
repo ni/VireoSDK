@@ -210,6 +210,8 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 
     Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
+
+    Define(tm, "Timestamp", "c(e(.Int64 seconds) e(.UInt64 fraction))");
 }
 
 }  // namespace Vireo

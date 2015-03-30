@@ -119,9 +119,18 @@ Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
     return true;
 }
 //------------------------------------------------------------
+TokenTraits SubString::ClassifyNextToken() const
+{
+    SubString temp = *this;
+    SubString token;
+    
+    TokenTraits tt = temp.ReadValueToken(&token);
+    return tt;
+}
+//------------------------------------------------------------
 Boolean SubString::IdentifierIsNext() const
 {
-    // ID tokens must start with a letter, under score,
+    // ID tokens must start with a letter, underscore,
     // or URL style escaped characer %20. Needs to be
     // extended to UTF8 support
     if (_begin <_end) {
@@ -253,7 +262,7 @@ Boolean SubString::ReadUtf32(Utf32Char* value)
     return codePoint != 0;
 }
 //------------------------------------------------------------
-Boolean SubString::ReadChar(char token)
+Boolean SubString::EatChar(char token)
 {
     EatLeadingSpaces();
     
@@ -267,34 +276,45 @@ Boolean SubString::ReadChar(char token)
 //------------------------------------------------------------
 Int32 SubString::ReadEscapeToken(SubString* token)
 {
-    // On entry _begin should point to the character after the /
-    // Supports escape sequences /n /r /t /' /" /000 (octal) /x00(hex)
-    // perhaps Utf8 allowing for 1 to 5 hex bytes following /u00 /u0000 /u000000 ...
-    // If it is recognized then the expanded size will be the number of bytes the sequence will expand to
-    // when encoded in Utf8. If it is not recognized then the expanded size will be 0
-
-    const Utf8Char* begin = _begin;
-    const Utf8Char* end = _begin;
+    // On entry _begin should point to the character after the \
+    // Supports escape sequences \n \r \t \b \\ \' \" \000 (octal) \x00(hex)
+    // Unicode \uXXXX is a code point encoded in UTF-16, only BMP is supported
+    //
+    // If sequence is recognized then the expanded size is the number of bytes
+    // the sequence expands to.
+    
+    const Utf8Char* newBegin = _begin;
     Int32 expandedSize = 0;
     
     if (_begin < _end) {
-        char c = *_begin++;
-        if (c == 'n' || c == 'r' || c == 't' || c == '\'' || c == '"' || c == '\\') {
-            end = _begin;
-            expandedSize = 1;
-        } else if (c == 'x') {
+        char c = *_begin;
+        if (c == 'x') {
+            //  "...\xhh..."
+            newBegin = _begin + 3;
             expandedSize = 1;
         } else if (c == 'u') {
-            expandedSize = 1; //TODO could be 1-5 in utf8
-        } else if (c == 'U') {
-            expandedSize = 1; //TODO could be 1-5 in utf8
+            //  "...\uhhhh..."
+            newBegin = _begin + 5;
+            expandedSize = 1; //TODO size will be UTF8 translation of UTF8 char
         } else if (c >= '0' && c <= '7') {
-            expandedSize = 1; // TODO
+            //  "...\ooo..."
+            newBegin = _begin + 3;
+            expandedSize = 1;
+        } else {
+            //  "...\c..."
+            // The default is that character following the '\'
+            // maps to a single character. If its not a special character
+            // then leave it as is. That's the c/c++ gammar
+            newBegin = _begin + 1;
+            expandedSize = 1;
         }
-        //else it is unrecognised, ignore it
+    } else {
+        // else the escape was the last character, ignore it.
     }
-    // else the escape was the last character, ignore it
-    token->AliasAssign(begin, end);
+    
+    token->AliasAssign(_begin, newBegin);
+    _begin = newBegin;
+    
     return expandedSize;
 }
 
@@ -342,6 +362,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                     case 'n':   *dest = '\n';       break;
                     case 'r':   *dest = '\r';       break;
                     case 't':   *dest = '\t';       break;
+                    case 'f':   *dest = '\f';       break;
+                    case 'b':   *dest = '\b';       break;
+                    // \uxxxx unicode characters
                     default :   *dest = escapeChar; break;
                 }
                 dest++;
@@ -360,12 +383,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 //------------------------------------------------------------
 // Read a token that represents a value. This includes
 // quoted strings and "*" which is used as a wild card character.
-// TODO refine the options and have test for them all.
-TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTraits)
+TokenTraits SubString::ReadValueToken(SubString* token)
 {
-    TokenTraits tokenTraits = TokenTraits_UnRecognized;
-    Boolean allowEscapes = true;
-    Boolean escapeSequencesFound = false;
+    TokenTraits tokenTraits = TokenTraits_Unrecognized;
 
     EatLeadingSpaces();
     
@@ -376,102 +396,113 @@ TokenTraits SubString::ReadValueToken(SubString* token, TokenTraits allowedTrait
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
-    if ((allowedTraits && TokenTraits_DoubleQuotedString) && (('"' == c) || (('@' == c) && (cPeek == '"')) )) {
-        tokenTraits = TokenTraits_DoubleQuotedString;
+    if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
+        Boolean allowEscapes = true;
+        tokenTraits = TokenTraits_String;
         //   "abc" or @"abc"
         if ((_begin < _end) && ('@' == c)) {
             _begin++;
-            allowEscapes = false; 
+            allowEscapes = false;
+            tokenTraits = TokenTraits_VerbatimString;
+        } else {
+            tokenTraits = TokenTraits_String;
         }
         while (_begin < _end) {
             c = *_begin++;
             if (c == '\\' && allowEscapes) {
                 SubString escapToken;
                 ReadEscapeToken(&escapToken);
-                escapeSequencesFound = true;
             } else if (c == '"') {
                 break;
             }
         }
-        if (escapeSequencesFound) {
-            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_EscapeSequences);
-        }
-    } else if ((allowedTraits && TokenTraits_SingleQuotedString) && (('\'' == c) || (('@' == c) && (cPeek == '\'')) )) {
-        tokenTraits = TokenTraits_SingleQuotedString;
+    } else if (('\'' == c) || (('@' == c) && (cPeek == '\''))) {
+        Boolean allowEscapes = true;
         //   'abc' or @'abc'
         if ((_begin < _end) && ('@' == c)) {
             _begin++;
             allowEscapes = false; 
+            tokenTraits = TokenTraits_VerbatimString;
+        } else {
+            tokenTraits = TokenTraits_String;
         }
         while (_begin < _end) {
             c = *_begin++;
             if (c == '\\' && allowEscapes) {
                 SubString escapToken;
                 ReadEscapeToken(&escapToken);
-                escapeSequencesFound = true;
             } else if (c == '\'') {
                 break;
             }
         }
-        if (escapeSequencesFound) {
-            tokenTraits = (TokenTraits) (tokenTraits | TokenTraits_EscapeSequences);
-        }
-    } else if ((allowedTraits && TokenTraits_WildCard) && ('*' == c)) {
+    } else if ('*' == c) {
         tokenTraits = TokenTraits_WildCard;
-    } else if ((allowedTraits && TokenTraits_Boolean) && (('t' == c) || ('f' == c))) {
-        while ((_begin < _end) && IsIdentifierChar(*_begin)) {
+    } else if (('(' == c) || (')' == c)) {
+        tokenTraits = TokenTraits_Parens;
+    } else if (IsIdentifierChar(c)) {
+        // Read the identifier token.
+        _begin = initialBegin;
+        while (_begin < _end && (IsIdentifierChar(*_begin))) {
             _begin++;
         }
-        tokenTraits = TokenTraits_Boolean;
-    } else if ((allowedTraits && TokenTraits_Parens) && (('(' == c) || (')' == c))) {
-        tokenTraits = TokenTraits_Parens;
-    } else if ((allowedTraits && TokenTraits_Comma) && (',' == c)) {
-        tokenTraits = TokenTraits_Comma;
-    } else if (allowedTraits && (TokenTraits_Integer | TokenTraits_RealNumber)) {
-        _begin--; // back up a character
-        if (ComparePrefixCStr("inf") || ComparePrefixCStr("nan")) {
-            _begin+=3;
-            tokenTraits = (TokenTraits) (TokenTraits_RealNumber);
-        } else if (ComparePrefixCStr("-inf")) {
-            _begin+=4;
-            tokenTraits = (TokenTraits) (TokenTraits_RealNumber | TokenTraits_Negative);
-        } else {
-            Boolean foundDigits = false;
-            Boolean foundNegaitveSign = false;
-            Boolean foundDecimalSeperatorSign = false;
-            Boolean foundExponent = false;
-            while (_begin < _end) {
-                // TODO further refine the parsing
-                c = *_begin;
-                if ('.' == c && !foundDecimalSeperatorSign) {
-                    foundDecimalSeperatorSign = true;
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_RealNumber);
-                    // TODO remove integer trait
-                } else if ('-' == c && (_begin == initialBegin) && !foundNegaitveSign) {
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_Negative);
-                    foundNegaitveSign = true;
-                } else if (('E' == c || 'e' == c) && foundDigits && !foundExponent) {
-                    _begin++;
-                    if ((_begin < _end) && (*_begin == '+')) {
-                        tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)TokenTraits_RealNumber);
-                        foundExponent = true;
-                    } else if ((_begin < _end) && (*_begin == '-')) {
-                        tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits)(TokenTraits_RealNumber | TokenTraits_Negative));
-                        foundExponent = true;
-                    } else {
-                        return TokenTraits_UnRecognized;
-                    }
-                    // TODO remove integer trait
-                } else if ((IsNumberChar(c) || ('t'== c) || ('f'== c) || ('x'== c))) {
-                    tokenTraits = (TokenTraits) (tokenTraits | (TokenTraits_Integer | TokenTraits_RealNumber));
-                    foundDigits = true;
-                } else {
+        SubString idToken(initialBegin, _begin);
+        
+        if (idToken.CompareCStr("inf") || idToken.CompareCStr("-inf") || idToken.CompareCStr("nan")) {
+            // Look for special IEE754 numeric tokens.
+            tokenTraits = TokenTraits_IEEE754;
+        } else if (('t' == c || 'f' == c) && ((idToken.Length() == 1) || CompareCStr("true") || CompareCStr("false"))) {
+            // Look for booleanish tokens.
+            tokenTraits = TokenTraits_Boolean;
+        } else if (('0'==c) && (*_begin == 'x')) {
+            // Look for hexidecimal tokens.
+            if (idToken.EatCharsByTrait(kACT_Hex) && idToken.Length() == 0) {
+                tokenTraits = TokenTraits_Integer;
+            }
+        } else if (IsNumberChar(c) || ((('+' == c) || ('-' == c)) && (idToken.Length() > 1))) {
+            // Look for numeric tokens, both integer and real
+            if (('+' == c) || ('-' == c)) {
+                // Skip the sign
+                idToken._begin++;
+            }
+            
+            do { // Block with short-cut breaks
+                Int32 leadingDigits = idToken.EatCharsByTrait(kACT_Decimal);
+                if (leadingDigits && idToken.Length() == 0) {
+                    // Since it was all numbers and nothing's left
+                    // It was an integer
+                    tokenTraits = TokenTraits_Integer;
                     break;
                 }
-                _begin++;
-            }
+                if (!idToken.EatChar('.')) {
+                    // Error if next char exists but is not '.'
+                    break;
+                }
+                Int32 fractionDigits = idToken.EatCharsByTrait(kACT_Decimal);
+                if (fractionDigits && idToken.Length() == 0) {
+                    //  Simple nn.nn format with no exponent, exit
+                    tokenTraits = TokenTraits_IEEE754;
+                    break;
+                }
+                if (!idToken.EatChar('e') || !idToken.EatChar('E')) {
+                    // Error if more characters remain and its not an exponent
+                    break;
+                }
+                // Eat any sign (they are optional)
+                if (!idToken.EatChar('+'))
+                    idToken.EatChar('-');
+                // make sure there are some digits
+                Int32 exponentDigits = idToken.EatCharsByTrait(kACT_Decimal);
+                if (exponentDigits && idToken.Length() == 0) {
+                    tokenTraits = TokenTraits_IEEE754;
+                    break;
+                }
+                // If it falls throuh then the token is not a valid number.
+            } while(false);
+        } else {
+            tokenTraits = TokenTraits_AlphaNum;
         }
     }
+    
     if (_begin > initialBegin) {
         token->AliasAssign(initialBegin, _begin);
     } else {
@@ -513,7 +544,7 @@ Boolean SubString::ReadNameToken(SubString* token)
 
     if (tempString.ReadToken(token)) {
         tempString.EatLeadingSpaces();
-        if (tempString.ReadChar(*tsNameSuffix)) {
+        if (tempString.EatChar(*tsNameSuffix)) {
             // Name was found, its removed from the front of 'this'
             // along with the colon
             _begin = tempString.Begin();
@@ -536,9 +567,8 @@ Boolean SubString::ReadToken(SubString* token)
     if (!(_begin < _end)) {
         tokenFound = false;
     } else if (c == '\'' || c == '"' || c == '@') {
-        // Quoted strings count as simple tokens, partly so that symbols can have special characters in them
-        TokenTraits traits = ReadValueToken(token, (TokenTraits) (TokenTraits_DoubleQuotedString | TokenTraits_SingleQuotedString) );
-        tokenFound = (traits && (TokenTraits_DoubleQuotedString | TokenTraits_SingleQuotedString)) != 0;
+        TokenTraits tt = ReadValueToken(token);
+        tokenFound = tt != TokenTraits_Unrecognized;
     } else if (IsSymbolChar(c)) {
         // Single character tokens, checked second so ',", and @ have priority
         _begin++;
@@ -799,6 +829,15 @@ void SubString::EatLeadingSpaces()
             break;
         }
     }
+}
+//------------------------------------------------------------
+Int32 SubString::EatCharsByTrait(UInt8 trait)
+{
+    const Utf8Char* initialBegin = _begin;
+    while ((_begin < _end) && (*_begin <= 127) && (AsciiCharTraits[(*_begin)] & trait)) {
+        _begin++;
+    }
+    return (Int32)(_begin - initialBegin);
 }
 //------------------------------------------------------------
 void SubString::EatOptionalComma()

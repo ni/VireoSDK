@@ -9,17 +9,17 @@ define (HelloWorld dv(.VirtualInstrument (
         e(.String str)
         e(.Boolean b)
     )
-    clump (1
+    clump (
 /*
-        typical literas could be 
+        typical literas could be
             1. number           10 or 10.5 or 10.5e2
-            2. boolean          t 
+            2. boolean          t
             3. string           "abc" @"12"
             4. collection       (e1 e2 e3)
-            
+
         Symbols can be any token. If the token has special characters
         it need to be escaped. How.
-*/             
+*/
 
         StringToUpper(* str)
         Printf("passing default value <%s>\n" str)
@@ -38,13 +38,13 @@ define (HelloWorld dv(.VirtualInstrument (
         Printf("passing inline constant value <%s>\n" i)
         Add(3.2 1.85 x)
         Printf("passing inline constant value <%s>\n" x)
-        
+
         BooleanConvertInt16(true i16)
         Printf("passing inline constant value <%s>\n" i16)
         BooleanConvertInt16(false i16)
         Printf("passing inline constant value <%s>\n" i16)
 
-        
+
         // MulInt32(6 7 9) not allowed.
 
         // This does not work (yet)

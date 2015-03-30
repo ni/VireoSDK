@@ -51,13 +51,9 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr mess
 void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message)
 {
     char buffer[200];
-
     ConstCStr preamble;
     
     switch (severity) {
-        case kTrace:
-            preamble = "Trace";
-            break;
         case kWarning:
             preamble = "Warning";
             break;
@@ -69,12 +65,9 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
             preamble = "HardError";
             _hardErrorCount++;
             break;
-        case kAssertFailure:
-            preamble = "Assert";
-            _hardErrorCount++;
-            break;
+        case kTrace:
         default:
-            preamble = "Event";
+            preamble = "Trace";
             break;
     }
     
@@ -82,7 +75,6 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
         return;
     
     Int32 length;
-    
     if (lineNumber > 0) {
         length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
     } else {

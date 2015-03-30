@@ -39,10 +39,7 @@ public:
         kSoftDataError = 2,
         
         //! An error in the input was detected and the operation cannot continue.
-        kHardDataError = 3,
-        
-        //! Internal state of the system has been compromised.
-        kAssertFailure = 4,
+        kHardDataError = 3,        
     };
     
     EventLog(StringRef stringRef);
