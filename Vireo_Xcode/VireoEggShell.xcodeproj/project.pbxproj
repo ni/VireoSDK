@@ -163,6 +163,7 @@
 		474A5F57199E71810013F8C5 /* Vireo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Vireo.m; sourceTree = "<group>"; };
 		4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Emscripten.cpp; path = ../source/io/Emscripten.cpp; sourceTree = "<group>"; };
 		4750F16F19C378D600FA80B8 /* library_canvas2d.js */ = {isa = PBXFileReference; explicitFileType = sourcecode.javascript; fileEncoding = 4; name = library_canvas2d.js; path = ../source/io/library_canvas2d.js; sourceTree = "<group>"; };
+		475317971AC9EA4F0030094A /* results */ = {isa = PBXFileReference; lastKnownFileType = folder; name = results; path = "../test-it/results"; sourceTree = "<group>"; };
 		475DCFA918654336003810C0 /* ConversionTable.def */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ConversionTable.def; path = ../source/include/ConversionTable.def; sourceTree = "<group>"; };
 		476CE4EB18F590DF00399E88 /* Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Timestamp.h; path = ../source/include/Timestamp.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
@@ -366,9 +367,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		475317961AC9EA050030094A /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "New Group";
+			sourceTree = "<group>";
+		};
 		4754290717C67A750096898B /* Test-It */ = {
 			isa = PBXGroup;
 			children = (
+				475317971AC9EA4F0030094A /* results */,
 				47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */,
 				47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */,
 				47F1285518BFACFB000DA4E1 /* Pi.via */,
@@ -602,6 +611,7 @@
 		47C84E7D17DA800500828A54 /* Make-It */ = {
 			isa = PBXGroup;
 			children = (
+				475317961AC9EA050030094A /* New Group */,
 				47CAD29517FDFD4200DDDB46 /* Makefile */,
 				47CAD29617FDFD4200DDDB46 /* make.bat */,
 				47CAD29717FDFD4200DDDB46 /* HelloWorld.via */,

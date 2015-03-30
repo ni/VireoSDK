@@ -48,7 +48,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         return null;
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString originalCopyOp = pInstructionBuilder->_instructionPointerType->GetName();
+    SubString originalCopyOp = pInstructionBuilder->_instructionPointerType->Name();
     
     // Compare types
     
@@ -198,7 +198,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     TypeRef destType = pInstructionBuilder->_argTypes[2];
     TypeRef goalType = destType;
     Boolean isAccumulator = false;
-    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
     
     // Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
     if (sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
@@ -220,7 +220,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         {
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
-            savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pVectorBinOpName = null;
             // TODO: Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
@@ -275,7 +275,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         }
         case kEncoding_Cluster:
         {
-            savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pClusterBinOpName = "ClusterBinaryOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
@@ -370,11 +370,11 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     InstructionCore* pInstruction = null;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
 
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficent copy
-        SubString destTypeName = destType->GetName();
+        SubString destTypeName = destType->Name();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
             ConstCStr copyOpName = "Copy";
             SubString copyOpToken(copyOpName);
@@ -533,7 +533,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
 {
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
-    SubString savedOperation = pInstructionBuilder->_instructionPointerType->GetName();
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
 
     ConstCStr scalarOpName = null;
     Boolean isIdentityOne = false;

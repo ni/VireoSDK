@@ -340,7 +340,7 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
 NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingType)
 {
     // Storage for the string used by the dictionary is part of
-    // NamedType so once it is created GetName() is used to
+    // NamedType so once it is created Name() is used to
     // get pointers to the storage types internal name. The local is temporary, but the
     // pointers in it last as long as the type, which is longer than
     // the map entry that poionts to it.
@@ -348,7 +348,7 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     
     NamedTypeRef namedType = NamedType::New(this, typeName, type, existingType);
     if (bNewInThisTM) {
-        SubString permanentTypeName = namedType->GetName();
+        SubString permanentTypeName = namedType->Name();
         _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
     } else {
         // If it is already in this TypeManager the new type is threaded of of the
@@ -702,12 +702,12 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
     }
   
 #if 0
-    if (!bMatch && otherType->GetName().Length() == 0) {
+    if (!bMatch && otherType->Name().Length() == 0) {
         printf(" whoas!!\n");
     }
 #endif
 
-    if (!bMatch  && (otherType->GetName().Length() > 0)) {
+    if (!bMatch  && (otherType->Name().Length() > 0)) {
         bMatch = IsA(otherType);
     }
 
@@ -718,11 +718,11 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 // matches the one provided.
 Boolean TypeCommon::IsA(TypeRef otherType)
 {
-    SubString otherTypeName = otherType->GetName();
+    SubString otherTypeName = otherType->Name();
     
     SubString angle("<");
     if (otherType->HasGenericType()) {
-        SubString name = GetName();
+        SubString name = Name();
         int i = name.FindFirstMatch(&angle, 0, false);
         if (i>0) {
             name = SubString(name.Begin(), name.Begin() + i);
@@ -744,7 +744,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 #endif
     TypeRef t = this;
     while (t) {
-        if (t->GetName().Compare(otherTypeName))
+        if (t->Name().Compare(otherTypeName))
             return true;
         t = t->BaseType();
     }
@@ -1720,7 +1720,7 @@ IntIndex TypedArrayCore::InternalCalculateLength()
     // Calculate how many elements are in the array based on the
     // current length of each dimension.
     IntIndex length = 1;
-    IntIndexItr iDim( GetDimensionLengths(), Rank());
+    IntIndexItr iDim( DimensionLengths(), Rank());
     while (iDim.HasNext()) {
         length *= iDim.Read();
     }
@@ -1731,7 +1731,7 @@ IntIndex TypedArrayCore::GetLength(IntIndex i)
 {
     VIREO_ASSERT((i >= 0) && (i < Rank()));
     if ((i >= 0) && (i < Rank())) {
-        return GetDimensionLengths()[i];
+        return DimensionLengths()[i];
     } else {
         return 0;
     }
@@ -1750,8 +1750,8 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
     }
     
     AQBlock1 *pElt = RawBegin();
-    IntIndex* pDimLength = GetDimensionLengths();
-    IntIndexItr iSlab(GetSlabLengths(), rank);
+    IntIndex* pDimLength = DimensionLengths();
+    IntIndexItr iSlab(SlabLengths(), rank);
     
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
@@ -1779,8 +1779,8 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]
     }
     
     AQBlock1 *pElt = RawBegin();
-    IntIndex* pDimLength = GetDimensionLengths();
-    IntIndexItr iSlab(GetSlabLengths(), rank);
+    IntIndex* pDimLength = DimensionLengths();
+    IntIndexItr iSlab(SlabLengths(), rank);
     
     // Find index by calculating dot product of
     // SlabLength vector and dimension index vector.
@@ -1821,9 +1821,9 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     //
 
     IntIndex *pRequestedLengths;
-    IntIndex *pTypesLengths = Type()->GetDimensionLengths();
-    IntIndex *pValueLengths = GetDimensionLengths();
-    IntIndex *pSlabLengths = GetSlabLengths();
+    IntIndex *pTypesLengths = Type()->DimensionLengths();
+    IntIndex *pValueLengths = DimensionLengths();
+    IntIndex *pSlabLengths = SlabLengths();
     
     IntIndex slabLength = ElementType()->TopAQSize();
     IntIndex originalLength = Length();
@@ -1930,7 +1930,7 @@ Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapacti
 Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
 {
     if (Rank() == pReference->Rank()) {
-        return ResizeDimensions(Rank(), pReference->GetDimensionLengths(), true);
+        return ResizeDimensions(Rank(), pReference->DimensionLengths(), true);
     } else {
         return false;
     }
@@ -2372,18 +2372,18 @@ VIREO_FUNCTION_SIGNATURE2(TypeUsageType, TypeRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(TypeGetElementName, TypeRef, StringRef)
+VIREO_FUNCTION_SIGNATURE2(TypeElementName, TypeRef, StringRef)
 {
     TypeRef t = _Param(0);
-    SubString elementName = t->GetElementName();
+    SubString elementName = t->ElementName();
     _Param(1)->CopyFromSubString(&elementName);
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(TypeGetName, TypeRef, StringRef)
+VIREO_FUNCTION_SIGNATURE2(TypeName, TypeRef, StringRef)
 {
     TypeRef t = _Param(0);
-    SubString name = t->GetName();
+    SubString name = t->Name();
     _Param(1)->CopyFromSubString(&name);
     return _NextInstruction();
 }
@@ -2591,8 +2591,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Types)
     DEFINE_VIREO_FUNCTION(TypeHasCustomDefault, "p(i(.Type) o(.Boolean))");
     DEFINE_VIREO_FUNCTION(TypeHasPadding, "p(i(.Type) o(.Boolean))");
     DEFINE_VIREO_FUNCTION(TypeHasGenericType, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeGetName, "p(i(.Type) o(.String))");
-    DEFINE_VIREO_FUNCTION(TypeGetElementName, "p(i(.Type) o(.String))");
+    DEFINE_VIREO_FUNCTION(TypeName, "p(i(.Type) o(.String))");
+    DEFINE_VIREO_FUNCTION(TypeElementName, "p(i(.Type) o(.String))");
     DEFINE_VIREO_FUNCTION(TypeBaseType, "p(i(.Type) o(.Type))");
     DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(.Type) o(.Int32))");

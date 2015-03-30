@@ -29,7 +29,7 @@ DECLARE_VIREO_PRIMITIVE2(ArrayElementType, TypedArrayCoreRef, TypeRef, (_Param(1
 VIREO_FUNCTION_SIGNATURE2(ArrayLengthN, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
 {
 	Int32 rank = _Param(0)->Rank();
-	IntIndex* pLengths = _Param(0)->GetDimensionLengths();
+	IntIndex* pLengths = _Param(0)->DimensionLengths();
 	TypeRef elementType = _Param(1)->ElementType();
 	for (IntIndex i =0; i< rank; i++) {
 		elementType->CopyData(pLengths+(rank-1-i), _Param(1)->BeginAt(i));
@@ -47,7 +47,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, Int32)
 VIREO_FUNCTION_SIGNATURE2(ArrayDimensions, TypedArrayCoreRef, TypedArray1D<IntIndex>*)
 {
     Int32 rank = _Param(0)->Rank();
-    IntIndex* pLengths = _Param(0)->GetDimensionLengths();
+    IntIndex* pLengths = _Param(0)->DimensionLengths();
     _Param(1)->Replace1D(0, rank, pLengths, true);
     return _NextInstruction();
 }

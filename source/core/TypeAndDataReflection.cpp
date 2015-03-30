@@ -108,7 +108,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
     while (type) {
 #if 0
         // helpful section of development
-        SubString ss = type->GetName();
+        SubString ss = type->Name();
         if (ss.CompareCStr("VirtualInstrument")) {
             printf("found");
         }
@@ -122,7 +122,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
     SubString rootName;
     Boolean isTypeRefConstant = false;
     if (_found) {
-        rootName = type->GetName();
+        rootName = type->Name();
     } else {
         _found = tm->PointerToTypeConstRefName((TypeRef*)_pNeedle, &rootName);
         isTypeRefConstant = _found;
@@ -184,7 +184,7 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
         AQBlock1* pElementData = (AQBlock1*)_pHayStack + offset;
         Accept(elementType, pElementData);
         if (_found) {
-            SubString ss = elementType->GetElementName();
+            SubString ss = elementType->ElementName();
             _path->InsertSubString(0, &ss);
             _path->InsertCStr(0, ".");
             break;

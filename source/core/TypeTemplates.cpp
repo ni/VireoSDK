@@ -117,14 +117,14 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
     TypeRef subType = Accept(type->GetSubElement(0));
     VIREO_ASSERT(subType != type->GetSubElement(0));
 
-    _newType = ArrayType::New(_typeManager, subType, type->Rank(), type->GetDimensionLengths());
+    _newType = ArrayType::New(_typeManager, subType, type->Rank(), type->DimensionLengths());
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitElement(ElementType* type)
 {
     TypeRef   baseType = Accept(type->BaseType());
-    SubString fieldName = type->GetElementName();
+    SubString fieldName = type->ElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
     IntIndex offset = type->ElementOffset();
     _newType = ElementType::New(_typeManager, &fieldName, baseType, usageType, offset);
@@ -133,7 +133,7 @@ void TypeTemplateVisitor::VisitElement(ElementType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
-    SubString name = type->GetName();
+    SubString name = type->Name();
 
     // TODO support more than one parameter
     if (name.CompareCStr(tsTemplatePrefix "1")) {
@@ -149,7 +149,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('<');
-    name =  (*_parameters->Begin())->GetName();
+    name =  (*_parameters->Begin())->Name();
     tempString.Value->Append('.');
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('>');

@@ -487,11 +487,11 @@ public:
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     
     //! Set the SubString to the name if the type is not anonymous.
-    virtual SubString GetName()                         { return SubString(null, null); }
+    virtual SubString Name()                            { return SubString(null, null); }
     //! Set the SubString to the aggregates elements field name.
-    virtual SubString GetElementName()                  { return SubString(null, null); }
+    virtual SubString ElementName()                     { return SubString(null, null); }
     //! Return a pointer to the raw vector of dimension lengths.
-    virtual IntIndex* GetDimensionLengths()             { return null; }
+    virtual IntIndex* DimensionLengths()                { return null; }
     
     //! Offset in AQs in the containing aggregate
     virtual IntIndex ElementOffset()                    { return 0; }
@@ -546,8 +546,8 @@ public:
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
         { return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
     virtual IntIndex BitLength()                        { return _wrapped->BitLength(); }
-    virtual SubString GetName()                         { return _wrapped->GetName(); }
-    virtual IntIndex* GetDimensionLengths()             { return _wrapped->GetDimensionLengths(); }
+    virtual SubString Name()                            { return _wrapped->Name(); }
+    virtual IntIndex* DimensionLengths()                { return _wrapped->DimensionLengths(); }
     // Data operations
     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped->Begin(mode); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
@@ -586,8 +586,8 @@ public:
     
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitNamed(this); }
-    virtual SubString GetName()                     { return SubString(_name.Begin(), _name.End()); }
-    virtual SubString GetElementName()              { return SubString(null, null); }
+    virtual SubString Name()                        { return SubString(_name.Begin(), _name.End()); }
+    virtual SubString ElementName()                 { return SubString(null, null); }
 };
 //------------------------------------------------------------
 //! Give a type a field name and offset properties. Used inside an aggregateType
@@ -605,7 +605,7 @@ public:
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
     
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitElement(this); }
-    virtual SubString GetElementName()              { return SubString(_elementName.Begin(), _elementName.End()); }
+    virtual SubString ElementName()                 { return SubString(_elementName.Begin(), _elementName.End()); }
     virtual IntIndex ElementOffset()                { return _offset; }
 };
 //------------------------------------------------------------
@@ -798,8 +798,8 @@ public:
     virtual Int32   SubElementCount()                   { return 1; }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
-    virtual SubString GetName()                         { return SubString("Array"); }
-    virtual IntIndex* GetDimensionLengths()             { return &_dimensionLengths[0]; }
+    virtual SubString Name()                            { return SubString("Array"); }
+    virtual IntIndex* DimensionLengths()                { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
@@ -910,8 +910,8 @@ private:
     IntIndex                _dimensionAndSlabLengths[2];
 public:
     IntIndex  Rank()                { return _typeRef->Rank(); }
-    IntIndex* GetDimensionLengths() { return _dimensionAndSlabLengths; }
-    IntIndex* GetSlabLengths()      { return &_dimensionAndSlabLengths[0] + Rank(); }
+    IntIndex* DimensionLengths()    { return _dimensionAndSlabLengths; }
+    IntIndex* SlabLengths()         { return &_dimensionAndSlabLengths[0] + Rank(); }
     
 protected:
     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
@@ -963,7 +963,7 @@ public:
     // For actual arrays (not types) this will always be regular whole number.
     // Types may be variable, fixed, or bounded.
     IntIndex InternalCalculateLength();
-    IntIndex Length()       { return Rank() == 1 ? *GetDimensionLengths() :  InternalCalculateLength(); }
+    IntIndex Length()       { return Rank() == 1 ? *DimensionLengths() :  InternalCalculateLength(); }
 
     //! Returns the maximum number of elements the current underlying storage could hold.
     IntIndex Capacity()     { return abs(_capacity); }
@@ -1026,7 +1026,7 @@ template <class T>
 class TypedObject : public TypedArrayCore
 {
 public:
-    T* ObjBegin()                    { return (T*) RawObj(); }
+    T* ObjBegin() { return (T*) RawObj(); }
 };
 
 //------------------------------------------------------------

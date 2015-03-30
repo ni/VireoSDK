@@ -542,8 +542,8 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             // Get the dim lengths and slabs for tha actual array, not its
             // reference type. The reference type may indicate variable size
             // but the actaul array will always have a specific size.
-            IntIndex* pLengths = pArray->GetDimensionLengths();
-            IntIndex* pSlabs = pArray->GetSlabLengths();
+            IntIndex* pLengths = pArray->DimensionLengths();
+            IntIndex* pSlabs = pArray->SlabLengths();
 
             // Now that the Array is the right size, parse the initializers storing
             // as many as there is room for. Log a warning if extras are found.
@@ -706,7 +706,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         return;
                     }
                 }
-                SubString typeName = type->GetName();
+                SubString typeName = type->Name();
                 LOG_EVENTV(kHardDataError, "Parsing pointer type '%.*s'", FMT_LEN_BEGIN(&typeName));
             }
             break;
@@ -1015,7 +1015,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     state._actualArgumentName = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
-                        SubString formalParameterTypeName = formalType->GetName();
+                        SubString formalParameterTypeName = formalType->Name();
                         
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
                             VIREO_ASSERT(!state.VarArgParameterDetected());                    
@@ -1171,7 +1171,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("a(");
         type->GetSubElement(0)->Accept(this);
-        IntIndex* pDimension = type->GetDimensionLengths();
+        IntIndex* pDimension = type->DimensionLengths();
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
@@ -1185,7 +1185,7 @@ private:
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
         type->BaseType()->Accept(this);
-        SubString elementName = type->GetElementName();
+        SubString elementName = type->ElementName();
         if (elementName.Length()>0) {
             // Add element name if it exists.
             _pFormatter->_string->Append(' ');
@@ -1199,7 +1199,7 @@ private:
         // At this point names are terminal elements.
         // There needs to be a mechanism that will optionally collect all the named dependencies
         // in a type.
-        SubString name = type->GetName();
+        SubString name = type->Name();
         if (name.Length()>0 ) {
             _pFormatter->_string->Append('.');
             _pFormatter->_string->Append(name.Length(), (Utf8Char*)name.Begin());
@@ -1365,7 +1365,7 @@ void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pD
 //------------------------------------------------------------
 void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
 {
-    SubString name = pointerType->GetName();
+    SubString name = pointerType->Name();
     // For pointer types, they are opaque to runtime code.
     // So the dispatch is now directed based on the type.
     if (name.CompareCStr(tsTypeType)) {
@@ -1411,8 +1411,8 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
     } else if (rank > 0) {
         _options._bQuoteStrings = true;
         FormatArrayDataRecurse(elementType, rank, pArray->BeginAt(0),
-                               pArray->GetDimensionLengths(),
-                               pArray->GetSlabLengths());
+                               pArray->DimensionLengths(),
+                               pArray->SlabLengths());
     } else if (rank == 0) {
         FormatData(elementType, pArray->RawObj());
     }
@@ -1456,7 +1456,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
         }
         TypeRef elementType = type->GetSubElement(i++);
         if (_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
-            SubString ss = elementType->GetElementName();
+            SubString ss = elementType->ElementName();
             Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
             if (useQuotes)
                 _string->Append('\"');

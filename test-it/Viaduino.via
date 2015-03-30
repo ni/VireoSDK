@@ -43,8 +43,8 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
         Printf("class DST_HelloWorld {  \n" )
         Perch(0)
             TypeGetSubElement(dsType index eltType)
-            TypeGetName(eltType typeName)
-            TypeGetElementName(eltType eltName)
+            TypeName(eltType typeName)
+            TypeElementName(eltType eltName)
             Printf("  VT%s _%s;\n" typeName eltName)
             Add(index 1 index)
         BranchIfLT(0 index count)
@@ -81,7 +81,7 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
                 //For each instruction
                 Perch(3)
                 InstructionType(inst instructionType internalName)
-                TypeGetName(instructionType typeName)
+                TypeName(instructionType typeName)
                 TypeGetSubElement(instructionType 0 parameterListType)
 
                 // For each argument in an instruction

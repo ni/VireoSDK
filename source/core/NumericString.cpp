@@ -1947,7 +1947,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
     STACK_VAR(String, temp);
     if (dimension == 1) {
         // generate the value of this 1d array as a row.
-        for (IntIndex i = 0; i< array->GetDimensionLengths()[dimension-1]; i++){
+        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++){
             index[dimension-1]=i;
             StaticTypeAndData arrayElem;
             arrayElem._paramType = array->ElementType();
@@ -1960,7 +1960,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
         }
         output->AppendCStr(END_OF_LINE);
     } else if (dimension >= 2){
-        if (rank >=3 && dimension ==2 && array->GetDimensionLengths()[1]>0) {
+        if (rank >=3 && dimension ==2 && array->DimensionLengths()[1]>0) {
             // generate the first index line
             output->AppendCStr("[");
             char dimensionString[kTempCStringLength];
@@ -1974,7 +1974,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             output->AppendCStr("]");
             output->AppendCStr(END_OF_LINE);
         }
-        for (IntIndex i = 0; i< array->GetDimensionLengths()[dimension-1]; i++){
+        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++){
             index[dimension-1]=i;
             for (IntIndex j=0; j<dimension-1;j++) {
                 index [j] = 0;
