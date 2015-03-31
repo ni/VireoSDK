@@ -225,6 +225,7 @@ public:
     Boolean ReadRawChar(Utf8Char* token);
     Boolean ReadUtf32(Utf32Char* value);
     Boolean ReadGraphemeCluster(SubString* token);
+    Boolean ReadLine(SubString* line);
     Boolean ReadMetaInt(IntIndex* value);
     Boolean ReadInt(IntMax* value);
     Boolean ParseDouble(Double* value);

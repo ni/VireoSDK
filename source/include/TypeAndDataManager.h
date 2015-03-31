@@ -1039,7 +1039,9 @@ public:
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-                                                { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    Boolean AppendUrlSubString(SubString *string);
+
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
 };
