@@ -62,7 +62,7 @@ Boolean String::AppendUrlSubString(SubString* string)
 		} else {
 			IntIndex value = 0;
 			IntIndex n = 0;
-			while (string->ReadRawChar(&c) && n<2) {
+			while (n<2 && string->ReadRawChar(&c)) {
 				value = value * 16;
 				if (c<='9' && c>= '0') {
 					value += c-'0';

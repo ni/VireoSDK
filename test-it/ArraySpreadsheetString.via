@@ -1,0 +1,27 @@
+define (HelloTime dv(.VirtualInstrument (
+    c( 
+	e(a(.Double *) a1)
+
+	e(dv(.String "%4d") format)
+	e(dv(.String ";") deli)
+	e(.String  s)
+	e(dv(a(.Double 5) (7 8 9)) a2)
+	e(dv(a(.Double *) (21.4 5))a3)
+	e(dv(a(.Double * *) ((4.5 2 3)(-21.4 -5 -7)))a4)
+	e(dv(a(.Double * * *) (((-1 -2 -3)(-4 -5 -6))((4.5 2 3)(-21.4 -5 -7))))a5)
+	e(dv(.Int32 4) i)
+	e(dv(.Double 4) db)
+	e(a(.Int32  *) ai)
+     )
+    clump (1
+	ArraySpreadsheet(s format deli a3)	
+	Printf("spread is:\n%s-----------------------\n" s)
+	ArraySpreadsheet(s format deli a2)	
+	Printf("spread is:\n%s-----------------------\n" s)
+	ArraySpreadsheet(s format deli a4)	
+	Printf("spread is:\n%s-----------------------\n" s)
+	ArraySpreadsheet(s format deli a5)	
+	Printf("spread is:\n%s-----------------------\n" s)
+    )
+) ) )
+enqueue (HelloTime)
