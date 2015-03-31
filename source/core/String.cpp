@@ -29,6 +29,59 @@ SDG
 #include "TDCodecVia.h"
 using namespace Vireo;
 
+//---------------------------------------------
+Boolean String::AppendUrlSubString(SubString* string)
+{
+	Utf8Char c;
+	IntIndex originLen = 0;
+	Boolean unreservedC = false;
+	SubString urlString(string);
+	while(string->ReadRawChar(&c)) {
+		unreservedC = true;
+		if (c=='%'){
+			unreservedC = false;
+		}
+		if (unreservedC) {
+			originLen++;
+		} else {
+			if (string->ReadRawChar(&c) && string->ReadRawChar(&c)) {
+				originLen++;
+			} else {
+				return false;
+			}
+		}
+	}
+	IntIndex i = this->Length();
+	this->Resize1D(this->Length()+originLen);
+	string->AliasAssign(&urlString);
+	while (string->ReadRawChar(&c)) {
+		if (c == '+') {
+			(*BeginAt(i)) = ' ';
+		} else if (c!= '%'){
+			(*BeginAt(i)) = c;
+		} else {
+			IntIndex value = 0;
+			IntIndex n = 0;
+			while (string->ReadRawChar(&c) && n<2) {
+				value = value * 16;
+				if (c<='9' && c>= '0') {
+					value += c-'0';
+				} else if (c<='f' && c>='a') {
+					value += 10+c-'a';
+				} else if (c<='F' && c>='A') {
+					value += 10 +c -'A';
+				} else {
+					return false;
+				}
+				n++;
+			}
+			(*BeginAt(i)) = (Utf8Char)value;
+		}
+		i++;
+	}
+	return true;
+}
+
 //------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
 {

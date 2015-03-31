@@ -1461,7 +1461,8 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             if (useQuotes)
                 _string->Append('\"');
             //TODO use percent encoding when needed
-            _string->Append(ss.Length(), ss.Begin());
+           // _string->Append(ss.Length(), ss.Begin());
+             _string->AppendUrlSubString(&ss);
             if (useQuotes)
                 _string->Append('\"');
             _string->Append(':');
@@ -1547,6 +1548,28 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
+{
+	_Param(3)->Resize1D(0);
+	SubString json("JSON");
+    TDViaFormatter formatter(_Param(3), false, 0, &json);
+    if (_Param(0).IsCluster()) {
+    	formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
+    } else if (_Param(0).IsArray()) {
+    	formatter.FormatArrayData(_ParamPointer(0), (TypedArrayCoreRef)_ParamPointer(1), _Param(0).Rank());
+    } else {
+    	formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
+    }
+	return _NextInstruction();
+}
+VIREO_FUNCTION_SIGNATURE6(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<String>*, Boolean, Boolean)
+{
+	StringRef jsonString = _Param(0);
+	TypedArray1D<String>* itemPath = _Param(3);
+	printf("path length:%d\n" ,itemPath->GetLength(0));
+	return _NextInstruction();
+}
+
 #endif
 
 //------------------------------------------------------------
@@ -1677,6 +1700,8 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
+    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))")
+    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(.String) o(.StaticTypeAndData) i(a(.String *)) i(.Boolean) i(.Boolean) )")
     DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
 #endif

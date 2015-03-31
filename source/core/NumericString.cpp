@@ -1981,7 +1981,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             }
             SpreadsheetDimension(output, formatString, delimiter, array, dimension-1, index);
         }
-        if (dimension == 2) {
+        if (dimension == 2 && rank>=3) {
             output->AppendCStr(END_OF_LINE);
         }
     }
@@ -2006,36 +2006,36 @@ VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, Typ
 //------------------------------------------------------------------------------------------------
 void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiterString, TypedArrayCoreRef array)
 {
-<<<<<<< HEAD
 	SubString format = formatString->MakeSubStringAlias();
-	Utf8Char c = 0;
 	SubString input= inputString->MakeSubStringAlias();
 	SubString delimiter = delimiterString->MakeSubStringAlias();
-
 	ArrayDimensionVector  dimensionLength;
 	IntIndex rank = array->Rank();
 	SubString line;
-	for (IntIndex i = 0;i<rank; i++) {
+	for (IntIndex i = 0;i<kArrayMaxRank; i++) {
 		dimensionLength[i] = 0;
 	}
+
 	if (rank == 1) {
-		IntIndex rowlen = 0;
+		IntIndex rowlen = 1;
 		IntIndex split = 0;
 
-		while ((split = input.FindFirstMatch(&delimiter, split, false))>-1) {
+		while ((split = input.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
 			rowlen++;
 		}
 		if (rowlen>dimensionLength[0]) {
 			dimensionLength[0] = rowlen;
 		}
-
 	} else if (rank == 2) {
 		int i = 0;
 		while(input.ReadLine(&line)) {
+			if (line.Length() == 0) {
+				continue;
+			}
 			i++;
 			IntIndex split = 0;
-			IntIndex rowlen = 0;
-			while ((split = line.FindFirstMatch(&delimiter, split, false))>-1) {
+			IntIndex rowlen = 1;
+			while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
 				rowlen++;
 			}
 			if (rowlen>dimensionLength[0]) {
@@ -2045,8 +2045,6 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
 		dimensionLength[1] = i;
 
 	} else {
-		int outputDimension = array->Rank();
-
 		int i = 0;
 		while(input.ReadLine(&line)) {
 			if (line.Length()==0)
@@ -2054,54 +2052,140 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
 				i=0;
 				continue;
 			}
-			i++;
-			if (i==1) {
+			if (i==0) {
 				Int64 dimensionL = 0;
 				IntIndex d = 0;
+				line.EatRawChars(1);
 				while (line.ReadInt(&dimensionL)) {
 					line.EatRawChars(1);
-					if (dimensionLength[rank-1-d] < dimensionL) {
-						dimensionLength[rank-1-d]=dimensionL;
+					if (dimensionLength[rank-1-d] < dimensionL+1) {
+						dimensionLength[rank-1-d] = dimensionL+1;
 					}
 					d++;
 				}
 			} else {
 				IntIndex split = 0;
-				IntIndex rowlen = 0;
-				while ((split = line.FindFirstMatch(&delimiter, split, false))>-1) {
+				IntIndex rowlen = 1;
+				while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
 					rowlen++;
 				}
 				if (rowlen>dimensionLength[0]) {
 					dimensionLength[0] = rowlen;
 				}
-				if (i-1>dimensionLength[1]){
+				if (i>dimensionLength[1]){
 					dimensionLength[1] = i;
 				}
 			}
+			i++;
 		}
+		// make sure all the dimension length is positive
 		for (IntIndex i = 0;i<rank; i++) {
 			if(dimensionLength[i]<=0) {
 				dimensionLength[i] = 1;
 			}
 		}
-		// increase dimension
-		array->ResizeDimensions(rank, dimen)
+		// resize the dimension and then fill the data
 	}
-	for (IntIndex i =0; i<12;i++) {
+	array->ResizeDimensions(rank, dimensionLength, false);
+	input= inputString->MakeSubStringAlias();
 
+	ArrayDimensionVector  elemIndex;
+	TypeRef elementType = array->ElementType();
+	StaticTypeAndData Value=  {elementType, array->BeginAtND(rank, elemIndex)};
+	if (rank == 1) {
+		IntIndex split =0;
+		elemIndex[0]=0;
+
+		SubString elemString;
+		IntIndex next=0;
+		while ((next = input.FindFirstMatch(&delimiter, split, false))>-1) {
+			elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
+			Value._pData = array->BeginAtND(rank, elemIndex);
+			FormatScan(&elemString, &format, &Value);
+			split=next+delimiter.Length();
+			elemIndex[0]++;
+		}
+		if (split>0) {
+			elemString.AliasAssign(input.Begin()+split, input.End());
+			if (elemString.Length()>0) {
+				Value._pData = array->BeginAtND(rank, elemIndex);
+				FormatScan(&elemString, &format, &Value);
+			}
+		}
+	} else if (rank == 2) {
+		elemIndex[0] = elemIndex[1] = 0;
+		IntIndex i =0;
+		while(input.ReadLine(&line)) {
+			if (line.Length() == 0) {
+				continue;
+			}
+			IntIndex split = 0;
+			IntIndex next = 0;
+			SubString elemString;
+			elemIndex[0]=0;
+			elemIndex[1] = i;
+			while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
+				elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
+				Value._pData = array->BeginAtND(rank, elemIndex);
+				FormatScan(&elemString, &format, &Value);
+				split=next+delimiter.Length();
+				elemIndex[0]++;
+			}
+			if (split>0) {
+				line.AliasAssign(line.Begin()+split, line.End());
+				if (line.Length()>0) {
+					Value._pData = array->BeginAtND(rank, elemIndex);
+					FormatScan(&line, &format, &Value);
+				}
+			}
+			i++;
+		}
+	} else {
+		for (IntIndex i =0; i< kArrayMaxRank; i++) {
+			elemIndex[i] = 0;
+		}
+		IntIndex i =0;
+		IntIndex dim = 2;
+		while(input.ReadLine(&line)) {
+			if (line.Length()==0)
+			{
+				i=0;
+				elemIndex[dim]++;
+				if (elemIndex[dim]>=array->GetLength(dim)) {
+					dim++;
+					elemIndex[dim] = 1;
+					for(IntIndex i =0; i< dim; i++) {
+						elemIndex[i] = 0;
+					}
+				}
+				continue;
+			}
+			if (i==0) {
+				// this line specify the index block [1, 2, 1, 0]
+			} else {
+				IntIndex split = 0;
+				IntIndex next = 0;
+				SubString elemString;
+				elemIndex[0]=0;
+				elemIndex[1] = i -1 ; // because the fist line is not for array data.
+				while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
+					elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
+					Value._pData = array->BeginAtND(rank, elemIndex);
+					FormatScan(&elemString, &format, &Value);
+					split=next+delimiter.Length();
+					elemIndex[0]++;
+				}
+				if (split>0) {
+					line.AliasAssign(line.Begin()+split, line.End());
+					if (line.Length()>0) {
+						Value._pData = array->BeginAtND(rank, elemIndex);
+						FormatScan(&line, &format, &Value);
+					}
+				}
+			}
+			i++;
+		}
 	}
-	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
-	FormatScan(&input, &format, &Value);
-
-
-=======
-    // In work
-#if 0
-    SubString format = formatString->MakeSubStringAlias();
-    Utf8Char c = 0;
-    SubString input= inputString->MakeSubStringAlias();
-#endif
->>>>>>> upstream/incoming
 }
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
 {
