@@ -30,7 +30,7 @@ enum TokenTraits
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_AlphaNum,       // a123
+    TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Parens,         // ()    typically added to others to allow expressions
 };
@@ -203,41 +203,77 @@ public:
     SubString(SubString* original)      { AliasAssign(original->Begin(), original->End()); }
     void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
     
+    //! Skip all tokens and comments up to the next eol sequence
     void EatToEol();
+    
+    //! Skip the next char if it matches the singel character token specified
     Boolean EatChar(char token);
+    
+    //! Skip the next sequence of chars that match a speciic trait (e.g. hexadecimal)
     Int32 EatCharsByTrait(UInt8 trait);
+    
+    //! Skip white space and comments
     void EatLeadingSpaces();
-    void EatOptionalComma();
+
+    //! Skip logical characters accounting for UTF-8 multibyte sequences
     void EatRawChars(Int32 count);
 
-    Int32 ReadEscapeToken(SubString* token);
+    //! Creat two sub strings base on the first occurence of a separator
     bool SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
-    Int32 LengthAferProcessingEscapes();
-    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
-    
+    //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+    
+    //! Fucntions to work with backslash '\' escapes in strings
+    Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
+    Int32 LengthAferProcessingEscapes();
+    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
+    
+    //! Read the next UTF-8 sequnce and decode it into a regular UTF-32 code point.
     Boolean ReadUtf32(Utf32Char* value);
+    
+    //! Read the next set of code points that make up a single grapheme.
     Boolean ReadGraphemeCluster(SubString* token);
-    Boolean ReadMetaInt(IntIndex* value);
+    
+    //! Read the next sequence of digits and parse them as an integer.
     Boolean ReadInt(IntMax* value);
+    
+    //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
+    Boolean ReadMetaInt(IntIndex* value);
+    
+    //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
     Boolean ParseDouble(Double* value);
-    Boolean ReadNameToken(SubString* token);
+    
+    //! Read a simple token
     Boolean ReadToken(SubString* token);
-    Boolean ReadSubexpressionToken(SubString* token);
-    Boolean IdentifierIsNext() const;
-    TokenTraits ClassifyNextToken() const;
-
-    Int32 CountMatches(char value);
-    Int32 StringLength();
-    void TrimQuotedString();
+    
+    //! Read a simple name (like a field name in a JSON object)
+    Boolean ReadNameToken(SubString* token);
+    
+    //! Read a token and classify it.
     TokenTraits ReadValueToken(SubString* token);
+    
+    //! Read a token or parenthesized expression of arbitrary depth.
+    Boolean ReadSubexpressionToken(SubString* token);
+    
+    //! Peek at the next token and classify it.
+    TokenTraits ClassifyNextToken() const;
+ 
+    //! Count occurrences of a specified Ascii character.
+    Int32 CountMatches(char value);
+    
+    //! Length of the string in logical UTF-8 encoded code points.
+    Int32 StringLength();
+    
+    //! Remove quotes (single or double) from the ends of a string
+    void TrimQuotedString();
+    
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
