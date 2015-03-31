@@ -346,6 +346,17 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     }
     return _NextInstruction();
 }
+
+//-----------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(DecodeUrlString, StringRef, StringRef)
+{
+	SubString urlString = _Param(0)->MakeSubStringAlias();
+	_Param(1)->Resize1D(0);
+	_Param(1)->AppendUrlSubString(&urlString);
+    return _NextInstruction();
+
+}
+
 //---------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
 {
@@ -558,6 +569,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringIndexChar, "p(i(.String) i(.Int32) o(.Utf32Char))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(DecodeUrlString, "p(i(.String) o(.String))")
     // StringConcatenate input can be string, or array of string.
     DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(.VarArgCount) o(.String) i(.*))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(.BranchTarget) i(.String) i(.String))");
