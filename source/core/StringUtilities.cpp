@@ -353,8 +353,8 @@ TokenTraits SubString::ReadValueToken(SubString* token)
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
-    if (IsPuncuationChar(c)) {
-        tokenTraits = TokenTraits_Puncuation;
+    if (IsPunctuationChar(c)) {
+        tokenTraits = TokenTraits_Punctuation;
     } else if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
         Boolean allowEscapes = true;
         tokenTraits = TokenTraits_String;
