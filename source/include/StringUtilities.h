@@ -30,6 +30,7 @@ enum TokenTraits
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
+    TokenTraits_Puncuation,     // , ( ) { } [ ] (Some 'punctuation' are resered: * @)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Parens,         // ()    typically added to others to allow expressions
@@ -41,7 +42,7 @@ enum TokenTraits
 
 enum AsciiCharTraitsEnum {
     kACT_Id          = 0x01,    // Valid part of an identier
-    kACT_Symbol      = 0x02,
+    kACT_Puncuation  = 0x02,
     kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x08,
     kACT_Decimal     = 0x10,
@@ -84,21 +85,21 @@ const UInt8 AsciiCharTraits[] =
     0,
     0,
     /* 20    */   kACT_Space,   //32
-    /* 21 !  */   kACT_Symbol,
+    /* 21 !  */   kACT_Puncuation,
     /* 22 "  */   0,
-    /* 23 #  */   kACT_Symbol,
+    /* 23 #  */   kACT_Puncuation,
     /* 24 $  */   kACT_Id,
     /* 25 %  */   kACT_Id,
-    /* 26 &  */   kACT_Symbol,
+    /* 26 &  */   kACT_Puncuation,
     /* 27 '  */   0,
-    /* 28 (  */   kACT_Symbol,
-    /* 29 )  */   kACT_Symbol,
+    /* 28 (  */   kACT_Puncuation,
+    /* 29 )  */   kACT_Puncuation,
     /* 2A *  */   kACT_Id,
     /* 2B +  */   kACT_Id,
-    /* 2C ,  */   kACT_Symbol,
+    /* 2C ,  */   kACT_Puncuation,
     /* 2D -  */   kACT_Id,
     /* 2E .  */   kACT_Id,
-    /* 2F /  */   kACT_Symbol,
+    /* 2F /  */   kACT_Puncuation,
     /* 30 0  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,      //48
     /* 31 1  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
     /* 32 2  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
@@ -142,10 +143,10 @@ const UInt8 AsciiCharTraits[] =
     /* 58 X  */   kACT_Id | kACT_Letter,
     /* 59 Y  */   kACT_Id | kACT_Letter,
     /* 5A Z  */   kACT_Id | kACT_Letter,
-    /* 5B [  */   kACT_Symbol,
-    /* 5C \  */   kACT_Symbol,
-    /* 5D ]  */   kACT_Symbol,
-    /* 5E ^  */   kACT_Symbol,
+    /* 5B [  */   kACT_Puncuation,
+    /* 5C \  */   kACT_Puncuation,
+    /* 5D ]  */   kACT_Puncuation,
+    /* 5E ^  */   kACT_Puncuation,
     /* 5F _  */   kACT_Id,
     /* 60 `  */   0,      //96
     /* 61 a  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -174,10 +175,10 @@ const UInt8 AsciiCharTraits[] =
     /* 78 x  */   kACT_Id | kACT_Letter,
     /* 79 y  */   kACT_Id | kACT_Letter,
     /* 7A z  */   kACT_Id | kACT_Letter,
-    /* 7B {  */   kACT_Symbol,
-    /* 7C |  */   kACT_Symbol,
-    /* 7D }  */   kACT_Symbol,
-    /* 7E ~  */   kACT_Symbol,
+    /* 7B {  */   kACT_Puncuation,
+    /* 7C |  */   kACT_Puncuation,
+    /* 7D }  */   kACT_Puncuation,
+    /* 7E ~  */   kACT_Puncuation,
     /* 7F del*/   0,
 };
     
@@ -190,11 +191,9 @@ public:
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
     static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
     static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
-    static Boolean IsLetterChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Letter)); }
     static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
-    static Boolean IsSymbolChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
+    static Boolean IsPuncuationChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Puncuation); }
     static Int32   CharLength(const Utf8Char* begin);
-    
     
 public:
     SubString()                         {}

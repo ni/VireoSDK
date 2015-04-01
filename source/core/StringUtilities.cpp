@@ -353,7 +353,9 @@ TokenTraits SubString::ReadValueToken(SubString* token)
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
-    if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
+    if (IsPuncuationChar(c)) {
+        tokenTraits = TokenTraits_Puncuation;
+    } else if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
         Boolean allowEscapes = true;
         tokenTraits = TokenTraits_String;
         //   "abc" or @"abc"
@@ -515,35 +517,7 @@ Boolean SubString::ReadNameToken(SubString* token)
 //------------------------------------------------------------
 Boolean SubString::ReadToken(SubString* token)
 {
-    EatLeadingSpaces();
-    
-    Boolean tokenFound = true;
-    const Utf8Char* initialBegin = _begin;
-    char c = *initialBegin;
-    
-    if (!(_begin < _end)) {
-        tokenFound = false;
-    } else if (c == '\'' || c == '"' || c == '@') {
-        TokenTraits tt = ReadValueToken(token);
-        tokenFound = tt != TokenTraits_Unrecognized;
-    } else if (IsSymbolChar(c)) {
-        // Single character tokens, checked second so ',", and @ have priority
-        _begin++;
-        token->AliasAssign(initialBegin, _begin);
-    } else {
-        // Alpha-numeric and underscore tokens
-        while (_begin < _end && (IsIdentifierChar(*_begin))) {
-            _begin++;
-        }
-        if (_begin > initialBegin) {
-            token->AliasAssign(initialBegin, _begin);
-            tokenFound = true;
-        }
-    }
-    if (!tokenFound) {
-        token->AliasAssign(null, null);
-    }
-    return tokenFound;
+    return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
 //------------------------------------------------------------
 // ! Read an integer or one of the special symbolic numbers formats
