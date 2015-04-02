@@ -24,6 +24,34 @@ class VIClump;
 class VirtualInstrument;
 class InstructionAllocator;
 
+//! Punctuation and options used by the TDViaFormatter
+enum ViaFormat {
+    kViaFormat_NoFieldNames = 0,
+    kViaFormat_UseFieldNames = 1,
+    kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames + 2,
+    kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames + 4,
+};
+
+struct ViaFormatChars
+{
+    ConstCStr   _name;
+    Utf8Char    _arrayPre;
+    Utf8Char    _arrayPost;
+    Utf8Char    _clusterPre;
+    Utf8Char    _clusterPost;
+    Utf8Char    _itemSeperator;
+    Utf8Char    _quote;
+    ViaFormat   _fieldNameFormat;
+};
+
+struct ViaFormatOptions
+{
+    //Once formatter digs below top level this will be on. Constructor controls initial value
+    Boolean         _bQuoteStrings;
+    Int32           _fieldWidth;
+    ViaFormatChars  *_pChars;
+};
+
 //------------------------------------------------------------
 // Find or build a type in the the type manager corresponding to ascii type description
 // The are three primary errors that are likely to happen.
@@ -33,7 +61,7 @@ class InstructionAllocator;
 // 3. Out of memory. Memory will be allocated out of the designated TypeManager
 // if the quota is exceeded parsing will cease.
 
-//! The VIA decoder.
+//! The VIA decoder. It is also designed to support other semantic like JSON
 class TDViaParser
 {
 private:
@@ -43,6 +71,9 @@ private:
     Int32           _lineNumberBase;
       
 public:
+    // format options also used in ViaFormatter
+    ViaFormatOptions  _options;
+
     Boolean         _loadVIsImmediatly;
     EventLog*       _pLog;
 
@@ -52,8 +83,9 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null);
     TypeRef ParseType();
+    Boolean    EatJSONPath(SubString* path);
     void    ParseData(TypeRef type, void* pData);
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
@@ -89,34 +121,6 @@ private :
 // as a long list of parameters in recursive functions.
 class TDViaFormatterTypeVisitor;
 
-//! Punctuation and options used by the TDViaFormatter
-enum ViaFormat {
-    kViaFormat_NoFieldNames = 0,
-    kViaFormat_UseFieldNames = 1,
-    kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames + 2,
-    kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames + 4,
-};
-
-struct ViaFormatChars
-{
-    ConstCStr   _name;
-    Utf8Char    _arrayPre;
-    Utf8Char    _arrayPost;
-    Utf8Char    _clusterPre;
-    Utf8Char    _clusterPost;
-    Utf8Char    _itemSeperator;
-    Utf8Char    _quote;
-    ViaFormat   _fieldNameFormat;
-};
-
-struct ViaFormatOptions
-{
-    //Once formatter digs below top level this will be on. Constructor controls initial value
-    Boolean         _bQuoteStrings;
-    Int32           _fieldWidth;
-    ViaFormatChars  *_pChars;
-};
-
 //! The VIA encoder.
 class TDViaFormatter
 {
@@ -144,6 +148,10 @@ public:
     void    FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData);
     
     static char LocaleDefaultDecimalSeperator;
+    static ViaFormatChars formatVIA;
+    static ViaFormatChars formatJSON;
+    static ViaFormatChars formatC;
+
 };
 
 // sprintf style formatting

@@ -44,11 +44,8 @@ Boolean String::AppendUrlSubString(SubString* string)
 		if (unreservedC) {
 			originLen++;
 		} else {
-			if (string->ReadRawChar(&c) && string->ReadRawChar(&c)) {
-				originLen++;
-			} else {
-				return false;
-			}
+		    string->ReadUrlToken(null);
+			originLen++;
 		}
 	}
 	IntIndex i = this->Length();
@@ -60,22 +57,13 @@ Boolean String::AppendUrlSubString(SubString* string)
 		} else if (c!= '%'){
 			(*BeginAt(i)) = c;
 		} else {
-			IntIndex value = 0;
-			IntIndex n = 0;
-			while (n<2 && string->ReadRawChar(&c)) {
-				value = value * 16;
-				if (c<='9' && c>= '0') {
-					value += c-'0';
-				} else if (c<='f' && c>='a') {
-					value += 10+c-'a';
-				} else if (c<='F' && c>='A') {
-					value += 10 +c -'A';
-				} else {
-					return false;
-				}
-				n++;
+		    // c == '%'. according to the document, single % is not legal in a url string.
+			Utf8Char value = 0;
+			if (string->ReadUrlToken(&value)){
+			    (*BeginAt(i)) = (Utf8Char)value;
+			} else {
+			    (*BeginAt(i)) = '%';
 			}
-			(*BeginAt(i)) = (Utf8Char)value;
 		}
 		i++;
 	}

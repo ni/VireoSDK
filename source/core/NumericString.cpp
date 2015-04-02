@@ -1958,7 +1958,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             }
             output->Append(temp.Value);
         }
-        output->AppendCStr(END_OF_LINE);
+        output->AppendCStr("\n");
     } else if (dimension >= 2){
         if (rank >=3 && dimension ==2 && array->GetDimensionLengths()[1]>0) {
             // generate the first index line
@@ -1972,7 +1972,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
                 output->AppendCStr(dimensionString);
             }
             output->AppendCStr("]");
-            output->AppendCStr(END_OF_LINE);
+            output->AppendCStr("\n");
         }
         for (IntIndex i = 0; i< array->GetDimensionLengths()[dimension-1]; i++){
             index[dimension-1]=i;
@@ -1982,7 +1982,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             SpreadsheetDimension(output, formatString, delimiter, array, dimension-1, index);
         }
         if (dimension == 2 && rank>=3) {
-            output->AppendCStr(END_OF_LINE);
+            output->AppendCStr("\n");
         }
     }
 }
@@ -2199,13 +2199,6 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
     }
     return _NextInstruction();
 }
-
-struct SyncJSStruct : public VarArgInstruction
-{
-    _ParamDef(StringRef, Function);
-    _ParamImmediateDef(StaticTypeAndData, parameter[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")

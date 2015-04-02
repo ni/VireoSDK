@@ -207,6 +207,7 @@ public:
     Boolean EatChar(char token);
     Int32 EatCharsByTrait(UInt8 trait);
     void EatLeadingSpaces();
+    void EatWhiteSpaces();
     void EatOptionalComma();
     void EatRawChars(Int32 count);
 
@@ -222,6 +223,7 @@ public:
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+    Boolean CompareEncodedString(SubString*  urlString);
     Boolean ReadRawChar(Utf8Char* token);
     Boolean ReadUtf32(Utf32Char* value);
     Boolean ReadGraphemeCluster(SubString* token);
@@ -231,6 +233,7 @@ public:
     Boolean ParseDouble(Double* value);
     Boolean ReadNameToken(SubString* token);
     Boolean ReadToken(SubString* token);
+    Boolean ReadUrlToken(Utf8Char* value);
     Boolean ReadSubexpressionToken(SubString* token);
     Boolean IdentifierIsNext() const;
     TokenTraits ClassifyNextToken() const;
@@ -242,7 +245,6 @@ public:
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
-#define END_OF_LINE "\n"
 //! Macro to help with %.* formats. Example => printf("%.*s", FMT_LEN_BEGIN(arg))
 #define FMT_LEN_BEGIN(_substring_)   (int)(_substring_)->Length(), (_substring_)->Begin()
 

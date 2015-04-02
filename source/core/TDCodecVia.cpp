@@ -33,7 +33,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase)
+TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -41,6 +41,14 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _originalStart = typeString->Begin();
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediatly = false;
+
+   if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
+       _options._pChars = &TDViaFormatter::formatVIA;
+   } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
+       _options._pChars = &TDViaFormatter::formatJSON;
+   } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
+       _options._pChars = &TDViaFormatter::formatC;
+   }
 }
 //------------------------------------------------------------
 void TDViaParser::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
@@ -448,18 +456,25 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
         tempDimensionLengths[i] = 0;
     }
 
-    // The opening "(" has been parsed before this function has been called.
+    // The opening array_pre like "(" has been parsed before this function has been called.
     Int32 dimIndex;
     while (depth >= 0) {
         dimIndex = (rank - depth) - 1;
 
-        tempString.ReadToken(&token);
-        if (token.CompareCStr("(")) {
+        if(!tempString.ReadToken(&token)) {
+             // avoid the dead loop for incorrect input
+             break;
+        }
+        if (token.EatChar(_options._pChars->_itemSeperator)) {
+            // for json string, it has non-space separator
+            continue;
+        }
+        if (token.EatChar(_options._pChars->_arrayPre)) {
             if (dimIndex >= 0)
                 tempDimensionLengths[dimIndex]++;
     
             depth++;
-        } else if (token.CompareCStr(")")) {
+        } else if (token.EatChar(_options._pChars->_arrayPost)) {
             // When popping out, store the max size for the current level.
             if (dimIndex >= 0) {
                 // If the inner dimension is larger than processed before record the larger number
@@ -482,15 +497,13 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
     VIREO_ASSERT(pArray != null);
     TypeRef type = pArray->Type();
     TypeRef arrayElementType = pArray->ElementType();
-    
     Int32 rank = type->Rank();
-    
+
     if (rank >= 1) {
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
         TokenTraits tokenTrait = _string.ReadValueToken(&token);
-
         if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
             token.TrimQuotedString();
@@ -518,7 +531,8 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 }
             }
-        } else if (token.CompareCStr("(")) {
+        } else if (token.EatChar(_options._pChars->_arrayPre)) {
+        //    printf("--------------------------------------------------------------input :%s\n",_string.Begin());
             // Second option, it is a list of values.
             // If one or more dimension lengths are variable then the outer most dimension
             // preflights the parsing so the overall storage can be allocated.
@@ -527,7 +541,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                         
             if (level == 0) {
                 ArrayDimensionVector initializerDimensionLengths;
-                
+
                 PreParseElements(rank, initializerDimensionLengths);
 
                 // Resize the array to the degree possible to match initializers
@@ -538,7 +552,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 VIREO_ASSERT(pFirstEltInSlice == null);
                 pFirstEltInSlice = pArray->RawBegin();
             }
- 
             // Get the dim lengths and slabs for tha actual array, not its
             // reference type. The reference type may indicate variable size
             // but the actaul array will always have a specific size.
@@ -554,17 +567,21 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             IntIndex elementCount = 0;
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
-            
-            while (!_string.EatChar(')') && (_string.Length() > 0) ) {
+
+            while ((_string.Length() > 0) && !_string.EatChar(_options._pChars->_arrayPost)) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
-                
+                _string.EatLeadingSpaces();
+                _string.EatChar(_options._pChars->_itemSeperator);
                 void* pElement = elementCount < length ? pEltData : null;
                 if (pElement == null) {
                     bExtraInitializersFound = true;
                 }
                 if (dimIndex == 0) {
                     // For the inner most dimension parse using element type.
+
+                    // will be replaced with the genericParseData in the future.
+
                     ParseData(arrayElementType, pElement);
                 } else {
                     // For nested dimensions just parse the next inner dimension using the array type.
@@ -712,26 +729,160 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-            _string.ReadValueToken(&token);
-            if (token.CompareCStr("(")) {
-                // List of values (a b c)
-                AQBlock1* baseOffset = (AQBlock1*)pData;
-                int i = 0;
-                while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
-                    TypeRef elementType = type->GetSubElement(i);
+                if(*(_options._pChars->_name)=='V') {
+                    _string.ReadValueToken(&token);
+                    if (token.CompareCStr("(")) {
+                        // List of values (a b c)
+                        AQBlock1* baseOffset = (AQBlock1*)pData;
+                        int i = 0;
+                        while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                            TypeRef elementType = type->GetSubElement(i);
+                            void* elementData = baseOffset;
+                            if (elementData != null)
+                                elementData = baseOffset + elementType->ElementOffset();
+                            ParseData(elementType, elementData);
+                            i++;
+                        }
+                    }
+                } else if(*(_options._pChars->_name)=='J'){
+                    // the json cluster always contains the name
+
+                    // JSON generally igonre any white space around or between syntactic elements
+                    // JSON does not provide or allow any sort of comment syntax
+                    _string.EatWhiteSpaces();
+                    if(!_string.EatChar('{')) {
+                        return ;
+                    }
+                    IntIndex elmIndex =0;
+                    AQBlock1* baseOffset = (AQBlock1*)pData;
                     void* elementData = baseOffset;
-                    if (elementData != null)
-                        elementData = baseOffset + elementType->ElementOffset();
-                    ParseData(elementType, elementData);
-                    i++;
+                    while ((_string.Length() > 0) && !_string.EatChar('}')  ) {
+                        SubString fieldName;
+                        _string.ReadToken(&fieldName);
+                        fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
+                        _string.EatWhiteSpaces();
+                        _string.EatChar(':');
+                        Boolean found = false;
+                        TypeRef elementType = null;
+                        for (elmIndex = 0;!found && elmIndex<type->SubElementCount(); elmIndex++) {
+                            elementType= type->GetSubElement(elmIndex);
+                            SubString name = elementType->GetElementName();
+                            elementData = baseOffset + elementType->ElementOffset();
+                            found = fieldName.CompareEncodedString(&name);
+                        }
+                        if (!found) {
+                            return ;
+                        }
+                        if (baseOffset == null){
+                            elementData = baseOffset ;
+                            return ;
+                        }
+                        ParseData(elementType, elementData);
+                        _string.EatWhiteSpaces();
+                        _string.EatChar(',');
+                    }
+
                 }
-            }
             }
             break;
         default:
             LOG_EVENT(kHardDataError, "No parser for data type's encoding");
             break;
     }
+}
+
+/**
+ * */
+Boolean EatJSONItem(SubString* input)
+{
+    input->EatWhiteSpaces();
+    SubString token;
+    const Utf8Char* begin = input->Begin();
+    if (*begin == '{') {
+        input->EatWhiteSpaces();
+        while ( input->Length()>0 && !input->EatChar('}') ) {
+            input->ReadToken(&token);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(':')) {
+                return false;
+            }
+            EatJSONItem(input);
+        }
+    } else if (*begin == '[') {
+        while ( input->Length()>0 && !input->EatChar(']') ) {
+            EatJSONItem(input);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(',')) {
+                return false;
+            }
+        }
+    } else {
+        input->ReadToken(&token);
+    }
+    return true;
+}
+/**
+ * Will find the start location of the specified item "path" in the JSON string
+ * return true if successfully, otherwise return false.
+ * The function is smart which means it can search either in the cluster or the array.
+ * */
+Boolean TDViaParser::EatJSONPath(SubString* path)
+{
+    if (path == null) {
+        return true;
+    }
+    SubString  token;
+    _string.EatWhiteSpaces();
+    if(_string.EatChar('{')) {
+        // searching in cluster
+        while ((_string.Length() > 0) && !_string.EatChar('}')) {
+            SubString fieldName;
+            _string.EatWhiteSpaces();
+            _string.ReadToken(&fieldName);
+            fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
+            _string.EatWhiteSpaces();
+            _string.EatChar(':');
+            Boolean found = false;
+            if (path!=null) {
+                // attention: not compare the encoded string.
+                found = fieldName.Compare(path);
+            }
+            if (found) {
+                return true;
+            } else {
+                _string.EatWhiteSpaces();
+                EatJSONItem(&_string);
+                _string.EatWhiteSpaces();
+                _string.EatChar(',');
+            }
+        }
+        return false;
+    } else if (_string.EatChar('[')){
+        // labview could use the path as the index integer to access the array element.
+        // only support 1d array
+        IntMax arrayIndex = -1;
+        SubString arrayIndexStr(path);
+        arrayIndexStr.ReadInt(&arrayIndex);
+        if (arrayIndex<0) {
+            return false;
+        }
+        IntIndex i = 0;
+        while ((_string.Length() > 0) &&!_string.EatChar(']')) {
+            _string.EatWhiteSpaces();
+            if (i==arrayIndex) {
+                return true;
+            } else {
+                EatJSONItem(&_string);
+                _string.EatChar(',');
+            }
+            i++;
+        }
+        return false;
+    } else {
+        // don't need to eat path any more
+        return false;
+    }
+    return true;
 }
 //------------------------------------------------------------
 // VirtualInstruments have their own parser since the defining components
@@ -1241,12 +1392,14 @@ private:
 // then this variable should be used.
 char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
 
+// the format const used in Formatter and Parser
+ViaFormatChars TDViaFormatter::formatVIA =  {"VIA",  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
+ViaFormatChars TDViaFormatter::formatJSON = {"JSON", '[',']','{','}',',','\"', kViaFormat_QuotedFieldNames};
+ViaFormatChars TDViaFormatter::formatC =    {"C",    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
+
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
-    static ViaFormatChars formatVIA =  {"VIA",  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
-    static ViaFormatChars formatJSON = {"JSON", '[',']','{','}',',','\"', kViaFormat_QuotedFieldNames};
-    static ViaFormatChars formatC =    {"C",    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
 
     // Might move all options to format string.
     _string = string;
@@ -1391,6 +1544,7 @@ void TDViaFormatter::FormatType(TypeRef type)
     }
 }
 //------------------------------------------------------------
+
 void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
 {
     TypeRef elementType = pArray->ElementType();
@@ -1404,7 +1558,89 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         if (_options._bQuoteStrings) {
             _string->Append(_options._pChars->_quote);
         }
-        _string->Append(pArray->Length(), pArray->RawBegin());
+        IntIndex needLength = 0;
+        if(*_options._pChars->_name == 'J') {
+            for (IntIndex i=0; i< pArray->Length();i++)
+            {
+                Utf8Char c = *((Utf8Char*)pArray->BeginAt(i));
+                // see the document on http://json.org. need handle more control character and \uhexadecimal
+                switch (c)
+                {
+                case '\n': case '\r': case '\t':
+                case '\f' : case '\b': case '\\':
+                case '"':{
+                    needLength += 2;
+                }
+                break;
+                default:
+                    needLength++;
+                    break;
+                }
+            }
+            IntIndex ptr = _string->Length();
+            _string->Resize1D(_string->Length()+needLength);
+            for (IntIndex i=0; i< pArray->Length();i++)
+              {
+                  Utf8Char c = *((Utf8Char*)pArray->BeginAt(i));
+                  switch (c)
+                  {
+                  case '\n': {
+                      *_string->BeginAt(ptr)= '\\';
+                      ptr++;
+                      *_string->BeginAt(ptr)= 'n';
+                   } break;
+                  case '\r':{
+                      *_string->BeginAt(ptr)= '\\';
+                      ptr++;
+                      *_string->BeginAt(ptr)='r';
+
+                  }break;
+                  case '\t':{
+                      *_string->BeginAt(ptr)= '\\';
+                      ptr++;
+                      *_string->BeginAt(ptr) = 't';
+                  }
+                  break;
+
+                  case '\f' :{
+                      *_string->BeginAt(ptr)= '\\';
+                       ptr++;
+                       *_string->BeginAt(ptr) = 'f';
+                  }break;
+                  case '\b':
+                      {
+                          *_string->BeginAt(ptr)= '\\';
+                          ptr++;
+                          *_string->BeginAt(ptr)= 'b';
+                      }
+                      break;
+                 case '\\':
+                 {
+                     *_string->BeginAt(ptr)= '\\';
+                      ptr++;
+                      *_string->BeginAt(ptr)= '\\';
+                  }
+                      break;
+                  case '"':{
+                      *_string->BeginAt(ptr)= '\\';
+                        ptr++;
+                        *_string->BeginAt(ptr) = '\"';
+                  }
+                  break;
+                  default:
+                      *_string->BeginAt(ptr) =c;
+                      break;
+                  }
+                  ptr++;
+              }
+           for(int i =0;i<_string->Length(); i++)
+           {
+            }
+        } else {
+            _string->Append(pArray->Length(), pArray->RawBegin());
+
+        }
+
         if (_options._bQuoteStrings) {
             _string->Append(_options._pChars->_quote);
         }
@@ -1552,7 +1788,7 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 {
 	_Param(3)->Resize1D(0);
 	SubString json("JSON");
-    TDViaFormatter formatter(_Param(3), false, 0, &json);
+    TDViaFormatter formatter(_Param(3), true, 0, &json);
     if (_Param(0).IsCluster()) {
     	formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
     } else if (_Param(0).IsArray()) {
@@ -1562,11 +1798,35 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
     }
 	return _NextInstruction();
 }
-VIREO_FUNCTION_SIGNATURE6(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<String>*, Boolean, Boolean)
+/**
+ * Unflatten from JSON string.
+ * The 3 boolean flags are: enale Labview extensions(true)
+ *                        :default null elements
+ *                        :strict validation. whether allow json object contains items not dfined in the cluster
+ * */
+VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
 {
-	StringRef jsonString = _Param(0);
-	TypedArray1D<String>* itemPath = _Param(3);
-	printf("path length:%d\n" ,itemPath->GetLength(0));
+	SubString jsonString = _Param(0)->MakeSubStringAlias();
+	TypedArray1D<StringRef>* itemPath = _Param(3);
+    EventLog log(EventLog::DevNull);
+    SubString jsonFormat("JSON");
+    TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &jsonString, &log, 1, &jsonFormat);
+	if (itemPath->Length()>0) {
+	    Boolean existingPath = true;
+	    for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
+	        SubString p = itemPath->At(i)->MakeSubStringAlias();
+	        if(!parser.EatJSONPath(&p)) {
+	            existingPath = false;
+	        }
+	    }
+	    if (existingPath){
+	        parser.ParseData(_ParamPointer(1), _ParamPointer(2));
+	    } else {
+	        // printf("not found\n");
+	    }
+	} else {
+	    parser.ParseData(_ParamPointer(1), _ParamPointer(2));
+	}
 	return _NextInstruction();
 }
 
@@ -1701,7 +1961,7 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
     DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))")
-    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(.String) o(.StaticTypeAndData) i(a(.String *)) i(.Boolean) i(.Boolean) )")
+    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(.String) o(.StaticTypeAndData) i(a(.String *)) i(.Boolean) i(.Boolean) i(.Boolean) )")
     DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
 #endif

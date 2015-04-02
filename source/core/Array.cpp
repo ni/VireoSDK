@@ -31,6 +31,7 @@ VIREO_FUNCTION_SIGNATURE2(ArrayLengthN, TypedArrayCoreRef, TypedArray1D<IntIndex
 	Int32 rank = _Param(0)->Rank();
 	IntIndex* pLengths = _Param(0)->GetDimensionLengths();
 	TypeRef elementType = _Param(1)->ElementType();
+	_Param(1)->Resize1D(rank);
 	for (IntIndex i =0; i< rank; i++) {
 		elementType->CopyData(pLengths+(rank-1-i), _Param(1)->BeginAt(i));
 	}

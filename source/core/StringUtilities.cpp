@@ -203,7 +203,6 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
 Boolean SubString::ReadLine(SubString* line)
 {
 	 const Utf8Char* initialBegin = _begin;
-	 Boolean characterEnd = false;
 	 if (_begin >= _end) {
 		 return false;
 	 }
@@ -279,7 +278,7 @@ Boolean SubString::EatChar(char token)
 //------------------------------------------------------------
 Int32 SubString::ReadEscapeToken(SubString* token)
 {
-    // On entry _begin should point to the character after the \
+    // On entry _begin should point to the character after the '\'
     // Supports escape sequences \n \r \t \b \\ \' \" \000 (octal) \x00(hex)
     // Unicode \uXXXX is a code point encoded in UTF-16, only BMP is supported
     //
@@ -591,6 +590,73 @@ Boolean SubString::ReadToken(SubString* token)
     }
     return tokenFound;
 }
+
+//---------------------------------------------------
+// ! read an url token like %20, and assign the 0x20 to the byteV
+// return true if read two hex successfully, else return false.
+Boolean SubString::ReadUrlToken(Utf8Char *byteV)
+{
+    IntIndex value = 0;
+    IntIndex n = 0;
+    const Utf8Char* initialBegin = _begin;
+    Utf8Char c;
+    if (_end - _begin <2) {
+        return false;
+    }
+    while (n<2) {
+        c = *_begin;
+        value = value * 16;
+        if (c<='9' && c>= '0') {
+            value += c-'0';
+        } else if (c<='f' && c>='a') {
+            value += 10+c-'a';
+        } else if (c<='F' && c>='A') {
+            value += 10 +c -'A';
+        } else {
+            _begin = initialBegin;
+            return false;
+        }
+        _begin++;
+        n++;
+    }
+    if (byteV!=null){
+        *byteV = value;
+    }
+	return true;
+}
+
+Boolean SubString::CompareEncodedString(SubString* encodedString)
+{
+    Utf8Char c;
+    Utf8Char decodedC;
+    IntIndex length =0 ;
+    SubString urlString(encodedString);
+    while (urlString.ReadRawChar(&c)) {
+        if (c == '+') {
+            decodedC = ' ';
+        } else if (c!= '%'){
+            decodedC = c;
+        } else {
+            Utf8Char value = 0;
+            if (urlString.ReadUrlToken(&value)){
+                decodedC = (Utf8Char)value;
+            } else {
+                decodedC = '%';
+            }
+        }
+        length++;
+        if (length>this->Length()) {
+            return false;
+        }
+        if (*(_begin+length-1) != decodedC) {
+            return false;
+        }
+    }
+    if (length < this->Length()) {
+        return false;
+    }
+    return true;
+}
 //------------------------------------------------------------
 // ! Read an integer or one of the special symbolic numbers formats
 Boolean SubString::ReadMetaInt(IntIndex *pValue)
@@ -828,6 +894,17 @@ void SubString::EatLeadingSpaces()
             } else {
                 break;
             }
+        } else {
+            break;
+        }
+    }
+}
+
+void SubString::EatWhiteSpaces()
+{
+    while (_begin < _end){
+        if(IsSpaceChar(*_begin)) {
+            _begin++;
         } else {
             break;
         }
