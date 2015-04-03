@@ -251,6 +251,12 @@ public:
             type->InitData(&Value);
         }
     }
+    T* DetachValue()
+    {
+        T* temp = Value;
+        Value = null;
+        return temp;
+    }
     ~StackVar()
     {
         if (Value) {

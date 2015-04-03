@@ -166,13 +166,11 @@ VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName
 }
 //------------------------------------------------------------
 //! Single threaded fucntion for reading string value. Beware the global buffer
+
 VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format)
 {
     TypeManagerScope scope(pShell->TheTypeManager());
-
     void *pData = null;
-    const int kStringBufSize = 1024;
-    static char returnString[kStringBufSize];
     
     SubString objectName(viName);
     SubString path(eltName);
@@ -180,15 +178,25 @@ VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* 
     if (actualType == null)
         return null;
     
-    STACK_VAR(String, tempString);
-    if (tempString.Value) {
-        SubString formatss(format);
-        TDViaFormatter formatter(tempString.Value, true, 0, &formatss);
-        formatter.FormatData(actualType, pData);
+    static StringRef returnBuffer = null;
+    if (returnBuffer == null) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        returnBuffer = tempReturn.DetachValue();
+    } else {
+        returnBuffer->Resize1D(0);
     }
-    SubString tempSS = tempString.Value->MakeSubStringAlias();
-    tempSS.CopyToBoundedBuffer(kStringBufSize, (Utf8Char*)returnString);
-    return returnString;
+
+    if (returnBuffer) {
+        SubString formatss(format);
+        TDViaFormatter formatter(returnBuffer, true, 0, &formatss);
+        formatter.FormatData(actualType, pData);
+        // Add an explicit null terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*) returnBuffer->Begin();
+    }
+    return "";
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
@@ -240,13 +248,13 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
 //------------------------------------------------------------
 VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer)
 {
-    SubString name = typeRef->GetName();
+    SubString name = typeRef->Name();
     *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void TypeRef_ElementName(TypeRef typeRef, Int32* bufferSize, char* buffer)
 {
-    SubString name = typeRef->GetElementName();
+    SubString name = typeRef->ElementName();
     *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------

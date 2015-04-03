@@ -508,9 +508,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         _argumentState = kArgumentResolvedToDefault;
         return;
     }
-    
-    // Note, symbols that start with unescaped numbers are not curently allowed.
-    if (!argument->IdentifierIsNext()) {
+
+    // If its not symbol name then it should be a value.
+    if (argument->ClassifyNextToken() != TokenTraits_SymbolName) {
         // Set the resolved argument type to what the constant should be so
         // the parameter is recognized as being there.
         _actualArgumentType = FormalParameterType();
@@ -588,7 +588,7 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
         return;
     }
     
-    SubString dsTypeName = ActualArgumentType()->GetName();
+    SubString dsTypeName = ActualArgumentType()->Name();
     
     if (prependType) {
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
@@ -808,7 +808,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
             break;
         case kArgumentTypeMismatch:
             {
-            SubString formalParameterTypeName = FormalParameterType()->GetName();
+            SubString formalParameterTypeName = FormalParameterType()->Name();
             LogEvent(EventLog::kSoftDataError, lineNumber, "Type mismatch, argument should be '%.*s'",
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }

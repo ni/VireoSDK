@@ -128,21 +128,6 @@ TokenTraits SubString::ClassifyNextToken() const
     return tt;
 }
 //------------------------------------------------------------
-Boolean SubString::IdentifierIsNext() const
-{
-    // ID tokens must start with a letter, underscore,
-    // or URL style escaped characer %20. Needs to be
-    // extended to UTF8 support
-    if (_begin <_end) {
-        // The forms of true and fasle are reserved key words.
-        if (CompareCStr("true") || CompareCStr("false"))
-            return false;
-        if (IsLetterChar(*_begin) || *_begin == '_' || *_begin == '%' || *_begin == '.')
-            return true;
-    }
-    return false;
-}
-//------------------------------------------------------------
 Boolean SubString::ReadRawChar(Utf8Char* token)
 {
     if (_begin < _end) {
@@ -202,27 +187,27 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
 //-------------------------------------------------------
 Boolean SubString::ReadLine(SubString* line)
 {
-	 const Utf8Char* initialBegin = _begin;
-	 if (_begin >= _end) {
-		 return false;
-	 }
-	 while (_begin < _end) {
-		 if (*_begin == 0x0A) {
-			 line->AliasAssign(initialBegin, _begin);
-			 _begin++;
-			 return true;
-		 } else if (*_begin == 0x0D) {
-			 line->AliasAssign(initialBegin, _begin);
-			 if (_begin+1 <_end && *(_begin+1)==0x0A) {
-				 _begin++;
-			 }
-			 _begin++;
-			 return true;
-		 }
-		 _begin++;
-	 }
-	 line->AliasAssign(initialBegin, _begin);
-	 return true;
+     const Utf8Char* initialBegin = _begin;
+     if (_begin >= _end) {
+         return false;
+     }
+     while (_begin < _end) {
+         if (*_begin == 0x0A) {
+             line->AliasAssign(initialBegin, _begin);
+             _begin++;
+             return true;
+         } else if (*_begin == 0x0D) {
+             line->AliasAssign(initialBegin, _begin);
+             if (_begin+1 <_end && *(_begin+1)==0x0A) {
+                 _begin++;
+             }
+             _begin++;
+             return true;
+         }
+         _begin++;
+     }
+     line->AliasAssign(initialBegin, _begin);
+     return true;
 }
 //------------------------------------------------------------
 Boolean SubString::ReadUtf32(Utf32Char* value)
@@ -398,7 +383,9 @@ TokenTraits SubString::ReadValueToken(SubString* token)
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
-    if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
+    if (IsPunctuationChar(c)) {
+        tokenTraits = TokenTraits_Punctuation;
+    } else if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
         Boolean allowEscapes = true;
         tokenTraits = TokenTraits_String;
         //   "abc" or @"abc"
@@ -452,7 +439,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
         if (idToken.CompareCStr("inf") || idToken.CompareCStr("-inf") || idToken.CompareCStr("nan")) {
             // Look for special IEE754 numeric tokens.
             tokenTraits = TokenTraits_IEEE754;
-        } else if (('t' == c || 'f' == c) && ((idToken.Length() == 1) || CompareCStr("true") || CompareCStr("false"))) {
+        } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for booleanish tokens.
             tokenTraits = TokenTraits_Boolean;
         } else if (('0'==c) && (*_begin == 'x')) {
@@ -501,7 +488,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
                 // If it falls throuh then the token is not a valid number.
             } while(false);
         } else {
-            tokenTraits = TokenTraits_AlphaNum;
+            tokenTraits = TokenTraits_SymbolName;
         }
     }
     
@@ -560,41 +547,13 @@ Boolean SubString::ReadNameToken(SubString* token)
 //------------------------------------------------------------
 Boolean SubString::ReadToken(SubString* token)
 {
-    EatLeadingSpaces();
-    
-    Boolean tokenFound = true;
-    const Utf8Char* initialBegin = _begin;
-    char c = *initialBegin;
-    
-    if (!(_begin < _end)) {
-        tokenFound = false;
-    } else if (c == '\'' || c == '"' || c == '@') {
-        TokenTraits tt = ReadValueToken(token);
-        tokenFound = tt != TokenTraits_Unrecognized;
-    } else if (IsSymbolChar(c)) {
-        // Single character tokens, checked second so ',", and @ have priority
-        _begin++;
-        token->AliasAssign(initialBegin, _begin);
-    } else {
-        // Alpha-numeric and underscore tokens
-        while (_begin < _end && (IsIdentifierChar(*_begin))) {
-            _begin++;
-        }
-        if (_begin > initialBegin) {
-            token->AliasAssign(initialBegin, _begin);
-            tokenFound = true;
-        }
-    }
-    if (!tokenFound) {
-        token->AliasAssign(null, null);
-    }
-    return tokenFound;
+    return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
 
 //---------------------------------------------------
 // ! read an url token like %20, and assign the 0x20 to the byteV
 // return true if read two hex successfully, else return false.
-Boolean SubString::ReadUrlToken(Utf8Char *byteV)
+Boolean SubString::ReadUrlEncodedToken(Utf8Char *byteV)
 {
     IntIndex value = 0;
     IntIndex n = 0;
@@ -622,7 +581,7 @@ Boolean SubString::ReadUrlToken(Utf8Char *byteV)
     if (byteV!=null){
         *byteV = value;
     }
-	return true;
+    return true;
 }
 
 Boolean SubString::CompareEncodedString(SubString* encodedString)
@@ -638,7 +597,7 @@ Boolean SubString::CompareEncodedString(SubString* encodedString)
             decodedC = c;
         } else {
             Utf8Char value = 0;
-            if (urlString.ReadUrlToken(&value)){
+            if (urlString.ReadUrlEncodedToken(&value)){
                 decodedC = (Utf8Char)value;
             } else {
                 decodedC = '%';
@@ -920,14 +879,6 @@ Int32 SubString::EatCharsByTrait(UInt8 trait)
     return (Int32)(_begin - initialBegin);
 }
 //------------------------------------------------------------
-void SubString::EatOptionalComma()
-{
-    EatLeadingSpaces();
-    if ((_begin < _end) && (*_begin == ',')) {
-        _begin++;
-    }
-}
-//------------------------------------------------------------
 void SubString::TrimQuotedString()
 {
     if (Length() >= 3 && *_begin == '@' ) {
@@ -945,7 +896,7 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
     if (searchStringLength > Length())
         return -1;
     if (offset < 0) {
-    	offset = 0;
+        offset = 0;
     }
     const Utf8Char* pStart = _begin + offset;
     const Utf8Char* pEnd = _end - searchStringLength;    

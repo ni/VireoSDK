@@ -25,7 +25,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
         case kEncoding_Array:
         {
             TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;
-            IntIndex* dimLengths = pArray->GetDimensionLengths();
+            IntIndex* dimLengths = pArray->DimensionLengths();
             Int32 rank = pArray->Rank();
             
             if (pArray == null)
@@ -55,7 +55,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
                 // Recursively call FlattenData on each element.
                 // Arrays contained in other data structures always include
                 // length information.
-                size_t   elementLength = pArray->GetSlabLengths()[0];
+                size_t   elementLength = pArray->SlabLengths()[0];
                 AQBlock1 *pElement = pArray->BeginAt(0);
                 AQBlock1 *pEnd = pElement + (pArray->Length() * elementLength);
 
@@ -159,8 +159,8 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 // Recursively call UnflattenData for each element.
                 // Arrays contained in other data structures always include
                 // length information.
-                size_t   elementLength = pArray->GetSlabLengths()[0];
-                AQBlock1 *pEnd = pArray->BeginAt(0) + (pArray->GetDimensionLengths()[0] * elementLength);
+                size_t   elementLength = pArray->SlabLengths()[0];
+                AQBlock1 *pEnd = pArray->BeginAt(0) + (pArray->DimensionLengths()[0] * elementLength);
                 AQBlock1 *pElementData = pArray->BeginAt(0);
 
                 for (; pElementData < pEnd; pElementData += elementLength)
@@ -176,8 +176,8 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 // Arrays contained in other data structures always include
                 // length information.
                 TypedArrayCoreRef pDefaultArray = *(TypedArrayCoreRef *) pDefaultData;
-                size_t   elementLength = pDefaultArray->GetSlabLengths()[0];
-                AQBlock1 *pEnd = pDefaultArray->BeginAt(0) + (pDefaultArray->GetDimensionLengths()[0] * elementLength);
+                size_t   elementLength = pDefaultArray->SlabLengths()[0];
+                AQBlock1 *pEnd = pDefaultArray->BeginAt(0) + (pDefaultArray->DimensionLengths()[0] * elementLength);
                 AQBlock1 *pElementData = pDefaultArray->BeginAt(0);
 
                 for (; pElementData < pEnd; pElementData += elementLength)

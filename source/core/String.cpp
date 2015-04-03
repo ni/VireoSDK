@@ -30,46 +30,126 @@ SDG
 using namespace Vireo;
 
 //---------------------------------------------
-Boolean String::AppendUrlSubString(SubString* string)
+Boolean String::AppendUrlEncodedSubString(SubString* string)
 {
-	Utf8Char c;
-	IntIndex originLen = 0;
-	Boolean unreservedC = false;
-	SubString urlString(string);
-	while(string->ReadRawChar(&c)) {
-		unreservedC = true;
-		if (c=='%'){
-			unreservedC = false;
-		}
-		if (unreservedC) {
-			originLen++;
-		} else {
-		    string->ReadUrlToken(null);
-			originLen++;
-		}
-	}
-	IntIndex i = this->Length();
-	this->Resize1D(this->Length()+originLen);
-	string->AliasAssign(&urlString);
-	while (string->ReadRawChar(&c)) {
-		if (c == '+') {
-			(*BeginAt(i)) = ' ';
-		} else if (c!= '%'){
-			(*BeginAt(i)) = c;
-		} else {
-		    // c == '%'. according to the document, single % is not legal in a url string.
-			Utf8Char value = 0;
-			if (string->ReadUrlToken(&value)){
-			    (*BeginAt(i)) = (Utf8Char)value;
-			} else {
-			    (*BeginAt(i)) = '%';
-			}
-		}
-		i++;
-	}
-	return true;
+    Utf8Char c;
+    IntIndex originLen = 0;
+    Boolean unreservedC = false;
+    SubString urlString(string);
+    while(string->ReadRawChar(&c)) {
+        unreservedC = true;
+        if (c=='%'){
+            unreservedC = false;
+        }
+        if (unreservedC) {
+            originLen++;
+        } else {
+            string->ReadUrlEncodedToken(null);
+            originLen++;
+        }
+    }
+    IntIndex i = this->Length();
+    this->Resize1D(this->Length()+originLen);
+    string->AliasAssign(&urlString);
+    while (string->ReadRawChar(&c)) {
+        if (c == '+') {
+            (*BeginAt(i)) = ' ';
+        } else if (c!= '%'){
+            (*BeginAt(i)) = c;
+        } else {
+            // c == '%'. according to the document, single % is not legal in a url string.
+            Utf8Char value = 0;
+            if (string->ReadUrlEncodedToken(&value)){
+                (*BeginAt(i)) = (Utf8Char)value;
+            } else {
+                (*BeginAt(i)) = '%';
+            }
+        }
+        i++;
+    }
+    return true;
 }
 
+/**
+ * This one will escape the input substring and then append it to current string
+ * e.g. It is used for JSON formating.
+ * */
+Boolean String::EscapeSubString(SubString* string)
+{
+    Int32 needLength = 0;
+    const Utf8Char* begin = string->Begin();
+    for (IntIndex i=0; i< string->Length(); i++) {
+        Utf8Char c = *(begin+i);
+        // see the document on http://json.org. need handle more control character and \uhexadecimal
+        switch (c) {
+        case '\n': case '\r': case '\t':
+        case '\f' : case '\b': case '\\':
+        case '"':
+        {
+
+            needLength += 2;
+        }
+            break;
+        default:
+            needLength++;
+            break;
+        }
+    }
+    IntIndex originLength = Length();
+    this->Resize1D(Length()+needLength);
+    Utf8Char* ptr = this->BeginAt(originLength);
+    for (IntIndex i=0; i< string->Length(); i++) {
+        Utf8Char c = *(begin + i);
+        switch (c) {
+        case '\n':
+        {
+            *ptr++ = '\\';
+            *ptr++ = 'n';
+        }
+            break;
+        case '\r':
+        {
+            *ptr++ = '\\';
+            *ptr++ ='r';
+        }
+            break;
+        case '\t':
+        {
+            *ptr++ = '\\';
+            *ptr++ = 't';
+        }
+           break;
+        case '\f' :
+        {
+            *ptr++ = '\\';
+            *ptr++  = 'f';
+        }
+           break;
+        case '\b':
+        {
+           *ptr++ = '\\';
+           *ptr++ = 'b';
+        }
+           break;
+        case '\\':
+        {
+            *ptr++ = '\\';
+            *ptr++ = '\\';
+        }
+           break;
+        case '"':
+        {
+            *ptr++ = '\\';
+            *ptr++  = '\"';
+        }
+        break;
+        default:
+            *ptr++ = c;
+            break;
+       }
+    }
+    return true;
+}
 //------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
 {
@@ -338,9 +418,9 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(DecodeUrlString, StringRef, StringRef)
 {
-	SubString urlString = _Param(0)->MakeSubStringAlias();
-	_Param(1)->Resize1D(0);
-	_Param(1)->AppendUrlSubString(&urlString);
+    SubString urlString = _Param(0)->MakeSubStringAlias();
+    _Param(1)->Resize1D(0);
+    _Param(1)->AppendUrlEncodedSubString(&urlString);
     return _NextInstruction();
 
 }

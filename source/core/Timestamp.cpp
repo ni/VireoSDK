@@ -235,21 +235,27 @@ Int64 PlatformTime::TickCountToMicroseconds(PlatformTickType ticks)
 #endif
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
+VIREO_FUNCTION_SIGNATURE2(GetTickCount, StaticType, void)
 {
-    _Param(0) = PlatformTime::TickCount();
+    Int64 value = PlatformTime::TickCount();
+    ConvertNumericRange(_Param(0).TopAQSize(), true, value, &value);
+    WriteIntToMemory(_Param(0).BitEncoding(), _Param(0).TopAQSize(), _ParamPointer(1), value);
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64)
+VIREO_FUNCTION_SIGNATURE2(GetMicrosecondTickCount, StaticType, void)
 {
-    _Param(0) = PlatformTime::TickCountToMicroseconds(PlatformTime::TickCount());
+    Int64 value = PlatformTime::TickCountToMicroseconds(PlatformTime::TickCount());
+    ConvertNumericRange(_Param(0).TopAQSize(), true, value, &value);
+    WriteIntToMemory(_Param(0).BitEncoding(), _Param(0).TopAQSize(), _ParamPointer(1), value);
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
+VIREO_FUNCTION_SIGNATURE2(GetMillisecondTickCount, StaticType, void)
 {
-    _Param(0) = (UInt32) PlatformTime::TickCountToMilliseconds(PlatformTime::TickCount());
+    Int64 value = (UInt32) PlatformTime::TickCountToMilliseconds(PlatformTime::TickCount());
+    ConvertNumericRange(_Param(0).TopAQSize(), true, value, &value);
+    WriteIntToMemory(_Param(0).BitEncoding(), _Param(0).TopAQSize(), _ParamPointer(1), value);
     return _NextInstruction();
 }
 
@@ -617,9 +623,9 @@ Int32 Date::isDTS()
 
 DEFINE_VIREO_BEGIN(Timestamp)
     // Low level time functions
-    DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
-    DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
-    DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
+    DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.StaticTypeAndData))")
 
 #if defined(VIREO_TYPE_Timestamp)
 

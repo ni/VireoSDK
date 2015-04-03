@@ -30,7 +30,8 @@ enum TokenTraits
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_AlphaNum,       // a123
+    TokenTraits_Punctuation,     // , ( ) { } [ ] (Some 'punctuation' are resered: * @)
+    TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Parens,         // ()    typically added to others to allow expressions
 };
@@ -41,7 +42,7 @@ enum TokenTraits
 
 enum AsciiCharTraitsEnum {
     kACT_Id          = 0x01,    // Valid part of an identier
-    kACT_Symbol      = 0x02,
+    kACT_Punctuation  = 0x02,
     kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x08,
     kACT_Decimal     = 0x10,
@@ -84,21 +85,21 @@ const UInt8 AsciiCharTraits[] =
     0,
     0,
     /* 20    */   kACT_Space,   //32
-    /* 21 !  */   kACT_Symbol,
+    /* 21 !  */   kACT_Punctuation,
     /* 22 "  */   0,
-    /* 23 #  */   kACT_Symbol,
+    /* 23 #  */   kACT_Punctuation,
     /* 24 $  */   kACT_Id,
     /* 25 %  */   kACT_Id,
-    /* 26 &  */   kACT_Symbol,
+    /* 26 &  */   kACT_Punctuation,
     /* 27 '  */   0,
-    /* 28 (  */   kACT_Symbol,
-    /* 29 )  */   kACT_Symbol,
+    /* 28 (  */   kACT_Punctuation,
+    /* 29 )  */   kACT_Punctuation,
     /* 2A *  */   kACT_Id,
     /* 2B +  */   kACT_Id,
-    /* 2C ,  */   kACT_Symbol,
+    /* 2C ,  */   kACT_Punctuation,
     /* 2D -  */   kACT_Id,
     /* 2E .  */   kACT_Id,
-    /* 2F /  */   kACT_Symbol,
+    /* 2F /  */   kACT_Punctuation,
     /* 30 0  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,      //48
     /* 31 1  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
     /* 32 2  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
@@ -142,10 +143,10 @@ const UInt8 AsciiCharTraits[] =
     /* 58 X  */   kACT_Id | kACT_Letter,
     /* 59 Y  */   kACT_Id | kACT_Letter,
     /* 5A Z  */   kACT_Id | kACT_Letter,
-    /* 5B [  */   kACT_Symbol,
-    /* 5C \  */   kACT_Symbol,
-    /* 5D ]  */   kACT_Symbol,
-    /* 5E ^  */   kACT_Symbol,
+    /* 5B [  */   kACT_Punctuation,
+    /* 5C \  */   kACT_Punctuation,
+    /* 5D ]  */   kACT_Punctuation,
+    /* 5E ^  */   kACT_Punctuation,
     /* 5F _  */   kACT_Id,
     /* 60 `  */   0,      //96
     /* 61 a  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -174,10 +175,10 @@ const UInt8 AsciiCharTraits[] =
     /* 78 x  */   kACT_Id | kACT_Letter,
     /* 79 y  */   kACT_Id | kACT_Letter,
     /* 7A z  */   kACT_Id | kACT_Letter,
-    /* 7B {  */   kACT_Symbol,
-    /* 7C |  */   kACT_Symbol,
-    /* 7D }  */   kACT_Symbol,
-    /* 7E ~  */   kACT_Symbol,
+    /* 7B {  */   kACT_Punctuation,
+    /* 7C |  */   kACT_Punctuation,
+    /* 7D }  */   kACT_Punctuation,
+    /* 7E ~  */   kACT_Punctuation,
     /* 7F del*/   0,
 };
     
@@ -190,11 +191,9 @@ public:
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
     static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
     static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
-    static Boolean IsLetterChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Letter)); }
     static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
-    static Boolean IsSymbolChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Symbol); }
+    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
     static Int32   CharLength(const Utf8Char* begin);
-    
     
 public:
     SubString()                         {}
@@ -203,45 +202,89 @@ public:
     SubString(SubString* original)      { AliasAssign(original->Begin(), original->End()); }
     void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
     
+    //! Skip all tokens and comments up to the next eol sequence
     void EatToEol();
+    
+    //! Skip the next char if it matches the singel character token specified
     Boolean EatChar(char token);
+    
+    //! Skip the next sequence of chars that match a speciic trait (e.g. hexadecimal)
     Int32 EatCharsByTrait(UInt8 trait);
+    
+    //! Skip white space and comments
     void EatLeadingSpaces();
+
+    //! Skip white space only
     void EatWhiteSpaces();
-    void EatOptionalComma();
+
+    //! Skip logical characters accounting for UTF-8 multibyte sequences
     void EatRawChars(Int32 count);
 
-    Int32 ReadEscapeToken(SubString* token);
+    //! Creat two sub strings base on the first occurence of a separator
     bool SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
-    Int32 LengthAferProcessingEscapes();
-    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
-    
+    //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
-    Boolean CompareEncodedString(SubString*  urlString);
-    Boolean ReadRawChar(Utf8Char* token);
-    Boolean ReadUtf32(Utf32Char* value);
-    Boolean ReadGraphemeCluster(SubString* token);
-    Boolean ReadLine(SubString* line);
-    Boolean ReadMetaInt(IntIndex* value);
-    Boolean ReadInt(IntMax* value);
-    Boolean ParseDouble(Double* value);
-    Boolean ReadNameToken(SubString* token);
-    Boolean ReadToken(SubString* token);
-    Boolean ReadUrlToken(Utf8Char* value);
-    Boolean ReadSubexpressionToken(SubString* token);
-    Boolean IdentifierIsNext() const;
-    TokenTraits ClassifyNextToken() const;
 
-    Int32 CountMatches(char value);
-    Int32 StringLength();
-    void TrimQuotedString();
+    //! compare with the encoded string
+    Boolean CompareEncodedString(SubString*  urlString);
+    
+    //! Fucntions to work with backslash '\' escapes in strings
+    Int32 ReadEscapeToken(SubString* token);
+    Boolean ReadRawChar(Utf8Char* token);
+    Int32 LengthAferProcessingEscapes();
+    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
+    
+    //! Read the next UTF-8 sequnce and decode it into a regular UTF-32 code point.
+    Boolean ReadUtf32(Utf32Char* value);
+    
+    //! Read the next set of code points that make up a single grapheme.
+    Boolean ReadGraphemeCluster(SubString* token);
+
+    //! Read a line from the Utf-8 sequence
+    Boolean ReadLine(SubString* line);
+
+    //! Read the next sequence of digits and parse them as an integer.
+    Boolean ReadInt(IntMax* value);
+    
+    //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
+    Boolean ReadMetaInt(IntIndex* value);
+    
+    //! Read the next sequence of digits and parse them as a Double.
+    Boolean ParseDouble(Double* value);
+    
+    //! Read a simple token
+    Boolean ReadToken(SubString* token);
+    
+    //! Read an Encoded token
+    Boolean ReadUrlEncodedToken(Utf8Char* value);
+
+    //! Read a simple name (like a field name in a JSON object)
+    Boolean ReadNameToken(SubString* token);
+    
+    //! Read a token and classify it.
     TokenTraits ReadValueToken(SubString* token);
+    
+    //! Read a token or parenthesized expression of arbitrary depth.
+    Boolean ReadSubexpressionToken(SubString* token);
+    
+    //! Peek at the next token and classify it.
+    TokenTraits ClassifyNextToken() const;
+ 
+    //! Count occurrences of a specified Ascii character.
+    Int32 CountMatches(char value);
+    
+    //! Length of the string in logical UTF-8 encoded code points.
+    Int32 StringLength();
+    
+    //! Remove quotes (single or double) from the ends of a string
+    void TrimQuotedString();
+    
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 

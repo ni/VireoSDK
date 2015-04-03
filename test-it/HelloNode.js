@@ -28,7 +28,10 @@ console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify('multi\nline with \'single\' and \"double\" quotes'));
 console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 
-
 // Write string that is not in JSON format.
 vireo.writeJSON('HelloWorld', 'variable1', 'Buenas Dias');
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
+
+// Write string that has been fixed.
+vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify('Buenas Dias'));
 console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');

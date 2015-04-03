@@ -555,8 +555,8 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             // Get the dim lengths and slabs for tha actual array, not its
             // reference type. The reference type may indicate variable size
             // but the actaul array will always have a specific size.
-            IntIndex* pLengths = pArray->GetDimensionLengths();
-            IntIndex* pSlabs = pArray->GetSlabLengths();
+            IntIndex* pLengths = pArray->DimensionLengths();
+            IntIndex* pSlabs = pArray->SlabLengths();
 
             // Now that the Array is the right size, parse the initializers storing
             // as many as there is room for. Log a warning if extras are found.
@@ -723,7 +723,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         return;
                     }
                 }
-                SubString typeName = type->GetName();
+                SubString typeName = type->Name();
                 LOG_EVENTV(kHardDataError, "Parsing pointer type '%.*s'", FMT_LEN_BEGIN(&typeName));
             }
             break;
@@ -766,7 +766,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         TypeRef elementType = null;
                         for (elmIndex = 0;!found && elmIndex<type->SubElementCount(); elmIndex++) {
                             elementType= type->GetSubElement(elmIndex);
-                            SubString name = elementType->GetElementName();
+                            SubString name = elementType->ElementName();
                             elementData = baseOffset + elementType->ElementOffset();
                             found = fieldName.CompareEncodedString(&name);
                         }
@@ -1166,7 +1166,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     state._actualArgumentName = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
-                        SubString formalParameterTypeName = formalType->GetName();
+                        SubString formalParameterTypeName = formalType->Name();
                         
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
                             VIREO_ASSERT(!state.VarArgParameterDetected());                    
@@ -1322,7 +1322,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("a(");
         type->GetSubElement(0)->Accept(this);
-        IntIndex* pDimension = type->GetDimensionLengths();
+        IntIndex* pDimension = type->DimensionLengths();
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
@@ -1336,7 +1336,7 @@ private:
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
         type->BaseType()->Accept(this);
-        SubString elementName = type->GetElementName();
+        SubString elementName = type->ElementName();
         if (elementName.Length()>0) {
             // Add element name if it exists.
             _pFormatter->_string->Append(' ');
@@ -1350,7 +1350,7 @@ private:
         // At this point names are terminal elements.
         // There needs to be a mechanism that will optionally collect all the named dependencies
         // in a type.
-        SubString name = type->GetName();
+        SubString name = type->Name();
         if (name.Length()>0 ) {
             _pFormatter->_string->Append('.');
             _pFormatter->_string->Append(name.Length(), (Utf8Char*)name.Begin());
@@ -1518,7 +1518,7 @@ void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pD
 //------------------------------------------------------------
 void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
 {
-    SubString name = pointerType->GetName();
+    SubString name = pointerType->Name();
     // For pointer types, they are opaque to runtime code.
     // So the dispatch is now directed based on the type.
     if (name.CompareCStr(tsTypeType)) {
@@ -1558,87 +1558,12 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         if (_options._bQuoteStrings) {
             _string->Append(_options._pChars->_quote);
         }
-        IntIndex needLength = 0;
         if(*_options._pChars->_name == 'J') {
-            for (IntIndex i=0; i< pArray->Length();i++)
-            {
-                Utf8Char c = *((Utf8Char*)pArray->BeginAt(i));
-                // see the document on http://json.org. need handle more control character and \uhexadecimal
-                switch (c)
-                {
-                case '\n': case '\r': case '\t':
-                case '\f' : case '\b': case '\\':
-                case '"':{
-                    needLength += 2;
-                }
-                break;
-                default:
-                    needLength++;
-                    break;
-                }
-            }
-            IntIndex ptr = _string->Length();
-            _string->Resize1D(_string->Length()+needLength);
-            for (IntIndex i=0; i< pArray->Length();i++)
-              {
-                  Utf8Char c = *((Utf8Char*)pArray->BeginAt(i));
-                  switch (c)
-                  {
-                  case '\n': {
-                      *_string->BeginAt(ptr)= '\\';
-                      ptr++;
-                      *_string->BeginAt(ptr)= 'n';
-                   } break;
-                  case '\r':{
-                      *_string->BeginAt(ptr)= '\\';
-                      ptr++;
-                      *_string->BeginAt(ptr)='r';
-
-                  }break;
-                  case '\t':{
-                      *_string->BeginAt(ptr)= '\\';
-                      ptr++;
-                      *_string->BeginAt(ptr) = 't';
-                  }
-                  break;
-
-                  case '\f' :{
-                      *_string->BeginAt(ptr)= '\\';
-                       ptr++;
-                       *_string->BeginAt(ptr) = 'f';
-                  }break;
-                  case '\b':
-                      {
-                          *_string->BeginAt(ptr)= '\\';
-                          ptr++;
-                          *_string->BeginAt(ptr)= 'b';
-                      }
-                      break;
-                 case '\\':
-                 {
-                     *_string->BeginAt(ptr)= '\\';
-                      ptr++;
-                      *_string->BeginAt(ptr)= '\\';
-                  }
-                      break;
-                  case '"':{
-                      *_string->BeginAt(ptr)= '\\';
-                        ptr++;
-                        *_string->BeginAt(ptr) = '\"';
-                  }
-                  break;
-                  default:
-                      *_string->BeginAt(ptr) =c;
-                      break;
-                  }
-                  ptr++;
-              }
-           for(int i =0;i<_string->Length(); i++)
-           {
-            }
-        } else {
+            SubString ss(pArray->RawBegin(), pArray->RawBegin() + pArray->Length());
+            _string->EscapeSubString(&ss);
+        }
+         else {
             _string->Append(pArray->Length(), pArray->RawBegin());
-
         }
 
         if (_options._bQuoteStrings) {
@@ -1647,8 +1572,8 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
     } else if (rank > 0) {
         _options._bQuoteStrings = true;
         FormatArrayDataRecurse(elementType, rank, pArray->BeginAt(0),
-                               pArray->GetDimensionLengths(),
-                               pArray->GetSlabLengths());
+                               pArray->DimensionLengths(),
+                               pArray->SlabLengths());
     } else if (rank == 0) {
         FormatData(elementType, pArray->RawObj());
     }
@@ -1692,13 +1617,13 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
         }
         TypeRef elementType = type->GetSubElement(i++);
         if (_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
-            SubString ss = elementType->GetElementName();
+            SubString ss = elementType->ElementName();
             Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
             if (useQuotes)
                 _string->Append('\"');
             //TODO use percent encoding when needed
            // _string->Append(ss.Length(), ss.Begin());
-             _string->AppendUrlSubString(&ss);
+             _string->AppendUrlEncodedSubString(&ss);
             if (useQuotes)
                 _string->Append('\"');
             _string->Append(':');
@@ -1786,17 +1711,17 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
 }
 VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 {
-	_Param(3)->Resize1D(0);
-	SubString json("JSON");
+    _Param(3)->Resize1D(0);
+    SubString json("JSON");
     TDViaFormatter formatter(_Param(3), true, 0, &json);
     if (_Param(0).IsCluster()) {
-    	formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
+        formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
     } else if (_Param(0).IsArray()) {
-    	formatter.FormatArrayData(_ParamPointer(0), (TypedArrayCoreRef)_ParamPointer(1), _Param(0).Rank());
+        formatter.FormatArrayData(_ParamPointer(0), (TypedArrayCoreRef)_ParamPointer(1), _Param(0).Rank());
     } else {
-    	formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
+        formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     }
-	return _NextInstruction();
+    return _NextInstruction();
 }
 /**
  * Unflatten from JSON string.
@@ -1806,28 +1731,28 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
  * */
 VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
 {
-	SubString jsonString = _Param(0)->MakeSubStringAlias();
-	TypedArray1D<StringRef>* itemPath = _Param(3);
+    SubString jsonString = _Param(0)->MakeSubStringAlias();
+    TypedArray1D<StringRef>* itemPath = _Param(3);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat("JSON");
     TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &jsonString, &log, 1, &jsonFormat);
-	if (itemPath->Length()>0) {
-	    Boolean existingPath = true;
-	    for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
-	        SubString p = itemPath->At(i)->MakeSubStringAlias();
-	        if(!parser.EatJSONPath(&p)) {
-	            existingPath = false;
-	        }
-	    }
-	    if (existingPath){
-	        parser.ParseData(_ParamPointer(1), _ParamPointer(2));
-	    } else {
-	        // printf("not found\n");
-	    }
-	} else {
-	    parser.ParseData(_ParamPointer(1), _ParamPointer(2));
-	}
-	return _NextInstruction();
+    if (itemPath->Length()>0) {
+        Boolean existingPath = true;
+        for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
+            SubString p = itemPath->At(i)->MakeSubStringAlias();
+            if(!parser.EatJSONPath(&p)) {
+                existingPath = false;
+            }
+        }
+        if (existingPath){
+            parser.ParseData(_ParamPointer(1), _ParamPointer(2));
+        } else {
+            // printf("not found\n");
+        }
+    } else {
+        parser.ParseData(_ParamPointer(1), _ParamPointer(2));
+    }
+    return _NextInstruction();
 }
 
 #endif
