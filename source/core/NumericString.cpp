@@ -2155,6 +2155,8 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         }
     }
 }
+
+//-------------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef outputArray = _Param(3);

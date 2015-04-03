@@ -192,13 +192,13 @@ Boolean SubString::ReadLine(SubString* line)
          return false;
      }
      while (_begin < _end) {
-         if (*_begin == 0x0A) {
+         if (*_begin == '\n') {
              line->AliasAssign(initialBegin, _begin);
              _begin++;
              return true;
-         } else if (*_begin == 0x0D) {
+         } else if (*_begin == '\r') {
              line->AliasAssign(initialBegin, _begin);
-             if (_begin+1 <_end && *(_begin+1)==0x0A) {
+             if (_begin+1 < _end && *(_begin+1) == '\n') {
                  _begin++;
              }
              _begin++;

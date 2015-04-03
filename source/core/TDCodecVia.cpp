@@ -43,8 +43,10 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _loadVIsImmediatly = false;
 
    if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
+       _options._bEscapeStrings = false;
        _options._pChars = &TDViaFormatter::formatVIA;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
+       _options._bEscapeStrings = true;
        _options._pChars = &TDViaFormatter::formatJSON;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
        _options._pChars = &TDViaFormatter::formatC;
@@ -729,7 +731,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-                if(*(_options._pChars->_name)=='V') {
+                if (_options._pChars->ViaFormatChars == kViaFormat_NoFieldNames) {
                     _string.ReadValueToken(&token);
                     if (token.CompareCStr("(")) {
                         // List of values (a b c)
@@ -744,9 +746,8 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                             i++;
                         }
                     }
-                } else if(*(_options._pChars->_name)=='J'){
+                } else if(_options._pChars->ViaFormatChars == kViaFormat_UseFieldNames){
                     // the json cluster always contains the name
-
                     // JSON generally igonre any white space around or between syntactic elements
                     // JSON does not provide or allow any sort of comment syntax
                     _string.EatWhiteSpaces();
@@ -781,7 +782,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
                     }
-
                 }
             }
             break;
@@ -820,9 +820,10 @@ Boolean EatJSONItem(SubString* input)
         input->ReadToken(&token);
     }
     return true;
+
 }
 /**
- * Will find the start location of the specified item "path" in the JSON string
+ * Will find the start e location of the specified item "path" in the JSON string
  * return true if successfully, otherwise return false.
  * The function is smart which means it can search either in the cluster or the array.
  * */
@@ -1407,8 +1408,10 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _options._fieldWidth = fieldWidth;
     
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
+        _options._bEscapeStrings = false;
         _options._pChars = &formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
+        _options._bEscapeStrings = true;
         _options._pChars = &formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._pChars = &formatC;
@@ -1544,7 +1547,6 @@ void TDViaFormatter::FormatType(TypeRef type)
     }
 }
 //------------------------------------------------------------
-
 void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
 {
     TypeRef elementType = pArray->ElementType();
@@ -1558,7 +1560,8 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         if (_options._bQuoteStrings) {
             _string->Append(_options._pChars->_quote);
         }
-        if(*_options._pChars->_name == 'J') {
+        // whether need to escape the string
+        if(_options._bEscapeStrings) {
             SubString ss(pArray->RawBegin(), pArray->RawBegin() + pArray->Length());
             _string->EscapeSubString(&ss);
         }

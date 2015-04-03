@@ -85,10 +85,7 @@ Boolean String::EscapeSubString(SubString* string)
         case '\n': case '\r': case '\t':
         case '\f' : case '\b': case '\\':
         case '"':
-        {
-
             needLength += 2;
-        }
             break;
         default:
             needLength++;
@@ -102,46 +99,32 @@ Boolean String::EscapeSubString(SubString* string)
         Utf8Char c = *(begin + i);
         switch (c) {
         case '\n':
-        {
             *ptr++ = '\\';
             *ptr++ = 'n';
-        }
             break;
         case '\r':
-        {
             *ptr++ = '\\';
             *ptr++ ='r';
-        }
             break;
         case '\t':
-        {
             *ptr++ = '\\';
             *ptr++ = 't';
-        }
            break;
         case '\f' :
-        {
             *ptr++ = '\\';
             *ptr++  = 'f';
-        }
            break;
         case '\b':
-        {
            *ptr++ = '\\';
            *ptr++ = 'b';
-        }
            break;
         case '\\':
-        {
             *ptr++ = '\\';
             *ptr++ = '\\';
-        }
            break;
         case '"':
-        {
             *ptr++ = '\\';
             *ptr++  = '\"';
-        }
         break;
         default:
             *ptr++ = c;

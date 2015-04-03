@@ -48,6 +48,7 @@ struct ViaFormatOptions
 {
     //Once formatter digs below top level this will be on. Constructor controls initial value
     Boolean         _bQuoteStrings;
+    Boolean         _bEscapeStrings;
     Int32           _fieldWidth;
     ViaFormatChars  *_pChars;
 };
