@@ -100,20 +100,20 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         }
         if (c == '<') {
             SubString charSet(">");
-			IntIndex charSetIndex = format->FindFirstMatch(&charSet, 0, false);
-			if (charSetIndex < 0) {
-				bValid = false;
-			} else {
-				char timeCode = *(format->Begin()+charSetIndex + 1);
+            IntIndex charSetIndex = format->FindFirstMatch(&charSet, 0, false);
+            if (charSetIndex < 0) {
+                bValid = false;
+            } else {
+                char timeCode = *(format->Begin()+charSetIndex + 1);
                 format->AliasAssign(format->Begin()+charSetIndex+2, format->End());
-				if (timeCode == 't') {
-					pOptions->FormatChar = 't';
-				} else if (timeCode == 'T') {
-					pOptions->FormatChar = 'T';
-				} else {
-					bValid = false;
-				}
-			}
+                if (timeCode == 't') {
+                    pOptions->FormatChar = 't';
+                } else if (timeCode == 'T') {
+                    pOptions->FormatChar = 'T';
+                } else {
+                    bValid = false;
+                }
+            }
             break;
         }
         if (c == '+') {
@@ -135,7 +135,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             if (format->ReadInt(&value)) {
                 pOptions->Precision = (Int32)value;
             } else {
-            	bValid = false;
+                bValid = false;
             }
         } else if (c == '_') {
             bPrecision = true;
@@ -241,42 +241,10 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
         }
     }
 }
-/*
- * Handle the Integer overflow in Labview.
- * */
-void ConvertNumericType(Int32 size, Boolean unsign, IntMax input, IntMax* output)
-{
-    IntMax NumericLimit[12] = {0, 255, -127, 128, 0, 65536, -32768, 32767, 0, 4294967295, -2147483648, 2147483647};
-    int limitIndex = 0;
-    if (size < 8) {
-        switch (size) {
-        case 1:
-            limitIndex = 0;
-        break;
-        case 2:
-            limitIndex = 1;
-        break;
-        case 4:
-            limitIndex = 2;
-        break;
-        default:
-            limitIndex = 0;
-        }
-        if (!unsign) {
-            limitIndex = limitIndex*4 + 2;
-        } else {
-            limitIndex = limitIndex*4;
-        }
-        if (input<NumericLimit[limitIndex]) {
-            input = NumericLimit[limitIndex];
-        } else if (input>NumericLimit[limitIndex+1]) {
-            input = NumericLimit[limitIndex+1];
-        }
-        *output = input;
-    }
-    // do nothing for int64 and uint64. We may not reach the max uint64 now.
-}
 
+/**
+ * main format function, all the %format functionality is done through this one
+ * */
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
 {
     IntIndex argumentIndex = 0;
@@ -389,9 +357,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 truncateSignificant = 0;
                         // calculate the exponent of the number, it also tell us whether should truncate the integer part.
                         if (fOptions.Significant >= 0) {
-                        	if (fOptions.Significant == 0) {
-                        		fOptions.Significant = 1;
-                        	}
+                            if (fOptions.Significant == 0) {
+                                fOptions.Significant = 1;
+                            }
                             if (tempDouble != 0) {
                                 Double absDouble = tempDouble;
                                 if (tempDouble < 0) {
@@ -553,7 +521,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
                         specifier[0] = fOptions.FormatChar;
                         if(fOptions.NumericLength[0] == '\0') {
-                        	tempFormat.AppendCStr("ll");
+                            tempFormat.AppendCStr("ll");
                         }
                         tempFormat.AppendCStr(specifier);
 
@@ -561,14 +529,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
                         if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
+                            // when reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                ConvertNumericType(4, true, intValue, &intValue);
+                                ConvertNumericRange(4, true, intValue, &intValue);
                             } else {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                ConvertNumericType(4, false, intValue, &intValue);
+                                ConvertNumericRange(4, false, intValue, &intValue);
                             }
-                           // printf("dou to int :%lld\n", intValue);
 
                         } else {
                             ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
@@ -576,15 +544,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         Int32 length = snprintf(formattedNumber, kTempCStringLength, tempFormat.BeginCStr(), intValue);
                         if (fOptions.FormatChar == 'd') {
-                        	if (fOptions.Significant == 0) {
-                        		fOptions.Significant++;
-                        	}
-                        	if (fOptions.Significant > 0){
+                            if (fOptions.Significant == 0) {
+                                fOptions.Significant++;
+                            }
+                            if (fOptions.Significant > 0){
                                 fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-strlen(fOptions.NumericLength));
                                 tempFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
                                 length = snprintf(formattedNumber, kTempCStringLength, "%lld", intValue);
                                 RefactorLabviewNumeric(&fOptions, formattedNumber, &length, 0, 0);
-                        	}
+                            }
                         }
                         buffer->Append(length, (Utf8Char*)formattedNumber);
                         argumentIndex++;
@@ -620,67 +588,67 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         argumentIndex++;
                     }
-                    	break;
+                        break;
                     case 'T':
                     {
-                    	Int32 timezone = Date::getLocaletimeZone();
-                    	if (!fOptions.EngineerNotation) {
-                    		 timezone = 0;
-                    	}
+                        Int32 timezone = Date::getLocaletimeZone();
+                        if (!fOptions.EngineerNotation) {
+                             timezone = 0;
+                        }
                         SubString strDateType("Timestamp");
                         TypeRef argType = arguments[argumentIndex]._paramType;
 
-                    	SubString datetimeFormat;
-                    	TempStackCString defaultTimeFormat;
-                    	SubString tempFormat(&fOptions.FmtSubString);
-                    	Utf8Char subCode;
+                        SubString datetimeFormat;
+                        TempStackCString defaultTimeFormat;
+                        SubString tempFormat(&fOptions.FmtSubString);
+                        Utf8Char subCode;
 
-                		char defaultFormatString[kTempCStringLength];
+                        char defaultFormatString[kTempCStringLength];
 
-                    	while(tempFormat.ReadRawChar(&subCode)) {
-                    		if (subCode == '^') {
-                    			timezone = 0;
-                    		} else if (subCode == '<') {
-                    			datetimeFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
-                    		} else if (subCode == '>') {
-                    			datetimeFormat.AliasAssign(datetimeFormat.Begin(), tempFormat.Begin()-1);
-                    		}
-                    	}
-                    	if (datetimeFormat.Length() == 0) {
-                    		Int32 fractionLen = -1;
-							if (fOptions.MinimumFieldWidth >= 0)
-							{
-								fractionLen = fOptions.MinimumFieldWidth;
-							}
-							if (fOptions.Precision >= 0) {
-								fractionLen = fOptions.Precision;
-							}
-							if (fractionLen < 0) {
-								fractionLen = 3;
-							}
-                    		if (fractionLen>0) {
-                    			sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", fractionLen);
-                    		} else {
-                    			sprintf(defaultFormatString, "%%#I:%%M:%%S %%p %%m/%%d/%%Y");
-                    		}
-							defaultTimeFormat.AppendCStr(defaultFormatString);
-							datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
-                    	}
+                        while(tempFormat.ReadRawChar(&subCode)) {
+                            if (subCode == '^') {
+                                timezone = 0;
+                            } else if (subCode == '<') {
+                                datetimeFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
+                            } else if (subCode == '>') {
+                                datetimeFormat.AliasAssign(datetimeFormat.Begin(), tempFormat.Begin()-1);
+                            }
+                        }
+                        if (datetimeFormat.Length() == 0) {
+                            Int32 fractionLen = -1;
+                            if (fOptions.MinimumFieldWidth >= 0)
+                            {
+                                fractionLen = fOptions.MinimumFieldWidth;
+                            }
+                            if (fOptions.Precision >= 0) {
+                                fractionLen = fOptions.Precision;
+                            }
+                            if (fractionLen < 0) {
+                                fractionLen = 3;
+                            }
+                            if (fractionLen>0) {
+                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", fractionLen);
+                            } else {
+                                sprintf(defaultFormatString, "%%#I:%%M:%%S %%p %%m/%%d/%%Y");
+                            }
+                            defaultTimeFormat.AppendCStr(defaultFormatString);
+                            datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
+                        }
 
-                    	if (argType->IsA(&strDateType)) {
-							Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
-							Date date(time, timezone);
-							validFormatString = ToString(date, &datetimeFormat, buffer);
-						} else {
-							Double tempDouble;
-							ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
-							Timestamp time(tempDouble);
-							Date date(time, timezone);
-							validFormatString = ToString(date, &datetimeFormat, buffer);
-						}
-                    	 argumentIndex++;
+                        if (argType->IsA(&strDateType)) {
+                            Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+                            Date date(time, timezone);
+                            validFormatString = ToString(date, &datetimeFormat, buffer);
+                        } else {
+                            Double tempDouble;
+                            ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
+                            Timestamp time(tempDouble);
+                            Date date(time, timezone);
+                            validFormatString = ToString(date, &datetimeFormat, buffer);
+                        }
+                         argumentIndex++;
                     }
-                    	break;
+                        break;
                     default:
                     printf("special error character %c\n",fOptions.FormatChar );
                     // This is just part of the format specifier, let it become part of the percent format
@@ -770,7 +738,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 *(buffer+i) = '0';
             }
             if (extend) {
-            	numberEnd++;
+                numberEnd++;
                 for (Int32 i = numberEnd; i > numberStart; i--) {
                     *(buffer+i) = *(buffer+i-1);
                 }
@@ -894,54 +862,54 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
     } else if (formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'b') {
-    	Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+        Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
         TempStackCString numberPart(tempNumber, *pSize);
         GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
     } else if (formatOptions->FormatChar == 'd') {
-    	Boolean extend = false;
-    	buffer = bufferBegin;
-    	Int32 significant = formatOptions->Significant;
-    	if (significant < *pSize - numberStart) {
-    		if (*(buffer + significant + numberStart) < '5') {
-    			for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
-    				*(buffer+i) = '0';
-    			}
-    		} else {
-    			for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
-					*(buffer+i) = '0';
-				}
-    			(*(buffer+significant+numberStart-1))++;
-				for (Int32 i = significant + numberStart -1; i >= numberStart; i--) {
-					if (*(buffer+i) > '9') {
-						*(buffer+i) = '0';
-						if (i == numberStart) {
-							extend =true;
-							break;
-						}
-						*(buffer+i-1) = *(buffer+i-1) +1 ;
-					} else {
-						break;
-					}
-				}
-    		}
-			Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
-    		if (extend) {
-    			numberEnd++;
-				for (Int32 i = numberEnd; i > numberStart; i--) {
-					*(buffer+i) = *(buffer+i-1);
-				}
-				*(buffer+ numberStart) =  '1';
-				TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
-				GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-			} else {
-				TempStackCString numberPart(tempNumber, *pSize - numberStart);
-				GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-			}
-    	} else {
-	    	Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+        Boolean extend = false;
+        buffer = bufferBegin;
+        Int32 significant = formatOptions->Significant;
+        if (significant < *pSize - numberStart) {
+            if (*(buffer + significant + numberStart) < '5') {
+                for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
+                    *(buffer+i) = '0';
+                }
+            } else {
+                for (Int32 i = numberEnd; i >= significant + numberStart; i--) {
+                    *(buffer+i) = '0';
+                }
+                (*(buffer+significant+numberStart-1))++;
+                for (Int32 i = significant + numberStart -1; i >= numberStart; i--) {
+                    if (*(buffer+i) > '9') {
+                        *(buffer+i) = '0';
+                        if (i == numberStart) {
+                            extend =true;
+                            break;
+                        }
+                        *(buffer+i-1) = *(buffer+i-1) +1 ;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
+            if (extend) {
+                numberEnd++;
+                for (Int32 i = numberEnd; i > numberStart; i--) {
+                    *(buffer+i) = *(buffer+i-1);
+                }
+                *(buffer+ numberStart) =  '1';
+                TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
+                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+            } else {
+                TempStackCString numberPart(tempNumber, *pSize - numberStart);
+                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+            }
+        } else {
+            Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
             TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
-    		GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-    	}
+            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+        }
     }
 }
 
@@ -1056,16 +1024,16 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoull(inpBegin, &endPointer, 8);
         }
         case 'f' : case 'e' :{
-        	Double temp = strtold(inpBegin, &endPointer);
-        	// or round to even
-        	intValue = (IntMax)temp;
+            Double temp = strtold(inpBegin, &endPointer);
+            // or round to even
+            intValue = (IntMax)temp;
         }
             break;
         default:
             intValue = strtoull(inpBegin, &endPointer, 10);
             break;
         }
-        ConvertNumericType(argumentType->TopAQSize(), true, intValue, &intValue);
+        ConvertNumericRange(argumentType->TopAQSize(), true, intValue, &intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
@@ -1089,16 +1057,16 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoll(inpBegin, &endPointer, 8);
         }
         case 'f' : case 'e' :{
-			Double temp = strtold(inpBegin, &endPointer);
-			// or round to even
-			intValue = (IntMax)temp;
+            Double temp = strtold(inpBegin, &endPointer);
+            // or round to even
+            intValue = (IntMax)temp;
         }
             break;
         default:
             intValue = strtoll(inpBegin, &endPointer, 10);
             break;
         }
-        ConvertNumericType(argumentType->TopAQSize(), false, intValue, &intValue);
+        ConvertNumericRange(argumentType->TopAQSize(), false, intValue, &intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
@@ -1126,7 +1094,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                doubleValue = intValue;
            }
            case 'f' : case 'e' :{
-        	   doubleValue = strtold(inpBegin, &endPointer);
+               doubleValue = strtold(inpBegin, &endPointer);
            }
                break;
            default:
@@ -1420,40 +1388,40 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
 //---------------------------------------------------------------------
 void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAndData Value)
 {
-	SubString format = formatString->MakeSubStringAlias();
-	Utf8Char c = 0;
-	SubString remainingFormat;
-	TempStackCString tempformat;
+    SubString format = formatString->MakeSubStringAlias();
+    Utf8Char c = 0;
+    SubString remainingFormat;
+    TempStackCString tempformat;
 
-	if(format.Length() == 0) {
-		DefaultFormatCode(1,&Value, &tempformat);
-	} else {
-		Utf8Char* index = NULL;
-		while (format.ReadRawChar(&c))
-		{
-			index = (Utf8Char*)format.Begin();
-			if (c == '%') {
-				FormatOptions fOptions;
-				ReadPercentFormatOptions(&format, &fOptions);
-				if (!fOptions.Valid) {
-					remainingFormat.AliasAssign(format.Begin(), format.End());
-					format.AliasAssign(formatString->Begin(), index);
-					tempformat.Append(&format);
-					DefaultFormatCode(1,&Value, &tempformat);
-					break;
-				} else if (fOptions.ConsumeArgument){
-					remainingFormat.AliasAssign(format.Begin(), format.End());
-					format.AliasAssign(formatString->Begin(), format.Begin());
-					tempformat.Append(&format);
-					break;
-				}
-			} else {
-			}
-		}
-	}
-	format.AliasAssign(tempformat.Begin(), tempformat.End());
-	Format(&format, 1, &Value, output);
-	output->AppendSubString(&remainingFormat);
+    if(format.Length() == 0) {
+        DefaultFormatCode(1,&Value, &tempformat);
+    } else {
+        Utf8Char* index = NULL;
+        while (format.ReadRawChar(&c))
+        {
+            index = (Utf8Char*)format.Begin();
+            if (c == '%') {
+                FormatOptions fOptions;
+                ReadPercentFormatOptions(&format, &fOptions);
+                if (!fOptions.Valid) {
+                    remainingFormat.AliasAssign(format.Begin(), format.End());
+                    format.AliasAssign(formatString->Begin(), index);
+                    tempformat.Append(&format);
+                    DefaultFormatCode(1,&Value, &tempformat);
+                    break;
+                } else if (fOptions.ConsumeArgument){
+                    remainingFormat.AliasAssign(format.Begin(), format.End());
+                    format.AliasAssign(formatString->Begin(), format.Begin());
+                    tempformat.Append(&format);
+                    break;
+                }
+            } else {
+            }
+        }
+    }
+    format.AliasAssign(tempformat.Begin(), tempformat.End());
+    Format(&format, 1, &Value, output);
+    output->AppendSubString(&remainingFormat);
 }
 VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
@@ -1509,18 +1477,18 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, StaticType, void)
 {
-	StringRef inputString = _Param(0);
-	StringRef remainingString= _Param(1);
-	StringRef formatString = _Param(2);
-	SubString format = formatString->MakeSubStringAlias();
-	StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
-	SubString input= inputString->MakeSubStringAlias();
-	FormatScan(&input, &format, &Value);
-	if (remainingString!= NULL) {
-		remainingString->Resize1D(input.Length());
-		TypeRef elementType = remainingString->ElementType();
-		elementType->CopyData(input.Begin(), remainingString->Begin(), input.Length());
-	}
+    StringRef inputString = _Param(0);
+    StringRef remainingString= _Param(1);
+    StringRef formatString = _Param(2);
+    SubString format = formatString->MakeSubStringAlias();
+    StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
+    SubString input= inputString->MakeSubStringAlias();
+    FormatScan(&input, &format, &Value);
+    if (remainingString!= NULL) {
+        remainingString->Resize1D(input.Length());
+        TypeRef elementType = remainingString->ElementType();
+        elementType->CopyData(input.Begin(), remainingString->Begin(), input.Length());
+    }
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -1643,19 +1611,19 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                 {
                     case 'a' : case 'A':
                     {
-                    	Int32 index = date.WeekDay();
-                    	fOption.FormatChar == 'a' ? output->AppendCStr(abbrWeekDayName[index]) : output->AppendCStr(weekDayName[index]);
+                        Int32 index = date.WeekDay();
+                        fOption.FormatChar == 'a' ? output->AppendCStr(abbrWeekDayName[index]) : output->AppendCStr(weekDayName[index]);
                     }
                     break;
                     case 'b': case 'B':
                     {
-                    	Int32 index = date.Month();
-                    	fOption.FormatChar == 'b' ? output->AppendCStr(abbrMonthName[index]) : output->AppendCStr(monthName[index]);
+                        Int32 index = date.Month();
+                        fOption.FormatChar == 'b' ? output->AppendCStr(abbrMonthName[index]) : output->AppendCStr(monthName[index]);
                     }
                     break;
                     case 'c':
                     {
-                    	hourFormat = 12;
+                        hourFormat = 12;
                         TempStackCString localeFormatString;
                         SubString formatSubString(fOption.FmtSubString.Begin(), fOption.FmtSubString.End()-1);
                         localeFormatString.AppendCStr("%");
@@ -1771,7 +1739,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 fractionLen = 0;
                         if (fOption.MinimumFieldWidth >= 0)
                         {
-                        	fractionLen = fOption.MinimumFieldWidth;
+                            fractionLen = fOption.MinimumFieldWidth;
                         }
                         if (fOption.Precision >= 0) {
                             fractionLen = fOption.Precision;
@@ -1835,7 +1803,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         } else if (fOption.Precision == 2) {
                             localeFormatString.AppendCStr("%a, %b %d, %Y");
                         } else {
-                        	// to do locale specifi format
+                            // to do locale specifi format
                             localeFormatString.AppendCStr("%m/%d/%Y");
                         }
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
@@ -1844,21 +1812,21 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         break;
                     case 'X':
                     {
-                    	hourFormat = 12;
+                        hourFormat = 12;
                         TempStackCString localeFormatString;
                         Int32 fractionLen = 0;
                         if (fOption.MinimumFieldWidth >= 0)
                         {
-                        	fractionLen = fOption.MinimumFieldWidth;
+                            fractionLen = fOption.MinimumFieldWidth;
                         }
                         if (fOption.Precision >= 0) {
-                        	fractionLen = fOption.Precision;
+                            fractionLen = fOption.Precision;
                         }
                         localeFormatString.AppendCStr("%#I:%M:%S");
                         if (fractionLen > 0) {
-                        	char fractionPart[kTempCStringLength];
-                        	sprintf(fractionPart, "%%.%du", fractionLen);
-                        	localeFormatString.AppendCStr(fractionPart);
+                            char fractionPart[kTempCStringLength];
+                            sprintf(fractionPart, "%%.%du", fractionLen);
+                            localeFormatString.AppendCStr(fractionPart);
                         }
                         localeFormatString.AppendCStr(" %p");
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
@@ -1958,7 +1926,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             }
             output->Append(temp.Value);
         }
-        output->AppendCStr(END_OF_LINE);
+        output->AppendCStr("\n");
     } else if (dimension >= 2){
         if (rank >=3 && dimension ==2 && array->DimensionLengths()[1]>0) {
             // generate the first index line
@@ -1972,7 +1940,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
                 output->AppendCStr(dimensionString);
             }
             output->AppendCStr("]");
-            output->AppendCStr(END_OF_LINE);
+            output->AppendCStr("\n");
         }
         for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++){
             index[dimension-1]=i;
@@ -1981,8 +1949,8 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             }
             SpreadsheetDimension(output, formatString, delimiter, array, dimension-1, index);
         }
-        if (dimension == 2) {
-            output->AppendCStr(END_OF_LINE);
+        if (dimension == 2 && rank>=3) {
+            output->AppendCStr("\n");
         }
     }
 }
@@ -2004,15 +1972,191 @@ VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, Typ
     return _NextInstruction();
 }
 //------------------------------------------------------------------------------------------------
-void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiter, TypedArrayCoreRef array)
+void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiterString, TypedArrayCoreRef array)
 {
-    // In work
-#if 0
     SubString format = formatString->MakeSubStringAlias();
-    Utf8Char c = 0;
     SubString input= inputString->MakeSubStringAlias();
-#endif
+    SubString delimiter = delimiterString->MakeSubStringAlias();
+    ArrayDimensionVector  dimensionLength;
+    IntIndex rank = array->Rank();
+    SubString line;
+    for (IntIndex i = 0;i<kArrayMaxRank; i++) {
+        dimensionLength[i] = 0;
+    }
+
+    if (rank == 1) {
+        IntIndex rowlen = 1;
+        IntIndex split = 0;
+
+        while ((split = input.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
+            rowlen++;
+        }
+        if (rowlen>dimensionLength[0]) {
+            dimensionLength[0] = rowlen;
+        }
+    } else if (rank == 2) {
+        int i = 0;
+        while(input.ReadLine(&line)) {
+            if (line.Length() == 0) {
+                continue;
+            }
+            i++;
+            IntIndex split = 0;
+            IntIndex rowlen = 1;
+            while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
+                rowlen++;
+            }
+            if (rowlen>dimensionLength[0]) {
+                dimensionLength[0] = rowlen;
+            }
+        }
+        dimensionLength[1] = i;
+
+    } else {
+        int i = 0;
+        while(input.ReadLine(&line)) {
+            if (line.Length()==0)
+            {
+                i=0;
+                continue;
+            }
+            if (i==0) {
+                Int64 dimensionL = 0;
+                IntIndex d = 0;
+                line.EatRawChars(1);
+                while (line.ReadInt(&dimensionL)) {
+                    line.EatRawChars(1);
+                    if (dimensionLength[rank-1-d] < dimensionL+1) {
+                        dimensionLength[rank-1-d] = dimensionL+1;
+                    }
+                    d++;
+                }
+            } else {
+                IntIndex split = 0;
+                IntIndex rowlen = 1;
+                while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
+                    rowlen++;
+                }
+                if (rowlen>dimensionLength[0]) {
+                    dimensionLength[0] = rowlen;
+                }
+                if (i>dimensionLength[1]){
+                    dimensionLength[1] = i;
+                }
+            }
+            i++;
+        }
+        // make sure all the dimension length is positive
+        for (IntIndex i = 0;i<rank; i++) {
+            if(dimensionLength[i]<=0) {
+                dimensionLength[i] = 1;
+            }
+        }
+        // resize the dimension and then fill the data
+    }
+    array->ResizeDimensions(rank, dimensionLength, false);
+    input= inputString->MakeSubStringAlias();
+
+    ArrayDimensionVector  elemIndex;
+    TypeRef elementType = array->ElementType();
+    StaticTypeAndData Value=  {elementType, array->BeginAtND(rank, elemIndex)};
+    if (rank == 1) {
+        IntIndex split =0;
+        elemIndex[0]=0;
+
+        SubString elemString;
+        IntIndex next=0;
+        while ((next = input.FindFirstMatch(&delimiter, split, false))>-1) {
+            elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
+            Value._pData = array->BeginAtND(rank, elemIndex);
+            FormatScan(&elemString, &format, &Value);
+            split=next+delimiter.Length();
+            elemIndex[0]++;
+        }
+        if (split>0) {
+            elemString.AliasAssign(input.Begin()+split, input.End());
+            if (elemString.Length()>0) {
+                Value._pData = array->BeginAtND(rank, elemIndex);
+                FormatScan(&elemString, &format, &Value);
+            }
+        }
+    } else if (rank == 2) {
+        elemIndex[0] = elemIndex[1] = 0;
+        IntIndex i =0;
+        while(input.ReadLine(&line)) {
+            if (line.Length() == 0) {
+                continue;
+            }
+            IntIndex split = 0;
+            IntIndex next = 0;
+            SubString elemString;
+            elemIndex[0]=0;
+            elemIndex[1] = i;
+            while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
+                elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
+                Value._pData = array->BeginAtND(rank, elemIndex);
+                FormatScan(&elemString, &format, &Value);
+                split=next+delimiter.Length();
+                elemIndex[0]++;
+            }
+            if (split>0) {
+                line.AliasAssign(line.Begin()+split, line.End());
+                if (line.Length()>0) {
+                    Value._pData = array->BeginAtND(rank, elemIndex);
+                    FormatScan(&line, &format, &Value);
+                }
+            }
+            i++;
+        }
+    } else {
+        for (IntIndex i =0; i< kArrayMaxRank; i++) {
+            elemIndex[i] = 0;
+        }
+        IntIndex i =0;
+        IntIndex dim = 2;
+        while(input.ReadLine(&line)) {
+            if (line.Length()==0)
+            {
+                i=0;
+                elemIndex[dim]++;
+                if (elemIndex[dim]>=array->GetLength(dim)) {
+                    dim++;
+                    elemIndex[dim] = 1;
+                    for(IntIndex i =0; i< dim; i++) {
+                        elemIndex[i] = 0;
+                    }
+                }
+                continue;
+            }
+            if (i==0) {
+                // this line specify the index block [1, 2, 1, 0]
+            } else {
+                IntIndex split = 0;
+                IntIndex next = 0;
+                SubString elemString;
+                elemIndex[0]=0;
+                elemIndex[1] = i -1 ; // because the fist line is not for array data.
+                while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
+                    elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
+                    Value._pData = array->BeginAtND(rank, elemIndex);
+                    FormatScan(&elemString, &format, &Value);
+                    split=next+delimiter.Length();
+                    elemIndex[0]++;
+                }
+                if (split>0) {
+                    line.AliasAssign(line.Begin()+split, line.End());
+                    if (line.Length()>0) {
+                        Value._pData = array->BeginAtND(rank, elemIndex);
+                        FormatScan(&line, &format, &Value);
+                    }
+                }
+            }
+            i++;
+        }
+    }
 }
+
+//-------------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef outputArray = _Param(3);
@@ -2025,13 +2169,6 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
     }
     return _NextInstruction();
 }
-
-struct SyncJSStruct : public VarArgInstruction
-{
-    _ParamDef(StringRef, Function);
-    _ParamImmediateDef(StaticTypeAndData, parameter[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
 
 DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")

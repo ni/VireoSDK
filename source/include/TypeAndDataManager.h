@@ -313,6 +313,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
+void ConvertNumericRange(Int32 size, Boolean unsign, IntMax input, IntMax* output);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
@@ -1039,7 +1040,10 @@ public:
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-                                                { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    Boolean AppendUrlEncodedSubString(SubString *string);
+    Boolean EscapeSubString(SubString *string);
+
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
 };

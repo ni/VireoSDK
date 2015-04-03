@@ -2044,6 +2044,44 @@ inline IntMax RoundToEven(Single value)
     // See above.
     return (IntMax)lrintf(value);
 }
+
+//---------------------------------------------------------------
+/*
+ * Handle the Integer overflow in Labview.
+ * */
+void ConvertNumericRange(Int32 size, Boolean unsign, IntMax input, IntMax* output)
+{
+    IntMax NumericLimit[12] = {0, 255, -127, 128, 0, 65536, -32768, 32767, 0, 4294967295, -2147483648, 2147483647};
+    int limitIndex = 0;
+    if (size < 8) {
+        switch (size) {
+        case 1:
+            limitIndex = 0;
+        break;
+        case 2:
+            limitIndex = 1;
+        break;
+        case 4:
+            limitIndex = 2;
+        break;
+        default:
+            limitIndex = 0;
+        }
+        if (!unsign) {
+            limitIndex = limitIndex*4 + 2;
+        } else {
+            limitIndex = limitIndex*4;
+        }
+        if (input<NumericLimit[limitIndex]) {
+            input = NumericLimit[limitIndex];
+        } else if (input>NumericLimit[limitIndex+1]) {
+            input = NumericLimit[limitIndex+1];
+        }
+        *output = input;
+    }
+    // do nothing for int64 and uint64. We may not reach the max uint64 now.
+}
+
 //------------------------------------------------------------
 NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax *pValue)
 {

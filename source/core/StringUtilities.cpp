@@ -179,6 +179,36 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
     token->AliasAssign(initialBegin, _begin);
     return characterEnd;
 }
+
+/**
+ * read a line of text. A line is considered to be terminated by any one of a line feed '0x0a', a carriage return '0x0d',
+ * or a carriage return followed immediately by a line feed
+ * */
+//-------------------------------------------------------
+Boolean SubString::ReadLine(SubString* line)
+{
+     const Utf8Char* initialBegin = _begin;
+     if (_begin >= _end) {
+         return false;
+     }
+     while (_begin < _end) {
+         if (*_begin == '\n') {
+             line->AliasAssign(initialBegin, _begin);
+             _begin++;
+             return true;
+         } else if (*_begin == '\r') {
+             line->AliasAssign(initialBegin, _begin);
+             if (_begin+1 < _end && *(_begin+1) == '\n') {
+                 _begin++;
+             }
+             _begin++;
+             return true;
+         }
+         _begin++;
+     }
+     line->AliasAssign(initialBegin, _begin);
+     return true;
+}
 //------------------------------------------------------------
 Boolean SubString::ReadUtf32(Utf32Char* value)
 {
@@ -233,7 +263,7 @@ Boolean SubString::EatChar(char token)
 //------------------------------------------------------------
 Int32 SubString::ReadEscapeToken(SubString* token)
 {
-    // On entry _begin should point to the character after the \
+    // On entry _begin should point to the character after the '\'
     // Supports escape sequences \n \r \t \b \\ \' \" \000 (octal) \x00(hex)
     // Unicode \uXXXX is a code point encoded in UTF-16, only BMP is supported
     //
@@ -519,6 +549,73 @@ Boolean SubString::ReadToken(SubString* token)
 {
     return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
+
+//---------------------------------------------------
+// ! read an url token like %20, and assign the 0x20 to the byteV
+// return true if read two hex successfully, else return false.
+Boolean SubString::ReadUrlEncodedToken(Utf8Char *byteV)
+{
+    IntIndex value = 0;
+    IntIndex n = 0;
+    const Utf8Char* initialBegin = _begin;
+    Utf8Char c;
+    if (_end - _begin <2) {
+        return false;
+    }
+    while (n<2) {
+        c = *_begin;
+        value = value * 16;
+        if (c<='9' && c>= '0') {
+            value += c-'0';
+        } else if (c<='f' && c>='a') {
+            value += 10+c-'a';
+        } else if (c<='F' && c>='A') {
+            value += 10 +c -'A';
+        } else {
+            _begin = initialBegin;
+            return false;
+        }
+        _begin++;
+        n++;
+    }
+    if (byteV!=null){
+        *byteV = value;
+    }
+    return true;
+}
+
+Boolean SubString::CompareEncodedString(SubString* encodedString)
+{
+    Utf8Char c;
+    Utf8Char decodedC;
+    IntIndex length =0 ;
+    SubString urlString(encodedString);
+    while (urlString.ReadRawChar(&c)) {
+        if (c == '+') {
+            decodedC = ' ';
+        } else if (c!= '%'){
+            decodedC = c;
+        } else {
+            Utf8Char value = 0;
+            if (urlString.ReadUrlEncodedToken(&value)){
+                decodedC = (Utf8Char)value;
+            } else {
+                decodedC = '%';
+            }
+        }
+        length++;
+        if (length>this->Length()) {
+            return false;
+        }
+        if (*(_begin+length-1) != decodedC) {
+            return false;
+        }
+    }
+    if (length < this->Length()) {
+        return false;
+    }
+    return true;
+}
 //------------------------------------------------------------
 // ! Read an integer or one of the special symbolic numbers formats
 Boolean SubString::ReadMetaInt(IntIndex *pValue)
@@ -761,6 +858,17 @@ void SubString::EatLeadingSpaces()
         }
     }
 }
+
+void SubString::EatWhiteSpaces()
+{
+    while (_begin < _end){
+        if(IsSpaceChar(*_begin)) {
+            _begin++;
+        } else {
+            break;
+        }
+    }
+}
 //------------------------------------------------------------
 Int32 SubString::EatCharsByTrait(UInt8 trait)
 {
@@ -788,7 +896,7 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
     if (searchStringLength > Length())
         return -1;
     if (offset < 0) {
-    	offset = 0;
+        offset = 0;
     }
     const Utf8Char* pStart = _begin + offset;
     const Utf8Char* pEnd = _end - searchStringLength;    
