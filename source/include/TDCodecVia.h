@@ -51,6 +51,9 @@ struct ViaFormatOptions
     Boolean         _bEscapeStrings;
     Int32           _fieldWidth;
     ViaFormatChars  *_pChars;
+    
+    Boolean UseFieldNames()         { return _pChars->_fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
+    Boolean UseQuoteFieldNames()    { return _pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames; }
 };
 
 //------------------------------------------------------------
@@ -72,7 +75,7 @@ private:
     Int32           _lineNumberBase;
       
 public:
-    // format options also used in ViaFormatter
+    // Format options also used in ViaFormatter
     ViaFormatOptions  _options;
 
     Boolean         _loadVIsImmediatly;

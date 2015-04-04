@@ -2,15 +2,17 @@ define (HelloTime dv(.VirtualInstrument (
     c( 
 	e(dv(.Int32 4) i4)
 	e(dv(.String "")s1)
+	e(dv(.String "abc%20edf") s2)
+	e(dv(.String "#*asdf`-=abc%20edf") s3)
 	e(.String s0)
 	e(.Double d0)
 	e(.Boolean b1)
      )
-    clump (1
-	DecodeUrlString("abc%20edf" s0)
-	Printf("decoded: (%s)\n" s0)
-	DecodeUrlString("#*asdf`-=abc%20edf" s0)
-	Printf("decoded: (%s)\n" s0)
+    clump (
+        DecodeUrlString(s2 s0)
+        Printf("decode: (%s) -> (%s)\n" s2 s0)
+        DecodeUrlString(s3 s0)
+        Printf("decode: (%s) -> (%s)\n" s3 s0)
     )
 ) ) )
 enqueue (HelloTime)

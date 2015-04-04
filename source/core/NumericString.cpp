@@ -2017,17 +2017,17 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         while(input.ReadLine(&line)) {
             if (line.Length()==0)
             {
-                i=0;
+                i = 0;
                 continue;
             }
-            if (i==0) {
+            if (i == 0) {
                 Int64 dimensionL = 0;
                 IntIndex d = 0;
                 line.EatRawChars(1);
                 while (line.ReadInt(&dimensionL)) {
                     line.EatRawChars(1);
                     if (dimensionLength[rank-1-d] < dimensionL+1) {
-                        dimensionLength[rank-1-d] = dimensionL+1;
+                        dimensionLength[rank-1-d] = (IntIndex) dimensionL+1;
                     }
                     d++;
                 }

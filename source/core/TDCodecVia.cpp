@@ -731,22 +731,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-                if (_options._pChars->ViaFormatChars == kViaFormat_NoFieldNames) {
-                    _string.ReadValueToken(&token);
-                    if (token.CompareCStr("(")) {
-                        // List of values (a b c)
-                        AQBlock1* baseOffset = (AQBlock1*)pData;
-                        int i = 0;
-                        while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
-                            TypeRef elementType = type->GetSubElement(i);
-                            void* elementData = baseOffset;
-                            if (elementData != null)
-                                elementData = baseOffset + elementType->ElementOffset();
-                            ParseData(elementType, elementData);
-                            i++;
-                        }
-                    }
-                } else if(_options._pChars->ViaFormatChars == kViaFormat_UseFieldNames){
+                if (_options.UseFieldNames()) {
                     // the json cluster always contains the name
                     // JSON generally igonre any white space around or between syntactic elements
                     // JSON does not provide or allow any sort of comment syntax
@@ -781,6 +766,21 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         ParseData(elementType, elementData);
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
+                    }
+                } else {
+                    _string.ReadValueToken(&token);
+                    if (token.CompareCStr("(")) {
+                        // List of values (a b c)
+                        AQBlock1* baseOffset = (AQBlock1*)pData;
+                        int i = 0;
+                        while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                            TypeRef elementType = type->GetSubElement(i);
+                            void* elementData = baseOffset;
+                            if (elementData != null)
+                                elementData = baseOffset + elementType->ElementOffset();
+                            ParseData(elementType, elementData);
+                            i++;
+                        }
                     }
                 }
             }
@@ -1619,14 +1619,16 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             _string->Append(_options._pChars->_itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
-        if (_options._pChars->_fieldNameFormat & kViaFormat_UseFieldNames) {
+        if (_options.UseFieldNames()) {
             SubString ss = elementType->ElementName();
-            Boolean useQuotes = _options._pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames;
+            Boolean useQuotes = _options.UseQuoteFieldNames();
             if (useQuotes)
                 _string->Append('\"');
+            
             //TODO use percent encoding when needed
            // _string->Append(ss.Length(), ss.Begin());
              _string->AppendUrlEncodedSubString(&ss);
+             
             if (useQuotes)
                 _string->Append('\"');
             _string->Append(':');
