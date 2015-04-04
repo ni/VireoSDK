@@ -214,6 +214,9 @@ public:
     //! Skip white space and comments
     void EatLeadingSpaces();
 
+    //! Skip white space only
+    void EatWhiteSpaces();
+
     //! Skip logical characters accounting for UTF-8 multibyte sequences
     void EatRawChars(Int32 count);
 
@@ -227,6 +230,9 @@ public:
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+
+    //! compare with the encoded string
+    Boolean CompareEncodedString(SubString*  urlString);
     
     //! Fucntions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
@@ -239,19 +245,25 @@ public:
     
     //! Read the next set of code points that make up a single grapheme.
     Boolean ReadGraphemeCluster(SubString* token);
-    
+
+    //! Read a line from the Utf-8 sequence
+    Boolean ReadLine(SubString* line);
+
     //! Read the next sequence of digits and parse them as an integer.
     Boolean ReadInt(IntMax* value);
     
     //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
     Boolean ReadMetaInt(IntIndex* value);
     
-    //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
+    //! Read the next sequence of digits and parse them as a Double.
     Boolean ParseDouble(Double* value);
     
     //! Read a simple token
     Boolean ReadToken(SubString* token);
     
+    //! Read an Encoded token
+    Boolean ReadUrlEncodedToken(Utf8Char* value);
+
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);
     
@@ -276,7 +288,6 @@ public:
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
-#define END_OF_LINE "\n"
 //! Macro to help with %.* formats. Example => printf("%.*s", FMT_LEN_BEGIN(arg))
 #define FMT_LEN_BEGIN(_substring_)   (int)(_substring_)->Length(), (_substring_)->Begin()
 

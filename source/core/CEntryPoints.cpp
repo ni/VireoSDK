@@ -160,7 +160,8 @@ VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName
         return;
 
     EventLog log(EventLog::DevNull);
-    TDViaParser parser(pShell->TheTypeManager(), &valueString, &log, 1);
+    SubString formatss(format);
+    TDViaParser parser(pShell->TheTypeManager(), &valueString, &log, 1, &formatss);
     parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
