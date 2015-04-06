@@ -479,7 +479,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
                     tokenTraits = TokenTraits_IEEE754;
                     break;
                 }
-                if (!idToken.EatChar('e') || !idToken.EatChar('E')) {
+                if (!idToken.EatChar('e') && !idToken.EatChar('E')) {
                     // Error if more characters remain and its not an exponent
                     break;
                 }

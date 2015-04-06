@@ -1,75 +1,77 @@
 ---test scan float------ ( 123.5 89 ) 
-Filled:<2>, remaining:( )
+passed:<9>, remaining:( )
 :<123.500000> <89.000000> 
+passed:<9>, remaining:( )
+:<123.000000> <89> 
 ---test scan float------ ( +127.5 .23 ) 
-Filled:<2>, remaining:( )
+passed:<11>, remaining:( )
 :<127.500000> <0.230000> 
 ---test scan float------ ( -923 -0077 ) 
-Filled:<2>, remaining:( )
+passed:<11>, remaining:( )
 :<-923.000000> <-77.000000> 
 ---test scan float------ (123-56) 
-Filled:<2>, remaining:()
+passed:<6>, remaining:()
 :<123.000000> <-56.000000> 
 ---test scan float------ ( 12E3.5) 
-Filled:<2>, remaining:()
+passed:<7>, remaining:()
 :<12000.000000> <0.500000> 
 ---test scan float------ ( 123.5+8E9) 
-Filled:<2>, remaining:()
+passed:<10>, remaining:()
 :<123.500000> <8000000000.000000> 
 ---test scan float------ (12.3E5+8E9 ) 
-Filled:<2>, remaining:( )
+passed:<10>, remaining:( )
 :<1230000.000000> <8000000000.000000> 
 ---test scan Int base10------ ( 067.3E5 ) 
-Filled:<2>, remaining:( )
+passed:<8>, remaining:( )
 :<67> <30000.000000> 
 ---test scan Int base10------ (  67+235 ) 
-Filled:<2>, remaining:( )
+passed:<8>, remaining:( )
 :<67> <235> 
 ---test scan Int base10------ (-67 +235ABCD) 
-Filled:<2>, remaining:(ABCD)
+passed:<8>, remaining:(ABCD)
 :<-67> <235> 
 ---test scan Int base16------ (-67 +235ABCD) 
-Filled:<2>, remaining:()
+passed:<12>, remaining:()
 :<-67> <37071821> 
 ---test scan Int base16------ (-67 -10) 
-Filled:<2>, remaining:()
+passed:<7>, remaining:()
 :<-103> <-16> 
 ---test scan Int base8------ (173 109088) 
-Filled:<2>, remaining:(9088)
-:<123> <8> 
+passed:<10>, remaining:()
+:<173> <109088> 
 ---test scan Int base8------ (-986 -10) 
-Filled:<0>, remaining:(-986 -10)
-:<0> <8> 
+passed:<8>, remaining:()
+:<-986> <-10> 
 ---test scan Intwidth------ (12345845QQTAvasd ) 
-Filled:<2>, remaining:(845QQTAvasd )
+passed:<5>, remaining:(845QQTAvasd )
 :<123> <45> 
 ---test scan Intwidth------ (123,  7200) 
-Filled:<2>, remaining:()
+passed:<10>, remaining:()
 :<123> <7200> 
 ---test scan IntBinary------ (1110100011) 
-Filled:<1>, remaining:(0100011)
+passed:<2>, remaining:(10100011)
 :<3> <7200> 
 ---test scan IntBinary------ (11113100045) 
-Filled:<2>, remaining:(45)
-:<15> <0> 
+passed:<9>, remaining:(45)
+:<15> <8> 
 ---test scan FloatWidth------ (31.4e6123) 
-Filled:<1>, remaining:(e6123)
+passed:<4>, remaining:(e6123)
 :<31.400000> <0> 
 ---test scan FloatWidth------ (31.4e+6123) 
-Filled:<1>, remaining:(e+6123)
+passed:<4>, remaining:(e+6123)
 :<31.400000> <0> 
 ---test scan String------ (abcdefg ABCDEFG 1234567 *&*^^&^@!~  ) 
-Filled:<3>, remaining:( *&*^^&^@!~  )
+passed:<23>, remaining:( *&*^^&^@!~  )
 :<abcdefg> <ABCDEFG> <1234567> 
 ---test scan String------ (abcdefg~) 
-Filled:<1>, remaining:()
+passed:<8>, remaining:()
 :<abcdefg~> <ABCDEFG> <1234567> 
 ---test scan String------ (     abcdefg   ABCDEFG1234567) 
-Filled:<3>, remaining:()
+passed:<29>, remaining:()
 :< > <abcdefg> <ABCDEFG1234567> 
 ---test scan String charset------ ( 1245644 abcdefg   ABCDEFG1234567) 
-Filled:<4>, remaining:()
+passed:<33>, remaining:()
 :< 12456> <44> <abcdefg> <ABCDEFG1234567> 
 ---test scan String------ ( hello worldMy name is :) 
-Filled:<4>, remaining:( is :)
+passed:<19>, remaining:( is :)
 :<hel> <lo> <worldMy> <name> 
