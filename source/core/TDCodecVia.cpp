@@ -1551,7 +1551,6 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
 {
     TypeRef elementType = pArray->ElementType();
     EncodingEnum elementEncoding = elementType->BitEncoding();
-
     if (rank==1 && (elementEncoding == kEncoding_Ascii || (elementEncoding == kEncoding_Unicode))) {
         // Unicode + elt size == 1 => Utf8
         // not planning on doing UTF16, or 32 at this time
@@ -1722,7 +1721,7 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
     if (_Param(0).IsCluster()) {
         formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
     } else if (_Param(0).IsArray()) {
-        formatter.FormatArrayData(_ParamPointer(0), (TypedArrayCoreRef)_ParamPointer(1), _Param(0).Rank());
+        formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     } else {
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     }
