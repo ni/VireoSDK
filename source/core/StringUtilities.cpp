@@ -304,18 +304,25 @@ Int32 SubString::ReadEscapeToken(SubString* token)
     
     return expandedSize;
 }
-
-bool SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const
+//------------------------------------------------------------
+void SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const
 {
     const Utf8Char* it = this->_begin;
     const Utf8Char* end = this->_end;
+    
     while(it < end && *it != separator)
         it++;
+    
     beforeMatch->AliasAssign(this->_begin, it);
-    afterMatch->AliasAssign(it, end);
-    return (it != end);
+    if (it < end) {
+        // Might be an empty string if match was at end.
+        afterMatch->AliasAssign(it + 1, end);
+    } else {
+        // Definitely an empty string.
+        afterMatch->AliasAssign(null, null);
+    }
 }
-
+//------------------------------------------------------------
 Int32 SubString::LengthAferProcessingEscapes()
 {
     SubString temp(this);
@@ -332,7 +339,7 @@ Int32 SubString::LengthAferProcessingEscapes()
     }
     return FinalLength;
 }
-
+//------------------------------------------------------------
 void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 {    
     SubString temp(this);

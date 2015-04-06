@@ -453,7 +453,7 @@ TypeRef ClumpParseState::StartNextOverload()
 //------------------------------------------------------------
 TypeRef ClumpParseState::StartInstruction(SubString* opName)
 {
-    _nextFuncitonDefinition = _clump->TheTypeManager()->FindType(opName);
+    _nextFuncitonDefinition = _clump->TheTypeManager()->FindTypeCore(opName);
     _genericFuncitonDefinition = null;
 
     // Look for a generic loader.
@@ -470,23 +470,38 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
 void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData)
 {
     _actualArgumentType = null;
+    *ppData = null;
     
     // "." prefixed symbols are type symbols from the TypeManager
     if (argument->ComparePrefixCStr(".")) {
-        // If it is to be passed as an input then that is OK. Elements in the
-        // type dictionary can not be used as an output.
+        _actualArgumentType = _clump->TheTypeManager()->FindType("Type");
+        
         Utf8Char dot;
         argument->ReadRawChar(&dot);
-        *ppData = (AQBlock1*) _clump->TheTypeManager()->FindTypeConstRef(argument);
-        if (*ppData != null) {
+        TypeRef type = _clump->TheTypeManager()->FindType(argument);
+        if (type != null) {
+            _argumentState = kArgumentResolvedToGlobal;
+            
+            if (_cia->IsCalculatePass()) {
+                return;
+            }
+            
+            // If it is to be passed as an input then that is OK.
+            // Literals cannot be used as outputs.
             UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
             if (usageType != kUsageTypeInput) {
-                *ppData = null;
                 _argumentState = kArgumentNotMutable;
-            } else {
-                _actualArgumentType = _clump->TheTypeManager()->FindType("Type");
-                _argumentState = kArgumentResolvedToGlobal;
+                return;
             }
+        
+            // Create an anonymous type const for the type resolved.
+            DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
+            TypeRef* pDef = (TypeRef*)cdt->Begin(kPAInit);
+            if (pDef) {
+                *pDef = type;
+            }
+            cdt = cdt->FinalizeConstant();
+            *ppData = (AQBlock1*)cdt->Begin(kPARead);
         }
         return;
     }
@@ -503,7 +518,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         } else {
             // For flat data, the call instruction logic for VIs will initialize the callee parameter
             // to the default value. For native instructions a null parameter value is passed.
-            *ppData = null;
         }
         _argumentState = kArgumentResolvedToDefault;
         return;
@@ -516,16 +530,18 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         _actualArgumentType = FormalParameterType();
         UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
         if (usageType != kUsageTypeInput) {
-            *ppData = null;
             _argumentState = kArgumentNotMutable;
             return;
         }
-    
+        
+        _argumentState = kArgumentResolvedToDefault;
+        if (_cia->IsCalculatePass()) {
+            return;
+        }
         DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
         TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
         cdt = cdt->FinalizeConstant();
         *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
-        _argumentState = kArgumentResolvedToDefault;
         return;
     }
     
@@ -564,7 +580,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
 
         // If there is a dot after the head, then there is more to parse.
-        if (pathTail.EatChar('.')) {
+        if (pathTail.Length()) {
             // If the top type is a cluster then the remainder is field name qualifier path.
             void* pDataStart = pData;
             _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, (void**)&pData, false);
@@ -575,8 +591,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             return;
         }
     }
-    *ppData = null;
-    _actualArgumentType = null;
 }
 //------------------------------------------------------------
 void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prependType)

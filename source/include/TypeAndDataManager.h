@@ -226,7 +226,7 @@ friend class TDViaParser;
     // also defines alignment rules. Each element in a cluster is addressable
 private:
     TypeManager(TypeManagerRef typeManager);
-    NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingType);
+    NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
 public:
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -240,9 +240,9 @@ public:
     TypeManagerRef RootTypeManager() { return _rootTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
 
-    NamedTypeRef FindType(ConstCStr name);
-    NamedTypeRef FindType(const SubString* name);
-    NamedTypeRef* FindTypeConstRef(const SubString* name);
+    TypeRef FindType(ConstCStr name);
+    TypeRef FindType(const SubString* name);
+    NamedTypeRef FindTypeCore(const SubString* name);
     TypedObjectRef FindObject(SubString* name);
     TypeRef BadType();
 
@@ -394,7 +394,7 @@ private:
     TypeManagerRef  _typeManager;       // TypeManger that owns this type
 public:
     TypeCommon(TypeManagerRef typeManager);
-    TypeManagerRef TheTypeManager()       { return _typeManager; }
+    TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypeRef Next()                      { return _next; }
 public:
     // Internal to the TypeManager, but this is hard to secifiy in C++
@@ -476,7 +476,7 @@ private:
 public:
     //! What type of internal pointer is this type. Only used for CustomValuePointers.
     PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }
-
+    //! Accept a TypeVisitor algorithm.
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitBad(this); }
     //! For a wrapped type, return the type that was wrapped, null otherwise.
     virtual TypeRef BaseType()                          { return null; }
@@ -806,7 +806,6 @@ public:
     virtual NIError InitData(void* pData, TypeRef pattern = null);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
-
 };
 //------------------------------------------------------------
 //! A type that has a custom ( e.g. non 0) value. Requires a base type.

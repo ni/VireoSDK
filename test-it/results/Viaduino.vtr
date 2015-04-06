@@ -45,8 +45,8 @@ Instructions _clump0_instructions = {
    _I3(AddComplexSingle, HelloWorld.Locals.vComplexSingle, HelloWorld.Locals.vComplexSingle, HelloWorld.Locals.vComplexSingle)
    _I3(AddDouble, HelloWorld.Locals.vComplexDouble.real, HelloWorld.Locals.vComplexDouble.real, HelloWorld.Locals.vComplexDouble.real)
    _I3(AddSingle, HelloWorld.Locals.vComplexSingle.imaginary, HelloWorld.Locals.vComplexSingle.imaginary, HelloWorld.Locals.vComplexSingle.imaginary)
-   _I2(TypeTopAQSize, .Int32Point, global_int)
-   _I2(TypeTopAQSize, .Int32, HelloWorld.Locals.vInt32)
-   _I2(TypeTopAQSize, .Double, HelloWorld.Locals.vInt32)
+   _I2(TypeTopAQSize, Type, global_int)
+   _I2(TypeTopAQSize, Type, HelloWorld.Locals.vInt32)
+   _I2(TypeTopAQSize, Type, HelloWorld.Locals.vInt32)
    _I0(Done)
 };

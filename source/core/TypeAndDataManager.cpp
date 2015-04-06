@@ -333,20 +333,20 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
     // This allows the resolved type to be passed with its name wrapper, and allows funtions to see the name
     // of the resolved symbol.
 
-    NamedTypeRef existingType = FindType(typeName);
-    return NewNamedType(typeName, type, existingType);
+    NamedTypeRef existingOverload = FindTypeCore(typeName);
+    return NewNamedType(typeName, type, existingOverload);
 }
 //------------------------------------------------------------
-NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingType)
+NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload)
 {
     // Storage for the string used by the dictionary is part of
     // NamedType so once it is created Name() is used to
     // get pointers to the storage types internal name. The local is temporary, but the
     // pointers in it last as long as the type, which is longer than
     // the map entry that poionts to it.
-    Boolean bNewInThisTM = existingType ? (existingType->TheTypeManager() != this) : true;
+    Boolean bNewInThisTM = existingOverload ? (existingOverload->TheTypeManager() != this) : true;
     
-    NamedTypeRef namedType = NamedType::New(this, typeName, type, existingType);
+    NamedTypeRef namedType = NamedType::New(this, typeName, type, existingOverload);
     if (bNewInThisTM) {
         SubString permanentTypeName = namedType->Name();
         _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
@@ -357,23 +357,32 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     return namedType;
 }
 //------------------------------------------------------------
-NamedTypeRef TypeManager::FindType(ConstCStr name)
+TypeRef TypeManager::FindType(ConstCStr name)
 {
     SubString ssName(name);
     return FindType(&ssName);
 }
 //------------------------------------------------------------
-NamedTypeRef TypeManager::FindType(const SubString* name)
+TypeRef TypeManager::FindType(const SubString* name)
 {
     MUTEX_SCOPE()
 
-    NamedTypeRef *pType = FindTypeConstRef(name);
-    NamedTypeRef type = pType ? *pType : null;
+    SubString pathHead;
+    SubString pathTail;
+    name->SplitString(&pathHead, &pathTail, '.');
     
+    TypeRef type = FindTypeCore(&pathHead);
+
+    if (type && pathTail.Length()) {
+        void* temp;
+        TypeRef subType = type->GetSubElementAddressFromPath(&pathTail, &temp, null, false);
+        type = subType;
+    }
+
     if (!type && name->ComparePrefixCStr(tsTemplatePrefix)) {
         // Names that start with $ are parameters.
         // They are all direct derivatives of "*" and are allocated as needed.
-        NamedTypeRef genericType = FindType(tsWildCard);
+        TypeRef genericType = FindType(tsWildCard);
         type = NewNamedType(name, genericType, null);
     }
     
@@ -393,7 +402,7 @@ TypedObjectRef TypeManager::FindObject(SubString* name)
     return null;
 }
 //------------------------------------------------------------
-NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
+NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
 {
     MUTEX_SCOPE()
 
@@ -406,20 +415,20 @@ NamedTypeRef* TypeManager::FindTypeConstRef(const SubString* name)
 
     TypeDictionaryIterator iter;
     iter = _typeNameDictionary.find(*name);
-    NamedTypeRef* pFoundTypeRef = (iter != _typeNameDictionary.end()) ? &iter->second : null;
+    NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : null;
     
-    if (pFoundTypeRef == null && _rootTypeManager) {
+    if (type == null && _rootTypeManager) {
 #ifdef VIREO_PERF_COUNTERS
         _lookUpsRoutedToOwner++;
 #endif
-        pFoundTypeRef = _rootTypeManager->FindTypeConstRef(name);
+        type = _rootTypeManager->FindTypeCore(name);
     } else {
 #ifdef VIREO_PERF_COUNTERS
         _lookUpsFound++;
 #endif
     }
-
-    return pFoundTypeRef;
+    
+    return type;
 }
 //------------------------------------------------------------
 TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName)
@@ -849,7 +858,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
             *end = (AQBlock1*)start + ((*pType)->ElementOffset());
             
             // If there is a tail recurse, repin start and recurse.
-            if (pathTail.EatChar('.')) {
+            if (pathTail.Length()) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
             }
             break;
@@ -1445,7 +1454,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         // If the path has a tail it needs to index the array.
         // There may be more than one way to do so raw1d indexes, or multidim
         // may allow end point relative as well ???
-        if (pathTail.EatChar('.')) {
+        if (pathTail.Length()) {
             subType = GetSubElementAddressFromPath(path, start, end, allowDynamic);
         } else {
             // TODO parse indexes.

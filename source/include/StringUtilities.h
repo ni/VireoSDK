@@ -221,7 +221,7 @@ public:
     void EatRawChars(Int32 count);
 
     //! Creat two sub strings base on the first occurence of a separator
-    bool SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
+    void SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
     //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
