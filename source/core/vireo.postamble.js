@@ -9,34 +9,36 @@ Module.v_writeValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['
 Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
 Module.v_delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-Module.v_shell = Module.v_create(0);
+Module.v_root =  Module.v_create(0);
+Module.v_userShell = Module.v_create(Module.v_root);
 Module.fpSync = function(fpId) {};
+
 
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
 
     readDouble:
         function(vi, path)
-        { return Module.v_readDouble(Module.v_shell, vi, path); },
+        { return Module.v_readDouble(Module.v_userShell, vi, path); },
     writeDouble:
         function(vi, path, value)
-        { Module.v_writeDouble(Module.v_shell, vi, path, value); },
+        { Module.v_writeDouble(Module.v_userShell, vi, path, value); },
     readJSON:
         function(vi, path)
-        { return Module.v_readValueString(Module.v_shell, vi, path, 'JSON'); },
+        { return Module.v_readValueString(Module.v_userShell, vi, path, 'JSON'); },
     writeJSON:
         function(vi, path, value)
-        { Module.v_writeValueString(Module.v_shell, vi, path, 'JSON', value); },
+        { Module.v_writeValueString(Module.v_userShell, vi, path, 'JSON', value); },
     loadVia:
         function(viaText)
-        { Module.v_repl(Module.v_shell, viaText, -1); },
+        { Module.v_repl(Module.v_userShell, viaText, -1); },
     executeSlices:
         function(slices)
-        { return Module.v_executeSlices(Module.v_shell, slices); },
+        { return Module.v_executeSlices(Module.v_userShell, slices); },
     reboot:
         function() {
-            Module.v_delete(Module.v_shell);
-            Module.v_shell = Module.v_create(0);
+            Module.v_delete(Module.v_userShell);
+            Module.v_userShell = Module.v_create(Module.v_root);
         },
     core: Module
 };
