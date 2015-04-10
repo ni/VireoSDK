@@ -314,7 +314,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
-void ConvertNumericRange(Int32 size, Boolean unsign, IntMax input, IntMax* output);
+IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax input);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.

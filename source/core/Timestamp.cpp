@@ -524,7 +524,7 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32*
 	Int32 secondsofMonth = -2;
 	if(year%4==0 && (year%100 != 0 || year%400 == 0)) {
 		// leap year
-		int dayofMonth[]={31, 29,31,30,31,30,31,31,30,31,30,31};
+		Int32 dayofMonth[]={31, 29,31,30,31,30,31,31,30,31,30,31};
 		Int32 seconds=0;
 		for (Int32 i = 0;i<12;i++) {
 			secondsofMonth = seconds;
@@ -536,7 +536,7 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32*
 			}
 		}
 	} else {
-		int dayofMonth[]={31, 28,31,30,31,30,31,31,30,31,30,31};
+		Int32 dayofMonth[]={31, 28,31,30,31,30,31,31,30,31,30,31};
 		Int32 seconds=0;
 		for (Int32 i = 0;i<12;i++) {
 			secondsofMonth = seconds;

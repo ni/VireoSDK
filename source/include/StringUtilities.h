@@ -296,7 +296,7 @@ public:
 class ComapreSubString
 {
     public:
-    bool operator()(const SubString &a, const SubString &b) const
+    Boolean operator()(const SubString &a, const SubString &b) const
     {
         Int32 aSize = a.Length();
         Int32 bSize = b.Length();

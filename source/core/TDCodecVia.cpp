@@ -186,7 +186,7 @@ For types beyond these simple types perhaps the tyep could be
     if (_string.EatChar('<')) {
         // Build a list of parameters.
         FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-        for(int i = 0; !_string.EatChar('>'); i++) {
+        for(IntIndex i = 0; !_string.EatChar('>'); i++) {
             templateParameters.Append(ParseType());
         }
         type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
@@ -773,7 +773,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     if (token.CompareCStr("(")) {
                         // List of values (a b c)
                         AQBlock1* baseOffset = (AQBlock1*)pData;
-                        int i = 0;
+                        IntIndex i = 0;
                         while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
                             TypeRef elementType = type->GetSubElement(i);
                             void* elementData = baseOffset;
@@ -1293,7 +1293,7 @@ private:
     {
         _pFormatter->_string->AppendCStr(prefix);
         IntIndex subElementCount = type->SubElementCount();
-        for (int i = 0; i < subElementCount; i++) {
+        for (IntIndex i = 0; i < subElementCount; i++) {
             TypeRef subType = type->GetSubElement(i);
             subType->Accept(this);
         }

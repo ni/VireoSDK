@@ -670,7 +670,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
     } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
         if (this->SubElementCount() == otherType->SubElementCount()) {
-            for (int i = 0; i < this->SubElementCount(); i++) {
+            for (Int32 i = 0; i < this->SubElementCount(); i++) {
                 if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
                     return false;
             }
@@ -701,7 +701,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
             if (this->SubElementCount() == otherType->SubElementCount()) {
-                for (int i = 0; i < this->SubElementCount(); i++) {
+                for (Int32 i = 0; i < this->SubElementCount(); i++) {
                     if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
                         break;
                 }
@@ -732,7 +732,7 @@ Boolean TypeCommon::IsA(TypeRef otherType)
     SubString angle("<");
     if (otherType->HasGenericType()) {
         SubString name = Name();
-        int i = name.FindFirstMatch(&angle, 0, false);
+        IntIndex i = name.FindFirstMatch(&angle, 0, false);
         if (i>0) {
             name = SubString(name.Begin(), name.Begin() + i);
             if (name.Compare(&otherTypeName))
@@ -1845,8 +1845,8 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         pRequestedLengths = dimensionLengths;
     } else {
         // It too few are supplied fill out the remaining in a temporary copy.
-        int i=0;
-        int dimsToBeFilledIn = valuesRank - rank;
+        Int32 i=0;
+        Int32 dimsToBeFilledIn = valuesRank - rank;
         
         for (; i < dimsToBeFilledIn ; i++) {
             // Inner dimensions stay the same so copy from value's.
@@ -1861,7 +1861,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     IntIndexItr  iRequestedDim(pRequestedLengths, valuesRank);
     
     IntIndex newCapacity = 1;
-    Int32    newLength = 1;
+    IntIndex newLength = 1;
     
     while(iRequestedDim.HasNext()) {
         *pSlabLengths++ = slabLength;
@@ -2039,8 +2039,7 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
     return kNIError_Success;
 }
 //------------------------------------------------------------
-// Simple numeric conversions
-//------------------------------------------------------------
+//! Simple numeric conversions
 inline IntMax RoundToEven(Double value)
 {
     // By default lrint uses Bankers (aka round to even)
@@ -2048,47 +2047,42 @@ inline IntMax RoundToEven(Double value)
     return (IntMax)lrint(value);
 }
 //------------------------------------------------------------
+//! Simple numeric conversions
 inline IntMax RoundToEven(Single value)
 {
     // See above.
     return (IntMax)lrintf(value);
 }
-
 //---------------------------------------------------------------
-/*
- * Handle the Integer overflow in Labview.
- * */
-void ConvertNumericRange(Int32 size, Boolean unsign, IntMax input, IntMax* output)
+//! Coerce value to a range. TODO Still could be improved on.
+IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax value)
 {
-    IntMax NumericLimit[12] = {0, 255, -127, 128, 0, 65536, -32768, 32767, 0, 4294967295, -2147483648, 2147483647};
-    int limitIndex = 0;
-    if (size < 8) {
+    IntMax min;
+    IntMax max;
+    
+    if (unsign) {
         switch (size) {
-        case 1:
-            limitIndex = 0;
-        break;
-        case 2:
-            limitIndex = 1;
-        break;
-        case 4:
-            limitIndex = 2;
-        break;
-        default:
-            limitIndex = 0;
+            case 1:     min = 0;            max = 255;          break;
+            case 2:     min = 0;            max = 65536;        break;
+            case 4:     min = 0;            max = 4294967295;   break;
+            case 8:     return  value;                          break;
+            default:    min = 0;            max = 0;            break;
+            }
+    } else {
+        switch (size) {
+            case 1:     min = -127;         max = 128;          break;
+            case 2:     min = -32768;       max = 32767;        break;
+            case 4:     min = -2147483648;  max = 2147483647;   break;
+            case 8:     return  value;                          break;
+            default:    min = 0;            max = 0;            break;
         }
-        if (!unsign) {
-            limitIndex = limitIndex*4 + 2;
-        } else {
-            limitIndex = limitIndex*4;
-        }
-        if (input<NumericLimit[limitIndex]) {
-            input = NumericLimit[limitIndex];
-        } else if (input>NumericLimit[limitIndex+1]) {
-            input = NumericLimit[limitIndex+1];
-        }
-        *output = input;
     }
-    // do nothing for int64 and uint64. We may not reach the max uint64 now.
+    if (value < min) {
+        value = min;
+    } else if (value > max) {
+        value = max;
+    }
+    return value;
 }
 
 //------------------------------------------------------------

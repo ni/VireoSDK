@@ -152,7 +152,7 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
     
-    for (int i = 0; i < subElementCount; i++) {
+    for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
     _newType  = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
@@ -185,7 +185,7 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
     
-    for (int i = 0; i < subElementCount; i++) {
+    for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
     _newType  = EquivalenceType::New(_typeManager, elementTypes, type->SubElementCount());

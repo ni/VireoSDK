@@ -352,7 +352,7 @@ InstructionCore* ClumpParseState::CreateInstruction(TypeRef instructionType, Int
             instructionType->InitData(&instruction->_function);
             
             GenericInstruction *ginstruction = (GenericInstruction*)instruction;
-            for (int i=0; i<argCount; i++) {
+            for (Int32 i=0; i<argCount; i++) {
                 ginstruction->_args[i] = args[i];
             }
         }
@@ -392,7 +392,7 @@ void ClumpParseState::SetClumpFireCount(Int32 fireCount)
     _clump->_fireCount = fireCount;
 }
 //------------------------------------------------------------
-TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, bool allowErrors)
+TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, Boolean allowErrors)
 {
     // A new instruction function is being substituted for the
     // on original map (used for generics and SubVI calling)
@@ -1038,7 +1038,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // still require patching (e.g. A branch to a forward perch)
         // add the _whereToPatch field.
         GenericInstruction *generic = (GenericInstruction*) instruction;
-        for (int i = 0; i < _argPatchCount; i++) {
+        for (Int32 i = 0; i < _argPatchCount; i++) {
             // Pointer to PatchInfo object was stashed in arg, look it up.
             PatchInfo *pPatch = (PatchInfo*)generic->_args[_argPatches[i]];
             
@@ -1080,7 +1080,7 @@ void ClumpParseState::CommitClump()
     if (_cia->IsCalculatePass())
         return;
         
-    for (int i = 0; i < _patchInfoCount; i++) {
+    for (Int32 i = 0; i < _patchInfoCount; i++) {
         *_patchInfos[i]._whereToPatch = *_patchInfos[i]._whereToPeek;
     }
 }

@@ -217,13 +217,13 @@ public:
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
     
     //! Return true if the blocks are equivalent.
-    bool Compare(const T* begin2, Int32 length2)
+    Boolean Compare(const T* begin2, Int32 length2)
     {
         return (length2 == Length() && (memcmp(_begin, begin2, Length()) == 0));
     }
     
     //! Return true if the blocks are equivalent.
-    bool Compare(const SubVector *subVector)
+    Boolean Compare(const SubVector *subVector)
     {
         return Compare(subVector->Begin(), subVector->Length());
     }
