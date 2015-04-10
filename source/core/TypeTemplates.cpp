@@ -29,7 +29,12 @@ class TypeTemplateVisitor : public TypeVisitor
     TypeManagerRef _typeManager;
     SubVector<TypeRef>* _parameters;
     TypeRef _newType;
+    AggregateAlignmentCalculator *_alignmentCalculator;
 
+ private:
+    TypeRef  LookupParameter(IntIndex i);
+    IntIndex AcceptMetaInt(IntIndex value);
+    
  private:
     virtual void VisitBad(TypeRef type);
     virtual void VisitBitBlock(BitBlockType* type);
@@ -54,14 +59,10 @@ TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, SubVector<TypeR
 //------------------------------------------------------------
 TypeRef TypeTemplateVisitor::Accept(TypeRef type)
 {
-    if (!type->HasGenericType()) {
-        return type;
-    } else {
-        type->Accept(this);
-        TypeRef newType = _newType;
-        _newType = null;
-        return newType;
-    }
+    type->Accept(this);
+    TypeRef newType = _newType;
+    _newType = null;
+    return newType;
 }
 //------------------------------------------------------------
 TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* parameters)
@@ -69,89 +70,233 @@ TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* 
     _typeManager = tm;
     _parameters = parameters;
     _newType = null;
+    _alignmentCalculator = null;
+}
+//------------------------------------------------------------
+TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
+{
+    if (i >= 0 && i < _parameters->Length()) {
+        return _parameters->Begin()[i];
+    } else {
+        // unsupplied parameters become new named types?
+        // or permanetly left open.
+        return null;
+    }
+}
+//------------------------------------------------------------
+IntIndex TypeTemplateVisitor::AcceptMetaInt(IntIndex value)
+{
+    if (IsMetaDim(value)) {
+        // Find the template parameter.
+        IntIndex i = MetaDimValue(value);
+        TypeRef type = LookupParameter(i);
+        if (type) {
+            // Use its value.
+            IntMax newValue = 0;
+            ReadIntFromMemory(type->BitEncoding(), type->TopAQSize(), type->Begin(kPARead), &newValue);
+            return (IntIndex) newValue;
+        } else {
+            // If no parameter is supplied then change it to simply being variable size
+            // or shift its position?, thats not hard either.
+            return kArrayVariableLengthSentinel;
+        }
+    } else {
+        return value;
+    }
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBad(TypeRef type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitCluster(ClusterType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+
+    ClusterAlignmentCalculator calc(_typeManager);
+    AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
+    _alignmentCalculator = &calc;
+    
     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
+    
     for (int i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
     _newType  = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
+    
+    _alignmentCalculator = saveCalc;
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
 {
-    _newType = _typeManager->BadType();
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
+    EquivalenceAlignmentCalculator calc(_typeManager);
+    AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
+    _alignmentCalculator = &calc;
+
+    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    IntIndex subElementCount = type->SubElementCount();
+    
+    for (int i = 0; i < subElementCount; i++) {
+        elementTypes[i] = Accept(type->GetSubElement(i));
+    }
+    _newType  = EquivalenceType::New(_typeManager, elementTypes, type->SubElementCount());
+
+    _alignmentCalculator = saveCalc;
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitArray(ArrayType* type)
 {
-    // A type can not currently derived based on dimension size
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
+    // Array  may be visited if the element type or a dimension is
+    // templated. Simple having a dimension that is variable should
+    // not tirgger template type substitution.
+    
+    IntIndexItr iDim(type->DimensionLengths(), type->Rank());
+    ArrayDimensionVector newDimensions;
+    IntIndex* pNew  = newDimensions;
+    while (iDim.HasNext()) {
+        *pNew++ = AcceptMetaInt(iDim.Read());
+    }
+
     TypeRef subType = Accept(type->GetSubElement(0));
+    // not strictly true any longer.
     VIREO_ASSERT(subType != type->GetSubElement(0));
 
-    _newType = ArrayType::New(_typeManager, subType, type->Rank(), type->DimensionLengths());
+    _newType = ArrayType::New(_typeManager, subType, type->Rank(), newDimensions);
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitElement(ElementType* type)
 {
+    IntIndex offset;
+    if (!type->HasGenericType()) {
+        _newType = type;
+        offset = _alignmentCalculator->AlignNextElement(type->BaseType());
+        VIREO_ASSERT(type->ElementOffset() == offset);
+        return;
+    }
+    
     TypeRef   baseType = Accept(type->BaseType());
     SubString fieldName = type->ElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
-    IntIndex offset = type->ElementOffset();
+    offset = _alignmentCalculator->AlignNextElement(baseType);
+
     _newType = ElementType::New(_typeManager, &fieldName, baseType, usageType, offset);
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
-    SubString name = type->Name();
-
-    // TODO support more than one parameter
-    if (name.CompareCStr(tsTemplatePrefix "1")) {
-        _newType = *_parameters->Begin();
+    if (!type->HasGenericType()) {
+        _newType = type;
         return;
     }
-    // To get here the named type was generic, and that means the
+
+    SubString name = type->Name();
+    IntMax nTParams =  _parameters->Length();
+
+    // When visiting a NamedType it means there is some portion it contains that is open.
+    // other wise the existing type would have been used as is.
+
+    // Case 1: The name is a template parameter name like '$0', '$1', ...
+    // In this case the type get substituted with the parameter value.
+    if (name.EatChar(*tsTemplatePrefix)) {
+        IntMax i;
+        name.ReadInt(&i);
+        if (i >= 0 && i < nTParams) {
+            _newType = _parameters->Begin()[i];
+        } else {
+             // BaseType of a generic parameter is the simple generic type
+             // so use it if the parameter was not passed in.
+            _newType = type->BaseType();
+        }
+        return;
+    }
+
+    // Case 2: There were no type passed in the template expression
+    if (0 == nTParams) {
+        _newType = type;
+        return;
+    }
+    
+    // Case 3: It's a named type that contains some open types.
+    // IF ther are parameters they are the set of parameters for this type
+    // but not for nested named types. So build a Name based on the set of parameters
+    // supplied then hide the parameters before recursing. If a named typed
+    // is tempalted in the top typ it (may/will) have its own set of arguemnts
+    // based on the outer scope.
+    
+    //
     // base type is also generic. First ceaate the hyotheitcal new name
-    // and see if instance already exists. If not, make one.
+    // and see if the instance already exists. If not, make one.
 
     // Create a new name, TODO should  really use TDCodecVIA to parse the type
     STACK_VAR(String, tempString);
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('<');
-    name =  (*_parameters->Begin())->Name();
-    tempString.Value->Append('.');
-    tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
+    for ( Int32 i = 0; true; i++) {
+        tempString.Value->Append('.');
+        name =  (*_parameters->Begin())->Name();
+        tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
+        if (i >= nTParams)
+            break;
+        tempString.Value->Append(' ');
+    }
     tempString.Value->Append('>');
     name = tempString.Value->MakeSubStringAlias();
 
@@ -161,15 +306,21 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
         TypeRef newBaseType = Accept(type->BaseType());
         VIREO_ASSERT(newBaseType != type->BaseType());
         _newType = _typeManager->Define(&name, newBaseType);
-        // The new type needs to have an IsA relation ship to the template it is derived from
+        // The new type needs to have an IsA relationship to the template it is derived from
         // how to do that?
     } else {
+        // This instantiation already exists.
         _newType = type;
     }
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitPointer(PointerType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+    
     TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         _newType = PointerType::New(_typeManager, newBaseType);
@@ -180,6 +331,11 @@ void TypeTemplateVisitor::VisitPointer(PointerType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+
     TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         // Templated defaults are a bit extreme. If the type is generic then
@@ -192,15 +348,24 @@ void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitDefaultPointer(DefaultPointerType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
 {
+    if (!type->HasGenericType()) {
+        _newType = type;
+        return;
+    }
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
-
 
 }  // namespace Vireo

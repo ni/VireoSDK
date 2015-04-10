@@ -4,24 +4,24 @@ define (BranchBackAndForth dv(.VirtualInstrument (
    e(dv(.Int32 2)  c2)
    e(dv(.Int32 3)  c3)
    e(dv(.Int32 4)  c4)
-   ) 
- clump(1 
+   )
+ clump(1
    // A program that hops back and forth
    Println(c1)  //Start Here
    Branch(1)
-   
+
    Perch(0)   //<<----- 0
-   Println(c3)   
+   Println(c3)
    Branch(2)
-   
+
    Perch(1)   //<<----- 1
    Println(c2)
    Branch(0)
-   
+
    Perch(2)   //<<----- 2
-   Println(c4)   
+   Println(c4)
    Branch(3)
-   Perch(3)   //<<- 3 Perchs at the end once caused a problem
+   Perch(3)   //<<- 3 Perches at the end once caused a problem
    )
 )))
 enqueue (BranchBackAndForth)

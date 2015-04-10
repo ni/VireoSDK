@@ -852,7 +852,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
     path->SplitString(&pathHead, &pathTail, '.');
 
     // If the head matches one of the AggregateType's elements, add the offset.
-    for (ElementType** pType = _elements.Begin(); pType != _elements.End(); pType++) {
+    for (ElementTypeRef* pType = _elements.Begin(); pType != _elements.End(); pType++) {
         if ( pathHead.Compare((*pType)->_elementName.Begin(), (*pType)->_elementName.Length()) ) {
             subType = (*pType);
             *end = (AQBlock1*)start + ((*pType)->ElementOffset());
@@ -922,8 +922,8 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     Boolean isVariableSize = false;
     EncodingEnum encoding = kEncoding_None;
     
-    for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
-        ElementType* element = *pType;
+    for (ElementTypeRef* pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+        ElementTypeRef element = *pType;
         
         element->_offset = bitLength;
         IntIndex elementLength = element->BitLength();
@@ -1085,8 +1085,8 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
     
     ClusterAlignmentCalculator alignmentCalculator(this->TheTypeManager());
     
-    for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
-        ElementType* element = *pType;
+    for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+        ElementTypeRef element = *pType;
         
 #ifdef VIREO_USING_ASSERTS
         Int32 offset = alignmentCalculator.AlignNextElement(element);
@@ -1120,7 +1120,7 @@ NIError ClusterType::InitData(void* pData, TypeRef pattern)
 {
     if (!IsFlat() || HasCustomDefault()) {
         // For non trivial cases visit each element
-        for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
 
             if ( !(*pType)->IsFlat() && (*pType)->IsAlias()) {
@@ -1146,7 +1146,7 @@ NIError ClusterType::ClearData(void* pData)
         return TypeCommon::ClearData(pData);
     } else {
         // For non trivial cases visit each element
-        for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++)
+        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++)
         {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
             // If the element is an input or output in a subVI call, the calling VI will clear
@@ -1169,7 +1169,7 @@ NIError ClusterType::CopyData(const void* pData, void *pDataCopy)
         return TypeCommon::CopyData(pData, pDataCopy);
     } else {
         // For non trivial cases visit each element
-        for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++)
+        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++)
         {
             // TODO errors
             Int32 offset = (*pType)->_offset;
@@ -1489,8 +1489,8 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     // to each element.
     
     ParamBlockAlignmentCalculator alignmentCalculator(this->TheTypeManager());
-    for (ElementType **pType = _elements.Begin(); pType!=_elements.End(); pType++) {
-        ElementType* element = *pType;
+    for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+        ElementTypeRef element = *pType;
         
 #ifdef VIREO_USING_ASSERTS
         Int32 offset = alignmentCalculator.AlignNextElement(element);

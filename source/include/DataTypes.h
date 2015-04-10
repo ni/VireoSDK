@@ -110,17 +110,32 @@ enum {
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
 
+inline Boolean IsMetaDim(IntIndex dim)
+{
+    return (dim > kArrayVariableLengthSentinel) && (dim <= kArrayFirstTemplatedDimLength);
+}
+
 inline Boolean IsVariableLengthDim(IntIndex dim)
 {
     return dim <= kArrayFirstTemplatedDimLength;
 }
+
+inline IntIndex MetaDimValue(IntIndex dim)
+{
+    if (IsMetaDim(dim)) {
+        return dim - kArrayVariableLengthSentinel - 1;
+    } else {
+        return 0;
+    }
+}
+
 
 //------------------------------------------------------------
 typedef enum {
     kNIError_Success = 0,
     kNIError_kInsufficientResources = 1,// Typically memory
     kNIError_kResourceNotFound = 2,
-    kNIError_kArrayRankMismatch = 3,    // Arrays ranks do not fit function requirements (typically they must be the same)
+    kNIError_kArrayRankMismatch = 3,    // Array's rank do not fit function requirements (typically they must be the same)
     kNIError_kCantDecode = 4,           // Data in stream does not fit grammar
     kNIError_kCantEncode = 5,           // Data type not supported by encoder
     kNIError_kLogicFailure = 6,

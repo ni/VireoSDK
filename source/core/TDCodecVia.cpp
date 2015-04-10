@@ -81,7 +81,7 @@ TypeRef TDViaParser::ParseType()
 {
     TypeManagerScope scope(this->_typeManager);
 
-    TypeRef pType = null;
+    TypeRef type = null;
     
     SubString  typeFunction;
     _string.ReadToken(&typeFunction);
@@ -90,29 +90,29 @@ TypeRef TDViaParser::ParseType()
         Utf8Char dot;
         typeFunction.ReadRawChar(&dot);
         
-        pType = _typeManager->FindType(&typeFunction);
-        if (!pType) {
+        type = _typeManager->FindType(&typeFunction);
+        if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
-            pType = BadType();
+            type = BadType();
         }
     } else if (typeFunction.CompareCStr(tsBitClusterTypeToken)) {
-        pType = ParseBitCluster();
+        type = ParseBitCluster();
     } else if (typeFunction.CompareCStr(tsClusterTypeToken)) {
-        pType = ParseCluster();
+        type = ParseCluster();
     } else if (typeFunction.CompareCStr(tsParamBlockToken)) {
-        pType = ParseParamBlock();
+        type = ParseParamBlock();
     } else if (typeFunction.CompareCStr(tsBitBlockTypeToken)) {
-        pType = ParseBitBlock();
+        type = ParseBitBlock();
     } else if (typeFunction.CompareCStr(tsArrayToken)) {
-        pType = ParseArray();
+        type = ParseArray();
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
-        pType = ParseDefaultValue(false);
+        type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {
-        pType = ParseDefaultValue(true);
+        type = ParseDefaultValue(true);
     } else if (typeFunction.CompareCStr(tsEquivalenceToken)) {
-        pType = ParseEquivalence();
+        type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
-        pType = ParsePointerType(false);
+        type = ParsePointerType(false);
     } else {
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
@@ -175,7 +175,7 @@ For types beyond these simple types perhaps the tyep could be
             DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
             TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
             cdt = cdt->FinalizeConstant();
-            pType = cdt;
+            type = cdt;
         }
         
         if (!t) {
@@ -184,14 +184,15 @@ For types beyond these simple types perhaps the tyep could be
     }
 
     if (_string.EatChar('<')) {
+        // Build a list of parameters.
         FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
         for(int i = 0; !_string.EatChar('>'); i++) {
             templateParameters.Append(ParseType());
         }
-        pType = InstantiateTypeTemplate(_typeManager,  pType, &templateParameters);
+        type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
     }
     
-    return pType;
+    return type;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitCluster()
@@ -285,7 +286,7 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
         }
 
         Int32 offset = calculator->AlignNextElement(subType);
-        ElementType* element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset);
+        ElementTypeRef element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset);
         ElementTypes[calculator->ElementCount-1] = element;
     
         _string.ReadToken(&token);
@@ -1332,7 +1333,7 @@ private:
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitElement(ElementType* type)
+    virtual void VisitElement(ElementTypeRef type)
     {
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');

@@ -60,6 +60,7 @@ class String;
 typedef TypeCommon  *TypeRef;
 typedef TypeManager *TypeManagerRef;
 typedef NamedType *NamedTypeRef;
+typedef ElementType *ElementTypeRef;
 typedef String *StringRef;
 
 // StaticType is used for functions tha take types determined at load time.
@@ -645,7 +646,7 @@ protected:
     : TypeCommon(typeManager), _elements(count)
     {
         _pDefault = null;
-        _elements.Assign((ElementType**)elements, count);
+        _elements.Assign((ElementTypeRef*)elements, count);
     }
     static size_t   StructSize(Int32 count)
     {

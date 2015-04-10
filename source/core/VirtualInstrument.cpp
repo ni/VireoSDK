@@ -231,7 +231,7 @@ InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* nextInstruction)
 //------------------------------------------------------------
 void InstructionAllocator::AddRequest(size_t count)
 {
-    // cant be adding requests once the
+    // Can't add requests in pass two.
     VIREO_ASSERT(_next == null);
     _size += count;
 }
@@ -481,11 +481,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         TypeRef type = _clump->TheTypeManager()->FindType(argument);
         if (type != null) {
             _argumentState = kArgumentResolvedToGlobal;
-            
-            if (_cia->IsCalculatePass()) {
-                return;
-            }
-            
             // If it is to be passed as an input then that is OK.
             // Literals cannot be used as outputs.
             UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
@@ -523,7 +518,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
 
-    // If its not symbol name then it should be a value.
+    // If its not a symbol name then it should be a value.
     if (argument->ClassifyNextToken() != TokenTraits_SymbolName) {
         // Set the resolved argument type to what the constant should be so
         // the parameter is recognized as being there.
@@ -535,9 +530,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
         
         _argumentState = kArgumentResolvedToDefault;
-        if (_cia->IsCalculatePass()) {
-            return;
-        }
         DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
         TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
         cdt = cdt->FinalizeConstant();

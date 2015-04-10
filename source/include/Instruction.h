@@ -166,7 +166,7 @@ struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, typ
     extern InstructionCore* VIVM_FASTCALL _name_ (_type_* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE0(_name_) \
-    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction0* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (InstructionCore* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE1(_name_, t0) \
     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction1<t0>* _this _PROGMEM)

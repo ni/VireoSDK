@@ -138,7 +138,6 @@ enqueue (HelloWorld)
             var esh = NationalInstruments.Vireo;
             esh.repeat = false;
             esh.pause = false;
-            esh.h = 0;
 
             var theCanvas = document.getElementById("theCanvas");
             var ctx = theCanvas.getContext("2d");
@@ -147,9 +146,7 @@ enqueue (HelloWorld)
 
             function VRun()
             {
-                if (esh.h != 0 ) {
-                    esh.reset();
-                }
+                esh.reboot();
                 esh.loadVia(editor1.getValue());
                 esh.execCount = 0
                 esh.startTime = Date.now();

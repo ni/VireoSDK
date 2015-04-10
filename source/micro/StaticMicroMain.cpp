@@ -12,10 +12,7 @@
 #include "VirtualInstrument.h"
 #include "TDCodecVia.h"
 
-
-
 using namespace Vireo;
-
 
 // Prototype are necessary for functions. However these prototype are
 // stripped down to the bare minimum. which is OK since they are

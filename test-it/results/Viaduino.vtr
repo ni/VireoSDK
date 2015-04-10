@@ -1,16 +1,16 @@
 class DST_HelloWorld {  
-  VTInt32 _vInt32;
-  VTBoolean _vBool;
-  VTUInt8 _vUInt8;
-  VTInt8 _vInt8;
-  VTUInt16 _vUInt16;
-  VTInt16 _vInt16;
-  VTUInt32 _vUInt32;
-  VTInt32 _vInt32;
-  VTSingle _vSingle;
-  VTDouble _vDouble;
-  VTComplexSingle _vComplexSingle;
-  VTComplexDouble _vComplexDouble;
+  Int32 _vInt32;
+  Boolean _vBool;
+  UInt8 _vUInt8;
+  Int8 _vInt8;
+  UInt16 _vUInt16;
+  Int16 _vInt16;
+  UInt32 _vUInt32;
+  Int32 _vInt32;
+  Single _vSingle;
+  Double _vDouble;
+  ComplexSingle _vComplexSingle;
+  ComplexDouble _vComplexDouble;
 };
 DST_HelloWorld  ds = {  
   6,

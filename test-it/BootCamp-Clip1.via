@@ -1,0 +1,16 @@
+define (Clip1 dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(.Int32 x)
+        e(dv(.Int32 5) y)
+    )
+    clump (
+       Println(x)
+       Add(y x x)
+       Mul(x x x)
+       Printf("The answer is %s \n" x)
+       DebugLED(true)
+    )
+) ) )
+
+enqueue (Clip1)

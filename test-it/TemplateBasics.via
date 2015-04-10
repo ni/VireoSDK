@@ -1,0 +1,31 @@
+// Tempalate Basic Tests
+
+define (RectT c(e(.$0 top) e(.$0 left) e(.$0 width) e(.$0 height) ))
+
+define (TestTemplate dv(.VirtualInstrument (
+    Locals: c(
+        e(.RectT r_none1)
+        e(.RectT<> r_none2)
+        e(.RectT< > r_none3)
+        e(.RectT<.Int32> r_int1)
+        e(.RectT<.Double> r_double1)
+        e(dv(.RectT<.Double> (1.1 2.1 3.1 4.1)) r_double2)
+        e(.RectT<.Boolean> r_boolean1)
+        e(.RectT<.String> r_string1)
+        e(.RectT<.RectT> r_rect1)
+    )
+
+    clump (
+        Printf(" .RectT  %s \n" r_none1)
+        Printf(" .RectT<> %s \n" r_none2)
+        Printf(" .RectT< > %s \n" r_none3)
+        Printf(" .RectT<.Int32> %s \n" r_int1)
+        Printf(" .RectT<.Double> %s \n" r_double1)
+        Printf(" .RectT<.Double> %s \n" r_double2)
+        Printf(" .RectT<.Boolean> %s \n" r_boolean1)
+        Printf(" .RectT<.String> %s \n" r_string1)
+        Printf(" .RectT<.Rect> %s \n" r_rect1)
+    )
+)))
+
+enqueue (TestTemplate)

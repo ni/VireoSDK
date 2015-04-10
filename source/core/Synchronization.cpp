@@ -216,7 +216,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 DEFINE_VIREO_BEGIN(Synchronization)
 
 // TODO type should be able to derive from observable state base class
-DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$1 *)elements)e(.Int32 insert)e(.Int32 count))")
+DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
 DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
 
 DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
