@@ -695,8 +695,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         
         if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
             bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
-        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_SInt || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
-            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
+        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_SInt2C || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
+            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt2C || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
@@ -2055,12 +2055,12 @@ inline IntMax RoundToEven(Single value)
 }
 //---------------------------------------------------------------
 //! Coerce value to a range. TODO Still could be improved on.
-IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax value)
+IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 {
     IntMax min;
     IntMax max;
     
-    if (unsign) {
+    if (encoding == kEncoding_UInt) {
         switch (size) {
             case 1:     min = 0;            max = 255;          break;
             case 2:     min = 0;            max = 65536;        break;
@@ -2098,7 +2098,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
                 default: err = kNIError_kCantDecode;           break;
             }
             break;
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
         case kEncoding_MetaInt:
             switch(aqSize) {
                 case 1: value = *(Int8*)pData;                 break;
@@ -2141,7 +2141,7 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
                 default: err = kNIError_kCantEncode;            break;
             }
             break;
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
         case kEncoding_MetaInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;          break;
@@ -2187,7 +2187,7 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
                 default: err = kNIError_kCantDecode;        break;
             }
             break;
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
         case kEncoding_MetaInt:
             switch (aqSize) {
                 case 1:  value = *(Int8*)pData;             break;
@@ -2229,7 +2229,7 @@ NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Do
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
         case kEncoding_MetaInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;      break;

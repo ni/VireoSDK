@@ -1,10 +1,10 @@
  Total number of types 3
 (.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .Utf32Char .Timestamp .Type .TypeManager .VI .Clump .BranchTarget .Instruction .InstructionBlock .Array .Object)
  e(.Boolean)  // encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:f generic:f
- e(.Int8)  // encoding:10 usage:0 baseType:c(e(bb(8 SInt))) dv:f generic:f
- e(.Int16)  // encoding:10 usage:0 baseType:c(e(bb(16 SInt))) dv:f generic:f
- e(.Int32)  // encoding:10 usage:0 baseType:c(e(bb(32 SInt))) dv:f generic:f
- e(.Int64)  // encoding:10 usage:0 baseType:c(e(bb(64 SInt))) dv:f generic:f
+ e(.Int8)  // encoding:10 usage:0 baseType:c(e(bb(8 SInt2c))) dv:f generic:f
+ e(.Int16)  // encoding:10 usage:0 baseType:c(e(bb(16 SInt2c))) dv:f generic:f
+ e(.Int32)  // encoding:10 usage:0 baseType:c(e(bb(32 SInt2c))) dv:f generic:f
+ e(.Int64)  // encoding:10 usage:0 baseType:c(e(bb(64 SInt2c))) dv:f generic:f
  e(.UInt8)  // encoding: 9 usage:0 baseType:c(e(bb(8 UInt))) dv:f generic:f
  e(.UInt16)  // encoding: 9 usage:0 baseType:c(e(bb(16 UInt))) dv:f generic:f
  e(.UInt32)  // encoding: 9 usage:0 baseType:eq(e(.UInt32Atomic)e(.UInt32Cluster)) dv:f generic:f

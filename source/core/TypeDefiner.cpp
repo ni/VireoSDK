@@ -107,7 +107,7 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
 
     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);
 
-    if (cdt->BitEncoding() == kEncoding_SInt && cdt->TopAQSize() == 4) {
+    if (cdt->BitEncoding() == kEncoding_SInt2C && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;
 
         string.AliasAssignCStr(name);
@@ -129,17 +129,17 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
     // Integer
     Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
-    Define(tm, "Int8",          "c(e(bb(8 SInt)))");
+    Define(tm, "Int8",          "c(e(bb(8 SInt2c)))");
     Define(tm, "UInt16",        "c(e(bb(16 UInt)))");
-    Define(tm, "Int16",         "c(e(bb(16 SInt)))");
+    Define(tm, "Int16",         "c(e(bb(16 SInt2c)))");
     // UInt32
     Define(tm, "UInt32Atomic",  "c(e(bb(32 UInt)))");
     Define(tm, "UInt32Cluster", "c(e(.UInt16 HiWord) e(.UInt16 LoWord))");
     Define(tm, "UInt32",        "eq(e(.UInt32Atomic) e(.UInt32Cluster))");
     // Integer Int32
-    Define(tm, "Int32",         "c(e(bb(32 SInt)))");
+    Define(tm, "Int32",         "c(e(bb(32 SInt2c)))");
     Define(tm, "UInt64",        "c(e(bb(64 UInt)))");
-    Define(tm, "Int64",         "c(e(bb(64 SInt)))");
+    Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
     Define(tm, "Block128",      "c(e(bb(128 Bits)))");
     Define(tm, "Block256",      "c(e(bb(256 Bits)))");
 #if 1

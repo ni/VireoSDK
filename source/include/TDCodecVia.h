@@ -167,7 +167,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsBits            "Bits"        // Boolean values, 0 = false, off, 1 = true, on. No numeric significance
 #define tsEnum            "Enum"        //!< no numeric significance
 #define tsUInt            "UInt"        //!< unsigned integer 0 == 00000b, max = 1111b
-#define tsSInt            "SInt"        //!< signed integer two's compliment.  for 4 bits min=1000b(-8), 0 = 0000b, max = 0111b
+#define tsSInt            "SInt2c"      //!< signed integer two's compliment.  for 4 bits min=1000b(-8), 0 = 0000b, max = 0111b
 #define tsInt1sCompliment "SInt1c"      //!< signed integer ones's compliment. for 4 bits min=1000b(-7), 0 = 0000b or 1111b, max = 0111b
 #define tsFixedPoint      "Q"           //!< .xxxx fractional part of fixed point numbers   TODO fractional bits??? Q.n
 #define ts1plusFractional "Q1"          //!< 1.xxxx  used in floating-point formats

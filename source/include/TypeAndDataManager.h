@@ -104,7 +104,7 @@ enum EncodingEnum {
     kEncoding_Bits,
     kEncoding_Enum,
     kEncoding_UInt,
-    kEncoding_SInt,             // 2s compliment
+    kEncoding_SInt2C,           // 2s compliment
     kEncoding_MetaInt,          // Includes variable (*) and template ($n) sentinels
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
@@ -114,7 +114,7 @@ enum EncodingEnum {
     kEncoding_Q1,               // 1.bbb fixed point
     kEncoding_IntBiased,
     kEncoding_ZigZag,           // For future use
-    kEncoding_Int1sCompliment,  // In case we ever run on a CDC 170 Cyber mainframe ;)
+    kEncoding_SInt1C,           // In case we ever run on a CDC 170 Cyber mainframe ;)
     
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
@@ -314,7 +314,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
-IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax input);
+IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.

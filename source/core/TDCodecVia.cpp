@@ -390,7 +390,7 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsUInt)) {
         enc = kEncoding_UInt;
     } else if (string->CompareCStr(tsSInt)) {
-        enc = kEncoding_SInt;
+        enc = kEncoding_SInt2C;
     } else if (string->CompareCStr(tsFixedPoint)) {
         enc = kEncoding_Q;
     } else if (string->CompareCStr(ts1plusFractional)) {
@@ -398,7 +398,7 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsIntBiased)) {
         enc = kEncoding_IntBiased;
     } else if (string->CompareCStr(tsInt1sCompliment)) {
-        enc = kEncoding_Int1sCompliment;
+        enc = kEncoding_SInt1C;
     } else if (string->CompareCStr(tsAscii)) {
         enc = kEncoding_Ascii;
     } else if (string->CompareCStr(tsBits)) {
@@ -629,7 +629,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_UInt:
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
             {
                 IntMax value = 0;
                 Boolean readSuccess = _string.ReadInt(&value);
@@ -1426,7 +1426,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
     {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
-        case kEncoding_SInt:            str = tsSInt;           break;
+        case kEncoding_SInt2C:          str = tsSInt;           break;
         case kEncoding_Bits:            str = tsBits;           break;
         case kEncoding_Pointer:         str = tsPointer;        break;
         case kEncoding_IEEE754Binary:   str = tsIEEE754Binary;  break;
@@ -1462,7 +1462,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
     IntMax value;
     ReadIntFromMemory(encoding, aqSize, pData, &value);
     
-    if (encoding == kEncoding_SInt) {
+    if (encoding == kEncoding_SInt2C) {
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
@@ -1649,7 +1649,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     
     switch (encoding) {
         case kEncoding_UInt:
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
         case kEncoding_MetaInt:
             FormatInt(encoding, type->TopAQSize(), pData);
             break;
