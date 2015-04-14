@@ -303,7 +303,7 @@ public:
     TypeRef         StartInstruction(SubString* opName);
     TypeRef         StartNextOverload();
     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
-    TypeRef         ReresolveInstruction(SubString* opName, bool allowErrors);
+    TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
     void            ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData);
     void            AddDataTargetArgument(SubString* argument, Boolean prependType);
     void            InternalAddArg(TypeRef actualType, void* arg);

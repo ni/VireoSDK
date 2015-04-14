@@ -231,7 +231,7 @@ InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* nextInstruction)
 //------------------------------------------------------------
 void InstructionAllocator::AddRequest(size_t count)
 {
-    // cant be adding requests once the
+    // Can't add requests in pass two.
     VIREO_ASSERT(_next == null);
     _size += count;
 }
@@ -352,7 +352,7 @@ InstructionCore* ClumpParseState::CreateInstruction(TypeRef instructionType, Int
             instructionType->InitData(&instruction->_function);
             
             GenericInstruction *ginstruction = (GenericInstruction*)instruction;
-            for (int i=0; i<argCount; i++) {
+            for (Int32 i=0; i<argCount; i++) {
                 ginstruction->_args[i] = args[i];
             }
         }
@@ -392,7 +392,7 @@ void ClumpParseState::SetClumpFireCount(Int32 fireCount)
     _clump->_fireCount = fireCount;
 }
 //------------------------------------------------------------
-TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, bool allowErrors)
+TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, Boolean allowErrors)
 {
     // A new instruction function is being substituted for the
     // on original map (used for generics and SubVI calling)
@@ -481,11 +481,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         TypeRef type = _clump->TheTypeManager()->FindType(argument);
         if (type != null) {
             _argumentState = kArgumentResolvedToGlobal;
-            
-            if (_cia->IsCalculatePass()) {
-                return;
-            }
-            
             // If it is to be passed as an input then that is OK.
             // Literals cannot be used as outputs.
             UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
@@ -523,7 +518,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         return;
     }
 
-    // If its not symbol name then it should be a value.
+    // If its not a symbol name then it should be a value.
     if (argument->ClassifyNextToken() != TokenTraits_SymbolName) {
         // Set the resolved argument type to what the constant should be so
         // the parameter is recognized as being there.
@@ -535,9 +530,6 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
         
         _argumentState = kArgumentResolvedToDefault;
-        if (_cia->IsCalculatePass()) {
-            return;
-        }
         DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
         TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
         cdt = cdt->FinalizeConstant();
@@ -1046,7 +1038,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // still require patching (e.g. A branch to a forward perch)
         // add the _whereToPatch field.
         GenericInstruction *generic = (GenericInstruction*) instruction;
-        for (int i = 0; i < _argPatchCount; i++) {
+        for (Int32 i = 0; i < _argPatchCount; i++) {
             // Pointer to PatchInfo object was stashed in arg, look it up.
             PatchInfo *pPatch = (PatchInfo*)generic->_args[_argPatches[i]];
             
@@ -1088,7 +1080,7 @@ void ClumpParseState::CommitClump()
     if (_cia->IsCalculatePass())
         return;
         
-    for (int i = 0; i < _patchInfoCount; i++) {
+    for (Int32 i = 0; i < _patchInfoCount; i++) {
         *_patchInfos[i]._whereToPatch = *_patchInfos[i]._whereToPeek;
     }
 }

@@ -41,7 +41,7 @@ define (Loop  v(.VirtualInstrument (\
 c(\
     e(dv(.Int32 20) framePause)\
     e(dv(.Double 400) width)\
-    e(dv(.Double 400) heigth)\
+    e(dv(.Double 400) height)\
     e(dv(.Double 0) cZero)\
     e(dv(.Double 1) cOne)\
     e(dv(.Double -40) cNeg40)\
@@ -49,7 +49,7 @@ c(\
 )\
 1\
  clump(1\
- SdlInit(width heigth)\
+ SdlInit(width height)\
  Perch(0)\
    SdlGLLoadIdentity()\
    SdlGLClear()\

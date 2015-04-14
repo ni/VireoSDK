@@ -110,17 +110,32 @@ enum {
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
 
+inline Boolean IsMetaDim(IntIndex dim)
+{
+    return (dim > kArrayVariableLengthSentinel) && (dim <= kArrayFirstTemplatedDimLength);
+}
+
 inline Boolean IsVariableLengthDim(IntIndex dim)
 {
     return dim <= kArrayFirstTemplatedDimLength;
 }
+
+inline IntIndex MetaDimValue(IntIndex dim)
+{
+    if (IsMetaDim(dim)) {
+        return dim - kArrayVariableLengthSentinel - 1;
+    } else {
+        return 0;
+    }
+}
+
 
 //------------------------------------------------------------
 typedef enum {
     kNIError_Success = 0,
     kNIError_kInsufficientResources = 1,// Typically memory
     kNIError_kResourceNotFound = 2,
-    kNIError_kArrayRankMismatch = 3,    // Arrays ranks do not fit function requirements (typically they must be the same)
+    kNIError_kArrayRankMismatch = 3,    // Array's rank do not fit function requirements (typically they must be the same)
     kNIError_kCantDecode = 4,           // Data in stream does not fit grammar
     kNIError_kCantEncode = 5,           // Data type not supported by encoder
     kNIError_kLogicFailure = 6,
@@ -202,13 +217,13 @@ public:
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
     
     //! Return true if the blocks are equivalent.
-    bool Compare(const T* begin2, Int32 length2)
+    Boolean Compare(const T* begin2, Int32 length2)
     {
         return (length2 == Length() && (memcmp(_begin, begin2, Length()) == 0));
     }
     
     //! Return true if the blocks are equivalent.
-    bool Compare(const SubVector *subVector)
+    Boolean Compare(const SubVector *subVector)
     {
         return Compare(subVector->Begin(), subVector->Length());
     }

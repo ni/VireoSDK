@@ -45,7 +45,7 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
             TypeGetSubElement(dsType index eltType)
             TypeName(eltType typeName)
             TypeElementName(eltType eltName)
-            Printf("  VT%s _%s;\n" typeName eltName)
+            Printf("  %s _%s;\n" typeName eltName)
             Add(index 1 index)
         BranchIfLT(0 index count)
         Printf("};\n")
@@ -86,7 +86,7 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
 
                 // For each argument in an instruction
                 // The instruction type is a pointer.
-                // To get acces to the pointer's description get its sub element
+                // To get access to the pointer's description get its sub element
                 TypeSubElementCount(parameterListType count2)
                 Printf("   _I%s(%s" count2 internalName)
                 Init(index2)

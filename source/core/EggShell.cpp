@@ -46,7 +46,6 @@ EggShell* EggShell::Create(EggShell* parent)
         TypeManagerScope scope(pTADM);
 
         if (!parent) {
-            
             TypeDefiner::DefineStandardTypes(pTADM);
             TypeDefiner::DefineTypes(pTADM);
         }

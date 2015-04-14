@@ -46,7 +46,7 @@ VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
     return pShell->TheExecutionContext()->ExecuteSlices(numSlices, 20);
 }
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value)
+VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, Boolean value)
 {
 }
 //------------------------------------------------------------

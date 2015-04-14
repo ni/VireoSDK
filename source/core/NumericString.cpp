@@ -473,7 +473,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 length = 0;
                         char* binaryindex = BinaryString;
                         if (intValue < 0) {
-                            for (int i = intSize-1; i >=0; i--) {
+                            for (IntIndex i = intSize-1; i >=0; i--) {
                                 if (intValue%2 == 0) {
                                     BinaryString[i] = '0';
                                 } else {
@@ -532,10 +532,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             // when reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                ConvertNumericRange(4, true, intValue, &intValue);
+                                intValue = ConvertNumericRange(4, true, intValue);
                             } else {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                ConvertNumericRange(4, false, intValue, &intValue);
+                                intValue = ConvertNumericRange(4, false, intValue);
                             }
 
                         } else {
@@ -1033,7 +1033,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoull(inpBegin, &endPointer, 10);
             break;
         }
-        ConvertNumericRange(argumentType->TopAQSize(), true, intValue, &intValue);
+        intValue = ConvertNumericRange(argumentType->TopAQSize(), true, intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
@@ -1066,7 +1066,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoll(inpBegin, &endPointer, 10);
             break;
         }
-        ConvertNumericRange(argumentType->TopAQSize(), false, intValue, &intValue);
+        intValue = ConvertNumericRange(argumentType->TopAQSize(), false, intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;

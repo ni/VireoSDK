@@ -21,7 +21,7 @@ VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const char* commands);
 
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices);
 
-VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, bool value);
+VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, Boolean value);
 
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell);
 

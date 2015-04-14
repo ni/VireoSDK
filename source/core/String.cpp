@@ -442,13 +442,13 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
     SubString ss = _Param(0)->MakeSubStringAlias();
     const Utf8Char* pSourceChar = ss.Begin();
     IntIndex targetLength = ss.Length();
-    bool found = false;
-    int leading = 0;
-    int trailing = 0;
+    Boolean found = false;
+    IntIndex leading = 0;
+    IntIndex trailing = 0;
     const Utf8Char* spacePos = null;
-    bool last = false;
+    Boolean last = false;
     while (pSourceChar < ss.End()) {
-        int bytes = ss.CharLength(pSourceChar);
+        IntIndex bytes = ss.CharLength(pSourceChar);
         if (bytes == 1) {
             char c = *pSourceChar;
             if (!found && ss.IsSpaceChar(c)) {
@@ -583,7 +583,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef,
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRef)
 {
-    int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    Int32 cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
     if (cmp < 0) {
         return _this->_p0;
     } else if (cmp > 0) {
@@ -597,7 +597,7 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRe
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRef)
 {
-    int cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    Int32 cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
     if (cmp > 0) {
         return _this->_p0;
     } else if (cmp < 0) {

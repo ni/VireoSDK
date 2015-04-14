@@ -60,6 +60,7 @@ class String;
 typedef TypeCommon  *TypeRef;
 typedef TypeManager *TypeManagerRef;
 typedef NamedType *NamedTypeRef;
+typedef ElementType *ElementTypeRef;
 typedef String *StringRef;
 
 // StaticType is used for functions tha take types determined at load time.
@@ -313,7 +314,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
-void ConvertNumericRange(Int32 size, Boolean unsign, IntMax input, IntMax* output);
+IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax input);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
@@ -645,7 +646,7 @@ protected:
     : TypeCommon(typeManager), _elements(count)
     {
         _pDefault = null;
-        _elements.Assign((ElementType**)elements, count);
+        _elements.Assign((ElementTypeRef*)elements, count);
     }
     static size_t   StructSize(Int32 count)
     {
