@@ -215,7 +215,7 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
         }
         break;
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt: {
+        case kEncoding_IntDim: {
             buffer->AppendCStr("%d");
         }
         break;
@@ -1038,7 +1038,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     }
     break;
     case kEncoding_SInt2C:
-    case kEncoding_MetaInt: {
+    case kEncoding_IntDim: {
         IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
         case 'x' : {

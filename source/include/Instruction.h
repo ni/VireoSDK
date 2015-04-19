@@ -140,7 +140,7 @@ struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, typ
 // Macro to access the arguments count variable in a variable argument functions.
 // var-arg functions must derive from VarArgInstruction
 // so the count will be the first argument in the snippet
-#define _ParamVarArgCount()     ((int)_PROGMEM_PTR(_this, _count))
+#define _ParamVarArgCount()     ((Int32)_PROGMEM_PTR(_this, _count))
     
 #ifdef _DEBUG
 #define VIVM_TAIL_CALLS_USE_JMP 0

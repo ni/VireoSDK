@@ -312,7 +312,7 @@ TypeRef TDViaParser::ParseArray()
     while (!token.CompareCStr(")")) {
         
         IntIndex dimensionLength;
-        if (!token.ReadMetaInt(&dimensionLength)) {
+        if (!token.ReadDimInt(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension '%.*s'",  FMT_LEN_BEGIN(&token));
             return BadType();
         }
@@ -346,7 +346,7 @@ TypeRef TDViaParser::ParseBitBlock()
     
     if (lengthToken.CompareCStr(tsHostPointerSize)) {
         length = _typeManager->HostPointerToAQSize() * _typeManager->AQBitLength();
-    } else if (!lengthToken.ReadMetaInt(&length)) {
+    } else if (!lengthToken.ReadDimInt(&length)) {
             return BadType();        
     }
     
@@ -1283,7 +1283,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
-        _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(length), &length);
+        _pFormatter->FormatInt(kEncoding_IntDim, sizeof(length), &length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1328,7 +1328,7 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(IntIndex), pDimension++);
+            _pFormatter->FormatInt(kEncoding_IntDim, sizeof(IntIndex), pDimension++);
         }
         _pFormatter->_string->AppendCStr(")");
     }
@@ -1466,7 +1466,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
-    } else if (encoding == kEncoding_MetaInt) {
+    } else if (encoding == kEncoding_IntDim) {
         if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
         } else if (IsVariableLengthDim((IntIndex)value)) {
@@ -1650,7 +1650,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     switch (encoding) {
         case kEncoding_UInt:
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt:
+        case kEncoding_IntDim:
             FormatInt(encoding, type->TopAQSize(), pData);
             break;
         case kEncoding_IEEE754Binary:

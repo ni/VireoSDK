@@ -105,7 +105,7 @@ enum EncodingEnum {
     kEncoding_Enum,
     kEncoding_UInt,
     kEncoding_SInt2C,           // 2s compliment
-    kEncoding_MetaInt,          // Includes variable (*) and template ($n) sentinels
+    kEncoding_IntDim,           // Like SInt2C, also includes variable and sentinels ($n, *) 
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
     kEncoding_Unicode,
@@ -793,7 +793,7 @@ public:
     // In the type dimension is described as follows:
     // negative=bounded, positive=fixed, zero=fix with no elements
     // negative VariableDimensionSentinel means varible, and will not be prealocated.
-    IntIndex    _dimensionLengths[1];
+    IntDim    _dimensionLengths[1];
     
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.
@@ -801,7 +801,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString Name()                            { return SubString("Array"); }
-    virtual IntIndex* DimensionLengths()                { return &_dimensionLengths[0]; }
+    virtual IntDim* DimensionLengths()                  { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);
