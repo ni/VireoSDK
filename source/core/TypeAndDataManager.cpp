@@ -2099,7 +2099,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
             }
             break;
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt:
+        case kEncoding_IntDim:
             switch(aqSize) {
                 case 1: value = *(Int8*)pData;                 break;
                 case 2: value = *(Int16*)pData;                break;
@@ -2142,7 +2142,7 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
             }
             break;
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt:
+        case kEncoding_IntDim:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;          break;
                 case 2:  *(Int16*)pData = (Int16)value;         break;
@@ -2188,7 +2188,7 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
             }
             break;
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt:
+        case kEncoding_IntDim:
             switch (aqSize) {
                 case 1:  value = *(Int8*)pData;             break;
                 case 2:  value = *(Int16*)pData;            break;
@@ -2230,7 +2230,7 @@ NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Do
             }
             break;
         case kEncoding_SInt2C:
-        case kEncoding_MetaInt:
+        case kEncoding_IntDim:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;      break;
                 case 2:  *(Int16*)pData = (Int16)value;     break;
