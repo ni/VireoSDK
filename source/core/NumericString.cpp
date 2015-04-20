@@ -1006,7 +1006,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     EncodingEnum encoding = argumentType->BitEncoding();
     switch (encoding) {
     case kEncoding_UInt: {
-        IntMax intValue;
+        IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoull(inpBegin, &endPointer, 16);
