@@ -110,6 +110,7 @@ private :
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
+    TypeRef ParseDefine();
     TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseNamedType();
@@ -187,10 +188,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 // Know as Latin-1 know more formally defined as ISO 8859-1
 // http://en.wikipedia.org/wiki/ISO/IEC_8859-1
 
-#define tsArrayToken            "a"
+#define tsArrayTypeToken        "a"
 #define tsBitClusterTypeToken   "bc"
 #define tsBitBlockTypeToken     "bb"
 #define tsClusterTypeToken      "c"
+#define tsDefineTypeToken       "define"
 #define tsElementToken          "e"  // used for Cluster, BitCluster, and array aggregate types for simple elements
 #define tsAliasToken            "al" // alias to another element. 
 #define tsInputParamToken       "i"  // input parameter
@@ -200,9 +202,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsStaticParamToken      "s"  // static parameter, not explicitly passed, allocated in param block and preserved between
 #define tsTempParamToken        "t"  // temp parameter, not explicitly passed, allocated in param block and can be thrown away
 #define tsVolatileToken         "x"  // volatile parameter, not explicitly passed or allocated in the param block
-#define tsEquivalenceToken      "eq" // for alternate views on the same set of bits.
+#define tsEquivalenceTypeToken  "eq" // for alternate views on the same set of bits.
 #define tsNamedTypeToken        "."
-#define tsParamBlockToken       "p"  // Used for defining param blocks used by native functions.
+#define tsParamBlockTypeToken   "p"  // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
 #define tsDefaultValueToken     "dv"
 #define tsVarValueToken         "var"

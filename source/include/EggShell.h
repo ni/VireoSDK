@@ -29,13 +29,11 @@ private:
     TypeManagerRef _typeManger;
     ExecutionContextRef _execContext;
     char*   _mallocBuffer;
-    Int64   _commandCount;
     
 public:
     NIError REPL(SubString *commandBuffer);
     NIError ReadFile(ConstCStr name, SubString *string);
     NIError ReadStdinLine(SubString *string);
-    Int64   CommanCount() { return _commandCount;}
     Boolean ShowStats;
     NIError Delete();    
     TypeManagerRef TheTypeManager()           { return _typeManger; }
@@ -44,7 +42,6 @@ public:
 private:
     EggShell(TypeManagerRef typeManger, ExecutionContextRef execContext);
     void ParseEnqueueVI(TDViaParser* parser);
-    void ParseDefine(TDViaParser* parser);
 };
 
 } // namespace Vireo

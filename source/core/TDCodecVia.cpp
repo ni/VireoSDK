@@ -99,17 +99,19 @@ TypeRef TDViaParser::ParseType()
         type = ParseBitCluster();
     } else if (typeFunction.CompareCStr(tsClusterTypeToken)) {
         type = ParseCluster();
-    } else if (typeFunction.CompareCStr(tsParamBlockToken)) {
+    } else if (typeFunction.CompareCStr(tsDefineTypeToken)) {
+        type = ParseDefine();
+    } else if (typeFunction.CompareCStr(tsParamBlockTypeToken)) {
         type = ParseParamBlock();
     } else if (typeFunction.CompareCStr(tsBitBlockTypeToken)) {
         type = ParseBitBlock();
-    } else if (typeFunction.CompareCStr(tsArrayToken)) {
+    } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {
         type = ParseDefaultValue(true);
-    } else if (typeFunction.CompareCStr(tsEquivalenceToken)) {
+    } else if (typeFunction.CompareCStr(tsEquivalenceTypeToken)) {
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
@@ -211,6 +213,31 @@ TypeRef TDViaParser::ParseCluster()
     return ClusterType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
+TypeRef TDViaParser::ParseDefine()
+{
+    if (!_string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return BadType();
+    }
+    
+    SubString symbolName;
+    _string.ReadToken(&symbolName);
+    TypeRef type = ParseType();
+    
+    if (!_string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return BadType();
+    }
+    
+    TypeRef namedType = _typeManager->Define(&symbolName, type);
+    if (!namedType) {
+        LOG_EVENT(kHardDataError, "Can't define symbol");
+        return BadType();
+    }
+
+    return namedType;
+}
+//------------------------------------------------------------
 TypeRef TDViaParser::ParseEquivalence()
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
@@ -234,7 +261,6 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
     UsageTypeEnum  usageType;
     
     _string.ReadToken(&token);
-    
     if (!token.CompareCStr("("))
         return LOG_EVENT(kHardDataError, "'(' missing");
     

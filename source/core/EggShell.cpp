@@ -61,7 +61,6 @@ EggShell* EggShell::Create(EggShell* parent)
 //------------------------------------------------------------
 EggShell::EggShell(TypeManagerRef typeManager, ExecutionContextRef execContext)
 {
-    _commandCount = 0;
     _typeManger     = typeManager;
     _execContext    = execContext;
     _mallocBuffer   = null;
@@ -87,25 +86,6 @@ NIError EggShell::Delete()
     TypeManager::Delete(pTADM);
     
     return kNIError_Success;
-}
-//------------------------------------------------------------
-void EggShell::ParseDefine(TDViaParser *parser)
-{
-    SubString symbolName;
-    
-    if (!parser->TheString()->EatChar('('))
-        return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
-    
-    parser->TheString()->ReadToken(&symbolName);
-    
-    TypeRef t = parser->ParseType();
-
-    if (!parser->TheString()->EatChar(')'))
-        return parser->LogEvent(EventLog::kHardDataError,  "')' missing");
-    
-    TypeRef namedType = _execContext->TheTypeManager()->Define(&symbolName, t);
-    if (!namedType)
-        return parser->LogEvent(EventLog::kHardDataError,  "Can't define symbol");    
 }
 //------------------------------------------------------------
 void EggShell::ParseEnqueueVI(TDViaParser* parser)
@@ -138,21 +118,24 @@ NIError EggShell::REPL(SubString *commandBuffer)
     TDViaParser parser(_execContext->TheTypeManager(), commandBuffer, &log, 1);
     SubString command;
     
+    parser.TheString()->EatLeadingSpaces();
     while((parser.TheString()->Length() > 0) && (log.TotalErrorCount() == 0)) {
-        parser.TheString()->ReadToken(&command);
-        _commandCount++;
-        if (command.CompareCStr("define")) {
-            ParseDefine(&parser);
-        } else if (command.CompareCStr("enqueue")) {
-            ParseEnqueueVI(&parser);
-        } else if (command.CompareCStr("clear")) {
-            _typeManger->DeleteTypes(false);
-        } else if (command.CompareCStr("exit")) {
-            log.LogEvent(EventLog::kTrace, 0, "chirp chirp");
-            return kNIError_kResourceNotFound;
+        if (parser.TheString()->ComparePrefixCStr(tsDefineTypeToken)) {
+            // Defines are now processed by the core parser.
+            parser.ParseType();
         } else {
-            log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
-            break;
+            parser.TheString()->ReadToken(&command);
+            if (command.CompareCStr("enqueue")) {
+                ParseEnqueueVI(&parser);
+            } else if (command.CompareCStr("clear")) {
+                _typeManger->DeleteTypes(false);
+            } else if (command.CompareCStr("exit")) {
+                log.LogEvent(EventLog::kTrace, 0, "chirp chirp");
+                return kNIError_kResourceNotFound;
+            } else {
+                log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
+                break;
+            }
         }
         parser.TheString()->EatLeadingSpaces();
         parser.RepinLineNumberBase();
