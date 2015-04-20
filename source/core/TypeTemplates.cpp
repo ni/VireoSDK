@@ -33,7 +33,7 @@ class TypeTemplateVisitor : public TypeVisitor
 
  private:
     TypeRef  LookupParameter(IntIndex i);
-    IntIndex AcceptDimInt(IntIndex value);
+    IntIndex AcceptIntDim(IntIndex value);
     
  private:
     virtual void VisitBad(TypeRef type);
@@ -84,7 +84,7 @@ TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
     }
 }
 //------------------------------------------------------------
-IntIndex TypeTemplateVisitor::AcceptDimInt(IntIndex value)
+IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
 {
     if (IsTemplateDim(value)) {
         // Find the template parameter.
@@ -209,7 +209,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
     ArrayDimensionVector newDimensions;
     IntIndex* pNew  = newDimensions;
     while (iDim.HasNext()) {
-        *pNew++ = AcceptDimInt(iDim.Read());
+        *pNew++ = AcceptIntDim(iDim.Read());
     }
 
     TypeRef subType = Accept(type->GetSubElement(0));

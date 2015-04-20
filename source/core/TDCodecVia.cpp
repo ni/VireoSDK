@@ -338,7 +338,7 @@ TypeRef TDViaParser::ParseArray()
     while (!token.CompareCStr(")")) {
         
         IntIndex dimensionLength;
-        if (!token.ReadDimInt(&dimensionLength)) {
+        if (!token.ReadIntDim(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension '%.*s'",  FMT_LEN_BEGIN(&token));
             return BadType();
         }
@@ -372,7 +372,7 @@ TypeRef TDViaParser::ParseBitBlock()
     
     if (lengthToken.CompareCStr(tsHostPointerSize)) {
         length = _typeManager->HostPointerToAQSize() * _typeManager->AQBitLength();
-    } else if (!lengthToken.ReadDimInt(&length)) {
+    } else if (!lengthToken.ReadIntDim(&length)) {
             return BadType();        
     }
     

@@ -625,7 +625,7 @@ Boolean SubString::CompareEncodedString(SubString* encodedString)
 }
 //------------------------------------------------------------
 // ! Read an integer or one of the special symbolic numbers formats
-Boolean SubString::ReadDimInt(IntIndex *pValue)
+Boolean SubString::ReadIntDim(IntIndex *pValue)
 {
     // Three formats are supported
     // 1. nnn   Simple integers negative or positive
