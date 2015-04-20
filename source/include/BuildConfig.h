@@ -109,6 +109,7 @@ SDG
     #define VIREO_TYPE_ComplexSingle 1
     #define VIREO_TYPE_ComplexDouble 1
     #define VIREO_TYPE_ArrayND 1
+    #define VIREO_TYPE_Waveform 1
 
     #define VIREO_TYPE_Timestamp 1
     #define VIREO_TYPE_Canvas2D  1

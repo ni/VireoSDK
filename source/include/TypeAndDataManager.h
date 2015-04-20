@@ -104,8 +104,8 @@ enum EncodingEnum {
     kEncoding_Bits,
     kEncoding_Enum,
     kEncoding_UInt,
-    kEncoding_SInt,             // 2s compliment
-    kEncoding_MetaInt,          // Includes variable (*) and template ($n) sentinels
+    kEncoding_SInt2C,           // 2s compliment
+    kEncoding_IntDim,           // Like SInt2C, also includes variable and sentinels ($n, *) 
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
     kEncoding_Unicode,
@@ -114,7 +114,7 @@ enum EncodingEnum {
     kEncoding_Q1,               // 1.bbb fixed point
     kEncoding_IntBiased,
     kEncoding_ZigZag,           // For future use
-    kEncoding_Int1sCompliment,  // In case we ever run on a CDC 170 Cyber mainframe ;)
+    kEncoding_SInt1C,           // In case we ever run on a CDC 170 Cyber mainframe ;)
     
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
@@ -314,7 +314,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
-IntMax ConvertNumericRange(Int32 size, Boolean unsign, IntMax input);
+IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
@@ -793,7 +793,7 @@ public:
     // In the type dimension is described as follows:
     // negative=bounded, positive=fixed, zero=fix with no elements
     // negative VariableDimensionSentinel means varible, and will not be prealocated.
-    IntIndex    _dimensionLengths[1];
+    IntDim    _dimensionLengths[1];
     
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.
@@ -801,7 +801,7 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString Name()                            { return SubString("Array"); }
-    virtual IntIndex* DimensionLengths()                { return &_dimensionLengths[0]; }
+    virtual IntDim* DimensionLengths()                  { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = null);

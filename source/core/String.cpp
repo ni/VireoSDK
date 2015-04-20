@@ -341,8 +341,7 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringLength, StringRef, Int32)
 {
-    SubString ss = _Param(0)->MakeSubStringAlias();
-    _Param(1) = ss.StringLength();
+    _Param(1) = _Param(0)->MakeSubStringAlias().StringLength();
     return _NextInstruction();
 }
 //------------------------------------------------------------

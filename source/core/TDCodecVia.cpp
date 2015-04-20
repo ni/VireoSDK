@@ -99,17 +99,19 @@ TypeRef TDViaParser::ParseType()
         type = ParseBitCluster();
     } else if (typeFunction.CompareCStr(tsClusterTypeToken)) {
         type = ParseCluster();
-    } else if (typeFunction.CompareCStr(tsParamBlockToken)) {
+    } else if (typeFunction.CompareCStr(tsDefineTypeToken)) {
+        type = ParseDefine();
+    } else if (typeFunction.CompareCStr(tsParamBlockTypeToken)) {
         type = ParseParamBlock();
     } else if (typeFunction.CompareCStr(tsBitBlockTypeToken)) {
         type = ParseBitBlock();
-    } else if (typeFunction.CompareCStr(tsArrayToken)) {
+    } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {
         type = ParseDefaultValue(true);
-    } else if (typeFunction.CompareCStr(tsEquivalenceToken)) {
+    } else if (typeFunction.CompareCStr(tsEquivalenceTypeToken)) {
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
@@ -211,6 +213,31 @@ TypeRef TDViaParser::ParseCluster()
     return ClusterType::New(_typeManager, elementTypes, calc.ElementCount);
 }
 //------------------------------------------------------------
+TypeRef TDViaParser::ParseDefine()
+{
+    if (!_string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return BadType();
+    }
+    
+    SubString symbolName;
+    _string.ReadToken(&symbolName);
+    TypeRef type = ParseType();
+    
+    if (!_string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return BadType();
+    }
+    
+    TypeRef namedType = _typeManager->Define(&symbolName, type);
+    if (!namedType) {
+        LOG_EVENT(kHardDataError, "Can't define symbol");
+        return BadType();
+    }
+
+    return namedType;
+}
+//------------------------------------------------------------
 TypeRef TDViaParser::ParseEquivalence()
 {
     TypeRef elementTypes[1000];   //TODO enforce limits or make them dynamic
@@ -234,7 +261,6 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
     UsageTypeEnum  usageType;
     
     _string.ReadToken(&token);
-    
     if (!token.CompareCStr("("))
         return LOG_EVENT(kHardDataError, "'(' missing");
     
@@ -312,7 +338,7 @@ TypeRef TDViaParser::ParseArray()
     while (!token.CompareCStr(")")) {
         
         IntIndex dimensionLength;
-        if (!token.ReadMetaInt(&dimensionLength)) {
+        if (!token.ReadIntDim(&dimensionLength)) {
             LOG_EVENTV(kHardDataError, "Invalid array dimension '%.*s'",  FMT_LEN_BEGIN(&token));
             return BadType();
         }
@@ -346,7 +372,7 @@ TypeRef TDViaParser::ParseBitBlock()
     
     if (lengthToken.CompareCStr(tsHostPointerSize)) {
         length = _typeManager->HostPointerToAQSize() * _typeManager->AQBitLength();
-    } else if (!lengthToken.ReadMetaInt(&length)) {
+    } else if (!lengthToken.ReadIntDim(&length)) {
             return BadType();        
     }
     
@@ -390,7 +416,7 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsUInt)) {
         enc = kEncoding_UInt;
     } else if (string->CompareCStr(tsSInt)) {
-        enc = kEncoding_SInt;
+        enc = kEncoding_SInt2C;
     } else if (string->CompareCStr(tsFixedPoint)) {
         enc = kEncoding_Q;
     } else if (string->CompareCStr(ts1plusFractional)) {
@@ -398,7 +424,7 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsIntBiased)) {
         enc = kEncoding_IntBiased;
     } else if (string->CompareCStr(tsInt1sCompliment)) {
-        enc = kEncoding_Int1sCompliment;
+        enc = kEncoding_SInt1C;
     } else if (string->CompareCStr(tsAscii)) {
         enc = kEncoding_Ascii;
     } else if (string->CompareCStr(tsBits)) {
@@ -629,7 +655,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_UInt:
-        case kEncoding_SInt:
+        case kEncoding_SInt2C:
             {
                 IntMax value = 0;
                 Boolean readSuccess = _string.ReadInt(&value);
@@ -1283,7 +1309,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
-        _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(length), &length);
+        _pFormatter->FormatInt(kEncoding_IntDim, sizeof(length), &length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1328,7 +1354,7 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            _pFormatter->FormatInt(kEncoding_MetaInt, sizeof(IntIndex), pDimension++);
+            _pFormatter->FormatInt(kEncoding_IntDim, sizeof(IntIndex), pDimension++);
         }
         _pFormatter->_string->AppendCStr(")");
     }
@@ -1426,7 +1452,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
     {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
-        case kEncoding_SInt:            str = tsSInt;           break;
+        case kEncoding_SInt2C:          str = tsSInt;           break;
         case kEncoding_Bits:            str = tsBits;           break;
         case kEncoding_Pointer:         str = tsPointer;        break;
         case kEncoding_IEEE754Binary:   str = tsIEEE754Binary;  break;
@@ -1462,11 +1488,11 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
     IntMax value;
     ReadIntFromMemory(encoding, aqSize, pData, &value);
     
-    if (encoding == kEncoding_SInt) {
+    if (encoding == kEncoding_SInt2C) {
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
-    } else if (encoding == kEncoding_MetaInt) {
+    } else if (encoding == kEncoding_IntDim) {
         if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
         } else if (IsVariableLengthDim((IntIndex)value)) {
@@ -1648,8 +1674,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     
     switch (encoding) {
         case kEncoding_UInt:
-        case kEncoding_SInt:
-        case kEncoding_MetaInt:
+        case kEncoding_SInt2C:
+        case kEncoding_IntDim:
             FormatInt(encoding, type->TopAQSize(), pData);
             break;
         case kEncoding_IEEE754Binary:

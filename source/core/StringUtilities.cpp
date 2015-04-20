@@ -625,12 +625,12 @@ Boolean SubString::CompareEncodedString(SubString* encodedString)
 }
 //------------------------------------------------------------
 // ! Read an integer or one of the special symbolic numbers formats
-Boolean SubString::ReadMetaInt(IntIndex *pValue)
+Boolean SubString::ReadIntDim(IntIndex *pValue)
 {
     // Three formats are supported
-    // 1. nnn  Simple integers negative or positive
-    // 2. '*'  Which means roughtly variable or wild card
-    // 3  $nn  Which also means variable but is identifies as a template parameter
+    // 1. nnn   Simple integers negative or positive
+    // 2. *     Which means variable or unspceified
+    // 3  $n    Which also means variable but is identifies as a template parameter
     // Meta ints can only be used where the reasonable range of value does not
     // include extreme negative numbers.
     

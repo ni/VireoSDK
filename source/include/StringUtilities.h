@@ -252,8 +252,8 @@ public:
     //! Read the next sequence of digits and parse them as an integer.
     Boolean ReadInt(IntMax* value);
     
-    //! Read the next sequence of digits and parse them as an MetaInt. Like Int but adds '*' and '$n'
-    Boolean ReadMetaInt(IntIndex* value);
+    //! Read the next sequence of digits and parse them as an IntDim. Like Int but adds '*' and '$n'
+    Boolean ReadIntDim(IntIndex* value);
     
     //! Read the next sequence of digits and parse them as a Double.
     Boolean ParseDouble(Double* value);

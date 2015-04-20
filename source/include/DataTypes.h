@@ -88,12 +88,12 @@ namespace Vireo
 //------------------------------------------------------------
 //! Types used for array indexes and dimensions
 typedef Int32        IntIndex;
+typedef Int32        IntDim;
 enum {
-
-    // MetaInt encoded as "*"
+    // IntDim encoded as "*"
     kArrayVariableLengthSentinel = INT32_MIN,
     
-    // MetaInt encoded as template parameters $0 .. $255
+    // IntDim encoded as template parameters $0 .. $255
     kArrayMaxTemplatedDimLengths = 256,
     
     kArrayFirstTemplatedDimLength = kArrayVariableLengthSentinel + kArrayMaxTemplatedDimLengths,
@@ -110,19 +110,21 @@ enum {
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
 
-inline Boolean IsMetaDim(IntIndex dim)
+//! Template dimensions are the encodings for $0.. $n
+inline Boolean IsTemplateDim(IntIndex dim)
 {
     return (dim > kArrayVariableLengthSentinel) && (dim <= kArrayFirstTemplatedDimLength);
 }
 
+//! Variable dimension is the encodings for *. Templates params also count as vairable.
 inline Boolean IsVariableLengthDim(IntIndex dim)
 {
     return dim <= kArrayFirstTemplatedDimLength;
 }
-
-inline IntIndex MetaDimValue(IntIndex dim)
+//! Decode a tempalte parametere index.
+inline IntIndex TemplateDimIndex(IntIndex dim)
 {
-    if (IsMetaDim(dim)) {
+    if (IsTemplateDim(dim)) {
         return dim - kArrayVariableLengthSentinel - 1;
     } else {
         return 0;

@@ -214,8 +214,8 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             buffer->AppendCStr("%u");
         }
         break;
-        case kEncoding_SInt:
-        case kEncoding_MetaInt: {
+        case kEncoding_SInt2C:
+        case kEncoding_IntDim: {
             buffer->AppendCStr("%d");
         }
         break;
@@ -529,13 +529,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
                         if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
-                            // when reading value from the double and format the value as integer, the max size is 4
+                            // When reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                intValue = ConvertNumericRange(4, true, intValue);
+                                intValue = ConvertNumericRange(kEncoding_UInt, 4, intValue);
                             } else {
                                 ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
-                                intValue = ConvertNumericRange(4, false, intValue);
+                                intValue = ConvertNumericRange(kEncoding_SInt2C, 4, intValue);
                             }
 
                         } else {
@@ -1033,12 +1033,12 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoull(inpBegin, &endPointer, 10);
             break;
         }
-        intValue = ConvertNumericRange(argumentType->TopAQSize(), true, intValue);
+        intValue = ConvertNumericRange(kEncoding_UInt, argumentType->TopAQSize(), intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
-    case kEncoding_SInt:
-    case kEncoding_MetaInt: {
+    case kEncoding_SInt2C:
+    case kEncoding_IntDim: {
         IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
         case 'x' : {
@@ -1066,7 +1066,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             intValue = strtoll(inpBegin, &endPointer, 10);
             break;
         }
-        intValue = ConvertNumericRange(argumentType->TopAQSize(), false, intValue);
+        intValue = ConvertNumericRange(kEncoding_SInt2C, argumentType->TopAQSize(), intValue);
         WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
     }
     break;
