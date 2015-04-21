@@ -1,4 +1,3 @@
-/*jshint browser: true, node: true*/
 var HttpClient = {
 
     // Make a header module
