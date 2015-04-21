@@ -1740,6 +1740,7 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 {
     _Param(3)->Resize1D(0);
@@ -1747,8 +1748,6 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
     TDViaFormatter formatter(_Param(3), true, 0, &json);
     if (_Param(0).IsCluster()) {
         formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
-    } else if (_Param(0).IsArray()) {
-        formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     } else {
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     }

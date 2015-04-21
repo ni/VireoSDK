@@ -6,13 +6,13 @@ Module.v_readDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', '
 Module.v_writeDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
 Module.v_readValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string' ]);
 Module.v_writeValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
+Module.v_dataWriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
 Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
 Module.v_delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
 Module.v_root =  Module.v_create(0);
 Module.v_userShell = Module.v_create(Module.v_root);
 Module.fpSync = function(fpId) {};
-
 
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
@@ -29,6 +29,9 @@ return {
     writeJSON:
         function(vi, path, value)
         { Module.v_writeValueString(Module.v_userShell, vi, path, 'JSON', value); },
+    dataWriteString:
+        function(destination, source, sourceLength)
+        { Module.v_dataWriteString(Module.v_userShell, destination, source, sourceLength); },
     loadVia:
         function(viaText)
         { Module.v_repl(Module.v_userShell, viaText, -1); },
