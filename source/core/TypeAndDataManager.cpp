@@ -2063,14 +2063,14 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
     if (encoding == kEncoding_UInt) {
         switch (size) {
             case 1:     min = 0;            max = 255;          break;
-            case 2:     min = 0;            max = 65536;        break;
+            case 2:     min = 0;            max = 65535;        break;
             case 4:     min = 0;            max = 4294967295;   break;
             case 8:     return  value;                          break;
             default:    min = 0;            max = 0;            break;
             }
     } else {
         switch (size) {
-            case 1:     min = -127;         max = 128;          break;
+            case 1:     min = -128;         max = 127;          break;
             case 2:     min = -32768;       max = 32767;        break;
             case 4:     min = -2147483648;  max = 2147483647;   break;
             case 8:     return  value;                          break;

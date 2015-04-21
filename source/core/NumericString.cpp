@@ -1006,7 +1006,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     EncodingEnum encoding = argumentType->BitEncoding();
     switch (encoding) {
     case kEncoding_UInt: {
-        IntMax intValue;
+        IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
         case 'x' : {
             intValue = strtoull(inpBegin, &endPointer, 16);
@@ -1995,12 +1995,12 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             dimensionLength[0] = rowlen;
         }
     } else if (rank == 2) {
-        int i = 0;
+        Int32 lineIndex = 0;
         while(input.ReadLine(&line)) {
             if (line.Length() == 0) {
                 continue;
             }
-            i++;
+            lineIndex++;
             IntIndex split = 0;
             IntIndex rowlen = 1;
             while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false))>-1) {
@@ -2010,24 +2010,26 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 dimensionLength[0] = rowlen;
             }
         }
-        dimensionLength[1] = i;
+        dimensionLength[1] = lineIndex;
 
     } else {
-        int i = 0;
+        Int32 lineIndex = 0;
         while(input.ReadLine(&line)) {
             if (line.Length()==0)
             {
-                i = 0;
+                lineIndex = 0;
                 continue;
             }
-            if (i == 0) {
-                Int64 dimensionL = 0;
+            if (lineIndex == 0) {
+                IntIndex dimensionL = 0;
                 IntIndex d = 0;
                 line.EatRawChars(1);
-                while (line.ReadInt(&dimensionL)) {
+                Int64 intValue = 0;
+                while (line.ReadInt(&intValue)) {
                     line.EatRawChars(1);
+                    dimensionL = (IntIndex)intValue;
                     if (dimensionLength[rank-1-d] < dimensionL+1) {
-                        dimensionLength[rank-1-d] = (IntIndex) dimensionL+1;
+                        dimensionLength[rank-1-d] = dimensionL+1;
                     }
                     d++;
                 }
@@ -2040,11 +2042,11 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 if (rowlen>dimensionLength[0]) {
                     dimensionLength[0] = rowlen;
                 }
-                if (i>dimensionLength[1]){
-                    dimensionLength[1] = i;
+                if (lineIndex>dimensionLength[1]){
+                    dimensionLength[1] = lineIndex;
                 }
             }
-            i++;
+            lineIndex++;
         }
         // make sure all the dimension length is positive
         for (IntIndex i = 0;i<rank; i++) {
@@ -2082,7 +2084,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         }
     } else if (rank == 2) {
         elemIndex[0] = elemIndex[1] = 0;
-        IntIndex i =0;
+        IntIndex lineIndex =0;
         while(input.ReadLine(&line)) {
             if (line.Length() == 0) {
                 continue;
@@ -2091,7 +2093,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             IntIndex next = 0;
             SubString elemString;
             elemIndex[0]=0;
-            elemIndex[1] = i;
+            elemIndex[1] = lineIndex;
             while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                 elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                 Value._pData = array->BeginAtND(rank, elemIndex);
@@ -2106,18 +2108,18 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                     FormatScan(&line, &format, &Value);
                 }
             }
-            i++;
+            lineIndex++;
         }
     } else {
         for (IntIndex i =0; i< kArrayMaxRank; i++) {
             elemIndex[i] = 0;
         }
-        IntIndex i =0;
+        IntIndex lineIndex =0;
         IntIndex dim = 2;
         while(input.ReadLine(&line)) {
             if (line.Length()==0)
             {
-                i=0;
+                lineIndex=0;
                 elemIndex[dim]++;
                 if (elemIndex[dim]>=array->GetLength(dim)) {
                     dim++;
@@ -2128,14 +2130,14 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 }
                 continue;
             }
-            if (i==0) {
+            if (lineIndex==0) {
                 // this line specify the index block [1, 2, 1, 0]
             } else {
                 IntIndex split = 0;
                 IntIndex next = 0;
                 SubString elemString;
                 elemIndex[0]=0;
-                elemIndex[1] = i -1 ; // because the fist line is not for array data.
+                elemIndex[1] = lineIndex -1 ; // because the fist line is not for array data.
                 while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                     elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                     Value._pData = array->BeginAtND(rank, elemIndex);
@@ -2151,7 +2153,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                     }
                 }
             }
-            i++;
+            lineIndex++;
         }
     }
 }
