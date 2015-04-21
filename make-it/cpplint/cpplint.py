@@ -39,6 +39,10 @@ find is legitimately a problem.
 In particular, we can get very confused by /* and // inside strings!
 We do a small hack, which is to ignore //'s with "'s after them on the
 same line, but it is far from perfect (in either direction).
+
+Modification 4/21/2015:
+Detection of function declaration adapted to allow macros that define
+the entry point name and the return value.
 """
 
 import codecs
@@ -3908,8 +3912,11 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # the previous non-blank line is ',', ';', ':', '(', '{', or '}', or if the
     # previous line starts a preprocessor block.
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
+    looksLikeFunction = Search(r'^[a-z,A-Z]', prevline)
     if (not Search(r'[,;:}{(]\s*$', prevline) and
-        not Match(r'\s*#', prevline)):
+        not Match(r'\s*#', prevline) and
+        not looksLikeFunction
+        ):
       error(filename, linenum, 'whitespace/braces', 4,
             '{ should almost always be at the end of the previous line')
 
