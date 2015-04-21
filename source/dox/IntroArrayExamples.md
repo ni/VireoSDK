@@ -33,7 +33,7 @@ enqueue (ArrayDemo)
 ~~~
 
 ### The IntIndex type
-Internally Vireo defines a C++ typedef _IntIndex_ for use in array indexing calculations. The type is not directly tied to the size_t defined by the C++ compiler. Currently, it is set to Int32, so the number of elements in any one array is limited to 2^31 though the total size of the elements may require more the 2^31 bytes.  When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contiguous array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LaBVIEW) so there is still work to be done before Int64 indexes will work.
+Internally Vireo defines a C++ typedef _IntIndex_ for use in array indexing calculations. The type is not directly tied to the size_t defined by the C++ compiler. Currently, it is set to Int32, so the number of elements in any one array is limited to 2^31 though the total size of the elements may require more the 2^31 bytes.  When Vireo is compiled in 64 bit mode, programs can work with sets of data so long as no one contiguous array exceeds the element count limit. While the IntIndex type is used in the core routines, many of the VIA exposed APIs are still defined directly as Int32 (In order to match LabVIEW) so there is still work to be done before Int64 indexes will work.
 
 ### Variable sized arrays
 The most common array type is the variable sized arrays.  In VIA variable dimensions are identified by an asterisk '*' internally this is encoded as IntIndex.Min meaning the most negative number for the IntIndex type. This means a variable sized array can be considered an array whose dimension can be up to the maximum

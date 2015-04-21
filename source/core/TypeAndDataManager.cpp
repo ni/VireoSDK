@@ -1935,7 +1935,7 @@ Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapacti
     return bOK;
 }
 //------------------------------------------------------------
-// Make this array match the shape of the reference type.
+//! Make the array match the shape of a reference array.
 Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
 {
     if (Rank() == pReference->Rank()) {
@@ -1945,6 +1945,7 @@ Boolean TypedArrayCore::ResizeToMatchOrEmpty(TypedArrayCoreRef pReference)
     }
 }
 //------------------------------------------------------------
+//! Resize a vector. If not enough space, make it empty.
 Boolean TypedArrayCore::Resize1DOrEmpty(Int32 length)
 {
     if (Resize1D(length)) {
@@ -1954,7 +1955,7 @@ Boolean TypedArrayCore::Resize1DOrEmpty(Int32 length)
     return false;
 }
 //------------------------------------------------------------
-// Replace elements by copying exisitng one exend if needed.
+//! Replace elements by copying over exisitng ones, exend if needed.
 NIError TypedArrayCore::Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate)
 {
     NIError err = kNIError_Success;
@@ -1983,7 +1984,7 @@ NIError TypedArrayCore::Replace1D(IntIndex position, IntIndex count, const void*
     return err;
 }
 //------------------------------------------------------------
-// Insert space for additional element(s) and optionally copy values in to the new location
+//! Insert space for additional element(s) and optionally copy values in to the new location
 NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* pSource)
 {
     if (position == -1) {
@@ -2018,6 +2019,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
     return kNIError_Success;
 }
 //------------------------------------------------------------
+//! Remove a block of elements from a vector.
 NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
 {
     // TODO error check
@@ -2039,53 +2041,49 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
     return kNIError_Success;
 }
 //------------------------------------------------------------
-//! Simple numeric conversions
+//! Banker's rounding for Doubles.
 inline IntMax RoundToEven(Double value)
 {
-    // By default lrint uses Bankers (aka round to even)
-    // the default for IEEE754 and the one usd by LaBVIEW
     return (IntMax)lrint(value);
 }
 //------------------------------------------------------------
-//! Simple numeric conversions
+//! Banker's rounding for Singles.
 inline IntMax RoundToEven(Single value)
 {
-    // See above.
     return (IntMax)lrintf(value);
 }
 //---------------------------------------------------------------
-//! Coerce value to a range. TODO Still could be improved on.
+//! Coerce value to a range. Incoming value is signed.
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 {
-    IntMax min;
-    IntMax max;
-    
     if (encoding == kEncoding_UInt) {
-        switch (size) {
-            case 1:     min = 0;            max = 255;          break;
-            case 2:     min = 0;            max = 65535;        break;
-            case 4:     min = 0;            max = 4294967295;   break;
-            case 8:     return  value;                          break;
-            default:    min = 0;            max = 0;            break;
+        if (value < 0) {
+            value = 0;
+        } else {
+            IntMax mask = ((IntMax)-1) << (size * 8);
+            if (value & mask) {
+                value = ~mask;
             }
-    } else {
-        switch (size) {
-            case 1:     min = -128;         max = 127;          break;
-            case 2:     min = -32768;       max = 32767;        break;
-            case 4:     min = -2147483648;  max = 2147483647;   break;
-            case 8:     return  value;                          break;
-            default:    min = 0;            max = 0;            break;
         }
-    }
-    if (value < min) {
-        value = min;
-    } else if (value > max) {
-        value = max;
+    } else if (encoding == kEncoding_SInt2C) {
+        IntMax mask = ((IntMax)-1) << ((size * 8) - 1);
+        if (value >= 0) {
+            if (value & mask) {
+                value = ~mask;
+            }
+        } else {
+            // If any top bits are not set then the value is too negative.
+            if ((value & mask) != mask) {
+                value = mask;
+            }
+        }
+    } else {
+        value = 0;
     }
     return value;
 }
-
 //------------------------------------------------------------
+//! Read an integer value from memory converting as necessary.
 NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax *pValue)
 {
     NIError err = kNIError_Success;
@@ -2130,6 +2128,7 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
     return err;
 }
 //------------------------------------------------------------
+//! Write an integer value to memory converting as necessary.
 NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value)
 {
     NIError err = kNIError_Success;
@@ -2175,6 +2174,7 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
     return err;
 }
 //------------------------------------------------------------
+//! Read a IEEE754 double value from memory converting as necessary.
 NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double *pValue)
 {
     NIError err = kNIError_Success;
@@ -2218,6 +2218,7 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
     return err;
 }
 //------------------------------------------------------------
+//! Write a IEEE754 double value to memory converting as necessary.
 NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value)
 {
     NIError err = kNIError_Success;
