@@ -27,6 +27,10 @@ var HttpClient = {
             
             headerExists: function(name) {
                 return headers.hasOwnProperty(name);
+            },
+            
+            deleteHeaders: function() {
+                headers = {};   
             }
         };
     })(),
@@ -34,22 +38,73 @@ var HttpClient = {
     loginManager: (function() {
         var username = "";
         var password = "";
-        var cookies = "";
+        var cookies = {};
         
         return {
-            addUsername : function(name) {
+            setUsername : function(name) {
                 username = name;
             },
-            addPassword : function(pass) {
-                password = pass;   
-            }
             
+            setPassword : function(pass) {
+                password = pass;   
+            },
+            
+            addCookie : function(key, value) {
+                 cookies[key] = value;
+            },
+            
+            setCookies : function(cookieStr) {
+                var tokens = cookieStr.split(';');
+                for (var index in tokens) {
+                    var subTokens = tokens[index].split("=");
+                    if (subTokens.length === 2) {
+                        this.addCookie(subTokens[0].trim(), subTokens[1].trim());
+                    }
+                }
+            },
+        
+            getCookieString : function() {
+                var str = "";
+                for (var key in cookies) {
+                    str += key + "=" + cookies[key] + ";";
+                }
+                return str;
+            },
+            
+            clearData : function() {
+                username = "";
+                password = "";
+                
+                var str = this.getCookieString();
+                for (var key in cookies) {
+                    document.cookie = key + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';   
+                }
+                cookies = {};
+            },
+            
+            getRequest : function(protocol, url) {
+                var request = new XMLHttpRequest();
+                if (username !== "" && password !== "") {
+                    request.open(protocol, url, true, username, password);
+                }
+                else if (username !== "" && password === "") {
+                    request.open(protocol, url, true, username);
+                }
+                else {
+                    request.open(protocol, url, true);   
+                }
+                
+                if (Object.keys(cookies).length !== 0) {
+                    request.withCredentials = true;
+                    document.cookie += this.getCookieString();
+                }
+                return request;
+            }
         };
     })(),
     
     makeRequest: function(protocol, url, buffer, successCallback, errorCallback) {
-        var request = new XMLHttpRequest();
-        request.open(protocol, url);
+        var request = this.loginManager.getRequest(protocol, url);
 
         var error = function () {
             errorCallback(request);
@@ -82,6 +137,17 @@ var HttpClient = {
         } else {
             request.send(buffer);
         }
+    },
+    
+    js_ni_httpClient_OpenHandle : function(cookies, username, password) {
+        this.loginManager.setCookies(cookies);
+        this.loginManager.setUsername(username);
+        this.loginManager.setPassword(password);
+    },
+    
+    js_ni_httpClient_CloseHandle : function(cookies, username, password) {
+        this.loginManager.clearData();
+        this.headers.deleteHeaders();
     },
 
     js_ni_httpClient_Get: function (url) {
