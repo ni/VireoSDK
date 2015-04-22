@@ -1168,7 +1168,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!keepTrying)
                 LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
 
-            // Starting reading actual parameters
+            // Start reading actual parameters
             if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
@@ -1189,8 +1189,12 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             
             while(keepTrying) {
                 for(Int32 i = 0; (i < argCount) && keepTrying; i++) {
+                
                     token = argExpressionTokens[i];
                     TypeRef formalType  = state.ReadFormalParameterType();
+                    if (formalType->IsStaticParam()) {
+                        printf(" found a static param\n");
+                    }
                     state._actualArgumentName = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
@@ -1205,7 +1209,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             continue;
                         }                
                     
-                        if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // un adorned number, 10p
+                        if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // unadorned number
                             state.AddBranchTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
                             state.AddClumpTargetArgument(&token);

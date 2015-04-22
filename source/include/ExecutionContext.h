@@ -34,48 +34,35 @@ public:
     //! What object is the clump waiting on?
     ObservableObject* _object;
 
-    //! Any async operations waiting on this queue
+    //! Pointer to the next WS describing a clump waiting on _object.
     WaitableState* _next;
 
     //! Which clump owns this WS object.
     VIClump* _clump;
     
     //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
-    Int64 _info;
+    IntMax _info;
 };
 //------------------------------------------------------------
+//! Base class for objects that clump can wait on.
 class ObservableObject
 {
 public:
     WaitableState* _waitingList;
     
 public:
-    
-    void Remove(WaitableState* pWSEltToRemove)
-    {
-        VIREO_ASSERT(pWSEltToRemove != null);
-        VIREO_ASSERT(pWSEltToRemove->_object == this);
-        
-        WaitableState* pTemp;
-        WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
-        WaitableState* pVisitor = *pFix;
-        
-        while(pVisitor) {
-            pTemp = pVisitor;
-            if (pTemp == pWSEltToRemove) {
-                *pFix = pTemp->_next;
-            } else {
-                pFix = &pVisitor->_next;
-            }
-            pVisitor = *pFix;
-        }
-
-        pWSEltToRemove->_info = 0;
-        pWSEltToRemove->_object = null;
-        pWSEltToRemove->_next = null;
-    }
+    void InsertWaitableState(WaitableState* pWS, IntMax info);
+    void RemoveWaitableState(WaitableState* pWSEltToRemove);
 };
 //------------------------------------------------------------
+//! Simplest observable object that clumps can wait on.
+class Occurrence : public ObservableObject
+{
+};
+typedef Occurrence *OccurenceRef;
+
+//------------------------------------------------------------
+//! Timer object that clumps can wait on.
 class Timer : public ObservableObject
 {
 public:
@@ -159,7 +146,7 @@ private:
     ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
-    ECONTEXT    Timer           _timer;
+    ECONTEXT    Timer           _timer;             // TODO, can be moved out of the execcontext once instruction can take injected parameters.
 
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
@@ -234,7 +221,8 @@ public:
     }
 };
 #endif
-    
+
+
 //------------------------------------------------------------
 //! Template class to dynamically create instances of a Vireo typed variable.
 template <class T>

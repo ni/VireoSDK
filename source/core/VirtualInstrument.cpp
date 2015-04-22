@@ -193,11 +193,11 @@ WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickTy
 void VIClump::ClearWaitStates()
 {
     // When an instruction retries and decides its time to continue for any reason
-    // It needs to removed WaitableObservers registered with objects it was waiting on.
+    // the instruction function need to clear all WS that might wake the clump up.
     if (_waitCount) {
         for (WaitableState* pWS = _waitStates; _waitCount; pWS++) {
             if (pWS->_object) {
-                pWS->_object->Remove(pWS);
+                pWS->_object->RemoveWaitableState(pWS);
                 VIREO_ASSERT(pWS->_object == null);
             }
             _waitCount -= 1;
@@ -1176,7 +1176,6 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
-    DEFINE_VIREO_TYPE(Instruction, ".DataPointer");
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(VIClump, VIClump_TypeString);
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);
