@@ -1,51 +1,51 @@
 
 define (g0 dv(.String '%d'))
 define (c1 dv(c(
-    e(.Double Numeric+1)   
-    e(.String string+2)   
-    e(a(.Double *) array)  
+    e(.Double Numeric%201)   
+    e(.String string%202)
+    e(a(.Double *) array)
 ) (12 'id\name' (11 22 33 ) )))
 define (c2 dv(c(
-    e(.Double Numeric+1) 
- 	e(.Double Numeric)   
-    e(.String string+2)   
-    e(a(.Double *) a)  
+    e(.Double Numeric+1)
+ 	e(.Double Numeric)
+    e(.String string+2)
+    e(a(.Double *) a)
 ) (200 2015.3 'header\nmessage body' (-11  -22 -33 -4.4 ) )))
 define (g6 dv(a(.String *) ('Numeric 1' )))
 
 define (_Functionghtmlvi dv(.VirtualInstrument (
-    Locals: c(   
-        e(.String local8)   
+    Locals: c(
+        e(.String local8)
         e(c(
-            e(.Boolean status)  
-            e(.Int32 code)  
-            e(.String source)  
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
         ) local12)   // Cluster
         e(c(
-            e(.Double Numeric+1)   
-            e(.String string+2)   
-            e(a(.Double *) array)   
+            e(.Double Numeric%201)
+            e(.String string%202)
+            e(a(.Double *) array)
         ) local16)   // Cluster
   	e(dv(c(
-            e(.Double Numeric+1)   
-            e(.String string+2)  
-            e(a(.Double *) array)  
-        ) (0 '' () ))local1616) 
+            e(.Double Numeric%201)
+            e(.String string%202)
+            e(a(.Double *) array)
+        ) (0 '' () ))local1616)
         e(c(
-            e(.Boolean status)  
-            e(.Int32 code)   
-            e(.String source)   
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
         ) local20)   // Cluster
-       
-        e(.String local26)   
-        e(a(.Double * *) local27)   
 
-        e(dv(.String '')di_29)   
-        e(a(.Int32 *) local30)   
-        e(.Double db1)   
+        e(.String local26)
+        e(a(.Double * *) local27)
 
-        e(dv(.Boolean true)local37)   
-        e(a(.String *) local38)       
+        e(dv(.String '')di_29)
+        e(a(.Int32 *) local30)
+        e(.Double db1)
+
+        e(dv(.Boolean true)local37)
+        e(a(.String *) local38)
         e(.String temp)   // String
 
     )

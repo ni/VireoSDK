@@ -781,7 +781,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                             elementType= type->GetSubElement(elmIndex);
                             SubString name = elementType->ElementName();
                             elementData = baseOffset + elementType->ElementOffset();
-                            found = fieldName.CompareEncodedString(&name);
+                            found = fieldName.CompareViaEncodedString(&name);
                         }
                         if (!found) {
                             return ;
@@ -817,17 +817,15 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
     }
 }
-
-/**
- * */
+//------------------------------------------------------------
+//! Skip over a JSON item.  TODO merge with ReadSubexpression
 Boolean EatJSONItem(SubString* input)
 {
-    input->EatWhiteSpaces();
     SubString token;
-    const Utf8Char* begin = input->Begin();
-    if (*begin == '{') {
+
+    if (input->EatChar('{')) {
         input->EatWhiteSpaces();
-        while ( input->Length()>0 && !input->EatChar('}') ) {
+        while (input->Length()>0 && !input->EatChar('}')) {
             input->ReadToken(&token);
             input->EatWhiteSpaces();
             if (!input->EatChar(':')) {
@@ -835,8 +833,8 @@ Boolean EatJSONItem(SubString* input)
             }
             EatJSONItem(input);
         }
-    } else if (*begin == '[') {
-        while ( input->Length()>0 && !input->EatChar(']') ) {
+    } else if (input->EatChar('[')) {
+        while (input->Length()>0 && !input->EatChar(']')) {
             EatJSONItem(input);
             input->EatWhiteSpaces();
             if (!input->EatChar(',')) {
@@ -849,11 +847,8 @@ Boolean EatJSONItem(SubString* input)
     return true;
 
 }
-/**
- * Will find the start e location of the specified item "path" in the JSON string
- * return true if successfully, otherwise return false.
- * The function is smart which means it can search either in the cluster or the array.
- * */
+//------------------------------------------------------------
+//! Find the location in JSON string based on an indexing path.
 Boolean TDViaParser::EatJSONPath(SubString* path)
 {
     if (path == null) {
@@ -862,7 +857,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
     SubString  token;
     _string.EatWhiteSpaces();
     if(_string.EatChar('{')) {
-        // searching in cluster
+        // Searching in cluster
         while ((_string.Length() > 0) && !_string.EatChar('}')) {
             SubString fieldName;
             _string.EatWhiteSpaces();
@@ -1598,7 +1593,7 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // whether need to escape the string
         if(_options._bEscapeStrings) {
             SubString ss(pArray->RawBegin(), pArray->RawBegin() + pArray->Length());
-            _string->EscapeSubString(&ss);
+            _string->AppendEscapeEncoded(&ss);
         }
          else {
             _string->Append(pArray->Length(), pArray->RawBegin());
@@ -1660,9 +1655,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             if (useQuotes)
                 _string->Append('\"');
             
-            //TODO use percent encoding when needed
-           // _string->Append(ss.Length(), ss.Begin());
-             _string->AppendUrlEncodedSubString(&ss);
+             _string->AppendViaDecoded(&ss);
              
             if (useQuotes)
                 _string->Append('\"');
@@ -1762,11 +1755,13 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
     }
     return _NextInstruction();
 }
+//------------------------------------------------------------
 /**
  * Unflatten from JSON string.
- * The 3 boolean flags are: enale Labview extensions(true)
- *                        :default null elements
- *                        :strict validation. whether allow json object contains items not dfined in the cluster
+ * The 3 boolean flags are
+ *      :enale LabVIEW extensions(true)
+ *      :default null elements
+ *      :strict validation. whether allow json object contains items not dfined in the cluster
  * */
 VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
 {

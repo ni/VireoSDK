@@ -110,7 +110,7 @@ const UInt8 AsciiCharTraits[] =
     /* 37 7  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
     /* 38 8  */   kACT_Id | kACT_Decimal | kACT_Hex,
     /* 39 9  */   kACT_Id | kACT_Decimal | kACT_Hex,
-    /* 3A :  */   0,
+    /* 3A :  */   kACT_Punctuation,
     /* 3B ;  */   0,
     /* 3C <  */   0,
     /* 3D =  */   0,
@@ -191,9 +191,11 @@ public:
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
     static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
     static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
+    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
     static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
     static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
     static Int32   CharLength(const Utf8Char* begin);
+    static Int32   DigitValue(Utf32Char codepoint, Int32 base);
     
 public:
     SubString()                         {}
@@ -231,8 +233,8 @@ public:
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
 
-    //! compare with the encoded string
-    Boolean CompareEncodedString(SubString*  urlString);
+    //! Compare with the encoded string
+    Boolean CompareViaEncodedString(SubString* string);
     
     //! Fucntions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
@@ -261,8 +263,8 @@ public:
     //! Read a simple token
     Boolean ReadToken(SubString* token);
     
-    //! Read an Encoded token
-    Boolean ReadUrlEncodedToken(Utf8Char* value);
+    //! Read 2 digit hex value
+    Boolean ReadHex(Int32* value);
 
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);

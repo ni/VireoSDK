@@ -23,7 +23,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-//! The core class for working with strings. The SubString never owns the data it points to.
+//! Length of the string in Unicode codepoints.
 Int32 SubString::CharLength(const Utf8Char* begin)
 {
 #if defined(VIREO_ASCII_ONLY)
@@ -48,6 +48,27 @@ Int32 SubString::CharLength(const Utf8Char* begin)
         return 1;
     }
 #endif
+}
+//------------------------------------------------------------
+//! Numeric value of a codepoint, -1 if not a numeric codepoint.
+Int32 SubString::DigitValue(Utf32Char codePoint, Int32 base)
+{
+    Int32 value = 0;
+    if (IsNumberChar(codePoint)) {
+        value = (codePoint - '0');
+    } else if (codePoint >= 'a' && codePoint <= 'f') {
+        value =  10 + (codePoint - 'a');
+    } else if (codePoint >= 'A' && codePoint <= 'F')  {
+        value =  10 + (codePoint - 'A');
+    } else {
+        value = -1;
+    }
+    
+    if (value >= base) {
+        value = -1;
+    }
+    
+    return value;
 }
 //------------------------------------------------------------
 Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2) const
@@ -373,10 +394,8 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
         }
     }
 }
-
 //------------------------------------------------------------
-// Read a token that represents a value. This includes
-// quoted strings and "*" which is used as a wild card character.
+//! Read a token that represents a simple symbol or value, including *.
 TokenTraits SubString::ReadValueToken(SubString* token)
 {
     TokenTraits tokenTraits = TokenTraits_Unrecognized;
@@ -449,7 +468,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
         } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for booleanish tokens.
             tokenTraits = TokenTraits_Boolean;
-        } else if (('0'==c) && (*_begin == 'x')) {
+        } else if (('0' == c) && (*_begin == 'x')) {
             // Look for hexidecimal tokens.
             if (idToken.EatCharsByTrait(kACT_Hex) && idToken.Length() == 0) {
                 tokenTraits = TokenTraits_Integer;
@@ -552,59 +571,41 @@ Boolean SubString::ReadNameToken(SubString* token)
     return false;
 }
 //------------------------------------------------------------
+//! Read a token from the front of the substream.
 Boolean SubString::ReadToken(SubString* token)
 {
     return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
-
 //---------------------------------------------------
-// ! read an url token like %20, and assign the 0x20 to the byteV
-// return true if read two hex successfully, else return false.
-Boolean SubString::ReadUrlEncodedToken(Utf8Char *byteV)
+//! Read n hex characters. Balk if there are not that many
+Boolean SubString::ReadHex(Int32 *pValue)
 {
-    IntIndex value = 0;
-    IntIndex n = 0;
-    const Utf8Char* initialBegin = _begin;
-    Utf8Char c;
-    if (_end - _begin <2) {
-        return false;
-    }
-    while (n<2) {
-        c = *_begin;
-        value = value * 16;
-        if (c<='9' && c>= '0') {
-            value += c-'0';
-        } else if (c<='f' && c>='a') {
-            value += 10+c-'a';
-        } else if (c<='F' && c>='A') {
-            value += 10 +c -'A';
-        } else {
-            _begin = initialBegin;
-            return false;
+    if (Length() >= 2) {
+        Int32 d1 = DigitValue(*_begin, 16);
+        Int32 d2 = DigitValue(*(_begin+1), 16);
+        if ((d1 >= 0) && (d2 >= 0)) {
+            _begin += 2;
+            *pValue = (d1 << 4) | d2;
+            return true;
         }
-        _begin++;
-        n++;
     }
-    if (byteV!=null){
-        *byteV = value;
-    }
-    return true;
+    return false;
 }
-
-Boolean SubString::CompareEncodedString(SubString* encodedString)
+//---------------------------------------------------
+Boolean SubString::CompareViaEncodedString(SubString* encodedString)
 {
     Utf8Char c;
     Utf8Char decodedC;
     IntIndex length =0 ;
-    SubString urlString(encodedString);
-    while (urlString.ReadRawChar(&c)) {
+    SubString ss(encodedString);
+    while (ss.ReadRawChar(&c)) {
         if (c == '+') {
             decodedC = ' ';
         } else if (c!= '%'){
             decodedC = c;
         } else {
-            Utf8Char value = 0;
-            if (urlString.ReadUrlEncodedToken(&value)){
+            Int32 value = 0;
+            if (ss.ReadHex(&value)){
                 decodedC = (Utf8Char)value;
             } else {
                 decodedC = '%';
@@ -624,7 +625,7 @@ Boolean SubString::CompareEncodedString(SubString* encodedString)
     return true;
 }
 //------------------------------------------------------------
-// ! Read an integer or one of the special symbolic numbers formats
+//! Read an integer or one of the special symbolic numbers formats
 Boolean SubString::ReadIntDim(IntIndex *pValue)
 {
     // Three formats are supported
@@ -665,54 +666,35 @@ Boolean SubString::ReadInt(IntMax *pValue)
 {
     IntMax value = 0;
     IntMax sign = 1;
+    Int32 base = 10;
     Boolean bNumberFound = false;
     
     EatLeadingSpaces();
-    const Utf8Char* begin = _begin;
     
-    Boolean bFirstChar = true;
-    IntMax base = 10;
     if (ComparePrefixCStr("0x")) {
-        begin += 2;
         base = 16;
+        _begin += 2;
     } else {
         base = 10;
+        if (EatChar('-')) {
+            sign = -1;
+        } else {
+            EatChar('+');
+        }
     } // Any need for octal?
     
-    while(begin < _end) {
-        Utf8Char oneChar = *begin;
-        Int32 cValue = -1;
-        if (IsNumberChar(oneChar)) {
-            cValue = (oneChar - '0');
-        } else if ( bFirstChar && ((oneChar == '-') || (oneChar == '+')) ) {
-            begin++;
-            if (oneChar == '-') {
-                sign = -1;
-            }
-        } else if (base == 16) {
-            if (oneChar >= 'a' && oneChar <= 'f') {
-                cValue = 10 + (oneChar - 'a');
-            } else if (oneChar >= 'A' && oneChar <= 'F')  {
-                cValue = 10 + (oneChar - 'A');
-            } else {
-                //No more hex number characters
-                break;
-            }
-        } else {
-            //No more number characters
-            break;
-        }
+    while(_begin < _end) {
+        Int32 cValue = DigitValue(*_begin, base);
+
         if (cValue >= 0) {
-            begin++;
+            _begin++;
             value = (value * base) + cValue;
             bNumberFound = true;
+        } else {
+            break;
         }
-        bFirstChar = false;
     }
     
-    if (bNumberFound) {
-        _begin = begin;
-    }
     if (pValue) {
         *pValue = value * sign;
     }

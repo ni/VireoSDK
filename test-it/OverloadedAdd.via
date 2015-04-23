@@ -1,0 +1,46 @@
+define (BigInt
+    c(
+        e( a(.Int8 *) digits)
+        e( .Boolean   positive)
+    )
+)
+
+
+define (Add dv(.VirtualInstrument (
+    Params:c(
+        i(.BigInt x)
+        i(.BigInt y)
+        o(.BigInt z)
+    )
+    clump(1
+        Printf("Adding %s %s now go implement it!\n" x y)
+    )
+ )))
+
+
+define (TopVI dv(.VirtualInstrument (
+    Locals:c(
+        e(dv(.Int32 3) xi)
+        e(dv(.Int32 2) yi)
+        e(.Int32 zi)
+
+        e(dv(.BigInt ((1 1 1) true ) ) xbi)
+        e(dv(.BigInt ((2 2 3) true ) ) ybi)
+        e(dv(.BigInt ((2 2 3) true ) ) zbi)
+
+        e(dv(a(.BigInt *) (((1) true) ((1) true))  xabi)
+        e(.BigInt  ybi)
+        e(a(.BigInt *)  zabi)
+
+    )
+    clump(
+        Add(xi yi zi)
+        Printf(" %s + %s = %s \n" xi yi zi)
+
+        Add(xbi ybi zbi)
+
+    //    Add(xabi ybi zabi)
+        )
+ )))
+
+enqueue (TopVI)
