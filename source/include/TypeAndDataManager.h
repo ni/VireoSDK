@@ -1042,7 +1042,7 @@ public:
     void InsertCStr(IntIndex position, ConstCStr cstr)
                                                { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     Boolean AppendUrlEncodedSubString(SubString *string);
-    Boolean EscapeSubString(SubString *string);
+    Boolean AppendEscapeSubString(const Utf8Char* source, IntIndex len);
 
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }

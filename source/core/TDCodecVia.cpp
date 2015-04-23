@@ -1589,7 +1589,7 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // whether need to escape the string
         if(_options._bEscapeStrings) {
             SubString ss(pArray->RawBegin(), pArray->RawBegin() + pArray->Length());
-            _string->EscapeSubString(&ss);
+            _string->AppendEscapeSubString(ss.Begin(), ss.Length());
         }
          else {
             _string->Append(pArray->Length(), pArray->RawBegin());
@@ -1653,7 +1653,12 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             
             //TODO use percent encoding when needed
            // _string->Append(ss.Length(), ss.Begin());
-             _string->AppendUrlEncodedSubString(&ss);
+            IntIndex pos = _string->Length();
+            _string->AppendUrlEncodedSubString(&ss);
+
+            if (_options._bEscapeStrings) {
+                _string->AppendEscapeSubString(_string->BeginAt(pos), _string->End() - _string->BeginAt(pos));
+            }
              
             if (useQuotes)
                 _string->Append('\"');

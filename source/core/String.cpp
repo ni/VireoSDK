@@ -73,12 +73,21 @@ Boolean String::AppendUrlEncodedSubString(SubString* string)
 /**
  * This one will escape the input substring and then append it to current string
  * e.g. It is used for JSON formating.
+ * dest is the location in the string to append.
+ * This function is well implemented so that it support in place operation
+ * which means the input substring could point to the String object.
+ * This is possible because the escaped string is always longer than original one.
  * */
-Boolean String::EscapeSubString(SubString* string)
+Boolean String::AppendEscapeSubString(const Utf8Char* source, IntIndex len)
 {
+    // if inplaceiNDEX is positive, it means it's an in place operation
+    IntIndex inplaceIndex = -1;
+    if (source >= this->Begin() && source < this->End()) {
+        inplaceIndex = source - this->Begin();
+    }
     Int32 needLength = 0;
-    const Utf8Char* begin = string->Begin();
-    for (IntIndex i=0; i< string->Length(); i++) {
+    const Utf8Char* begin = source;
+    for (IntIndex i=0; i< len; i++) {
         Utf8Char c = *(begin+i);
         // see the document on http://json.org. need handle more control character and \uhexadecimal
         switch (c) {
@@ -92,42 +101,46 @@ Boolean String::EscapeSubString(SubString* string)
             break;
         }
     }
-    IntIndex originLength = Length();
-    this->Resize1D(Length()+needLength);
-    Utf8Char* ptr = this->BeginAt(originLength);
-    for (IntIndex i=0; i< string->Length(); i++) {
+    IntIndex originLength = inplaceIndex > -1 ? inplaceIndex : Length();
+
+    this->Resize1D(originLength+needLength);
+    if (inplaceIndex > -1) {
+        begin = this->BeginAt(inplaceIndex);
+    }
+    Utf8Char* ptr = this->End()-1;
+    for (IntIndex i= len -1; i >=0; i--) {
         Utf8Char c = *(begin + i);
         switch (c) {
         case '\n':
-            *ptr++ = '\\';
-            *ptr++ = 'n';
+            *ptr-- = 'n';
+            *ptr-- = '\\';
             break;
         case '\r':
-            *ptr++ = '\\';
-            *ptr++ ='r';
+            *ptr-- ='r';
+            *ptr-- = '\\';
             break;
         case '\t':
-            *ptr++ = '\\';
-            *ptr++ = 't';
+            *ptr-- = 't';
+            *ptr-- = '\\';
            break;
         case '\f' :
-            *ptr++ = '\\';
-            *ptr++  = 'f';
+            *ptr-- = 'f';
+            *ptr-- = '\\';
            break;
         case '\b':
-           *ptr++ = '\\';
-           *ptr++ = 'b';
+           *ptr-- = 'b';
+           *ptr-- = '\\';
            break;
         case '\\':
-            *ptr++ = '\\';
-            *ptr++ = '\\';
+            *ptr-- = '\\';
+            *ptr-- = '\\';
            break;
         case '"':
-            *ptr++ = '\\';
-            *ptr++  = '\"';
+            *ptr--  = '\"';
+            *ptr-- = '\\';
         break;
         default:
-            *ptr++ = c;
+            *ptr-- = c;
             break;
        }
     }
