@@ -9,20 +9,20 @@ Max ts (9223372036854775807 18446744073709551615) 9.22337E+18
 Min+ ts (0 1) 5.42101E-20
 Min- ts (-9223372036854775808 18446744073709551615) -9.22337E+18
 comparison (893353197568 3) (893353197568 4)
-IsLT t
-IsLE t
-IsEQ f
-IsGE f
-IsGT f
+IsLT true
+IsLE true
+IsEQ false
+IsGE false
+IsGT false
 comparison (893353197568 4) (893353197568 4)
-IsLT f
-IsLE t
-IsEQ t
-IsGE t
-IsGT f
+IsLT false
+IsLE true
+IsEQ true
+IsGE true
+IsGT false
 comparison (893353197568 5) (893353197568 4)
-IsLT f
-IsLE f
-IsEQ f
-IsGE t
-IsGT t
+IsLT false
+IsLE false
+IsEQ false
+IsGE true
+IsGT true

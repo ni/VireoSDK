@@ -1,38 +1,38 @@
 3
-t
-t
+true
+true
 0
-t
+true
 3 default elt array has size 3
-t
+true
 2 default elt array has size 2
-t
+true
 1 default elt array has size 1
-t
+true
 0 default elt array has size 0
-t
+true
 3
 1
-t
+true
 2
-t
+true
 3
-t
+true
 5
-t
+true
 2
-t
+true
 2
-t
+true
 3
-t
+true
 4
-t
+true
 5
-t
+true
 6
-t
+true
 7
-t
+true
 8
-t
+true

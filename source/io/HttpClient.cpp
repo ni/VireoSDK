@@ -25,12 +25,19 @@ extern "C" void js_ni_httpClient_Get(const char *, int, StringRef, StringRef);
 #endif
 
 //------------------------------------------------------------
+//VIREO_FUNCTION_SIGNATURE3(HttpClientGet, StringRef, StringRef, StringRef)
 VIREO_FUNCTION_SIGNATURE4(HttpClientGet, StringRef, StringRef, StringRef, OccurenceRef)
 {
+#if 1
+
+#if kVireoOS_emscripten
+    js_ni_httpClient_Get((char*)_Param(0)->Begin(), _Param(0)->Length(), _Param(1), _Param(2));
+#endif
+    return _NextInstruction();
+
+#else
     VIClump* clump = THREAD_CLUMP();
     WaitableState* pWS = clump->GetWaitStates(2);
-
-    return _NextInstruction();
 
     if (!pWS) {
         // This is the initial call, call th js function
@@ -49,6 +56,7 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGet, StringRef, StringRef, StringRef, Occure
         clump->ClearWaitStates();
         return _NextInstruction();
     }
+#endif
 }
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(LabVIEW_HttpClient)

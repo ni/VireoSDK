@@ -1192,10 +1192,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 
                     token = argExpressionTokens[i];
                     TypeRef formalType  = state.ReadFormalParameterType();
-                    if (formalType->IsStaticParam()) {
-                        printf(" found a static param\n");
-                    }
-                    state._actualArgumentName = token;
+
+                    state._parserFocus = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
                         SubString formalParameterTypeName = formalType->Name();
@@ -1215,6 +1213,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
+                        } else if (formalType->IsStaticParam()) {
+                            LOG_EVENT(kSoftDataError, "unexpeced static parameter");
                         } else {
                             // The most common case is a data value
                             state.AddDataTargetArgument(&token, false); // For starters
@@ -1239,6 +1239,11 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 }
             }
             state.EmitInstruction();
+#if 0
+            if (state.LastArgumentError()) {
+                state.LogArgumentProcessing(CalcCurrentLine());
+            }
+#endif
         }
         _string.ReadToken(&instructionNameToken);
 
@@ -1689,7 +1694,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatPointerData(type, pData);
             break;
         case kEncoding_Boolean:
-            _string->Append((*(AQBlock1*) pData) ? 't' : 'f');
+            _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
             _string->Append('*');
