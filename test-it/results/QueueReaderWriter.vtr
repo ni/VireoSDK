@@ -1,10 +1,10 @@
 >>Added1 new value 1.1
-Dequeued1 value is 1.1 to:f
+Dequeued1 value is 1.1 to:false
 >>Added1 new value 1.2
-Dequeued2 value is 1.2 to:f
+Dequeued2 value is 1.2 to:false
 >>Added1 new value 1.3
-Dequeued3 value is 1.3 to:f
+Dequeued3 value is 1.3 to:false
 >>Added1 new value 1.4
-Dequeued4 value is 1.4 to:f
-Dequeued5 value is 0 to:t
+Dequeued4 value is 1.4 to:false
+Dequeued5 value is 0 to:true
  Reader/Writer done

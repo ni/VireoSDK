@@ -1168,7 +1168,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!keepTrying)
                 LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
 
-            // Starting reading actual parameters
+            // Start reading actual parameters
             if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
@@ -1189,9 +1189,11 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             
             while(keepTrying) {
                 for(Int32 i = 0; (i < argCount) && keepTrying; i++) {
+                
                     token = argExpressionTokens[i];
                     TypeRef formalType  = state.ReadFormalParameterType();
-                    state._actualArgumentName = token;
+
+                    state._parserFocus = token;
                     if (formalType) {
                         // TODO the type classification can be moved into a codec independent class.
                         SubString formalParameterTypeName = formalType->Name();
@@ -1205,12 +1207,14 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             continue;
                         }                
                     
-                        if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // un adorned number, 10p
+                        if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // unadorned number
                             state.AddBranchTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
+                        } else if (formalType->IsStaticParam()) {
+                            LOG_EVENT(kSoftDataError, "unexpeced static parameter");
                         } else {
                             // The most common case is a data value
                             state.AddDataTargetArgument(&token, false); // For starters
@@ -1235,6 +1239,11 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 }
             }
             state.EmitInstruction();
+#if 0
+            if (state.LastArgumentError()) {
+                state.LogArgumentProcessing(CalcCurrentLine());
+            }
+#endif
         }
         _string.ReadToken(&instructionNameToken);
 
@@ -1690,7 +1699,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatPointerData(type, pData);
             break;
         case kEncoding_Boolean:
-            _string->Append((*(AQBlock1*) pData) ? 't' : 'f');
+            _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
             _string->Append('*');
@@ -1745,6 +1754,7 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
     formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     return _NextInstruction();
 }
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 {
     _Param(3)->Resize1D(0);
@@ -1752,8 +1762,6 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
     TDViaFormatter formatter(_Param(3), true, 0, &json);
     if (_Param(0).IsCluster()) {
         formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
-    } else if (_Param(0).IsArray()) {
-        formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     } else {
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
     }

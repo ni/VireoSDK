@@ -33,7 +33,6 @@ class QueueCore : public ObservableObject
 
     IntIndex RemoveIndex();
  public:
-    void InitWaitableQueueState(WaitableState* pWS, Int64 elementsAvailable);
     Boolean Compress();
     Boolean TryMakeRoom(IntIndex length);
     Boolean Enqueue(void* pData);
@@ -45,15 +44,6 @@ class QueueCore : public ObservableObject
 typedef Int32 CallSiteQueueState;
 typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 
-//------------------------------------------------------------
-void QueueCore::InitWaitableQueueState(WaitableState* pWS, Int64 elementsAvailable)
-{
-    // in MT, lock object
-    pWS->_object = this;
-    pWS->_info = elementsAvailable;
-    pWS->_next = _waitingList;
-    _waitingList = pWS;
-}
 //------------------------------------------------------------
 IntIndex QueueCore::RemoveIndex()
 {
@@ -84,6 +74,7 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
 //------------------------------------------------------------
 void QueueCore::ChangeCount(Int32 amount)
 {
+    // TODO: move this into WaitableState
     WaitableState *pNext = null;
     WaitableState ** ppPrevious = &_waitingList;
 
@@ -166,7 +157,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
         pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
-        pQV->InitWaitableQueueState(pWS+1, -1);
+        pQV->InsertWaitableState(pWS+1, -1);
         return clump->WaitOnWaitStates(_this);
     } else {
         // With timeout == 0 just continue immediately.
@@ -205,7 +196,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
         pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
-        pQV->InitWaitableQueueState(pWS+1, 1);
+        pQV->InsertWaitableState(pWS+1, 1);
         return clump->WaitOnWaitStates(_this);
     } else {
         // With timeout == 0 just continue immediately.
@@ -214,27 +205,28 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 }
 
 DEFINE_VIREO_BEGIN(Synchronization)
+    DEFINE_VIREO_TYPE(Occurrence, "c(e(.DataPointer firstState))")
 
-// TODO type should be able to derive from observable state base class
-DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
-DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
+    // TODO type should be able to derive from observable state base class
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
+    DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
 
-DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
 
-DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
-DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-// DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
-// DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
 
-// DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
-// DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
+    // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(.Queue queue)i(.Double element))")
+    // DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
 
-#if 0
-DEFINE_VIREO_FUNCTION(PreviewElement, "")
-DEFINE_VIREO_FUNCTION(Status, "")
-DEFINE_VIREO_FUNCTION(Release, "")
-DEFINE_VIREO_FUNCTION(Flush, "")
-#endif
+    #if 0
+    DEFINE_VIREO_FUNCTION(PreviewElement, "")
+    DEFINE_VIREO_FUNCTION(Status, "")
+    DEFINE_VIREO_FUNCTION(Release, "")
+    DEFINE_VIREO_FUNCTION(Flush, "")
+    #endif
 
 DEFINE_VIREO_END()

@@ -1234,8 +1234,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Data)
     DEFINE_VIREO_GENERIC(Convert, ".GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, ".GenericUnOp", EmitGenericUnOpInstruction);
 
-    DEFINE_VIREO_GENERIC(Search1DArray, "p(i(.*) i(.*) i(.Int32) o(.Int32) s(.*))", EmitSearchInstruction);
-    DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(.Array) i(.*) i(.Int32) o(.Int32) s(.*))")
+    DEFINE_VIREO_GENERIC(Search1DArray, "p(i(.*) i(.*) i(.Int32) o(.Int32) s(.Instruction))", EmitSearchInstruction);
+    DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(.Array) i(.*) i(.Int32) o(.Int32) s(.Instruction))")
     DEFINE_VIREO_GENERIC(ArrayConcatenate, "p(i(.VarArgCount) o(.Array output) i(.*))", EmitArrayConcatenateInstruction);
     DEFINE_VIREO_FUNCTION(ArrayConcatenateInternal, "p(i(.VarArgCount) o(.Array output) i(.*))" )
     DEFINE_VIREO_GENERIC(AddElements, "p(i(.Array) o(.* output))", EmitVectorOp);
@@ -1244,8 +1244,8 @@ DEFINE_VIREO_BEGIN(LabVIEW_Data)
     DEFINE_VIREO_GENERIC(OrElements, "p(i(.Array) o(.* output))", EmitVectorOp);
     DEFINE_VIREO_FUNCTION(VectorOpInternal, "p(i(.Array) o(.* output) i(.Boolean))" )
 
-    DEFINE_VIREO_FUNCTION(ClusterBinaryOp, "p(i(.*) i(.*) o(.*) s(.*) s(.*))")
-    DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(.*) o(.*) s(.*))")
+    DEFINE_VIREO_FUNCTION(ClusterBinaryOp, "p(i(.*) i(.*) o(.*) s(.Instruction) s(.Instruction))")
+    DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(.*) o(.*) s(.Instruction))")
     DEFINE_VIREO_FUNCTION(IsEQAccumulator, "p(i(.GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsNEAccumulator, "p(i(.GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLTAccumulator, "p(i(.GenericBinOp))");
@@ -1254,12 +1254,12 @@ DEFINE_VIREO_BEGIN(LabVIEW_Data)
     DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(.GenericBinOp))");
     
     // Vector operations
-    DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(.Array) i(.Array) o(.Array) s(.*))" )
-    DEFINE_VIREO_FUNCTION(VectorVectorBinaryAccumulatorOp, "p(i(.Array) i(.Array) o(.Array) s(.*) s(.*))" )
-    DEFINE_VIREO_FUNCTION(VectorVectorSplitOp, "p(i(.Array) o(.Array) o(.Array) s(.*))" )
-    DEFINE_VIREO_FUNCTION(ScalarVectorBinaryOp, "p(i(.*) i(.Array) o(.Array) s(.*))" )
-    DEFINE_VIREO_FUNCTION(VectorScalarBinaryOp, "p(i(.Array) i(.*) o(.Array) s(.*))" )
-    DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(.Array) o(.Array) s(.*))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(.Array) i(.Array) o(.Array) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorBinaryAccumulatorOp, "p(i(.Array) i(.Array) o(.Array) s(.Instruction) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorSplitOp, "p(i(.Array) o(.Array) o(.Array) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(ScalarVectorBinaryOp, "p(i(.*) i(.Array) o(.Array) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorScalarBinaryOp, "p(i(.Array) i(.*) o(.Array) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(.Array) o(.Array) s(.Instruction))" )
 
 DEFINE_VIREO_END()
 } // namespace Vireo

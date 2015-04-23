@@ -360,6 +360,15 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
     _runQueue.Enqueue(elt);
 }
 //------------------------------------------------------------
+void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
+{
+    EventLog tempLog(EventLog::StdOut);
+    va_list args;
+    va_start(args, message);
+    tempLog.LogEventV(severity, -1, message, args);
+    va_end(args);
+}
+//------------------------------------------------------------
 #ifdef VIVM_SUPPORTS_ISR
 // Interrupts should already be disabled when this is called
 // so there is no need to add guards inside.
@@ -438,13 +447,42 @@ void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCoun
     }
 }
 //------------------------------------------------------------
-void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
+void ObservableObject::InsertWaitableState(WaitableState* pWS, IntMax info)
 {
-    EventLog tempLog(EventLog::StdOut);
-    va_list args;
-    va_start(args, message);
-    tempLog.LogEventV(severity, -1, message, args);
-    va_end(args);
+    // clump be set up by now.
+    VIREO_ASSERT(pWS->_clump != null)
+    
+    // in MT, lock object
+    pWS->_object = this;
+    pWS->_info = info;
+    pWS->_next = _waitingList;
+    _waitingList = pWS;
+}
+//------------------------------------------------------------
+void ObservableObject::RemoveWaitableState(WaitableState* pWSEltToRemove)
+{
+    VIREO_ASSERT(pWSEltToRemove != null);
+    VIREO_ASSERT(pWSEltToRemove->_object == this);
+    
+    WaitableState* pTemp;
+    WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
+    WaitableState* pVisitor = *pFix;
+    
+    while(pVisitor) {
+        VIREO_ASSERT(pVisitor->_clump != null)
+        
+        pTemp = pVisitor;
+        if (pTemp == pWSEltToRemove) {
+            *pFix = pTemp->_next;
+        } else {
+            pFix = &pVisitor->_next;
+        }
+        pVisitor = *pFix;
+    }
+    
+    pWSEltToRemove->_info = 0;
+    pWSEltToRemove->_object = null;
+    pWSEltToRemove->_next = null;
 }
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)

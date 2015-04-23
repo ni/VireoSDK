@@ -193,11 +193,11 @@ WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickTy
 void VIClump::ClearWaitStates()
 {
     // When an instruction retries and decides its time to continue for any reason
-    // It needs to removed WaitableObservers registered with objects it was waiting on.
+    // the instruction function need to clear all WS that might wake the clump up.
     if (_waitCount) {
         for (WaitableState* pWS = _waitStates; _waitCount; pWS++) {
             if (pWS->_object) {
-                pWS->_object->Remove(pWS);
+                pWS->_object->RemoveWaitableState(pWS);
                 VIREO_ASSERT(pWS->_object == null);
             }
             _waitCount -= 1;
@@ -830,7 +830,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
         default:                            simpleMessage = "Unknown argument type";          break;
     }
     if (simpleMessage) {
-        LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_actualArgumentName));
+        LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_parserFocus));
     }
 }
 //------------------------------------------------------------
@@ -840,7 +840,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
 // the VI's parameter block.
 InstructionCore* ClumpParseState::EmitCallVIInstruction()
 {
-    VIREO_ASSERT(this->_argCount >0);  // TODO arg[0] is subVI
+    VIREO_ASSERT(this->_argCount > 0);  // TODO arg[0] is subVI
     
     ClumpParseState snippetBuilder(this);
    
@@ -969,6 +969,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     return callInstruction;
 }
 //------------------------------------------------------------
+//! Emit a specific instruction. Used by generic instruction emitters.
 InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCount, ...)
 {
     // Look for funciton that matches parameter list.
@@ -1001,6 +1002,7 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
     return null;
 }
 //------------------------------------------------------------
+//! Emit the instruction resolved to by general clump parser.
 InstructionCore* ClumpParseState::EmitInstruction()
 {
     if (!_instructionType)
@@ -1018,8 +1020,29 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // If there is no generic resolver function assume the underlying function
         // can take the parameters as is (e.g. it is runtime polymorphic)
     }
-    _pVarArgCount = null;
 
+    // If extra parameters exits for the matched function is that OK?
+    Int32 formalArgCount = _instructionType->SubElementCount();
+    if (formalArgCount > _argCount) {
+        Boolean foundMissing = false;
+        for (Int32 i = _argCount; i < formalArgCount; i++) {
+            TypeRef type = _instructionType->GetSubElement(i);
+            if (type->IsStaticParam()) {
+                InternalAddArg(type, null);
+            } else {
+                foundMissing = true;
+            }
+        }
+#if 0
+        if (foundMissing && (_pVarArgCount == null)) {
+            _argumentState = kArgumentTooFew;
+            SubString instructionName = _instructionPointerType->Name();
+            _parserFocus.AliasAssign(&instructionName);
+        }
+#endif
+    }
+    
+    _pVarArgCount = null;
     _totalInstructionCount++;
     _totalInstructionPointerCount += (sizeof(InstructionCore) / sizeof(void*)) + _argCount;
     
@@ -1176,7 +1199,6 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 
 DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
-    DEFINE_VIREO_TYPE(Instruction, ".DataPointer");
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(VIClump, VIClump_TypeString);
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);

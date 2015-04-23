@@ -14,7 +14,7 @@ class DST_HelloWorld {
 };
 DST_HelloWorld  ds = {  
   6,
-  t,
+  true,
   1,
   2,
   3,

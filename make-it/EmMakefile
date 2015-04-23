@@ -55,7 +55,7 @@ help:
 #EM_OPT= -g4 -s NO_EXIT_RUNTIME=1 -fno-exceptions
 EM_OPT= -Os -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
-EMLIBRARY= --js-library ../source/io/library_canvas2d.js
+EMLIBRARY= --js-library ../source/io/library_canvas2d.js --js-library ../source/io/library_httpClient.js
 EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
@@ -67,7 +67,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_ReadDouble',\
     '_EggShell_WriteDouble',\
     '_EggShell_ReadValueString',\
-    '_EggShell_WriteValueString'\
+    '_EggShell_WriteValueString',\
+	'_Data_WriteString'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\
@@ -77,6 +78,7 @@ EM_BC_FILES = objs/VireoMerged.bc\
     objs/Timestamp.bc\
     objs/Canvas2d.bc\
     objs/FileIO.bc\
+    objs/HttpClient.bc\
     objs/Emscripten.bc\
     objs/CEntryPoints.bc
 
@@ -91,6 +93,7 @@ vjs:
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/Timestamp.cpp -o objs/Timestamp.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/Canvas2d.cpp -o objs/Canvas2d.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/FileIO.cpp -o objs/FileIO.bc
+	emcc $(EMFLAGS) $(IOSOURCEDIR)/HttpClient.cpp -o objs/HttpClient.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/Emscripten.cpp -o objs/Emscripten.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/CEntryPoints.cpp -o objs/CEntryPoints.bc
 	emcc $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js

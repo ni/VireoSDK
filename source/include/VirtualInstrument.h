@@ -273,7 +273,7 @@ private:
     TypeRef         _baseViType;
     TypeRef         _baseReentrantViType;
 public:
-    SubString       _actualArgumentName;
+    SubString       _parserFocus;
 
 public:
     // ---

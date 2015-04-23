@@ -178,6 +178,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "CodePointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "BranchTarget", ".DataPointer");
+    Define(tm, "Instruction", ".DataPointer");
 
     // Pointer to root clump of a VI
     Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI

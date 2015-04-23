@@ -24,9 +24,10 @@ using namespace Vireo;
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
-    return 0x00010004; // TODO
+    return 0x00020001; // TODO
 }
 //------------------------------------------------------------
+//! Create a new shell with a designated parent, or null for a new root.
 VIREO_EXPORT void* EggShell_Create(EggShell* parent)
 {
     return EggShell::Create(parent);
@@ -41,13 +42,10 @@ VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const Utf8Char* commands, Int3
     pShell->REPL(&comandBuffer);
 }
 //------------------------------------------------------------
+//! Run the vireo execution system for a few slices.
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
 {
     return pShell->TheExecutionContext()->ExecuteSlices(numSlices, 20);
-}
-//------------------------------------------------------------
-VIREO_EXPORT void EggShell_SetDelayedLoad(EggShell* pShell, Boolean value)
-{
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
@@ -55,20 +53,11 @@ VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
     return eggShell->TheTypeManager()->TypeList();
 }
 //------------------------------------------------------------
+//! Delete a shell and all the types it owns.
 VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
 {
     if (pShell != null)
         pShell->Delete();
-}
-//------------------------------------------------------------
-VIREO_EXPORT void ExecutionContext_EnqueueRunQueue(ExecutionContextRef pContext, VIClump* pClump)
-{
-    pContext->EnqueueRunQueue(pClump);
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 ExecutionContext_ExecuteSlices(ExecutionContextRef pContext, Int32 numSlices)
-{
-    return pContext->ExecuteSlices(numSlices, 1);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
@@ -117,6 +106,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     }
 }
 //------------------------------------------------------------
+//! Write a numeric value to a symbol. Value will be coerced as needed.
 VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
 {
     void *pData = null;
@@ -130,6 +120,7 @@ VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, con
     WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, d);
 }
 //------------------------------------------------------------
+//! Read a numeric value from a symbol. Value will be coerced as needed.
 VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, const char* eltName)
 {
     void *pData = null;
@@ -143,8 +134,8 @@ VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, co
     ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, &d);
     return d;
 }
-
 //------------------------------------------------------------
+// Write a string value to a symbol. Value will be parsed according to format designated.
 VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format, const char* value)
 {
     TypeManagerScope scope(pShell->TheTypeManager());
@@ -165,8 +156,7 @@ VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName
     parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
-//! Single threaded fucntion for reading string value. Beware the global buffer
-
+//! Read a symbol's value as a string. Value will be formatted according to the format designated.
 VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format)
 {
     TypeManagerScope scope(pShell->TheTypeManager());
@@ -199,9 +189,12 @@ VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* 
     return "";
 }
 //------------------------------------------------------------
-VIREO_EXPORT void Clump_DecrementFireCount(VIClump* clump)
+VIREO_EXPORT void Data_WriteString(EggShell* pShell, StringRef stringObject, const unsigned char* buffer, Int32 length)
 {
-    clump->Trigger();
+    VIREO_ASSERT(String::ValidateHandle(stringObject));
+    // Scope needs to be setup for allocations
+    TypeManagerScope scope(pShell->TheTypeManager());
+    stringObject->CopyFrom(length, buffer);
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)

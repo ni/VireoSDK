@@ -75,3 +75,39 @@ passed:<33>, remaining:()
 ---test scan String------ ( hello worldMy name is :) 
 passed:<19>, remaining:( is :)
 :<hel> <lo> <worldMy> <name> 
+---test scan overflow signed max------ (  2140483647) 
+passed:<12>, remaining:()
+:<127>  
+---test scan overflow unsigned max------ (  4290967295) 
+passed:<12>, remaining:()
+:<255>  
+---test scan overflow min------ (  -2240483647) 
+passed:<13>, remaining:()
+:<-128>  
+---test scan overflow neg------ (  -12453) 
+passed:<8>, remaining:()
+:<0>  
+---test scan overflow signed max------ (  2140483647) 
+passed:<12>, remaining:()
+:<32767>  
+---test scan overflow unsigned max------ (  4290967295) 
+passed:<12>, remaining:()
+:<65535>  
+---test scan overflow min------ (  -2240483647) 
+passed:<13>, remaining:()
+:<-32768>  
+---test scan overflow neg------ (  -12453) 
+passed:<8>, remaining:()
+:<0>  
+---test scan overflow signed max------ (  4290967295) 
+passed:<12>, remaining:()
+:<2147483647>  
+---test scan overflow unsigned max------ (  4290967295) 
+passed:<12>, remaining:()
+:<4290967295>  
+---test scan overflow min------ (  -2240483647) 
+passed:<13>, remaining:()
+:<-2147483648>  
+---test scan overflow  neg------ (  -12453) 
+passed:<8>, remaining:()
+:<0>  
