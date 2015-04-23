@@ -67,7 +67,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_ReadDouble',\
     '_EggShell_WriteDouble',\
     '_EggShell_ReadValueString',\
-    '_EggShell_WriteValueString'\
+    '_EggShell_WriteValueString',\
+	'_Data_WriteString'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\
