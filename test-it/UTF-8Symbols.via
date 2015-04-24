@@ -6,6 +6,12 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Hello, China. I can fly.3") 你好%20世界1)
         e(dv(.String "Hello, China. I can fly.4") 你好%20世界2)
         e(dv(.String "Hello, Japan. I can fly.") こんにちは世界)
+        e(dv(.String "Heart:💚")  💚)
+        e(dv(.String "Hatch:🐣")  🐣)
+        e(dv(.String "Gracie:🐥")  🐥)
+
+
+
     )
     clump (
        Println(你好世界1)
@@ -13,6 +19,9 @@ define (HelloWorld dv(.VirtualInstrument (
        Println(你好%20世界1)
        Println(你好%20世界2)
        Println(こんにちは世界)
+       Println(💚)
+       Println(🐣)
+       Println(🐥)
     )
 ) ) )
 
