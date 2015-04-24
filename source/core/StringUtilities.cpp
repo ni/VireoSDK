@@ -527,28 +527,32 @@ TokenTraits SubString::ReadToken(SubString* token)
 }
 //------------------------------------------------------------
 //! Read an expression that may be a single token or nested expression
-Boolean SubString::ReadSubexpressionToken(SubString* token)
+TokenTraits SubString::ReadSubexpressionToken(SubString* token)
 {
     EatLeadingSpaces();
     SubString tempString(this);
-    Boolean tokenFound;
+    TokenTraits tt = TokenTraits_Unrecognized;
     const Utf8Char* begin = Begin();
     Int32 depth = 0;
     
     do {
-        tokenFound = this->ReadToken(token);
+        tt = this->ReadToken(token);
         if (token->CompareCStr("(")) {
             depth++;
         } else if (token->CompareCStr(")")) {
             depth--;
+            // The out going trait will be the last one recorded
+            // unless ReadToken failed. In that case the last tt
+            // will be TokenTraits_Unrecognized.
+            tt = TokenTraits_NestedExpression;
         }
-    } while (tokenFound && (depth>0));
+    } while (tt && (depth>0));
     
     // The loop has reached an end state, go back and
     // add tokens that were skipped over to get to this point.
     token->AliasAssign(begin, this->Begin());
     
-    return tokenFound;
+    return tt;
 }
 //------------------------------------------------------------
 //! Read an optional "Name:" prefix to a value.

@@ -34,6 +34,7 @@ enum TokenTraits
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Parens,         // ()    typically added to others to allow expressions
+    TokenTraits_NestedExpression,
 };
 
 //------------------------------------------------------------
@@ -270,7 +271,7 @@ public:
     Boolean ReadNameToken(SubString* token);
     
     //! Read a token or parenthesized expression of arbitrary depth.
-    Boolean ReadSubexpressionToken(SubString* token);
+    TokenTraits ReadSubexpressionToken(SubString* token);
     
     //! Peek at the next token and classify it.
     TokenTraits ClassifyNextToken() const;

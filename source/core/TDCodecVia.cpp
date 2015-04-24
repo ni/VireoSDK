@@ -334,7 +334,7 @@ TypeRef TDViaParser::ParseArray()
     
     TypeRef elementType = ParseType();
     
-    _string.ReadToken(&token);
+    _string.ReadSubexpressionToken(&token);
     while (!token.CompareCStr(")")) {
         
         IntIndex dimensionLength;
