@@ -145,7 +145,7 @@ TokenTraits SubString::ClassifyNextToken() const
     SubString temp = *this;
     SubString token;
     
-    TokenTraits tt = temp.ReadValueToken(&token);
+    TokenTraits tt = temp.ReadToken(&token);
     return tt;
 }
 //------------------------------------------------------------
@@ -396,7 +396,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.
-TokenTraits SubString::ReadValueToken(SubString* token)
+TokenTraits SubString::ReadToken(SubString* token)
 {
     TokenTraits tokenTraits = TokenTraits_Unrecognized;
 
@@ -569,12 +569,6 @@ Boolean SubString::ReadNameToken(SubString* token)
     // Its not a name prefix, leave all as is
     token->AliasAssign(null, null);
     return false;
-}
-//------------------------------------------------------------
-//! Read a token from the front of the substream.
-Boolean SubString::ReadToken(SubString* token)
-{
-    return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
 //---------------------------------------------------
 //! Read n hex characters. Balk if there are not that many

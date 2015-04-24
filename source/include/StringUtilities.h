@@ -260,17 +260,14 @@ public:
     //! Read the next sequence of digits and parse them as a Double.
     Boolean ParseDouble(Double* value);
     
-    //! Read a simple token
-    Boolean ReadToken(SubString* token);
+    //! Read a simple token name, value, punctuation, etc.
+    TokenTraits ReadToken(SubString* token);
     
     //! Read 2 digit hex value
     Boolean ReadHex(Int32* value);
 
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);
-    
-    //! Read a token and classify it.
-    TokenTraits ReadValueToken(SubString* token);
     
     //! Read a token or parenthesized expression of arbitrary depth.
     Boolean ReadSubexpressionToken(SubString* token);
