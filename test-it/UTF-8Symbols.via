@@ -1,0 +1,20 @@
+define (HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "Hello, China. I can fly.1") 你好世界1)
+        e(dv(.String "Hello, China. I can fly.2") 你好世界2)
+        e(dv(.String "Hello, China. I can fly.3") 你好%20世界1)
+        e(dv(.String "Hello, China. I can fly.4") 你好%20世界2)
+        e(dv(.String "Hello, Japan. I can fly.") こんにちは世界)
+    )
+    clump (
+       Println(你好世界1)
+       Println(你好世界2)
+       Println(你好%20世界1)
+       Println(你好%20世界2)
+       Println(こんにちは世界)
+    )
+) ) )
+
+
+enqueue (HelloWorld)

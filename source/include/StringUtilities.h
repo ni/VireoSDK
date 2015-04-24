@@ -53,38 +53,38 @@ enum AsciiCharTraitsEnum {
 
 const UInt8 AsciiCharTraits[] =
 {
-    0,      //0
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    /* 00   */  0,      //0
+    /* 01   */  0,
+    /* 02   */  0,
+    /* 03   */  0,
+    /* 04   */  0,
+    /* 05   */  0,
+    /* 06   */  0,
+    /* 07   */  0,
+    /* 08   */  0,
     /* 09 ht*/  kACT_Space,
     /* 0A lf*/  kACT_Space,
     /* 0B vt*/  kACT_Space,
     /* 0C ff*/  kACT_Space,
     /* 0D cr*/  kACT_Space,
-    0,
-    0,
-    0,      //16
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    /* 0E   */  0,
+    /* 0F   */  0,
+    /* 10   */  0,      //16
+    /* 11   */  0,
+    /* 12   */  0,
+    /* 13   */  0,
+    /* 14   */  0,
+    /* 15   */  0,
+    /* 16   */  0,
+    /* 17   */  0,
+    /* 18   */  0,
+    /* 19   */  0,
+    /* 1A   */  0,
+    /* 1B   */  0,
+    /* 1C   */  0,
+    /* 1D   */  0,
+    /* 1E   */  0,
+    /* 1F   */  0,
     /* 20    */   kACT_Space,   //32
     /* 21 !  */   kACT_Punctuation,
     /* 22 "  */   0,
@@ -190,11 +190,11 @@ class SubString : public SubVector<Utf8Char>
 public:
     static Boolean IsAscii(Utf8Char c)      { return !(c & 0x10); }
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
-    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
-    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
-    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
-    static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
-    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
+    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
+    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
+    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
+    static Boolean IsIdentifierChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id)) || (c & 0x80); }
+    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
     static Int32   CharLength(const Utf8Char* begin);
     static Int32   DigitValue(Utf32Char codepoint, Int32 base);
     
