@@ -25,16 +25,16 @@ enum TokenTraits
 {
     // in/out traits used to define what is being looked for and what was found
     TokenTraits_Unrecognized = 0,
-    TokenTraits_Boolean,        // t, f, true, false
+    TokenTraits_Boolean,        // true, false
     TokenTraits_Integer,        // 123
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_Punctuation,     // , ( ) { } [ ] (Some 'punctuation' are resered: * @)
+    TokenTraits_Punctuation,    // ,  (Some 'punctuation' are resered: * @)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
-    TokenTraits_Parens,         // ()    typically added to others to allow expressions
-    TokenTraits_NestedExpression,
+    TokenTraits_Nesting,        // ()    typically added to others to allow expressions
+    TokenTraits_NestedExpression,//( ) { } [ ] < >
 };
 
 //------------------------------------------------------------
@@ -43,12 +43,13 @@ enum TokenTraits
 
 enum AsciiCharTraitsEnum {
     kACT_Id          = 0x01,    // Valid part of an identier
-    kACT_Punctuation  = 0x02,
+    kACT_Punctuation = 0x02,
     kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x08,
     kACT_Decimal     = 0x10,
     kACT_Oct         = 0x20,
     kACT_Hex         = 0x40,
+    kACT_Nesting     = 0x80,
 };
 
 const UInt8 AsciiCharTraits[] =
@@ -93,8 +94,8 @@ const UInt8 AsciiCharTraits[] =
     /* 25 %  */   kACT_Id,
     /* 26 &  */   kACT_Punctuation,
     /* 27 '  */   0,
-    /* 28 (  */   kACT_Punctuation,
-    /* 29 )  */   kACT_Punctuation,
+    /* 28 (  */   kACT_Nesting,
+    /* 29 )  */   kACT_Nesting,
     /* 2A *  */   kACT_Id,
     /* 2B +  */   kACT_Id,
     /* 2C ,  */   kACT_Punctuation,
@@ -113,9 +114,9 @@ const UInt8 AsciiCharTraits[] =
     /* 39 9  */   kACT_Id | kACT_Decimal | kACT_Hex,
     /* 3A :  */   kACT_Punctuation,
     /* 3B ;  */   0,
-    /* 3C <  */   0,
+    /* 3C <  */   kACT_Nesting,
     /* 3D =  */   0,
-    /* 3E >  */   0,
+    /* 3E >  */   kACT_Nesting,
     /* 3F ?  */   0,
     /* 40 @  */   0,      //64
     /* 41 A  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -144,9 +145,9 @@ const UInt8 AsciiCharTraits[] =
     /* 58 X  */   kACT_Id | kACT_Letter,
     /* 59 Y  */   kACT_Id | kACT_Letter,
     /* 5A Z  */   kACT_Id | kACT_Letter,
-    /* 5B [  */   kACT_Punctuation,
+    /* 5B [  */   kACT_Nesting,
     /* 5C \  */   kACT_Punctuation,
-    /* 5D ]  */   kACT_Punctuation,
+    /* 5D ]  */   kACT_Nesting,
     /* 5E ^  */   kACT_Punctuation,
     /* 5F _  */   kACT_Id,
     /* 60 `  */   0,      //96
@@ -176,9 +177,9 @@ const UInt8 AsciiCharTraits[] =
     /* 78 x  */   kACT_Id | kACT_Letter,
     /* 79 y  */   kACT_Id | kACT_Letter,
     /* 7A z  */   kACT_Id | kACT_Letter,
-    /* 7B {  */   kACT_Punctuation,
+    /* 7B {  */   kACT_Nesting,
     /* 7C |  */   kACT_Punctuation,
-    /* 7D }  */   kACT_Punctuation,
+    /* 7D }  */   kACT_Nesting,
     /* 7E ~  */   kACT_Punctuation,
     /* 7F del*/   0,
 };

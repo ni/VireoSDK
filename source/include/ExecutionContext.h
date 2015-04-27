@@ -25,51 +25,55 @@ namespace Vireo
 class VIClump;
 class FunctionClump;
 class EventLog;
-class ObservableObject;
+class ObservableCore;
 
 //------------------------------------------------------------
-class WaitableState
+class Observer
 {
 public:
     //! What object is the clump waiting on?
-    ObservableObject* _object;
+    ObservableCore* _object;
 
     //! Pointer to the next WS describing a clump waiting on _object.
-    WaitableState* _next;
+    Observer* _next;
 
     //! Which clump owns this WS object.
     VIClump* _clump;
     
-    //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
+    //! State the observed object is in. Iniitally only simple state
+    //! changes can be observed.
     IntMax _info;
 };
 //------------------------------------------------------------
-//! Base class for objects that clump can wait on.
-class ObservableObject
+//! Base class for objects that clump can 'observe/wait on'.
+class ObservableCore
 {
 public:
-    WaitableState* _waitingList;
+    Observer* _observerList;
     
 public:
-    void InsertWaitableState(WaitableState* pWS, IntMax info);
-    void RemoveWaitableState(WaitableState* pWSEltToRemove);
+    void InsertObserver(Observer* pObserver, IntMax info);
+    void RemoveObserver(Observer* pObserver);
+    void ObserveStateChange(IntMax info);
 };
+typedef TypedObject<ObservableCore> ObservableObject, *ObservableRef;
+
 //------------------------------------------------------------
 //! Simplest observable object that clumps can wait on.
-class Occurrence : public ObservableObject
+class OccurrenceCore : public ObservableCore
 {
 };
-typedef Occurrence *OccurenceRef;
+typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 
 //------------------------------------------------------------
 //! Timer object that clumps can wait on.
-class Timer : public ObservableObject
+class Timer : public ObservableCore
 {
 public:
-    Boolean AnythingWaiting()                   { return _waitingList != null; }
-    void QuickCheckTimers(PlatformTickType t)   { if (_waitingList) { CheckTimers(t); } }
+    Boolean AnythingWaiting()                   { return _observerList != null; }
+    void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
     void CheckTimers(PlatformTickType t);
-    void InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCount);
+    void InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount);
 };
 //------------------------------------------------------------
 //! Queue of clumps.
@@ -181,8 +185,8 @@ public:
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
-    // A single global instance allows allows all field references
-    // to resolver to a fixed global address. This avoid pointer+offset
+    // A single global instance allows all field references
+    // to resolve to a fixed global address. This avoids pointer+offset
     // instructions that are costly on small MCUs
     extern ExecutionContext gSingleExecutionContext;
     #define THREAD_EXEC()	(&gSingleExecutionContext)

@@ -176,7 +176,7 @@ For types beyond these simple types perhaps the tyep could be
 
             DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
             TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
-            cdt = cdt->FinalizeConstant();
+            cdt = cdt->FinalizeDVT();
             type = cdt;
         }
         
@@ -459,7 +459,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 
     // Simple constants can resolved to a unique instance.
     // Perhaps even deeper constant values, let the type system figure it out.
-    cdt = cdt->FinalizeConstant();
+    cdt = cdt->FinalizeDVT();
     
     if (!_string.EatChar(')'))
         return BadType();

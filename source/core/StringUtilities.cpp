@@ -453,7 +453,7 @@ TokenTraits SubString::ReadToken(SubString* token)
     } else if ('*' == c) {
         tokenTraits = TokenTraits_WildCard;
     } else if (('(' == c) || (')' == c)) {
-        tokenTraits = TokenTraits_Parens;
+        tokenTraits = TokenTraits_NestedExpression;
     } else if (IsIdentifierChar(c)) {
         // Read the identifier token.
         _begin = initialBegin;

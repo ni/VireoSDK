@@ -9,9 +9,6 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Heart:💚")  💚)
         e(dv(.String "Hatch:🐣")  🐣)
         e(dv(.String "Gracie:🐥")  🐥)
-
-
-
     )
     clump (
        Println(你好世界1)

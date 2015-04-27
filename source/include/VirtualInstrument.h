@@ -90,8 +90,8 @@ public:
     e(.Int32 FireCount)                 \
     e(.Int32 ShortCount)                \
     e(.Int32 WaitCount)                 \
-    e(.WaitableState WaitableState)     \
-    e(.WaitableState WaitableState)     \
+    e(.Observer Observer)               \
+    e(.Observer Observer)               \
 )"
 
 // Initially all clump had the ability to wait on timers, now that has grown to
@@ -111,11 +111,6 @@ public:
 
 
 //------------------------------------------------------------
-
-
-typedef TypedArray1D<WaitableState>*   WaitableStatesRef;
-
-//------------------------------------------------------------
 //! A Clump owns an instruction list its execution state.
 class VIClump : public FunctionClump
 {
@@ -128,8 +123,8 @@ public:
 	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
 	IntSmall            _fireCount;         //! What to reset _shortCount to when the clump is done.
 	IntSmall            _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
-    Int32               _waitCount;         //! How many waitSates are active?
-    WaitableState       _waitStates[2];     //! Fixed set of waits states, maximum is 2.
+    Int32               _observationCount;  //! How many waitSates are active?
+    Observer            _observationStates[2]; //! Fixed set of waits states, maximum is 2.
     
 public:
     void Trigger();
@@ -139,11 +134,11 @@ public:
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
     VirtualInstrument*  OwningVI()      { return _owningVI; }
-    WaitableState*      GetWaitStates(Int32) { return _waitCount ? _waitStates : null; };
-    WaitableState*      ReserveWaitStatesWithTimeout(Int32, PlatformTickType count);
-    InstructionCore* WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
-    void                ClearWaitStates();
-    InstructionCore*    WaitOnWaitStates(InstructionCore*);
+    Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
+    Observer*           ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
+    InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
+    void                ClearObservationStates();
+    InstructionCore*    WaitOnObservableObject(InstructionCore*);
     ExecutionContextRef OwningContext()    { return OwningVI()->OwningContext(); }
     TypeManagerRef      TheTypeManager(){ return OwningContext()->TheTypeManager(); }
 };
@@ -197,9 +192,9 @@ class ClumpParseState
 #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
 #define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
 public:
-    static const Int32 kMaxPerches = 200;   // TODO dynamic
-    static const Int32 kMaxArguments = 100; // TODO dynamic
-    static const Int32 kMaxPatchInfos = 100; // TODO allow more
+    static const Int32 kMaxPerches = 200;       // TODO dynamic
+    static const Int32 kMaxArguments = 100;     // TODO dynamic
+    static const Int32 kMaxPatchInfos = 100;    // TODO allow more
 public:
     enum ArgumentState {
         // Initial state, not where it should end in either.

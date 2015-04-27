@@ -400,4 +400,11 @@ VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count,
     VIREO_ASSERT( TypedBlock::ValidateHandle(object));
     memcpy(object->BeginAtAQ(offset), buffer, count);
 }
+//------------------------------------------------------------
+VIREO_EXPORT void ObservabeObject_StateChange(ObservableRef observable, IntMax state)
+{
+    ObservableCore *pObs = observable->ObjBegin();
+    pObs->ObserveStateChange(state);
+}
+
 #endif

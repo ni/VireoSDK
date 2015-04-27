@@ -20,7 +20,7 @@ using namespace Vireo;
 //------------------------------------------------------------
 // Based on the underlying array, queues may be growable or bounded.
 //
-class QueueCore : public ObservableObject
+class QueueCore : public ObservableCore
 {
  private:
     TypedArrayCoreRef _elements;
@@ -38,7 +38,6 @@ class QueueCore : public ObservableObject
     Boolean Enqueue(void* pData);
     Boolean Dequeue(void* pData);
     Boolean HasRoom(IntIndex count);
-    void ChangeCount(IntIndex count);
 };
 
 typedef Int32 CallSiteQueueState;
@@ -72,25 +71,6 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
     }
 }
 //------------------------------------------------------------
-void QueueCore::ChangeCount(Int32 amount)
-{
-    // TODO: move this into WaitableState
-    WaitableState *pNext = null;
-    WaitableState ** ppPrevious = &_waitingList;
-
-    for (WaitableState* pWS = _waitingList; pWS; pWS = pNext) {
-        pNext = pWS->_next;
-        if (amount == pWS->_info) {
-            THREAD_EXEC()->EnqueueRunQueue(pWS->_clump);
-            // Remove the waiter from the list and enqueue it.
-            *ppPrevious = pNext;
-            pWS->_next = null;
-        } else {
-            ppPrevious = &pWS->_next;
-        }
-    }
-}
-//------------------------------------------------------------
 Boolean QueueCore::Enqueue(void* pData)
 {
     if (!TryMakeRoom(1))
@@ -101,7 +81,7 @@ Boolean QueueCore::Enqueue(void* pData)
     eltType->CopyData(pData, pTarget);
     _count++;
     _insert++;
-    ChangeCount(1);
+    ObserveStateChange(1);
     return true;
 }
 //------------------------------------------------------------
@@ -115,7 +95,7 @@ Boolean QueueCore::Dequeue(void* pData)
         void* pSource = _elements->BeginAt(RemoveIndex());
         eltType->CopyData(pSource, pData);
         _count--;
-        ChangeCount(-1);
+        ObserveStateChange(-1);
         return true;
     }
 }
@@ -131,7 +111,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
     QueueCore *pQV = _Param(0)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
 
-    // If the instruction needs to retry it will use two WaitableState records
+    // If the instruction needs to retry it will use two Observer records
     // [0] is for the timer and
     // [1] is for the queue
     // These records are reserved if necessary in below. If none are reserved
@@ -142,23 +122,23 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
     _Param(3) = !done;
 
     // If is succeeded or timed out then its time to move to the next instruction.
-    WaitableState* pWS = clump->GetWaitStates(2);
-    if (done || (pWS && pWS[0]._info == null)) {
-        clump->ClearWaitStates();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (done || (pObserver && pObserver[0]._info == null)) {
+        clump->ClearObservationStates();
         return _NextInstruction();
     }
 
     Int32 timeOut = _Param(2);
-    if (pWS) {
+    if (pObserver) {
         // This is a retry and another clump got the element but
         // there is still time to wait, continue waiting.
-        return clump->WaitOnWaitStates(_this);
+        return clump->WaitOnObservableObject(_this);
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
-        pQV->InsertWaitableState(pWS+1, -1);
-        return clump->WaitOnWaitStates(_this);
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pQV->InsertObserver(pObserver+1, -1);
+        return clump->WaitOnObservableObject(_this);
     } else {
         // With timeout == 0 just continue immediately.
         return _NextInstruction();
@@ -170,7 +150,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
     QueueCore *pQV = _Param(0)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
 
-    // If the instruction needs to retry it will use two WaitableState records
+    // If the instruction needs to retry it will use two Observer records
     // [0] is for the timer and
     // [1] is for the queue
     // These records are reserved if necessary in below. If none are reserved
@@ -181,23 +161,23 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
     _Param(3) = !done;
 
     // If is succeeded or timed out then its time to move to the next instruction.
-    WaitableState* pWS = clump->GetWaitStates(2);
-    if (done || (pWS && pWS[0]._info == null)) {
-        clump->ClearWaitStates();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (done || (pObserver && pObserver[0]._info == null)) {
+        clump->ClearObservationStates();
         return _NextInstruction();
     }
 
     Int32 timeOut = _Param(2);
-    if (pWS) {
+    if (pObserver) {
         // This is a retry and another clump got the element but
         // there is still time to wait, continue waiting.
-        return clump->WaitOnWaitStates(_this);
+        return clump->WaitOnObservableObject(_this);
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pWS = clump->ReserveWaitStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
-        pQV->InsertWaitableState(pWS+1, 1);
-        return clump->WaitOnWaitStates(_this);
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pQV->InsertObserver(pObserver+1, 1);
+        return clump->WaitOnObservableObject(_this);
     } else {
         // With timeout == 0 just continue immediately.
         return _NextInstruction();
@@ -205,7 +185,8 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 }
 
 DEFINE_VIREO_BEGIN(Synchronization)
-    DEFINE_VIREO_TYPE(Occurrence, "c(e(.DataPointer firstState))")
+    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState))")
+    DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
 
     // TODO type should be able to derive from observable state base class
     DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")

@@ -230,7 +230,7 @@ ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
     _theTypeManager = typeManager;
     _breakoutCount = 0;
     _runningQueueElt = (VIClump*) null;
-    _timer._waitingList = null;
+    _timer._observerList = null;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -387,10 +387,10 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 //------------------------------------------------------------
 void Timer::CheckTimers(PlatformTickType t)
 {
-    WaitableState* pTemp;
-    WaitableState* elt = _waitingList;
+    Observer* pTemp;
+    Observer* elt = _observerList;
     // pFix is previous next pointer to patch when removing element.
-    WaitableState** pFix = &(_waitingList);
+    Observer** pFix = &(_observerList);
 
     // Enqueue all elements that are ready to run
     while (elt) {
@@ -426,53 +426,55 @@ void Timer::CheckTimers(PlatformTickType t)
 #endif
 }
 //------------------------------------------------------------
-void Timer::InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCount)
+void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount)
 {
-    pWS->_object = this;
-    pWS->_info =  tickCount;
-    if (_waitingList == null) {
-        VIREO_ASSERT(pWS->_next == null)
+    pObserver->_object = this;
+    pObserver->_info =  tickCount;
+    if (_observerList == null) {
+        VIREO_ASSERT(pObserver->_next == null)
         // No list, now there is one.
-        _waitingList = pWS;
+        _observerList = pObserver;
     } else {
         // Insert into the list based on wake-up time.
-        WaitableState** pFix = &_waitingList;
-        WaitableState* pVisitor = *pFix;
+        Observer** pFix = &_observerList;
+        Observer* pVisitor = *pFix;
         while (pVisitor && (tickCount > pVisitor->_info)) {
             pFix = &(pVisitor->_next);
             pVisitor = *pFix;
         }
-        pWS->_next = pVisitor;
-        *pFix = pWS;
+        pObserver->_next = pVisitor;
+        *pFix = pObserver;
     }
 }
 //------------------------------------------------------------
-void ObservableObject::InsertWaitableState(WaitableState* pWS, IntMax info)
+//! Insert an observer into the ObservableObject's list
+void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
-    // clump be set up by now.
-    VIREO_ASSERT(pWS->_clump != null)
+    // clump should be set up by now.
+    VIREO_ASSERT(pObserver->_clump != null)
     
     // in MT, lock object
-    pWS->_object = this;
-    pWS->_info = info;
-    pWS->_next = _waitingList;
-    _waitingList = pWS;
+    pObserver->_object = this;
+    pObserver->_info = info;
+    pObserver->_next = _observerList;
+    _observerList = pObserver;
 }
 //------------------------------------------------------------
-void ObservableObject::RemoveWaitableState(WaitableState* pWSEltToRemove)
+//! Remove an observer from the ObservableObject's list
+void ObservableCore::RemoveObserver(Observer* pObserver)
 {
-    VIREO_ASSERT(pWSEltToRemove != null);
-    VIREO_ASSERT(pWSEltToRemove->_object == this);
+    VIREO_ASSERT(pObserver != null);
+    VIREO_ASSERT(pObserver->_object == this);
     
-    WaitableState* pTemp;
-    WaitableState** pFix = &(_waitingList); // previous next pointer to patch when removing element.
-    WaitableState* pVisitor = *pFix;
+    Observer* pTemp;
+    Observer** pFix = &(_observerList); // previous next pointer to patch when removing element.
+    Observer* pVisitor = *pFix;
     
     while(pVisitor) {
         VIREO_ASSERT(pVisitor->_clump != null)
         
         pTemp = pVisitor;
-        if (pTemp == pWSEltToRemove) {
+        if (pTemp == pObserver) {
             *pFix = pTemp->_next;
         } else {
             pFix = &pVisitor->_next;
@@ -480,11 +482,29 @@ void ObservableObject::RemoveWaitableState(WaitableState* pWSEltToRemove)
         pVisitor = *pFix;
     }
     
-    pWSEltToRemove->_info = 0;
-    pWSEltToRemove->_object = null;
-    pWSEltToRemove->_next = null;
+    pObserver->_info = 0;
+    pObserver->_object = null;
+    pObserver->_next = null;
 }
-
+//------------------------------------------------------------
+//! Look in the waiting list for waiters that have a matching info.
+void ObservableCore::ObserveStateChange(IntMax info)
+{
+    Observer *pNext = null;
+    Observer ** ppPrevious = &_observerList;
+    
+    for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
+        pNext = pObserver->_next;
+        if (info == pObserver->_info) {
+            THREAD_EXEC()->EnqueueRunQueue(pObserver->_clump);
+            // Remove the waiter from the list and enqueue it.
+            *ppPrevious = pNext;
+            pObserver->_next = null;
+        } else {
+            ppPrevious = &pObserver->_next;
+        }
+    }
+}
 DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
