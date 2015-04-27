@@ -30,44 +30,38 @@ SDG
 using namespace Vireo;
 
 //---------------------------------------------
-Boolean String::AppendUrlEncodedSubString(SubString* string)
+//! Append a ViaEncoded string, decode it in the process.
+void String::AppendViaDecoded(SubString* string)
 {
+    Int32 value = 0;
     Utf8Char c;
-    IntIndex originLen = 0;
-    Boolean unreservedC = false;
-    SubString urlString(string);
-    while(string->ReadRawChar(&c)) {
-        unreservedC = true;
-        if (c=='%'){
-            unreservedC = false;
-        }
-        if (unreservedC) {
-            originLen++;
-        } else {
-            string->ReadUrlEncodedToken(null);
-            originLen++;
+    SubString ss = string;
+    
+    IntIndex originalLength = Length();
+    Int32 decodedLength = originalLength + ss.Length();
+    
+    // Pass one, see how many %XX sequences exist.
+    // Utf8 multibyte sequences are copied over byte by byte.
+    while(ss.ReadRawChar(&c)) {
+        if (c == '%' && ss.ReadHex(&value)) {
+            decodedLength  -= 2;
         }
     }
-    IntIndex i = this->Length();
-    this->Resize1D(this->Length()+originLen);
-    string->AliasAssign(&urlString);
-    while (string->ReadRawChar(&c)) {
-        if (c == '+') {
-            (*BeginAt(i)) = ' ';
-        } else if (c!= '%'){
-            (*BeginAt(i)) = c;
-        } else {
-            // c == '%'. according to the document, single % is not legal in a url string.
-            Utf8Char value = 0;
-            if (string->ReadUrlEncodedToken(&value)){
-                (*BeginAt(i)) = (Utf8Char)value;
+
+    if (Resize1D(decodedLength)) {
+        // Pass two, copy over the characters and decode
+        // valid %XX sequences. Warning, %XX values above
+        // 127 could easly result in invalid Utf8 sequences.
+        ss = string;
+        Utf8Char* pDest = BeginAt(originalLength);
+        while(ss.ReadRawChar(&c)) {
+            if (c == '%' && ss.ReadHex(&value)) {
+                *pDest++ = (Utf8Char)value;
             } else {
-                (*BeginAt(i)) = '%';
+                *pDest++ = c;
             }
         }
-        i++;
     }
-    return true;
 }
 
 /**
@@ -78,7 +72,7 @@ Boolean String::AppendUrlEncodedSubString(SubString* string)
  * which means the input substring could point to the String object.
  * This is possible because the escaped string is always longer than original one.
  * */
-Boolean String::AppendEscapeSubString(const Utf8Char* source, IntIndex len)
+void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
 {
     // if inplaceiNDEX is positive, it means it's an in place operation
     IntIndex inplaceIndex = -1;
@@ -92,7 +86,7 @@ Boolean String::AppendEscapeSubString(const Utf8Char* source, IntIndex len)
         // see the document on http://json.org. need handle more control character and \uhexadecimal
         switch (c) {
         case '\n': case '\r': case '\t':
-        case '\f' : case '\b': case '\\':
+        case '\f': case '\b': case '\\':
         case '"':
             needLength += 2;
             break;
@@ -144,7 +138,6 @@ Boolean String::AppendEscapeSubString(const Utf8Char* source, IntIndex len)
             break;
        }
     }
-    return true;
 }
 //------------------------------------------------------------
 struct ReplaceSubstringStruct : public InstructionCore
@@ -411,15 +404,13 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 }
 
 //-----------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(DecodeUrlString, StringRef, StringRef)
+VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
 {
-    SubString urlString = _Param(0)->MakeSubStringAlias();
+    SubString viaString = _Param(0)->MakeSubStringAlias();
     _Param(1)->Resize1D(0);
-    _Param(1)->AppendUrlEncodedSubString(&urlString);
+    _Param(1)->AppendViaDecoded(&viaString);
     return _NextInstruction();
-
 }
-
 //---------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
 {
@@ -632,7 +623,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_String)
     DEFINE_VIREO_FUNCTION(StringIndexChar, "p(i(.String) i(.Int32) o(.Utf32Char))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(.String) o(.String))")
-    DEFINE_VIREO_FUNCTION(DecodeUrlString, "p(i(.String) o(.String))")
+    DEFINE_VIREO_FUNCTION(StringViaDecode, "p(i(.String) o(.String))")
     // StringConcatenate input can be string, or array of string.
     DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(.VarArgCount) o(.String) i(.*))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(.BranchTarget) i(.String) i(.String))");

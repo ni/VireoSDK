@@ -1,5 +1,5 @@
 define (HelloTime dv(.VirtualInstrument (
-    c( 
+    c(
 	e(dv(.Int32 4) i4)
 	e(dv(.String "")s1)
 	e(dv(.String "abc%20edf") s2)
@@ -9,9 +9,9 @@ define (HelloTime dv(.VirtualInstrument (
 	e(.Boolean b1)
      )
     clump (
-        DecodeUrlString(s2 s0)
+        StringViaDecode(s2 s0)
         Printf("decode: (%s) -> (%s)\n" s2 s0)
-        DecodeUrlString(s3 s0)
+        StringViaDecode(s3 s0)
         Printf("decode: (%s) -> (%s)\n" s3 s0)
     )
 ) ) )

@@ -1040,9 +1040,10 @@ public:
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
-    Boolean AppendUrlEncodedSubString(SubString *string);
-    Boolean AppendEscapeSubString(const Utf8Char* source, IntIndex len);
+                                              { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    void AppendViaDecoded(SubString *string);
+    void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
+
 
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
