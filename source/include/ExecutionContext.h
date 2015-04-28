@@ -18,6 +18,7 @@ SDG
 #include "Instruction.h"
 #include "Timestamp.h"
 #include "EventLog.h"
+#include "Synchronization.h"
 
 namespace Vireo
 {
@@ -27,54 +28,6 @@ class FunctionClump;
 class EventLog;
 class ObservableCore;
 
-//------------------------------------------------------------
-class Observer
-{
-public:
-    //! What object is the clump waiting on?
-    ObservableCore* _object;
-
-    //! Pointer to the next WS describing a clump waiting on _object.
-    Observer* _next;
-
-    //! Which clump owns this WS object.
-    VIClump* _clump;
-    
-    //! State the observed object is in. Iniitally only simple state
-    //! changes can be observed.
-    IntMax _info;
-};
-//------------------------------------------------------------
-//! Base class for objects that clump can 'observe/wait on'.
-class ObservableCore
-{
-public:
-    Observer* _observerList;
-    
-public:
-    void InsertObserver(Observer* pObserver, IntMax info);
-    void RemoveObserver(Observer* pObserver);
-    void ObserveStateChange(IntMax info);
-};
-typedef TypedObject<ObservableCore> ObservableObject, *ObservableRef;
-
-//------------------------------------------------------------
-//! Simplest observable object that clumps can wait on.
-class OccurrenceCore : public ObservableCore
-{
-};
-typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
-
-//------------------------------------------------------------
-//! Timer object that clumps can wait on.
-class Timer : public ObservableCore
-{
-public:
-    Boolean AnythingWaiting()                   { return _observerList != null; }
-    void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
-    void CheckTimers(PlatformTickType t);
-    void InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount);
-};
 //------------------------------------------------------------
 //! Queue of clumps.
 /** The Queue is made by linking clumps directly using their next field,

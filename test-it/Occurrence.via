@@ -1,0 +1,26 @@
+
+define (TestProgram dv(.VirtualInstrument (
+    Locals: c(
+        e(.Occurrence occ1)
+    )
+
+    clump (
+        Trigger(1)
+        Printf(" Clump0: about to wait on occurence\n")
+        WaitOnOccurrence(occ1 true 10000)
+        Printf(" Clump0: back from wait on occurence - 1 \n")
+        WaitOnOccurrence(occ1 true 50)
+        Printf(" Clump0: back from wait on occurence - 2\n")
+    )
+
+    clump (
+        Printf(" Clump1: about to wait.\n")
+        WaitMilliseconds(50)
+        Printf(" Clump1: About to SetOccurrece.\n")
+        SetOccurrence(occ1)
+        Printf(" CLump1: Occurrence set.\n")
+    )
+) ) )
+
+
+enqueue (TestProgram)

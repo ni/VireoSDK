@@ -18,31 +18,192 @@
 using namespace Vireo;
 
 //------------------------------------------------------------
-// Based on the underlying array, queues may be growable or bounded.
-//
-class QueueCore : public ObservableCore
+//! Insert an observer into the ObservableObject's list
+void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
- private:
-    TypedArrayCoreRef _elements;
+    // clump should be set up by now.
+    VIREO_ASSERT(pObserver->_clump != null)
+    
+    // in MT, lock object
+    pObserver->_object = this;
+    pObserver->_info = info;
+    pObserver->_next = _observerList;
+    _observerList = pObserver;
+}
+//------------------------------------------------------------
+//! Remove an observer from the ObservableObject's list
+void ObservableCore::RemoveObserver(Observer* pObserver)
+{
+    VIREO_ASSERT(pObserver != null);
+    VIREO_ASSERT(pObserver->_object == this);
+    
+    Observer* pTemp;
+    Observer** pFix = &(_observerList); // previous next pointer to patch when removing element.
+    Observer* pVisitor = *pFix;
+    
+    while(pVisitor) {
+        VIREO_ASSERT(pVisitor->_clump != null)
+        
+        pTemp = pVisitor;
+        if (pTemp == pObserver) {
+            *pFix = pTemp->_next;
+        } else {
+            pFix = &pVisitor->_next;
+        }
+        pVisitor = *pFix;
+    }
+    
+    pObserver->_info = 0;
+    pObserver->_object = null;
+    pObserver->_next = null;
+}
+//------------------------------------------------------------
+//! Look in the waiting list for waiters that have a matching info.
+void ObservableCore::ObserveStateChange(IntMax info)
+{
+    Observer *pNext = null;
+    Observer ** ppPrevious = &_observerList;
+    
+    for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
+        pNext = pObserver->_next;
+        if (info == pObserver->_info) {
+            THREAD_EXEC()->EnqueueRunQueue(pObserver->_clump);
+            // Remove the waiter from the list and enqueue it.
+            *ppPrevious = pNext;
+            pObserver->_next = null;
+        } else {
+            ppPrevious = &pObserver->_next;
+        }
+    }
+}
+//------------------------------------------------------------
+void Timer::CheckTimers(PlatformTickType t)
+{
+    Observer* pTemp;
+    Observer* elt = _observerList;
+    // pFix is previous next pointer to patch when removing element.
+    Observer** pFix = &(_observerList);
+    
+    // Enqueue all elements that are ready to run
+    while (elt) {
+        pTemp = elt;
+        if (pTemp->_info <= t) {
+            // Remove
+            *pFix = pTemp->_next;
+            pTemp->_next = null;
+            pTemp->_info = 0;
+            THREAD_EXEC()->EnqueueRunQueue(pTemp->_clump);
+        } else {
+            // Items are sorted at insertion, so once a time in the future
+            // is found quit the loop.
+            break;
+        }
+        elt = *pFix;
+    }
+    
+#ifdef VIREO_SUPPORTS_ISR
+    if (_triggeredIsrList) {
+        VIREO_ISR_DISABLE
+        elt = _triggeredIsrList;
+        while (elt) {
+            pClump = elt;
+            elt = elt->_next;
+            pClump->_next = null;
+            pClump->_wakeUpInfo = 0;    // Put in known state.
+            _runQueue.Enqueue(pClump);
+        }
+        _triggeredIsrList = null;
+        VIREO_ISR_ENABLE
+    }
+#endif
+}
+//------------------------------------------------------------
+void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount)
+{
+    pObserver->_object = this;
+    pObserver->_info =  tickCount;
+    if (_observerList == null) {
+        VIREO_ASSERT(pObserver->_next == null)
+        // No list, now there is one.
+        _observerList = pObserver;
+    } else {
+        // Insert into the list based on wake-up time.
+        Observer** pFix = &_observerList;
+        Observer* pVisitor = *pFix;
+        while (pVisitor && (tickCount > pVisitor->_info)) {
+            pFix = &(pVisitor->_next);
+            pVisitor = *pFix;
+        }
+        pObserver->_next = pVisitor;
+        *pFix = pObserver;
+    }
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
+{
+    PlatformTickType future = PlatformTime::MicrosecondsFromNowToTickCount(_Param(0));
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
+{
+    PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(_Param(0));
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
+{
+    return THREAD_CLUMP()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
+}
+//------------------------------------------------------------
+void OccurrenceCore::SetOccurrence()
+{
+    _setCount++;
+    ObserveStateChange(_setCount);
+}
+//------------------------------------------------------------
+Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
+{
+    if ((count - _setCount) > 0) {
+        return true;
+    } else if (ignorePrevious && count != _setCount) {
+        return true;
+    } else {
+        return false;
+    }
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32)
+{
+    OccurrenceCore *pOcc = _Param(0)->ObjBegin();
+    Boolean bIgnorePrevious = _Param(1);
+    UInt32 msTimeout = _Param(2);
+    
+    if (!bIgnorePrevious && pOcc->HasOccurred(_Param(3), bIgnorePrevious)) {
+        _Param(3) = pOcc->Count();
+        return _NextInstruction();
+    }
 
-    //! Index where the next element will be stored (may be one past end if full)
-    IntIndex   _insert;
-
-    //! How many elements are in the queue
-    IntIndex   _count;
-
-    IntIndex RemoveIndex();
- public:
-    Boolean Compress();
-    Boolean TryMakeRoom(IntIndex length);
-    Boolean Enqueue(void* pData);
-    Boolean Dequeue(void* pData);
-    Boolean HasRoom(IntIndex count);
-};
-
-typedef Int32 CallSiteQueueState;
-typedef TypedObject<QueueCore> QueueObject, *QueueRef;
-
+    VIClump* clump = THREAD_CLUMP();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (!pObserver) {
+        PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(msTimeout);
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
+        pOcc->InsertObserver(pObserver+1, pOcc->Count()+1);
+        return clump->WaitOnObservableObject(_this);
+    } else {
+        // If it woke up because of timeout or occerrence..
+        clump->ClearObservationStates();
+        return _NextInstruction();
+    }
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
+{
+    OccurrenceCore *pOcc = _Param(0)->ObjBegin();
+    pOcc->SetOccurrence();
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 IntIndex QueueCore::RemoveIndex()
 {
@@ -185,10 +346,19 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 }
 
 DEFINE_VIREO_BEGIN(Synchronization)
-    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState))")
-    DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
 
-    // TODO type should be able to derive from observable state base class
+    // Timers
+    DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(.UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
+    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")
+
+    // Occurrences
+    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState)e(.Int32 setCount)")
+    DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
+    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
+    DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
+
+    // Queues
     DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
     DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
 

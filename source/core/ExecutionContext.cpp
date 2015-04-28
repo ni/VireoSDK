@@ -116,23 +116,6 @@ InstructionCore* ExecutionContext::Stop()
     return &_culDeSac;
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
-{
-    PlatformTickType future = PlatformTime::MicrosecondsFromNowToTickCount(_Param(0));
-    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
-{
-    PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(_Param(0));
-    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
-{
-    return THREAD_CLUMP()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
-}
-//------------------------------------------------------------
 // Trigger - Decrement target fire count (may cause target to be activated)
 VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 {
@@ -384,137 +367,13 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
     }
 }
 #endif
-//------------------------------------------------------------
-void Timer::CheckTimers(PlatformTickType t)
-{
-    Observer* pTemp;
-    Observer* elt = _observerList;
-    // pFix is previous next pointer to patch when removing element.
-    Observer** pFix = &(_observerList);
-
-    // Enqueue all elements that are ready to run
-    while (elt) {
-        pTemp = elt;
-        if (pTemp->_info <= t) {
-            // Remove
-            *pFix = pTemp->_next;
-            pTemp->_next = null;
-            pTemp->_info = 0;
-            THREAD_EXEC()->EnqueueRunQueue(pTemp->_clump);
-        } else {
-            // Items are sorted at insertion, so once a time in the future
-            // is found quit the loop.
-            break;
-        }
-        elt = *pFix;
-    }
-
-#ifdef VIREO_SUPPORTS_ISR
-    if (_triggeredIsrList) {
-        VIREO_ISR_DISABLE
-        elt = _triggeredIsrList;
-        while (elt) {
-            pClump = elt;
-            elt = elt->_next;
-            pClump->_next = null;
-            pClump->_wakeUpInfo = 0;    // Put in known state.
-            _runQueue.Enqueue(pClump);
-        }
-        _triggeredIsrList = null;
-        VIREO_ISR_ENABLE
-    }
-#endif
-}
-//------------------------------------------------------------
-void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount)
-{
-    pObserver->_object = this;
-    pObserver->_info =  tickCount;
-    if (_observerList == null) {
-        VIREO_ASSERT(pObserver->_next == null)
-        // No list, now there is one.
-        _observerList = pObserver;
-    } else {
-        // Insert into the list based on wake-up time.
-        Observer** pFix = &_observerList;
-        Observer* pVisitor = *pFix;
-        while (pVisitor && (tickCount > pVisitor->_info)) {
-            pFix = &(pVisitor->_next);
-            pVisitor = *pFix;
-        }
-        pObserver->_next = pVisitor;
-        *pFix = pObserver;
-    }
-}
-//------------------------------------------------------------
-//! Insert an observer into the ObservableObject's list
-void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
-{
-    // clump should be set up by now.
-    VIREO_ASSERT(pObserver->_clump != null)
-    
-    // in MT, lock object
-    pObserver->_object = this;
-    pObserver->_info = info;
-    pObserver->_next = _observerList;
-    _observerList = pObserver;
-}
-//------------------------------------------------------------
-//! Remove an observer from the ObservableObject's list
-void ObservableCore::RemoveObserver(Observer* pObserver)
-{
-    VIREO_ASSERT(pObserver != null);
-    VIREO_ASSERT(pObserver->_object == this);
-    
-    Observer* pTemp;
-    Observer** pFix = &(_observerList); // previous next pointer to patch when removing element.
-    Observer* pVisitor = *pFix;
-    
-    while(pVisitor) {
-        VIREO_ASSERT(pVisitor->_clump != null)
-        
-        pTemp = pVisitor;
-        if (pTemp == pObserver) {
-            *pFix = pTemp->_next;
-        } else {
-            pFix = &pVisitor->_next;
-        }
-        pVisitor = *pFix;
-    }
-    
-    pObserver->_info = 0;
-    pObserver->_object = null;
-    pObserver->_next = null;
-}
-//------------------------------------------------------------
-//! Look in the waiting list for waiters that have a matching info.
-void ObservableCore::ObserveStateChange(IntMax info)
-{
-    Observer *pNext = null;
-    Observer ** ppPrevious = &_observerList;
-    
-    for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
-        pNext = pObserver->_next;
-        if (info == pObserver->_info) {
-            THREAD_EXEC()->EnqueueRunQueue(pObserver->_clump);
-            // Remove the waiter from the list and enqueue it.
-            *ppPrevious = pNext;
-            pObserver->_next = null;
-        } else {
-            ppPrevious = &pObserver->_next;
-        }
-    }
-}
-DEFINE_VIREO_BEGIN(LabVIEW_Execution1)
+DEFINE_VIREO_BEGIN(LabVIEW_Execution)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(.BranchTarget) i(.Int32) o(.Int32))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(.BranchTarget))")
     DEFINE_VIREO_FUNCTION(CallVI, "p(i(.VI) i(.Instruction copyInProc) i(.Instruction copyOutProc))")
-    DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(.UInt32))")
-    DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
-    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Done, "p()")
     DEFINE_VIREO_FUNCTION(Stop, "p(i(.Boolean))")
     DEFINE_VIREO_FUNCTION(CulDeSac, "p(i(.Boolean))")
