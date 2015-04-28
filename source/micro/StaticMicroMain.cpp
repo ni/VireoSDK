@@ -3,7 +3,7 @@
 //  VireoEggShell
 //
 //  Created by Paul Austin on 12/11/14.
-//  Copyright (c) 2014 Paul Austin. All rights reserved.
+//  Copyright (c) 2014-2015 Paul Austin. All rights reserved.
 //
 
 #include "DataTypes.h"

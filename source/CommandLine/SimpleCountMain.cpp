@@ -1,11 +1,11 @@
 /**
- 
- Copyright (c) 2014 National Instruments Corp.
- 
- This software is subject to the terms described in the LICENSE.TXT file
- 
- SDG
- */
+
+Copyright (c) 2014-2015 National Instruments Corp.
+
+This software is subject to the terms described in the LICENSE.TXT file
+
+SDG
+*/
 
 #include "TypeAndDataManager.h"
 #include "EggShell.h"

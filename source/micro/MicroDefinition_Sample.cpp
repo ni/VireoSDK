@@ -1,9 +1,9 @@
 /**
- 
- Sample of a machine generated function table for micro Vireo
- 
-  SDG
- */
+
+Sample of a machine generated function table for micro Vireo
+
+SDG
+*/
 //---- SHA1 hash is for all text below this line ----
 #include "DataTypes.h"
 #include "ExecutionContext.h"

@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2015 National Instruments Corp.
 
 This software is subject to the terms described in the LICENSE.TXT file
 
