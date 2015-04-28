@@ -42,16 +42,9 @@ extern "C" {
 
 //------------------------------------------------------------
 //VIREO_FUNCTION_SIGNATURE3(HttpClientGet, StringRef, StringRef, StringRef)
-VIREO_FUNCTION_SIGNATURE4(HttpClientGet, StringRef, StringRef, StringRef, OccurrenceRef)
+VIREO_FUNCTION_SIGNATURE4(HttpClientGetExperiment, StringRef, StringRef, StringRef, OccurrenceRef)
 {
-#if 1
-  
-#if kVireoOS_emscripten
-    js_ni_httpClient_Get((char*)_Param(0)->Begin(), _Param(0)->Length(), _Param(1), _Param(2));
-#endif
-    return _NextInstruction();
-    
-#else
+#if 0
     OccurrenceCore *pOcc = _Param(3)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -71,6 +64,8 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGet, StringRef, StringRef, StringRef, Occurr
         clump->ClearObservationStates();
         return _NextInstruction();
     }
+#else
+    return _NextInstruction();
 #endif
 }
 
@@ -264,7 +259,7 @@ VIREO_FUNCTION_SIGNATURE9(ni_httpClient_Post, UInt32, StringRef, StringRef, Stri
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(LabVIEW_HttpClient)
-    DEFINE_VIREO_FUNCTION(HttpClientGet, "p(i(.String) o(.String) o(.String) s(.Occurrence))");
+    DEFINE_VIREO_FUNCTION(HttpClientGetExperiment, "p(i(.String) o(.String) o(.String) s(.Occurrence))");
     DEFINE_VIREO_FUNCTION(ni_httpClient_Open, "p(i(.String) i(.String) i(.String) io(.Int32) i(.Boolean) o(.UInt32))");
     DEFINE_VIREO_FUNCTION(ni_httpClient_Close, "p(i(.UInt32) io(.Int32))");
     DEFINE_VIREO_FUNCTION(ni_httpClient_AddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32))");
