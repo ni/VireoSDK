@@ -6,6 +6,7 @@ Module.v_readDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', '
 Module.v_writeDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
 Module.v_readValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string' ]);
 Module.v_writeValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
+Module.v_setOrrurrence = Module.cwrap('Occurrence_Set', 'void', ['number']);
 Module.v_dataWriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
 Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
@@ -295,7 +296,7 @@ return {
             NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
             return 0;
         },
-    makeRequest: 
+    makeRequest:
         function (userHandle, protocol, url, timeOut, buffer, successCallback, errorCallback, onTimeOutCallback) {
             var httpUser = this.getHttpUser(userHandle);
 

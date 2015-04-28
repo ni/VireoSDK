@@ -401,10 +401,10 @@ VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count,
     memcpy(object->BeginAtAQ(offset), buffer, count);
 }
 //------------------------------------------------------------
-VIREO_EXPORT void ObservabeObject_StateChange(ObservableRef observable, IntMax state)
+VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
 {
-    ObservableCore *pObs = observable->ObjBegin();
-    pObs->ObserveStateChange(state);
+    OccurrenceCore *pOcc = occurrence->ObjBegin();
+    pOcc->SetOccurrence();
 }
 
 #endif
