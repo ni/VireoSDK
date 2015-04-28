@@ -761,6 +761,7 @@ DECLARE_VIREO_PRIMITIVE2( LogComplexSingle, ComplexSingle, ComplexSingle, (_Para
 DECLARE_VIREO_PRIMITIVE2( Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
 DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle x) o(.ComplexSingle result))")
@@ -791,6 +792,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
     DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexSingle, "p(i(.ComplexSingle) o(.ComplexSingle))")
     DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexSingle, "p(i(.ComplexSingle) i(.ComplexSingle) o(.ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(Polar, ComplexSingle, "p(i(.Single) i(.Single) o(.ComplexSingle))")
 
 DEFINE_VIREO_END()
 #endif
@@ -824,7 +826,7 @@ DECLARE_VIREO_PRIMITIVE2( LogComplexDouble, ComplexDouble, ComplexDouble, (_Para
 DECLARE_VIREO_PRIMITIVE2( Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0) ) )
 DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
-//TODO - DECLARE_VIREO_PRIMITIVE3( CxPolar, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
 DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble x) o(.ComplexDouble result))")
@@ -855,6 +857,7 @@ DEFINE_VIREO_BEGIN(LabVIEW_Math)
     DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
     DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexDouble, "p(i(.ComplexDouble) o(.ComplexDouble))")
     DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexDouble, "p(i(.ComplexDouble) i(.ComplexDouble) o(.ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(Polar, ComplexDouble, "p(i(.Double) i(.Double) o(.ComplexDouble))")
 DEFINE_VIREO_END()
 
 #endif

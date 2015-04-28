@@ -1,0 +1,21 @@
+
+
+define (HelloComplex dv(.VirtualInstrument (
+    Locals: c(
+        //-------------------
+        e(dv(.Double 2.0) dMagnitude)
+        e(dv(.Double 0.5) dPhase)
+        e(.ComplexDouble dCmplx)
+        //-------------------
+        e(dv(.Single 2.0) sMagnitude)
+        e(dv(.Single -0.5) sPhase)
+        e(.ComplexSingle sCmplx)
+    )
+    clump(
+        Polar(dMagnitude dPhase dCmplx)
+        Printf("Double: Polar(%s %s) => %s\n" dMagnitude dPhase dCmplx)
+        Polar(sMagnitude sPhase sCmplx)
+        Printf("Single: Polar(%s %s) => %s\n" sMagnitude sPhase sCmplx)
+    )
+ ) ) )
+enqueue (HelloComplex)
