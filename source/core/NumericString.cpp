@@ -208,6 +208,10 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             index++;
         }
         TypeRef argType = arguments[i]._paramType;
+        if (argType->Name().CompareCStr("Timestamp")) {
+            buffer->AppendCStr("%T");
+            return ;
+        }
         switch(argType->BitEncoding()) {
 
         case kEncoding_UInt: {
