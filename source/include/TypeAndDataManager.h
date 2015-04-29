@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
 
@@ -817,7 +817,7 @@ private:
     static size_t   StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
-    DefaultValueType* FinalizeConstant();
+    DefaultValueType* FinalizeDVT();
 public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);

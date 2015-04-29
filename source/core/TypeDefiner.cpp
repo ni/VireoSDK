@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
 
 This software is subject to the terms described in the LICENSE.TXT file
 
@@ -209,7 +209,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
 
-    Define(tm, "WaitableState", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
+    Define(tm, "Observer", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 
     Define(tm, "Timestamp", "c(e(.Int64 seconds) e(.UInt64 fraction))");

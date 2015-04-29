@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -145,7 +145,7 @@ TokenTraits SubString::ClassifyNextToken() const
     SubString temp = *this;
     SubString token;
     
-    TokenTraits tt = temp.ReadValueToken(&token);
+    TokenTraits tt = temp.ReadToken(&token);
     return tt;
 }
 //------------------------------------------------------------
@@ -396,7 +396,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.
-TokenTraits SubString::ReadValueToken(SubString* token)
+TokenTraits SubString::ReadToken(SubString* token)
 {
     TokenTraits tokenTraits = TokenTraits_Unrecognized;
 
@@ -453,7 +453,7 @@ TokenTraits SubString::ReadValueToken(SubString* token)
     } else if ('*' == c) {
         tokenTraits = TokenTraits_WildCard;
     } else if (('(' == c) || (')' == c)) {
-        tokenTraits = TokenTraits_Parens;
+        tokenTraits = TokenTraits_NestedExpression;
     } else if (IsIdentifierChar(c)) {
         // Read the identifier token.
         _begin = initialBegin;
@@ -527,28 +527,32 @@ TokenTraits SubString::ReadValueToken(SubString* token)
 }
 //------------------------------------------------------------
 //! Read an expression that may be a single token or nested expression
-Boolean SubString::ReadSubexpressionToken(SubString* token)
+TokenTraits SubString::ReadSubexpressionToken(SubString* token)
 {
     EatLeadingSpaces();
     SubString tempString(this);
-    Boolean tokenFound;
+    TokenTraits tt = TokenTraits_Unrecognized;
     const Utf8Char* begin = Begin();
     Int32 depth = 0;
     
     do {
-        tokenFound = this->ReadToken(token);
+        tt = this->ReadToken(token);
         if (token->CompareCStr("(")) {
             depth++;
         } else if (token->CompareCStr(")")) {
             depth--;
+            // The out going trait will be the last one recorded
+            // unless ReadToken failed. In that case the last tt
+            // will be TokenTraits_Unrecognized.
+            tt = TokenTraits_NestedExpression;
         }
-    } while (tokenFound && (depth>0));
+    } while (tt && (depth>0));
     
     // The loop has reached an end state, go back and
     // add tokens that were skipped over to get to this point.
     token->AliasAssign(begin, this->Begin());
     
-    return tokenFound;
+    return tt;
 }
 //------------------------------------------------------------
 //! Read an optional "Name:" prefix to a value.
@@ -569,12 +573,6 @@ Boolean SubString::ReadNameToken(SubString* token)
     // Its not a name prefix, leave all as is
     token->AliasAssign(null, null);
     return false;
-}
-//------------------------------------------------------------
-//! Read a token from the front of the substream.
-Boolean SubString::ReadToken(SubString* token)
-{
-    return ReadValueToken(token) != TokenTraits_Unrecognized;
 }
 //---------------------------------------------------
 //! Read n hex characters. Balk if there are not that many

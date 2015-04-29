@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -176,31 +176,35 @@ void VIClump::AppendToWaitList(VIClump* elt)
     }
 }
 //------------------------------------------------------------
-WaitableState* VIClump::ReserveWaitStatesWithTimeout(Int32 count, PlatformTickType tickCount)
+Observer* VIClump::ReserveObservationStatesWithTimeout(Int32 count, PlatformTickType tickCount)
 {
-    VIREO_ASSERT(_waitCount == 0);
+    VIREO_ASSERT(_observationCount == 0);
     if (count <= 2) {
-        _waitCount = count;
-        _waitStates[0]._clump = this;
-        _waitStates[1]._clump = this;
-        OwningContext()->_timer.InitWaitableTimerState(_waitStates, tickCount);
-        return _waitStates;
+        _observationCount = count;
+        _observationStates[0]._clump = this;
+        _observationStates[1]._clump = this;
+        if (tickCount) {
+            OwningContext()->_timer.InitObservableTimerState(_observationStates, tickCount);
+        } else {
+            OwningContext()->_timer.InitObservableTimerState(_observationStates, 0x7FFFFFFFFFFFFFFF);
+        }
+        return _observationStates;
     } else {
         return null;
     }
 }
 //------------------------------------------------------------
-void VIClump::ClearWaitStates()
+void VIClump::ClearObservationStates()
 {
     // When an instruction retries and decides its time to continue for any reason
     // the instruction function need to clear all WS that might wake the clump up.
-    if (_waitCount) {
-        for (WaitableState* pWS = _waitStates; _waitCount; pWS++) {
-            if (pWS->_object) {
-                pWS->_object->RemoveWaitableState(pWS);
-                VIREO_ASSERT(pWS->_object == null);
+    if (_observationCount) {
+        for (Observer* pObserver = _observationStates; _observationCount; pObserver++) {
+            if (pObserver->_object) {
+                pObserver->_object->RemoveObserver(pObserver);
+                VIREO_ASSERT(pObserver->_object == null);
             }
-            _waitCount -= 1;
+            _observationCount -= 1;
         }
     }
 }
@@ -210,16 +214,16 @@ InstructionCore* VIClump::WaitUntilTickCount(PlatformTickType tickCount, Instruc
     VIREO_ASSERT( _next == null )
     VIREO_ASSERT( _shortCount == 0 )
 
-    ReserveWaitStatesWithTimeout(1, tickCount);
-    return this->WaitOnWaitStates(nextInstruction);
+    ReserveObservationStatesWithTimeout(1, tickCount);
+    return this->WaitOnObservableObject(nextInstruction);
 }
 //------------------------------------------------------------
-InstructionCore* VIClump::WaitOnWaitStates(InstructionCore* nextInstruction)
+InstructionCore* VIClump::WaitOnObservableObject(InstructionCore* nextInstruction)
 {
-    if (_waitCount) {
+    if (_observationCount) {
         // Hack, single one is a timer so it doesn't retry. There will be nothing to clear.
-        if (_waitCount == 1)
-            _waitCount = 0;
+        if (_observationCount == 1)
+            _observationCount = 0;
         return OwningContext()->SuspendRunningQueueElt(nextInstruction);
     } else {
         return nextInstruction;
@@ -495,7 +499,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             if (pDef) {
                 *pDef = type;
             }
-            cdt = cdt->FinalizeConstant();
+            cdt = cdt->FinalizeDVT();
             *ppData = (AQBlock1*)cdt->Begin(kPARead);
         }
         return;
@@ -508,7 +512,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             // Define a DefaultValue type. As a DV it will never merge to another instance.
             // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-            cdt = cdt->FinalizeConstant();
+            cdt = cdt->FinalizeDVT();
             *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         } else {
             // For flat data, the call instruction logic for VIs will initialize the callee parameter
@@ -532,7 +536,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         _argumentState = kArgumentResolvedToDefault;
         DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
         TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
-        cdt = cdt->FinalizeConstant();
+        cdt = cdt->FinalizeDVT();
         *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
         return;
     }
@@ -1027,8 +1031,11 @@ InstructionCore* ClumpParseState::EmitInstruction()
         Boolean foundMissing = false;
         for (Int32 i = _argCount; i < formalArgCount; i++) {
             TypeRef type = _instructionType->GetSubElement(i);
-            if (type->IsStaticParam()) {
-                InternalAddArg(type, null);
+            if (type->IsStaticParam()) {                
+                DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), type, true);
+                cdt = cdt->FinalizeDVT();
+                void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite); // * passed as a param means null
+                InternalAddArg(type, pData);
             } else {
                 foundMissing = true;
             }

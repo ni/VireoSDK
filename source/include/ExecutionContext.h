@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -18,6 +18,7 @@ SDG
 #include "Instruction.h"
 #include "Timestamp.h"
 #include "EventLog.h"
+#include "Synchronization.h"
 
 namespace Vireo
 {
@@ -25,52 +26,8 @@ namespace Vireo
 class VIClump;
 class FunctionClump;
 class EventLog;
-class ObservableObject;
+class ObservableCore;
 
-//------------------------------------------------------------
-class WaitableState
-{
-public:
-    //! What object is the clump waiting on?
-    ObservableObject* _object;
-
-    //! Pointer to the next WS describing a clump waiting on _object.
-    WaitableState* _next;
-
-    //! Which clump owns this WS object.
-    VIClump* _clump;
-    
-    //! What it is waiting for: > 1, elts in the queus, <1 room in the queue
-    IntMax _info;
-};
-//------------------------------------------------------------
-//! Base class for objects that clump can wait on.
-class ObservableObject
-{
-public:
-    WaitableState* _waitingList;
-    
-public:
-    void InsertWaitableState(WaitableState* pWS, IntMax info);
-    void RemoveWaitableState(WaitableState* pWSEltToRemove);
-};
-//------------------------------------------------------------
-//! Simplest observable object that clumps can wait on.
-class Occurrence : public ObservableObject
-{
-};
-typedef Occurrence *OccurenceRef;
-
-//------------------------------------------------------------
-//! Timer object that clumps can wait on.
-class Timer : public ObservableObject
-{
-public:
-    Boolean AnythingWaiting()                   { return _waitingList != null; }
-    void QuickCheckTimers(PlatformTickType t)   { if (_waitingList) { CheckTimers(t); } }
-    void CheckTimers(PlatformTickType t);
-    void InitWaitableTimerState(WaitableState* pWS, PlatformTickType tickCount);
-};
 //------------------------------------------------------------
 //! Queue of clumps.
 /** The Queue is made by linking clumps directly using their next field,
@@ -181,8 +138,8 @@ public:
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
-    // A single global instance allows allows all field references
-    // to resolver to a fixed global address. This avoid pointer+offset
+    // A single global instance allows all field references
+    // to resolve to a fixed global address. This avoids pointer+offset
     // instructions that are costly on small MCUs
     extern ExecutionContext gSingleExecutionContext;
     #define THREAD_EXEC()	(&gSingleExecutionContext)

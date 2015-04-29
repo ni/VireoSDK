@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -25,15 +25,16 @@ enum TokenTraits
 {
     // in/out traits used to define what is being looked for and what was found
     TokenTraits_Unrecognized = 0,
-    TokenTraits_Boolean,        // t, f, true, false
+    TokenTraits_Boolean,        // true, false
     TokenTraits_Integer,        // 123
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_Punctuation,     // , ( ) { } [ ] (Some 'punctuation' are resered: * @)
+    TokenTraits_Punctuation,    // ,  (Some 'punctuation' are resered: * @)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
-    TokenTraits_Parens,         // ()    typically added to others to allow expressions
+    TokenTraits_Nesting,        // ()    typically added to others to allow expressions
+    TokenTraits_NestedExpression,//( ) { } [ ] < >
 };
 
 //------------------------------------------------------------
@@ -42,48 +43,49 @@ enum TokenTraits
 
 enum AsciiCharTraitsEnum {
     kACT_Id          = 0x01,    // Valid part of an identier
-    kACT_Punctuation  = 0x02,
+    kACT_Punctuation = 0x02,
     kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x08,
     kACT_Decimal     = 0x10,
     kACT_Oct         = 0x20,
     kACT_Hex         = 0x40,
+    kACT_Nesting     = 0x80,
 };
 
 const UInt8 AsciiCharTraits[] =
 {
-    0,      //0
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    /* 00   */  0,      //0
+    /* 01   */  0,
+    /* 02   */  0,
+    /* 03   */  0,
+    /* 04   */  0,
+    /* 05   */  0,
+    /* 06   */  0,
+    /* 07   */  0,
+    /* 08   */  0,
     /* 09 ht*/  kACT_Space,
     /* 0A lf*/  kACT_Space,
     /* 0B vt*/  kACT_Space,
     /* 0C ff*/  kACT_Space,
     /* 0D cr*/  kACT_Space,
-    0,
-    0,
-    0,      //16
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    /* 0E   */  0,
+    /* 0F   */  0,
+    /* 10   */  0,      //16
+    /* 11   */  0,
+    /* 12   */  0,
+    /* 13   */  0,
+    /* 14   */  0,
+    /* 15   */  0,
+    /* 16   */  0,
+    /* 17   */  0,
+    /* 18   */  0,
+    /* 19   */  0,
+    /* 1A   */  0,
+    /* 1B   */  0,
+    /* 1C   */  0,
+    /* 1D   */  0,
+    /* 1E   */  0,
+    /* 1F   */  0,
     /* 20    */   kACT_Space,   //32
     /* 21 !  */   kACT_Punctuation,
     /* 22 "  */   0,
@@ -92,8 +94,8 @@ const UInt8 AsciiCharTraits[] =
     /* 25 %  */   kACT_Id,
     /* 26 &  */   kACT_Punctuation,
     /* 27 '  */   0,
-    /* 28 (  */   kACT_Punctuation,
-    /* 29 )  */   kACT_Punctuation,
+    /* 28 (  */   kACT_Nesting,
+    /* 29 )  */   kACT_Nesting,
     /* 2A *  */   kACT_Id,
     /* 2B +  */   kACT_Id,
     /* 2C ,  */   kACT_Punctuation,
@@ -112,9 +114,9 @@ const UInt8 AsciiCharTraits[] =
     /* 39 9  */   kACT_Id | kACT_Decimal | kACT_Hex,
     /* 3A :  */   kACT_Punctuation,
     /* 3B ;  */   0,
-    /* 3C <  */   0,
+    /* 3C <  */   kACT_Nesting,
     /* 3D =  */   0,
-    /* 3E >  */   0,
+    /* 3E >  */   kACT_Nesting,
     /* 3F ?  */   0,
     /* 40 @  */   0,      //64
     /* 41 A  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -143,9 +145,9 @@ const UInt8 AsciiCharTraits[] =
     /* 58 X  */   kACT_Id | kACT_Letter,
     /* 59 Y  */   kACT_Id | kACT_Letter,
     /* 5A Z  */   kACT_Id | kACT_Letter,
-    /* 5B [  */   kACT_Punctuation,
+    /* 5B [  */   kACT_Nesting,
     /* 5C \  */   kACT_Punctuation,
-    /* 5D ]  */   kACT_Punctuation,
+    /* 5D ]  */   kACT_Nesting,
     /* 5E ^  */   kACT_Punctuation,
     /* 5F _  */   kACT_Id,
     /* 60 `  */   0,      //96
@@ -175,9 +177,9 @@ const UInt8 AsciiCharTraits[] =
     /* 78 x  */   kACT_Id | kACT_Letter,
     /* 79 y  */   kACT_Id | kACT_Letter,
     /* 7A z  */   kACT_Id | kACT_Letter,
-    /* 7B {  */   kACT_Punctuation,
+    /* 7B {  */   kACT_Nesting,
     /* 7C |  */   kACT_Punctuation,
-    /* 7D }  */   kACT_Punctuation,
+    /* 7D }  */   kACT_Nesting,
     /* 7E ~  */   kACT_Punctuation,
     /* 7F del*/   0,
 };
@@ -189,11 +191,11 @@ class SubString : public SubVector<Utf8Char>
 public:
     static Boolean IsAscii(Utf8Char c)      { return !(c & 0x10); }
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
-    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
-    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
-    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
-    static Boolean IsIdentifierChar(Utf8Char c) { return ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id); }
-    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c < 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
+    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
+    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
+    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
+    static Boolean IsIdentifierChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id)) || (c & 0x80); }
+    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
     static Int32   CharLength(const Utf8Char* begin);
     static Int32   DigitValue(Utf32Char codepoint, Int32 base);
     
@@ -260,8 +262,8 @@ public:
     //! Read the next sequence of digits and parse them as a Double.
     Boolean ParseDouble(Double* value);
     
-    //! Read a simple token
-    Boolean ReadToken(SubString* token);
+    //! Read a simple token name, value, punctuation, etc.
+    TokenTraits ReadToken(SubString* token);
     
     //! Read 2 digit hex value
     Boolean ReadHex(Int32* value);
@@ -269,11 +271,8 @@ public:
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);
     
-    //! Read a token and classify it.
-    TokenTraits ReadValueToken(SubString* token);
-    
     //! Read a token or parenthesized expression of arbitrary depth.
-    Boolean ReadSubexpressionToken(SubString* token);
+    TokenTraits ReadSubexpressionToken(SubString* token);
     
     //! Peek at the next token and classify it.
     TokenTraits ClassifyNextToken() const;

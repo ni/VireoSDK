@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
 
@@ -176,7 +176,7 @@ For types beyond these simple types perhaps the tyep could be
 
             DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
             TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
-            cdt = cdt->FinalizeConstant();
+            cdt = cdt->FinalizeDVT();
             type = cdt;
         }
         
@@ -334,7 +334,7 @@ TypeRef TDViaParser::ParseArray()
     
     TypeRef elementType = ParseType();
     
-    _string.ReadToken(&token);
+    _string.ReadSubexpressionToken(&token);
     while (!token.CompareCStr(")")) {
         
         IntIndex dimensionLength;
@@ -459,7 +459,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 
     // Simple constants can resolved to a unique instance.
     // Perhaps even deeper constant values, let the type system figure it out.
-    cdt = cdt->FinalizeConstant();
+    cdt = cdt->FinalizeDVT();
     
     if (!_string.EatChar(')'))
         return BadType();
@@ -532,7 +532,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
-        TokenTraits tokenTrait = _string.ReadValueToken(&token);
+        TokenTraits tokenTrait = _string.ReadToken(&token);
         if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
             token.TrimQuotedString();
@@ -677,7 +677,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Boolean:
             {
-                _string.ReadValueToken(&token);
+                _string.ReadToken(&token);
                 Boolean value = false;
                 if (token.CompareCStr("t") || token.CompareCStr("true")) {
                     value = true;
@@ -698,7 +698,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_IEEE754Binary:
             {
-                _string.ReadValueToken(&token);
+                _string.ReadToken(&token);
                 Double value = 0.0;
                 Boolean readSuccess = token.ParseDouble(&value);
                 if (!readSuccess)
@@ -714,7 +714,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Ascii:
         case kEncoding_Unicode:
-            _string.ReadValueToken(&token);
+            _string.ReadToken(&token);
             token.TrimQuotedString();
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
@@ -795,7 +795,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.EatChar(',');
                     }
                 } else {
-                    _string.ReadValueToken(&token);
+                    _string.ReadToken(&token);
                     if (token.CompareCStr("(")) {
                         // List of values (a b c)
                         AQBlock1* baseOffset = (AQBlock1*)pData;

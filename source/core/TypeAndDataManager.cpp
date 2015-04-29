@@ -1527,18 +1527,17 @@ DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valu
     return type;
 }
 //------------------------------------------------------------
-DefaultValueType* DefaultValueType::FinalizeConstant()
+DefaultValueType* DefaultValueType::FinalizeDVT()
 {
-    // Constants can ( e.g. could)  be shared but it has to be carefully boot strapped
+    // Constants can ( e.g. could) be shared but it has to be carefully boot strapped
     // (1) The DefaultValueType object is created. It has storage inlined in the object
-    // (2) The storage in the DVT is used as a location to for the parser to read in the data
-    //
+    // (2) The storage in the DVT is used as a location for the parser to read in the data
     // (3) Once loaded the type can be finialized and the default value now makes up part of the binary
     // name for the type.
     //
-    // Types with mutable defaults ( e.g variables) can not be merged.
-    // Non flat could be merged, but are not yet. To do so the entire sub value would have to match.
-    // partial mathces are not currently allowed since ther is not a provision for sharing ownership for sparse
+    // Types with mutable defaults (e.g variables) can not be merged.
+    // Non flat could be merged, but are not yet. To do so the entire sub-value would have to match.
+    // partial mathces are not currently allowed since there is not a provision for sharing ownership for sparse
     // sets of data in deeply structured data. The root of the value must own all elements beneath it.
     
     if (!IsMutableValue() && IsFlat()) {
@@ -1547,6 +1546,7 @@ DefaultValueType* DefaultValueType::FinalizeConstant()
         SubString binaryName((AQBlock1*)&this->_topAQSize, binaryNameEnd);
         return (DefaultValueType*) this->TheTypeManager()->ResolveToUniqueInstance(this,  &binaryName);
     } else {
+        // Mutable values (and non flat values for now) are not shared.
         return this;
     }
 }

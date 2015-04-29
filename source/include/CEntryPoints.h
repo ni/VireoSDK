@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -61,3 +61,6 @@ VIREO_EXPORT void Data_ReadPointer(TypedBlock* object, Int32 offset, void** valu
 VIREO_EXPORT void Data_WritePointer(TypedBlock* object, Int32 offset, void* value);
 VIREO_EXPORT void Data_ReadBytes(TypedBlock* object, Int32 offset, Int32 count, Int32* buffer);
 VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count, Int32* buffer);
+//------------------------------------------------------------
+//! Occurrence functions
+VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)

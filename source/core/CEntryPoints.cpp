@@ -1,6 +1,6 @@
 /**
  
-Copyright (c) 2014 National Instruments Corp.
+Copyright (c) 2014-2015 National Instruments Corp.
  
 This software is subject to the terms described in the LICENSE.TXT file
  
@@ -400,4 +400,11 @@ VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count,
     VIREO_ASSERT( TypedBlock::ValidateHandle(object));
     memcpy(object->BeginAtAQ(offset), buffer, count);
 }
+//------------------------------------------------------------
+VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
+{
+    OccurrenceCore *pOcc = occurrence->ObjBegin();
+    pOcc->SetOccurrence();
+}
+
 #endif
