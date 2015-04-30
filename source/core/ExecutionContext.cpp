@@ -66,7 +66,7 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 
         // Now let the Caller proceed
         runningQueueElt->_caller = null;
-        exec->EnqueueRunQueue(callerClump);
+        callerClump->EnqueueRunQueue();
     } else {
         // Since there is no caller its a top VI
 #ifndef VIREO_MICRO
@@ -90,7 +90,7 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 
         // null out next so it doesn't look like it is in a list.
         clumpToEnqueue->_next = null;
-        exec->EnqueueRunQueue(clumpToEnqueue);
+        clumpToEnqueue->EnqueueRunQueue();
         exec->ClearBreakout();
     }
 
@@ -339,6 +339,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 //------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
+    VIREO_ASSERT((NULL == elt->_next))
     VIREO_ASSERT((0 == elt->_shortCount))
     _runQueue.Enqueue(elt);
 }

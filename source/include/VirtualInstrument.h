@@ -133,6 +133,8 @@ public:
     
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
+    void EnqueueRunQueue()  { OwningContext()->EnqueueRunQueue(this); }
+
     VirtualInstrument*  OwningVI()      { return _owningVI; }
     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
     Observer*           ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);

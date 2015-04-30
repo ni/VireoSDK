@@ -67,10 +67,10 @@ void ObservableCore::ObserveStateChange(IntMax info)
     for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
         pNext = pObserver->_next;
         if (info == pObserver->_info) {
-            THREAD_EXEC()->EnqueueRunQueue(pObserver->_clump);
             // Remove the waiter from the list and enqueue it.
             *ppPrevious = pNext;
             pObserver->_next = null;
+            pObserver->_clump->EnqueueRunQueue();
         } else {
             ppPrevious = &pObserver->_next;
         }
@@ -92,7 +92,7 @@ void Timer::CheckTimers(PlatformTickType t)
             *pFix = pTemp->_next;
             pTemp->_next = null;
             pTemp->_info = 0;
-            THREAD_EXEC()->EnqueueRunQueue(pTemp->_clump);
+            pTemp->_clump->EnqueueRunQueue();
         } else {
             // Items are sorted at insertion, so once a time in the future
             // is found quit the loop.
