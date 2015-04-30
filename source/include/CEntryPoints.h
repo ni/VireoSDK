@@ -23,6 +23,8 @@ VIREO_EXPORT void EggShell_Delete(EggShell* pShell);
 VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
 VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
 VIREO_EXPORT void Data_WriteString(EggShell* pShell, StringRef stringObject, const unsigned char* buffer, Int32 length);
+VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value);
+VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value);
 //------------------------------------------------------------
 //! Typeref functions
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);
@@ -63,4 +65,4 @@ VIREO_EXPORT void Data_ReadBytes(TypedBlock* object, Int32 offset, Int32 count, 
 VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count, Int32* buffer);
 //------------------------------------------------------------
 //! Occurrence functions
-VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
+VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence);

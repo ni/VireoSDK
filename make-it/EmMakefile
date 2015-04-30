@@ -68,7 +68,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_WriteDouble',\
     '_EggShell_ReadValueString',\
     '_EggShell_WriteValueString',\
-	'_Data_WriteString'\
+    '_Occurrence_Set',\
+	'_Data_WriteString',\
 	'_Data_WriteInt32',\
 	'_Data_WriteUInt32'\
     ]" -s RESERVED_FUNCTION_POINTERS=10

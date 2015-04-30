@@ -44,12 +44,12 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
 
    if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
        _options._bEscapeStrings = false;
-       _options._pChars = &TDViaFormatter::formatVIA;
+       _options._fmt = TDViaFormatter::formatVIA;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
        _options._bEscapeStrings = true;
-       _options._pChars = &TDViaFormatter::formatJSON;
+       _options._fmt = TDViaFormatter::formatJSON;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
-       _options._pChars = &TDViaFormatter::formatC;
+       _options._fmt = TDViaFormatter::formatC;
    }
 }
 //------------------------------------------------------------
@@ -491,19 +491,19 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
         dimIndex = (rank - depth) - 1;
 
         if(!tempString.ReadToken(&token)) {
-             // avoid the dead loop for incorrect input
+             // Avoid infinite loop for incorrect input.
              break;
         }
-        if (token.EatChar(_options._pChars->_itemSeperator)) {
-            // for json string, it has non-space separator
+        if (token.EatChar(Fmt()._itemSeperator)) {
+            // For JSON string, it has non-space separator.
             continue;
         }
-        if (token.EatChar(_options._pChars->_arrayPre)) {
+        if (token.EatChar(Fmt()._arrayPre)) {
             if (dimIndex >= 0)
                 tempDimensionLengths[dimIndex]++;
     
             depth++;
-        } else if (token.EatChar(_options._pChars->_arrayPost)) {
+        } else if (token.EatChar(Fmt()._arrayPost)) {
             // When popping out, store the max size for the current level.
             if (dimIndex >= 0) {
                 // If the inner dimension is larger than processed before record the larger number
@@ -560,7 +560,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 }
             }
-        } else if (token.EatChar(_options._pChars->_arrayPre)) {
+        } else if (token.EatChar(Fmt()._arrayPre)) {
         //    printf("--------------------------------------------------------------input :%s\n",_string.Begin());
             // Second option, it is a list of values.
             // If one or more dimension lengths are variable then the outer most dimension
@@ -597,11 +597,11 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
 
-            while ((_string.Length() > 0) && !_string.EatChar(_options._pChars->_arrayPost)) {
+            while ((_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 _string.EatLeadingSpaces();
-                _string.EatChar(_options._pChars->_itemSeperator);
+                _string.EatChar(Fmt()._itemSeperator);
                 void* pElement = elementCount < length ? pEltData : null;
                 if (pElement == null) {
                     bExtraInitializersFound = true;
@@ -758,7 +758,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Cluster:
             {
-                if (_options.UseFieldNames()) {
+                if (Fmt().UseFieldNames()) {
                     // the json cluster always contains the name
                     // JSON generally igonre any white space around or between syntactic elements
                     // JSON does not provide or allow any sort of comment syntax
@@ -1432,7 +1432,6 @@ ViaFormatChars TDViaFormatter::formatC =    {"C",    '{','}','{','}',',','\"', k
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
 {
-
     // Might move all options to format string.
     _string = string;
     _options._bQuoteStrings = quoteOnTopString;
@@ -1440,12 +1439,12 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._bEscapeStrings = false;
-        _options._pChars = &formatVIA;
+        _options._fmt = formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._bEscapeStrings = true;
-        _options._pChars = &formatJSON;
+        _options._fmt = formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
-        _options._pChars = &formatC;
+        _options._fmt = formatC;
     }
 }
 //------------------------------------------------------------
@@ -1588,7 +1587,7 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // These encodings have a special format
         // TODO option for raw or escaped forms need to be covered, sometime in quotes
         if (_options._bQuoteStrings) {
-            _string->Append(_options._pChars->_quote);
+            _string->Append(Fmt()._quote);
         }
         // whether need to escape the string
         if(_options._bEscapeStrings) {
@@ -1600,7 +1599,7 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         }
 
         if (_options._bQuoteStrings) {
-            _string->Append(_options._pChars->_quote);
+            _string->Append(Fmt()._quote);
         }
     } else if (rank > 0) {
         _options._bQuoteStrings = true;
@@ -1622,10 +1621,10 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
     AQBlock1 *pElement = pBegin;
 
     Boolean bPastFirst = false;
-    _string->Append(_options._pChars->_arrayPre);
+    _string->Append(Fmt()._arrayPre);
     while (dimensionLength-- > 0) {
         if (bPastFirst) {
-            _string->Append(_options._pChars->_itemSeperator);
+            _string->Append(Fmt()._itemSeperator);
         }
         if (rank == 0) {
             FormatData(elementType, pElement);
@@ -1635,7 +1634,7 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
         pElement += elementLength;
         bPastFirst = true;
     }
-    _string->Append(_options._pChars->_arrayPost);
+    _string->Append(Fmt()._arrayPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
@@ -1643,15 +1642,15 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
     IntIndex count = type->SubElementCount();
     IntIndex i= 0;
     _options._bQuoteStrings = true;
-    _string->Append(_options._pChars->_clusterPre);
+    _string->Append(Fmt()._clusterPre);
     while (i < count) {
         if (i > 0) {
-            _string->Append(_options._pChars->_itemSeperator);
+            _string->Append(Fmt()._itemSeperator);
         }
         TypeRef elementType = type->GetSubElement(i++);
-        if (_options.UseFieldNames()) {
+        if (Fmt().UseFieldNames()) {
             SubString ss = elementType->ElementName();
-            Boolean useQuotes = _options.UseQuoteFieldNames();
+            Boolean useQuotes = Fmt().QuoteFieldNames();
             if (useQuotes)
                 _string->Append('\"');
             
@@ -1665,7 +1664,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
         FormatData(elementType, pElementData);
     }
-    _string->Append(_options._pChars->_clusterPost);
+    _string->Append(Fmt()._clusterPost);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)
