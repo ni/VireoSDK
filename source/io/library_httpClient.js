@@ -1,36 +1,35 @@
 
 var HttpClient =
 {
-    js_ni_httpClient_Open: function (cookieFile, cookieFileLength, userName, userNameLength, password, passwordLength, errorCode, verifyServer) {
-        return NationalInstruments.Vireo.addHttpUser(Pointer_stringify(userName, userNameLength), Pointer_stringify(password, passwordLength));
+    jsHttpClientOpen: function (cookieFile, cookieFileLength, userName, userNameLength, password, passwordLength, verifyServer, userHandlePointer, errorMessage) {
+        return NationalInstruments.Vireo.addHttpUser(userHandlePointer, Pointer_stringify(userName, userNameLength), Pointer_stringify(password, passwordLength), errorMessage);
     },
 
-    js_ni_httpClient_Close: function (userHandle) {
-        var user = NationalInstruments.Vireo.getHttpUser(userHandle);
-        return NationalInstruments.Vireo.removeHttpUser(userHandle);
+    jsHttpClientClose: function (userHandle, errorMessage) {
+        return NationalInstruments.Vireo.removeHttpUser(userHandle, errorMessage);
     },
 
-    js_ni_httpClient_AddHeader: function (userHandle, header, headerLength, value, valueLength) {
-        return NationalInstruments.Vireo.addHeader(userHandle, Pointer_stringify(header, headerLength), Pointer_stringify(value, valueLength));
+    jsHttpClientAddHeader: function (userHandle, header, headerLength, value, valueLength, errorMessage) {
+        return NationalInstruments.Vireo.addHeader(userHandle, Pointer_stringify(header, headerLength), Pointer_stringify(value, valueLength), errorMessage);
     },
 
-    js_ni_httpClient_RemoveHeader: function (userHandle, header, headerLength) {
-        return NationalInstruments.Vireo.removeHeader(userHandle, Pointer_stringify(header, headerLength));
+    jsHttpClientRemoveHeader: function (userHandle, header, headerLength, errorMessage) {
+        return NationalInstruments.Vireo.removeHeader(userHandle, Pointer_stringify(header, headerLength), errorMessage);
     },
 
-    js_ni_httpClient_GetHeader: function (userHandle, header, headerLength, value) {
-        return NationalInstruments.Vireo.getHeaderValue(userHandle, Pointer_stringify(header, headerLength), value);
+    jsHttpClientGetHeader: function (userHandle, header, headerLength, value, errorMessage) {
+        return NationalInstruments.Vireo.getHeaderValue(userHandle, Pointer_stringify(header, headerLength), value, errorMessage);
     },
 
-    js_ni_httpClient_HeaderExist: function (userHandle, header, headerLength) {
-        return NationalInstruments.Vireo.headerExist(userHandle, Pointer_stringify(header, headerLength));
+    jsHttpClientHeaderExist: function (userHandle, header, headerLength, headerExistPointer, errorMessage) {
+        return NationalInstruments.Vireo.headerExist(userHandle, Pointer_stringify(header, headerLength), headerExistPointer, errorMessage);
     },
 
-    js_ni_httpClient_ListHeaders: function (userHandle, list) {
-        return NationalInstruments.Vireo.listHeaders(userHandle, list);
+    jsHttpClientListHeaders: function (userHandle, list, errorMessage) {
+        return NationalInstruments.Vireo.listHeaders(userHandle, list, errorMessage);
     },
 
-    js_ni_httpClient_Get: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, done) {
+    jsHttpClientGet: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
         var doneText = 'done';
         var successCallback = function (request) {
             // Return Headers
@@ -56,7 +55,7 @@ var HttpClient =
         return 0;
     },
 
-    js_ni_httpClient_Head: function (userHandle, url, urlLength, timeOut, headers, done) {
+    jsHttpClientHead: function (userHandle, url, urlLength, timeOut, headers, errorCodePointer, errorMessage, occurrenceRef) {
         var doneText = 'done';
         var successCallback = function (request) {
             // Return Headers
@@ -78,7 +77,7 @@ var HttpClient =
         return 0;
     },
 
-    js_ni_httpClient_PutBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, done) {
+    jsHttpClientPutBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
         var doneText = 'done';
         var successCallback = function (request) {
             // Return Headers
@@ -105,7 +104,7 @@ var HttpClient =
         return 0;
     },
 
-    js_ni_httpClient_Delete: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, done) {
+    jsHttpClientDelete: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
         var doneText = 'done';
         var successCallback = function (request) {
             // Return Headers
@@ -131,7 +130,7 @@ var HttpClient =
         return 0;
     },
 
-    js_ni_httpClient_PostBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, done) {
+    jsHttpClientPostBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
         var doneText = 'done';
         var successCallback = function (request) {
             // Return Headers
