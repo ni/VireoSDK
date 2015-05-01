@@ -137,7 +137,7 @@ struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, typ
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8, class type9>
-struct Instruction10 : public Instruction8<type0, type1, type2, type3, type4, type5, type6, type7, type8>
+struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, type5, type6, type7, type8>
 {
 	type9* _p9;
 	NEXT_INSTRUCTION_METHOD()

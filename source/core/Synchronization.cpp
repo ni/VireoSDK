@@ -352,11 +352,13 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
     DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")
 
+#if 0
     // Occurrences
     DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState)e(.Int32 setCount)")
     DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
-    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
-    DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
+#endif
+	DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
+	DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
 
     // Queues
     DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")

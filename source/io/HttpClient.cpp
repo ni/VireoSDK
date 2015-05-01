@@ -32,11 +32,11 @@ extern "C" {
 	extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
 	extern Int32 jsHttpClientHeaderExist(UInt32, const char *, int, UInt32 *, StringRef);
 	extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
-	extern void jsHttpClientGet(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurenceRef);
-	extern void jsHttpClientHead(UInt32, const char *, int, Int32, StringRef, Int32 *, StringRef, OccurenceRef);
-	extern void jsHttpClientPutBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurenceRef);
-	extern void jsHttpClientDelete(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurenceRef);
-	extern void jsHttpClientPostBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurenceRef);
+	extern void jsHttpClientGet(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientHead(UInt32, const char *, int, Int32, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientPutBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientDelete(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientPostBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
@@ -148,38 +148,9 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientListHeaders, UInt32, StringRef, Int32, Strin
 }
 
 //------------------------------------------------------------
-//VIREO_FUNCTION_SIGNATURE3(HttpClientGet, StringRef, StringRef, StringRef)
-VIREO_FUNCTION_SIGNATURE4(HttpClientGetExperiment, StringRef, StringRef, StringRef, OccurrenceRef)
-{
-#if 0
-	OccurrenceCore *pOcc = _Param(3)->ObjBegin();
-	VIClump* clump = THREAD_CLUMP();
-	Observer* pObserver = clump->GetObservationStates(2);
-	if (!pObserver) {
-		// This is the initial call, call th js function
-
-#if kVireoOS_emscripten
-		js_ni_httpClient_Get((char*)_Param(0)->Begin(), _Param(0)->Length(), _Param(1), _Param(2));
-#endif
-		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
-		return clump->WaitOnObservableObject(_this);
-	}
-	else {
-		// re-entering the instruction and the operation is done or it timedout.
-		// the clump should continue.
-		clump->ClearObservationStates();
-		return _NextInstruction();
-	}
-#else
-	return _NextInstruction();
-#endif
-}
-
-//------------------------------------------------------------
 // handle(0), url(1), output file(2), timeOut(3), headers(4), body(5), errorCode(6), errorMessage(7), ocurrence(8)
 // NOTE: ocurrence is inserted by the Vireo Compiler
-VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurenceRef)
+VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
 	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
@@ -198,7 +169,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 			_Param(7),
 			_Param(8));
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count()+1);
 		return clump->WaitOnObservableObject(_this);
 	}
 	else
@@ -214,7 +185,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 
 //------------------------------------------------------------
 // handle(0), url(1), timeOut(2), headers(3), errorCode(4), errorMessage(5), occurrence(6)
-VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, Int32, StringRef, OccurenceRef)
+VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
 	OccurrenceCore *pOcc = _Param(6)->ObjBegin();
@@ -222,7 +193,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 	Observer* pObserver = clump->GetObservationStates(2);
 	if (!pObserver) {
 		// This is the initial call, call the js function
-		_Param(5) = jsHttpClientHead(
+		jsHttpClientHead(
 			_Param(0),
 			(char*)_Param(1)->Begin(), _Param(1)->Length(),
 			_Param(2),
@@ -231,7 +202,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 			_Param(5),
 			_Param(6));
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
 	}
 	else
@@ -248,7 +219,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 
 //------------------------------------------------------------
 // handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5), body(6), errorCode(7), errorMessage(8), occurrence(9)
-VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurenceRef)
+VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
 	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
@@ -256,7 +227,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 	Observer* pObserver = clump->GetObservationStates(2);
 	if (!pObserver) {
 		// This is the initial call, call the js function
-		_Param(8) = jsHttpClientPutBuffer(
+		jsHttpClientPutBuffer(
 			_Param(0),
 			(char*)_Param(1)->Begin(), _Param(1)->Length(),
 			(char*)_Param(2)->Begin(), _Param(2)->Length(),
@@ -268,7 +239,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 			_Param(8),
 			_Param(9));
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
 	}
 	else
@@ -284,7 +255,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 
 //------------------------------------------------------------
 // handle(0), url(1), output file(2), timeOut(3), headers(4), body(5), errorCode(6), errorMessage(7), occurrence(8)
-VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurenceRef)
+VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
 	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
@@ -292,7 +263,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 	Observer* pObserver = clump->GetObservationStates(2);
 	if (!pObserver) {
 		// This is the initial call, call the js function
-		_Param(7) = jsHttpClientDelete(
+		jsHttpClientDelete(
 			_Param(0),
 			(char*)_Param(1)->Begin(), _Param(1)->Length(),
 			(char*)_Param(2)->Begin(), _Param(2)->Length(),
@@ -303,7 +274,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 			_Param(7),
 			_Param(8));
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
 	}
 	else
@@ -319,7 +290,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 
 //------------------------------------------------------------
 // handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5), body(6), errorCode(7), errorMessage(8), occurrence(9)
-VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurenceRef)
+VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
 	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
@@ -327,7 +298,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 	Observer* pObserver = clump->GetObservationStates(2);
 	if (!pObserver) {
 		// This is the initial call, call the js function
-		_Param(8) = jsHttpClientPostBuffer(
+		jsHttpClientPostBuffer(
 			_Param(0),
 			(char*)_Param(1)->Begin(), _Param(1)->Length(),
 			(char*)_Param(2)->Begin(), _Param(2)->Length(),
@@ -339,7 +310,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 			_Param(8),
 			_Param(9));
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, 1);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
 	}
 	else

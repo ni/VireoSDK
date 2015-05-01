@@ -104,10 +104,10 @@ HttpUsers = function () {
 
         proto.add = function (userName, password) {
             var httpUser = new HttpUser(userName, password);
-            var handle = Object.keys(this.httpClients).length + 1;
+            var handle = Object.keys(this.httpClients).length + 1; 
             var strHandle = handle.toString();
             this.httpClients[strHandle] = httpUser;
-            console.log ('Created handle(' + handle + ') for user: "' + userName + '".');
+            //console.log ('Created handle(' + handle + ') for user: "' + userName + '".');
             return handle;
         };
 
@@ -116,7 +116,7 @@ HttpUsers = function () {
             if (this.httpClients.hasOwnProperty(strHandle))
             {
                 var user = this.httpClients[strHandle]
-                console.log ('Deleted handle(' + strHandle + ') for user: "' + user.getUserName() + '".');
+                //console.log ('Deleted handle(' + strHandle + ') for user: "' + user.getUserName() + '".');
                 delete this.httpClients[strHandle];
             }
             else
@@ -130,7 +130,7 @@ HttpUsers = function () {
             if (this.httpClients.hasOwnProperty(strHandle))
             {
                 var user = this.httpClients[strHandle];
-                console.log ('The following handle(' + strHandle + ') was requested for: "' + user.getUserName() +'".');
+                //console.log ('The following handle(' + strHandle + ') was requested for: "' + user.getUserName() +'".');
                 return user;
             }
             else
@@ -144,7 +144,7 @@ HttpUsers = function () {
             if (user instanceof HttpUser)
             {
                 user.addHeader (header, value);
-                console.log ('The following header was added: ' + header + '(' + value + ') for user: "' + user.getUserName() +'".');
+                //console.log ('The following header was added: ' + header + '(' + value + ') for user: "' + user.getUserName() +'".');
             }
             else
             {
@@ -157,7 +157,7 @@ HttpUsers = function () {
             if (user instanceof HttpUser)
             {
                 user.removeHeader (header);
-                console.log ("The following header was removed: " + header);
+                //console.log ("The following header was removed: " + header);
             }
             else
             {
@@ -170,7 +170,7 @@ HttpUsers = function () {
             if (user instanceof HttpUser)
             {
                 var value = user.getHeaderValue (header);
-                console.log ('The following value was returned: "' + value + '" for header: "' + header + '".');
+                //console.log ('The following value was returned: "' + value + '" for header: "' + header + '".');
                 return value;
             }
             else
@@ -184,7 +184,7 @@ HttpUsers = function () {
             if (user instanceof HttpUser)
             {
                 var exist = user.headerExist (header);
-                console.log ('The following headerExist value was returned: "' + exist + '" for header: "' + header + '".');
+                //console.log ('The following headerExist value was returned: "' + exist + '" for header: "' + header + '".');
                 return exist;
             }
             else
@@ -198,7 +198,7 @@ HttpUsers = function () {
             if (user instanceof HttpUser)
             {
                 var value = user.listHeaders ();
-                console.log ('The following list of headers was returned: "' + value + '".');
+                //console.log ('The following list of headers was returned: "' + value + '".');
                 return value;
             }
             else
@@ -385,8 +385,8 @@ return {
             var request = new XMLHttpRequest();
             request.open(protocol, url);
 
-            var error = function () {
-                errorCallback(request);
+            var error = function (status, statusText) {
+                errorCallback(status, statusText);
             };
 
             var onTimeOut = function () {
@@ -394,28 +394,31 @@ return {
             }
 
             // Set the headers
-            var allHeaders = httpUser.getHeaders();
-            for (var key in allHeaders) {
-                if (allHeaders.hasOwnProperty(key)) {
-                    request.setRequestHeader(key, allHeaders[key]);
+            if (httpUser instanceof HttpUser)
+            {
+                var allHeaders = httpUser.getHeaders();
+                for (var key in allHeaders) {
+                    if (allHeaders.hasOwnProperty(key)) {
+                        request.setRequestHeader(key, allHeaders[key]);
+                    }
                 }
             }
 
-            request.onreadystatechange = function () {
+            request.onreadystatechange = function (event) {
                 if (request.readyState === 4) {
                     if (request.status == 200) {
                         successCallback(request);
                     } else {
-                        error();
+                        error(request.status, request.statusText);
                     }
                 }
             };
 
-            request.onerror = function () {
-                error();
+            request.onerror = function (event) {
+                error(event.target.status, event.target.statusText);
             };
 
-            request.ontimeout = function () {
+            request.ontimeout = function (evt) {
                 onTimeOut();
             }
 
