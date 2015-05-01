@@ -3,9 +3,11 @@
 #
 #   Name <email address> area(s)
 
-Paul Austin <paul@ni.com> SDG, TypeManager, Execution, VirtualInstrument, Primitives
-James Levitt <james.levitt@ni.com> Generic-Un/BinOp, Bug fixes, Valgrind
-Milan Raj <milan.raj@ni.com> Emscripten projects
-Ethan Searl <ethan.searl@ni.com> Generic-Un/BinOp, Math, String, Testing
-Brandon Vaughan <brandon.vaughan@ni.com> Initial string and FileIO
-Wei Zhang<Wei.zhang@ni.com> Date and time formatting
+Paul Austin <paul-at-ni.com> SDG, TypeManager, Execution, VirtualInstrument, Primitives
+James Levitt <james.levitt-at-ni.com> Generic-Un/BinOp, Bug fixes, Valgrind
+Milan Raj <milan.raj-at-ni.com> Emscripten projects
+Ethan Searl <ethan.searl-at-ni.com> Generic-Un/BinOp, Math, String, Testing
+Brandon Vaughan <brandon.vaughan-at-ni.com> Initial string and FileIO
+Wei Zhang<Wei.zhang-at-ni.com> Date and time formatting
+Carlos Gonzalez<carlos.gonzalez-at-ni.com> HttpClient
+Stephen Schwahn<schwahn3-at-gmail.com> HttpClient
