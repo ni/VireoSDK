@@ -23,7 +23,7 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
     // clump should be set up by now.
     VIREO_ASSERT(pObserver->_clump != null)
-    
+
     // in MT, lock object
     pObserver->_object = this;
     pObserver->_info = info;
@@ -36,14 +36,14 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
 {
     VIREO_ASSERT(pObserver != null);
     VIREO_ASSERT(pObserver->_object == this);
-    
+
     Observer* pTemp;
     Observer** pFix = &(_observerList); // previous next pointer to patch when removing element.
     Observer* pVisitor = *pFix;
-    
+
     while(pVisitor) {
         VIREO_ASSERT(pVisitor->_clump != null)
-        
+
         pTemp = pVisitor;
         if (pTemp == pObserver) {
             *pFix = pTemp->_next;
@@ -52,7 +52,7 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
         }
         pVisitor = *pFix;
     }
-    
+
     pObserver->_info = 0;
     pObserver->_object = null;
     pObserver->_next = null;
@@ -63,7 +63,7 @@ void ObservableCore::ObserveStateChange(IntMax info)
 {
     Observer *pNext = null;
     Observer ** ppPrevious = &_observerList;
-    
+
     for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
         pNext = pObserver->_next;
         if (info == pObserver->_info) {
@@ -83,7 +83,7 @@ void Timer::CheckTimers(PlatformTickType t)
     Observer* elt = _observerList;
     // pFix is previous next pointer to patch when removing element.
     Observer** pFix = &(_observerList);
-    
+
     // Enqueue all elements that are ready to run
     while (elt) {
         pTemp = elt;
@@ -100,7 +100,7 @@ void Timer::CheckTimers(PlatformTickType t)
         }
         elt = *pFix;
     }
-    
+
 #ifdef VIREO_SUPPORTS_ISR
     if (_triggeredIsrList) {
         VIREO_ISR_DISABLE
@@ -178,7 +178,7 @@ VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32
     OccurrenceCore *pOcc = _Param(0)->ObjBegin();
     Boolean bIgnorePrevious = _Param(1);
     UInt32 msTimeout = _Param(2);
-    
+
     if (!bIgnorePrevious && pOcc->HasOccurred(_Param(3), bIgnorePrevious)) {
         _Param(3) = pOcc->Count();
         return _NextInstruction();
@@ -357,8 +357,8 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState)e(.Int32 setCount)")
     DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
 #endif
-	DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
-	DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
+    DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
 
     // Queues
     DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
