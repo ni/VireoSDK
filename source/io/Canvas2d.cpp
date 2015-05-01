@@ -239,7 +239,7 @@ VIREO_FUNCTION_SIGNATURE1(Fill, Canvas2D)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_Canvas2D)
+DEFINE_VIREO_BEGIN(Canvas2D)
 
 //    REQUIRES(".Math")  // namespace style
 //    REQUIRES(".Double")  // type dependency style

@@ -348,7 +348,7 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
 }
 #endif
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
+DEFINE_VIREO_BEGIN(FileSystem)
     // Types
     DEFINE_VIREO_TYPE(FileHandle, ".Int32")
     // Values

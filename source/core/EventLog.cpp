@@ -89,7 +89,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
 }
 
 #if 0
-DEFINE_VIREO_BEGIN(Vireo_EventLog)
+DEFINE_VIREO_BEGIN(EventLog)
     DEFINE_VIREO_FUNCTION(EventLogRecordEvent, "p(i(.String))")
 DEFINE_VIREO_END()
 #endif

@@ -368,7 +368,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
     }
 }
 #endif
-DEFINE_VIREO_BEGIN(LabVIEW_Execution)
+DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")

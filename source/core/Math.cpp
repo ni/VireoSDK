@@ -498,7 +498,7 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 
 } // extern "C"
 
-DEFINE_VIREO_BEGIN(LabVIEW_Math)
+DEFINE_VIREO_BEGIN(Math)
     // Function signatures
     DEFINE_VIREO_TYPE(BinOpBoolean, "p(i(.Boolean x) i(.Boolean y) o(.Boolean result))")
     DEFINE_VIREO_TYPE(UnOpBoolean, "p(i(.Boolean x) o(.Boolean result))")
@@ -763,7 +763,7 @@ DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Para
 DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
-DEFINE_VIREO_BEGIN(LabVIEW_Math)
+DEFINE_VIREO_BEGIN(ComplexMath)
     DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle x) o(.ComplexSingle result))")
     DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(.ComplexSingle x) i(.ComplexSingle y) o(.ComplexSingle result))")
 
@@ -828,7 +828,7 @@ DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Para
 DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
-DEFINE_VIREO_BEGIN(LabVIEW_Math)
+DEFINE_VIREO_BEGIN(ComplexMath)
     DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble x) o(.ComplexDouble result))")
     DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(.ComplexDouble x) i(.ComplexDouble y) o(.ComplexDouble result))")
 

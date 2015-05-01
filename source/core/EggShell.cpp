@@ -170,7 +170,7 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
 {
     struct stat fileInfo;
 #if (kVireoOS_win32U || kVireoOS_win64U)
-    // This will go away once its written as a VI, then it will be hidden the FileIO functions
+    // This will go away once its written as a VI, then it will be hidden the FileSystem functions
     int h = 0;
 	_sopen_s(&h, name, O_RDONLY, _SH_DENYWR, 0);
 #else

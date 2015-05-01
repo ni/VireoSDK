@@ -24,26 +24,76 @@ namespace Vireo {
 // into the gpTypeDefinerList. The order can not be guaranteed.
 // but all global constructors will be called before the apps
 // main entry point is called.
-TypeDefiner* gpTypeDefinerList = null;
+TypeDefiner* TypeDefiner::_gpTypeDefinerList = null;
 
+//------------------------------------------------------------
+//! Call all registered module functions. Move items down the list as needed.
 void TypeDefiner::DefineTypes(TypeManagerRef tm)
 {
-    TypeDefiner* pItem = gpTypeDefinerList;
-    while (pItem) {
-        pItem->_pCallback(tm);
-        pItem = pItem->_pNext;
+    TypeDefiner** ppNext = &_gpTypeDefinerList;
+    while (*ppNext) {
+        TypeDefiner *pCurrent = *ppNext;
+        Boolean hasRequirements = (pCurrent)->_pCallback(pCurrent, tm);
+        if (!hasRequirements) {
+            // 1. Pull the current item out of the list.
+            *ppNext = pCurrent->_pNext;
+            
+            // If its not at the end, insert one spot further down the list, and repeat.
+            if (pCurrent->_pNext) {
+                // 2. Update current to point on step further down.
+                pCurrent->_pNext = pCurrent->_pNext->_pNext;
+                
+                // 3. put current back in the list.
+                (*ppNext)->_pNext = pCurrent;
+                
+                // Leave the updated ppNext as is.
+            } else {
+                printf("Requires not met\n");
+                // It was at the end, requirement no met.
+            }
+        } else {
+            ppNext = &(*ppNext)->_pNext;
+        }
     }
 }
 //------------------------------------------------------------
-TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pNameSapce, Int32 version)
+//! Constructor used by DEFINE_VIREO_BEGIN blocks
+TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version)
 {
     VIREO_ASSERT(version == kVireoABIVersion)
-    _pNext = gpTypeDefinerList;
+    _pNext = _gpTypeDefinerList;
     _pCallback = callback;
-    _pNameSpace = pNameSapce;
-    gpTypeDefinerList = this;
+    _pModuleName = pModuleName;
+    _gpTypeDefinerList = this;
 }
 //------------------------------------------------------------
+//! Verifiy a required module has been loaded. Called by registration visitor callbacks.
+Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
+{
+    TypeDefiner* pDefiner = _gpTypeDefinerList;
+    // Walk down the list until found, or the
+    // the one making the query is encountered.
+    while (pDefiner && pDefiner != _this) {
+    //    printf("Is %s == %s? \n", name, pDefiner->_pModuleName);
+        if (strcmp(name, pDefiner->_pModuleName) == 0) {
+            return true;
+        }
+        pDefiner = pDefiner->_pNext;
+    }
+    return false;
+}
+//------------------------------------------------------------
+//! Define an anonymous type.
+TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
+{
+    TypeManagerScope scope(tm);
+    
+    EventLog log(EventLog::StdOut);
+    TDViaParser parser(tm, typeString, &log, 1);
+    return parser.ParseType();
+}
+//------------------------------------------------------------
+//! Define a namned type from C strings.
 TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeString)
 {
     SubString typeName(name);
@@ -51,15 +101,7 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeStr
     return Define(tm, &typeName, &wrappedTypeString);
 }
 //------------------------------------------------------------
-TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
-{
-    TypeManagerScope scope(tm);
-
-    EventLog log(EventLog::StdOut);
-    TDViaParser parser(tm, typeString, &log, 1);
-    return parser.ParseType();
-}
-//------------------------------------------------------------
+//! Define a namned type from SubStrings.
 TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
 {
     TypeManagerScope scope(tm);

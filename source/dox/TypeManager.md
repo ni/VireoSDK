@@ -122,7 +122,7 @@ The signatures for internal functions are also defined as standard types. The ty
 // 
 // To bind the type to an actual function it will be part of the following:
 
-DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
+DEFINE_VIREO_BEGIN(FileSystem)
     ... 
     DEFINE_VIREO_FUNCTION(Print, "p(i(.StaticTypeAndData))");
     ...

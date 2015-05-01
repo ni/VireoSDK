@@ -1,6 +1,10 @@
- Clump0: About to wait on occurence
+ Clump0: About to wait on occurence - 1
  Clump1: About to wait 50ms.
- Clump1: About to SetOccurrece.
- Clump1: Occurrence set.
+ Clump1: About to SetOccurrece - A
  Clump0: Back from wait on occurence - 1 
- Clump0: Back from wait on occurence - 2
+ Clump0: About to wait on occurence - 2
+ Clump1: About to SetOccurrece - B
+ Clump1: Occurrence set.
+ Clump0: Back from wait on occurence - 2 
+ Clump0: About to wait on occurence - 3
+ Clump0: Back from wait on occurence - 3

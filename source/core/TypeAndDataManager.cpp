@@ -2595,7 +2595,7 @@ VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
 //------------------------------------------------------------
 #include "TypeDefiner.h"
 using namespace Vireo;
-DEFINE_VIREO_BEGIN(LabVIEW_Types)
+DEFINE_VIREO_BEGIN(TypeManager)
     DEFINE_VIREO_TYPE(AllocationStatistics, AllocationStatistics_TypeString);
     DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(.TypeManager) o(.AllocationStatistics))");
     DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(.TypeManager))");
