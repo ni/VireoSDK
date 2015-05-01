@@ -213,6 +213,10 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 
     Define(tm, "Timestamp", "c(e(.Int64 seconds) e(.UInt64 fraction))");
+
+	// Occurrences
+	Define(tm, "OccurrenceValue", "c(e(.DataPointer firstState)e(.Int32 setCount)");
+	Define(tm, "Occurrence", "a(.OccurrenceValue)");
 }
 
 }  // namespace Vireo

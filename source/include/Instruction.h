@@ -136,6 +136,13 @@ struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, typ
 	NEXT_INSTRUCTION_METHOD()
 };
 
+template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8, class type9>
+struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, type5, type6, type7, type8>
+{
+	type9* _p9;
+	NEXT_INSTRUCTION_METHOD()
+};
+
 //------------------------------------------------------------
 // Macros to return a pointer to the primary "next" instruction
 #define _NextInstruction() (_this->Next())
@@ -208,6 +215,9 @@ struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, typ
 
 #define VIREO_FUNCTION_SIGNATURE9(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8) \
 	VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction9<t0, t1, t2, t3, t4, t5, t6, t7, t8>* _this _PROGMEM)
+
+#define VIREO_FUNCTION_SIGNATURE10(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) \
+	VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction10<t0, t1, t2, t3, t4, t5, t6, t7, t8, t9>* _this _PROGMEM)
 
 // Macro used for static link projects where simple prototypes are needed. 
 #define VIREO_FUNCTION_C_PROTO(_name_) VIREO_FUNCTION_SIGNATURE0(_name_)

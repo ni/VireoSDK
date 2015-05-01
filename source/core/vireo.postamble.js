@@ -7,10 +7,12 @@ Module.v_writeDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', '
 Module.v_readValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string' ]);
 Module.v_writeValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
 Module.v_dataWriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
+Module.v_dataWriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
+Module.v_dataWriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
 Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
 Module.v_delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-Module.v_setOrrurrence = Module.cwrap('Occurrence_Set', 'void', ['number']);
+Module.v_setOccurrence = Module.cwrap('Occurrence_Set', 'void', ['number']);
 Module.v_root =  Module.v_create(0);
 Module.v_userShell = Module.v_create(Module.v_root);
 Module.fpSync = function(fpId) {};
@@ -60,7 +62,10 @@ HttpUser = function (userName, password) {
             {
                 return this.headers[header];
             }
-            return '';
+            else
+            {
+                throw new Error('"' + header + '" is not included in the client handle.');
+            }
         };
 
         proto.headerExist = function (header) {
@@ -99,136 +104,112 @@ HttpUsers = function () {
 
         proto.add = function (userName, password) {
             var httpUser = new HttpUser(userName, password);
-            var handle = Object.keys(this.httpClients).length + 1;
+            var handle = Object.keys(this.httpClients).length + 1; 
             var strHandle = handle.toString();
             this.httpClients[strHandle] = httpUser;
-            console.log ("httpUser created for: " + userName);
+            //console.log ('Created handle(' + handle + ') for user: "' + userName + '".');
             return handle;
         };
 
         proto.remove = function (handle) {
-            if (handle !== 0)
+            var strHandle = handle.toString();
+            if (this.httpClients.hasOwnProperty(strHandle))
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle]
-                    console.log ("httpUser deleted for: " + user.getUserName());
-                    delete this.httpClients[strHandle];
-                }
-                else
-                {
-                    console.log ("httpUser error: Unknown handle (" + strHandle + ")");
-                    return -1;
-                }
+                var user = this.httpClients[strHandle]
+                //console.log ('Deleted handle(' + strHandle + ') for user: "' + user.getUserName() + '".');
+                delete this.httpClients[strHandle];
             }
-
-            return 0;
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
 
         proto.get = function (handle) {
-            if (handle !== 0)
+            var strHandle = handle.toString();
+            if (this.httpClients.hasOwnProperty(strHandle))
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    console.log ("The following user was requested: " + user.getUserName());
-                    return user;
-                }
+                var user = this.httpClients[strHandle];
+                //console.log ('The following handle(' + strHandle + ') was requested for: "' + user.getUserName() +'".');
+                return user;
             }
-            return null;
+            else
+            {
+                return null;
+            }
         };
 
         proto.addHeader = function (handle, header, value) {
-            if (handle !== 0)
+            var user = this.get (handle);
+            if (user instanceof HttpUser)
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    user.addHeader (header,value);
-                    console.log ("The following header was added: " + header + "(" + value + ")");
-                    return 0;
-                }
-                else
-                    return -1;
+                user.addHeader (header, value);
+                //console.log ('The following header was added: ' + header + '(' + value + ') for user: "' + user.getUserName() +'".');
             }
-            return -1;
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
 
         proto.removeHeader = function (handle, header) {
-            if (handle !== 0)
+            var user = this.get (handle);
+            if (user instanceof HttpUser)
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    user.removeHeader (header);
-                    console.log ("The following header was removed: " + header);
-                    return 0;
-                }
-                else
-                    return -1;
+                user.removeHeader (header);
+                //console.log ("The following header was removed: " + header);
             }
-            return -1;
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
 
         proto.getHeaderValue = function (handle, header) {
-            if (handle !== 0)
+            var user = this.get (handle);
+            if (user instanceof HttpUser)
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    var value = user.getHeaderValue (header);
-                    console.log ("The following value was returned:(" + value + ") for header: " + header);
-                    return value;
-                }
-                else
-                    return '';
+                var value = user.getHeaderValue (header);
+                //console.log ('The following value was returned: "' + value + '" for header: "' + header + '".');
+                return value;
             }
-            return '';
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
 
         proto.headerExist = function (handle, header) {
-            if (handle !== 0)
+            var user = this.get (handle);
+            if (user instanceof HttpUser)
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    var exist = user.headerExist (header);
-                    console.log ("The following value was returned:(" + exist + ") for headerExist: " + header);
-                    return exist;
-                }
-                else
-                    return false;
+                var exist = user.headerExist (header);
+                //console.log ('The following headerExist value was returned: "' + exist + '" for header: "' + header + '".');
+                return exist;
             }
-            return false;
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
 
         proto.listHeaders = function (handle) {
-            if (handle !== 0)
+            var user = this.get (handle);
+            if (user instanceof HttpUser)
             {
-                var strHandle = handle.toString();
-                if (this.httpClients.hasOwnProperty(strHandle))
-                {
-                    var user = this.httpClients[strHandle];
-                    var value = user.listHeaders ();
-                    console.log ("The following value was returned:(" + value + ") for listHeaders.");
-                    return value;
-                }
-                else
-                    return '';
+                var value = user.listHeaders ();
+                //console.log ('The following list of headers was returned: "' + value + '".');
+                return value;
             }
-            return '';
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
         };
     }
 };
 
-var httpUsers = new HttpUsers ();
-httpUsers.add("",""); // Adding default user for empty handle (0)
+var httpUsers = new HttpUsers();
 
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
@@ -248,6 +229,15 @@ return {
     dataWriteString:
         function(destination, source, sourceLength)
         { Module.v_dataWriteString(Module.v_userShell, destination, source, sourceLength); },
+    dataWriteInt32:
+        function(destination, value)
+        { Module.v_dataWriteInt32(destination, value); },
+    dataWriteUInt32:
+        function(destination, value)
+        { Module.v_dataWriteUInt32(destination, value); },
+    setOccurence:
+        function(occurrence)
+        { Module.v_setOccurrence(occurrence); },
     loadVia:
         function(viaText)
         { Module.v_repl(Module.v_userShell, viaText, -1); },
@@ -261,40 +251,132 @@ return {
         },
     core: Module,
     addHttpUser:
-        function (userName, password) {
-            return httpUsers.add (userName, password);
+        function (handlePointer, userName, password, errorMessage) {
+            var handle = 0;
+            var returnValue = 0;
+            var errorString = '';
+            try 
+            {
+                handle = httpUsers.add (userName, password);
+            }
+            catch (error)
+            {
+                handle = 0;
+                returnValue = -1;
+                errorString = "Unable to open HTTP handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteUInt32(handlePointer, handle);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     removeHttpUser:
-        function (handle) {
-            httpUsers.remove(handle);
+        function (handle, errorMessage) {
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                httpUsers.remove(handle);
+            }
+            catch (error)
+            {
+                returnValue = -1;
+                errorString = "Unable to close HTTP handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     getHttpUser:
         function (handle) {
             return httpUsers.get(handle);
         },
     addHeader:
-        function (handle, header, value) {
-            httpUsers.addHeader (handle, header, value);
+        function (handle, header, value, errorMessage) {
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                httpUsers.addHeader (handle, header, value);
+            }
+            catch (error)
+            {
+                returnValue = -1;
+                errorString = "Unable to add header to HTTP handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     removeHeader:
-        function (handle, header) {
-            return httpUsers.removeHeader (handle, header);
+        function (handle, header, errorMessage) {
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                httpUsers.removeHeader (handle, header);
+            }
+            catch (error)
+            {
+                returnValue = -1;
+                errorString = "Unable to remove header from HTTP handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     getHeaderValue:
-        function (handle, header, value) {
-            var valueText = httpUsers.getHeaderValue (handle, header);
+        function (handle, header, value, errorMessage) {
+            var valueText = '';
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                valueText = httpUsers.getHeaderValue (handle, header);
+            }
+            catch (error)
+            {
+                valueText = '';
+                returnValue = -1;
+                errorString = "Unable to get header value from HTTP handle: " + error.message;
+            }
             NationalInstruments.Vireo.dataWriteString(value, valueText, valueText.length);
-            return 0;
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     headerExist:
-        function (handle, header) {
-            return httpUsers.headerExist (handle, header);
+        function (handle, header, headerExistPointer, errorMessage) {
+            var headerExist = false;
+            var returnValue = 0;
+            var errorString = '';
+            try 
+            {
+                headerExist = httpUsers.headerExist (handle, header)
+            }
+            catch (error)
+            {
+                headerExist = false;
+                returnValue = -1;
+                errorString = "Unable to verify if header exists in HTTP handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteUInt32(headerExistPointer, headerExist?1:0);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     listHeaders:
-        function (handle, list) {
-            var listText = httpUsers.listHeaders (handle);
+        function (handle, list, errorMessage) {
+            var listText = '';
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                listText = httpUsers.listHeaders (handle);
+            }
+            catch (error)
+            {
+                listText = '';
+                returnValue = -1;
+                errorString = "Unable to list headers for HTTP handle: " + error.message;
+            }
             NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
-            return 0;
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         },
     makeRequest:
         function (userHandle, protocol, url, timeOut, buffer, successCallback, errorCallback, onTimeOutCallback) {
@@ -303,8 +385,8 @@ return {
             var request = new XMLHttpRequest();
             request.open(protocol, url);
 
-            var error = function () {
-                errorCallback(request);
+            var error = function (status, statusText) {
+                errorCallback(status, statusText);
             };
 
             var onTimeOut = function () {
@@ -312,28 +394,31 @@ return {
             }
 
             // Set the headers
-            var allHeaders = httpUser.getHeaders();
-            for (var key in allHeaders) {
-                if (allHeaders.hasOwnProperty(key)) {
-                    request.setRequestHeader(key, allHeaders[key]);
+            if (httpUser instanceof HttpUser)
+            {
+                var allHeaders = httpUser.getHeaders();
+                for (var key in allHeaders) {
+                    if (allHeaders.hasOwnProperty(key)) {
+                        request.setRequestHeader(key, allHeaders[key]);
+                    }
                 }
             }
 
-            request.onreadystatechange = function () {
+            request.onreadystatechange = function (event) {
                 if (request.readyState === 4) {
                     if (request.status == 200) {
                         successCallback(request);
                     } else {
-                        error();
+                        error(request.status, request.statusText);
                     }
                 }
             };
 
-            request.onerror = function () {
-                error();
+            request.onerror = function (event) {
+                error(event.target.status, event.target.statusText);
             };
 
-            request.ontimeout = function () {
+            request.ontimeout = function (evt) {
                 onTimeOut();
             }
 

@@ -1,160 +1,231 @@
 
 var HttpClient =
 {
-    js_ni_httpClient_Open: function (cookieFile, cookieFileLength, userName, userNameLength, password, passwordLength, errorCode, verifyServer) {
-        return NationalInstruments.Vireo.addHttpUser(Pointer_stringify(userName, userNameLength), Pointer_stringify(password, passwordLength));
+    jsHttpClientOpen: function (cookieFile, cookieFileLength, userName, userNameLength, password, passwordLength, verifyServer, userHandlePointer, errorMessage) {
+        return NationalInstruments.Vireo.addHttpUser(userHandlePointer, Pointer_stringify(userName, userNameLength), Pointer_stringify(password, passwordLength), errorMessage);
     },
 
-    js_ni_httpClient_Close: function (userHandle) {
-        var user = NationalInstruments.Vireo.getHttpUser(userHandle);
-        return NationalInstruments.Vireo.removeHttpUser(userHandle);
+    jsHttpClientClose: function (userHandle, errorMessage) {
+        return NationalInstruments.Vireo.removeHttpUser(userHandle, errorMessage);
     },
 
-    js_ni_httpClient_AddHeader: function (userHandle, header, headerLength, value, valueLength) {
-        return NationalInstruments.Vireo.addHeader(userHandle, Pointer_stringify(header, headerLength), Pointer_stringify(value, valueLength));
+    jsHttpClientAddHeader: function (userHandle, header, headerLength, value, valueLength, errorMessage) {
+        return NationalInstruments.Vireo.addHeader(userHandle, Pointer_stringify(header, headerLength), Pointer_stringify(value, valueLength), errorMessage);
     },
 
-    js_ni_httpClient_RemoveHeader: function (userHandle, header, headerLength) {
-        return NationalInstruments.Vireo.removeHeader(userHandle, Pointer_stringify(header, headerLength));
+    jsHttpClientRemoveHeader: function (userHandle, header, headerLength, errorMessage) {
+        return NationalInstruments.Vireo.removeHeader(userHandle, Pointer_stringify(header, headerLength), errorMessage);
     },
 
-    js_ni_httpClient_GetHeader: function (userHandle, header, headerLength, value) {
-        return NationalInstruments.Vireo.getHeaderValue(userHandle, Pointer_stringify(header, headerLength), value);
+    jsHttpClientGetHeader: function (userHandle, header, headerLength, value, errorMessage) {
+        return NationalInstruments.Vireo.getHeaderValue(userHandle, Pointer_stringify(header, headerLength), value, errorMessage);
     },
 
-    js_ni_httpClient_HeaderExist: function (userHandle, header, headerLength) {
-        return NationalInstruments.Vireo.headerExist(userHandle, Pointer_stringify(header, headerLength));
+    jsHttpClientHeaderExist: function (userHandle, header, headerLength, headerExistPointer, errorMessage) {
+        return NationalInstruments.Vireo.headerExist(userHandle, Pointer_stringify(header, headerLength), headerExistPointer, errorMessage);
     },
 
-    js_ni_httpClient_ListHeaders: function (userHandle, list) {
-        return NationalInstruments.Vireo.listHeaders(userHandle, list);
+    jsHttpClientListHeaders: function (userHandle, list, errorMessage) {
+        return NationalInstruments.Vireo.listHeaders(userHandle, list, errorMessage);
     },
 
-    js_ni_httpClient_Get: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, done) {
-        var doneText = 'done';
+    jsHttpClientGet: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
+        var occurrenceHasBeenSet = false;
+        function setErrorAndOccurrence(errorCode, operation, additionalErrorText) {
+            var fullErrorText = '';
+            if (errorCode !== 0) {
+                fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
+            }
+            NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            if (!occurrenceHasBeenSet) {
+                occurrenceHasBeenSet = true;
+                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            }
+        };
+
         var successCallback = function (request) {
-            // Return Headers
             var headersText = request.getAllResponseHeaders();
-            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
-
-            // Return body
             var bodyText = request.responseText;
+
+            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
             NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+            setErrorAndOccurrence(0, '');
         };
-        var errorCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
-        };
-        var timeOutCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
-        };
-
-        NationalInstruments.Vireo.makeRequest(userHandle, 'GET', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
-
-        return 0;
-    },
-
-    js_ni_httpClient_Head: function (userHandle, url, urlLength, timeOut, headers, done) {
-        var doneText = 'done';
-        var successCallback = function (request) {
-            // Return Headers
-            var headersText = request.getAllResponseHeaders();
-            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
-        };
-        var errorCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+        var errorCallback = function (status, statusText) {
+            setErrorAndOccurrence(-1, 'GET', statusText + '(' + status + ').');
         };
         var timeOutCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+            setErrorAndOccurrence(-1, 'GET', 'The time out value of ' + timeOut + ' was exceeded.');
         };
 
-        NationalInstruments.Vireo.makeRequest(userHandle, 'HEAD', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
-
-        return 0;
+        try
+        {
+            NationalInstruments.Vireo.makeRequest(userHandle, 'GET', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
+        }
+        catch (error)
+        {
+            setErrorAndOccurrence(-1, 'GET', error.message);
+        }
     },
 
-    js_ni_httpClient_PutBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, done) {
-        var doneText = 'done';
-        var successCallback = function (request) {
-            // Return Headers
-            var headersText = request.getAllResponseHeaders();
-            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
+    jsHttpClientHead: function (userHandle, url, urlLength, timeOut, headers, errorCodePointer, errorMessage, occurrenceRef) {
+        var occurrenceHasBeenSet = false;
+        function setErrorAndOccurrence(errorCode, operation, additionalErrorText) {
+            var fullErrorText = '';
+            if (errorCode !== 0) {
+                fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
+            }
+            NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            if (!occurrenceHasBeenSet) {
+                occurrenceHasBeenSet = true;
+                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            }
+        };
 
-            // Return body
+        var successCallback = function (request) {
+            var errorString = '';
+            var headersText = request.getAllResponseHeaders();
+
+            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
+            setErrorAndOccurrence(0, '');
+        };
+        var errorCallback = function (status, statusText) {
+            setErrorAndOccurrence(-1, 'HEAD', statusText + '(' + status + ').');
+        };
+        var timeOutCallback = function (request) {
+            setErrorAndOccurrence(-1, 'HEAD', 'The time out value of ' + timeOut + ' was exceeded.');
+        };
+
+        try {
+            NationalInstruments.Vireo.makeRequest(userHandle, 'HEAD', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
+        }
+        catch (error) {
+            setErrorAndOccurrence(-1, 'HEAD', error.message);
+        }
+    },
+
+    jsHttpClientPutBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
+        var occurrenceHasBeenSet = false;
+        function setErrorAndOccurrence(errorCode, operation, additionalErrorText) {
+            var fullErrorText = '';
+            if (errorCode !== 0) {
+                fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
+            }
+            NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            if (!occurrenceHasBeenSet) {
+                occurrenceHasBeenSet = true;
+                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            }
+        };
+
+        var successCallback = function (request) {
+            var errorString = '';
+            var headersText = request.getAllResponseHeaders();
             var bodyText = request.responseText;
+
+            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
             NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
-            console.log("Success with Put for " + Pointer_stringify(url, urlLength));
+            setErrorAndOccurrence(0, '');
         };
-        var errorCallback = function (request) {
-            console.log("errorCallback was called with " + request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+        var errorCallback = function (status, statusText) {
+            setErrorAndOccurrence(-1, 'PUT', statusText + '(' + status + ').');
         };
         var timeOutCallback = function (request) {
-            console.log("timeOutCallback was called with " + request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+            setErrorAndOccurrence(-1, 'PUT', 'The time out value of ' + timeOut + ' was exceeded.');
         };
 
-        NationalInstruments.Vireo.makeRequest(userHandle, 'PUT', Pointer_stringify(url, urlLength), timeOut, Pointer_stringify(buffer, bufferLength), successCallback, errorCallback, timeOutCallback);
-
-        return 0;
+        try {
+            NationalInstruments.Vireo.makeRequest(userHandle, 'PUT', Pointer_stringify(url, urlLength), timeOut, Pointer_stringify(buffer, bufferLength), successCallback, errorCallback, timeOutCallback);
+        }
+        catch (error) {
+            setErrorAndOccurrence(-1, 'PUT', error.message);
+        }
     },
 
-    js_ni_httpClient_Delete: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, done) {
-        var doneText = 'done';
-        var successCallback = function (request) {
-            // Return Headers
-            var headersText = request.getAllResponseHeaders();
-            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
-
-            // Return body
-            var bodyText = request.responseText;
-            NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+    jsHttpClientDelete: function (userHandle, url, urlLength, outputFile, outputFileLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
+        var occurrenceHasBeenSet = false;
+        function setErrorAndOccurrence(errorCode, operation, additionalErrorText) {
+            var fullErrorText = '';
+            if (errorCode !== 0) {
+                fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
+            }
+            NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            if (!occurrenceHasBeenSet) {
+                occurrenceHasBeenSet = true;
+                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            }
         };
-        var errorCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+
+        var successCallback = function (request) {
+            var errorString = '';
+            var headersText = request.getAllResponseHeaders();
+            var bodyText = request.responseText;
+
+            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
+            NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
+            setErrorAndOccurrence(0, '');
+        };
+        var errorCallback = function (status, statusText) {
+            setErrorAndOccurrence(-1, 'DELETE', statusText + '(' + status + ').');
         };
         var timeOutCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+            setErrorAndOccurrence(-1, 'DELETE', 'The time out value of ' + timeOut + ' was exceeded.');
         };
 
-        NationalInstruments.Vireo.makeRequest(userHandle, 'DELETE', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
-
-        return 0;
+        try {
+            NationalInstruments.Vireo.makeRequest(userHandle, 'DELETE', Pointer_stringify(url, urlLength), timeOut, undefined, successCallback, errorCallback, timeOutCallback);
+        }
+        catch (error) {
+            setErrorAndOccurrence(-1, 'DELETE', error.message);
+        }
     },
 
-    js_ni_httpClient_PostBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, done) {
-        var doneText = 'done';
-        var successCallback = function (request) {
-            // Return Headers
-            var headersText = request.getAllResponseHeaders();
-            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
-
-            // Return body
-            var bodyText = request.responseText;
-            NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+    jsHttpClientPostBuffer: function (userHandle, url, urlLength, outputFile, outputFileLength, buffer, bufferLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
+        var occurrenceHasBeenSet = false;
+        function setErrorAndOccurrence(errorCode, operation, additionalErrorText) {
+            var fullErrorText = '';
+            if (errorCode !== 0) {
+                fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
+            }
+            NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            if (!occurrenceHasBeenSet) {
+                occurrenceHasBeenSet = true;
+                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            }
         };
-        var errorCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+
+        var successCallback = function (request) {
+            var errorString = '';
+            var headersText = request.getAllResponseHeaders();
+            var bodyText = request.responseText;
+
+            NationalInstruments.Vireo.dataWriteString(headers, headersText, headersText.length);
+            NationalInstruments.Vireo.dataWriteString(body, bodyText, bodyText.length);
+            setErrorAndOccurrence(0, '');
+        };
+        var errorCallback = function (status, statusText) {
+            setErrorAndOccurrence(-1, 'POST', statusText + '(' + status + ').');
         };
         var timeOutCallback = function (request) {
-            console.log(request.statusText);
-            NationalInstruments.Vireo.dataWriteString(done, doneText, doneText.length);
+            setErrorAndOccurrence(-1, 'POST', 'The time out value of ' + timeOut + ' was exceeded.');
         };
 
-        NationalInstruments.Vireo.makeRequest(userHandle, 'POST', Pointer_stringify(url, urlLength), timeOut, Pointer_stringify(buffer, bufferLength), successCallback, errorCallback, timeOutCallback);
-
-        return 0;
+        try {
+            NationalInstruments.Vireo.makeRequest(userHandle, 'POST', Pointer_stringify(url, urlLength), timeOut, Pointer_stringify(buffer, bufferLength), successCallback, errorCallback, timeOutCallback);
+        }
+        catch (error) {
+            setErrorAndOccurrence(-1, 'POST', error.message);
+        }
     }
 };
 
