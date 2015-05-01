@@ -42,6 +42,9 @@ struct ViaFormatChars
     Utf8Char    _itemSeperator;
     Utf8Char    _quote;
     ViaFormat   _fieldNameFormat;
+    
+    Boolean UseFieldNames()      { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
+    Boolean QuoteFieldNames()    { return _fieldNameFormat == kViaFormat_QuotedFieldNames; }
 };
 
 struct ViaFormatOptions
@@ -50,10 +53,9 @@ struct ViaFormatOptions
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
     Int32           _fieldWidth;
-    ViaFormatChars  *_pChars;
     
-    Boolean UseFieldNames()         { return _pChars->_fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
-    Boolean UseQuoteFieldNames()    { return _pChars->_fieldNameFormat == kViaFormat_QuotedFieldNames; }
+    ViaFormatChars  _fmt;
+    
 };
 
 //------------------------------------------------------------
@@ -77,6 +79,7 @@ private:
 public:
     // Format options also used in ViaFormatter
     ViaFormatOptions  _options;
+    ViaFormatChars& Fmt()  { return _options._fmt; }
 
     Boolean         _loadVIsImmediatly;
     EventLog*       _pLog;
@@ -133,6 +136,7 @@ class TDViaFormatter
 private:
     StringRef       _string;
     ViaFormatOptions  _options;
+    ViaFormatChars& Fmt() { return _options._fmt; }
     
     static const Int32 kTempFormattingBufferSize = 100;
 public:

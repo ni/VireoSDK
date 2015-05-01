@@ -197,6 +197,16 @@ VIREO_EXPORT void Data_WriteString(EggShell* pShell, StringRef stringObject, con
     stringObject->CopyFrom(length, buffer);
 }
 //------------------------------------------------------------
+VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value)
+{
+	*destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value)
+{
+	*destination = value;
+}
+//------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {
     //   TypeManagerScope scope(typeManager);
@@ -406,5 +416,4 @@ VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
     OccurrenceCore *pOcc = occurrence->ObjBegin();
     pOcc->SetOccurrence();
 }
-
 #endif
