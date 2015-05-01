@@ -310,10 +310,10 @@ public:
 
 //------------------------------------------------------------
 // Utility functions to read and write numbers to non aligned memory based on size and encoding
-NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax* pValue);
-NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
-NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
-NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
+NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax* pValue);
+NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
+NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double* pValue);
+NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 
 //------------------------------------------------------------

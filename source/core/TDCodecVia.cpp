@@ -670,7 +670,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 if (!pData)
                     return; // If no where to put the parsed data, then all is done.
                 
-                if (WriteIntToMemory(encoding, aqSize, pData, value) != kNIError_Success)
+                if (WriteIntToMemory(type, pData, value) != kNIError_Success)
                     LOG_EVENT(kSoftDataError, "Data int size not suported");
 
             }
@@ -706,7 +706,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 if (!pData)
                     return; // If no where to put the parsed data, then all is done.
                 
-                if (WriteDoubleToMemory(kEncoding_IEEE754Binary, aqSize, pData, value) != kNIError_Success)
+                if (WriteDoubleToMemory(type, pData, value) != kNIError_Success)
                     LOG_EVENT(kSoftDataError, "Data IEEE754 size not supported");
                 
                 // TODO support 16 bit reals? 128 bit reals? those are defined by IEEE754
@@ -1313,7 +1313,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
-        _pFormatter->FormatInt(kEncoding_IntDim, sizeof(length), &length);
+        _pFormatter->FormatInt(kEncoding_IntDim, length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1358,7 +1358,8 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            _pFormatter->FormatInt(kEncoding_IntDim, sizeof(IntIndex), pDimension++);
+            _pFormatter->FormatInt(kEncoding_IntDim, *pDimension);
+            pDimension++;
         }
         _pFormatter->_string->AppendCStr(")");
     }
@@ -1484,13 +1485,12 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
     _string->AppendCStr(str);
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
+void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = null;
     
-    IntMax value;
-    ReadIntFromMemory(encoding, aqSize, pData, &value);
+    //ReadIntFromMemory(type, pData, &value);
     
     if (encoding == kEncoding_SInt2C) {
         format = "%*lld";
@@ -1513,13 +1513,12 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData)
     _string->Append(len, (Utf8Char*)buffer);
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData)
+void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr pBuff = buffer;
-
     Double value;
-    ReadDoubleFromMemory(kEncoding_IEEE754Binary, aqSize, pData, &value);
+    ReadDoubleFromMemory(type, pData, &value);
 
     Int32 len;
     if (isnan(value)) {
@@ -1686,10 +1685,12 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_UInt:
         case kEncoding_SInt2C:
         case kEncoding_IntDim:
-            FormatInt(encoding, type->TopAQSize(), pData);
+            IntMax intValue;
+            ReadIntFromMemory(type, pData, &intValue);
+            FormatInt(type->BitEncoding(), intValue);
             break;
         case kEncoding_IEEE754Binary:
-            FormatIEEE754(encoding, type->TopAQSize(), pData);
+            FormatIEEE754(type, pData);
             break;
         case kEncoding_Pointer:
             FormatPointerData(type, pData);
@@ -1842,17 +1843,17 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         success = (parser.ErrorCount() == 0);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteDoubleToMemory(type, pData, parsedValue);
             } else {
-                WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteIntToMemory(type, pData, parsedValue);
             }
         } else {
             if (pDefault) {
                 type->CopyData(pDefault, pData);
             } else if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteDoubleToMemory(type, pData, 0);
             } else {
-                WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteIntToMemory(type, pData, 0);
             }
         }
         length2 = parser.TheString()->Length();
@@ -1896,17 +1897,17 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
         success = (parser.ErrorCount() == 0);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteDoubleToMemory(type, pData, parsedValue);
             } else {
-                WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, parsedValue);
+                WriteIntToMemory(type, pData, parsedValue);
             }
         } else {
             if (pDefault) {
                 type->CopyData(pDefault, pData);
             } else if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteDoubleToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteDoubleToMemory(type, pData, 0);
             } else {
-                WriteIntToMemory(type->BitEncoding(), type->TopAQSize(), pData, 0);
+                WriteIntToMemory(type, pData, 0);
             }
         }
 

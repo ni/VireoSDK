@@ -117,7 +117,7 @@ VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, con
     if (actualType == null)
         return;
     
-    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, d);
+    WriteDoubleToMemory(actualType, pData, d);
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
@@ -131,7 +131,7 @@ VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, co
         return -1;
 
     Double d;
-    ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, &d);
+    ReadDoubleFromMemory(actualType, pData, &d);
     return d;
 }
 //------------------------------------------------------------
