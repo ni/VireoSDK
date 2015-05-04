@@ -377,56 +377,6 @@ return {
             NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
             return returnValue;
-        },
-    makeRequest:
-        function (userHandle, protocol, url, timeOut, buffer, successCallback, errorCallback, onTimeOutCallback) {
-            var httpUser = this.getHttpUser(userHandle);
-
-            var request = new XMLHttpRequest();
-            request.open(protocol, url);
-
-            var error = function (status, statusText) {
-                errorCallback(status, statusText);
-            };
-
-            var onTimeOut = function () {
-                onTimeOutCallback(request);
-            }
-
-            // Set the headers
-            if (httpUser instanceof HttpUser)
-            {
-                var allHeaders = httpUser.getHeaders();
-                for (var key in allHeaders) {
-                    if (allHeaders.hasOwnProperty(key)) {
-                        request.setRequestHeader(key, allHeaders[key]);
-                    }
-                }
-            }
-
-            request.onreadystatechange = function (event) {
-                if (request.readyState === 4) {
-                    if (request.status == 200) {
-                        successCallback(request);
-                    } else {
-                        error(request.status, request.statusText);
-                    }
-                }
-            };
-
-            request.onerror = function (event) {
-                error(event.target.status, event.target.statusText);
-            };
-
-            request.ontimeout = function (evt) {
-                onTimeOut();
-            }
-
-            if (buffer === undefined) {
-                request.send();
-            } else {
-                request.send(buffer);
-            }
         }
 };
 

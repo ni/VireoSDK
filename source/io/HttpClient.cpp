@@ -24,6 +24,15 @@ SDG
 using namespace Vireo;
 
 #if kVireoOS_emscripten
+
+enum HttpClientMethodId {
+	kGet = 0,
+	kHead = 1,
+	kPut = 2,
+	kPost = 3,
+	kDelete
+};
+
 extern "C" {
     extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, Boolean, UInt32 *, StringRef);
     extern Int32 jsHttpClientClose(UInt32, StringRef);
@@ -32,11 +41,7 @@ extern "C" {
     extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
     extern Int32 jsHttpClientHeaderExist(UInt32, const char *, int, UInt32 *, StringRef);
     extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
-    extern void jsHttpClientGet(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientHead(UInt32, const char *, int, Int32, StringRef, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientPutBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientDelete(UInt32, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientPostBuffer(UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
@@ -153,34 +158,36 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientListHeaders, UInt32, StringRef, Int32, Strin
 VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(8)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientGet(
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            _Param(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            _Param(7),
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count()+1);
-        return clump->WaitOnObservableObject(_this);
-    }
-    else
-    {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kGet,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			null, 0,
+			_Param(3),
+			_Param(4),
+			_Param(5),
+			_ParamPointer(6),
+			_Param(7),
+			_Param(8));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	}
+	else
+	{
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -188,33 +195,37 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(6)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientHead(
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            _Param(2),
-            _Param(3),
-            _ParamPointer(4),
-            _Param(5),
-            _Param(6));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    }
-    else
-    {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(6)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kHead,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			null,0,
+			null,0,
+			_Param(2),
+			_Param(3),
+			null,
+			_ParamPointer(4),
+			_Param(5),
+			_Param(6));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	}
+	else
+	{
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -222,35 +233,36 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(9)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientPutBuffer(
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            (char*)_Param(3)->Begin(), _Param(3)->Length(),
-            _Param(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            _Param(8),
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    }
-    else
-    {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kPut,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(4),
+			_Param(5),
+			_Param(6),
+			_ParamPointer(7),
+			_Param(8),
+			_Param(9));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	}
+	else
+	{
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -258,34 +270,36 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(8)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientDelete(
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            _Param(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            _Param(7),
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    }
-    else
-    {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kDelete,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			null,0,
+			_Param(3),
+			_Param(4),
+			_Param(5),
+			_ParamPointer(6),
+			_Param(7),
+			_Param(8));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	}
+	else
+	{
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -293,35 +307,36 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(9)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientPostBuffer(
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            (char*)_Param(3)->Begin(), _Param(3)->Length(),
-            _Param(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            _Param(8),
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    }
-    else
-    {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kPost,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(4),
+			_Param(5),
+			_Param(6),
+			_ParamPointer(7),
+			_Param(8),
+			_Param(9));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	}
+	else
+	{
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
