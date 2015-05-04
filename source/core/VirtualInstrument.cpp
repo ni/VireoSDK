@@ -1029,10 +1029,10 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // can take the parameters as is (e.g. it is runtime polymorphic)
     }
 
-    // If extra parameters exits for the matched function is that OK?
+    // If extra parameters exist for the matched function is that OK?
     Int32 formalArgCount = _instructionType->SubElementCount();
     if (formalArgCount > _argCount) {
-        Boolean foundMissing = false;
+//      Boolean foundMissing = false;
         for (Int32 i = _argCount; i < formalArgCount; i++) {
             TypeRef type = _instructionType->GetSubElement(i);
             if (type->IsStaticParam()) {                
@@ -1041,7 +1041,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
                 void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite); // * passed as a param means null
                 InternalAddArg(type, pData);
             } else {
-                foundMissing = true;
+//              foundMissing = true;
             }
         }
 #if 0
@@ -1208,7 +1208,8 @@ class InstructionBlockDataProcsClass : public IDataProcs
 InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 #endif
 
-DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
+DEFINE_VIREO_BEGIN(Execution)
+    DEFINE_VIREO_REQUIRES(Synchronization)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(VIClump, VIClump_TypeString);

@@ -81,6 +81,6 @@ VIREO_FUNCTION_SIGNATURE1(DebugButton, Boolean)
 }
 
 DEFINE_VIREO_BEGIN(DebugGPIO)
-    DEFINE_VIREO_FUNCTION(DebugLED, "p(i(.Boolean))");
-    DEFINE_VIREO_FUNCTION(DebugButton, "p(o(.Boolean))");
+    DEFINE_VIREO_FUNCTION(DebugLED, "p(i(.Boolean))")
+    DEFINE_VIREO_FUNCTION(DebugButton, "p(o(.Boolean))")
 DEFINE_VIREO_END()

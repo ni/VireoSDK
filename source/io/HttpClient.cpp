@@ -341,18 +341,18 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
- // DEFINE_VIREO_REQUIRES(Synchronization)
-    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.Boolean) o(.UInt32) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )");
-    DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientGetHeader, "p(io(.UInt32) i(.String) o(.String) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientHeaderExist, "p(io(.UInt32) i(.String) o(.UInt32) o(.String) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(.UInt32) o(.String) io(.Int32) o(.String))");
-    DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))");
-    DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(.UInt32) i(.String) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))");
-    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))");
-    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))");
-    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))");
+    DEFINE_VIREO_REQUIRES(Synchronization)
+    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.Boolean) o(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
+    DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientGetHeader, "p(io(.UInt32) i(.String) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientHeaderExist, "p(io(.UInt32) i(.String) o(.UInt32) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(.UInt32) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(.UInt32) i(.String) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
 DEFINE_VIREO_END()
 #endif

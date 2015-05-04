@@ -21,7 +21,7 @@ namespace Vireo {
 
 class EventLog;    
 class TypeDefiner;
-typedef Boolean (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef typeManager);
+typedef ConstCStr (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef typeManager);
 
 //! Facilitate the registration of Vireo types that are defined in C++ code.
 class TypeDefiner
@@ -47,6 +47,7 @@ class TypeDefiner
     static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
     static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
     static Boolean HasRequiredModule(TypeDefiner* _this, ConstCStr name);
+    static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
 #else
@@ -57,7 +58,6 @@ class TypeDefiner
   private:
     static TypeDefiner* _gpTypeDefinerList;
     //@}
-    
 };
 
 }
@@ -91,15 +91,16 @@ class TypeDefiner
 #else
 
     #define DEFINE_VIREO_BEGIN(_module_) \
-      static Boolean TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
+      static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
       static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) (TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
-      static Boolean TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
+      static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
 
-    #define DEFINE_VIREO_END()  return true; }
+    #define DEFINE_VIREO_END()  return null; }
 
     // Used immediatly after the BEGIN
     #define DEFINE_VIREO_REQUIRES(_module_) \
-      if (!TypeDefiner::HasRequiredModule(_this, #_module_)) { return false; }
+      { ConstCStr moduleName = #_module_;   \
+      if (!TypeDefiner::HasRequiredModule(_this, moduleName)) { return moduleName; } }
 
     #define DEFINE_VIREO_TYPE(_name_, _type_) \
       (TypeDefiner::Define(tm, #_name_, _type_));

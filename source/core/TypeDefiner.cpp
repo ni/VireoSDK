@@ -27,44 +27,57 @@ namespace Vireo {
 TypeDefiner* TypeDefiner::_gpTypeDefinerList = null;
 
 //------------------------------------------------------------
+//! Constructor used by DEFINE_VIREO_BEGIN blocks
+TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version)
+{
+    VIREO_ASSERT(version == kVireoABIVersion)
+    
+    // Append to end since constructors called in the order
+    // they occurr in  a file.
+    TypeDefiner** ppNext = &_gpTypeDefinerList;
+    while (*ppNext) {
+        ppNext = &(*ppNext)->_pNext;
+    }
+    _pNext = null;
+    *ppNext = this;
+    _pCallback = callback;
+    _pModuleName = pModuleName;
+}
+//------------------------------------------------------------
 //! Call all registered module functions. Move items down the list as needed.
 void TypeDefiner::DefineTypes(TypeManagerRef tm)
 {
     TypeDefiner** ppNext = &_gpTypeDefinerList;
     while (*ppNext) {
         TypeDefiner *pCurrent = *ppNext;
-        Boolean hasRequirements = (pCurrent)->_pCallback(pCurrent, tm);
-        if (!hasRequirements) {
+        ConstCStr missingModule = (pCurrent)->_pCallback(pCurrent, tm);
+        // have it return a pointer to what it was missing, null if nothing.
+        if (missingModule != null) {
             // 1. Pull the current item out of the list.
+    //        printf("doing the slide down %s %s\n", pCurrent->_pModuleName, missingModule);
             *ppNext = pCurrent->_pNext;
+            pCurrent->_pNext = null;
             
-            // If its not at the end, insert one spot further down the list, and repeat.
-            if (pCurrent->_pNext) {
-                // 2. Update current to point on step further down.
-                pCurrent->_pNext = pCurrent->_pNext->_pNext;
-                
-                // 3. put current back in the list.
-                (*ppNext)->_pNext = pCurrent;
-                
-                // Leave the updated ppNext as is.
-            } else {
-                printf("Requires not met\n");
-                // It was at the end, requirement no met.
-            }
+            // 2. Find the right place to insert it.
+            InsertPastRequirement(ppNext, pCurrent, missingModule);
         } else {
             ppNext = &(*ppNext)->_pNext;
         }
     }
 }
 //------------------------------------------------------------
-//! Constructor used by DEFINE_VIREO_BEGIN blocks
-TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version)
+//! Insert a module registration past an element it requires.
+void TypeDefiner::InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName)
 {
-    VIREO_ASSERT(version == kVireoABIVersion)
-    _pNext = _gpTypeDefinerList;
-    _pCallback = callback;
-    _pModuleName = pModuleName;
-    _gpTypeDefinerList = this;
+    while (*ppNext) {
+        if (strcmp(requirementName, (*ppNext)->_pModuleName) == 0) {
+            module->_pNext = (*ppNext)->_pNext;
+            (*ppNext)->_pNext = module;
+            return;
+        } else {
+            ppNext = &(*ppNext)->_pNext;
+        }
+    }
 }
 //------------------------------------------------------------
 //! Verifiy a required module has been loaded. Called by registration visitor callbacks.
@@ -74,7 +87,7 @@ Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
     // Walk down the list until found, or the
     // the one making the query is encountered.
     while (pDefiner && pDefiner != _this) {
-    //    printf("Is %s == %s? \n", name, pDefiner->_pModuleName);
+     //   printf("Is %s == %s? \n", name, pDefiner->_pModuleName);
         if (strcmp(name, pDefiner->_pModuleName) == 0) {
             return true;
         }
@@ -184,30 +197,6 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
     Define(tm, "Block128",      "c(e(bb(128 Bits)))");
     Define(tm, "Block256",      "c(e(bb(256 Bits)))");
-#if 1
-    // TODO These could be moved out of the core once there is a way to order
-    // module initialization
-
-    // Floating-point Single
-#if defined(VIREO_TYPE_Single)
-    Define(tm, "SingleAtomic",  "c(e(bb(32 IEEE754B)))");
-    Define(tm, "SingleCluster", "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
-    Define(tm, "Single",        "eq(e(.SingleAtomic) e(.SingleCluster))");
-#endif
-    // Floating-point Double
-#if defined(VIREO_TYPE_Double)
-    Define(tm, "DoubleAtomic",  "c(e(bb(64 IEEE754B)))");
-    Define(tm, "DoubleCluster", "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52 Q1)  fraction))))");
-    Define(tm, "Double",        "eq(e(.DoubleAtomic) e(.DoubleCluster))");
-#endif
-    // ComplexNumbers
-#if defined(VIREO_TYPE_ComplexSingle)
-    Define(tm, "ComplexSingle", "c(e(.Single real) e(.Single imaginary))");
-#endif
-#if defined(VIREO_TYPE_ComplexDouble)
-    Define(tm, "ComplexDouble", "c(e(.Double real) e(.Double imaginary))");
-#endif
-#endif
 
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
@@ -223,11 +212,10 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Instruction", ".DataPointer");
 
     // Pointer to root clump of a VI
-    Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
-    Define(tm, "EmptyParameterList", "c()");  // Parameter is name, it gets resolved to first clump for SubVI
-
     // Clump - 0 based index into VIs array of clumps
     Define(tm, "Clump", ".DataPointer");  // Parameter is index
+    Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
+    Define(tm, "EmptyParameterList", "c()");  // Parameter is name, it gets resolved to first clump for SubVI
 
     // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
     Define(tm, "Type", ".DataPointer");
@@ -251,14 +239,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
 
-    Define(tm, "Observer", "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
-
-    Define(tm, "Timestamp", "c(e(.Int64 seconds) e(.UInt64 fraction))");
-
-    // Occurrences
-    Define(tm, "OccurrenceValue", "c(e(.DataPointer firstState)e(.Int32 setCount)");
-    Define(tm, "Occurrence", "a(.OccurrenceValue)");
 }
 
 }  // namespace Vireo

@@ -52,6 +52,7 @@
 		476646F01AA7B5D300D4F305 /* DebugGPIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472A078F1AA67EF8008109FA /* DebugGPIO.cpp */; };
 		4786297E19270C9900141666 /* Canvas2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4786297D1927064300141666 /* Canvas2d.cpp */; };
 		479AFEBC170DD22C002C0FF0 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479AFEBB170DD22C002C0FF0 /* Accelerate.framework */; };
+		47A877761AE6DAEB00EC5D77 /* HttpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47A877741AE6925800EC5D77 /* HttpClient.cpp */; };
 		47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */; };
 		47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
 		47D84DE717C2A271009053DB /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD317C2A271009053DB /* Array.cpp */; };
@@ -168,6 +169,7 @@
 		476CE4EB18F590DF00399E88 /* Timestamp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Timestamp.h; path = ../source/include/Timestamp.h; sourceTree = "<group>"; };
 		47862976191D2EDE00141666 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../Vireo_Web/Makefile; sourceTree = "<group>"; };
 		4786297D1927064300141666 /* Canvas2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Canvas2d.cpp; path = ../source/io/Canvas2d.cpp; sourceTree = "<group>"; };
+		478BB8031AEFDEEF00BF9DB6 /* Synchronization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Synchronization.h; path = ../source/include/Synchronization.h; sourceTree = "<group>"; };
 		47937177191049BE00DF942B /* Doxyfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Doxyfile; path = ../source/Doxyfile; sourceTree = "<group>"; };
 		47937178191186BF00DF942B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4797A38E1862265B00E643D7 /* CEntryPoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CEntryPoints.h; path = ../source/include/CEntryPoints.h; sourceTree = "<group>"; };
@@ -175,6 +177,8 @@
 		4799F8AE18C78F060019E214 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
 		479AFE75170DCD49002C0FF0 /* VireoEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = VireoEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		479AFEBB170DD22C002C0FF0 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		47A877741AE6925800EC5D77 /* HttpClient.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = HttpClient.cpp; path = ../source/io/HttpClient.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		47A877751AE6925800EC5D77 /* library_httpClient.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = library_httpClient.js; path = ../source/io/library_httpClient.js; sourceTree = "<group>"; };
 		47AF92321804739F00310F36 /* MandelbrotInline.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = MandelbrotInline.via; path = "../test-it/MandelbrotInline.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		47B55D311894479500207C01 /* ByValueFunctions.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ByValueFunctions.via; path = "../test-it/ByValueFunctions.via"; sourceTree = "<group>"; };
 		47B55D32189DA7D600207C01 /* PrintHelloWorld.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = PrintHelloWorld.via; path = "../test-it/PrintHelloWorld.via"; sourceTree = "<group>"; };
@@ -232,7 +236,7 @@
 		47D84DC417C2A258009053DB /* BuildConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = BuildConfig.h; path = ../source/include/BuildConfig.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DC917C2A258009053DB /* DataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataTypes.h; path = ../source/include/DataTypes.h; sourceTree = "<group>"; };
 		47D84DCA17C2A258009053DB /* EggShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggShell.h; path = ../source/include/EggShell.h; sourceTree = "<group>"; };
-		47D84DCB17C2A258009053DB /* ExecutionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExecutionContext.h; path = ../source/include/ExecutionContext.h; sourceTree = "<group>"; };
+		47D84DCB17C2A258009053DB /* ExecutionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ExecutionContext.h; path = ../source/include/ExecutionContext.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DCC17C2A258009053DB /* Instruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Instruction.h; path = ../source/include/Instruction.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DCE17C2A258009053DB /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Thread.h; path = ../source/include/Thread.h; sourceTree = "<group>"; };
 		47D84DCF17C2A258009053DB /* StringUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringUtilities.h; path = ../source/include/StringUtilities.h; sourceTree = "<group>"; };
@@ -474,6 +478,8 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
+				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
 				472A078C1AA67EAE008109FA /* JavaScript.cpp */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
@@ -578,6 +584,7 @@
 				47D84DCA17C2A258009053DB /* EggShell.h */,
 				470F626A1886F522003146BF /* EventLog.h */,
 				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
+				478BB8031AEFDEEF00BF9DB6 /* Synchronization.h */,
 				47D84DD217C2A258009053DB /* VirtualInstrument.h */,
 				47D84DCC17C2A258009053DB /* Instruction.h */,
 				47D84DCE17C2A258009053DB /* Thread.h */,
@@ -806,6 +813,7 @@
 			files = (
 				47D84DE717C2A271009053DB /* Array.cpp in Sources */,
 				47D84DE817C2A271009053DB /* CEntryPoints.cpp in Sources */,
+				47A877761AE6DAEB00EC5D77 /* HttpClient.cpp in Sources */,
 				47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */,
 				47D84DEE17C2A271009053DB /* EggShell.cpp in Sources */,
 				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,

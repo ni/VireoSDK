@@ -1087,7 +1087,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     Boolean tokenFound = true;
     do {
         // Read the function name.
-        tokenFound = _string.ReadToken(&token);
+        _string.ReadToken(&token);
         
         // If there is none, all is done.
         if (token.CompareCStr(")")) {
@@ -1758,7 +1758,7 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 /**
  * Unflatten from JSON string.
  * The 3 boolean flags are
- *      :enale LabVIEW extensions(true)
+ *      :enable LV extensions(true)
  *      :default null elements
  *      :strict validation. whether allow json object contains items not dfined in the cluster
  * */

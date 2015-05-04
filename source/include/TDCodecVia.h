@@ -186,12 +186,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsPointer         "Pointer"     // CodePointer - necessary distinction for Harvard architecture machines
 #define tsHostPointerSize "HostPointerSize"  // Used in BitBlock definitions
 
-
-// Notes on Ascii
-// There are many Ascii variants to chose from. LabVIEW historically used what was
-// Know as Latin-1 know more formally defined as ISO 8859-1
-// http://en.wikipedia.org/wiki/ISO/IEC_8859-1
-
 #define tsArrayTypeToken        "a"
 #define tsBitClusterTypeToken   "bc"
 #define tsBitBlockTypeToken     "bb"

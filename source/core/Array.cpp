@@ -435,6 +435,8 @@ DEFINE_VIREO_END()
 
 #ifdef VIREO_TYPE_Waveform
 DEFINE_VIREO_BEGIN(Waveform)
+    DEFINE_VIREO_REQUIRES(IEEE754Math)
+    DEFINE_VIREO_REQUIRES(Timestamp)
     DEFINE_VIREO_TYPE(AnalogWaveform, "c(e(a(.Double *) Y)e(.Timestamp t0)e(.Double dt))")
     DEFINE_VIREO_TYPE(DigitalWaveform, "c(e(a(.UInt8 * *) data)e(a(.UInt32 *) transitions))")
 DEFINE_VIREO_END()

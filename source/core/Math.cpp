@@ -498,7 +498,22 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 
 } // extern "C"
 
-DEFINE_VIREO_BEGIN(Math)
+DEFINE_VIREO_BEGIN(IEEE754Math)
+
+  // Floating-point Single
+  #if defined(VIREO_TYPE_Single)
+    DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bb(32 IEEE754B)))");
+    DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
+    DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic) e(.SingleCluster))");
+  #endif
+
+  // Floating-point Double
+  #if defined(VIREO_TYPE_Double)
+    DEFINE_VIREO_TYPE(DoubleAtomic, "c(e(bb(64 IEEE754B)))");
+    DEFINE_VIREO_TYPE(DoubleCluster, "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52 Q1)  fraction))))");
+    DEFINE_VIREO_TYPE(Double, "eq(e(.DoubleAtomic) e(.DoubleCluster))");
+  #endif
+
     // Function signatures
     DEFINE_VIREO_TYPE(BinOpBoolean, "p(i(.Boolean x) i(.Boolean y) o(.Boolean result))")
     DEFINE_VIREO_TYPE(UnOpBoolean, "p(i(.Boolean x) o(.Boolean result))")
@@ -763,7 +778,8 @@ DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Para
 DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
-DEFINE_VIREO_BEGIN(ComplexMath)
+DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
+    DEFINE_VIREO_TYPE(ComplexSingle, "c(e(.Single real) e(.Single imaginary))");
     DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(.ComplexSingle x) o(.ComplexSingle result))")
     DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(.ComplexSingle x) i(.ComplexSingle y) o(.ComplexSingle result))")
 
@@ -828,7 +844,8 @@ DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Para
 DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
 DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
 
-DEFINE_VIREO_BEGIN(ComplexMath)
+DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
+    DEFINE_VIREO_TYPE(ComplexDouble, "c(e(.Double real) e(.Double imaginary))");
     DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(.ComplexDouble x) o(.ComplexDouble result))")
     DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(.ComplexDouble x) i(.ComplexDouble y) o(.ComplexDouble result))")
 

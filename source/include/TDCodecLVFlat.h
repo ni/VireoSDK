@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief A Vireo codec for the LabVIEW binary dlattened data format.
+    \brief A Vireo codec for the LV binary dlattened data format.
  */
 
 namespace Vireo
