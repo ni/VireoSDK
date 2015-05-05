@@ -88,26 +88,6 @@ NIError EggShell::Delete()
     return kNIError_Success;
 }
 //------------------------------------------------------------
-void EggShell::ParseEnqueueVI(TDViaParser* parser)
-{
-    SubString viName;
-    
-    if (! parser->TheString()->EatChar('('))
-        return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
-    
-     parser->TheString()->ReadToken(&viName);
-    
-    if (! parser->TheString()->EatChar(')'))
-        return parser->LogEvent(EventLog::kHardDataError, "')' missing");
-
-    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_execContext->TheTypeManager()->FindObject(&viName);
-    if (vio && vio->ObjBegin()) {
-        vio->ObjBegin()->PressGo();
-    } else {
-        return parser->LogEvent(EventLog::kHardDataError, "VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
-    }
-}
-//------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
 {
     ExecutionContextScope scope(_execContext);
@@ -116,38 +96,13 @@ NIError EggShell::REPL(SubString *commandBuffer)
     EventLog log(errorLog.Value);
     
     TDViaParser parser(_execContext->TheTypeManager(), commandBuffer, &log, 1);
-    SubString command;
-    
-    parser.TheString()->EatLeadingSpaces();
-    while((parser.TheString()->Length() > 0) && (log.TotalErrorCount() == 0)) {
-        if (parser.TheString()->ComparePrefixCStr(tsDefineTypeToken)) {
-            // Defines are now processed by the core parser.
-            parser.ParseType();
-        } else {
-            parser.TheString()->ReadToken(&command);
-            if (command.CompareCStr("enqueue")) {
-                ParseEnqueueVI(&parser);
-            } else if (command.CompareCStr("clear")) {
-                _typeManger->DeleteTypes(false);
-            } else if (command.CompareCStr("exit")) {
-                log.LogEvent(EventLog::kTrace, 0, "chirp chirp");
-                return kNIError_kResourceNotFound;
-            } else {
-                log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
-                break;
-            }
-        }
-        parser.TheString()->EatLeadingSpaces();
-        parser.RepinLineNumberBase();
-    }
-    
-    TDViaParser::FinalizeModuleLoad(_execContext->TheTypeManager(), &log);
-    
+    NIError err = parser.ParseREPL();
+
     if (errorLog.Value->Length() > 0) {
         printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
     }
     
-    return log.TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
+    return err;
 }
 //------------------------------------------------------------
 // TODO Eventually Vireo should use a a Vireo program to process file io

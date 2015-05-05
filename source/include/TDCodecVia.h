@@ -92,7 +92,9 @@ public:
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null);
     TypeRef ParseType();
-    Boolean    EatJSONPath(SubString* path);
+    Boolean EatJSONPath(SubString* path);
+    NIError ParseREPL();
+    void    ParseEnqueue();
     void    ParseData(TypeRef type, void* pData);
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);

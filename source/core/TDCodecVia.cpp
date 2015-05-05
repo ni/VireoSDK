@@ -77,9 +77,59 @@ void TDViaParser::RepinLineNumberBase()
     _originalStart = _string.Begin();
 }
 //------------------------------------------------------------
+void TDViaParser::ParseEnqueue()
+{
+    SubString viName;
+    
+    if (! _string.EatChar('('))
+        return LOG_EVENT(kHardDataError, "'(' missing");
+    
+    _string.ReadToken(&viName);
+    
+    if (! _string.EatChar(')'))
+        return LOG_EVENT(kHardDataError, "')' missing");
+    
+    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_typeManager->FindObject(&viName);
+    if (vio && vio->ObjBegin()) {
+        vio->ObjBegin()->PressGo();
+    } else {
+        return LOG_EVENTV(kHardDataError,"VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
+    }
+}
+//------------------------------------------------------------
+NIError TDViaParser::ParseREPL()
+{
+    SubString command;
+    _string.EatLeadingSpaces();
+    while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
+        if (_string.ComparePrefixCStr(tsDefineTypeToken)) {
+            // Defines are now processed by the core parser.
+            ParseType();
+        } else {
+            _string.ReadToken(&command);
+            if (command.CompareCStr("enqueue")) {
+                ParseEnqueue();
+            } else if (command.CompareCStr("exit")) {
+                _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
+                return kNIError_kResourceNotFound;
+            } else {
+                LOG_EVENT(kHardDataError, "bad egg");
+               // log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
+                break;
+            }
+        }
+        _string.EatLeadingSpaces();
+        RepinLineNumberBase();
+    }
+    
+    TDViaParser::FinalizeModuleLoad(_typeManager, _pLog);
+
+    return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
+}
+//------------------------------------------------------------
 TypeRef TDViaParser::ParseType()
 {
-    TypeManagerScope scope(this->_typeManager);
+    TypeManagerScope scope(_typeManager);
 
     TypeRef type = null;
     
@@ -120,42 +170,6 @@ TypeRef TDViaParser::ParseType()
         // Call a type function directly
 #endif
 
-/*
- When looking for a type the most common case we have has been the cases above.
- For example: a(.Int32 *) Thus a type is a type. 
- 
- But value literals imply a type, and more specifically they imply DV type. So
- instead of dv(.Int32 505) they type could be described simply as 505. For simple 
- types its based on the token type. 
- 
- Simple cases:
- 
- simple types:
- all integers   2345 -> becomes a dv(.Int32 2345)
- with a dp      2345.0 -> becomes a dv(.Double 2345.0)
- booleans       true -> becomes dv(.Boolean true)
- strings        "Hello" -> becomes dv(.String "Hello")
- composite types:
- arrays         (1 2 3) -> becomes dv(a(.Int32 3) (1 2 3))
- arrays         ("Apple" "Kaypro" "Sun") -> becomes dv(a(.String 3) ("Apple" "Kaypro" "Sun"))
-    For arays the first element sets the type. al following elements
-    must match the first type
-                
-If a type has generic parametes those parameters are sued for those.
-If not the the parameter is use for the default value? Doe this make snese.
-            
- 
-For types beyond these simple types perhaps the tyep could be 
-
-    .Int8<4>
-    
- The token classification routine takes in a hint and returns a resolved type.
- Thus integers default to .Int32 but can be used for other types that have a numeric encoging (signed or unsigned) encoding.
- 
-    .Rect<(0 0 10 10)>  // A rectangle with a default value.
-    .Rect<0 0 10 10>    // Hmmm which one makes the most sense?
- 
-*/
         // See if the token fits the rules for a literal.
         TokenTraits tt = typeFunction.ClassifyNextToken();
         ConstCStr tName = null;
