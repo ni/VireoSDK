@@ -248,6 +248,8 @@ TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* poin
         SubString typeName(name);
         TypeRef type =  Define(&typeName, valueTypeNode);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
+        // When instruction reflection is enabled the name of the c entry point is recorded as well
+        // to assist generation of C code that references the same symbols.
         CPrimtitiveInfo cpi;
         cpi._cName = cName;
         cpi._type = type;
@@ -467,7 +469,7 @@ Int32  TypeManager::AQAlignment(Int32 size)
     if (size<8)
         return 4;
     else
-    return 8;
+        return 8;
 }
 //------------------------------------------------------------
 Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)

@@ -139,6 +139,7 @@ enum PointerTypeEnum {
     kPTInstructionFunction,
     kPTGenericFucntionPropType,
     kPTGenericFunctionCodeGen,
+    kPTExecContext,
 };
 
 // PointerTypeEnum defines how a pointer to data will be used.

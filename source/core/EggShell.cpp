@@ -34,29 +34,12 @@ namespace Vireo
 //------------------------------------------------------------
 EggShell* EggShell::Create(EggShell* parent)
 {
-    EggShell *pShell = null;
-    
-    TypeManagerRef pParentTADM = parent ? parent->TheTypeManager() : null;
-    
-    TypeManagerRef pTADM = TypeManager::New(pParentTADM);
-    
-    // Once the TADM exists use it to create the rest
+    TypeManagerRef parentTADM = parent ? parent->TheTypeManager() : null;
+    ExecutionContextRef exec = ConstructTypeManagerAndExecutionContext(parentTADM);
     {
-        // Set it up as the active scope, allocations will now go through this TADM.
-        TypeManagerScope scope(pTADM);
-
-        if (!parent) {
-            TypeDefiner::DefineStandardTypes(pTADM);
-            TypeDefiner::DefineTypes(pTADM);
-        }
-        
-        // Once standard types have been loaded the execution system can be constructed
-        ExecutionContextRef pExecutionContext = TADM_NEW_PLACEMENT(ExecutionContext)(pTADM);
-        
-        // Last step create the shell.
-        pShell = TADM_NEW_PLACEMENT(EggShell)(pTADM, pExecutionContext);
+        ExecutionContextScope scope(exec);
+        return TADM_NEW_PLACEMENT(EggShell)(exec->TheTypeManager(), exec);
     }
-    return pShell;
 }
 //------------------------------------------------------------
 EggShell::EggShell(TypeManagerRef typeManager, ExecutionContextRef execContext)

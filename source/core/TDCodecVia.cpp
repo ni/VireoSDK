@@ -33,6 +33,24 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
+ExecutionContextRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM)
+{
+    TypeManagerRef newTADM = TypeManager::New(parentTADM);
+    {
+        // Set it up as the active scope, allocations will now go through this TADM.
+        TypeManagerScope scope(newTADM);
+        
+        if (!parentTADM) {
+            // In the beginning... creating a new universe, add some core types.
+            TypeDefiner::DefineStandardTypes(newTADM);
+            TypeDefiner::DefineTypes(newTADM);
+        }
+        
+        // Once standard types have been loaded an execution context can be constructed
+        return TADM_NEW_PLACEMENT(ExecutionContext)(newTADM);
+    }
+}
+//------------------------------------------------------------
 TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format)
 {
     _pLog = pLog;
@@ -79,6 +97,7 @@ void TDViaParser::RepinLineNumberBase()
 //------------------------------------------------------------
 void TDViaParser::ParseEnqueue()
 {
+    //! TODO merge with runtime enqueue function
     SubString viName;
     
     if (! _string.EatChar('('))
@@ -102,19 +121,20 @@ NIError TDViaParser::ParseREPL()
     SubString command;
     _string.EatLeadingSpaces();
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
-        if (_string.ComparePrefixCStr(tsDefineTypeToken)) {
-            // Defines are now processed by the core parser.
+        if (_string.ComparePrefixCStr(")")) {
+            break;
+        } else if (_string.ComparePrefixCStr(tsDefineTypeToken)
+                   || _string.ComparePrefixCStr(tsEnqueueTypeToken)
+                   || _string.ComparePrefixCStr(tsContextTypeToken)
+                   ) {
             ParseType();
         } else {
             _string.ReadToken(&command);
-            if (command.CompareCStr("enqueue")) {
-                ParseEnqueue();
-            } else if (command.CompareCStr("exit")) {
+            if (command.CompareCStr("exit")) {
                 _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
                 return kNIError_kResourceNotFound;
             } else {
                 LOG_EVENT(kHardDataError, "bad egg");
-               // log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
                 break;
             }
         }
@@ -125,6 +145,32 @@ NIError TDViaParser::ParseREPL()
     TDViaParser::FinalizeModuleLoad(_typeManager, _pLog);
 
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
+{
+    ExecutionContextRef exec = ConstructTypeManagerAndExecutionContext(parentTADM);
+    TypeRef eType = _typeManager->FindType(tsExecutionContextType);
+    TypeRef type = DefaultPointerType::New(_typeManager, eType, exec, kPTExecContext);
+    
+    if (!_string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return BadType();
+    }
+    
+    {   // Parse the nested section using the newly created TADM/Context pair.
+        ExecutionContextScope scope(exec);
+        TDViaParser parser(exec->TheTypeManager(), &_string, _pLog, CalcCurrentLine());
+        parser.ParseREPL();
+        _string.AliasAssign(parser.TheString());
+    }
+
+    if (!_string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return BadType();
+    }
+    
+    return type;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseType()
@@ -157,6 +203,8 @@ TypeRef TDViaParser::ParseType()
         type = ParseBitBlock();
     } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
+    } else if (typeFunction.CompareCStr(tsContextTypeToken)) {
+        type = ParseContext(_typeManager);
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {
@@ -165,6 +213,8 @@ TypeRef TDViaParser::ParseType()
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
+    } else if (typeFunction.CompareCStr(tsEnqueueTypeToken)) {
+        ParseEnqueue();
     } else {
 #if defined(VIREO_TYPE_CONSTRUCTION)
         // Call a type function directly
@@ -1719,7 +1769,6 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
     }
 }
-
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ToTypeAndDataString, StaticType, void, StringRef)
 {

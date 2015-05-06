@@ -49,9 +49,9 @@ class TypeDefiner
     static Boolean HasRequiredModule(TypeDefiner* _this, ConstCStr name);
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
 #else
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeString,PointerTypeEnum pointerType);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString,PointerTypeEnum pointerType);
 #endif
     static void DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString);
     static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeString);

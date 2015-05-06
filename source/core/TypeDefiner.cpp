@@ -54,7 +54,6 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
         // have it return a pointer to what it was missing, null if nothing.
         if (missingModule != null) {
             // 1. Pull the current item out of the list.
-    //        printf("doing the slide down %s %s\n", pCurrent->_pModuleName, missingModule);
             *ppNext = pCurrent->_pNext;
             pCurrent->_pNext = null;
             
@@ -87,7 +86,6 @@ Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
     // Walk down the list until found, or the
     // the one making the query is encountered.
     while (pDefiner && pDefiner != _this) {
-     //   printf("Is %s == %s? \n", name, pDefiner->_pModuleName);
         if (strcmp(name, pDefiner->_pModuleName) == 0) {
             return true;
         }
@@ -128,20 +126,20 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
 }
 //------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
 
-    tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType, cname);
+    tm->DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType, cname);
 }
 #else
-void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* instruction, ConstCStr typeCStr, PointerTypeEnum pointerType)
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType)
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuidType(tm, &typeString);
 
-    tm->DefineCustomPointerTypeWithValue(name, (void*)instruction, type, pointerType);
+    tm->DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType);
 }
 #endif
 //------------------------------------------------------------
