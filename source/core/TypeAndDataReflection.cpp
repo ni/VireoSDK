@@ -67,7 +67,7 @@ TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, S
     
     path->Resize1D(0);
     DataReflectionVisitor drv(tNeedle, pNeedle, path);
-    for (TypeManager *tm = this; tm && !drv.Found(); tm = tm->RootTypeManager()) {
+    for (TypeManager *tm = this; tm && !drv.Found(); tm = tm->BaseTypeManager()) {
         drv.Accept(tm);
     }
     

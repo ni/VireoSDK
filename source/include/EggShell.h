@@ -27,7 +27,6 @@ public:
 
 private:
     TypeManagerRef _typeManger;
-    ExecutionContextRef _execContext;
     char*   _mallocBuffer;
     
 public:
@@ -36,12 +35,10 @@ public:
     NIError ReadStdinLine(SubString *string);
     Boolean ShowStats;
     NIError Delete();    
-    TypeManagerRef TheTypeManager()           { return _typeManger; }
-    ExecutionContextRef TheExecutionContext() { return _execContext; }
+    TypeManagerRef TheTypeManager()  { return _typeManger; }
     
 private:
-    EggShell(TypeManagerRef typeManger, ExecutionContextRef execContext);
-    void ParseEnqueueVI(TDViaParser* parser);
+    EggShell(TypeManagerRef tm);
 };
 
 } // namespace Vireo

@@ -147,9 +147,6 @@ SDG
 
 #define USE_C99_TYPES
 
-#define VIVM_BREAKOUT_COUNT 20
-
-
 // TODO allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL
 
@@ -174,10 +171,6 @@ SDG
     #define VIREO_ISR_DISABLE  cli();
     #define VIREO_ISR_ENABLE  sei();
 
-    #define VIVM_SUPPORTS_FUNCTION_REGISTRATION_BY_NUMBER
-
-    #define VIVM_BREAKOUT_COUNT 10
-
     #ifdef VIVM_ENABLE_TRACE
         #define VIVM_TRACE(message)  {Serial.print(message); Serial.print("\n");}
         #define VIVM_TRACE_FUNCTION(name)   VIVM_TRACE(name)
@@ -188,10 +181,6 @@ SDG
     #define kVireoOS_wiring
 
     #define VIREO_SUPPORTS_ISR
-
-    #define VIVM_SUPPORTS_FUNCTION_REGISTRATION_BY_NUMBER
-
-    #define VIVM_BREAKOUT_COUNT 10
 
     #ifdef VIVM_ENABLE_TRACE
         #define VIVM_TRACE(message)  {Serial.print(message); Serial.print("\n");}

@@ -1,4 +1,4 @@
 Hello, world. I can fly.
 42
-(^ExecutionContext_null * * () 0 (^DataPointer_null ^DataPointer_null))
-(^ExecutionContext () ('Hello, world. I can fly.') ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 0 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 12 (^DataPointer ^DataPointer))
+(^TypeManager_null * * () 0 (^DataPointer_null ^DataPointer_null))
+(^TypeManager () ('Hello, world. I can fly.') ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 0 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 12 (^DataPointer ^DataPointer))

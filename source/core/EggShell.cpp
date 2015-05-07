@@ -35,17 +35,16 @@ namespace Vireo
 EggShell* EggShell::Create(EggShell* parent)
 {
     TypeManagerRef parentTADM = parent ? parent->TheTypeManager() : null;
-    ExecutionContextRef exec = ConstructTypeManagerAndExecutionContext(parentTADM);
+    TypeManagerRef newTADM = ConstructTypeManagerAndExecutionContext(parentTADM);
     {
-        ExecutionContextScope scope(exec);
-        return TADM_NEW_PLACEMENT(EggShell)(exec->TheTypeManager(), exec);
+        TypeManagerScope scope(newTADM);
+        return TADM_NEW_PLACEMENT(EggShell)(newTADM);
     }
 }
 //------------------------------------------------------------
-EggShell::EggShell(TypeManagerRef typeManager, ExecutionContextRef execContext)
+EggShell::EggShell(TypeManagerRef tm)
 {
-    _typeManger     = typeManager;
-    _execContext    = execContext;
+    _typeManger     = tm;
     _mallocBuffer   = null;
 }
 //------------------------------------------------------------
@@ -62,7 +61,6 @@ NIError EggShell::Delete()
     }
     
     pTADM->DeleteTypes(true);
-    pTADM->Free(_execContext);
     pTADM->Free(this);
     pTADM->PrintMemoryStat("ES Delete end", true);
 
@@ -73,12 +71,12 @@ NIError EggShell::Delete()
 //------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
 {
-    ExecutionContextScope scope(_execContext);
+    TypeManagerScope scope(_typeManger);
     
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
     
-    TDViaParser parser(_execContext->TheTypeManager(), commandBuffer, &log, 1);
+    TDViaParser parser(_typeManger, commandBuffer, &log, 1);
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {

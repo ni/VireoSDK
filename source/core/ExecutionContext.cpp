@@ -204,13 +204,12 @@ VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
     }
 }
 //------------------------------------------------------------
-ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
+ExecutionContext::ExecutionContext()
 {
     if (!_classInited) {
         _classInited = true;
         _culDeSac._function = (InstructionFunction) CulDeSac;
     }
-    _theTypeManager = typeManager;
     _breakoutCount = 0;
     _runningQueueElt = (VIClump*) null;
     _timer._observerList = null;
@@ -219,11 +218,6 @@ ExecutionContext::ExecutionContext(TypeManagerRef typeManager)
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // For smaller targets there may only one for the entire process, or processor
     ExecutionContext gSingleExecutionContext;
-#else
-    // Typically there might be just one exec system per thread, however in the case of
-    // UI controls using an exec system,there may be several. It that case they should never be
-    // nested. When ExecuteSice is called from a thread this will be set up.
-    VIVM_THREAD_LOCAL ExecutionContextRef ExecutionContextScope::_threadsExecutionContext;
 #endif
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)
@@ -246,10 +240,6 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
 //------------------------------------------------------------
 ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
 {
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
-    ExecutionContextScope scope(this);
-#endif
-
     VIREO_ASSERT((_runningQueueElt == null))
 
     PlatformTickType currentTime  = PlatformTime::TickCount();
@@ -330,7 +320,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // TODO check global memory manager for allocation errors
 #else
-    if (TheTypeManager()->_totalAllocationFailures > 0) {
+    if (THREAD_TADM()->_totalAllocationFailures > 0) {
         reply = kExecutionState_None;
     }
 #endif
@@ -369,6 +359,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 }
 #endif
 DEFINE_VIREO_BEGIN(Execution)
+    DEFINE_VIREO_REQUIRES(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(.UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(.Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(.Clump))")

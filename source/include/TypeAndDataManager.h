@@ -50,18 +50,17 @@ class PointerType;
 class DefaultValueType;
 class DefaultPointerType;
 class CustomDataProcType;
-
 class TypeManager;
 class ExecutionContext;
 class IDataProcs;
 class String;
-
     
-typedef TypeCommon  *TypeRef;
-typedef TypeManager *TypeManagerRef;
 typedef NamedType *NamedTypeRef;
 typedef ElementType *ElementTypeRef;
+typedef ExecutionContext* ExecutionContextRef;
 typedef String *StringRef;
+typedef TypeCommon  *TypeRef;
+typedef TypeManager *TypeManagerRef;
 
 // StaticType is used for functions tha take types determined at load time.
 // specifiying StaticType for the parameter will result in the instruction holding a TypeCommon*
@@ -139,7 +138,7 @@ enum PointerTypeEnum {
     kPTInstructionFunction,
     kPTGenericFucntionPropType,
     kPTGenericFunctionCodeGen,
-    kPTExecContext,
+    kPTTypeManager,
 };
 
 // PointerTypeEnum defines how a pointer to data will be used.
@@ -194,19 +193,19 @@ inline IntIndex Max(IntIndex a, IntIndex b) { return a > b ? a : b; }
 class TypeManager
 {
 public:
-    static TypeManagerRef New(TypeManagerRef tmParent);
+    static TypeManagerRef New(TypeManagerRef tm);
     static void Delete(TypeManagerRef tm);
     
 private:
-    TypeManagerRef    _rootTypeManager;   // Root is null when the instance is the root.
-
+    TypeManagerRef      _baseTypeManager;   // Base is null when the instance is a root.
+    ExecutionContextRef _executionContext;
 #ifdef STL_MAP
     typedef std::map<SubString, NamedTypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
     std::map<SubString, NamedTypeRef, ComapreSubString>  _typeNameDictionary;
     std::map<SubString, TypeRef, ComapreSubString>  _typeInstanceDictionary;
 #else
     typedef DictionaryElt* TypeDictionaryIterator;
-    SimpleDictionary       _typeNameDictionary;
+    SimpleDictionary    _typeNameDictionary;
 #endif
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
@@ -230,6 +229,8 @@ private:
     TypeManager(TypeManagerRef typeManager);
     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
 public:
+    ExecutionContextRef TheExecutionContext() {return _executionContext;};
+    void    SetExecutionContext(ExecutionContextRef exec) {_executionContext = exec;};
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
     TypeRef ResolveToUniqueInstance(TypeRef type, SubString *binaryName);
@@ -239,7 +240,7 @@ public:
     TypeRef TypeList() { return _typeList; }
     void    PrintMemoryStat(ConstCStr, Boolean last);
     
-    TypeManagerRef RootTypeManager() { return _rootTypeManager; }
+    TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
@@ -325,6 +326,7 @@ class TypeManagerScope
 private:
     TypeManagerRef _saveTypeManager;
     VIVM_THREAD_LOCAL static TypeManagerRef ThreadsTypeManager;
+    
 public:
     TypeManagerScope(TypeManagerRef typeManager)
     {

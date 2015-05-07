@@ -20,7 +20,7 @@
  e(.Type)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
  e(.TypeManager)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
  e(.VI)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
- e(.Clump)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.Clump)  // encoding: 1 usage:0 baseType:c(e(.InstructionBlock CodeStart)e(.DataPointer Next)e(.Int64 WakeUpInfo)e(.DataPointer Owner)e(.DataPointer NextWaitingCaller)e(.DataPointer Caller)e(.Instruction SavePC)e(.Int32 FireCount)e(.Int32 ShortCount)e(.Int32 WaitCount)e(.Observer Observer)e(.Observer Observer)) dv:false generic:false
  e(.BranchTarget)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
  e(.Instruction)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
  e(.InstructionBlock)  // encoding:15 usage:0 baseType:cdp(.Instruction) dv:false generic:false

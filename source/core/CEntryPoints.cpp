@@ -45,7 +45,8 @@ VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const Utf8Char* commands, Int3
 //! Run the vireo execution system for a few slices.
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
 {
-    return pShell->TheExecutionContext()->ExecuteSlices(numSlices, 20);
+    TypeManagerScope scope(pShell->TheTypeManager());
+    return pShell->TheTypeManager()->TheExecutionContext()->ExecuteSlices(numSlices, 20);
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
@@ -72,7 +73,7 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
     if (actualType == null)
         return -1;
 
-    ExecutionContextScope scope(pShell->TheExecutionContext());
+    TypeManagerScope scope(pShell->TheTypeManager());
     STACK_VAR(String, flatDataString);
 
     // Write flattened data to the string
@@ -95,7 +96,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
     if (actualType == null)
         return -1;
     
-    ExecutionContextScope scope(pShell->TheExecutionContext());
+    TypeManagerScope scope(pShell->TheTypeManager());
     SubBinaryBuffer subBuffer((UInt8*)buffer, (UInt8*)buffer+bufferSize);
 
     // Write unflattened data to the element

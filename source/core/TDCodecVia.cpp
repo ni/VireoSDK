@@ -33,7 +33,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-ExecutionContextRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM)
+TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM)
 {
     TypeManagerRef newTADM = TypeManager::New(parentTADM);
     {
@@ -44,10 +44,12 @@ ExecutionContextRef ConstructTypeManagerAndExecutionContext(TypeManagerRef paren
             // In the beginning... creating a new universe, add some core types.
             TypeDefiner::DefineStandardTypes(newTADM);
             TypeDefiner::DefineTypes(newTADM);
+            ExecutionContextRef exec = TADM_NEW_PLACEMENT(ExecutionContext)();
+            newTADM->SetExecutionContext(exec);
         }
         
         // Once standard types have been loaded an execution context can be constructed
-        return TADM_NEW_PLACEMENT(ExecutionContext)(newTADM);
+        return newTADM;
     }
 }
 //------------------------------------------------------------
@@ -149,9 +151,9 @@ NIError TDViaParser::ParseREPL()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
 {
-    ExecutionContextRef exec = ConstructTypeManagerAndExecutionContext(parentTADM);
-    TypeRef eType = _typeManager->FindType(tsExecutionContextType);
-    TypeRef type = DefaultPointerType::New(_typeManager, eType, exec, kPTExecContext);
+    TypeManagerRef newTADM = ConstructTypeManagerAndExecutionContext(parentTADM);
+    TypeRef eType = _typeManager->FindType(tsTypeManagerType);
+    TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
     
     if (!_string.EatChar('(')) {
         LOG_EVENT(kHardDataError, "'(' missing");
@@ -159,8 +161,8 @@ TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
     }
     
     {   // Parse the nested section using the newly created TADM/Context pair.
-        ExecutionContextScope scope(exec);
-        TDViaParser parser(exec->TheTypeManager(), &_string, _pLog, CalcCurrentLine());
+        TypeManagerScope scope(newTADM);
+        TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine());
         parser.ParseREPL();
         _string.AliasAssign(parser.TheString());
     }
@@ -1073,7 +1075,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
     
-    vi->Init(ExecutionContextScope::Current(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
+    vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
     
     if (_loadVIsImmediatly) {
         TDViaParser::FinalizeVILoad(vi, _pLog);
@@ -1095,17 +1097,17 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
             // (1) Parse, but don't create any instrucitons, determine how much memory is needed.
             // Errors are ignored in this pass.
 #ifdef VIREO_USING_ASSERTS
-            //  Int32 startingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
+            //  Int32 startingAllocations = vi->TheTypeManager()->_totalAllocations;
 #endif
             EventLog dummyLog(EventLog::DevNull);
-            TDViaParser parser(vi->OwningContext()->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
 #ifdef VIREO_USING_ASSERTS
             // The frist pass should just calculate the size needed. If any allocations occured then
             // there is a problem.
-            // Int32 endingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
+            // Int32 endingAllocations = vi->TheTypeManager()->_totalAllocations;
             // VIREO_ASSERT(startingAllocations == endingAllocations)
 #endif
         }
@@ -1116,7 +1118,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
         
         {
             // (3) Parse a second time, instrucitons will be allocated out of the chunk.
-            TDViaParser parser(vi->OwningContext()->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1268,7 +1270,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     
                         if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // unadorned number
                             state.AddBranchTargetArgument(&token);
-                        } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
+                        } else if (formalParameterTypeName.CompareCStr(tsVIClumpType)) {
+                            // Parse as an integer then resolve to pointer to the clump.
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
@@ -1831,7 +1834,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
     TypedArray1D<StringRef>* itemPath = _Param(3);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat("JSON");
-    TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &jsonString, &log, 1, &jsonFormat);
+    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat);
     if (itemPath->Length()>0) {
         Boolean existingPath = true;
         for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
@@ -1861,7 +1864,7 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     SubString string = _Param(0)->MakeSubStringAlias();
     EventLog log(_Param(3));
     
-    TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &string, &log, 1);
+    TDViaParser parser(THREAD_TADM(), &string, &log, 1);
     parser._loadVIsImmediatly = true;
     
     parser.ParseData(type, _ParamPointer(2));
@@ -1885,11 +1888,11 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
         EventLog log(EventLog::DevNull);
-        TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
+        TDViaParser parser(THREAD_TADM(), &substring, &log, 1);
         Int64 parsedValue;
 
         // ParseData needs to be given an integer type so that it parses the string as a decimal string.
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Int64");
+        TypeRef parseType = THREAD_TADM()->FindType("Int64");
 
         parser.ParseData(parseType, &parsedValue);
 
@@ -1939,11 +1942,11 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
         EventLog log(EventLog::DevNull);
-        TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
+        TDViaParser parser(THREAD_TADM(), &substring, &log, 1);
         Double parsedValue;
 
         // ParseData needs to be given a floating point type so that it parses the string as an exponential string.
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Double");
+        TypeRef parseType = THREAD_TADM()->FindType("Double");
 
         parser.ParseData(parseType, &parsedValue);
 

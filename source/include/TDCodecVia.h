@@ -25,9 +25,7 @@ class VirtualInstrument;
 class InstructionAllocator;
 
 //! Create a Execution and Typemanager pair.
-class ExecutionContext;
-typedef ExecutionContext* ExecutionContextRef;
-ExecutionContextRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM);
+TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM);
 
 //! Punctuation and options used by the TDViaFormatter
 enum ViaFormat {
@@ -58,9 +56,7 @@ struct ViaFormatOptions
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
     Int32           _fieldWidth;
-    
     ViaFormatChars  _fmt;
-    
 };
 
 //------------------------------------------------------------
@@ -219,6 +215,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsFireCountOpToken      "FireCount"
 
 #define tsExecutionContextType  "ExecutionContext"
+#define tsTypeManagerType       "TypeManager"
+#define tsVIClumpType           "Clump"
 
 } // namespace Vireo
 

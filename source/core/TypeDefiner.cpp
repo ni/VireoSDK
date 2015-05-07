@@ -208,16 +208,11 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "BranchTarget", ".DataPointer");
     Define(tm, "Instruction", ".DataPointer");
-
-    // Pointer to root clump of a VI
-    // Clump - 0 based index into VIs array of clumps
-    Define(tm, "Clump", ".DataPointer");  // Parameter is index
     Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
-    Define(tm, "EmptyParameterList", "c()");  // Parameter is name, it gets resolved to first clump for SubVI
 
     // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
-    Define(tm, "Type", ".DataPointer");
-    Define(tm, "TypeManager", ".DataPointer");
+    Define(tm, tsTypeType, ".DataPointer");
+    Define(tm, tsTypeManagerType, ".DataPointer");
 
     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
     Define(tm, "StaticType", ".DataPointer");

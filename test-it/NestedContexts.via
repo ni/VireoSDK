@@ -1,0 +1,61 @@
+define (HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+    )
+    clump (
+       Println(variable1)
+    )
+) ) )
+
+context(
+    define (HelloWorld dv(.VirtualInstrument (
+        Locals:
+        c(
+            e(dv(.String "I'm in a context.") variable1)
+        )
+        clump (
+           Println(variable1)
+        )
+    ) ) )
+    enqueue (HelloWorld)
+
+    context(
+        define (HelloWorld dv(.VirtualInstrument (
+            Locals:
+            c(
+                e(dv(.String "I'm deep in a context.") variable1)
+            )
+            clump (
+               Println(variable1)
+            )
+        ) ) )
+        enqueue (HelloWorld)
+            context(
+                define (HelloWorld dv(.VirtualInstrument (
+                    Locals:
+                    c(
+                        e(dv(.String "I'm very deep in a context.") variable1)
+                    )
+                    clump (
+                       Println(variable1)
+                    )
+                ) ) )
+                enqueue (HelloWorld)
+            )
+
+    )
+)
+context(
+    define (HelloWorld dv(.VirtualInstrument (
+        Locals:
+        c(
+            e(dv(.String "I'm in a context as well.") variable1)
+        )
+        clump (
+           Println(variable1)
+        )
+    ) ) )
+    enqueue (HelloWorld)
+)
+enqueue (HelloWorld)
