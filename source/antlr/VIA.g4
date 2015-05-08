@@ -7,28 +7,28 @@ This software is subject to the terms described in the LICENSE.TXT file
 SDG
 */
 
-// TODO UTF-8 adaptations needed.
-
 grammar VIA;
+
+// TODO UTF-8 adaptations needed.
 
 viaStream
     : symbol (symbol)*
     ;
 
 symbol
-    : NAMED_SYMBOL
-    | literal
-    | temaplate
-    | invoke
+    : literal
+    | temaplateSymbol
+    | invokeSymbol
     | viaCollection
     | jsonishArray
     | jsonishCluster
+    | SIMPLE_SYMBOL
     ;
 
 literal
-    : STRING
+    : BOOLEAN
     | NUMBER
-    | BOOLEAN
+    | STRING
     ;
 
 //------------------------------------------------------------
@@ -36,49 +36,15 @@ literal
 
 // Via collections covers array and cluster initializers
 viaCollection
-    : '('  element* ')' ;
+    : '(' element* ')' ;
 
 // JSON arays use square brackes and use commas (optional in via)
 jsonishArray
     : '[' symbol? (','? symbol)* ']' ;
 
-// JSON arays use curly braces and use commas (optional in via)
+// JSON "clusters" use curly braces and use commas (optional in via)
 jsonishCluster
     : '{' (fieldName symbol)? (','? fieldName symbol)* '}' ;
-
-
-//------------------------------------------------------------
-// Symbols can be used in three forms,
-// Simple, templated, and call.
-
-// Simple is a the symbol token followed by WS
-NAMED_SYMBOL: SYMBOL_CORE ;
-
-// Template is a the symbol token followed by '<' no WS
-temaplate: TEMPLATED_SYMBOL element* CLOSE;
-TEMPLATED_SYMBOL: SYMBOL_CORE OPEN_TEMPLATE ;
-fragment OPEN_TEMPLATE: '<';
-CLOSE: '>';
-
-// Invoke is a the symbol token followed by '(' no WS
-invoke: INVOKE_SYMBOL element* CLOSE_INVOKE;
-INVOKE_SYMBOL: SYMBOL_CORE OPEN_INVOKE;
-fragment OPEN_INVOKE: '(';
-CLOSE_INVOKE: ')';
-
-// Elements can be prefixed by a name.
-// Names are used as cluster field names or
-// parameter names for templates or invoke expressions.
-element : (fieldName? symbol) ;
-
-// Field names be symbols, or quoted strings
-// Quoted strings allow for JSON style inializers
-fieldName: FIELD_NAME ;
-FIELD_NAME:  (SYMBOL_CORE | ESCAPED_STRING) ':' ;
-
-// Need to extend to full UTF-8 set.
-fragment SYMBOL_CORE : ('*' | (PERCENT_ESC | [._a-zA-Z]) (PERCENT_ESC | [._a-zA-Z0-9])*) ;
-fragment PERCENT_ESC : '%' ((HEX_CAP HEX_CAP) | (HEX_LC HEX_LC));
 
 //------------------------------------------------------------
 // Strings come in two formats.
@@ -112,14 +78,11 @@ fragment VERBATIM_DQ : '"' (~["])* '"';
 
 //------------------------------------------------------------
 // Boolean literals.
-BOOLEAN
-    : 'true'
-    | 'false'
-    ;
+BOOLEAN : 'true' | 'false' ;
 
 //------------------------------------------------------------
 // Numbers, both integer and IEEE754. Adapted from ANTLR's
-// JSON grammar numeric key words have to be excluded from
+// JSON grammar. Numeric key words have to be excluded from
 // gerenal symbols.
 NUMBER
     :   '-'? INT '.' [0-9]+ EXP?    // 1.35, 1.35E-9, 0.3, -4.5
@@ -127,23 +90,67 @@ NUMBER
     |   '-'? INT                    // -3, 45
     |   '0x' (HEX_LC* | HEX_CAP*)   // 0xFFF, oxff
     |   '0b' [01]*                  // 0b0010011
-    |   [+\-]? ('nan' | 'NaN')
-    |   [+\-]? ('inf' | 'Infinity')
+    |   [+\-]? NOT_A_NUMBER
+    |   [+\-]? INFINITY
     ;
-
-// Numbers should not be followed by symbol charactes.
-// This matches that pattern.
-INVALIDNUMBER : NUMBER [0-9a-zA-Z_.]* ;
 
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
 fragment EXP :   [Ee] [+\-]? INT ;    // \- since - means "range" inside [...]
+
+fragment INFINITY : ('inf' | 'Infinity') ;
+fragment NOT_A_NUMBER : ('nan' | 'NaN') ;
+
+// Numbers should not be followed by symbol characters.
+// This token matches that pattern.
+INVALID_NUMBER : NUMBER [0-9a-zA-Z_.]* ;
+
+//------------------------------------------------------------
+// Symbols can be used in three forms,
+// (1)simple, (2)templated, and (3)invoke.
+
+// Simple is a the symbol token followed by WS
+SIMPLE_SYMBOL: SYMBOL_CORE | SYMBOL_VERBATIM;
+
+// Template is a the symbol token followed by '<' no WS
+temaplateSymbol: TEMPLATED_SYMBOL element* CLOSE_TEMPLATE;
+
+    TEMPLATED_SYMBOL: SYMBOL_CORE OPEN_TEMPLATE ;
+
+    fragment OPEN_TEMPLATE: '<';
+
+    CLOSE_TEMPLATE: '>';
+
+// Invoke is a the symbol token followed by '(' no WS
+invokeSymbol: INVOKE_SYMBOL element* CLOSE_INVOKE;
+
+    INVOKE_SYMBOL: SYMBOL_CORE OPEN_INVOKE;
+
+    fragment OPEN_INVOKE: '(';
+
+    CLOSE_INVOKE: ')';
+
+// Elements can be prefixed by a name.
+// Names are used as cluster field names or
+// parameter names for templates or invoke expressions.
+element : (fieldName? symbol) ;
+
+// Field names be symbols, or quoted strings
+// Quoted strings allow for JSON style inializers
+fieldName: FIELD_NAME ;
+FIELD_NAME:  (SYMBOL_CORE | ESCAPED_STRING) ':' ;
+
+// Need to extend to full UTF-8 set.
+fragment SYMBOL_CORE : ('*' | (PERCENT_ESC | [._a-zA-Z]) (PERCENT_ESC | [._a-zA-Z0-9])*) ;
+//fragment SYMBOL_VERBATIM : '\\' ('\\\\' | ~[\\])* '\\' ;
+fragment SYMBOL_VERBATIM : '|' ('\\\\' | ~[|])* '|' ;
+fragment PERCENT_ESC : '%' ((HEX_CAP HEX_CAP) | (HEX_LC HEX_LC));
 
 //------------------------------------------------------------
 // Things to ignore
 WS : [ \t\n\r]+ -> skip ;
 
-//   /* Block coment */
+//   /* A block comment */
 BLOCK_COMMENT : ('/*' .*? '*/') -> skip ;
 
-//   // Comment to end of line
+//   // A comment to end of line
 LINE_COMMENT : ('//' ~[\r\n]*) -> skip ;

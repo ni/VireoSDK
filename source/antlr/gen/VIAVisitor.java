@@ -47,17 +47,17 @@ public interface VIAVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitJsonishCluster(@NotNull VIAParser.JsonishClusterContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VIAParser#temaplate}.
+	 * Visit a parse tree produced by {@link VIAParser#temaplateSymbol}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTemaplate(@NotNull VIAParser.TemaplateContext ctx);
+	T visitTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link VIAParser#invoke}.
+	 * Visit a parse tree produced by {@link VIAParser#invokeSymbol}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInvoke(@NotNull VIAParser.InvokeContext ctx);
+	T visitInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link VIAParser#element}.
 	 * @param ctx the parse tree

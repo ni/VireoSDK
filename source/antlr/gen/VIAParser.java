@@ -16,26 +16,28 @@ public class VIAParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, NAMED_SYMBOL=7, TEMPLATED_SYMBOL=8, 
-		CLOSE=9, INVOKE_SYMBOL=10, CLOSE_INVOKE=11, FIELD_NAME=12, STRING=13, 
-		BOOLEAN=14, NUMBER=15, INVALIDNUMBER=16, WS=17, BLOCK_COMMENT=18, LINE_COMMENT=19;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, STRING=7, BOOLEAN=8, NUMBER=9, 
+		INVALID_NUMBER=10, SIMPLE_SYMBOL=11, TEMPLATED_SYMBOL=12, CLOSE_TEMPLATE=13, 
+		INVOKE_SYMBOL=14, CLOSE_INVOKE=15, FIELD_NAME=16, WS=17, BLOCK_COMMENT=18, 
+		LINE_COMMENT=19;
 	public static final int
 		RULE_viaStream = 0, RULE_symbol = 1, RULE_literal = 2, RULE_viaCollection = 3, 
-		RULE_jsonishArray = 4, RULE_jsonishCluster = 5, RULE_temaplate = 6, RULE_invoke = 7, 
-		RULE_element = 8, RULE_fieldName = 9;
+		RULE_jsonishArray = 4, RULE_jsonishCluster = 5, RULE_temaplateSymbol = 6, 
+		RULE_invokeSymbol = 7, RULE_element = 8, RULE_fieldName = 9;
 	public static final String[] ruleNames = {
 		"viaStream", "symbol", "literal", "viaCollection", "jsonishArray", "jsonishCluster", 
-		"temaplate", "invoke", "element", "fieldName"
+		"temaplateSymbol", "invokeSymbol", "element", "fieldName"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'('", "'['", "','", "']'", "'{'", "'}'", null, null, "'>'", null, 
-		"')'"
+		null, "'('", "'['", "','", "']'", "'{'", "'}'", null, null, null, null, 
+		null, null, "'>'", null, "')'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, "NAMED_SYMBOL", "TEMPLATED_SYMBOL", 
-		"CLOSE", "INVOKE_SYMBOL", "CLOSE_INVOKE", "FIELD_NAME", "STRING", "BOOLEAN", 
-		"NUMBER", "INVALIDNUMBER", "WS", "BLOCK_COMMENT", "LINE_COMMENT"
+		null, null, null, null, null, null, null, "STRING", "BOOLEAN", "NUMBER", 
+		"INVALID_NUMBER", "SIMPLE_SYMBOL", "TEMPLATED_SYMBOL", "CLOSE_TEMPLATE", 
+		"INVOKE_SYMBOL", "CLOSE_INVOKE", "FIELD_NAME", "WS", "BLOCK_COMMENT", 
+		"LINE_COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -124,7 +126,7 @@ public class VIAParser extends Parser {
 			setState(24);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << NAMED_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER) | (1L << SIMPLE_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL))) != 0)) {
 				{
 				{
 				setState(21); 
@@ -149,15 +151,14 @@ public class VIAParser extends Parser {
 	}
 
 	public static class SymbolContext extends ParserRuleContext {
-		public TerminalNode NAMED_SYMBOL() { return getToken(VIAParser.NAMED_SYMBOL, 0); }
 		public LiteralContext literal() {
 			return getRuleContext(LiteralContext.class,0);
 		}
-		public TemaplateContext temaplate() {
-			return getRuleContext(TemaplateContext.class,0);
+		public TemaplateSymbolContext temaplateSymbol() {
+			return getRuleContext(TemaplateSymbolContext.class,0);
 		}
-		public InvokeContext invoke() {
-			return getRuleContext(InvokeContext.class,0);
+		public InvokeSymbolContext invokeSymbol() {
+			return getRuleContext(InvokeSymbolContext.class,0);
 		}
 		public ViaCollectionContext viaCollection() {
 			return getRuleContext(ViaCollectionContext.class,0);
@@ -168,6 +169,7 @@ public class VIAParser extends Parser {
 		public JsonishClusterContext jsonishCluster() {
 			return getRuleContext(JsonishClusterContext.class,0);
 		}
+		public TerminalNode SIMPLE_SYMBOL() { return getToken(VIAParser.SIMPLE_SYMBOL, 0); }
 		public SymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -193,55 +195,55 @@ public class VIAParser extends Parser {
 		try {
 			setState(34);
 			switch (_input.LA(1)) {
-			case NAMED_SYMBOL:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(27); 
-				match(NAMED_SYMBOL);
-				}
-				break;
 			case STRING:
 			case BOOLEAN:
 			case NUMBER:
-				enterOuterAlt(_localctx, 2);
+				enterOuterAlt(_localctx, 1);
 				{
-				setState(28); 
+				setState(27); 
 				literal();
 				}
 				break;
 			case TEMPLATED_SYMBOL:
-				enterOuterAlt(_localctx, 3);
+				enterOuterAlt(_localctx, 2);
 				{
-				setState(29); 
-				temaplate();
+				setState(28); 
+				temaplateSymbol();
 				}
 				break;
 			case INVOKE_SYMBOL:
-				enterOuterAlt(_localctx, 4);
+				enterOuterAlt(_localctx, 3);
 				{
-				setState(30); 
-				invoke();
+				setState(29); 
+				invokeSymbol();
 				}
 				break;
 			case T__0:
-				enterOuterAlt(_localctx, 5);
+				enterOuterAlt(_localctx, 4);
 				{
-				setState(31); 
+				setState(30); 
 				viaCollection();
 				}
 				break;
 			case T__1:
-				enterOuterAlt(_localctx, 6);
+				enterOuterAlt(_localctx, 5);
 				{
-				setState(32); 
+				setState(31); 
 				jsonishArray();
 				}
 				break;
 			case T__4:
+				enterOuterAlt(_localctx, 6);
+				{
+				setState(32); 
+				jsonishCluster();
+				}
+				break;
+			case SIMPLE_SYMBOL:
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(33); 
-				jsonishCluster();
+				match(SIMPLE_SYMBOL);
 				}
 				break;
 			default:
@@ -260,9 +262,9 @@ public class VIAParser extends Parser {
 	}
 
 	public static class LiteralContext extends ParserRuleContext {
-		public TerminalNode STRING() { return getToken(VIAParser.STRING, 0); }
-		public TerminalNode NUMBER() { return getToken(VIAParser.NUMBER, 0); }
 		public TerminalNode BOOLEAN() { return getToken(VIAParser.BOOLEAN, 0); }
+		public TerminalNode NUMBER() { return getToken(VIAParser.NUMBER, 0); }
+		public TerminalNode STRING() { return getToken(VIAParser.STRING, 0); }
 		public LiteralContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -346,7 +348,7 @@ public class VIAParser extends Parser {
 			setState(42);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << NAMED_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER) | (1L << SIMPLE_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME))) != 0)) {
 				{
 				{
 				setState(39); 
@@ -419,7 +421,7 @@ public class VIAParser extends Parser {
 			setState(57);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__2) | (1L << T__4) | (1L << NAMED_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__2) | (1L << T__4) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER) | (1L << SIMPLE_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL))) != 0)) {
 				{
 				{
 				setState(52);
@@ -546,37 +548,37 @@ public class VIAParser extends Parser {
 		return _localctx;
 	}
 
-	public static class TemaplateContext extends ParserRuleContext {
+	public static class TemaplateSymbolContext extends ParserRuleContext {
 		public TerminalNode TEMPLATED_SYMBOL() { return getToken(VIAParser.TEMPLATED_SYMBOL, 0); }
-		public TerminalNode CLOSE() { return getToken(VIAParser.CLOSE, 0); }
+		public TerminalNode CLOSE_TEMPLATE() { return getToken(VIAParser.CLOSE_TEMPLATE, 0); }
 		public List<ElementContext> element() {
 			return getRuleContexts(ElementContext.class);
 		}
 		public ElementContext element(int i) {
 			return getRuleContext(ElementContext.class,i);
 		}
-		public TemaplateContext(ParserRuleContext parent, int invokingState) {
+		public TemaplateSymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_temaplate; }
+		@Override public int getRuleIndex() { return RULE_temaplateSymbol; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VIAListener ) ((VIAListener)listener).enterTemaplate(this);
+			if ( listener instanceof VIAListener ) ((VIAListener)listener).enterTemaplateSymbol(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VIAListener ) ((VIAListener)listener).exitTemaplate(this);
+			if ( listener instanceof VIAListener ) ((VIAListener)listener).exitTemaplateSymbol(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof VIAVisitor ) return ((VIAVisitor<? extends T>)visitor).visitTemaplate(this);
+			if ( visitor instanceof VIAVisitor ) return ((VIAVisitor<? extends T>)visitor).visitTemaplateSymbol(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final TemaplateContext temaplate() throws RecognitionException {
-		TemaplateContext _localctx = new TemaplateContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_temaplate);
+	public final TemaplateSymbolContext temaplateSymbol() throws RecognitionException {
+		TemaplateSymbolContext _localctx = new TemaplateSymbolContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_temaplateSymbol);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -586,7 +588,7 @@ public class VIAParser extends Parser {
 			setState(85);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << NAMED_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER) | (1L << SIMPLE_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME))) != 0)) {
 				{
 				{
 				setState(82); 
@@ -598,7 +600,7 @@ public class VIAParser extends Parser {
 				_la = _input.LA(1);
 			}
 			setState(88); 
-			match(CLOSE);
+			match(CLOSE_TEMPLATE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -612,7 +614,7 @@ public class VIAParser extends Parser {
 		return _localctx;
 	}
 
-	public static class InvokeContext extends ParserRuleContext {
+	public static class InvokeSymbolContext extends ParserRuleContext {
 		public TerminalNode INVOKE_SYMBOL() { return getToken(VIAParser.INVOKE_SYMBOL, 0); }
 		public TerminalNode CLOSE_INVOKE() { return getToken(VIAParser.CLOSE_INVOKE, 0); }
 		public List<ElementContext> element() {
@@ -621,28 +623,28 @@ public class VIAParser extends Parser {
 		public ElementContext element(int i) {
 			return getRuleContext(ElementContext.class,i);
 		}
-		public InvokeContext(ParserRuleContext parent, int invokingState) {
+		public InvokeSymbolContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_invoke; }
+		@Override public int getRuleIndex() { return RULE_invokeSymbol; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof VIAListener ) ((VIAListener)listener).enterInvoke(this);
+			if ( listener instanceof VIAListener ) ((VIAListener)listener).enterInvokeSymbol(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof VIAListener ) ((VIAListener)listener).exitInvoke(this);
+			if ( listener instanceof VIAListener ) ((VIAListener)listener).exitInvokeSymbol(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof VIAVisitor ) return ((VIAVisitor<? extends T>)visitor).visitInvoke(this);
+			if ( visitor instanceof VIAVisitor ) return ((VIAVisitor<? extends T>)visitor).visitInvokeSymbol(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final InvokeContext invoke() throws RecognitionException {
-		InvokeContext _localctx = new InvokeContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_invoke);
+	public final InvokeSymbolContext invokeSymbol() throws RecognitionException {
+		InvokeSymbolContext _localctx = new InvokeSymbolContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_invokeSymbol);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -652,7 +654,7 @@ public class VIAParser extends Parser {
 			setState(94);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << NAMED_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << T__1) | (1L << T__4) | (1L << STRING) | (1L << BOOLEAN) | (1L << NUMBER) | (1L << SIMPLE_SYMBOL) | (1L << TEMPLATED_SYMBOL) | (1L << INVOKE_SYMBOL) | (1L << FIELD_NAME))) != 0)) {
 				{
 				{
 				setState(91); 
@@ -788,25 +790,25 @@ public class VIAParser extends Parser {
 		"\7E\n\7\3\7\5\7H\n\7\3\7\3\7\3\7\7\7M\n\7\f\7\16\7P\13\7\3\7\3\7\3\b\3"+
 		"\b\7\bV\n\b\f\b\16\bY\13\b\3\b\3\b\3\t\3\t\7\t_\n\t\f\t\16\tb\13\t\3\t"+
 		"\3\t\3\n\5\ng\n\n\3\n\3\n\3\13\3\13\3\13\2\2\f\2\4\6\b\n\f\16\20\22\24"+
-		"\2\3\3\2\17\21s\2\26\3\2\2\2\4$\3\2\2\2\6&\3\2\2\2\b(\3\2\2\2\n\61\3\2"+
+		"\2\3\3\2\t\13s\2\26\3\2\2\2\4$\3\2\2\2\6&\3\2\2\2\b(\3\2\2\2\n\61\3\2"+
 		"\2\2\f@\3\2\2\2\16S\3\2\2\2\20\\\3\2\2\2\22f\3\2\2\2\24j\3\2\2\2\26\32"+
 		"\5\4\3\2\27\31\5\4\3\2\30\27\3\2\2\2\31\34\3\2\2\2\32\30\3\2\2\2\32\33"+
-		"\3\2\2\2\33\3\3\2\2\2\34\32\3\2\2\2\35%\7\t\2\2\36%\5\6\4\2\37%\5\16\b"+
-		"\2 %\5\20\t\2!%\5\b\5\2\"%\5\n\6\2#%\5\f\7\2$\35\3\2\2\2$\36\3\2\2\2$"+
-		"\37\3\2\2\2$ \3\2\2\2$!\3\2\2\2$\"\3\2\2\2$#\3\2\2\2%\5\3\2\2\2&\'\t\2"+
-		"\2\2\'\7\3\2\2\2(,\7\3\2\2)+\5\22\n\2*)\3\2\2\2+.\3\2\2\2,*\3\2\2\2,-"+
-		"\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\r\2\2\60\t\3\2\2\2\61\63\7\4\2\2\62"+
-		"\64\5\4\3\2\63\62\3\2\2\2\63\64\3\2\2\2\64;\3\2\2\2\65\67\7\5\2\2\66\65"+
-		"\3\2\2\2\66\67\3\2\2\2\678\3\2\2\28:\5\4\3\29\66\3\2\2\2:=\3\2\2\2;9\3"+
-		"\2\2\2;<\3\2\2\2<>\3\2\2\2=;\3\2\2\2>?\7\6\2\2?\13\3\2\2\2@D\7\7\2\2A"+
-		"B\5\24\13\2BC\5\4\3\2CE\3\2\2\2DA\3\2\2\2DE\3\2\2\2EN\3\2\2\2FH\7\5\2"+
-		"\2GF\3\2\2\2GH\3\2\2\2HI\3\2\2\2IJ\5\24\13\2JK\5\4\3\2KM\3\2\2\2LG\3\2"+
-		"\2\2MP\3\2\2\2NL\3\2\2\2NO\3\2\2\2OQ\3\2\2\2PN\3\2\2\2QR\7\b\2\2R\r\3"+
-		"\2\2\2SW\7\n\2\2TV\5\22\n\2UT\3\2\2\2VY\3\2\2\2WU\3\2\2\2WX\3\2\2\2XZ"+
-		"\3\2\2\2YW\3\2\2\2Z[\7\13\2\2[\17\3\2\2\2\\`\7\f\2\2]_\5\22\n\2^]\3\2"+
-		"\2\2_b\3\2\2\2`^\3\2\2\2`a\3\2\2\2ac\3\2\2\2b`\3\2\2\2cd\7\r\2\2d\21\3"+
-		"\2\2\2eg\5\24\13\2fe\3\2\2\2fg\3\2\2\2gh\3\2\2\2hi\5\4\3\2i\23\3\2\2\2"+
-		"jk\7\16\2\2k\25\3\2\2\2\16\32$,\63\66;DGNW`f";
+		"\3\2\2\2\33\3\3\2\2\2\34\32\3\2\2\2\35%\5\6\4\2\36%\5\16\b\2\37%\5\20"+
+		"\t\2 %\5\b\5\2!%\5\n\6\2\"%\5\f\7\2#%\7\r\2\2$\35\3\2\2\2$\36\3\2\2\2"+
+		"$\37\3\2\2\2$ \3\2\2\2$!\3\2\2\2$\"\3\2\2\2$#\3\2\2\2%\5\3\2\2\2&\'\t"+
+		"\2\2\2\'\7\3\2\2\2(,\7\3\2\2)+\5\22\n\2*)\3\2\2\2+.\3\2\2\2,*\3\2\2\2"+
+		",-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\21\2\2\60\t\3\2\2\2\61\63\7\4\2\2"+
+		"\62\64\5\4\3\2\63\62\3\2\2\2\63\64\3\2\2\2\64;\3\2\2\2\65\67\7\5\2\2\66"+
+		"\65\3\2\2\2\66\67\3\2\2\2\678\3\2\2\28:\5\4\3\29\66\3\2\2\2:=\3\2\2\2"+
+		";9\3\2\2\2;<\3\2\2\2<>\3\2\2\2=;\3\2\2\2>?\7\6\2\2?\13\3\2\2\2@D\7\7\2"+
+		"\2AB\5\24\13\2BC\5\4\3\2CE\3\2\2\2DA\3\2\2\2DE\3\2\2\2EN\3\2\2\2FH\7\5"+
+		"\2\2GF\3\2\2\2GH\3\2\2\2HI\3\2\2\2IJ\5\24\13\2JK\5\4\3\2KM\3\2\2\2LG\3"+
+		"\2\2\2MP\3\2\2\2NL\3\2\2\2NO\3\2\2\2OQ\3\2\2\2PN\3\2\2\2QR\7\b\2\2R\r"+
+		"\3\2\2\2SW\7\16\2\2TV\5\22\n\2UT\3\2\2\2VY\3\2\2\2WU\3\2\2\2WX\3\2\2\2"+
+		"XZ\3\2\2\2YW\3\2\2\2Z[\7\17\2\2[\17\3\2\2\2\\`\7\20\2\2]_\5\22\n\2^]\3"+
+		"\2\2\2_b\3\2\2\2`^\3\2\2\2`a\3\2\2\2ac\3\2\2\2b`\3\2\2\2cd\7\21\2\2d\21"+
+		"\3\2\2\2eg\5\24\13\2fe\3\2\2\2fg\3\2\2\2gh\3\2\2\2hi\5\4\3\2i\23\3\2\2"+
+		"\2jk\7\22\2\2k\25\3\2\2\2\16\32$,\63\66;DGNW`f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

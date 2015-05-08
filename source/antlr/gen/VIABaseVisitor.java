@@ -59,14 +59,14 @@ public class VIABaseVisitor<T> extends AbstractParseTreeVisitor<T> implements VI
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTemaplate(@NotNull VIAParser.TemaplateContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitInvoke(@NotNull VIAParser.InvokeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

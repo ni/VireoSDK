@@ -68,25 +68,25 @@ public interface VIAListener extends ParseTreeListener {
 	 */
 	void exitJsonishCluster(@NotNull VIAParser.JsonishClusterContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VIAParser#temaplate}.
+	 * Enter a parse tree produced by {@link VIAParser#temaplateSymbol}.
 	 * @param ctx the parse tree
 	 */
-	void enterTemaplate(@NotNull VIAParser.TemaplateContext ctx);
+	void enterTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VIAParser#temaplate}.
+	 * Exit a parse tree produced by {@link VIAParser#temaplateSymbol}.
 	 * @param ctx the parse tree
 	 */
-	void exitTemaplate(@NotNull VIAParser.TemaplateContext ctx);
+	void exitTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link VIAParser#invoke}.
+	 * Enter a parse tree produced by {@link VIAParser#invokeSymbol}.
 	 * @param ctx the parse tree
 	 */
-	void enterInvoke(@NotNull VIAParser.InvokeContext ctx);
+	void enterInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link VIAParser#invoke}.
+	 * Exit a parse tree produced by {@link VIAParser#invokeSymbol}.
 	 * @param ctx the parse tree
 	 */
-	void exitInvoke(@NotNull VIAParser.InvokeContext ctx);
+	void exitInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link VIAParser#element}.
 	 * @param ctx the parse tree

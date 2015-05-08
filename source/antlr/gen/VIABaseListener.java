@@ -88,25 +88,25 @@ public class VIABaseListener implements VIAListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTemaplate(@NotNull VIAParser.TemaplateContext ctx) { }
+	@Override public void enterTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTemaplate(@NotNull VIAParser.TemaplateContext ctx) { }
+	@Override public void exitTemaplateSymbol(@NotNull VIAParser.TemaplateSymbolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInvoke(@NotNull VIAParser.InvokeContext ctx) { }
+	@Override public void enterInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInvoke(@NotNull VIAParser.InvokeContext ctx) { }
+	@Override public void exitInvokeSymbol(@NotNull VIAParser.InvokeSymbolContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
