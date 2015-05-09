@@ -11,24 +11,35 @@ grammar VIA;
 
 // TODO UTF-8 adaptations needed.
 
+//------------------------------------------------------------
+// The VIA streamis a series of symobl expressions.
 viaStream
     : symbol (symbol)*
     ;
 
+//------------------------------------------------------------
+// Symbols in Vireo represent a value encoded in some
+// structure of bits. A symbol can be used for its value
+// or for properties of the structure that hold the value.
 symbol
-    : literal
-    | temaplateSymbol
-    | invokeSymbol
-    | viaCollection
-    | jsonishArray
-    | jsonishCluster
-    | SIMPLE_SYMBOL
+    : literal               // 42, true, "Hello"
+    | temaplateSymbol       // Queue<Int32>
+    | invokeSymbol          // Add(4 x z)
+    | SIMPLE_SYMBOL         // Pi
     ;
 
+//------------------------------------------------------------
+// Literals are pure values. Once loaded a symbol will be
+// created using an appropriate strcutre that can contain
+// the value. Collections may be a mix of pure values
+// and symbols.
 literal
-    : BOOLEAN
-    | NUMBER
-    | STRING
+    : BOOLEAN               // true, false
+    | NUMBER                // 42, 3.14
+    | STRING                // "Hello"
+    | viaCollection         // (1 2 3 4)
+    | jsonishArray          // [1,2,3,4]
+    | jsonishCluster        // {"x":1,"y":1}
     ;
 
 //------------------------------------------------------------
@@ -85,17 +96,17 @@ BOOLEAN : 'true' | 'false' ;
 // JSON grammar. Numeric key words have to be excluded from
 // gerenal symbols.
 NUMBER
-    :   '-'? INT '.' [0-9]+ EXP?    // 1.35, 1.35E-9, 0.3, -4.5
-    |   '-'? INT EXP                // 1e10 -3e4
+    :   '-'? INT '.' [0-9]+ EXP?    // 505,
+    |   '-'? INT EXP                // 3.14e10, 3.14-e10
     |   '-'? INT                    // -3, 45
-    |   '0x' (HEX_LC* | HEX_CAP*)   // 0xFFF, oxff
+    |   '0x' (HEX_LC* | HEX_CAP*)   // 0xFFF, 0xff (don't mix capitalization)
     |   '0b' [01]*                  // 0b0010011
     |   [+\-]? NOT_A_NUMBER
     |   [+\-]? INFINITY
     ;
 
-fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
-fragment EXP :   [Ee] [+\-]? INT ;    // \- since - means "range" inside [...]
+fragment INT :   '0' | [1-9] [0-9]* ; // Don't allow leading zeros.
+fragment EXP :   [Ee] [+\-]? INT ;
 
 fragment INFINITY : ('inf' | 'Infinity') ;
 fragment NOT_A_NUMBER : ('nan' | 'NaN') ;
@@ -114,7 +125,7 @@ SIMPLE_SYMBOL: SYMBOL_CORE | SYMBOL_VERBATIM;
 // Template is a the symbol token followed by '<' no WS
 temaplateSymbol: TEMPLATED_SYMBOL element* CLOSE_TEMPLATE;
 
-    TEMPLATED_SYMBOL: SYMBOL_CORE OPEN_TEMPLATE ;
+    TEMPLATED_SYMBOL: SIMPLE_SYMBOL OPEN_TEMPLATE ;
 
     fragment OPEN_TEMPLATE: '<';
 
@@ -123,7 +134,7 @@ temaplateSymbol: TEMPLATED_SYMBOL element* CLOSE_TEMPLATE;
 // Invoke is a the symbol token followed by '(' no WS
 invokeSymbol: INVOKE_SYMBOL element* CLOSE_INVOKE;
 
-    INVOKE_SYMBOL: SYMBOL_CORE OPEN_INVOKE;
+    INVOKE_SYMBOL: SIMPLE_SYMBOL OPEN_INVOKE;
 
     fragment OPEN_INVOKE: '(';
 
@@ -134,16 +145,21 @@ invokeSymbol: INVOKE_SYMBOL element* CLOSE_INVOKE;
 // parameter names for templates or invoke expressions.
 element : (fieldName? symbol) ;
 
-// Field names be symbols, or quoted strings
+// Field names can be symbols, or quoted strings
 // Quoted strings allow for JSON style inializers
 fieldName: FIELD_NAME ;
 FIELD_NAME:  (SYMBOL_CORE | ESCAPED_STRING) ':' ;
 
-// Need to extend to full UTF-8 set.
-fragment SYMBOL_CORE : ('*' | (PERCENT_ESC | [._a-zA-Z]) (PERCENT_ESC | [._a-zA-Z0-9])*) ;
-//fragment SYMBOL_VERBATIM : '\\' ('\\\\' | ~[\\])* '\\' ;
-fragment SYMBOL_VERBATIM : '|' ('\\\\' | ~[|])* '|' ;
-fragment PERCENT_ESC : '%' ((HEX_CAP HEX_CAP) | (HEX_LC HEX_LC));
+    // Need to extend to full UTF-8 set.
+    fragment SYMBOL_CORE : ('*' | (PERCENT_ESC | [._a-zA-Z]) (PERCENT_ESC | [._a-zA-Z0-9])*) ;
+
+    // PERCENT_ESC encoding uses the %XX encodings pattern that is part of
+    // RFC 1738. for example a space ' ' is %20
+    fragment PERCENT_ESC : '%' ((HEX_CAP HEX_CAP) | (HEX_LC HEX_LC));
+
+    // SYMBOL_VERBATIM uses back slashes to delimit names with
+    // special characters. VHDL-93 calls this an 'extended identified'.
+    fragment SYMBOL_VERBATIM : '\\' ('\\\\' | ~[|])* '\\' ;
 
 //------------------------------------------------------------
 // Things to ignore
