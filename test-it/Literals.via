@@ -1,0 +1,31 @@
+define (HelloWorld dv(.VirtualInstrument (
+    Locals: c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+        e(dv(.Int32 1234567) v32)
+        e(dv(.Int8 127) v8)
+    )
+    clump (
+        Println(true)
+        Println(false)
+        Println("Hello")
+        Println(@"Two
+Line Hello")
+        Println(3)
+        Println(3.14)
+        Println(-3.14)
+        Println(-3.14e10)
+        Println(-3.14e+10)
+        Println(-3.14e-10)
+        Println(v32)
+        Println(v8)
+
+        Println(inf)
+        Println(-inf)
+        Println(nan)
+
+        //      Println((1 2 3)))   Not quite ready for this.
+        //      Println(+inf)
+    )
+) ) )
+
+enqueue (HelloWorld)
