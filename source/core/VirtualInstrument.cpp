@@ -475,7 +475,7 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
     return StartNextOverload();
 }
 //------------------------------------------------------------
-void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData)
+void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** ppData)
 {
     _actualArgumentType = null;
     *ppData = null;
@@ -538,10 +538,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         }
         
         _argumentState = kArgumentResolvedToDefault;
-        DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-        TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
-        cdt = cdt->FinalizeDVT();
-        *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+        TypeRef type = TypeDefiner::ParseLiteral(_clump->TheTypeManager(), FormalParameterType(), _pLog, _approximateLineNumber, argument);
+        _actualArgumentType = type;
+        *ppData = type->Begin(kPARead); // * passed as a param means null
         return;
     }
     
@@ -561,15 +560,15 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         // The symbol was found in the TypeManager chain. Get a pointer to the value.
         
         UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
-        AQBlock1* pData = null;
+        void* pData = null;
 
         // TODO access-option based on parameter direction;
         if (usageType == kUsageTypeInput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPARead);
+            pData = _actualArgumentType->Begin(kPARead);
         } else if (usageType == kUsageTypeOutput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPAWrite);
+            pData = _actualArgumentType->Begin(kPAWrite);
         } else if (usageType == kUsageTypeInputOutput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPAReadWrite);
+            pData = _actualArgumentType->Begin(kPAReadWrite);
         } else {
             pData = null;
         }
@@ -595,7 +594,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
 //------------------------------------------------------------
 void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prependType)
 {
-    AQBlock1* pData = null;
+    void* pData = null;
     ResolveActualArgumentAddress(argument, &pData);
     
     if (ActualArgumentType() == null) {

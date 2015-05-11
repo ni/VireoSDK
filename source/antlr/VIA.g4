@@ -96,7 +96,7 @@ BOOLEAN : 'true' | 'false' ;
 // JSON grammar. Numeric key words have to be excluded from
 // gerenal symbols.
 NUMBER
-    :   '-'? INT '.' [0-9]+ EXP?    // 505,
+    :   '-'? INT '.' [0-9]+ EXP?    // 505.0,
     |   '-'? INT EXP                // 3.14e10, 3.14-e10
     |   '-'? INT                    // -3, 45
     |   '0x' (HEX_LC* | HEX_CAP*)   // 0xFFF, 0xff (don't mix capitalization)

@@ -175,13 +175,14 @@ TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
     return type;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseType()
+TypeRef TDViaParser::ParseType(TypeRef patternType)
 {
     TypeManagerScope scope(_typeManager);
 
     TypeRef type = null;
     
-    SubString  typeFunction;
+    SubString save = _string;
+    SubString typeFunction;
     _string.ReadToken(&typeFunction);
     
     if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
@@ -225,28 +226,41 @@ TypeRef TDViaParser::ParseType()
         // See if the token fits the rules for a literal.
         TokenTraits tt = typeFunction.ClassifyNextToken();
         ConstCStr tName = null;
-        TypeRef t = null;
-
-        if (tt == TokenTraits_Integer) {
-            tName = "Int32";
-        } else if (tt == TokenTraits_IEEE754) {
-            tName = "Double";
-        } else if (tt == TokenTraits_Boolean) {
-            tName = "Boolean";
-        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
-            tName = "String";
+        TypeRef literalsType = null;
+        
+        if (patternType) {
+            EncodingEnum enc = patternType->BitEncoding();
+            if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+                if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
+                    literalsType = patternType;
+                }
+            } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
+                // Since the "(" has been read, restore it, and read the whole expression.
+                _string = save;
+                _string.ReadSubexpressionToken(&typeFunction);
+                literalsType = patternType;
+            }
         }
         
-        if (tName) {
-            t = _typeManager->FindType(tName);
-
-            DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
+        if (literalsType == null) {
+            if (tt == TokenTraits_Integer) {
+                tName = "Int32";
+            } else if (tt == TokenTraits_IEEE754) {
+                tName = "Double";
+            } else if (tt == TokenTraits_Boolean) {
+                tName = "Boolean";
+            } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
+                tName = "String";
+            }
+            literalsType = _typeManager->FindType(tName);
+        }
+        
+        if (literalsType) {
+            DefaultValueType *cdt = DefaultValueType::New(_typeManager, literalsType, false);
             TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
             cdt = cdt->FinalizeDVT();
             type = cdt;
-        }
-        
-        if (!t) {
+        } else {
             LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
         }
     }

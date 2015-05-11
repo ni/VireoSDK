@@ -301,7 +301,7 @@ public:
     TypeRef         StartNextOverload();
     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
     TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
-    void            ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData);
+    void            ResolveActualArgumentAddress(SubString* argument, void** ppData);
     void            AddDataTargetArgument(SubString* argument, Boolean prependType);
     void            InternalAddArg(TypeRef actualType, void* arg);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);

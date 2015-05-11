@@ -91,7 +91,7 @@ public:
     void    RepinLineNumberBase();
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null);
-    TypeRef ParseType();
+    TypeRef ParseType(TypeRef patternType = null);
     Boolean EatJSONPath(SubString* path);
     NIError ParseREPL();
     void    ParseEnqueue();

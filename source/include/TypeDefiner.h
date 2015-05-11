@@ -38,7 +38,10 @@ class TypeDefiner
     static void DefineTypes(TypeManagerRef tm);
     
     //! Use the TypeDefiners parser to parse data according to specified type.
-    static void ParseValue(TypeManagerRef tm, TypeRef defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
+    static void ParseValue(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
+
+    //! Use the TypeDefiners parser to parse data according to specified type.
+    static TypeRef ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString);
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
