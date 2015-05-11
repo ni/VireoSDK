@@ -1209,7 +1209,7 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 #endif
 
 DEFINE_VIREO_BEGIN(VirtualInstrument)
-    DEFINE_VIREO_REQUIRES(Synchronization)
+    DEFINE_VIREO_REQUIRE(Synchronization)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(Clump, Clump_TypeString);

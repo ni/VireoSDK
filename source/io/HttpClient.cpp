@@ -341,7 +341,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
-    DEFINE_VIREO_REQUIRES(Synchronization)
+    DEFINE_VIREO_REQUIRE(Synchronization)
     DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.Boolean) o(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")

@@ -2609,7 +2609,7 @@ using namespace Vireo;
 DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_REQUIRES(IEEE754Math)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
 #endif

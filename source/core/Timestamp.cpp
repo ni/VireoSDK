@@ -616,7 +616,7 @@ Int32 Date::isDTS()
 
 
 DEFINE_VIREO_BEGIN(Timestamp)
-    DEFINE_VIREO_REQUIRES(IEEE754Math)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
 
     // Low level time functions
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")

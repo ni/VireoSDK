@@ -74,7 +74,7 @@ class TypeDefiner
 
     #define DEFINE_VIREO_END()
 
-    #define DEFINE_VIREO_REQUIRES(_module_)
+    #define DEFINE_VIREO_REQUIRE(_module_)
 
     #define DEFINE_VIREO_TYPE(_name_, _type_)
 
@@ -98,7 +98,7 @@ class TypeDefiner
     #define DEFINE_VIREO_END()  return null; }
 
     // Used immediatly after the BEGIN
-    #define DEFINE_VIREO_REQUIRES(_module_) \
+    #define DEFINE_VIREO_REQUIRE(_module_) \
       { ConstCStr moduleName = #_module_;   \
       if (!TypeDefiner::HasRequiredModule(_this, moduleName)) { return moduleName; } }
 

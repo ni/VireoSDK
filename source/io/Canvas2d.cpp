@@ -240,7 +240,7 @@ VIREO_FUNCTION_SIGNATURE1(Fill, Canvas2D)
 }
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Canvas2D)
-    DEFINE_VIREO_REQUIRES(IEEE754Math)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
 
     DEFINE_VIREO_TYPE(Style, ".Int32")  // can be object or RGB
     DEFINE_VIREO_TYPE(ColorPoint, "c(e(.Double)e(.Int32))")
