@@ -453,10 +453,8 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Double)
 VIREO_FUNCTION_SIGNATURE1(Random, Double)
 {
     static Boolean seeded = false;
-    if (_ParamPointer(0))
-    {
-        if (!seeded)
-        {
+    if (_ParamPointer(0)) {
+        if (!seeded) {
             srand((unsigned int)PlatformTime::TickCount());
             seeded = true;
         }

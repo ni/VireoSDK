@@ -123,16 +123,14 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, Stri
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
         _ParamPointer(2),
         _Param(5));
-    if ((_Param(4) == 0) && (_Param(2) == 1))
-    {
+    
+    if ((_Param(4) == 0) && (_Param(2) == 1)) {
         _Param(4) = jsHttpClientGetHeader(
             _Param(0),
             (char*)_Param(1)->Begin(), _Param(1)->Length(),
             _Param(3),
             _Param(5));
-    }
-    else
-    {
+    } else {
         _Param(3)->Resize1D(0);
     }
     #endif
@@ -178,9 +176,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
 		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
-	}
-	else
-	{
+	} else {
 		// re-entering the instruction and the operation is done or it timed out.
 		// the clump should continue.
 		clump->ClearObservationStates();
@@ -215,9 +211,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
 		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
-	}
-	else
-	{
+	} else {
 		// re-entering the instruction and the operation is done or it timed out.
 		// the clump should continue.
 		clump->ClearObservationStates();
@@ -253,9 +247,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
 		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
-	}
-	else
-	{
+	} else {
 		// re-entering the instruction and the operation is done or it timed out.
 		// the clump should continue.
 		clump->ClearObservationStates();
@@ -290,9 +282,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
 		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
-	}
-	else
-	{
+	} else {
 		// re-entering the instruction and the operation is done or it timed out.
 		// the clump should continue.
 		clump->ClearObservationStates();
@@ -327,9 +317,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
 		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
 		return clump->WaitOnObservableObject(_this);
-	}
-	else
-	{
+	} else {
 		// re-entering the instruction and the operation is done or it timed out.
 		// the clump should continue.
 		clump->ClearObservationStates();

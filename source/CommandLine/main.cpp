@@ -42,8 +42,6 @@ int VIREO_MAIN(int argc, const char * argv[])
             printf("  -v  version \n");
             printf("  -h  help \n");
             printf("  -s  show stats \n");
-        } else if (strcmp(argv[i],"-dl") == 0) {
-            // dl option is ignored now
         } else if (strcmp(argv[i],"-v") == 0) {
             printf(" Vireo EggShell built %s\n",__TIME__ );
         } else {
