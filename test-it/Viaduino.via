@@ -3,7 +3,7 @@
 // instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
 
 define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
-    c(
+    Locals: c(
         e(.Type     dsType)
         e(.Int32    count)
         e(.Int32    index)

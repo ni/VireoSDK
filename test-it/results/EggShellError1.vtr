@@ -1,1 +1,1 @@
-(Line 20 HardError "'(' missing.")
+(Line 20 Error "Unrecognized data type 'define'.")

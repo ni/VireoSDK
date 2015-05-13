@@ -1,11 +1,10 @@
-define (HelloWorld dv(.VirtualInstrument (
-    Locals: 
-    c(
-        e(dv(.String "Hello, world. I can fly.") variable1)
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:c(
+        e("Hello, sky. I can fly." str)
     )
-    clump (
-       Println(variable1)
+    clump(
+        Println(str)
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

@@ -182,12 +182,18 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     TypeRef type = null;
     SubString save = _string;
     SubString typeFunction;
-    _string.ReadToken(&typeFunction);
+    TokenTraits tt = _string.ReadToken(&typeFunction);
     
-    if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
-        Utf8Char dot;
-        typeFunction.ReadRawChar(&dot);
-        
+    
+    if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr(tsDefineTypeToken)) {
+        // Legacy work around
+        _string.EatLeadingSpaces();
+    }
+    
+    Boolean bTypeFunction = _string.ComparePrefixCStr("(");
+    if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
+        // Eat the dot prefix if it exists.
+        typeFunction.EatChar('.');
         type = _typeManager->FindType(&typeFunction);
         if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
@@ -240,42 +246,42 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     SubString expressionToken;
     _string.ReadSubexpressionToken(&expressionToken);
 
-        // See if the token fits the rules for a literal.
+    // See if the token fits the rules for a literal.
     TokenTraits tt = expressionToken.ClassifyNextToken();
-        ConstCStr tName = null;
-        TypeRef literalsType = null;
-        
-        if (patternType) {
-            EncodingEnum enc = patternType->BitEncoding();
-            if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
-                if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
-                    literalsType = patternType;
-                }
-            } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
+    ConstCStr tName = null;
+    TypeRef literalsType = null;
+    
+    if (patternType) {
+        EncodingEnum enc = patternType->BitEncoding();
+        if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+            if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
                 literalsType = patternType;
             }
+        } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
+            literalsType = patternType;
         }
-        
-        if (literalsType == null) {
-            if (tt == TokenTraits_Integer) {
-                tName = "Int32";
-            } else if (tt == TokenTraits_IEEE754) {
-                tName = "Double";
-            } else if (tt == TokenTraits_Boolean) {
-                tName = "Boolean";
-            } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
-                tName = "String";
-            }
-            literalsType = _typeManager->FindType(tName);
+    }
+    
+    if (literalsType == null) {
+        if (tt == TokenTraits_Integer) {
+            tName = "Int32";
+        } else if (tt == TokenTraits_IEEE754) {
+            tName = "Double";
+        } else if (tt == TokenTraits_Boolean) {
+            tName = "Boolean";
+        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
+            tName = "String";
         }
-        
-        if (literalsType) {
-            DefaultValueType *cdt = DefaultValueType::New(_typeManager, literalsType, false);
+        literalsType = _typeManager->FindType(tName);
+    }
+    
+    if (literalsType) {
+        DefaultValueType *cdt = DefaultValueType::New(_typeManager, literalsType, false);
         TypeDefiner::ParseData(_typeManager, cdt, _pLog, CalcCurrentLine(), &expressionToken);
-            cdt = cdt->FinalizeDVT();
-            type = cdt;
-        } else {
-        LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
+        cdt = cdt->FinalizeDVT();
+        type = cdt;
+    } else {
+        LOG_EVENTV(kHardDataError, "Unrecognized literal '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
     }
     return type;
 }
@@ -530,6 +536,9 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
         return BadType();
     
     TypeRef subType = ParseType();
+    if (!subType)
+        return BadType();
+    
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
     // The initializer value is optional, so check to see there is something
@@ -1858,7 +1867,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
                 existingPath = false;
             }
         }
-        if (existingPath){
+        if (existingPath) {
             parser.ParseData(_ParamPointer(1), _ParamPointer(2));
         } else {
             // printf("not found\n");

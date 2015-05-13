@@ -537,10 +537,14 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** p
             return;
         }
         
-        _argumentState = kArgumentResolvedToDefault;
         TypeRef type = TypeDefiner::ParseLiteral(_clump->TheTypeManager(), FormalParameterType(), _pLog, _approximateLineNumber, argument);
-        _actualArgumentType = type;
-        *ppData = type->Begin(kPARead); // * passed as a param means null
+        if (type) {
+            _argumentState = kArgumentResolvedToLiteral;
+            _actualArgumentType = type;
+            *ppData = type->Begin(kPARead);
+        } else {
+            _argumentState = kArgumentNotResolved;
+        }
         return;
     }
     
@@ -810,14 +814,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
     {
         case kArgumentNotResolved:
             // Ignore arguments if the instruction was not resolved.
-            if (_instructionType)
-                simpleMessage = "Argument not resolved";
-            break;
-        case kArgumentTooMany:
-            simpleMessage = "Too many arguments";
-            break;
-        case kArgumentTooFew:
-            simpleMessage = "Too few arguments";
+            simpleMessage = _instructionType ? "Argument not resolved" : null;
             break;
         case kArgumentTypeMismatch:
             {
@@ -826,15 +823,19 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }
             break;
+        case kArgumentTooMany:              simpleMessage = "Too many arguments";       break;
+        case kArgumentTooFew:               simpleMessage = "Too few arguments";        break;
         case kArgumentNotOptional:          simpleMessage = "Argument not optional";    break;
         case kArgumentNotMutable:           simpleMessage = "Argument not mutable";     break;
         // Good states
-        case kArgumentResolvedToClump:      simpleMessage = "Argument is clump";        break;
-        case kArgumentResolvedToVIElement:  simpleMessage = "Argument is VI element";   break;
-        case kArgumentResolvedToPerch:      simpleMessage = "Argument is perch";        break;
-        case kArgumentResolvedToParameter:  simpleMessage = "Argument is parameter";    break;
-        case kArgumentResolvedToDefault:    simpleMessage = "Argument is default";      break;
-        default:                            simpleMessage = "Unknown argument type";          break;
+        case kArgumentResolvedToGlobal:
+        case kArgumentResolvedToLiteral:
+        case kArgumentResolvedToClump:
+        case kArgumentResolvedToVIElement:
+        case kArgumentResolvedToPerch:
+        case kArgumentResolvedToParameter:
+        case kArgumentResolvedToDefault:    simpleMessage = null;                       break;
+        default:                            simpleMessage = "Unknown argument type";    break;
     }
     if (simpleMessage) {
         LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_parserFocus));

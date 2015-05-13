@@ -3,8 +3,7 @@ define//
  (Test dv(.VirtualInstrument (//c
  c(
 e(//
-dv//
-(//
+dv(//
 .Int32//
 //
 2//
@@ -15,10 +14,10 @@ dv//
     e(dv(.Int32 2) variable2)
     e(.Int32 result)
   )
-//  
+//
 //
 
-//  
+//
 clump//
 (//
 1//

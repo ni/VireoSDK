@@ -3,8 +3,19 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "Hello, world. I can fly.") variable1)
         e(dv(.Int32 1234567) v32)
         e(dv(.Int8 127) v8)
+
+        // Using literals prototypes
+        e(0.0       z0)
+        e(0         z1)
+        e(Int32     z2)
+        e(c(e(bb(32 SInt2c))) z3)
+        e("0"       z4)
+        e(@"0"      z5)
+        e('0'       z6)
+        e(@'0'      z7)
     )
     clump (
+    //    Println((1 2 3))  // Not quite ready for this.
         Println(true)
         Println(false)
         Println("Hello")
@@ -25,6 +36,15 @@ Line Hello")
 
         //      Println((1 2 3)))   Not quite ready for this.
         //      Println(+inf)
+
+        Println(z0)
+        Println(z1)
+        Println(z2)
+        Println(z3)
+        Println(z4)
+        Println(z5)
+        Println(z6)
+        Println(z7)
     )
 ) ) )
 

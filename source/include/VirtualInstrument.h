@@ -211,6 +211,7 @@ public:
         kArgumentResolved_FirstGood,
         kArgumentResolvedToVIElement = kArgumentResolved_FirstGood,
         kArgumentResolvedToGlobal,
+        kArgumentResolvedToLiteral,
         kArgumentResolvedToDefault,
         kArgumentResolvedToParameter,
         kArgumentResolvedToClump,
