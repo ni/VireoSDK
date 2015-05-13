@@ -641,7 +641,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 }
             }
         } else if (token.EatChar(Fmt()._arrayPre)) {
-        //    printf("--------------------------------------------------------------input :%s\n",_string.Begin());
             // Second option, it is a list of values.
             // If one or more dimension lengths are variable then the outer most dimension
             // preflights the parsing so the overall storage can be allocated.
@@ -650,7 +649,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                         
             if (level == 0) {
                 ArrayDimensionVector initializerDimensionLengths;
-
                 PreParseElements(rank, initializerDimensionLengths);
 
                 // Resize the array to the degree possible to match initializers
@@ -1840,7 +1838,7 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
  * The 3 boolean flags are
  *      :enable LV extensions(true)
  *      :default null elements
- *      :strict validation. whether allow json object contains items not dfined in the cluster
+ *      :strict validation. whether allow json object contains items not defined in the cluster
  * */
 VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
 {

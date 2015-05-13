@@ -168,7 +168,7 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
     }
 }
 //------------------------------------------------------------
-//! Parse a value forme a stream to set the value of a DefaulValueType.
+//! Parse a value from a stream to set the value of a DefaulValueType.
 void TypeDefiner::ParseValue(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
