@@ -169,7 +169,7 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
 }
 //------------------------------------------------------------
 //! Parse a value from a stream to set the value of a DefaulValueType.
-void TypeDefiner::ParseValue(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
+void TypeDefiner::ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
     parser.ParseData(defaultValueType, defaultValueType->Begin(kPAInit));
@@ -179,6 +179,7 @@ void TypeDefiner::ParseValue(TypeManagerRef tm, DefaultValueType* defaultValueTy
 TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
+    // ParseType supports value literals and type literals (that also have a value)  
     return parser.ParseType(patternType);
 }
 //------------------------------------------------------------

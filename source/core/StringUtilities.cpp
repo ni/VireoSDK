@@ -410,7 +410,7 @@ TokenTraits SubString::ReadToken(SubString* token)
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
     
     if (IsPunctuationChar(c)) {
-        tokenTraits = TokenTraits_Punctuation;
+        tokenTraits = (c == '(') ? TokenTraits_NestedExpression : TokenTraits_Punctuation;
     } else if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
         Boolean allowEscapes = true;
         tokenTraits = TokenTraits_String;

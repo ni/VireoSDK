@@ -1,0 +1,7 @@
+{"Numeric 1":12,"string 2":"id
+ame","array":[11, 12 , 13]}
+Item Numeric 1 in JSON is |12|
+Item Numeric 1 in JSON is |12|
+Item string 2 in JSON is |id
+ame|
+Item array in JSON is |(11 12 13)|

@@ -30,7 +30,7 @@ enum TokenTraits
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_Punctuation,    // ,  (Some 'punctuation' are resered: * @)
+    TokenTraits_Punctuation,    // ,  (Many 'punctuation' are resered: * @ $ _)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Nesting,        // ()    typically added to others to allow expressions

@@ -180,7 +180,6 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     TypeManagerScope scope(_typeManager);
 
     TypeRef type = null;
-    
     SubString save = _string;
     SubString typeFunction;
     _string.ReadToken(&typeFunction);
@@ -219,12 +218,30 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     } else if (typeFunction.CompareCStr(tsEnqueueTypeToken)) {
         ParseEnqueue();
     } else {
-#if defined(VIREO_TYPE_CONSTRUCTION)
-        // Call a type function directly
-#endif
+        _string = save;
+        type = ParseLiteral(patternType);
+    }
+
+    if (_string.EatChar('<')) {
+        // Build a list of parameters.
+        FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
+        for(IntIndex i = 0; !_string.EatChar('>'); i++) {
+            templateParameters.Append(ParseType());
+        }
+        type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
+    }
+    
+    return type;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
+{
+    TypeRef type = null;
+    SubString expressionToken;
+    _string.ReadSubexpressionToken(&expressionToken);
 
         // See if the token fits the rules for a literal.
-        TokenTraits tt = typeFunction.ClassifyNextToken();
+    TokenTraits tt = expressionToken.ClassifyNextToken();
         ConstCStr tName = null;
         TypeRef literalsType = null;
         
@@ -235,9 +252,6 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
                     literalsType = patternType;
                 }
             } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
-                // Since the "(" has been read, restore it, and read the whole expression.
-                _string = save;
-                _string.ReadSubexpressionToken(&typeFunction);
                 literalsType = patternType;
             }
         }
@@ -257,23 +271,12 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         
         if (literalsType) {
             DefaultValueType *cdt = DefaultValueType::New(_typeManager, literalsType, false);
-            TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
+        TypeDefiner::ParseData(_typeManager, cdt, _pLog, CalcCurrentLine(), &expressionToken);
             cdt = cdt->FinalizeDVT();
             type = cdt;
         } else {
-            LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
-        }
+        LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
     }
-
-    if (_string.EatChar('<')) {
-        // Build a list of parameters.
-        FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-        for(IntIndex i = 0; !_string.EatChar('>'); i++) {
-            templateParameters.Append(ParseType());
-        }
-        type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
-    }
-    
     return type;
 }
 //------------------------------------------------------------
