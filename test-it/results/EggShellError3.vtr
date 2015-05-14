@@ -1,1 +1,1 @@
-(Line 32 HardError "'(' missing.")
+(Line 32 Error "Unrecognized data type 'enqueue'.")

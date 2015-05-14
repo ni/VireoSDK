@@ -52,7 +52,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 {
     // Derived on the specification found here.
     // http://www.cplusplus.com/reference/cstdio/printf/
-    // There will be some allowances for LabVIEW and since
+    // There will be some allowances for LV and since
     // data is typed codes that identify type size like
     // (hh, ll j, z, r, and L) are not needed.
 
@@ -721,8 +721,8 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             }
             Boolean extend = false;
             if (*(buffer+trailing) > '5') {
-                // LabVIEW typically uses Bankers rounding, but for
-                // significant digits it always round midpoints down.
+                // LV typically uses Bankers rounding, but for
+                // significant digits midpoints are always rounded down.
                 *(buffer+trailing-1) = *(buffer+trailing-1) + 1;
             }
             for (Int32 i = trailing-1; i >= numberStart; i--) {
@@ -2176,7 +2176,8 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
     return _NextInstruction();
 }
 
-DEFINE_VIREO_BEGIN(LabVIEW_String)
+DEFINE_VIREO_BEGIN(NumericString)
+    DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(.String) i(.String) i(.String) i(.Array))")

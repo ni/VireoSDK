@@ -24,6 +24,9 @@ class VIClump;
 class VirtualInstrument;
 class InstructionAllocator;
 
+//! Create a Execution and Typemanager pair.
+TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM);
+
 //! Punctuation and options used by the TDViaFormatter
 enum ViaFormat {
     kViaFormat_NoFieldNames = 0,
@@ -53,9 +56,7 @@ struct ViaFormatOptions
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
     Int32           _fieldWidth;
-    
     ViaFormatChars  _fmt;
-    
 };
 
 //------------------------------------------------------------
@@ -67,7 +68,7 @@ struct ViaFormatOptions
 // 3. Out of memory. Memory will be allocated out of the designated TypeManager
 // if the quota is exceeded parsing will cease.
 
-//! The VIA decoder. It is also designed to support other semantic like JSON
+//! The VIA decoder, also includes options for JSON and C style initializers.
 class TDViaParser
 {
 private:
@@ -85,15 +86,17 @@ public:
     EventLog*       _pLog;
 
     void    LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
-    Int32   ErrorCount()
-        { return _pLog->TotalErrorCount(); }
+    Int32   ErrorCount() { return _pLog->TotalErrorCount(); }
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null);
-    TypeRef ParseType();
-    Boolean    EatJSONPath(SubString* path);
+    TypeRef ParseType(TypeRef patternType = null);
+    TypeRef ParseLiteral(TypeRef patternType);
     void    ParseData(TypeRef type, void* pData);
+    Boolean EatJSONPath(SubString* path);
+    NIError ParseREPL();
+    void    ParseEnqueue();
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
@@ -114,6 +117,7 @@ private :
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
     TypeRef ParseDefine();
+    TypeRef ParseContext(TypeManagerRef parentTADM);
     TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseNamedType();
@@ -123,10 +127,6 @@ private :
 };
 
 #if defined (VIREO_VIA_FORMATTER)
-// Questions The type and data formatter is handled as a class similar to the parser
-// not sure it need to be a class. Here is why it seems to help. Mutually recursive functions for type and data
-// are methods on the same class. State and formatting options can be held by the class instead of being passed
-// as a long list of parameters in recursive functions.
 class TDViaFormatterTypeVisitor;
 
 //! The VIA encoder.
@@ -160,10 +160,8 @@ public:
     static ViaFormatChars formatVIA;
     static ViaFormatChars formatJSON;
     static ViaFormatChars formatC;
-
 };
 
-// sprintf style formatting
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
 #endif
 
@@ -186,17 +184,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsPointer         "Pointer"     // CodePointer - necessary distinction for Harvard architecture machines
 #define tsHostPointerSize "HostPointerSize"  // Used in BitBlock definitions
 
-
-// Notes on Ascii
-// There are many Ascii variants to chose from. LabVIEW historically used what was
-// Know as Latin-1 know more formally defined as ISO 8859-1
-// http://en.wikipedia.org/wiki/ISO/IEC_8859-1
-
 #define tsArrayTypeToken        "a"
 #define tsBitClusterTypeToken   "bc"
 #define tsBitBlockTypeToken     "bb"
 #define tsClusterTypeToken      "c"
+#define tsContextTypeToken      "context"
 #define tsDefineTypeToken       "define"
+#define tsEnqueueTypeToken      "enqueue"
 #define tsElementToken          "e"  // used for Cluster, BitCluster, and array aggregate types for simple elements
 #define tsAliasToken            "al" // alias to another element. 
 #define tsInputParamToken       "i"  // input parameter
@@ -222,7 +216,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsFireCountOpToken      "FireCount"
 
 #define tsExecutionContextType  "ExecutionContext"
-
+#define tsTypeManagerType       "TypeManager"
+#define tsVIClumpType           "Clump"
 
 } // namespace Vireo
 

@@ -506,7 +506,7 @@ Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* w
 //------------------------------------------------------------
 void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
 {
-	Int32 secondsOfYear;
+	Int32 secondsOfYear = 0;
 	Int32 firstweekDay = 0;
 
 	Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsOfYear, &firstweekDay);
@@ -591,20 +591,20 @@ Date::Date(Timestamp timestamp, Int32 timeZone)
 //------------------------------------------------------------
 Int32 Date::getLocaletimeZone()
 {
-	#if kVireoOS_emscripten
-        	TempStackCString result;
-        	result.AppendCStr(emscripten_run_script_string("new Date().getTimezoneOffset()"));
-        	EventLog log(EventLog::DevNull);
-        	SubString valueString(result.Begin(), result.End());
-        	TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &valueString, &log, 1);
-        	TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Int32");
-        	Int32 minutes;
-        	parser.ParseData(parseType, &minutes);
-        	_SystemLocaletimeZone = minutes * 60;
-	#else
-        	// doesn't support yet
-        	_SystemLocaletimeZone = 0;
-	#endif
+#if kVireoOS_emscripten
+    TempStackCString result;
+    result.AppendCStr(emscripten_run_script_string("new Date().getTimezoneOffset()"));
+    EventLog log(EventLog::DevNull);
+    SubString valueString(result.Begin(), result.End());
+    TDViaParser parser(THREAD_TADM(), &valueString, &log, 1);
+    TypeRef parseType = THREAD_TADM()->FindType("Int32");
+    Int32 minutes;
+    parser.ParseData(parseType, &minutes);
+    _SystemLocaletimeZone = minutes * 60;
+#else
+    // doesn't support yet
+    _SystemLocaletimeZone = 0;
+#endif
         	return _SystemLocaletimeZone;
  };
 //------------------------------------------------------------
@@ -616,13 +616,15 @@ Int32 Date::isDTS()
 
 
 DEFINE_VIREO_BEGIN(Timestamp)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
+
     // Low level time functions
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
 
 #if defined(VIREO_TYPE_Timestamp)
-
+    DEFINE_VIREO_TYPE(Timestamp, "c(e(.Int64 seconds) e(.UInt64 fraction))")
     DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(.Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsLE, IsLETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
@@ -641,6 +643,5 @@ DEFINE_VIREO_BEGIN(Timestamp)
 #endif
 
 DEFINE_VIREO_END()
-
 }
 

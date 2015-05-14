@@ -60,7 +60,7 @@ void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
 #endif
 }
 //------------------------------------------------------------
-TypeManager::TypeManager(TypeManagerRef rootTypeManager)
+TypeManager::TypeManager(TypeManagerRef parentTm)
 {
 #ifdef VIREO_PERF_COUNTERS
     _lookUpsFound = 0;
@@ -74,7 +74,8 @@ TypeManager::TypeManager(TypeManagerRef rootTypeManager)
     _allocationLimit = 16777216;  //16 meg for starters
     
     _typeList = null;
-    _rootTypeManager = rootTypeManager;
+    _baseTypeManager = parentTm;
+    _executionContext = parentTm ? parentTm->TheExecutionContext() : null;
     _aqBitLength = 8;
     
     // Once the object is constructed set up the source temporarily
@@ -184,19 +185,21 @@ void TypeManager::Free(void* pBuffer)
     }
 }
 //------------------------------------------------------------
-// Delete all types allocated within a TypeManager.
-// no type managers should refere to this instance as their root
+//! Delete all types allocated within a TypeManager.
 void TypeManager::DeleteTypes(Boolean finalTime)
 {
     MUTEX_SCOPE()
-    
     TypeManagerScope scope(this);
 
-    TypeRef type = _typeList;
+    // Any type managers that had this instance
+    // as their parent should be cleaned up by now.
+    
     // Clear out any default values. They may depend on types
     // The OwnsDefDef property does not forward the the query
     // to wrapped types. The prevents base types in on TADM
     // from being being cleared by wraps from derived TADMs.
+    
+    TypeRef type = _typeList;
     while (type) {
         TypeRef  nextType = type->_next;
         if (type->OwnsDefDefData()) {
@@ -220,7 +223,13 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     _typeInstanceDictionary.clear();
     
     if (!finalTime) {
+        // If just a temporary reset then restore the BadType instance.
         _badType = TADM_NEW_PLACEMENT(TypeCommon)(this);
+    } else {
+        if (!_baseTypeManager) {
+            Free(_executionContext);
+            _executionContext = null;
+        }
     }
 }
 //------------------------------------------------------------
@@ -248,6 +257,8 @@ TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* poin
         SubString typeName(name);
         TypeRef type =  Define(&typeName, valueTypeNode);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
+        // When instruction reflection is enabled the name of the c entry point is recorded as well
+        // to assist generation of C code that references the same symbols.
         CPrimtitiveInfo cpi;
         cpi._cName = cName;
         cpi._type = type;
@@ -417,11 +428,11 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
     iter = _typeNameDictionary.find(*name);
     NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : null;
     
-    if (type == null && _rootTypeManager) {
+    if (type == null && _baseTypeManager) {
 #ifdef VIREO_PERF_COUNTERS
         _lookUpsRoutedToOwner++;
 #endif
-        type = _rootTypeManager->FindTypeCore(name);
+        type = _baseTypeManager->FindTypeCore(name);
     } else {
 #ifdef VIREO_PERF_COUNTERS
         _lookUpsFound++;
@@ -435,7 +446,7 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
 {
     std::map<SubString, TypeRef, ComapreSubString>::iterator  iter;
     
-    for (TypeManagerRef tm = this; tm ; tm = tm->RootTypeManager()) {
+    for (TypeManagerRef tm = this; tm ; tm = tm->BaseTypeManager()) {
         iter = _typeInstanceDictionary.find(*binaryName);
         if (iter != _typeInstanceDictionary.end()) {
             // Existing instance has been found;
@@ -467,7 +478,7 @@ Int32  TypeManager::AQAlignment(Int32 size)
     if (size<8)
         return 4;
     else
-    return 8;
+        return 8;
 }
 //------------------------------------------------------------
 Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)
@@ -2292,10 +2303,10 @@ VIREO_FUNCTION_SIGNATURE1(TypeManagerCurrentTypeManager, TypeManagerRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(TypeManagerRootTypeManager, TypeManagerRef, TypeManagerRef)
+VIREO_FUNCTION_SIGNATURE2(TypeManagerBaseTypeManager, TypeManagerRef, TypeManagerRef)
 {
     if (_Param(0)) {
-        _Param(1) = _Param(0)->RootTypeManager();
+        _Param(1) = _Param(0)->BaseTypeManager();
     } else {
         _Param(1) = null;
     }
@@ -2558,8 +2569,8 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
         CPrimtitiveInfo cpi = iter->second;
         cName->AliasAssignCStr(cpi._cName);
         return cpi._type;
-    } else if (RootTypeManager()) {
-        return RootTypeManager()->FindCustomPointerTypeFromValue(pointer, cName);
+    } else if (BaseTypeManager()) {
+        return BaseTypeManager()->FindCustomPointerTypeFromValue(pointer, cName);
     } else {
         return BadType();
     }
@@ -2616,20 +2627,20 @@ VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
 //------------------------------------------------------------
 #include "TypeDefiner.h"
 using namespace Vireo;
-DEFINE_VIREO_BEGIN(LabVIEW_Types)
-    DEFINE_VIREO_TYPE(AllocationStatistics, AllocationStatistics_TypeString);
-    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(.TypeManager) o(.AllocationStatistics))");
-    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerRootTypeManager, "p(i(.TypeManager) o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
-    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_Double)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
 #endif
- //   DEFINE_VIREO_FUNCTION(TypeManagerWriteString, "p(i(.TypeManager) i(.String) i(.String))");
- //   DEFINE_VIREO_FUNCTION(TypeManagerReadString, "p(i(.TypeManager) i(.String) o(.String))");
+
+    DEFINE_VIREO_TYPE(AllocationStatistics, AllocationStatistics_TypeString);
+    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(.TypeManager) o(.AllocationStatistics))");
+    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(.TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerBaseTypeManager, "p(i(.TypeManager) o(.TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
+    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");

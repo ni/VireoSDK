@@ -12,21 +12,19 @@ SDG
  */
 
 #if _WIN32
-    #define _CRT_SECURE_NO_WARNINGS
-    #define snprintf _snprintf
+  #define _CRT_SECURE_NO_WARNINGS
+  #define snprintf _snprintf
 #endif
 
 #ifdef __APPLE__
-#include <xlocale.h>
+  #include <xlocale.h>
 #endif
 
-// LabVIEW has string iterators wrapper for its strings handle
-// those could be used, or the wstring could be used.
-// in memory strings are to be 16 bit wide. serialized are to be UTF8
 #include "ExecutionContext.h"
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+
 using namespace Vireo;
 
 //---------------------------------------------
@@ -612,7 +610,7 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRe
     }
 }
 
-DEFINE_VIREO_BEGIN(LabVIEW_String)
+DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(.String) i(.String) i(.Int32) i(.Int32) i(.String) o(.String))")
     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, "p(o(.String) i(.String) i(.String) i(.String) i(.Int32) i(.Int32) i(.Int32) i(.Boolean) i(.Boolean))")
     DEFINE_VIREO_FUNCTION(SearchSplitString, "p(i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.Int32))")

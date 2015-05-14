@@ -89,7 +89,7 @@ define (VirtualInstrument
         e(.ExecutionContext Context)   
         e(a(.*) Params)             
         e(a(.*) Locals)              
-        e(a(.VIClump *) Clumps)     // An array of clumps, see definition below.      
+        e(a(.Clump *) Clumps)     // An array of clumps, see definition below.      
         e(.Int32 lineNumberBase)    // Internal fields for maping back to souce code    
         e(.SubString ClumpSource)
     ))
@@ -122,7 +122,7 @@ The signatures for internal functions are also defined as standard types. The ty
 // 
 // To bind the type to an actual function it will be part of the following:
 
-DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
+DEFINE_VIREO_BEGIN(FileSystem)
     ... 
     DEFINE_VIREO_FUNCTION(Print, "p(i(.StaticTypeAndData))");
     ...
@@ -132,7 +132,7 @@ DEFINE_VIREO_END()
 As noted, the Print function takes one parameter, but its a special one. The _StaticTypeAndData_ type instructs the VIA decoder to generate code that passes both the parameter explicitly listed and the statically derivable type, Since they are passed internally as two separate parameters there is no need to [box](http://en.wikipedia.org/wiki/Object_type_(object-oriented_programming)#Boxing) primitive data types.
 
 ~~~
-DEFINE_VIREO_BEGIN(LabVIEW_Math)
+DEFINE_VIREO_BEGIN(IEEE754Math)
     ...
     // If many functions take a common signature then the signare can be it own named
     // type. The Generic binOp type takes three anythings.

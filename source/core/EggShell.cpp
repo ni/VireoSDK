@@ -34,35 +34,17 @@ namespace Vireo
 //------------------------------------------------------------
 EggShell* EggShell::Create(EggShell* parent)
 {
-    EggShell *pShell = null;
-    
-    TypeManagerRef pParentTADM = parent ? parent->TheTypeManager() : null;
-    
-    TypeManagerRef pTADM = TypeManager::New(pParentTADM);
-    
-    // Once the TADM exists use it to create the rest
+    TypeManagerRef parentTADM = parent ? parent->TheTypeManager() : null;
+    TypeManagerRef newTADM = ConstructTypeManagerAndExecutionContext(parentTADM);
     {
-        // Set it up as the active scope, allocations will now go through this TADM.
-        TypeManagerScope scope(pTADM);
-
-        if (!parent) {
-            TypeDefiner::DefineStandardTypes(pTADM);
-            TypeDefiner::DefineTypes(pTADM);
-        }
-        
-        // Once standard types have been loaded the execution system can be constructed
-        ExecutionContextRef pExecutionContext = TADM_NEW_PLACEMENT(ExecutionContext)(pTADM);
-        
-        // Last step create the shell.
-        pShell = TADM_NEW_PLACEMENT(EggShell)(pTADM, pExecutionContext);
+        TypeManagerScope scope(newTADM);
+        return TADM_NEW_PLACEMENT(EggShell)(newTADM);
     }
-    return pShell;
 }
 //------------------------------------------------------------
-EggShell::EggShell(TypeManagerRef typeManager, ExecutionContextRef execContext)
+EggShell::EggShell(TypeManagerRef tm)
 {
-    _typeManger     = typeManager;
-    _execContext    = execContext;
+    _typeManger     = tm;
     _mallocBuffer   = null;
 }
 //------------------------------------------------------------
@@ -79,7 +61,6 @@ NIError EggShell::Delete()
     }
     
     pTADM->DeleteTypes(true);
-    pTADM->Free(_execContext);
     pTADM->Free(this);
     pTADM->PrintMemoryStat("ES Delete end", true);
 
@@ -88,66 +69,21 @@ NIError EggShell::Delete()
     return kNIError_Success;
 }
 //------------------------------------------------------------
-void EggShell::ParseEnqueueVI(TDViaParser* parser)
-{
-    SubString viName;
-    
-    if (! parser->TheString()->EatChar('('))
-        return parser->LogEvent(EventLog::kHardDataError, "'(' missing");
-    
-     parser->TheString()->ReadToken(&viName);
-    
-    if (! parser->TheString()->EatChar(')'))
-        return parser->LogEvent(EventLog::kHardDataError, "')' missing");
-
-    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_execContext->TheTypeManager()->FindObject(&viName);
-    if (vio && vio->ObjBegin()) {
-        vio->ObjBegin()->PressGo();
-    } else {
-        return parser->LogEvent(EventLog::kHardDataError, "VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
-    }
-}
-//------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
 {
-    ExecutionContextScope scope(_execContext);
+    TypeManagerScope scope(_typeManger);
     
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
     
-    TDViaParser parser(_execContext->TheTypeManager(), commandBuffer, &log, 1);
-    SubString command;
-    
-    parser.TheString()->EatLeadingSpaces();
-    while((parser.TheString()->Length() > 0) && (log.TotalErrorCount() == 0)) {
-        if (parser.TheString()->ComparePrefixCStr(tsDefineTypeToken)) {
-            // Defines are now processed by the core parser.
-            parser.ParseType();
-        } else {
-            parser.TheString()->ReadToken(&command);
-            if (command.CompareCStr("enqueue")) {
-                ParseEnqueueVI(&parser);
-            } else if (command.CompareCStr("clear")) {
-                _typeManger->DeleteTypes(false);
-            } else if (command.CompareCStr("exit")) {
-                log.LogEvent(EventLog::kTrace, 0, "chirp chirp");
-                return kNIError_kResourceNotFound;
-            } else {
-                log.LogEvent(EventLog::kHardDataError, 0, "bad egg");
-                break;
-            }
-        }
-        parser.TheString()->EatLeadingSpaces();
-        parser.RepinLineNumberBase();
-    }
-    
-    TDViaParser::FinalizeModuleLoad(_execContext->TheTypeManager(), &log);
-    
+    TDViaParser parser(_typeManger, commandBuffer, &log, 1);
+    NIError err = parser.ParseREPL();
+
     if (errorLog.Value->Length() > 0) {
         printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
     }
     
-    return log.TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
+    return err;
 }
 //------------------------------------------------------------
 // TODO Eventually Vireo should use a a Vireo program to process file io
@@ -170,7 +106,7 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
 {
     struct stat fileInfo;
 #if (kVireoOS_win32U || kVireoOS_win64U)
-    // This will go away once its written as a VI, then it will be hidden the FileIO functions
+    // This will go away once its written as a VI, then it will be hidden the FileSystem functions
     int h = 0;
 	_sopen_s(&h, name, O_RDONLY, _SH_DENYWR, 0);
 #else

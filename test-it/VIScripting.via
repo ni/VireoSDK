@@ -1,4 +1,4 @@
-define (HelloWorld0 dv (.VirtualInstrument (
+define (HelloWorld0 dv(.VirtualInstrument (
  c( e(dv(.String 'Could this be a simple reentrant VI?, Hello world.') variable1) )
             clump (1
                 Println(variable1)
@@ -6,7 +6,7 @@ define (HelloWorld0 dv (.VirtualInstrument (
 )))
 
 define (HelloWorld dv(.VirtualInstrument (
-    c( 
+    c(
         //----------------------------------------------
         e(dv(.String
         "(
@@ -44,15 +44,15 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(.String "MyVeryOwnString")         myVeryOwnStringName)
 
         e(dv(.String "HelloWorld2")             hw2str)
-        
+
         // VirtualInstrument is the VI's type, not an instance of that type.
         // To Make an instance of the type a variable of that type must be initialized.
-        // Something is a bit odd about all of this  
+        // Something is a bit odd about all of this
         e(.VirtualInstrument                    vi1)
         e(.VirtualInstrument                    vi2)
         e(.VirtualInstrument                    vi3)
         e(.VirtualInstrument                    viBad)
-        e(dv(.VirtualInstrument (        
+        e(dv(.VirtualInstrument (
             c(
             e(dv(.Int32 505) variable10)
          //   e(dv(.String 'a by-value hello world') variable1)
@@ -80,10 +80,10 @@ define (HelloWorld dv(.VirtualInstrument (
 
 
         EnqueueRunQueue(vi1)
-        
+
         HelloWorld0()                   // Call as a shared VI
         EnqueueRunQueue(HelloWorld0)    // Press the run button
-        
+
         //-------------------------------------------------
         // Now define some types then load code that needs them
         TypeManagerCurrentTypeManager(tm)
@@ -93,7 +93,7 @@ define (HelloWorld dv(.VirtualInstrument (
         EnqueueRunQueue(vi2)    // Press the run button
         Printf("-------\n")
 
-//      Not quire ready to work, the VI value exists but is not quire initialized correctly         
+//      Not quite ready to work, the VI value exists but is not quire initialized correctly
 //      EnqueueRunQueue(viValue)
 //      vi1()
     )

@@ -29,11 +29,11 @@ class VIClump;
 //! The VIA definition for a VirtualInstrument. Must match the C++ definition.
 #define VI_TypeString               \
 "a(c(                               \
-    e(.ExecutionContext Context)    \
+    e(.TypeManager TypeManager)     \
     e(a(.*) Params)                 \
     e(a(.*) Locals)                 \
-    e(a(.VIClump *) Clumps)         \
-    e(.Int32 lineNumberBase)        \
+    e(a(.Clump *) Clumps)         \
+    e(.Int32 LineNumberBase)        \
     e(.SubString ClumpSource)       \
 ))"
 
@@ -43,9 +43,9 @@ class VirtualInstrument
 {
     friend class VIDataProcsClass;
 private:
-    ExecutionContextRef     _executionContext;
-    TypedObjectRef          _params;          // All clumps in subVI share the same param block
-    TypedObjectRef          _locals;           // All clumps in subVI share the same data
+    TypeManagerRef          _typeManger;
+    TypedObjectRef          _params;        // All clumps in subVI share the same param block
+    TypedObjectRef          _locals;        // All clumps in subVI share the same locals
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
     void ClearTopVIParamBlock();
@@ -53,17 +53,17 @@ public:
     Int32                   _lineNumberBase;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
 public :
-    NIError Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
+    NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
     TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
 
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
-    ExecutionContextRef OwningContext() {return _executionContext;}
-    TypedObjectRef Params()             {return _params;}
-    TypedObjectRef Locals()             {return _locals;}
-    TypedArray1D<VIClump>* Clumps()     {return _clumps;}
+    TypeManagerRef TheTypeManager()     { return _typeManger; }
+    TypedObjectRef Params()             { return _params; }
+    TypedObjectRef Locals()             { return _locals; }
+    TypedArray1D<VIClump>* Clumps()     { return _clumps; }
 };
 
 //------------------------------------------------------------
@@ -78,7 +78,7 @@ public:
 
 //------------------------------------------------------------
 //! The VIA definition for a Clump. Must match the C++ definition.
-#define VIClump_TypeString              \
+#define Clump_TypeString              \
 "c(                                     \
     e(.InstructionBlock CodeStart)      \
     e(.DataPointer Next)                \
@@ -133,7 +133,7 @@ public:
     
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
-    void EnqueueRunQueue()  { OwningContext()->EnqueueRunQueue(this); }
+    void EnqueueRunQueue()  { TheExecutionContext()->EnqueueRunQueue(this); }
 
     VirtualInstrument*  OwningVI()      { return _owningVI; }
     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
@@ -141,8 +141,8 @@ public:
     InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
     void                ClearObservationStates();
     InstructionCore*    WaitOnObservableObject(InstructionCore*);
-    ExecutionContextRef OwningContext()    { return OwningVI()->OwningContext(); }
-    TypeManagerRef      TheTypeManager(){ return OwningContext()->TheTypeManager(); }
+    TypeManagerRef      TheTypeManager()        { return OwningVI()->TheTypeManager(); }
+    ExecutionContextRef TheExecutionContext()   { return TheTypeManager()->TheExecutionContext(); }
 };
 //------------------------------------------------------------
 //! An instruciton that suspends a clump and starts a SubVI's root clump.
@@ -211,6 +211,7 @@ public:
         kArgumentResolved_FirstGood,
         kArgumentResolvedToVIElement = kArgumentResolved_FirstGood,
         kArgumentResolvedToGlobal,
+        kArgumentResolvedToLiteral,
         kArgumentResolvedToDefault,
         kArgumentResolvedToParameter,
         kArgumentResolvedToClump,
@@ -284,7 +285,7 @@ public:
     // _recordNextInstructionAddress  lets the state know when that patch-up is needed.
     Int32           _recordNextInstructionAddress;
     
-    size_t*          _pVarArgCount;
+    size_t*         _pVarArgCount;
     Boolean         _bIsVI;
     
     //------------------------------------------------------------
@@ -301,7 +302,7 @@ public:
     TypeRef         StartNextOverload();
     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
     TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
-    void            ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData);
+    void            ResolveActualArgumentAddress(SubString* argument, void** ppData);
     void            AddDataTargetArgument(SubString* argument, Boolean prependType);
     void            InternalAddArg(TypeRef actualType, void* arg);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);

@@ -1165,8 +1165,8 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
     
     return _NextInstruction();
 }
-//------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_Data)
+//------------------------------------------------------------      
+DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Init, "p(i(.StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Clear, "p(i(.StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(ZeroOutTop, "p(i(.StaticTypeAndData))")

@@ -6,7 +6,7 @@
 (Line 88 Error "Argument not mutable '(10 11 12)'.")
 (Line 88 Error "Data encoding not formatted correctly.")
 (Line 88 Error "Data encoding not formatted correctly.")
-(Line 88 HardError "'(' missing.")
+(Line 94 Error "Type mismatch, argument should be 'Array'.")
 (Line 99 Error "Argument not mutable 'Ten'.")
 (Line 101 Error "Argument not mutable '4'.")
 (Line 102 Error "Argument not mutable '(1 2 3)'.")

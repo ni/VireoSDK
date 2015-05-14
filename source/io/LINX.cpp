@@ -42,7 +42,7 @@ VIREO_FUNCTION_SIGNATURE2(LinxDigitalRead, TypedArray1D<UInt8>*, TypedArray1D<Bo
 }
 
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_Linx)
+DEFINE_VIREO_BEGIN(Linx)
 
 // Primitives
 DEFINE_VIREO_FUNCTION(LinxDeviceName, "p(o(.String name))");

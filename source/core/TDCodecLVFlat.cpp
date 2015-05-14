@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file 
-    \brief Native Verio functions for LabVIEW's flat data format.
+    \brief Native Verio functions for LV flat data format.
  */
 
 #include "TypeDefiner.h"

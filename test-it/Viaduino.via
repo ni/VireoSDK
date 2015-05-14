@@ -3,7 +3,7 @@
 // instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
 
 define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
-    c(
+    Locals: c(
         e(.Type     dsType)
         e(.Int32    count)
         e(.Int32    index)
@@ -12,8 +12,8 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
         e(.String   typeName)
         e(.String   eltName)
         e(.String   eltValue)
-        e(a(.VIClump *) clumps) // alias to the array of clumps
-        e(.VIClump clump)
+        e(a(.Clump *) clumps) // alias to the array of clumps
+        e(.Clump clump)
         e(.Instruction inst)
         e(.Type  instructionType)
         e(.Type  parameterListType)

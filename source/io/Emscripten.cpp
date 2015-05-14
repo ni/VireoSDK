@@ -39,7 +39,7 @@ VIREO_FUNCTION_SIGNATURE2(JSGetElementByID, StringRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_Emscripten)
+DEFINE_VIREO_BEGIN(JavaScript)
     DEFINE_VIREO_FUNCTION(JSEval, "p(i(.String))");
     DEFINE_VIREO_FUNCTION(JSTest2, "p(i(.Int32)o(.Int32))");
     DEFINE_VIREO_FUNCTION(JSGetElementByID, "p(i(.String)o(.Int32))");

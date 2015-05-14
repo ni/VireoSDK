@@ -91,12 +91,7 @@ typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
 public:
-    ExecutionContext(TypeManagerRef typeManager);
-
-private:
-    ECONTEXT    TypeManagerRef _theTypeManager;
-public:
-    ECONTEXT    TypeManagerRef TheTypeManager()    { return _theTypeManager; }
+    ExecutionContext();
 
 private:
     ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
@@ -145,40 +140,9 @@ public:
     #define THREAD_EXEC()	(&gSingleExecutionContext)
     #define THREAD_CLUMP() gSingleExecutionContext.CurrentClump();
 #else
-    #define THREAD_EXEC() ExecutionContextScope::Current()
-    #define THREAD_CLUMP() ExecutionContextScope::Current()->CurrentClump()
+    #define THREAD_EXEC() (THREAD_TADM()->TheExecutionContext())
+    #define THREAD_CLUMP() (THREAD_EXEC()->CurrentClump())
 #endif
-
-#ifndef VIREO_SINGLE_GLOBAL_CONTEXT
-//------------------------------------------------------------
-//! Stack based class to manage a threads active TypeManager and ExecutionContext.
-class ExecutionContextScope
-{
-    ExecutionContextRef _saveExec;
-    TypeManagerScope  _typeManagerScope;
-    VIVM_THREAD_LOCAL static ExecutionContextRef _threadsExecutionContext;
-
-public:
-    //! Constructor saves the currect context (if it exists) and begins a new one.
-    ExecutionContextScope(ExecutionContextRef context)
-    : _typeManagerScope(context->TheTypeManager())
-    {
-        _saveExec = _threadsExecutionContext;
-        _threadsExecutionContext = context;
-    }
-    //! Destructor restores previous context
-    ~ExecutionContextScope()
-    {
-        _threadsExecutionContext = _saveExec;
-    }
-    //! Static method returns the current active ExecutionContext
-    static ExecutionContextRef Current()
-    {
-        return (ExecutionContextRef) _threadsExecutionContext;
-    }
-};
-#endif
-
 
 //------------------------------------------------------------
 //! Template class to dynamically create instances of a Vireo typed variable.

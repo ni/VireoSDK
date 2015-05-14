@@ -21,14 +21,14 @@ namespace Vireo
 //------------------------------------------------------------
 // VirtualInstrument
 //------------------------------------------------------------
-NIError VirtualInstrument::Init(ExecutionContextRef context, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* clumpSource)
+NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* clumpSource)
 {
-    VIREO_ASSERT(_executionContext == null)
+    VIREO_ASSERT(_typeManger == null)
     VIREO_ASSERT( sizeof(VIClump) == _clumps->ElementType()->TopAQSize() )
 
     // The preliminary initialization defines a generic VI
     // finish it out by defining its type.
-    _executionContext = context;
+    _typeManger = tm;
     _params->SetElementType(paramsType, false);
     _locals->SetElementType(localsType, false);
     _clumps->Resize1D(clumpCount);
@@ -147,7 +147,7 @@ void VIClump::Trigger()
     
     // Strickly speaking, this assert can be relaxed, but It will be interesting
     // to see when that change is needed.
-    VIREO_ASSERT(THREAD_EXEC() == OwningContext())
+    VIREO_ASSERT(THREAD_EXEC() == TheExecutionContext())
     
     if (--_shortCount == 0) {
         EnqueueRunQueue();
@@ -188,9 +188,9 @@ Observer* VIClump::ReserveObservationStatesWithTimeout(Int32 count, PlatformTick
         _observationStates[0]._clump = this;
         _observationStates[1]._clump = this;
         if (tickCount) {
-            OwningContext()->_timer.InitObservableTimerState(_observationStates, tickCount);
+            TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, tickCount);
         } else {
-            OwningContext()->_timer.InitObservableTimerState(_observationStates, 0x7FFFFFFFFFFFFFFF);
+            TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, 0x7FFFFFFFFFFFFFFF);
         }
         return _observationStates;
     } else {
@@ -228,7 +228,7 @@ InstructionCore* VIClump::WaitOnObservableObject(InstructionCore* nextInstructio
         // Hack, single one is a timer so it doesn't retry. There will be nothing to clear.
         if (_observationCount == 1)
             _observationCount = 0;
-        return OwningContext()->SuspendRunningQueueElt(nextInstruction);
+        return TheExecutionContext()->SuspendRunningQueueElt(nextInstruction);
     } else {
         return nextInstruction;
     }
@@ -475,14 +475,14 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
     return StartNextOverload();
 }
 //------------------------------------------------------------
-void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1** ppData)
+void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** ppData)
 {
     _actualArgumentType = null;
     *ppData = null;
     
     // "." prefixed symbols are type symbols from the TypeManager
     if (argument->ComparePrefixCStr(".")) {
-        _actualArgumentType = _clump->TheTypeManager()->FindType("Type");
+        _actualArgumentType = _clump->TheTypeManager()->FindType(tsTypeType);
         
         Utf8Char dot;
         argument->ReadRawChar(&dot);
@@ -537,11 +537,14 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
             return;
         }
         
-        _argumentState = kArgumentResolvedToDefault;
-        DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-        TypeDefiner::ParseValue(_clump->TheTypeManager(), cdt, _pLog, _approximateLineNumber, argument);
-        cdt = cdt->FinalizeDVT();
-        *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+        TypeRef type = TypeDefiner::ParseLiteral(_clump->TheTypeManager(), FormalParameterType(), _pLog, _approximateLineNumber, argument);
+        if (type) {
+            _argumentState = kArgumentResolvedToLiteral;
+            _actualArgumentType = type;
+            *ppData = type->Begin(kPARead);
+        } else {
+            _argumentState = kArgumentNotResolved;
+        }
         return;
     }
     
@@ -561,15 +564,15 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
         // The symbol was found in the TypeManager chain. Get a pointer to the value.
         
         UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
-        AQBlock1* pData = null;
+        void* pData = null;
 
         // TODO access-option based on parameter direction;
         if (usageType == kUsageTypeInput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPARead);
+            pData = _actualArgumentType->Begin(kPARead);
         } else if (usageType == kUsageTypeOutput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPAWrite);
+            pData = _actualArgumentType->Begin(kPAWrite);
         } else if (usageType == kUsageTypeInputOutput) {
-            pData = (AQBlock1*)_actualArgumentType->Begin(kPAReadWrite);
+            pData = _actualArgumentType->Begin(kPAReadWrite);
         } else {
             pData = null;
         }
@@ -595,7 +598,7 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, AQBlock1
 //------------------------------------------------------------
 void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prependType)
 {
-    AQBlock1* pData = null;
+    void* pData = null;
     ResolveActualArgumentAddress(argument, &pData);
     
     if (ActualArgumentType() == null) {
@@ -735,7 +738,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
     if ((*pObj)->Type()->IsA(_baseReentrantViType)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
-        TypeManagerRef tm = this->_vi->OwningContext()->TheTypeManager();
+        TypeManagerRef tm = this->_vi->TheTypeManager();
         
         // Reentrant VI clones exist in TM the caller VI is in.
         DefaultValueType *cdt = DefaultValueType::New(tm, viType, false);
@@ -811,14 +814,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
     {
         case kArgumentNotResolved:
             // Ignore arguments if the instruction was not resolved.
-            if (_instructionType)
-                simpleMessage = "Argument not resolved";
-            break;
-        case kArgumentTooMany:
-            simpleMessage = "Too many arguments";
-            break;
-        case kArgumentTooFew:
-            simpleMessage = "Too few arguments";
+            simpleMessage = _instructionType ? "Argument not resolved" : null;
             break;
         case kArgumentTypeMismatch:
             {
@@ -827,15 +823,19 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
                      FMT_LEN_BEGIN(&formalParameterTypeName));
             }
             break;
+        case kArgumentTooMany:              simpleMessage = "Too many arguments";       break;
+        case kArgumentTooFew:               simpleMessage = "Too few arguments";        break;
         case kArgumentNotOptional:          simpleMessage = "Argument not optional";    break;
         case kArgumentNotMutable:           simpleMessage = "Argument not mutable";     break;
         // Good states
-        case kArgumentResolvedToClump:      simpleMessage = "Argument is clump";        break;
-        case kArgumentResolvedToVIElement:  simpleMessage = "Argument is VI element";   break;
-        case kArgumentResolvedToPerch:      simpleMessage = "Argument is perch";        break;
-        case kArgumentResolvedToParameter:  simpleMessage = "Argument is parameter";    break;
-        case kArgumentResolvedToDefault:    simpleMessage = "Argument is default";      break;
-        default:                            simpleMessage = "Unknown argument type";          break;
+        case kArgumentResolvedToGlobal:
+        case kArgumentResolvedToLiteral:
+        case kArgumentResolvedToClump:
+        case kArgumentResolvedToVIElement:
+        case kArgumentResolvedToPerch:
+        case kArgumentResolvedToParameter:
+        case kArgumentResolvedToDefault:    simpleMessage = null;                       break;
+        default:                            simpleMessage = "Unknown argument type";    break;
     }
     if (simpleMessage) {
         LogEvent(severity, lineNumber, "%s '%.*s'", simpleMessage, FMT_LEN_BEGIN(&_parserFocus));
@@ -1029,10 +1029,10 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // can take the parameters as is (e.g. it is runtime polymorphic)
     }
 
-    // If extra parameters exits for the matched function is that OK?
+    // If extra parameters exist for the matched function is that OK?
     Int32 formalArgCount = _instructionType->SubElementCount();
     if (formalArgCount > _argCount) {
-        Boolean foundMissing = false;
+//      Boolean foundMissing = false;
         for (Int32 i = _argCount; i < formalArgCount; i++) {
             TypeRef type = _instructionType->GetSubElement(i);
             if (type->IsStaticParam()) {                
@@ -1041,7 +1041,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
                 void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite); // * passed as a param means null
                 InternalAddArg(type, pData);
             } else {
-                foundMissing = true;
+//              foundMissing = true;
             }
         }
 #if 0
@@ -1166,7 +1166,7 @@ class VIDataProcsClass : public IDataProcs
         if (pClump) {
             // In packed mode all instructions are in one block.
             // The first instruction of the first clump is the beginning of the block.
-            vi->OwningContext()->TheTypeManager()->Free(pClump->_codeStart);
+            vi->TheTypeManager()->Free(pClump->_codeStart);
 
             // If it's a top VI
             if (!pClump->_caller)
@@ -1208,10 +1208,12 @@ class InstructionBlockDataProcsClass : public IDataProcs
 InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 #endif
 
-DEFINE_VIREO_BEGIN(LabVIEW_Execution2)
+DEFINE_VIREO_BEGIN(VirtualInstrument)
+    DEFINE_VIREO_REQUIRE(Synchronization)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
-    DEFINE_VIREO_TYPE(VIClump, VIClump_TypeString);
+    DEFINE_VIREO_TYPE(Clump, Clump_TypeString);
+    DEFINE_VIREO_TYPE(EmptyParameterList, "c()");
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);
     DEFINE_VIREO_TYPE(ReentrantVirtualInstrument, ".VirtualInstrument");  // A case of simple inheritance
     DEFINE_VIREO_FUNCTION(EnqueueRunQueue, "p(i(.VirtualInstrument))");

@@ -33,6 +33,26 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
+TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM)
+{
+    TypeManagerRef newTADM = TypeManager::New(parentTADM);
+    {
+        // Set it up as the active scope, allocations will now go through this TADM.
+        TypeManagerScope scope(newTADM);
+        
+        if (!parentTADM) {
+            // In the beginning... creating a new universe, add some core types.
+            TypeDefiner::DefineStandardTypes(newTADM);
+            TypeDefiner::DefineTypes(newTADM);
+            ExecutionContextRef exec = TADM_NEW_PLACEMENT(ExecutionContext)();
+            newTADM->SetExecutionContext(exec);
+        }
+        
+        // Once standard types have been loaded an execution context can be constructed
+        return newTADM;
+    }
+}
+//------------------------------------------------------------
 TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format)
 {
     _pLog = pLog;
@@ -77,19 +97,103 @@ void TDViaParser::RepinLineNumberBase()
     _originalStart = _string.Begin();
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseType()
+void TDViaParser::ParseEnqueue()
 {
-    TypeManagerScope scope(this->_typeManager);
+    //! TODO merge with runtime enqueue function
+    SubString viName;
+    
+    if (! _string.EatChar('('))
+        return LOG_EVENT(kHardDataError, "'(' missing");
+    
+    _string.ReadToken(&viName);
+    
+    if (! _string.EatChar(')'))
+        return LOG_EVENT(kHardDataError, "')' missing");
+    
+    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_typeManager->FindObject(&viName);
+    if (vio && vio->ObjBegin()) {
+        vio->ObjBegin()->PressGo();
+    } else {
+        return LOG_EVENTV(kHardDataError,"VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
+    }
+}
+//------------------------------------------------------------
+NIError TDViaParser::ParseREPL()
+{
+    SubString command;
+    _string.EatLeadingSpaces();
+    while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
+        if (_string.ComparePrefixCStr(")")) {
+            break;
+        } else if (_string.ComparePrefixCStr(tsDefineTypeToken)
+                   || _string.ComparePrefixCStr(tsEnqueueTypeToken)
+                   || _string.ComparePrefixCStr(tsContextTypeToken)
+                   ) {
+            ParseType();
+        } else {
+            _string.ReadToken(&command);
+            if (command.CompareCStr("exit")) {
+                _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
+                return kNIError_kResourceNotFound;
+            } else {
+                LOG_EVENT(kHardDataError, "bad egg");
+                break;
+            }
+        }
+        _string.EatLeadingSpaces();
+        RepinLineNumberBase();
+    }
+    
+    TDViaParser::FinalizeModuleLoad(_typeManager, _pLog);
+
+    return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
+{
+    TypeManagerRef newTADM = ConstructTypeManagerAndExecutionContext(parentTADM);
+    TypeRef eType = _typeManager->FindType(tsTypeManagerType);
+    TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
+    
+    if (!_string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return BadType();
+    }
+    
+    {   // Parse the nested section using the newly created TADM/Context pair.
+        TypeManagerScope scope(newTADM);
+        TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine());
+        parser.ParseREPL();
+        _string.AliasAssign(parser.TheString());
+    }
+
+    if (!_string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return BadType();
+    }
+    
+    return type;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseType(TypeRef patternType)
+{
+    TypeManagerScope scope(_typeManager);
 
     TypeRef type = null;
+    SubString save = _string;
+    SubString typeFunction;
+    TokenTraits tt = _string.ReadToken(&typeFunction);
     
-    SubString  typeFunction;
-    _string.ReadToken(&typeFunction);
     
-    if (typeFunction.ComparePrefixCStr(tsNamedTypeToken)) {
-        Utf8Char dot;
-        typeFunction.ReadRawChar(&dot);
-        
+    if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr(tsDefineTypeToken)) {
+        // Legacy work around
+        _string.EatLeadingSpaces();
+    }
+    
+    Boolean bTypeFunction = _string.ComparePrefixCStr("(");
+    if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
+        // Eat the dot prefix if it exists.
+        typeFunction.EatChar('.');
         type = _typeManager->FindType(&typeFunction);
         if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
@@ -107,6 +211,8 @@ TypeRef TDViaParser::ParseType()
         type = ParseBitBlock();
     } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
+    } else if (typeFunction.CompareCStr(tsContextTypeToken)) {
+        type = ParseContext(_typeManager);
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {
@@ -115,74 +221,11 @@ TypeRef TDViaParser::ParseType()
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
+    } else if (typeFunction.CompareCStr(tsEnqueueTypeToken)) {
+        ParseEnqueue();
     } else {
-#if defined(VIREO_TYPE_CONSTRUCTION)
-        // Call a type function directly
-#endif
-
-/*
- When looking for a type the most common case we have has been the cases above.
- For example: a(.Int32 *) Thus a type is a type. 
- 
- But value literals imply a type, and more specifically they imply DV type. So
- instead of dv(.Int32 505) they type could be described simply as 505. For simple 
- types its based on the token type. 
- 
- Simple cases:
- 
- simple types:
- all integers   2345 -> becomes a dv(.Int32 2345)
- with a dp      2345.0 -> becomes a dv(.Double 2345.0)
- booleans       true -> becomes dv(.Boolean true)
- strings        "Hello" -> becomes dv(.String "Hello")
- composite types:
- arrays         (1 2 3) -> becomes dv(a(.Int32 3) (1 2 3))
- arrays         ("Apple" "Kaypro" "Sun") -> becomes dv(a(.String 3) ("Apple" "Kaypro" "Sun"))
-    For arays the first element sets the type. al following elements
-    must match the first type
-                
-If a type has generic parametes those parameters are sued for those.
-If not the the parameter is use for the default value? Doe this make snese.
-            
- 
-For types beyond these simple types perhaps the tyep could be 
-
-    .Int8<4>
-    
- The token classification routine takes in a hint and returns a resolved type.
- Thus integers default to .Int32 but can be used for other types that have a numeric encoging (signed or unsigned) encoding.
- 
-    .Rect<(0 0 10 10)>  // A rectangle with a default value.
-    .Rect<0 0 10 10>    // Hmmm which one makes the most sense?
- 
-*/
-        // See if the token fits the rules for a literal.
-        TokenTraits tt = typeFunction.ClassifyNextToken();
-        ConstCStr tName = null;
-        TypeRef t = null;
-
-        if (tt == TokenTraits_Integer) {
-            tName = "Int32";
-        } else if (tt == TokenTraits_IEEE754) {
-            tName = "Double";
-        } else if (tt == TokenTraits_Boolean) {
-            tName = "Boolean";
-        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
-            tName = "String";
-        }
-        
-        if (tName) {
-            t = _typeManager->FindType(tName);
-
-            DefaultValueType *cdt = DefaultValueType::New(_typeManager, t, false);
-            TypeDefiner::ParseValue(_typeManager, cdt, _pLog, CalcCurrentLine(), &typeFunction);
-            cdt = cdt->FinalizeDVT();
-            type = cdt;
-        }
-        
-        if (!t) {
-            LOG_EVENTV(kHardDataError, "Unrecognized type primitive '%.*s'",  FMT_LEN_BEGIN(&typeFunction));
-        }
+        _string = save;
+        type = ParseLiteral(patternType);
     }
 
     if (_string.EatChar('<')) {
@@ -194,6 +237,52 @@ For types beyond these simple types perhaps the tyep could be
         type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
     }
     
+    return type;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
+{
+    TypeRef type = null;
+    SubString expressionToken;
+    _string.ReadSubexpressionToken(&expressionToken);
+
+    // See if the token fits the rules for a literal.
+    TokenTraits tt = expressionToken.ClassifyNextToken();
+    ConstCStr tName = null;
+    TypeRef literalsType = null;
+    
+    if (patternType) {
+        EncodingEnum enc = patternType->BitEncoding();
+        if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+            if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
+                literalsType = patternType;
+            }
+        } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
+            literalsType = patternType;
+        }
+    }
+    
+    if (literalsType == null) {
+        if (tt == TokenTraits_Integer) {
+            tName = "Int32";
+        } else if (tt == TokenTraits_IEEE754) {
+            tName = "Double";
+        } else if (tt == TokenTraits_Boolean) {
+            tName = "Boolean";
+        } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
+            tName = "String";
+        }
+        literalsType = _typeManager->FindType(tName);
+    }
+    
+    if (literalsType) {
+        DefaultValueType *cdt = DefaultValueType::New(_typeManager, literalsType, false);
+        TypeDefiner::ParseData(_typeManager, cdt, _pLog, CalcCurrentLine(), &expressionToken);
+        cdt = cdt->FinalizeDVT();
+        type = cdt;
+    } else {
+        LOG_EVENTV(kHardDataError, "Unrecognized literal '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
+    }
     return type;
 }
 //------------------------------------------------------------
@@ -447,6 +536,9 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
         return BadType();
     
     TypeRef subType = ParseType();
+    if (!subType)
+        return BadType();
+    
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
     // The initializer value is optional, so check to see there is something
@@ -561,8 +653,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 }
             }
         } else if (token.EatChar(Fmt()._arrayPre)) {
-            printf("read into array\n");
-        //    printf("--------------------------------------------------------------input :%s\n",_string.Begin());
             // Second option, it is a list of values.
             // If one or more dimension lengths are variable then the outer most dimension
             // preflights the parsing so the overall storage can be allocated.
@@ -571,7 +661,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                         
             if (level == 0) {
                 ArrayDimensionVector initializerDimensionLengths;
-
                 PreParseElements(rank, initializerDimensionLengths);
 
                 // Resize the array to the degree possible to match initializers
@@ -1010,7 +1099,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
     
-    vi->Init(ExecutionContextScope::Current(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
+    vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
     
     if (_loadVIsImmediatly) {
         TDViaParser::FinalizeVILoad(vi, _pLog);
@@ -1032,17 +1121,17 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
             // (1) Parse, but don't create any instrucitons, determine how much memory is needed.
             // Errors are ignored in this pass.
 #ifdef VIREO_USING_ASSERTS
-            //  Int32 startingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
+            //  Int32 startingAllocations = vi->TheTypeManager()->_totalAllocations;
 #endif
             EventLog dummyLog(EventLog::DevNull);
-            TDViaParser parser(vi->OwningContext()->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
 #ifdef VIREO_USING_ASSERTS
             // The frist pass should just calculate the size needed. If any allocations occured then
             // there is a problem.
-            // Int32 endingAllocations = vi->OwningContext()->TheTypeManager()->_totalAllocations;
+            // Int32 endingAllocations = vi->TheTypeManager()->_totalAllocations;
             // VIREO_ASSERT(startingAllocations == endingAllocations)
 #endif
         }
@@ -1053,7 +1142,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
         
         {
             // (3) Parse a second time, instrucitons will be allocated out of the chunk.
-            TDViaParser parser(vi->OwningContext()->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1088,7 +1177,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     Boolean tokenFound = true;
     do {
         // Read the function name.
-        tokenFound = _string.ReadToken(&token);
+        _string.ReadToken(&token);
         
         // If there is none, all is done.
         if (token.CompareCStr(")")) {
@@ -1205,7 +1294,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     
                         if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // unadorned number
                             state.AddBranchTargetArgument(&token);
-                        } else if (formalParameterTypeName.CompareCStr("Clump")) {  // this is a simple integer, perhaps it should be adorned.
+                        } else if (formalParameterTypeName.CompareCStr(tsVIClumpType)) {
+                            // Parse as an integer then resolve to pointer to the clump.
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true);
@@ -1711,7 +1801,6 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
     }
 }
-
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(ToTypeAndDataString, StaticType, void, StringRef)
 {
@@ -1764,9 +1853,9 @@ VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
 /**
  * Unflatten from JSON string.
  * The 3 boolean flags are
- *      :enale LabVIEW extensions(true)
+ *      :enable LV extensions(true)
  *      :default null elements
- *      :strict validation. whether allow json object contains items not dfined in the cluster
+ *      :strict validation. whether allow json object contains items not defined in the cluster
  * */
 VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
 {
@@ -1774,7 +1863,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
     TypedArray1D<StringRef>* itemPath = _Param(3);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat("JSON");
-    TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &jsonString, &log, 1, &jsonFormat);
+    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat);
     if (itemPath->Length()>0) {
         Boolean existingPath = true;
         for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
@@ -1783,7 +1872,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
                 existingPath = false;
             }
         }
-        if (existingPath){
+        if (existingPath) {
             parser.ParseData(_ParamPointer(1), _ParamPointer(2));
         } else {
             // printf("not found\n");
@@ -1804,7 +1893,7 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     SubString string = _Param(0)->MakeSubStringAlias();
     EventLog log(_Param(3));
     
-    TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &string, &log, 1);
+    TDViaParser parser(THREAD_TADM(), &string, &log, 1);
     parser._loadVIsImmediatly = true;
     
     parser.ParseData(type, _ParamPointer(2));
@@ -1828,11 +1917,11 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
         EventLog log(EventLog::DevNull);
-        TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
+        TDViaParser parser(THREAD_TADM(), &substring, &log, 1);
         Int64 parsedValue;
 
         // ParseData needs to be given an integer type so that it parses the string as a decimal string.
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Int64");
+        TypeRef parseType = THREAD_TADM()->FindType("Int64");
 
         parser.ParseData(parseType, &parsedValue);
 
@@ -1882,11 +1971,11 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
         EventLog log(EventLog::DevNull);
-        TDViaParser parser(THREAD_EXEC()->TheTypeManager(), &substring, &log, 1);
+        TDViaParser parser(THREAD_TADM(), &substring, &log, 1);
         Double parsedValue;
 
         // ParseData needs to be given a floating point type so that it parses the string as an exponential string.
-        TypeRef parseType = THREAD_EXEC()->TheTypeManager()->FindType("Double");
+        TypeRef parseType = THREAD_TADM()->FindType("Double");
 
         parser.ParseData(parseType, &parsedValue);
 

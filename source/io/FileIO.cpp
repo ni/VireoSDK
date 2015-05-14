@@ -348,33 +348,33 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
 }
 #endif
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(LabVIEW_FileIO)
+DEFINE_VIREO_BEGIN(FileSystem)
     // Types
     DEFINE_VIREO_TYPE(FileHandle, ".Int32")
     // Values
-    DEFINE_VIREO_VALUE(StdIn, STDIN_FILENO, ".FileHandle");
-    DEFINE_VIREO_VALUE(StdOut, STDOUT_FILENO, ".FileHandle");
-    DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle");
+    DEFINE_VIREO_VALUE(StdIn, STDIN_FILENO, ".FileHandle")
+    DEFINE_VIREO_VALUE(StdOut, STDOUT_FILENO, ".FileHandle")
+    DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle")
     // Primitives
     // Print is like PrintLn
 #if defined(VIREO_VIA_FORMATTER)
-    DEFINE_VIREO_FUNCTION(Println, "p(i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(Printf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(Println, "p(i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(Printf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))")
 #endif
     //--------
 #ifdef VIREO_FILESYSTEM
-    DEFINE_VIREO_FUNCTION(FileOpen, "p(i(.String)i(.String)i(.Int32)i(.Int32)i(.Boolean)i(.FileHandle)i(.Boolean)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(FileSize, "p(i(.FileHandle)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(FileDelete, "p(i(.String)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(StreamClose, "p(i(.FileHandle)o(.Int32))");
+    DEFINE_VIREO_FUNCTION(FileOpen, "p(i(.String)i(.String)i(.Int32)i(.Int32)i(.Boolean)i(.FileHandle)i(.Boolean)o(.Int32))")
+    DEFINE_VIREO_FUNCTION(FileSize, "p(i(.FileHandle)o(.Int32))")
+    DEFINE_VIREO_FUNCTION(FileDelete, "p(i(.String)o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StreamClose, "p(i(.FileHandle)o(.Int32))")
 #endif
     //--------
-    DEFINE_VIREO_FUNCTION(StreamSetPosition, "p(i(.FileHandle)i(.Int32)i(.Int32)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(StreamRead, "p(i(.FileHandle)o(.String)o(.Int32)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(StreamWrite, "p(i(.FileHandle)i(.String)i(.Int32)o(.Int32))");
+    DEFINE_VIREO_FUNCTION(StreamSetPosition, "p(i(.FileHandle)i(.Int32)i(.Int32)o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StreamRead, "p(i(.FileHandle)o(.String)o(.Int32)o(.Int32))")
+    DEFINE_VIREO_FUNCTION(StreamWrite, "p(i(.FileHandle)i(.String)i(.Int32)o(.Int32))")
 
 #ifdef VIREO_FILESYSTEM_DIRLIST
-    DEFINE_VIREO_FUNCTION(ListDirectory, "p(i(.String)o(a(.String *)))");
+    DEFINE_VIREO_FUNCTION(ListDirectory, "p(i(.String)o(a(.String *)))")
 #endif
 
 DEFINE_VIREO_END()

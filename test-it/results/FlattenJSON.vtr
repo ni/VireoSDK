@@ -2,5 +2,5 @@ Test JSON Parser and Formatter
 JSON is |{"Numeric+1":200,"Numeric":2015.3,"string+2":"header\nmessage body","a":[-11,-22,-33,-4.4]}|
 JSON is |[-11,-22,-33,-4.4]|
 JSON is |{"Numeric 1":12,"string 2":"id\name","array":[11,22,33]}|
-Cluster is |{"Numeric 1":12,"string 2":"id\name","array":[]}|
+Cluster is |{"Numeric 1":12,"string 2":"id\name","array":[11,22,33]}|
 item in cluster is |12.000000|

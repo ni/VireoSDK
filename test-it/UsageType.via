@@ -22,7 +22,7 @@ define (HelloWorld dv(.VirtualInstrument (
      e(.Int32 i)
      e(.Int32 n)
     )
-    clump (1
+    clump(1
        Println(variable1)
         TypeSubElementCount(tvar n)
         Perch(0)
@@ -39,7 +39,7 @@ define (HelloWorld dv(.VirtualInstrument (
     clump(1
        Println(n)
     )
-    
+
       //  While()
       //  Unitl()
       //  For(i n 1)  // for arg0 goes from initial value to arg1 execute clump arg2. This can be done by a sub vi!
