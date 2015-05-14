@@ -201,6 +201,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Int32",         "c(e(bb(32 SInt2c)))");
     Define(tm, "UInt64",        "c(e(bb(64 UInt)))");
     Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
+    
     Define(tm, "Block128",      "c(e(bb(128 Bits)))");
     Define(tm, "Block256",      "c(e(bb(256 Bits)))");
 
@@ -220,10 +221,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 
     // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
     Define(tm, tsTypeType, ".DataPointer");
-    Define(tm, tsTypeManagerType, ".DataPointer");
-
-    // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
-    Define(tm, "StaticType", ".DataPointer");
+//    Define(tm, tsTypeManagerType, ".DataPointer");
 
     Define(tm, "Object", ".DataPointer");
     Define(tm, "Array", ".DataPointer");    // Object with Rank > 0
@@ -234,12 +232,15 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // This parameter will be constant number, not a pointer to a number
     Define(tm, "VarArgCount", ".DataPointer");
 
+    // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
+    Define(tm, "StaticType", ".DataPointer");
+    
     // StaticTypeAndData - Used in prototypes for polymorphic functions.
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
-
+ 
     Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
 }
 

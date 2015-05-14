@@ -1209,6 +1209,7 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 #endif
 
 DEFINE_VIREO_BEGIN(VirtualInstrument)
+    DEFINE_VIREO_REQUIRE(TypeManager)
     DEFINE_VIREO_REQUIRE(Synchronization)
     DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);

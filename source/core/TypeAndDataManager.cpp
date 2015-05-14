@@ -2351,7 +2351,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
 }
 #endif
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
+VIREO_FUNCTION_SIGNATURE2(TypeOf, TypeRef, TypeRef)
 {
     // TODO Using the static StaticTypeAndData may cause the the
     // parameter to allocate a default value if one does not already exist
@@ -2361,7 +2361,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeOf, TypeRef, void, TypeRef)
     
     // Return the static type.
     TypeRef staticType = (TypeRef)_ParamPointer(0);
-    _Param(2) = staticType;
+    _Param(1) = staticType;
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2610,6 +2610,11 @@ DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
+#endif
+
+    DEFINE_VIREO_TYPE(TypeManager, ".DataPointer");
+
+#if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
     DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
 #endif
@@ -2635,7 +2640,7 @@ DEFINE_VIREO_BEGIN(TypeManager)
     DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(.Type) i(.String) o(.Type))");
 #endif
 
-    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(.StaticTypeAndData) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(.StaticType) o(.Type))");
     DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeAlignment, "p(i(.Type) o(.Int32))");
     DEFINE_VIREO_FUNCTION(TypeEncoding, "p(i(.Type) o(.Int32))");
