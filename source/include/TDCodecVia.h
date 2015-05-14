@@ -153,8 +153,8 @@ public:
     void    FormatPointerData(TypeRef pointerType, void* pData);
     void    FormatEncoding(EncodingEnum value);
     void    FormatElementUsageType(UsageTypeEnum value);
-    void    FormatInt(EncodingEnum encoding, Int32 aqSize, void* pData);
-    void    FormatIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData);
+    void    FormatInt(EncodingEnum encoding, IntMax value);
+    void    FormatIEEE754(TypeRef type, void* pData);
     
     static char LocaleDefaultDecimalSeperator;
     static ViaFormatChars formatVIA;
