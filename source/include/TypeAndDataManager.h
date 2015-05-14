@@ -312,10 +312,10 @@ public:
 
 //------------------------------------------------------------
 // Utility functions to read and write numbers to non aligned memory based on size and encoding
-NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax* pValue);
-NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value);
-NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double* pValue);
-NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value);
+NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax* pValue);
+NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
+NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double* pValue);
+NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 
 //------------------------------------------------------------
@@ -524,6 +524,7 @@ public:
     
     Boolean CompareType(TypeRef otherType);
     Boolean IsA(const SubString* otherTypeName);
+    Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     
@@ -1043,9 +1044,10 @@ public:
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-                                                { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+                                              { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendViaDecoded(SubString *string);
-    void AppendEscapeEncoded(SubString *string);
+    void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
+
 
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }

@@ -511,7 +511,7 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *p
         return kNIError_kResourceNotFound;
     }
     
-    ReadDoubleFromMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, pValue);
+    ReadDoubleFromMemory(actualType, pData, pValue);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -523,7 +523,7 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double v
         return kNIError_kResourceNotFound;
     }
     
-    WriteDoubleToMemory(actualType->BitEncoding(), actualType->TopAQSize(), pData, value);
+    WriteDoubleToMemory(actualType, pData, value);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -2095,10 +2095,12 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 }
 //------------------------------------------------------------
 //! Read an integer value from memory converting as necessary.
-NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax *pValue)
+NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
 {
     NIError err = kNIError_Success;
     IntMax value = 0;
+    EncodingEnum encoding = type->BitEncoding();
+    Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch(aqSize) {
@@ -2140,9 +2142,11 @@ NIError ReadIntFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntM
 }
 //------------------------------------------------------------
 //! Write an integer value to memory converting as necessary.
-NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMax value)
+NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
 {
     NIError err = kNIError_Success;
+    EncodingEnum encoding = type->BitEncoding();
+    Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
@@ -2186,10 +2190,12 @@ NIError WriteIntToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, IntMa
 }
 //------------------------------------------------------------
 //! Read a IEEE754 double value from memory converting as necessary.
-NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double *pValue)
+NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
 {
     NIError err = kNIError_Success;
     Double value = 0.0;
+    EncodingEnum encoding = type->BitEncoding();
+    Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
@@ -2223,6 +2229,12 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
                 default: err = kNIError_kCantDecode;        break;
             }
             break;
+        case kEncoding_Cluster:
+          if (type->IsA("Timestamp")) {
+              Timestamp* t = (Timestamp*) pData;
+              value = t->ToDouble();
+          }
+          break;
         default: err = kNIError_kCantDecode; break;
     }
     *pValue = value;
@@ -2230,9 +2242,11 @@ NIError ReadDoubleFromMemory(EncodingEnum encoding, Int32 aqSize, void* pData, D
 }
 //------------------------------------------------------------
 //! Write a IEEE754 double value to memory converting as necessary.
-NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Double value)
+NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
 {
     NIError err = kNIError_Success;
+    EncodingEnum encoding = type->BitEncoding();
+    Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
@@ -2266,6 +2280,13 @@ NIError WriteDoubleToMemory(EncodingEnum encoding, Int32 aqSize, void* pData, Do
                 case 1:  *(UInt8*)pData = value!=0.0 ? 1 : 0;break;
                 default: err = kNIError_kCantEncode;        break;
             }
+            break;
+        case kEncoding_Cluster:
+            if (type->IsA("Timestamp")) {
+                Timestamp* t = (Timestamp*) pData;
+                *t = Timestamp(value);
+            }
+            break;
         default: err = kNIError_kCantDecode; break;
     }
     if (err != kNIError_Success) {

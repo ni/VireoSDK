@@ -208,6 +208,10 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             index++;
         }
         TypeRef argType = arguments[i]._paramType;
+        if (argType->IsA("Timestamp")) {
+            buffer->AppendCStr("%T");
+            return ;
+        }
         switch(argType->BitEncoding()) {
 
         case kEncoding_UInt: {
@@ -350,7 +354,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         Double tempDouble;
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
+                        ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
                         Int32 leadingZero = 0;
                         Int32 exponent = 0;
                         Int32 precision = fOptions.Precision;
@@ -399,7 +403,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         Double tempDouble;
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
+                        ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
                         Int32 precision = fOptions.Precision;
                         if (precision>0 && fOptions.EngineerNotation) {
                             Int32 exponent = 0;
@@ -465,7 +469,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         IntMax intValue;
                         Int32 intSize = 8*argType->TopAQSize();
 
-                        ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                        ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
                         char BinaryString[2*kTempCStringLength];
                         char bits [2];
                         bits[0] = '0';
@@ -531,15 +535,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
                             // When reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
-                                ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                                ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
                                 intValue = ConvertNumericRange(kEncoding_UInt, 4, intValue);
                             } else {
-                                ReadIntFromMemory(argType->BitEncoding(),  argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                                ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
                                 intValue = ConvertNumericRange(kEncoding_SInt2C, 4, intValue);
                             }
 
                         } else {
-                            ReadIntFromMemory(argType->BitEncoding(), argType->TopAQSize(), arguments[argumentIndex]._pData, &intValue);
+                            ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
                         }
 
                         Int32 length = snprintf(formattedNumber, kTempCStringLength, tempFormat.BeginCStr(), intValue);
@@ -641,7 +645,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         } else {
                             Double tempDouble;
-                            ReadDoubleFromMemory(argType->BitEncoding(), argType->TopAQSize(),  arguments[argumentIndex]._pData, &tempDouble);
+                            ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
                             Timestamp time(tempDouble);
                             Date date(time, timezone);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
@@ -1034,7 +1038,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             break;
         }
         intValue = ConvertNumericRange(kEncoding_UInt, argumentType->TopAQSize(), intValue);
-        WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+        WriteIntToMemory(argumentType, argument->_pData, intValue);
     }
     break;
     case kEncoding_SInt2C:
@@ -1067,7 +1071,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             break;
         }
         intValue = ConvertNumericRange(kEncoding_SInt2C, argumentType->TopAQSize(), intValue);
-        WriteIntToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, intValue);
+        WriteIntToMemory(argumentType, argument->_pData, intValue);
     }
     break;
     case kEncoding_IEEE754Binary: {
@@ -1102,7 +1106,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                doubleValue = intValue;
                break;
            }
-        WriteDoubleToMemory(argumentType->BitEncoding(), argumentType->TopAQSize(), argument->_pData, doubleValue);
+        WriteDoubleToMemory(argumentType, argument->_pData, doubleValue);
     }
     break;
     case kEncoding_Array: {

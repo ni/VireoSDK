@@ -93,7 +93,7 @@ IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
         if (type) {
             // Use its value.
             IntMax newValue = 0;
-            ReadIntFromMemory(type->BitEncoding(), type->TopAQSize(), type->Begin(kPARead), &newValue);
+            ReadIntFromMemory(type, type->Begin(kPARead), &newValue);
             return (IntIndex) newValue;
         } else {
             // If no parameter is supplied then change it to simply being variable size
