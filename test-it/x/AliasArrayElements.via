@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e (dv(a(.String *) ("Red" "Blue" "Green" "Yellow"))  v1)
      //   al(.String v2)
@@ -25,4 +25,4 @@ define (HelloWorld dv(.VirtualInstrument (
         )
 )))
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

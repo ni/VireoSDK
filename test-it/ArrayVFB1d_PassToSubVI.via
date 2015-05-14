@@ -1,4 +1,4 @@
-define (PrintArrayInfo dv(.VirtualInstrument (
+define(PrintArrayInfo dv(.VirtualInstrument (
  c(
     i(.String           message)
     io(a(.Int32 *)      param1)
@@ -29,7 +29,7 @@ define (PrintArrayInfo dv(.VirtualInstrument (
     ArrayLength(param1 length_r)
  )
 )))
-define (ArrayDemo dv(.VirtualInstrument (
+define(ArrayDemo dv(.VirtualInstrument (
  c(  
     e(dv(.String "Variable") strVariable)
     e(dv(.String "Fixed") strFixed)
@@ -48,4 +48,4 @@ define (ArrayDemo dv(.VirtualInstrument (
         PrintArrayInfo(strBounded boundedArray1d)
    )
  ) ) )
-enqueue (ArrayDemo)
+enqueue(ArrayDemo)

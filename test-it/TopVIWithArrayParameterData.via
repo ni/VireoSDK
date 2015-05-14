@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         i(dv(.String "Hello, world. I can fly.") param1)
         i(.Int32 param2)
@@ -21,4 +21,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

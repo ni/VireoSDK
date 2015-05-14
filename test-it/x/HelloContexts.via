@@ -9,7 +9,7 @@
 // this could be used to make structure that have private internals
 
 defines a symbol in one context that is a new context
-define (Foo ctx(
+define(Foo ctx(
 
 
 all definitions are inside this context
@@ -22,11 +22,11 @@ all definitions are inside this context
 
 */
 
-define (Earth  context(
+define(Earth  context(
 
 //a context will process it own REPL
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String "Hello, world. I can fly.") variable1)
@@ -38,4 +38,4 @@ define (HelloWorld dv(.VirtualInstrument (
 
 ))
 
-enqueue (Earth.HelloWorld)
+enqueue(Earth.HelloWorld)

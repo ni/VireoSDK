@@ -1,5 +1,5 @@
  // test different format code
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
 Locals: c(
     e(dv(.Int32 71) num1)
     e(dv(.Int32 364) num2)
@@ -128,4 +128,4 @@ Locals: c(
 
  	)
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

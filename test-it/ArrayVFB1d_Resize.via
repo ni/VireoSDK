@@ -1,4 +1,4 @@
-define (ArrayDemo dv(.VirtualInstrument (
+define(ArrayDemo dv(.VirtualInstrument (
  c(   
     e(a(.Int32 *)       variableArray1d)
     e(a(.Int32 1000)    fixedArray1d)
@@ -44,4 +44,4 @@ define (ArrayDemo dv(.VirtualInstrument (
         Printf("boundedArray1d initial:%s  shrinking:%s bigger:%s empty:%s just_right:%s\n" length_i length_s length_b length_z length_r)
    )
  ) ) )
-enqueue (ArrayDemo)
+enqueue(ArrayDemo)

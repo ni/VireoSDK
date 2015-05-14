@@ -1,8 +1,8 @@
 // Tempalate Basic Tests
 
-define (RectT c(e(.$0 top) e(.$0 left) e(.$0 width) e(.$0 height) ))
+define(RectT c(e(.$0 top) e(.$0 left) e(.$0 width) e(.$0 height) ))
 
-define (TestTemplate dv(.VirtualInstrument (
+define(TestTemplate dv(.VirtualInstrument (
     Locals: c(
         e(.RectT r_none1)
         e(.RectT<> r_none2)
@@ -28,4 +28,4 @@ define (TestTemplate dv(.VirtualInstrument (
     )
 )))
 
-enqueue (TestTemplate)
+enqueue(TestTemplate)

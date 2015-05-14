@@ -1,10 +1,10 @@
-define (HelloWorldString dv(.String "Hello World"))
+define(HelloWorldString dv(.String "Hello World"))
 
 // At on point non flat custom values were not properly cloned,
 // so changing one value changed them all. Once fixed
 // this test worked. SDG
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
     e(.HelloWorldString variable1) 
     e(.HelloWorldString variable2) 
@@ -19,4 +19,4 @@ define (HelloWorld dv(.VirtualInstrument (
         Printf("v2 = <%s> should not be empty\n" variable2)        
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

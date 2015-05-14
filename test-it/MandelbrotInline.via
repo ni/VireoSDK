@@ -1,4 +1,4 @@
-define (MandelbrotMain dv(.VirtualInstrument (
+define(MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
@@ -87,7 +87,7 @@ define (MandelbrotMain dv(.VirtualInstrument (
     )
 ) ) )
 
-define (Mandelbrot10 dv(.VirtualInstrument (
+define(Mandelbrot10 dv(.VirtualInstrument (
     // Dataspace
     c()
     clump (1
@@ -106,5 +106,5 @@ define (Mandelbrot10 dv(.VirtualInstrument (
     )
 )))
 
-//enqueue (MandelbrotMain)
-enqueue (Mandelbrot10)
+//enqueue(MandelbrotMain)
+enqueue(Mandelbrot10)

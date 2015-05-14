@@ -1,5 +1,5 @@
 // Test %d format with different data types
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello") vString)
         e(dv(.Boolean t) vBool)
@@ -186,4 +186,4 @@ define (HelloWorld dv(.VirtualInstrument (
 
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

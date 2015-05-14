@@ -1,5 +1,5 @@
  // test different format code
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
 Locals: c(
     e(dv(.Int32 5) num0)
     e(dv(.Int32 71) num1)
@@ -30,4 +30,4 @@ Locals: c(
         Printf("(%d) (%d) (%5$d) (%4$d) (%d) (%5$d)\n" num1 num2 num4 num5 num0)
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

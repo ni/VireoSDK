@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
         e(.Boolean button)
@@ -11,4 +11,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

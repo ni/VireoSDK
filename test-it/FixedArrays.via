@@ -1,4 +1,4 @@
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
    c(
     e(dv(.Int32  42) value)
     e(a(.Double -5)   arrayOfDoubleBounded1d)
@@ -62,7 +62,7 @@ define (Test dv(.VirtualInstrument (
     Println(value)
     )
  ) ) )
-enqueue (Test)
+enqueue(Test)
 
 
 

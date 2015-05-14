@@ -1,4 +1,4 @@
-define (ToStringForTypes dv(.VirtualInstrument (
+define(ToStringForTypes dv(.VirtualInstrument (
     c( 
         e(.String string)
         e(c(e(.Int32) e(.Int32))   v)
@@ -14,4 +14,4 @@ define (ToStringForTypes dv(.VirtualInstrument (
 
     )
 ) ) )
-enqueue (ToStringForTypes)
+enqueue(ToStringForTypes)

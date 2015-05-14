@@ -1,5 +1,5 @@
 
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
  c(
     e(dv(.Int32 0)  c0) 
     e(dv(.Int32 1)  c1) 
@@ -153,7 +153,7 @@ define (Test dv(.VirtualInstrument (
     //------
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)
 
 
 

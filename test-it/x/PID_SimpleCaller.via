@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: PID SimpleCaller.vi
-define (videf1 v(.VirtualInstrument (
+define(videf1 v(.VirtualInstrument (
     c(
         e(v(.Double 0) c1)   // output
         e(v(.Boolean true) c2)
@@ -38,7 +38,7 @@ define (videf1 v(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: PID.vi
-define (videf2, v(.VirtualInstrument, (
+define(videf2, v(.VirtualInstrument, (
     c(
         e(v(.Double 0) fp18)   // output
         e(v(.Boolean false) fp19)   // reinitialize? (F)
@@ -266,4 +266,4 @@ define (videf2, v(.VirtualInstrument, (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

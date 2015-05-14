@@ -1,4 +1,4 @@
-define (HelloTime dv(.VirtualInstrument (
+define(HelloTime dv(.VirtualInstrument (
     c(
  	e(dv(.Timestamp (2592155561 0)) t1)
  	e(dv(.Timestamp (0 0)) t2)
@@ -34,4 +34,4 @@ define (HelloTime dv(.VirtualInstrument (
 	Printf("(%s)\n" s1)
     )
 ) ) )
-enqueue (HelloTime)
+enqueue(HelloTime)

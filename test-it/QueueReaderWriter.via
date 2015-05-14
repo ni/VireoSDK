@@ -1,5 +1,5 @@
 
-define (TestProgram dv(.VirtualInstrument (
+define(TestProgram dv(.VirtualInstrument (
     c(
         e(.Queue<.Double> q)
         e(dv(.Double 42.5) x)
@@ -54,4 +54,4 @@ define (TestProgram dv(.VirtualInstrument (
 ) ) )
 
 
-enqueue (TestProgram)
+enqueue(TestProgram)

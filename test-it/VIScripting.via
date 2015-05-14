@@ -1,11 +1,11 @@
-define (HelloWorld0 dv(.VirtualInstrument (
+define(HelloWorld0 dv(.VirtualInstrument (
  c( e(dv(.String 'Could this be a simple reentrant VI?, Hello world.') variable1) )
             clump (1
                 Println(variable1)
             )
 )))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         //----------------------------------------------
         e(dv(.String
@@ -98,4 +98,4 @@ define (HelloWorld dv(.VirtualInstrument (
 //      vi1()
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

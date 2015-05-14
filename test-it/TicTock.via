@@ -1,5 +1,5 @@
 // A fast clock 100ms tics so the unit test is quicker
-define (TicTock  dv(.VirtualInstrument  (
+define(TicTock  dv(.VirtualInstrument  (
  c(
    e(dv(.UInt32 100)  oneHundred)
    e(dv(.UInt32 100000)  oneHundredThousand)
@@ -15,4 +15,4 @@ define (TicTock  dv(.VirtualInstrument  (
   // Branch(0)    // In the unit test dir don't loop.
    )
 )))
-enqueue (TicTock)
+enqueue(TicTock)

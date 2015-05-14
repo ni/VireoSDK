@@ -1,4 +1,4 @@
-define (ImplicitArgs dv(.VirtualInstrument (
+define(ImplicitArgs dv(.VirtualInstrument (
  c(
     e(.Int32 ci32)
     e(.Double cdouble)

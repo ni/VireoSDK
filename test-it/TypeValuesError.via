@@ -1,6 +1,6 @@
-define (Int32_5 dv(.Int32 5))
+define(Int32_5 dv(.Int32 5))
 
-define (HelloTypeValues dv(.VirtualInstrument (
+define(HelloTypeValues dv(.VirtualInstrument (
     c(
         e(.Int32 n)
         e(.Type  t)
@@ -17,4 +17,4 @@ define (HelloTypeValues dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloTypeValues)
+enqueue(HelloTypeValues)

@@ -1,11 +1,11 @@
-define (MyInt32 dv(.Int32 3))
+define(MyInt32 dv(.Int32 3))
 
-define (Chunk16Bytes c(e(.Int64) e(.Int64)))
+define(Chunk16Bytes c(e(.Int64) e(.Int64)))
 
-define (Chunk32Bytes c(e(.Int64 f1) e(.Int64 f2) e(.Int64 f3) e(.Int64 f4)))
-define (Chunk33Bytes c(e(.Int64 f1) e(.Int64 f2) e(.Int64 f3) e(.Int64 f4) e(.Int8 f5)))
+define(Chunk32Bytes c(e(.Int64 f1) e(.Int64 f2) e(.Int64 f3) e(.Int64 f4)))
+define(Chunk33Bytes c(e(.Int64 f1) e(.Int64 f2) e(.Int64 f3) e(.Int64 f4) e(.Int8 f5)))
 
-define (CopyOps dv(.VirtualInstrument (
+define(CopyOps dv(.VirtualInstrument (
  c(    
 
     e(dv(.Int32 0)  c0)
@@ -82,4 +82,4 @@ define (CopyOps dv(.VirtualInstrument (
     Println(c2String)
    )
 )))
-enqueue (CopyOps)
+enqueue(CopyOps)

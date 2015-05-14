@@ -1,4 +1,4 @@
-define (SubVI2 dv(.VirtualInstrument (
+define(SubVI2 dv(.VirtualInstrument (
 c(
     i(.Int32 x)
     o(.Int32 x_out)
@@ -16,7 +16,7 @@ clump(1
 )
 )))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
 c(
      e(dv(.Int32 42) value)
 )
@@ -29,4 +29,4 @@ c(
         SubVI2(value value)
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

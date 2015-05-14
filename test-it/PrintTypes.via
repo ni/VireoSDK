@@ -1,4 +1,4 @@
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
  c(
     e(dv(.Int32 1) c1)
     e(dv(.Int32 2)  c2)
@@ -96,4 +96,4 @@ define (Test dv(.VirtualInstrument (
     Println(cluster1)
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)

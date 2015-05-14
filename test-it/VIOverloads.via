@@ -1,5 +1,5 @@
 
-define (Magnitude dv(.VirtualInstrument (
+define(Magnitude dv(.VirtualInstrument (
     c(
         i(.Single   x)
         i(.Single   y)
@@ -18,7 +18,7 @@ define (Magnitude dv(.VirtualInstrument (
     )
 ) ) )
 
-define (Magnitude dv(.VirtualInstrument (
+define(Magnitude dv(.VirtualInstrument (
     c(
         i(.Double   x)
         i(.Double   y)
@@ -37,7 +37,7 @@ define (Magnitude dv(.VirtualInstrument (
     )
 ) ) )
 
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
     c(
         e(dv(.Double  10) xd)
         e(dv(.Double  10) yd)
@@ -55,4 +55,4 @@ define (Test dv(.VirtualInstrument (
     )
 )))
 
-enqueue (Test)
+enqueue(Test)

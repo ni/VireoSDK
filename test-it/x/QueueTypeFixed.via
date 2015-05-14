@@ -1,5 +1,5 @@
 
-define (TestProgram dv(.VirtualInstrument (
+define(TestProgram dv(.VirtualInstrument (
     c(
         e(.Queue<.Double 10> qDouble)
         e(dv(.Double 6.28) x)
@@ -44,4 +44,4 @@ c(
     e(.Int32 count)                 // Current size
 )
 */
-enqueue (TestProgram)
+enqueue(TestProgram)

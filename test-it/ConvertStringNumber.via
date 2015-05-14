@@ -1,7 +1,7 @@
-define (default20 dv(.Single 20) )
-define (stringa373 dv(.String 'a373') )
+define(default20 dv(.Single 20) )
+define(stringa373 dv(.String 'a373') )
 
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
  c(
     e(.Int32 x)
     e(.Int32 y)
@@ -130,7 +130,7 @@ define (Test dv(.VirtualInstrument (
 
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)
 
 
 

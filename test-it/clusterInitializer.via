@@ -2,7 +2,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(c(
             e(.UInt8 n1)
@@ -21,4 +21,4 @@ define (videf1 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

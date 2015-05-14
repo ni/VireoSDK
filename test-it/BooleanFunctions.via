@@ -1,4 +1,4 @@
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
  c(
     e(dv(.Boolean t) ct)
     e(dv(.Boolean f) cf)
@@ -53,7 +53,7 @@ define (Test dv(.VirtualInstrument (
     Printf(" Not (%s) => %s\n" y value)
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)
 
 
 

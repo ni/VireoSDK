@@ -1,7 +1,7 @@
-define (ConstantDouble dv(.Double 42.42)) 
-define (GlobalDouble var(.Double 42.43))
+define(ConstantDouble dv(.Double 42.42)) 
+define(GlobalDouble var(.Double 42.43))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello, world. I can fly.") v1)
         e(dv(.Double 6.28) v2)
@@ -30,4 +30,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

@@ -1,4 +1,4 @@
-define (TicTock  dv(.VirtualInstrument  (
+define(TicTock  dv(.VirtualInstrument  (
  c(
    e(dv(.String 'Tic')  sTic)
    ) 
@@ -7,7 +7,7 @@ define (TicTock  dv(.VirtualInstrument  (
    )
 )))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c( 
         //----------------------------------------------
         e(dv(.UInt32 5000) delay)
@@ -44,4 +44,4 @@ define (HelloWorld dv(.VirtualInstrument (
 //      WaitMilliseconds(delay)
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

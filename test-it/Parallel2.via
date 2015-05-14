@@ -1,4 +1,4 @@
-define (Parallel2  dv(.VirtualInstrument (
+define(Parallel2  dv(.VirtualInstrument (
      c(
         e(dv(.UInt32 100)  oneHundred)
         e(dv(.UInt32 50)  fifty)
@@ -21,4 +21,4 @@ define (Parallel2  dv(.VirtualInstrument (
     //    Branch(0)   
     )
 )))
-enqueue (Parallel2)
+enqueue(Parallel2)

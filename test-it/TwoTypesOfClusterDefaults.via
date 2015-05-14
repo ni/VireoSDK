@@ -1,13 +1,13 @@
 // A typedef
-define (Point c(
+define(Point c(
             e(.Int32 n0)
             e(.Int32 n1)
 ) )
 
 // A typedef based on another with its own default values.
-define (10x20Point dv(.Point (10 20)))
+define(10x20Point dv(.Point (10 20)))
 
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         // (1)This is how defaults look from LabVIEW.
         // The defaults are sep    

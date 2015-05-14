@@ -1,9 +1,9 @@
 #!/usr/local/bin/esh
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c( e(dv(.String "Hello world. I can fly.") variable1) )
     clump (1
        Println(variable1)
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

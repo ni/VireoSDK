@@ -1,8 +1,8 @@
 // Define a value that inherits from Int32
-define (TheAnswer  dv(.Int32 42))
+define(TheAnswer  dv(.Int32 42))
 
 // Define a value that inherits from VirtualInstrument
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
 
     // This is a simple data space
     c(  
@@ -24,6 +24,6 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)                // Runs HelloWorld
+enqueue(HelloWorld)                // Runs HelloWorld
 
-enqueue (VirtualInstrument)         // Runs the empty VI
+enqueue(VirtualInstrument)         // Runs the empty VI

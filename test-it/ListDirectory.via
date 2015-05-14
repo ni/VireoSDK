@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "./TestDataFolder") path)
         e(a(.String *) fileList)
@@ -10,4 +10,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

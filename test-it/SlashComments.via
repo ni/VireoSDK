@@ -1,6 +1,5 @@
 //4
-define//
- (Test dv(.VirtualInstrument (//c
+define(Test dv(.VirtualInstrument (//c
  c(
 e(//
 dv(//
@@ -29,5 +28,6 @@ clump//
  //
  )//
  )//
-enqueue //
-(Test)
+enqueue(//yo
+Test//yo
+)

@@ -5,10 +5,10 @@
 // This is entirely different from making two variables of type .Int32
 
 // Two global types their default value should not be changeable
-define (g1 dv(.Int32 42))
-define (g2 dv(.Int32 47))
+define(g1 dv(.Int32 42))
+define(g2 dv(.Int32 47))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     // this cluster serves as a type template 
     c(
         e(dv(.Int32 45) v1)
@@ -29,4 +29,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

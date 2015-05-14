@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean t) prependArraySize)
         e(dv(c(
@@ -33,4 +33,4 @@ define (videf1 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

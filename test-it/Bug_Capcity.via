@@ -12,7 +12,7 @@
 
 //---------------------------------------------------
 //VI Definition: this crashes the brick.vi
-define (videf2 dv(.VirtualInstrument (
+define(videf2 dv(.VirtualInstrument (
     c(
         e(a(.String -1000) local4)
         e(a(.String -1000) local5)
@@ -31,4 +31,4 @@ define (videf2 dv(.VirtualInstrument (
         Println(local4)
     )
 )))
-enqueue (videf2)
+enqueue(videf2)

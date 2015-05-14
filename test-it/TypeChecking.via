@@ -1,6 +1,6 @@
-define (MyInt32 dv(.Int32 3))
+define(MyInt32 dv(.Int32 3))
 
-define (TypeChecking dv(.VirtualInstrument (
+define(TypeChecking dv(.VirtualInstrument (
  c(
    e(dv(.Int32 5)  cInt32)
    e(.MyInt32 cMyInt32)
@@ -41,4 +41,4 @@ define (TypeChecking dv(.VirtualInstrument (
    )
 )))
 //If it loads it will crash.
-//enqueue (TypeChecking)
+//enqueue(TypeChecking)

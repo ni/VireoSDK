@@ -1,9 +1,9 @@
 /*
 123
 */
-define (MyInt32 .Int32)
-define (Int32OneTwoThree dv(.MyInt32 123))
-define (Test dv(.VirtualInstrument (
+define(MyInt32 .Int32)
+define(Int32OneTwoThree dv(.MyInt32 123))
+define(Test dv(.VirtualInstrument (
  c(
     e(.Int32OneTwoThree variable0) 
   ) 
@@ -11,4 +11,4 @@ define (Test dv(.VirtualInstrument (
     Println(variable0) 
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)

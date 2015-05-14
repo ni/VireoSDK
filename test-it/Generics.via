@@ -1,4 +1,4 @@
-define (arrayOfPoints dv(.VirtualInstrument (
+define(arrayOfPoints dv(.VirtualInstrument (
     c(
         e(dv(.Int32 5) dimSize)   // dimension size
         e(c(
@@ -19,9 +19,9 @@ define (arrayOfPoints dv(.VirtualInstrument (
        Println(Array)
     )
 )))
-enqueue (arrayOfPoints)
+enqueue(arrayOfPoints)
 
-define (ArrayMath dv(.VirtualInstrument (
+define(ArrayMath dv(.VirtualInstrument (
 c(
     e(dv(a(.Double *) (0 1 2 3 4 5 6 7 8 9 10)) array1)
     e(dv(a(.Double *) (0)) array2)
@@ -34,7 +34,7 @@ clump(1
 )))
 enqueue(ArrayMath)
 
-define (ClusterMath dv(.VirtualInstrument (
+define(ClusterMath dv(.VirtualInstrument (
  c(
         e(dv(c(
             e(.UInt8 n1)
@@ -77,4 +77,4 @@ define (ClusterMath dv(.VirtualInstrument (
     Println(z)
    )
  ) ) )
-enqueue (ClusterMath)
+enqueue(ClusterMath)

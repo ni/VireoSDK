@@ -1,4 +1,4 @@
-define (HelloSdl v(.VirtualInstrument (
+define(HelloSdl v(.VirtualInstrument (
     c(
      e(dv(.String "Hello world. I can fly.") variable1)
       e(dv(.UInt32 100) framePause)
@@ -16,4 +16,4 @@ define (HelloSdl v(.VirtualInstrument (
         Branch(0)
     )
 ) ) )
-enqueue (HelloSdl)
+enqueue(HelloSdl)

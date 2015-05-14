@@ -6,10 +6,10 @@
 // Allocated values and static values are similar
 // So some tests are included for static ones as well.
  
-define (Int32_4 var(.Int32 4))
-define (Int32_5 var(.Int32 5))
-define (True dv(.Boolean t))
-define (MyGlobalVar var(.Int32 312))
+define(Int32_4 var(.Int32 4))
+define(Int32_5 var(.Int32 5))
+define(True dv(.Boolean t))
+define(MyGlobalVar var(.Int32 312))
 
 /*
 Dynamic Types are allocated in the same TypeManager used by the executions context 
@@ -22,7 +22,7 @@ then the  cookie is removed from the dictionary.
  
 */
 
-define (TestAllocateValues dv(.VirtualInstrument (
+define(TestAllocateValues dv(.VirtualInstrument (
     c(
         e(dv(.String "") varNameEmpty)
         e(dv(.String "GlobalVar1") varName1)
@@ -117,4 +117,4 @@ define (TestAllocateValues dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (TestAllocateValues)
+enqueue(TestAllocateValues)

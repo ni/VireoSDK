@@ -3,12 +3,12 @@
 
 // Bug found by Ethan Searl March 10,2014
 
-define (c0 dv(.Int32 0) )
-define (c1 dv(.Int32 2) )
-define (c2 dv(.Boolean true) )
+define(c0 dv(.Int32 0) )
+define(c1 dv(.Int32 2) )
+define(c2 dv(.Boolean true) )
 //---------------------------------------------------
 //VI Definition: Untitled 5
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(.Int32 local1)   // Numeric 2
         e(.Int32 local2)   // Numeric 2
@@ -41,4 +41,4 @@ define (videf1 dv(.VirtualInstrument (
     )
 )))
 //--------------------------------------------------
-enqueue (videf1)
+enqueue(videf1)

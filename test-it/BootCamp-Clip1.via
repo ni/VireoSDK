@@ -1,4 +1,4 @@
-define (Clip1 dv(.VirtualInstrument (
+define(Clip1 dv(.VirtualInstrument (
     Locals:
     c(
         e(.Int32 x)
@@ -13,4 +13,4 @@ define (Clip1 dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (Clip1)
+enqueue(Clip1)

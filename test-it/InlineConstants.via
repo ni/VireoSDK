@@ -1,6 +1,6 @@
 // Test out inline constants
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(.Int32  i)
         e(.Int16  i16)
@@ -53,4 +53,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

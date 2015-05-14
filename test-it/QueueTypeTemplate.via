@@ -1,5 +1,5 @@
 // Instantiate templates
-define (TestProgram1 dv(.VirtualInstrument (
+define(TestProgram1 dv(.VirtualInstrument (
     c(
         e(.Queue<.Double> q)
         e(dv(.Double 42.5) x)
@@ -22,7 +22,7 @@ define (TestProgram1 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (TestProgram2 dv(.VirtualInstrument (
+define(TestProgram2 dv(.VirtualInstrument (
     c(
         e(.Queue<.Int32> q)
         e(dv(.Int32 47) x)
@@ -45,5 +45,5 @@ define (TestProgram2 dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (TestProgram1)
-enqueue (TestProgram2)
+enqueue(TestProgram1)
+enqueue(TestProgram2)

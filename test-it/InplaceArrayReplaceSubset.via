@@ -1,9 +1,9 @@
-define (c0 dv(.Int32 1) )
-define (c1 dv(a(.Int16 *) (1 2 3 4) ) )
-define (c2 dv(a(.Int32 *) (11 22 33 44) ) )
+define(c0 dv(.Int32 1) )
+define(c1 dv(a(.Int16 *) (1 2 3 4) ) )
+define(c2 dv(a(.Int32 *) (11 22 33 44) ) )
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
   c(
     e(a(.Int32 *) local1)
     e(a(.Int32 *) local2)
@@ -26,5 +26,5 @@ define (videf1 dv(.VirtualInstrument (
     //--- end of vi
   )
 )))
-enqueue (videf1)
+enqueue(videf1)
 

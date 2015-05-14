@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String "Hello, China. I can fly.1") 你好世界1)
@@ -23,4 +23,4 @@ define (HelloWorld dv(.VirtualInstrument (
 ) ) )
 
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

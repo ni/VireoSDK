@@ -1,9 +1,9 @@
 // Test out inline constants
-define (Ten dv(.Int32  10))
-define (ConstantArray dv(a(.Int32 *) (10 20 30)))
+define(Ten dv(.Int32  10))
+define(ConstantArray dv(a(.Int32 *) (10 20 30)))
 
 
-define (SubVI1 dv(.VirtualInstrument (
+define(SubVI1 dv(.VirtualInstrument (
     c(
         i(.Int32    ix)
         i(.Double   dx)
@@ -21,7 +21,7 @@ define (SubVI1 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (SubVI2 dv(.VirtualInstrument (
+define(SubVI2 dv(.VirtualInstrument (
     c(
         i(.Int32    ix)
   //      o(.Double   dx)
@@ -36,7 +36,7 @@ define (SubVI2 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (SubVI3 dv(.VirtualInstrument (
+define(SubVI3 dv(.VirtualInstrument (
     c(
         o(a(.Int32 *)  ax)
     )
@@ -48,7 +48,7 @@ define (SubVI3 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (SubVI4 dv(.VirtualInstrument (
+define(SubVI4 dv(.VirtualInstrument (
     c(
         o(.Int32    ix)
         o(.Double   dx)
@@ -64,7 +64,7 @@ define (SubVI4 dv(.VirtualInstrument (
 ) ) )
 
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(.Int32 _ix)
         e(.Double _dx)
@@ -103,4 +103,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

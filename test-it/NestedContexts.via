@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String "Hello, world. I can fly.") variable1)
@@ -9,7 +9,7 @@ define (HelloWorld dv(.VirtualInstrument (
 ) ) )
 
 context(
-    define (HelloWorld dv(.VirtualInstrument (
+    define(HelloWorld dv(.VirtualInstrument (
         Locals:
         c(
             e(dv(.String "I'm in a context.") variable1)
@@ -18,10 +18,10 @@ context(
            Println(variable1)
         )
     ) ) )
-    enqueue (HelloWorld)
+    enqueue(HelloWorld)
 
     context(
-        define (HelloWorld dv(.VirtualInstrument (
+        define(HelloWorld dv(.VirtualInstrument (
             Locals:
             c(
                 e(dv(.String "I'm deep in a context.") variable1)
@@ -30,9 +30,9 @@ context(
                Println(variable1)
             )
         ) ) )
-        enqueue (HelloWorld)
+        enqueue(HelloWorld)
             context(
-                define (HelloWorld dv(.VirtualInstrument (
+                define(HelloWorld dv(.VirtualInstrument (
                     Locals:
                     c(
                         e(dv(.String "I'm very deep in a context.") variable1)
@@ -41,13 +41,13 @@ context(
                        Println(variable1)
                     )
                 ) ) )
-                enqueue (HelloWorld)
+                enqueue(HelloWorld)
             )
 
     )
 )
 context(
-    define (HelloWorld dv(.VirtualInstrument (
+    define(HelloWorld dv(.VirtualInstrument (
         Locals:
         c(
             e(dv(.String "I'm in a context as well.") variable1)
@@ -56,6 +56,6 @@ context(
            Println(variable1)
         )
     ) ) )
-    enqueue (HelloWorld)
+    enqueue(HelloWorld)
 )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

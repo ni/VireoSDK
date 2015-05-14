@@ -1,4 +1,4 @@
-define (SubVI1 dv(.VirtualInstrument (
+define(SubVI1 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 1')  sInside)
   ) 
@@ -7,7 +7,7 @@ define (SubVI1 dv(.VirtualInstrument (
    )
  )))
 
-define (SubVI2 dv(.VirtualInstrument (
+define(SubVI2 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 2')  sInside)
   ) 
@@ -16,7 +16,7 @@ define (SubVI2 dv(.VirtualInstrument (
    )
  )))
 
-define (SubVI3 dv(.VirtualInstrument (
+define(SubVI3 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 3')  sInside)
   ) 
@@ -25,7 +25,7 @@ define (SubVI3 dv(.VirtualInstrument (
    )
  )))
 
-define (SubVI4 dv(.VirtualInstrument (
+define(SubVI4 dv(.VirtualInstrument (
  c(
     e(dv(.String 'Inside call 4')  sInside)
   ) 
@@ -34,7 +34,7 @@ define (SubVI4 dv(.VirtualInstrument (
    )
  )))
 
-define (TopVI dv(.VirtualInstrument (
+define(TopVI dv(.VirtualInstrument (
  c(
     e(dv(.String 'Before call')  sBefore)
     e(dv(.String 'After call')  sAfter)
@@ -60,4 +60,4 @@ define (TopVI dv(.VirtualInstrument (
    )
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

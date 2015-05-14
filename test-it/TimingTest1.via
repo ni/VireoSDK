@@ -6,18 +6,18 @@
 // up in the same slice that another went to sleep in 
 // This test failed before the fix was applied.
 
-define (c0 dv(.Int32 10) )
-define (c1 dv(.String 'Waiting') )
-define (c21 dv(.UInt32 10) )
-define (c2 dv(.UInt32 20) )
-define (c3 dv(.String 'Woke up') )
-define (c4 dv(.UInt32 20) )
-define (c5 dv(.Int32 1) )
-define (c6 dv(.Int32 0) )
+define(c0 dv(.Int32 10) )
+define(c1 dv(.String 'Waiting') )
+define(c21 dv(.UInt32 10) )
+define(c2 dv(.UInt32 20) )
+define(c3 dv(.String 'Woke up') )
+define(c4 dv(.UInt32 20) )
+define(c5 dv(.Int32 1) )
+define(c6 dv(.Int32 0) )
 
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(.Int32 local1)
         e(.Int32 local2)
@@ -60,4 +60,4 @@ define (videf1 dv(.VirtualInstrument (
         Perch(1)
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

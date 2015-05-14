@@ -1,4 +1,4 @@
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello, world. I can fly.") variable1)
     )
@@ -6,7 +6,7 @@ define (HelloWorld dv(.VirtualInstrument (
         Println(variable1)
     )
 ) ) )
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello, world. I can swim.") variable1)
     )
@@ -17,4 +17,4 @@ define (HelloWorld dv(.VirtualInstrument (
 
 // With overloads this is not an automatic error  
 // It should still be an error to have duplicate signatures
-enqueue (HelloWorld)
+enqueue(HelloWorld)

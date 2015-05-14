@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Int32 875770417) local1)   // 1234
         e(dv(.Int32 0) defaultVal)   // default value
@@ -24,4 +24,4 @@ define (videf1 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

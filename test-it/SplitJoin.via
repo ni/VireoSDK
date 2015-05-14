@@ -1,24 +1,24 @@
-define (I8_neg1 dv(.Int8 -1) )
+define(I8_neg1 dv(.Int8 -1) )
 
-define (U8_0 dv(.UInt8 0) )
-define (U8_255 dv(.UInt8 255) )
+define(U8_0 dv(.UInt8 0) )
+define(U8_255 dv(.UInt8 255) )
 
-define (U16_1 dv(.UInt16 1) )
-define (U16_2 dv(.UInt16 2) )
-define (U16_255 dv(.UInt16 255) )
-define (U16_65535 dv(.UInt16 65535) )
+define(U16_1 dv(.UInt16 1) )
+define(U16_2 dv(.UInt16 2) )
+define(U16_255 dv(.UInt16 255) )
+define(U16_65535 dv(.UInt16 65535) )
 
-define (I32_65538 dv(.Int32 65538) )
-define (I32_neg65535 dv(.Int32 -65535) )
+define(I32_65538 dv(.Int32 65538) )
+define(I32_neg65535 dv(.Int32 -65535) )
 
-define (U32_65538 dv(.UInt32 65538) )
-define (U32_4294901761 dv(.UInt32 4294901761) )
+define(U32_65538 dv(.UInt32 65538) )
+define(U32_4294901761 dv(.UInt32 4294901761) )
 
-define (I32_array dv(a(.Int32 *) (53546 45687796 2147483647 567675465 445809845 2042398785 -2147400000 -2 ) ) )
+define(I32_array dv(a(.Int32 *) (53546 45687796 2147483647 567675465 445809845 2042398785 -2147400000 -2 ) ) )
 
 //---------------------------------------------------
 
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean f) result_hi)
         e(dv(.Boolean f) result_lo)
@@ -79,4 +79,4 @@ define (videf1 dv(.VirtualInstrument (
 		 Println(U16_array2)
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

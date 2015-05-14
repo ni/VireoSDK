@@ -1,5 +1,5 @@
 //trace
-define (FailAssert dv(.VirtualInstrument (
+define(FailAssert dv(.VirtualInstrument (
  c(
  e(dv(.String  '----') cSeperator)
  e(dv(.Int32 0) c0)
@@ -17,4 +17,4 @@ define (FailAssert dv(.VirtualInstrument (
    )
 )))
 
-enqueue (FailAssert)
+enqueue(FailAssert)

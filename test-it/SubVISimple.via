@@ -1,12 +1,12 @@
 //trace
-define (SubVI0 dv(.VirtualInstrument (
+define(SubVI0 dv(.VirtualInstrument (
     Locals:c( e(dv(.String 'Inside call') sInside) )
     clump(1 
         Println(sInside)
     )
  )))
 
-define (SubVI1  dv(.VirtualInstrument (
+define(SubVI1  dv(.VirtualInstrument (
     Params:c(i(.Int32 x))
     Locals:c(e(dv(.String 'Inside call') sInside))
     clump(1 
@@ -15,7 +15,7 @@ define (SubVI1  dv(.VirtualInstrument (
         )
  )))
 
-define (SubVI2  dv(.VirtualInstrument (
+define(SubVI2  dv(.VirtualInstrument (
     Params:c(i(.Int32 x) o(.Int32 x_out))
     Locals:c(
         e(dv(.String 'Inside call') sInside)
@@ -30,7 +30,7 @@ define (SubVI2  dv(.VirtualInstrument (
     )
  )))
 
-define (SubVI3 dv(.VirtualInstrument (
+define(SubVI3 dv(.VirtualInstrument (
     Params:c(io(.Int32 x))
     Locals:c(
         e(dv(.String 'Inside call') sInside)
@@ -44,7 +44,7 @@ define (SubVI3 dv(.VirtualInstrument (
  )))
  
  
-define (SubVI1d dv(.VirtualInstrument (
+define(SubVI1d dv(.VirtualInstrument (
  Params: c(i(.Double x))
  Locals: c(
     e(dv(.String 'Inside call') sInside)
@@ -55,7 +55,7 @@ define (SubVI1d dv(.VirtualInstrument (
    )
  )))
 
-define (SubVI2d dv(.VirtualInstrument (
+define(SubVI2d dv(.VirtualInstrument (
  c(i(.Double x) o(.Double x_out))
  c(
     e(dv(.String 'Inside call') sInside)
@@ -70,7 +70,7 @@ define (SubVI2d dv(.VirtualInstrument (
    )
  )))
 
-define (SubVI3d dv(.VirtualInstrument (
+define(SubVI3d dv(.VirtualInstrument (
  c(io(.Double x))
  c(
     e(dv(.String 'Inside call') sInside)
@@ -84,7 +84,7 @@ define (SubVI3d dv(.VirtualInstrument (
  )))
 
 
-define (TopVI dv(.VirtualInstrument (
+define(TopVI dv(.VirtualInstrument (
  Locals:c(
    e(dv(.Int32 42) value)
    e(dv(.Double 42.1) dValue)
@@ -108,4 +108,4 @@ define (TopVI dv(.VirtualInstrument (
    )
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

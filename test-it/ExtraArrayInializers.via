@@ -1,4 +1,4 @@
-define (ArrayDemo dv(.VirtualInstrument (
+define(ArrayDemo dv(.VirtualInstrument (
  c(   
     e(dv(a(.Int32 *) (1 2 3 4 6 7 8))     variableArray1dwithDefaults)
     e(dv(a(.Int32 5) (1 2 3 4 6 7 8))     fixedArray1dwithDefaults)
@@ -11,4 +11,4 @@ define (ArrayDemo dv(.VirtualInstrument (
         Println(boundedArray1dwithDefaults)
    )
  ) ) )
-enqueue (ArrayDemo)
+enqueue(ArrayDemo)

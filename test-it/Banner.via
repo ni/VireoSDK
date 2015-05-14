@@ -1,4 +1,4 @@
-define (PrintBanner dv(.VirtualInstrument (
+define(PrintBanner dv(.VirtualInstrument (
     c(
      e(dv(.String @"
   _____        ____    ____
@@ -17,4 +17,4 @@ define (PrintBanner dv(.VirtualInstrument (
         Println(banner)
     )
 ) ) )
-enqueue (PrintBanner)
+enqueue(PrintBanner)

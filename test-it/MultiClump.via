@@ -1,4 +1,4 @@
-define (MultiClump  dv(.VirtualInstrument  (
+define(MultiClump  dv(.VirtualInstrument  (
  c(
     e(dv(.String 'Clump 0') s0)
     e(dv(.String 'Clump 1') s1)
@@ -27,5 +27,5 @@ define (MultiClump  dv(.VirtualInstrument  (
     	Println(s3)
         )
   )))
-enqueue (MultiClump)
+enqueue(MultiClump)
 

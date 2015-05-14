@@ -1,5 +1,5 @@
 
-define (TestQueueTemplates dv(.VirtualInstrument (
+define(TestQueueTemplates dv(.VirtualInstrument (
     Locals: c(
           // Define several type of Queues.
           e(.Queue qOpen)
@@ -59,4 +59,4 @@ c(
     e(.Int32 count)                 // Current size
 )
 */
-enqueue (TestQueueTemplates)
+enqueue(TestQueueTemplates)

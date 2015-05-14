@@ -2,7 +2,7 @@
 // to generate source for building a static linked version of the run time
 // instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
 
-define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
+define(ConverterToStaticLinkCPP dv(.VirtualInstrument (
     Locals: c(
         e(.Type     dsType)
         e(.Int32    count)
@@ -119,10 +119,10 @@ define (ConverterToStaticLinkCPP dv(.VirtualInstrument (
 
 // =================================================================
 
-define (number_two dv(.Int32 2))
-define (global_int var(.Int32 2))
+define(number_two dv(.Int32 2))
+define(global_int var(.Int32 2))
 
-define (Int32Point
+define(Int32Point
   dv(
     c(
         e(.Int32 x)
@@ -132,7 +132,7 @@ define (Int32Point
   )
 )
 
-define (DoublePoint
+define(DoublePoint
   dv(
     c(
         e(.Double x)
@@ -142,7 +142,7 @@ define (DoublePoint
   )
 )
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.Int32     6)      vInt32)
         e(dv(.Boolean  t) vBool)
@@ -199,4 +199,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (ConverterToStaticLinkCPP)
+enqueue(ConverterToStaticLinkCPP)

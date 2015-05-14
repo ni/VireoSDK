@@ -1,9 +1,9 @@
-define (g1 dv(a(.String *) ('Numeric 1' )))
-define (g2 dv(a(.String *) ('string 2' )))
-define (g3 dv(a(.String *) ('array' )))
+define(g1 dv(a(.String *) ('Numeric 1' )))
+define(g2 dv(a(.String *) ('string 2' )))
+define(g3 dv(a(.String *) ('array' )))
 
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String
@@ -33,4 +33,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

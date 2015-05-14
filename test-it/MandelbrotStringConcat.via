@@ -1,4 +1,4 @@
-define (Mandelbrot dv(.VirtualInstrument (
+define(Mandelbrot dv(.VirtualInstrument (
     // Parameter list
     c(
         i(.ComplexDouble a)
@@ -23,7 +23,7 @@ define (Mandelbrot dv(.VirtualInstrument (
     )
 )))
 
-define (MandelbrotMain dv(.VirtualInstrument (
+define(MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
@@ -72,4 +72,4 @@ define (MandelbrotMain dv(.VirtualInstrument (
         BranchIfGE(0 y yLast)
     )
 ) ) )
-enqueue (MandelbrotMain)
+enqueue(MandelbrotMain)

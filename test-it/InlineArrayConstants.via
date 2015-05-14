@@ -1,7 +1,7 @@
 // Test out inline constants
-define (Ten dv(.Int32 10))
+define(Ten dv(.Int32 10))
 
-define (SubVI1 dv(.VirtualInstrument (
+define(SubVI1 dv(.VirtualInstrument (
     c(
         i(.Int32    ix)
         i(.Double   dx)
@@ -19,7 +19,7 @@ define (SubVI1 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (SubVI2 dv(.VirtualInstrument (
+define(SubVI2 dv(.VirtualInstrument (
     c(
         o(.Int32    ix)
         o(.Double   dx)
@@ -34,7 +34,7 @@ define (SubVI2 dv(.VirtualInstrument (
     )
 ) ) )
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(.Int32 x)
         e(.String str)
@@ -62,4 +62,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

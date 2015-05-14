@@ -1,5 +1,5 @@
 
-define (TestTypeManager v(.VirtualInstrument (
+define(TestTypeManager v(.VirtualInstrument (
  c(
     e(.TypeManager      vTypeManager)
     e(.TypeManager      vRootTypeManager)
@@ -35,4 +35,4 @@ define (TestTypeManager v(.VirtualInstrument (
     Printf("The list of types has %s elements." vCount)
    )
 )))
-enqueue (TestTypeManager)
+enqueue(TestTypeManager)

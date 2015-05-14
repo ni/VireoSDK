@@ -1,5 +1,5 @@
 // Test scan from string 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.UInt32 ) passed)
         e(dv(.String ) remaining)
@@ -166,4 +166,4 @@ define (HelloWorld dv(.VirtualInstrument (
 	Printf ("passed:<%d>, remaining:(%s)\n:<%d>  \n" passed remaining uint32 )
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

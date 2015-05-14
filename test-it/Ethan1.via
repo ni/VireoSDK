@@ -1,4 +1,4 @@
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(.Boolean false)  fp1)   // stop 3
         e(dv(.Boolean false)  fp2)   // stop 2
@@ -7,4 +7,4 @@ define (videf1 dv(.VirtualInstrument (
        Perch(0)
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

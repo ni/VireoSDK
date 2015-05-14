@@ -1,4 +1,4 @@
-define (CalcUsingIntegers dv(.VirtualInstrument (
+define(CalcUsingIntegers dv(.VirtualInstrument (
  c(
     e(dv(.Int32 6)  i)
     e(dv(.Int32 7)  j)
@@ -9,7 +9,7 @@ define (CalcUsingIntegers dv(.VirtualInstrument (
 	Println(k)
    )
  ) ) )
-define (CalcUsingDoubles dv(.VirtualInstrument (
+define(CalcUsingDoubles dv(.VirtualInstrument (
  c(
     e(dv(.Double 6)  x)
     e(dv(.Double 7)  y)
@@ -20,5 +20,5 @@ define (CalcUsingDoubles dv(.VirtualInstrument (
 	Println(z)
    )
  ) ) )
-enqueue (CalcUsingIntegers)
-enqueue (CalcUsingDoubles)
+enqueue(CalcUsingIntegers)
+enqueue(CalcUsingDoubles)

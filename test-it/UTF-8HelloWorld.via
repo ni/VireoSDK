@@ -7,7 +7,7 @@
 // for a ascii characters does not need to be UTF-8 aware. It can still look
 // byte by byte which is generally faster.
  
-define (PrintLengths  dv(.VirtualInstrument (
+define(PrintLengths  dv(.VirtualInstrument (
  c(
     i(.String string)
   )
@@ -27,7 +27,7 @@ define (PrintLengths  dv(.VirtualInstrument (
    )
  )))
 
-define (HelloBiggerWorld dv(.VirtualInstrument (
+define(HelloBiggerWorld dv(.VirtualInstrument (
     c(
         // Translations by Google
         e(dv(.String "Hello, world. I can fly.") vEnglish)
@@ -78,4 +78,4 @@ define (HelloBiggerWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloBiggerWorld)
+enqueue(HelloBiggerWorld)

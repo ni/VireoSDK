@@ -2,101 +2,101 @@
 // Generated on Wed Feb 26 13:46:50 2014
 
 
-define (c0 dv(.Int32 50) )
-define (c1 dv(c(
+define(c0 dv(.Int32 50) )
+define(c1 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((8 )  0 false )) )
-define (c2 dv(c(
+define(c2 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((0 )  0 false )) )
-define (c3 dv(.Int32 8) )
-define (c4 dv(.Int32 6) )
-define (c5 dv(.Int32 9801) )
-define (c6 dv(.Int32 396) )
-define (c7 dv(.Int32 4) )
-define (c8 dv(.Int32 1103) )
-define (c9 dv(.Int32 26390) )
-define (c10 dv(.Int32 0) )
-define (c11 dv(.Boolean true) )
-define (c12 dv(.Int32 1) )
-define (c13 dv(a(.Int8 *) () ) )
-define (c14 dv(.Int32 10) )
-define (c15 dv(.Int8 0) )
-define (c16 dv(.Boolean true) )
-define (c17 dv(a(c(
+define(c3 dv(.Int32 8) )
+define(c4 dv(.Int32 6) )
+define(c5 dv(.Int32 9801) )
+define(c6 dv(.Int32 396) )
+define(c7 dv(.Int32 4) )
+define(c8 dv(.Int32 1103) )
+define(c9 dv(.Int32 26390) )
+define(c10 dv(.Int32 0) )
+define(c11 dv(.Boolean true) )
+define(c12 dv(.Int32 1) )
+define(c13 dv(a(.Int8 *) () ) )
+define(c14 dv(.Int32 10) )
+define(c15 dv(.Int8 0) )
+define(c16 dv(.Boolean true) )
+define(c17 dv(a(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) *) (((1 0 0 0 )  0 false ) ((1 0 0 0 )  0 false ) ((6 1 0 0 )  0 false ) ((6 9 2 1 )  0 false ) ((6 7 7 1 3 3 0 0 )  0 false ) ((0 0 0 0 6 3 7 0 2 0 0 0 )  0 false ) ((0 0 0 0 6 5 8 3 7 8 6 2 )  0 false ) ((0 0 0 0 6 5 2 8 2 1 4 2 5 4 6 0 )  0 false ) ((0 0 0 0 6 7 5 6 3 3 9 2 8 0 9 2 4 6 2 0 )  0 false ) ((0 0 0 0 6 3 1 5 7 2 7 7 2 1 3 1 2 1 0 4 3 7 1 0 )  0 false ) ((0 0 0 0 0 0 0 0 6 3 1 5 7 2 7 7 2 1 3 1 2 1 0 4 3 7 1 0 )  0 false ) ) ) )
-define (c18 dv(.Boolean false) )
-define (c19 dv(.Int32 0) )
-define (c20 dv(.Int32 1) )
-define (c21 dv(.Int8 0) )
-define (c22 dv(.Int8 10) )
-define (c23 dv(a(.Int8 *) (0 ) ) )
-define (c24 dv(a(c(
+define(c18 dv(.Boolean false) )
+define(c19 dv(.Int32 0) )
+define(c20 dv(.Int32 1) )
+define(c21 dv(.Int8 0) )
+define(c22 dv(.Int8 10) )
+define(c23 dv(a(.Int8 *) (0 ) ) )
+define(c24 dv(a(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) *) (((1 )  0 false ) ((1 )  0 false ) ((2 )  0 false ) ((6 )  0 false ) ((4 2 )  0 false ) ((0 2 1 )  0 false ) ((0 2 7 )  0 false ) ((0 4 0 5 )  0 false ) ((0 2 3 0 4 )  0 false ) ((0 8 8 2 6 3 )  0 false ) ((0 0 8 8 2 6 3 )  0 false ) ) ) )
-define (c25 dv(c(
+define(c25 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((1 )  0 false )) )
-define (c26 dv(c(
+define(c26 dv(c(
     e(.Int32 n0)
     e(.Int32 n1)
 ) (5 -1 )) )
-define (c27 dv(.Int32 -1) )
-define (c28 dv(.Int32 9) )
-define (c29 dv(.Int8 1) )
-define (c30 dv(c(
+define(c27 dv(.Int32 -1) )
+define(c28 dv(.Int32 9) )
+define(c29 dv(.Int8 1) )
+define(c30 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) (()  0 false )) )
-define (c31 dv(.Int32 0) )
-define (c32 dv(.Int32 1) )
-define (c33 dv(a(c(
+define(c31 dv(.Int32 0) )
+define(c32 dv(.Int32 1) )
+define(c33 dv(a(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) *) () ) )
-define (c34 dv(.Int32 7) )
-define (c35 dv(.Int32 2) )
-define (c36 dv(a(.Int8 *) () ) )
-define (c37 dv(.Int8 9) )
-define (c38 dv(c(
+define(c34 dv(.Int32 7) )
+define(c35 dv(.Int32 2) )
+define(c36 dv(a(.Int8 *) () ) )
+define(c37 dv(.Int8 9) )
+define(c38 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((1 )  0 false )) )
-define (c39 dv(.UInt8 35) )
-define (c40 dv(.Int8 46) )
-define (c41 dv(.UInt8 48) )
-define (c42 dv(.Int8 48) )
-define (c43 dv(.UInt8 0) )
-define (c44 dv(.Int8 45) )
-define (c45 dv(c(
+define(c39 dv(.UInt8 35) )
+define(c40 dv(.Int8 46) )
+define(c41 dv(.UInt8 48) )
+define(c42 dv(.Int8 48) )
+define(c43 dv(.UInt8 0) )
+define(c44 dv(.Int8 45) )
+define(c45 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((5 1 )  1 false )) )
-define (c46 dv(c(
+define(c46 dv(c(
     e(a(.Int8 *) n0)   // Array Num
     e(.Int32 n1)   // Decimal Index
     e(.Boolean n2)   // stop
 ) ((2 4 8 2 8 2 )  5 false )) )
-define (c47 dv(.Int32 5) )
-define (c48 dv(.Int8 2) )
+define(c47 dv(.Int32 5) )
+define(c48 dv(.Int8 2) )
 //---------------------------------------------------
 //VI Definition: Add.vi
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -306,7 +306,7 @@ define (videf1 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: CalcDivideDigits.vi
-define (videf6 dv(.VirtualInstrument (
+define(videf6 dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local8)   // decimal Ofst 2
         i(dv(.Int32 0) local1)   // Digits
@@ -341,7 +341,7 @@ define (videf6 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: CompareToDigits.vi
-define (videf7 dv(.VirtualInstrument (
+define(videf7 dv(.VirtualInstrument (
     c(
         o(dv(.Boolean false) local7)   // Equal
         i(dv(.Int32 0) local1)   // Digits
@@ -384,7 +384,7 @@ define (videf7 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: ComputeAddSize.vi
-define (videf4 dv(.VirtualInstrument (
+define(videf4 dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local9)   // Digits
         i(dv(.Int32 0) local3)   // B Position
@@ -427,7 +427,7 @@ define (videf4 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: ComputeUUSSize.vi
-define (videf10 dv(.VirtualInstrument (
+define(videf10 dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local7)   // B Index
         o(dv(.Int32 0) local8)   // A Index
@@ -510,7 +510,7 @@ define (videf10 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Count Leading Zeros.vi
-define (videf11 dv(.VirtualInstrument (
+define(videf11 dv(.VirtualInstrument (
     c(
         i(dv(a(.Int8 *) () ) local1)   // Array Num
         o(dv(a(.Int8 *) () ) local9)   // Array Dup
@@ -554,7 +554,7 @@ define (videf11 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Display Intermed Text.vi
-define (videf12 dv(.VirtualInstrument (
+define(videf12 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -610,7 +610,7 @@ define (videf12 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Div Scalar.vi
-define (videf17 dv(.VirtualInstrument (
+define(videf17 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -722,7 +722,7 @@ define (videf17 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Divide.vi
-define (videf14 dv(.VirtualInstrument (
+define(videf14 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -950,7 +950,7 @@ define (videf14 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Factorial To the Fourth.vi
-define (videf24 dv(.VirtualInstrument (
+define(videf24 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1048,7 +1048,7 @@ define (videf24 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Factorial.vi
-define (videf25 dv(.VirtualInstrument (
+define(videf25 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1182,7 +1182,7 @@ define (videf25 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Filter String.vi
-define (videf16 dv(.VirtualInstrument (
+define(videf16 dv(.VirtualInstrument (
     c(
         o(dv(.String '') local11)   // String Out
         i(dv(.Int32 0) local1)   // Index
@@ -1227,7 +1227,7 @@ define (videf16 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: GreaterNoOutput.vi
-define (videf9 dv(.VirtualInstrument (
+define(videf9 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1376,7 +1376,7 @@ define (videf9 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: GreaterThan.vi
-define (videf2 dv(.VirtualInstrument (
+define(videf2 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1445,7 +1445,7 @@ define (videf2 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Index ArrayClust.vi
-define (videf22 dv(.VirtualInstrument (
+define(videf22 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1498,7 +1498,7 @@ define (videf22 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Index ArrayInt.vi
-define (videf5 dv(.VirtualInstrument (
+define(videf5 dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local8)   // digit
         i(dv(.Int32 0) local3)   // Index
@@ -1536,7 +1536,7 @@ define (videf5 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: MakeDivArray.vi
-define (videf21 dv(.VirtualInstrument (
+define(videf21 dv(.VirtualInstrument (
     c(
         o(dv(a(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1599,7 +1599,7 @@ define (videf21 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Mult Scalar.vi
-define (videf26 dv(.VirtualInstrument (
+define(videf26 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1722,7 +1722,7 @@ define (videf26 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Multiply.vi
-define (videf13 dv(.VirtualInstrument (
+define(videf13 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -1987,7 +1987,7 @@ define (videf13 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Nearest Even.vi
-define (videf29 dv(.VirtualInstrument (
+define(videf29 dv(.VirtualInstrument (
     c(
         o(dv(.Int8 0) local5)   // Rounded to even
         i(dv(.Int8 0) local1)   // digit
@@ -2011,7 +2011,7 @@ define (videf29 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Normalize.vi
-define (videf19 dv(.VirtualInstrument (
+define(videf19 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2090,7 +2090,7 @@ define (videf19 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Number To Digits.vi
-define (videf27 dv(.VirtualInstrument (
+define(videf27 dv(.VirtualInstrument (
     c(
         i(dv(.Int32 0) local1)   // Value
         o(dv(a(.Int8 *) () ) local10)   // Digits
@@ -2132,7 +2132,7 @@ define (videf27 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Number To String.vi
-define (videf15 dv(.VirtualInstrument (
+define(videf15 dv(.VirtualInstrument (
     c(
         o(dv(.String '') local23)   // String
         i(dv(.Int32 0) local2)   // Digits
@@ -2270,7 +2270,7 @@ define (videf15 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: PrepForMultiply.vi
-define (videf28 dv(.VirtualInstrument (
+define(videf28 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2341,7 +2341,7 @@ define (videf28 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: PrepareNumerator.vi
-define (videf20 dv(.VirtualInstrument (
+define(videf20 dv(.VirtualInstrument (
     c(
         i(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2482,7 +2482,7 @@ define (videf20 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Reverse Array.vi
-define (videf18 dv(.VirtualInstrument (
+define(videf18 dv(.VirtualInstrument (
     c(
         i(dv(a(.Int8 *) () ) local1)   // Array
         o(dv(a(.Int8 *) () ) local11)   // Reversed Array
@@ -2525,7 +2525,7 @@ define (videf18 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Round.vi
-define (videf8 dv(.VirtualInstrument (
+define(videf8 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2621,7 +2621,7 @@ define (videf8 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Shift.vi
-define (videf23 dv(.VirtualInstrument (
+define(videf23 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2685,7 +2685,7 @@ define (videf23 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: SimpleCalcPi.vi
-define (videf30 dv(.VirtualInstrument (
+define(videf30 dv(.VirtualInstrument (
     c(
         e(.UInt32 local1)   // millisecond timer value
         e(.Int32 local2)
@@ -2799,7 +2799,7 @@ define (videf30 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Sqrt.vi
-define (videf32 dv(.VirtualInstrument (
+define(videf32 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2901,7 +2901,7 @@ define (videf32 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Subtract.vi
-define (videf33 dv(.VirtualInstrument (
+define(videf33 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -2951,7 +2951,7 @@ define (videf33 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Unsigned Unsafe Subtract.vi
-define (videf3 dv(.VirtualInstrument (
+define(videf3 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -3062,7 +3062,7 @@ define (videf3 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: XtoY.vi
-define (videf31 dv(.VirtualInstrument (
+define(videf31 dv(.VirtualInstrument (
     c(
         o(dv(c(
             e(a(.Int8 *) n0)   // Array Num
@@ -3188,4 +3188,4 @@ define (videf31 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf30)
+enqueue(videf30)

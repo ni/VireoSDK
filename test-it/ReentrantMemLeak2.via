@@ -1,4 +1,4 @@
-define (SubVI0 dv(.ReentrantVirtualInstrument (
+define(SubVI0 dv(.ReentrantVirtualInstrument (
 c(
     // Leak #3 was caused by code top top copy in 
     // arrays but not clusters that contained arrays.
@@ -13,7 +13,7 @@ c(
    )
  )))
 
-define (SubVI1 dv(.ReentrantVirtualInstrument (
+define(SubVI1 dv(.ReentrantVirtualInstrument (
 c(
     // Leak #3 was caused by code top top copy in 
     // arrays but not clusters that contained arrays.
@@ -28,7 +28,7 @@ c(
    )
  )))
  
-define (TopVI dv(.VirtualInstrument (
+define(TopVI dv(.VirtualInstrument (
 c(
     // Leak #2 was caused by the Cluster init method 
     // skipping allocation of parameter there were arrays
@@ -50,4 +50,4 @@ clump(1
    )
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

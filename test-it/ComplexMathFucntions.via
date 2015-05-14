@@ -1,6 +1,6 @@
 
 
-define (HelloComplex dv(.VirtualInstrument (
+define(HelloComplex dv(.VirtualInstrument (
     Locals: c(
         //-------------------
         e(dv(.Double 2.0) dMagnitude)
@@ -18,4 +18,4 @@ define (HelloComplex dv(.VirtualInstrument (
         Printf("Single: Polar(%s %s) => %s\n" sMagnitude sPhase sCmplx)
     )
  ) ) )
-enqueue (HelloComplex)
+enqueue(HelloComplex)

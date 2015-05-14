@@ -1,4 +1,4 @@
-define (HelloTime dv(.VirtualInstrument (
+define(HelloTime dv(.VirtualInstrument (
     c(
 	e(dv(.Int32 4) i4)
 	e(dv(.String "")s1)
@@ -15,4 +15,4 @@ define (HelloTime dv(.VirtualInstrument (
         Printf("decode: (%s) -> (%s)\n" s3 s0)
     )
 ) ) )
-enqueue (HelloTime)
+enqueue(HelloTime)

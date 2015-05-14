@@ -1,26 +1,26 @@
 /// Test getting and setting dimensions for arrays.
 
-define (av0 var( a(.Int32 ) ) ) 
-define (av1 var( a(.Int32 *) ) ) 
-define (av2 var( a(.Int32 * *) ) )  
-define (av3 var( a(.Int32 * * *) ) ) 
-define (av4 var( a(.Int32 * * * *) ) ) 
+define(av0 var( a(.Int32 ) ) ) 
+define(av1 var( a(.Int32 *) ) ) 
+define(av2 var( a(.Int32 * *) ) )  
+define(av3 var( a(.Int32 * * *) ) ) 
+define(av4 var( a(.Int32 * * * *) ) ) 
 
-define (af0 var( a(.Int32 ) ) ) 
-define (af1 var( a(.Int32 2) ) ) 
-define (af2 var( a(.Int32 2 3) ) ) 
-define (af3 var( a(.Int32 2 3 4) ) ) 
-define (af4 var( a(.Int32 2 3 4 5) ) ) 
+define(af0 var( a(.Int32 ) ) ) 
+define(af1 var( a(.Int32 2) ) ) 
+define(af2 var( a(.Int32 2 3) ) ) 
+define(af3 var( a(.Int32 2 3 4) ) ) 
+define(af4 var( a(.Int32 2 3 4 5) ) ) 
 
-define (ab0 var( a(.Int32 ) ) )  
-define (ab1 var( a(.Int32 -2) ) ) 
-define (ab2 var( a(.Int32 -2 -3) ) ) 
-define (ab3 var( a(.Int32 -2 -3 -4) ) ) 
-define (ab4 var( a(.Int32 -2 -3 -4 -5) ) ) 
+define(ab0 var( a(.Int32 ) ) )  
+define(ab1 var( a(.Int32 -2) ) ) 
+define(ab2 var( a(.Int32 -2 -3) ) ) 
+define(ab3 var( a(.Int32 -2 -3 -4) ) ) 
+define(ab4 var( a(.Int32 -2 -3 -4 -5) ) ) 
 
 //---------------------------------------------------
 //VI Definition: Untitled 2
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(a(.Int32 *) dims)
         e(dv(a(.Int32 *) ())  d0)
@@ -257,4 +257,4 @@ define (videf1 dv(.VirtualInstrument (
 
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

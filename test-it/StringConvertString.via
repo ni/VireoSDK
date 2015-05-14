@@ -1,11 +1,11 @@
 
-define (c0 dv(c(
+define(c0 dv(c(
   e(.String n0)
   e(.Double n1)
 ) ('zxc' 45.8 )) )
 //---------------------------------------------------
 //VI Definition: Untitled 1
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
   c(
     e(c(
         e(.String n0)
@@ -23,5 +23,5 @@ define (videf1 dv(.VirtualInstrument (
     //--- end of vi
   )
 )))
-enqueue (videf1)
+enqueue(videf1)
 

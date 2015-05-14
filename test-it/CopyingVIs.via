@@ -1,5 +1,5 @@
-define (AFewMillisecods   dv(.UInt32 200))
-define (SubVI0 dv(.ReentrantVirtualInstrument (
+define(AFewMillisecods   dv(.UInt32 200))
+define(SubVI0 dv(.ReentrantVirtualInstrument (
  c(
     e(dv(.String 'Hello, World.') sInside)
   )
@@ -9,8 +9,8 @@ define (SubVI0 dv(.ReentrantVirtualInstrument (
    )
  )))
 
-//define (SubVI1 dv(.ReentrantVirtualInstrument .SubVI0))
-define (TopVI dv(.VirtualInstrument (
+//define(SubVI1 dv(.ReentrantVirtualInstrument .SubVI0))
+define(TopVI dv(.VirtualInstrument (
  c(
   )
     clump(1 
@@ -34,4 +34,4 @@ define (TopVI dv(.VirtualInstrument (
 
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

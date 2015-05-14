@@ -1,5 +1,5 @@
 
-define (Rectangle c(
+define(Rectangle c(
     e(.Int32 Top)
     e(.Int32 Left)
     e(.Int32 Bottom)
@@ -7,11 +7,11 @@ define (Rectangle c(
 )
 
 // Positional 
-define (Box1 dv(.Rectangle (0 0 20 30)))
+define(Box1 dv(.Rectangle (0 0 20 30)))
 
 // Named  JSON like data Initializers
-define (Box2 dv(.Rectangle (Bottom:20 Right:30 Foo:45)))
-define (Box3 dv(.Dictionary (Bottom:20 Right:30 Foo:45 Right:70)))
+define(Box2 dv(.Rectangle (Bottom:20 Right:30 Foo:45)))
+define(Box3 dv(.Dictionary (Bottom:20 Right:30 Foo:45 Right:70)))
 
 /*
 Rectangle<(Bottom:20 Right:30 Foo:45)>
@@ -19,12 +19,12 @@ dv(.Rectangle(..value..))
 dv(c(......)(..value..))
 */
 
-define (Box4 Dictionary(("Bottom" 20) Right:30 Foo:45 Right:70)> )
-define (Box4 Dictionary<(Bottom:20 Right:30 Foo:45 Right:70)> )
+define(Box4 Dictionary(("Bottom" 20) Right:30 Foo:45 Right:70)> )
+define(Box4 Dictionary<(Bottom:20 Right:30 Foo:45 Right:70)> )
 
 
 // Named JSON arbitrary order
-define (Box3 dv(.Rectangle (Right:30 Bottom:20 )))
+define(Box3 dv(.Rectangle (Right:30 Bottom:20 )))
 
 /*
 
@@ -68,27 +68,27 @@ Values can be "open" that is thre is something that is not so fixed
 */
 
 
-define (Hw2 dv(.VirtualInstrument ( Locals:c(e(.Int32 v1))
+define(Hw2 dv(.VirtualInstrument ( Locals:c(e(.Int32 v1))
     clump (
        Println(variable1)
     )
 ) ) )
 
-define (Hw2 dv(.VirtualInstrument ( c(e(.Int32 v1))
-    clump (
-       Println(variable1)
-    )
-) ) )
-
-
-define (Hw3 dv(.VirtualInstrument ( Locals:.Rectangle)
+define(Hw2 dv(.VirtualInstrument ( c(e(.Int32 v1))
     clump (
        Println(variable1)
     )
 ) ) )
 
 
-define (Hw3 dv(.VirtualInstrument (
+define(Hw3 dv(.VirtualInstrument ( Locals:.Rectangle)
+    clump (
+       Println(variable1)
+    )
+) ) )
+
+
+define(Hw3 dv(.VirtualInstrument (
     Locals:.Rectangle)
     Clumps:(
         (
@@ -102,7 +102,7 @@ define (Hw3 dv(.VirtualInstrument (
 
 
 
-define (HelloWorld dv(.VirtualInstrument {
+define(HelloWorld dv(.VirtualInstrument {
     Locals : {
         e(dv(.String "Hello, world. I can fly.") variable1)
     }
@@ -117,7 +117,7 @@ define (HelloWorld dv(.VirtualInstrument {
 
 
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     Locals: c(
         e(dv(.String "Hello, world. I can fly.") variable1)
     )
@@ -129,4 +129,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

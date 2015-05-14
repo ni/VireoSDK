@@ -1,5 +1,5 @@
 
-define (DrawCanvas dv(.VirtualInstrument (
+define(DrawCanvas dv(.VirtualInstrument (
  c(
     e(.Canvas2D canvas)   
     e(dv(.Double 200) x)   
@@ -19,4 +19,4 @@ define (DrawCanvas dv(.VirtualInstrument (
     Stroke(canvas)
    )
 )))
-enqueue (DrawCanvas)
+enqueue(DrawCanvas)

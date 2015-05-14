@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: PID.vi
-define (CalcPid v(.VirtualInstrument (
+define(CalcPid v(.VirtualInstrument (
     c(
         o(v(.Double 0) fp1)         // output
         i(v(.Boolean false) fp2)    // reinitialize? (F)
@@ -233,7 +233,7 @@ define (CalcPid v(.VirtualInstrument (
     )
 )))
 
-define (RunPid v(.VirtualInstrument (
+define(RunPid v(.VirtualInstrument (
         c(
         e(v(.Boolean false) cFalse)
         e(v(.Boolean true) cTrue)
@@ -263,4 +263,4 @@ define (RunPid v(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (RunPid)
+enqueue(RunPid)

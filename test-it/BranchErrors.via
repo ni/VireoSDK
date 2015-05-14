@@ -1,10 +1,10 @@
-define (BadBranch1 dv(.VirtualInstrument (
+define(BadBranch1 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(1)   // Error, Perch not defined
    )
 )))
-define (BadBranch2 dv(.VirtualInstrument (
+define(BadBranch2 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(1)   
@@ -12,7 +12,7 @@ define (BadBranch2 dv(.VirtualInstrument (
    Perch(1)
    )
 )))
-define (BadBranch3 dv(.VirtualInstrument (
+define(BadBranch3 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(1)   
@@ -20,14 +20,14 @@ define (BadBranch3 dv(.VirtualInstrument (
    Perch(2)
    )
 )))
-define (BadBranch4 dv(.VirtualInstrument (
+define(BadBranch4 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(200) // to big (for now)   
    Perch(200)
    )
 )))
-define (BadBranch5 dv(.VirtualInstrument (
+define(BadBranch5 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(cat)   // Error, Perch not defined
@@ -35,7 +35,7 @@ define (BadBranch5 dv(.VirtualInstrument (
    )
 )))
 //----------------------
-define (GoodBranch1 dv(.VirtualInstrument (
+define(GoodBranch1 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(0)   
@@ -43,21 +43,21 @@ define (GoodBranch1 dv(.VirtualInstrument (
    )
 )))
 ////
-define (GoodBranch2 dv(.VirtualInstrument (
+define(GoodBranch2 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(199)   
    Perch(199)
    )
 )))
-define (GoodBranch3 dv(.VirtualInstrument (
+define(GoodBranch3 dv(.VirtualInstrument (
  c()
  clump(1
    Branch(1)   
    Perch(1)
    )
 )))
-define (GoodBranch4 dv(.VirtualInstrument (
+define(GoodBranch4 dv(.VirtualInstrument (
  c()
  clump(1
    Perch(1)

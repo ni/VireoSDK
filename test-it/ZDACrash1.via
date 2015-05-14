@@ -1,6 +1,6 @@
 //---------------------------------------------------
 //VI Definition: Untitled 1.vi
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         o(dv(a(.Int32 *) (1 2 3 ) ) local1)   // Array
     )
@@ -12,7 +12,7 @@ define (videf1 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Untitled 2.vi
-define (videf2 dv(.VirtualInstrument (
+define(videf2 dv(.VirtualInstrument (
     c(
         e(dv(a(.Int32 *) (4 5 6) ) local7)   // Array
         e(a(.Int32 *) local8)   // Array
@@ -25,4 +25,4 @@ define (videf2 dv(.VirtualInstrument (
         videf1(local8)
     )
 )))
-enqueue (videf2)
+enqueue(videf2)

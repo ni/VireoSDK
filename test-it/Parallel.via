@@ -1,7 +1,7 @@
 /*
 Parallel.via - Do two things at once
 */
-define (Parallel dv(.VirtualInstrument (
+define(Parallel dv(.VirtualInstrument (
      c(
         e(dv(.UInt32 100) oneHundred)
         e(dv(.UInt32 50) fifty)
@@ -30,4 +30,4 @@ define (Parallel dv(.VirtualInstrument (
 )))
 
 
-enqueue (Parallel)
+enqueue(Parallel)

@@ -162,7 +162,7 @@ MandelBromMain()
     
 
 
-define (MandelbrotMain dv(.VirtualInstrument (
+define(MandelbrotMain dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.StdOut file)
@@ -219,4 +219,4 @@ define (MandelbrotMain dv(.VirtualInstrument (
         // Printf("Time to calculate Mandelbrot: %s microseconds" tDone)
     )
 ) ) )
-enqueue (MandelbrotMain)
+enqueue(MandelbrotMain)

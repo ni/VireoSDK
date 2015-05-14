@@ -1,4 +1,4 @@
-define (HelloTime dv(.VirtualInstrument (
+define(HelloTime dv(.VirtualInstrument (
     c( 
 	e(a(.Double *) a1)
 
@@ -49,4 +49,4 @@ define (HelloTime dv(.VirtualInstrument (
 	Printf("spread is:\n%s-----------------------\n" s)
     )
 ) ) )
-enqueue (HelloTime)
+enqueue(HelloTime)

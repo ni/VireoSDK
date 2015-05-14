@@ -1,5 +1,5 @@
 
-define (RoundRect dv(.VirtualInstrument (
+define(RoundRect dv(.VirtualInstrument (
  c(
     i(.Canvas2D theCanvas)   
     i(.Double x)   
@@ -37,7 +37,7 @@ define (RoundRect dv(.VirtualInstrument (
    )
 )))
 
-define (DrawCanvas dv(.VirtualInstrument (
+define(DrawCanvas dv(.VirtualInstrument (
  c(
     i(.Canvas2D canvas)   
    )
@@ -48,4 +48,4 @@ define (DrawCanvas dv(.VirtualInstrument (
     Fill(canvas)
    )
 )))
-enqueue (DrawCanvas)
+enqueue(DrawCanvas)

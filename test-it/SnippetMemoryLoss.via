@@ -1,6 +1,6 @@
 
-define (Point c(e(.Int32 x) e(.Int32 y)))
-define (HelloWorld dv(.VirtualInstrument (
+define(Point c(e(.Int32 x) e(.Int32 y)))
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(a(.Int32 *) ( 1 2 3)) v1)
         e(dv(a(.Int32 *) ( 4 5 6)) v2)
@@ -37,4 +37,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

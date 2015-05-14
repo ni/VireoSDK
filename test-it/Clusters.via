@@ -1,8 +1,8 @@
-define (Rectangle c(e(.Int32 top)e(.Int32 left)e(.Int32 bottom)e(.Int32 right)))
-define (StructNode c(e(.Rectangle inside)e(.Rectangle outside)))
-define (RectangleWithName c(e(.Rectangle rect)e(.String name)))
+define(Rectangle c(e(.Int32 top)e(.Int32 left)e(.Int32 bottom)e(.Int32 right)))
+define(StructNode c(e(.Rectangle inside)e(.Rectangle outside)))
+define(RectangleWithName c(e(.Rectangle rect)e(.String name)))
 
-define (HelloWorld dv(.VirtualInstrument
+define(HelloWorld dv(.VirtualInstrument
 (
 c(
   e(dv(.String "Hello world.") variable1)
@@ -42,4 +42,4 @@ clump (
     Println(variable1)
    )
  ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

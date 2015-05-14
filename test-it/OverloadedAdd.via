@@ -1,4 +1,4 @@
-define (BigInt
+define(BigInt
     c(
         e( a(.Int8 *) digits)
         e( .Boolean   positive)
@@ -6,7 +6,7 @@ define (BigInt
 )
 
 
-define (Add dv(.VirtualInstrument (
+define(Add dv(.VirtualInstrument (
     Params:c(
         i(.BigInt x)
         i(.BigInt y)
@@ -18,7 +18,7 @@ define (Add dv(.VirtualInstrument (
  )))
 
 
-define (TopVI dv(.VirtualInstrument (
+define(TopVI dv(.VirtualInstrument (
     Locals:c(
         e(dv(.Int32 3) xi)
         e(dv(.Int32 2) yi)
@@ -43,4 +43,4 @@ define (TopVI dv(.VirtualInstrument (
         )
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

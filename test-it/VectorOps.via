@@ -1,4 +1,4 @@
-define (VectorOp dv(.VirtualInstrument (
+define(VectorOp dv(.VirtualInstrument (
  c(   
     e(.Boolean vBool) 
     e(.Type  vType) 
@@ -144,4 +144,4 @@ define (VectorOp dv(.VirtualInstrument (
        Println(arrayOfDouble1d_1)
    )
  ) ) )
-enqueue (VectorOp)
+enqueue(VectorOp)

@@ -1,17 +1,17 @@
 
-define (Cluster0 c(e(.Int8)) )                  // none
-define (Cluster1 c(e(.Int32)) )                 // none
-define (Cluster2 c(e(.Int32) e(.Int8)) )
-define (Cluster3 c(e(.Cluster2) e(.Cluster2)) )
-define (Cluster4 c(e(.Double) e(.Cluster2)) )
-define (Cluster5 c(e(.Double) e(.Single)) )
-define (Cluster6 c(e(.Single) e(.Double)) )
-define (Cluster7 c(e(.Single) e(.Single)) )     // none
-define (Cluster8 c(e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
-define (Cluster9 c(e(.Int64) e(.Int8) e(.Int8) e(.Int16) e(.Int32)  ) )
-define (Cluster10 c(e(.Int8) e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
+define(Cluster0 c(e(.Int8)) )                  // none
+define(Cluster1 c(e(.Int32)) )                 // none
+define(Cluster2 c(e(.Int32) e(.Int8)) )
+define(Cluster3 c(e(.Cluster2) e(.Cluster2)) )
+define(Cluster4 c(e(.Double) e(.Cluster2)) )
+define(Cluster5 c(e(.Double) e(.Single)) )
+define(Cluster6 c(e(.Single) e(.Double)) )
+define(Cluster7 c(e(.Single) e(.Single)) )     // none
+define(Cluster8 c(e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
+define(Cluster9 c(e(.Int64) e(.Int8) e(.Int8) e(.Int16) e(.Int32)  ) )
+define(Cluster10 c(e(.Int8) e(.Int8) e(.Int8) e(.Int16) e(.Int32) e(.Int64)  ) )
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
   c(
     e(dv(.String "Hello world.") variable1)
     e(.Cluster0 v0)
@@ -75,4 +75,4 @@ define (HelloWorld dv(.VirtualInstrument (
 
     )
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

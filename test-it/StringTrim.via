@@ -1,4 +1,4 @@
-define (HelloStringTrim dv(.VirtualInstrument (
+define(HelloStringTrim dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String "Hello, sky. I can fly.") v1)
@@ -128,4 +128,4 @@ define (HelloStringTrim dv(.VirtualInstrument (
         )
 ) ) )
 
-enqueue (HelloStringTrim)
+enqueue(HelloStringTrim)

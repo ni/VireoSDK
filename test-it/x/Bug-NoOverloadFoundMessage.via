@@ -1,6 +1,6 @@
-define (ConstantValue dv(.Int32 505))
+define(ConstantValue dv(.Int32 505))
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
     )
     clump (
@@ -9,4 +9,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

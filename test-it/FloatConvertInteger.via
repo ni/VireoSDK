@@ -1,10 +1,10 @@
-define (c0 dv(.Double nan))
-define (c1 dv(.Double inf))
-define (c2 dv(.Double -inf))
-define (c3 dv(.Double 1.5))
-define (c4 dv(.Double 2.5))
+define(c0 dv(.Double nan))
+define(c1 dv(.Double inf))
+define(c2 dv(.Double -inf))
+define(c3 dv(.Double 1.5))
+define(c4 dv(.Double 2.5))
 
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
  c(
     e(.UInt8 u8)
     e(.UInt16 u16)
@@ -68,5 +68,5 @@ define (videf1 dv(.VirtualInstrument (
     Println(d)
   )
  ) ) )
-enqueue (videf1)
+enqueue(videf1)
 

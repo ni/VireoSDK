@@ -1,5 +1,5 @@
 
-define (TestProgram dv(.VirtualInstrument (
+define(TestProgram dv(.VirtualInstrument (
     c(
         // The queue type can be used in its open form
         // That means it is a queue of 'nothing'
@@ -56,4 +56,4 @@ define (TestProgram dv(.VirtualInstrument (
 ) ) )
 
 
-enqueue (TestProgram)
+enqueue(TestProgram)

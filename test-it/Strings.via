@@ -1,5 +1,5 @@
 //trace
-define (ToStringTest dv(.VirtualInstrument (
+define(ToStringTest dv(.VirtualInstrument (
  c(
  e(dv(.String  'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorld)
  e(dv(.String  @'Hello\nWorld\r cr \t\t tabbed test with a slash \\.\$ no dollar ') cHelloWorldLiteral)
@@ -85,4 +85,4 @@ Printf("@string multiline hello world <%s>\n" cHelloWorldMultiline)
    )
 )))
 
-enqueue (ToStringTest)
+enqueue(ToStringTest)

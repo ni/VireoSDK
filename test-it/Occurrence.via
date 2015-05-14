@@ -1,5 +1,5 @@
 
-define (HelloOccurrence dv(.VirtualInstrument (
+define(HelloOccurrence dv(.VirtualInstrument (
     Locals: c(
         e(.Occurrence occ1)
     )
@@ -29,4 +29,4 @@ define (HelloOccurrence dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloOccurrence)
+enqueue(HelloOccurrence)

@@ -4,7 +4,7 @@
 // Are these defining values or types. Well 
  
 // (1) A global Queue that can be shared across VIs
-define (MyGlobalVar var(.Queue))
+define(MyGlobalVar var(.Queue))
 
 /*
 Dynamic Types are allocated in the same TypeManager used by the executions context 
@@ -29,17 +29,17 @@ though that is not always good thing
 Consider 
 
 1.  A simple variable definition  the type is a simple type already defined
-    define (Var1 .Int32)
+    define(Var1 .Int32)
      
      
 2.  A built in functional type such as the array aggrigatore 
-    define (Var2 a(.Int32 10))
+    define(Var2 a(.Int32 10))
     
     Note that "a" looks a bit like a function call a vararg function call that 
     takes a type and a varialble list of parameters.
     
 3.  VIA defined functional types
-    define (Var2 Queue(.Int32 10))
+    define(Var2 Queue(.Int32 10))
     
     Some notes.
     1. Queue must be a "type" there is no "." prefix since the context indicates
@@ -58,7 +58,7 @@ Consider
     Queue is a VI perhaps there is a naming convention. Queue-Type.
     
 */ 
-define (TestAllocateValues dv(.VirtualInstrument (
+define(TestAllocateValues dv(.VirtualInstrument (
     c(
         e(dv(.String "") varNameEmpty)
         e(dv(.String "GlobalVar1") varName1)
@@ -137,4 +137,4 @@ define (TestAllocateValues dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (TestAllocateValues)
+enqueue(TestAllocateValues)

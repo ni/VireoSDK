@@ -1,4 +1,4 @@
-define (HelloWorldSub dv(.VirtualInstrument (
+define(HelloWorldSub dv(.VirtualInstrument (
 c(
 e(dv(.String "Hello") variable1)
 )
@@ -16,7 +16,7 @@ clump (1
 )
 ) ) )
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "TopVI") variable1)
         e(.Int32 x)
@@ -42,4 +42,4 @@ define (HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue (HelloWorld)
+enqueue(HelloWorld)

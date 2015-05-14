@@ -1,4 +1,4 @@
-define (SubVIFromMyPast dv(.VirtualInstrument (
+define(SubVIFromMyPast dv(.VirtualInstrument (
  c(
     e(dv(.String 'Yesterday I made scrambled eggs and they seemed far away') str)
   )
@@ -7,7 +7,7 @@ define (SubVIFromMyPast dv(.VirtualInstrument (
    )
  )))
 
-define (CarpeDiem dv(.VirtualInstrument (
+define(CarpeDiem dv(.VirtualInstrument (
     c(
         e(dv(.String 'Here comes the sun') str)
     )
@@ -18,7 +18,7 @@ define (CarpeDiem dv(.VirtualInstrument (
     )
 )))
 
-define (SubVIFromMyFuture dv(.VirtualInstrument (
+define(SubVIFromMyFuture dv(.VirtualInstrument (
  c(
     e(dv(.String 'The sun\'ll come out tomorrow') str)
   )
@@ -27,4 +27,4 @@ define (SubVIFromMyFuture dv(.VirtualInstrument (
    )
  )))
 
-enqueue (CarpeDiem)
+enqueue(CarpeDiem)

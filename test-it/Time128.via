@@ -1,4 +1,4 @@
-define (HelloTime dv(.VirtualInstrument (
+define(HelloTime dv(.VirtualInstrument (
     c(
      e(.Timestamp t0)
      e(dv(.Timestamp (1 0x8000000000000001)) t1)    // 1.5 seconds
@@ -96,4 +96,4 @@ define (HelloTime dv(.VirtualInstrument (
 
     )
 ) ) )
-enqueue (HelloTime)
+enqueue(HelloTime)

@@ -3,7 +3,7 @@
 
 //---------------------------------------------------
 //VI Definition: Untitled 3
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(dv(a(.UInt32 *) (1 2 3 4)) array1234)
         e(dv(a(.UInt32 *) (4 3 2 1)) array4321)
@@ -102,4 +102,4 @@ define (videf1 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

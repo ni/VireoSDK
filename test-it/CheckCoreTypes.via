@@ -1,4 +1,4 @@
-define (TypesToCheck dv(a(.Type *) (
+define(TypesToCheck dv(a(.Type *) (
     .Boolean
     .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64
     .Single .Double .ComplexSingle .ComplexDouble
@@ -12,9 +12,9 @@ define (TypesToCheck dv(a(.Type *) (
     )
 ))
 
-define (VIParamClusterFlat c())
+define(VIParamClusterFlat c())
 
-define (HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(.VirtualInstrument (
     .VIParamClusterFlat
     c(
      e(.TypeManager tm)
@@ -78,4 +78,4 @@ define (HelloWorld dv(.VirtualInstrument (
       //  For(i n 1)  // for arg0 goes from initial value to arg1 execute clump arg2. This can be done by a sub vi!
 
 ) ) )
-enqueue (HelloWorld)
+enqueue(HelloWorld)

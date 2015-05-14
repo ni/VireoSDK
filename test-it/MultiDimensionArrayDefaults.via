@@ -1,39 +1,39 @@
 
-define (c0 dv(a(.Double * ) (404.1 505.0) ))
+define(c0 dv(a(.Double * ) (404.1 505.0) ))
 
-define (c1 dv(a(.Double 1 1) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  // Extra initializers
-define (c1_ok dv(a(.Double 4 1) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  // Extra initializers
-define (c2 dv(a(.Double * *) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  
-define (c3 dv(a(.Double * * * * * * * * * * ) (((((((((( 404.0 505.0 )))))))))) ))
-define (c4 dv(a(.Double * * * *) ((((1 2 3)(1 2 3)(1 2 3))) (((4 5 6 7)(4 5 6 7)(4 5 6 7)(4 5 6 7)))  ) ) )
+define(c1 dv(a(.Double 1 1) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  // Extra initializers
+define(c1_ok dv(a(.Double 4 1) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  // Extra initializers
+define(c2 dv(a(.Double * *) ((404.1)(404.2 1.2)(404.3)(404.4)) ))  
+define(c3 dv(a(.Double * * * * * * * * * * ) (((((((((( 404.0 505.0 )))))))))) ))
+define(c4 dv(a(.Double * * * *) ((((1 2 3)(1 2 3)(1 2 3))) (((4 5 6 7)(4 5 6 7)(4 5 6 7)(4 5 6 7)))  ) ) )
 
 // Should be rank 2: dimensions (6 3)
-define (c5 dv(a(.Double * *) ((3.1)(4.2 6.7)(4.2)(4.2)(4.2 5.7 8.1)(4.2)) ) )
+define(c5 dv(a(.Double * *) ((3.1)(4.2 6.7)(4.2)(4.2)(4.2 5.7 8.1)(4.2)) ) )
 
-define (af23_1 dv(a(.Int32 2 3) () ))  // Extra initializers
-define (af23_2 dv(a(.Int32 2 3) (()) ))  // Extra initializers
-define (af23_3 dv(a(.Int32 2 3) ((1)) ))  // Extra initializers
-define (af23_4 dv(a(.Int32 2 3) ((1 2 3 4)) ))  // Extra initializers
-define (af23_5 dv(a(.Int32 2 3) ((1 2 3 4) () () ()) ))  // Extra initializers
+define(af23_1 dv(a(.Int32 2 3) () ))  // Extra initializers
+define(af23_2 dv(a(.Int32 2 3) (()) ))  // Extra initializers
+define(af23_3 dv(a(.Int32 2 3) ((1)) ))  // Extra initializers
+define(af23_4 dv(a(.Int32 2 3) ((1 2 3 4)) ))  // Extra initializers
+define(af23_5 dv(a(.Int32 2 3) ((1 2 3 4) () () ()) ))  // Extra initializers
 
-define (ab23_1 dv(a(.Int32 -2 -3) () ))  // Extra initializers
-define (ab23_2 dv(a(.Int32 -2 -3) (()) ))  // Extra initializers
-define (ab23_3 dv(a(.Int32 -2 -3) ((1)) ))  // Extra initializers
-define (ab23_4 dv(a(.Int32 -2 -3) ((1 2 3 4)) ))  // Extra initializers
-define (ab23_5 dv(a(.Int32 -2 -3) ((1 2 3 4) () () ()) ))  // Extra initializers
+define(ab23_1 dv(a(.Int32 -2 -3) () ))  // Extra initializers
+define(ab23_2 dv(a(.Int32 -2 -3) (()) ))  // Extra initializers
+define(ab23_3 dv(a(.Int32 -2 -3) ((1)) ))  // Extra initializers
+define(ab23_4 dv(a(.Int32 -2 -3) ((1 2 3 4)) ))  // Extra initializers
+define(ab23_5 dv(a(.Int32 -2 -3) ((1 2 3 4) () () ()) ))  // Extra initializers
 
-define (av23_1 dv(a(.Int32 * *) () ))  // Extra initializers
-define (av23_2 dv(a(.Int32 * *) (()) ))  // Extra initializers
-define (av23_3 dv(a(.Int32 * *) ((1)) ))  // Extra initializers
-define (av23_4 dv(a(.Int32 * *) ((1 2 3 4)) ))  // Extra initializers
-define (av23_5 dv(a(.Int32 * *) ((1 2 3 4) () () ()) ))  // Extra initializers
+define(av23_1 dv(a(.Int32 * *) () ))  // Extra initializers
+define(av23_2 dv(a(.Int32 * *) (()) ))  // Extra initializers
+define(av23_3 dv(a(.Int32 * *) ((1)) ))  // Extra initializers
+define(av23_4 dv(a(.Int32 * *) ((1 2 3 4)) ))  // Extra initializers
+define(av23_5 dv(a(.Int32 * *) ((1 2 3 4) () () ()) ))  // Extra initializers
 
-//define (a23 dv(a(.Int32 2 3) () ))  // Extra initializers
-//define (a23 dv(a(.Int32 2 3) () ))  // Extra initializers
+//define(a23 dv(a(.Int32 2 3) () ))  // Extra initializers
+//define(a23 dv(a(.Int32 2 3) () ))  // Extra initializers
 
 //---------------------------------------------------
 //VI Definition: Untitled 2
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         e(a(.Int32 * *) temp)
     )
@@ -99,4 +99,4 @@ define (videf1 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue (videf1)
+enqueue(videf1)

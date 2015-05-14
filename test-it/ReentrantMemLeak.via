@@ -1,11 +1,11 @@
-define (SubVI0 dv(.ReentrantVirtualInstrument (
+define(SubVI0 dv(.ReentrantVirtualInstrument (
  c()
   clump(1
     Printf("In reentrant  SubVI \n")
    )
  )))
 
-define (TopVI dv(.VirtualInstrument (
+define(TopVI dv(.VirtualInstrument (
  c(
   )
 clump(1
@@ -23,4 +23,4 @@ clump(1
     )
  )))
 
-enqueue (TopVI)
+enqueue(TopVI)

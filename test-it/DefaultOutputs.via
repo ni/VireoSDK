@@ -4,28 +4,28 @@
 // videf1 conditionally writes to its output params based on the value of its boolean input.
 // The calling vi alternates calling videf1 with true or false.
 
-define (c0 dv(.Int32 4) )
-define (c1 dv(.String '---') )
-define (c2 dv(.Int32 2) )
-define (c3 dv(.Int32 0) )
-define (GlobalError c(
+define(c0 dv(.Int32 4) )
+define(c1 dv(.String '---') )
+define(c2 dv(.Int32 2) )
+define(c3 dv(.Int32 0) )
+define(GlobalError c(
     e(.Boolean n0)   // status
     e(.Int32 n1)   // code
     e(.String n2)   // source
 ) )
-define (c4 dv(.Boolean true) )
-define (c5 dv(c(
+define(c4 dv(.Boolean true) )
+define(c5 dv(c(
     e(.UInt8 n0)
     e(.UInt8 n1)
     e(.UInt8 n2)
     e(.UInt8 n3)
 ) (5 6 7 8 )) )
-define (c6 dv(.UInt8 4) )
-define (c7 dv(a(.Int32 *) (6 5 7 ) ) )
-define (c8 dv(.Int32 1) )
+define(c6 dv(.UInt8 4) )
+define(c7 dv(a(.Int32 *) (6 5 7 ) ) )
+define(c8 dv(.Int32 1) )
 //---------------------------------------------------
 //VI Definition: Untitled 1.vi
-define (videf1 dv(.VirtualInstrument (
+define(videf1 dv(.VirtualInstrument (
     c(
         i(dv(.Boolean false) local1)   // Boolean
         o(dv(c(
@@ -56,7 +56,7 @@ define (videf1 dv(.VirtualInstrument (
 )))
 //---------------------------------------------------
 //VI Definition: Untitled 2.vi
-define (videf2 dv(.VirtualInstrument (
+define(videf2 dv(.VirtualInstrument (
     c(
         e(.Int32 local1)
         e(.Int32 local2)
@@ -92,4 +92,4 @@ define (videf2 dv(.VirtualInstrument (
         Perch(1)
     )
 )))
-enqueue (videf2)
+enqueue(videf2)

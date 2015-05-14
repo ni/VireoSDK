@@ -1,8 +1,8 @@
 vireo = require('../target-support/js/vireo.js');
 
 var text =
-    'define (c0 dv(.UInt32 90))\n' +
-    'define (HelloWorld dv(.VirtualInstrument (\n' +
+    'define(c0 dv(.UInt32 90))\n' +
+    'define(HelloWorld dv(.VirtualInstrument (\n' +
         'Locals: c(' +
             'e(dv(.String "Hello, world. I can fly.你好世界。我能飛。") variable1)' +
         ')\n' +
@@ -11,7 +11,7 @@ var text =
             'FPSync(c0)' +
         ')' +
     ') ) )\n'  +
-    'enqueue (HelloWorld)\n';
+    'enqueue(HelloWorld)\n';
 
 vireo.core.fpSync = function(fpId) {console.log("***fpSync() Called with: " + fpId + " ***"); };
 vireo.loadVia(text);

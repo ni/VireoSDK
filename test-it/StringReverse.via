@@ -1,4 +1,4 @@
-define (HelloStringRotate dv(.VirtualInstrument (
+define(HelloStringRotate dv(.VirtualInstrument (
     Locals:
     c(
         e(dv(.String "Hello, sky. I can fly.") v1)
@@ -44,4 +44,4 @@ define (HelloStringRotate dv(.VirtualInstrument (
         )
 ) ) )
 
-enqueue (HelloStringRotate)
+enqueue(HelloStringRotate)

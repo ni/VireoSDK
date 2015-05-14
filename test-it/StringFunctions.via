@@ -1,4 +1,4 @@
-define (StringFuncions dv(.VirtualInstrument (
+define(StringFuncions dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello world. I can fly.")                 variable1)
         e(dv(.String "abcdefghijklmnopqrstuvwzyz12345678890")   abc)
@@ -61,4 +61,4 @@ define (StringFuncions dv(.VirtualInstrument (
 
     )
 ) ) )
-enqueue (StringFuncions)
+enqueue(StringFuncions)

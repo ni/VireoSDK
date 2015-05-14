@@ -1,4 +1,4 @@
- define (HelloWorld dv(.VirtualInstrument (
+ define(HelloWorld dv(.VirtualInstrument (
  c(
     e(dv(.String 'Hello world. I can fly.')  variable1)
   ) 
@@ -7,7 +7,7 @@
    )
  ) ) )
 
-define (Test dv(.VirtualInstrument (
+define(Test dv(.VirtualInstrument (
  c(
  e(.Int32 value)
       e(dv(.Int32 1) c1)
@@ -34,4 +34,4 @@ define (Test dv(.VirtualInstrument (
     Println(arrayOfTypes)
    )
  ) ) )
-enqueue (Test)
+enqueue(Test)
