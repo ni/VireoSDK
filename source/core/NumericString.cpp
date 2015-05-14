@@ -208,7 +208,7 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             index++;
         }
         TypeRef argType = arguments[i]._paramType;
-        if (argType->Name().CompareCStr("Timestamp")) {
+        if (argType->IsA("Timestamp")) {
             buffer->AppendCStr("%T");
             return ;
         }

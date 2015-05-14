@@ -524,6 +524,7 @@ public:
     
     Boolean CompareType(TypeRef otherType);
     Boolean IsA(const SubString* otherTypeName);
+    Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     

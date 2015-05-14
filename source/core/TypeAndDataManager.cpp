@@ -2230,7 +2230,7 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
             }
             break;
         case kEncoding_Cluster:
-          if (type->Name().CompareCStr("Timestamp")) {
+          if (type->IsA("Timestamp")) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
           }
@@ -2282,7 +2282,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             }
             break;
         case kEncoding_Cluster:
-            if (type->Name().CompareCStr("Timestamp")) {
+            if (type->IsA("Timestamp")) {
                 Timestamp* t = (Timestamp*) pData;
                 *t = Timestamp(value);
             }
