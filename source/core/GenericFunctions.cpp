@@ -72,8 +72,15 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 extraParam = (void*) (size_t)sourceType->TopAQSize();
             }
         } else if (sourceType->IsArray()) {
-            //Objects require a deep copy (e.g. arrays will copy over all values)
-            copyOpName = "CopyObject";
+            VIREO_ASSERT(!destType->IsInputParam());
+            if (destType->IsAlias() && !destType->IsOutputParam()) {
+                // If its a local alias then just copy the pointer.
+                // Outputs are alias to the callers params, so that still needs a deep copy
+                copyOpName = "CopyTop";
+            } else {
+                //Objects require a deep copy (e.g. arrays will copy over all values)
+                copyOpName = "CopyObject";
+            }
         } else {
             // Non flat clusters (e.g clusters with arrays) need type info passed
             // so the general purpose copy function can get to the types copy proc.
@@ -1174,8 +1181,12 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_TYPE(GenericBinOp, "p(i(.*) i(.*) o(.*))")
     DEFINE_VIREO_TYPE(GenericUnOp, "p(i(.*) o(.*))")
 
+    // Copy and CopyTop share the same generic emitter, it checks the name of the instruction
+    // to determine the correct behaviour.
     DEFINE_VIREO_GENERIC(Copy, ".GenericUnOp", EmitGenericCopyInstruction);
     DEFINE_VIREO_GENERIC(CopyTop, ".GenericUnOp", EmitGenericCopyInstruction);
+    
+    // Internal copy operation for flat blocks of of data.
     DEFINE_VIREO_FUNCTION(Copy1, "p(i(.Int8) o(.Int8))");
     DEFINE_VIREO_FUNCTION(Copy2, "p(i(.Int16)  o(.Int16))");
     DEFINE_VIREO_FUNCTION(Copy4, "p(i(.Int32)  o(.Int32))");
@@ -1183,10 +1194,14 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Copy16, "p(i(.Block128) o(.Block128))");
     DEFINE_VIREO_FUNCTION(Copy32, "p(i(.Block256) o(.Block256))");
     DEFINE_VIREO_FUNCTION(CopyN, "p(i(.DataPointer) o(.DataPointer) i(.Int32))");
+    
+    // Deep copy where needed for objects/arrays/strings.
     DEFINE_VIREO_FUNCTION(CopyObject, "p(i(.Object) o(.Object))")
 
+    // Deep copy for clusters
     DEFINE_VIREO_FUNCTION(CopyStaticTypedBlock, "p(i(.DataPointer) o(.DataPointer) i(.StaticType))")
 
+    // Generic math operations
     DEFINE_VIREO_GENERIC(Not, ".GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(And, ".GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Or, ".GenericBinOp", EmitGenericBinOpInstruction);

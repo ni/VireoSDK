@@ -1,13 +1,12 @@
-v1 <Red Fish>
-v2 <Blue Fish>
-v3 <Green Fish>
-v4 <>
-alias of v1 <Red Fish>
-alias of v2 <Blue Fish>
-alias of v4 <>
-changed v4 <Blue Fish> <Blue Fish>
-changed v4 <Green Fish> <Green Fish>
-changed alias <Red Fish> <Red Fish>
-Init alias <> <>
-Other alias is still OK <> 
-Other alias is still OK <Green Fish> 
+RF <Red Fish>
+BF <Blue Fish>
+GF <Green Fish>
+Temp <>
+alias of RF <Red Fish>
+alias of BF <Blue Fish>
+alias of vGF <Green Fish>
+changed temp <Blue Fish> <Green Fish>
+changed temp <Green Fish> <Green Fish>
+Pre  Init alias <Red Fish> <Blue Fish> <Green Fish> <Green Fish>
+Post Init alias <Red Fish> <Blue Fish> <> <>
+Other alias is still BF <Blue Fish> 

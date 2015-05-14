@@ -475,7 +475,7 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
     return StartNextOverload();
 }
 //------------------------------------------------------------
-void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** ppData)
+void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, Boolean needsAddress)
 {
     _actualArgumentType = null;
     *ppData = null;
@@ -504,7 +504,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** p
                 *pDef = type;
             }
             cdt = cdt->FinalizeDVT();
-            *ppData = (AQBlock1*)cdt->Begin(kPARead);
+            if (needsAddress) {
+                *ppData = (AQBlock1*)cdt->Begin(kPARead);
+            }
         }
         return;
     }
@@ -517,7 +519,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** p
             // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
             cdt = cdt->FinalizeDVT();
-            *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+            if (needsAddress) {
+                *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+            }
         } else {
             // For flat data, the call instruction logic for VIs will initialize the callee parameter
             // to the default value. For native instructions a null parameter value is passed.
@@ -541,7 +545,9 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** p
         if (type) {
             _argumentState = kArgumentResolvedToLiteral;
             _actualArgumentType = type;
-            *ppData = type->Begin(kPARead);
+            if (needsAddress) {
+                *ppData = type->Begin(kPARead);
+            }
         } else {
             _argumentState = kArgumentNotResolved;
         }
@@ -589,17 +595,20 @@ void ClumpParseState::ResolveActualArgumentAddress(SubString* argument, void** p
             _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, (void**)&pData, false);
         }
         if (_actualArgumentType) {
-            *ppData = pData;
+            if (needsAddress) {
+                *ppData = pData;
+            }
             _argumentState = kArgumentResolvedToGlobal;
             return;
         }
     }
 }
 //------------------------------------------------------------
-void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prependType)
+void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress)
 {
     void* pData = null;
-    ResolveActualArgumentAddress(argument, &pData);
+    
+    ResolveActualArgument(argument, &pData, addAddress);
     
     if (ActualArgumentType() == null) {
         return;
@@ -607,12 +616,12 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
     
     SubString dsTypeName = ActualArgumentType()->Name();
     
-    if (prependType) {
+    if (addType) {
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
         // they are fully polymorphic.
         InternalAddArg(null, ActualArgumentType());
 	} else if (dsTypeName.CompareCStr(tsWildCard) && FormalParameterType()->IsOptionalParam()) {
-        // '*' as an argument means no value is passed. If its marks as options this is OK
+        // '*' as an argument means no value is passed. If its marked as optional this is OK
         // the '*' is not the generic type in this case.
 	} else {
         if (!ActualArgumentType()->IsA(FormalParameterType())) {
@@ -620,13 +629,15 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean prepend
         }
     }
     
-    InternalAddArg(ActualArgumentType(), pData);
+    if (addAddress) {
+        InternalAddArg(ActualArgumentType(), pData);
+    }
 }
 //------------------------------------------------------------
-void ClumpParseState::InternalAddArg(TypeRef actualType, void* arg)
+void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
 {
     _argTypes[_argCount] = actualType;
-    _argPointers[_argCount++] = arg;
+    _argPointers[_argCount++] = address;
     
     if (_pVarArgCount) {
         *_pVarArgCount += 1;

@@ -1297,13 +1297,15 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         } else if (formalParameterTypeName.CompareCStr(tsVIClumpType)) {
                             // Parse as an integer then resolve to pointer to the clump.
                             state.AddClumpTargetArgument(&token);
+                        } else if (formalParameterTypeName.CompareCStr("StaticType")) {
+                            state.AddDataTargetArgument(&token, true, false);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
-                            state.AddDataTargetArgument(&token, true);
+                            state.AddDataTargetArgument(&token, true, true);
                         } else if (formalType->IsStaticParam()) {
                             LOG_EVENT(kSoftDataError, "unexpeced static parameter");
                         } else {
                             // The most common case is a data value
-                            state.AddDataTargetArgument(&token, false); // For starters
+                            state.AddDataTargetArgument(&token, false, true); // For starters
                         }
                     }
                     if (state.LastArgumentError()) {
@@ -1670,6 +1672,10 @@ void TDViaFormatter::FormatType(TypeRef type)
 //------------------------------------------------------------
 void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
 {
+    if (null == pArray) {
+        _string->AppendCStr("null");
+        return;
+    }
     TypeRef elementType = pArray->ElementType();
     EncodingEnum elementEncoding = elementType->BitEncoding();
     if (rank==1 && (elementEncoding == kEncoding_Ascii || (elementEncoding == kEncoding_Unicode))) {

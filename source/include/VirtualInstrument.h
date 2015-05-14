@@ -302,9 +302,9 @@ public:
     TypeRef         StartNextOverload();
     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
     TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
-    void            ResolveActualArgumentAddress(SubString* argument, void** ppData);
-    void            AddDataTargetArgument(SubString* argument, Boolean prependType);
-    void            InternalAddArg(TypeRef actualType, void* arg);
+    void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
+    void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
+    void            InternalAddArg(TypeRef actualType, void* address);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);
     Boolean         VarArgParameterDetected()   { return _pVarArgCount != null; }
     Boolean         GenericFunction()           { return _instructionType->HasGenericType(); }

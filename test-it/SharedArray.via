@@ -1,50 +1,43 @@
-define(HelloWorld dv(.VirtualInstrument (
-    c(
-        e(dv(.String "Red Fish") v1)
-        e(dv(.String "Blue Fish") v2)
-        e(dv(.String "Green Fish") v3)
-        e(.String  v4)
+define(HelloWorld dv(VirtualInstrument (
+    Locals: c(
+        e("Red Fish" vRF)
+        e("Blue Fish" vBF)
+        e("Green Fish" vGF)
+        e(String  vTemp)
 
         // i, o, and io are intended for parameter blocks
         // But internally they allow alias'
-        al(.String  alias1)
-        al(.String  alias2)
+        al(String  alias1)
+        al(String  alias2)
     )
-    clump (1
-        Printf("v1 <%s>\n" v1)
-        Printf("v2 <%s>\n" v2)
-        Printf("v3 <%s>\n" v3)
-        Printf("v4 <%s>\n" v4)
+    clump (
+        Printf("RF <%s>\n" vRF)
+        Printf("BF <%s>\n" vBF)
+        Printf("GF <%s>\n" vGF)
+        Printf("Temp <%s>\n" vTemp)
 
-        CopyTop(v1 alias1)        
-        Printf("alias of v1 <%s>\n" alias1)
-        CopyTop(v2 alias1)
-        Printf("alias of v2 <%s>\n" alias1)
-        CopyTop(v4 alias1)
-        Printf("alias of v4 <%s>\n" alias1)
-        Copy(v2 v4)
-        Printf("changed v4 <%s> <%s>\n" v4 alias1)
-        Copy(v3 v4)
-        Printf("changed v4 <%s> <%s>\n" v4 alias1)
-        Copy(v1 alias1)
-        Printf("changed alias <%s> <%s>\n" v4 alias1)
+        // Copy value to alias' and make sure the new value is seen.
+        Copy(vRF alias1)
+        Printf("alias of RF <%s>\n" alias1)
+        Copy(vBF alias1)
+        Copy(alias1 alias2)
+        Printf("alias of BF <%s>\n" alias1)
+        Copy(vGF alias1)
+        Printf("alias of vGF <%s>\n" alias1)
 
+        // Copy the value to new location
+        Copy(vBF vTemp)
+        Printf("changed temp <%s> <%s>\n" vTemp alias1)
+
+        Copy(vGF vTemp)
+        Printf("changed temp <%s> <%s>\n" vTemp alias1)
+
+        // Init the alias this should what it is an alias of
+        Printf("Pre  Init alias <%s> <%s> <%s> <%s>\n" vRF vBF vGF alias1)
         Init(alias1)
-        Printf("Init alias <%s> <%s>\n" v4 alias1)
+        Printf("Post Init alias <%s> <%s> <%s> <%s>\n" vRF vBF vGF alias1)
 
-        // the top will be zeroed out at cleanup but it can be done explicitly as well
-        CopyTop(alias1 alias2)
-        ZeroOutTop(alias1)
-        
-        // If the variabel is copied or used in any other regular 
-        // way to in the zero state it will crash
-        // Copy(v2 alias1)
-        // Printf("ZeroOut alias <%s> <%s>\n" v4 alias1)
-        Printf("Other alias is still OK <%s> \n" alias2)            
-        Copy(v3 v4)
-        Printf("Other alias is still OK <%s> \n" alias2)            
-
-        // alias2 will be cleaned up by runtime. 
+        Printf("Other alias is still BF <%s> \n" alias2)
     )
 ) ) )
 
