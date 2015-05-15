@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Core types (Int32,...) and ifdefs to work around a few platfrom collisions.
+    \brief Core types (Int32,...) and ifdefs to work around a few platform collisions.
  */
 
 #ifndef DataTypes_h
@@ -19,7 +19,7 @@ SDG
 
 #include "BuildConfig.h"
 
-#if defined (__APPLE__)
+#if defined (__APPLE__) // Carlos Glz: I suggest to use kVireoOS_macosxU instead and let BuildConfig.h deal with OS definitions.
 typedef char  int8, Int8;
 typedef unsigned char Boolean;
 #else
@@ -30,25 +30,20 @@ typedef bool Boolean;
 typedef unsigned char       UInt8, Utf8Char;
 typedef short               Int16;
 typedef unsigned short      UInt16, Utf16Char;
-#if __LP64__
 typedef int                 Int32;
 typedef unsigned int        UInt32;
-#else
-typedef int                 Int32;
-typedef unsigned int        UInt32;
-#endif
 typedef long long           Int64;
 typedef unsigned long long  UInt64;
 typedef float               Single;
 typedef double              Double;
 
-typedef Int64               IntMax;
-typedef UInt64              UIntMax;
+typedef Int64               IntMax; 
+typedef UInt64              UIntMax; // Carlos Glz: I suggest to rename IntMax and UIntMax to IntMaxSize and UIntMaxSize to help on understanding their meaning. If we have IntMax, why not IntMin?
 typedef Int32               Utf32Char;
 
-//! Poiner to generic data
+//! Pointer to generic data
 typedef void*               DataPointer;
-//! Poiner to native executable code
+//! Pointer to native executable code
 typedef void*               CodePointer;
 
 //! Pointer to read only null terminated string
@@ -71,14 +66,10 @@ namespace Vireo
 {
 
 //------------------------------------------------------------
-#ifdef __cplusplus
-    #define null 0
-#else
-    #define null ((void *)0)
-#endif
+#define null NULL
 
 //------------------------------------------------------------
-//! Int that can be used for small counts could be In8 for very small targets.
+//! Int that can be used for small counts could be Int8 for very small targets.
 #ifdef VIREO_MICRO
     typedef Int8 IntSmall;
 #else
@@ -103,6 +94,7 @@ enum {
 
 //------------------------------------------------------------
 //! Some core token grammar items core to Vireo. Others are in TDCodecVia.h
+// Carlos Glz: These definitions look odd here. I think we should send them to TDCodecVia.h. All core token grammar items should be together and not on different files.
 #define tsTypeType         "Type"
 #define tsWildCard         "*"
 #define tsNameSuffix       ":"
@@ -116,12 +108,12 @@ inline Boolean IsTemplateDim(IntIndex dim)
     return (dim > kArrayVariableLengthSentinel) && (dim <= kArrayFirstTemplatedDimLength);
 }
 
-//! Variable dimension is the encodings for *. Templates params also count as vairable.
+//! Variable dimension is the encodings for *. Templates params also count as variable.
 inline Boolean IsVariableLengthDim(IntIndex dim)
 {
     return dim <= kArrayFirstTemplatedDimLength;
 }
-//! Decode a tempalte parametere index.
+//! Decode a template parameter index.
 inline IntIndex TemplateDimIndex(IntIndex dim)
 {
     if (IsTemplateDim(dim)) {
@@ -164,7 +156,7 @@ typedef Int64   AQBlock8;
 #endif
 
 //------------------------------------------------------------
-//! A wrapper that gives a raw block of elements a Begin(), End(), and Length() method.
+//! A wrapper that gives a raw block of elements a Begin(), End(), and Length() method. It does not own the data.
 template <class T>
 class SubVector
 {
@@ -198,14 +190,15 @@ public:
     }
     
     //! Construct a wrapper for a raw block of elements.
-    IntIndex CopyToBoundedBuffer(IntIndex bufferSize, T* buffer)
+    IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer)
     {
-        bufferSize--;  // Make room for null
+        bufferLength--;  // Make room for null
         IntIndex length = Length();
-        if (bufferSize < length)
-            length = bufferSize;
-        memcpy(buffer, Begin(), length * sizeof(T));
-        buffer[length] = 0;
+        if (bufferLength < length) {
+            length = bufferLength;
+        }
+        memcpy(destinationBuffer, Begin(), length * sizeof(T));
+        destinationBuffer[length] = (T)0;
         return length;
     }
 
@@ -219,7 +212,7 @@ public:
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
     
     //! Return true if the blocks are equivalent.
-    Boolean Compare(const T* begin2, Int32 length2)
+    Boolean Compare(const T* begin2, IntIndex length2)
     {
         return (length2 == Length() && (memcmp(_begin, begin2, Length()) == 0));
     }
@@ -232,8 +225,8 @@ public:
 };
 
 //------------------------------------------------------------
-//! A wrapper for an aray of UInt8s (.e.g bytes). It does not own the data.
-class SubBinaryBuffer :  public SubVector<UInt8>
+//! A wrapper for an array of UInt8s (.e.g bytes). It does not own the data.
+class SubBinaryBuffer :  public SubVector<UInt8>  // Binary or byte buffer
 {
 public:
     SubBinaryBuffer()   { }
@@ -254,6 +247,7 @@ public:
     //! Read the iterator's next value
     T Read()            { return *_current++;  }
     Boolean HasNext()   { return _current < _end; }
+    Boolean PointerInRange(void* p) { return p >= _current && p < _end; }
 };
 //------------------------------------------------------------
 //! A light weight iterator for sequential reads of runtime typed values
@@ -274,10 +268,6 @@ public:
         _current += _blockLength;
         return p;
     }
-    Boolean PointerInRange(void* p)
-    {
-        return p>=_current && p < _end;
-    }
 };
 //------------------------------------------------------------
 typedef Itr<IntIndex>   IntIndexItr;
@@ -291,7 +281,7 @@ protected:
     // The buffer has a an extra element for cases where the C array
     // contains a null element at the end.
     T    _buffer[COUNT+1];
-    // Since this class owns the buffer and it know what is going on,
+    // Since this class owns the buffer and it knows what is going on,
     // in certain cases it is OK to write and the end pointer.
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
 public:
@@ -331,7 +321,7 @@ public:
     //! Return a reference to the indexed element in the vector (no range checking).
     const T&  operator[] (const int i)  { return _buffer[i]; }
     
-    //! Append an element to the aray if there is room.
+    //! Append an element to the array if there is room.
     Boolean Append(T element)
     {
         IntIndex i = this->Length();
@@ -345,7 +335,7 @@ public:
         }
     }
     
-    //! Append a block of elements to the aray if there is room.
+    //! Append a block of elements to the array if there is room.
     Boolean Append(const T* begin, size_t length)
     {
         if (length + this->Length() > Capacity()) {
