@@ -96,7 +96,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
         pInstruction = pInstructionBuilder->EmitInstruction();
     } else {
-        pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Type mismatch", null);
+        pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Type mismatch");
     }
     return pInstruction;
 }
@@ -260,7 +260,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
-            snippetBuilder.EmitInstruction(&savedOperation, 3, xEltType, null, yEltType, null, destEltType, null);
+            snippetBuilder.EmitInstruction(&savedOperation, 3, xEltType, (void*)null, yEltType, (void*)null, destEltType, (void*)null);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             
             // Create the accumulator snippet
@@ -405,7 +405,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
             
-            snippetBuilder.EmitInstruction(&savedOperation, 2, sourceXType->GetSubElement(0), null, destType->GetSubElement(0), null);
+            snippetBuilder.EmitInstruction(&savedOperation, 2, sourceXType->GetSubElement(0), (void*)null, destType->GetSubElement(0), (void*)null);
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
@@ -573,7 +573,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorOp, scalarOpSnippetArgId);
     
-    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), null,
+    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), (void*)null,
         destType, pInstructionBuilder->_argPointers[1], destType, pInstructionBuilder->_argPointers[1]);
     
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);

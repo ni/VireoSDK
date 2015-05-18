@@ -32,16 +32,17 @@ TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, In
 {
     VIREO_ASSERT(version == kVireoABIVersion)
     
-    // Append to end since constructors called in the order
+    _pNext = null;
+    _pCallback = callback;
+    _pModuleName = pModuleName;
+
+    // Append to end since constructors are called in the order
     // they occurr in  a file.
     TypeDefiner** ppNext = &_gpTypeDefinerList;
     while (*ppNext) {
         ppNext = &(*ppNext)->_pNext;
     }
-    _pNext = null;
     *ppNext = this;
-    _pCallback = callback;
-    _pModuleName = pModuleName;
 }
 //------------------------------------------------------------
 //! Call all registered module functions. Move items down the list as needed.
@@ -51,7 +52,8 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
     while (*ppNext) {
         TypeDefiner *pCurrent = *ppNext;
         ConstCStr missingModule = (pCurrent)->_pCallback(pCurrent, tm);
-        // have it return a pointer to what it was missing, null if nothing.
+        
+        // The funciton returns a pointer to what it was missing, null if nothing.
         if (missingModule != null) {
             // 1. Pull the current item out of the list.
             *ppNext = pCurrent->_pNext;
@@ -65,7 +67,7 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
     }
 }
 //------------------------------------------------------------
-//! Insert a module registration past an element it requires.
+//! Insert a module registration past the element it requires.
 void TypeDefiner::InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName)
 {
     while (*ppNext) {

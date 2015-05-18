@@ -19,62 +19,65 @@ SDG
 
 #include "BuildConfig.h"
 
-#if defined (__APPLE__) // Carlos Glz: I suggest to use kVireoOS_macosxU instead and let BuildConfig.h deal with OS definitions.
-typedef char  int8, Int8;
-typedef unsigned char Boolean;
+#if defined (kVireoOS_macosxU)
+    typedef unsigned char Boolean;
 #else
-typedef signed char int8, Int8;
-typedef bool Boolean;
+    typedef bool Boolean;
 #endif
 
-typedef unsigned char       UInt8, Utf8Char;
-typedef short               Int16;
-typedef unsigned short      UInt16, Utf16Char;
-typedef int                 Int32;
-typedef unsigned int        UInt32;
-typedef long long           Int64;
-typedef unsigned long long  UInt64;
-typedef float               Single;
-typedef double              Double;
+#define __STDC_LIMIT_MACROS
+#include <stdint.h>
 
-typedef Int64               IntMax; 
-typedef UInt64              UIntMax; // Carlos Glz: I suggest to rename IntMax and UIntMax to IntMaxSize and UIntMaxSize to help on understanding their meaning. If we have IntMax, why not IntMin?
-typedef Int32               Utf32Char;
+//! Basic integer types.
+typedef int8_t          Int8;
+typedef uint8_t         UInt8, Utf8Char;
+typedef int16_t         Int16;
+typedef uint16_t        UInt16, Utf16Char;
+typedef int32_t         Int32;
+typedef uint32_t        UInt32;
+typedef int64_t         Int64;
+typedef uint64_t        UInt64;
 
-//! Pointer to generic data
-typedef void*               DataPointer;
-//! Pointer to native executable code
-typedef void*               CodePointer;
+//! Largest int type supported by the compiler (C++11).
+typedef intmax_t        IntMax;
+typedef uintmax_t       UIntMax;
 
-//! Pointer to read only null terminated string
-typedef const char*         ConstCStr;
+//! Floating point types.
+typedef float           Single;
+typedef double          Double;
 
+//! Unicode code point encoded in Uft32.
+typedef Int32          Utf32Char;
 
+//! Pointer to generic data.
+typedef void*          DataPointer;
+
+//! Pointer to native executable code.
+typedef void*          CodePointer;
+
+//! Pointer to read only null terminated strings
+typedef const char*    ConstCStr;
+
+//! Structure that should have the largest required alignment.
 typedef union {
     // Looks like some of the recent C++ specs supply a type
     // like this (aligned_storage) but its too early to rely
-    // on that being available.
+    // on that being available. Oddest case seen so far was
+    // javascript via emscripten; pointer were 4 bytes, but alignement
+    // was 8 due to doubles.
     IntMax  _align_IntMax;
     Double  _align_Double;
     void*   _align_Pointer;
 } MaxAlignedType;
 
-#define __STDC_LIMIT_MACROS
-#include <stdint.h>
+//------------------------------------------------------------
+//! Using the classic C++ definition of null. Avoiding nullptr
+//  Since it may not be treated as POD and constructor initialization
+//  is much less predictable.
+#define null  0
 
 namespace Vireo
 {
-
-//------------------------------------------------------------
-#define null NULL
-
-//------------------------------------------------------------
-//! Int that can be used for small counts could be Int8 for very small targets.
-#ifdef VIREO_MICRO
-    typedef Int8 IntSmall;
-#else
-    typedef Int32 IntSmall;
-#endif
 
 //------------------------------------------------------------
 //! Types used for array indexes and dimensions

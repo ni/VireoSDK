@@ -1,0 +1,49 @@
+// A very preliminary test that uses VI and instruction reflection
+// to generate source for building a static linked version of the run time
+// instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
+//context(
+define(ConverterToStaticLinkCPP dv(VirtualInstrument (
+    Params: c(
+          i(VirtualInstrument vi_in)
+        )
+    Locals: c(
+    //    al(VirtualInstrument vi) // alias
+    )
+    clump (
+        Println("Convert <")
+        Println(vi_in)
+        EnqueueRunQueue(vi_in)
+        Println("Convert >")
+    )
+) ) )
+// =================================================================
+
+define(SampleVI dv(VirtualInstrument (
+
+    Params: c(
+        i("Yo"     var0)
+    )
+
+    Locals: c(
+        e("Hello"     var1)
+    )
+    clump (
+        Println(var1)
+        // Try address from different types of symbols
+    //    Add(vInt32 vInt32 vInt32)
+    //    Add(Int32 Int32Point.y vInt32)
+    )
+) ) )
+
+define(RunConversion dv(VirtualInstrument (
+    Locals:c(
+    )
+    clump(
+        Println(SampleVI)
+        ConverterToStaticLinkCPP(SampleVI)
+    )
+)))
+
+//enqueue(ConverterToStaticLinkCPP)
+enqueue(RunConversion)
+//)

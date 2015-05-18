@@ -282,9 +282,9 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
     Boolean done = pQV->Enqueue(_ParamPointer(1));
     _Param(3) = !done;
 
-    // If is succeeded or timed out then its time to move to the next instruction.
+    // If it succeeded or timed out then its time to move to the next instruction.
     Observer* pObserver = clump->GetObservationStates(2);
-    if (done || (pObserver && pObserver[0]._info == null)) {
+    if (done || (pObserver && pObserver[0]._info == 0)) {
         clump->ClearObservationStates();
         return _NextInstruction();
     }
@@ -321,9 +321,9 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
     Boolean done = pQV->Dequeue(_ParamPointer(1));
     _Param(3) = !done;
 
-    // If is succeeded or timed out then its time to move to the next instruction.
+    // If it succeeded or timed out then its time to move to the next instruction.
     Observer* pObserver = clump->GetObservationStates(2);
-    if (done || (pObserver && pObserver[0]._info == null)) {
+    if (done || (pObserver && pObserver[0]._info == 0)) {
         clump->ClearObservationStates();
         return _NextInstruction();
     }

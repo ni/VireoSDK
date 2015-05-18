@@ -16,10 +16,6 @@ SDG
   #define snprintf _snprintf
 #endif
 
-#ifdef __APPLE__
-  #include <xlocale.h>
-#endif
-
 #include "ExecutionContext.h"
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
@@ -75,7 +71,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     // if inplaceiNDEX is positive, it means it's an in place operation
     IntIndex inplaceIndex = -1;
     if (source >= this->Begin() && source < this->End()) {
-        inplaceIndex = source - this->Begin();
+        inplaceIndex = (IntIndex) (source - this->Begin());
     }
     Int32 needLength = 0;
     const Utf8Char* begin = source;

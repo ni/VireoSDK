@@ -121,15 +121,15 @@ public:
 	VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
 	VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
 	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
-	IntSmall            _fireCount;         //! What to reset _shortCount to when the clump is done.
-	IntSmall            _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
+	Int32               _fireCount;         //! What to reset _shortCount to when the clump is done.
+	Int32               _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
     Int32               _observationCount;  //! How many waitSates are active?
     Observer            _observationStates[2]; //! Fixed set of waits states, maximum is 2.
     
 public:
     void Trigger();
-    IntSmall            FireCount()     { return _fireCount; }
-    IntSmall            ShortCount()    { return _shortCount; }
+    Int32               FireCount()     { return _fireCount; }
+    Int32               ShortCount()    { return _shortCount; }
     
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);

@@ -30,7 +30,7 @@ TypeManagerRef  ExecutionContext::_theTypeManager;
 VIClumpQueue    ExecutionContext::_runQueue;            // Elts ready To run
 VIClump*        ExecutionContext::_sleepingList;        // Elts waiting for something external to wake them up
 VIClump*        ExecutionContext::_runningQueueElt;     // Elt actually running
-IntSmall        ExecutionContext::_breakoutCount;
+Int32           ExecutionContext::_breakoutCount;
 #endif
 
 

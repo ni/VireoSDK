@@ -393,7 +393,7 @@ VIREO_FUNCTION_SIGNATURE3(AddVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArra
     {
         _Param(2)->Resize1D(minSize);
     }
-#ifdef __APPLE__
+#if define(kVireoOS_macosxU)
     // vDSP_vaddD(_Param(0)->Begin(), 1, _Param(1)->Begin(), 1, _Param(2)->Begin(), 1, minSize);
 #else
 #endif

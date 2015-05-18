@@ -1651,7 +1651,7 @@ void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
         // serialize the pointer type and weather it is null or not
         _string->Append('^');
         _string->Append(name.Length(), (Utf8Char*)name.Begin());
-        if ((*(size_t*)pData) == null) {
+        if ((*(void**)pData) == null) {
             _string->Append(5, (Utf8Char*)"_null");
         }
     }
@@ -1753,7 +1753,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             IntIndex pos = _string->Length();
             _string->AppendViaDecoded(&ss);
             if (_options._bEscapeStrings) {
-                _string->AppendEscapeEncoded(_string->BeginAt(pos), _string->End() - _string->BeginAt(pos));
+                _string->AppendEscapeEncoded(_string->BeginAt(pos), (IntIndex)(_string->End() - _string->BeginAt(pos)));
             }
 
             if (useQuotes)

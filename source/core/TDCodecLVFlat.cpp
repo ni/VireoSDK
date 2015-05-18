@@ -14,8 +14,7 @@ SDG
 #include "TypeDefiner.h"
 
 // TODO: Code review
-namespace Vireo
-{
+using namespace Vireo;
 
 NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prependArrayLength)
 {
@@ -264,5 +263,3 @@ DEFINE_VIREO_BEGIN(TDCodecLVFlat)
     DEFINE_VIREO_FUNCTION(FlattenToString, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))");
     DEFINE_VIREO_FUNCTION(UnflattenFromString, "p(i(.String) i(.Boolean) i(.StaticTypeAndData) o(.String) o(.*) o(.Boolean))");
 DEFINE_VIREO_END()
-
-} // namespace Vireo

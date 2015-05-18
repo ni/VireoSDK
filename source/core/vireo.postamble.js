@@ -104,7 +104,7 @@ HttpUsers = function () {
 
         proto.add = function (userName, password) {
             var httpUser = new HttpUser(userName, password);
-            var handle = Object.keys(this.httpClients).length + 1; 
+            var handle = Object.keys(this.httpClients).length + 1;
             var strHandle = handle.toString();
             this.httpClients[strHandle] = httpUser;
             //console.log ('Created handle(' + handle + ') for user: "' + userName + '".');
@@ -115,7 +115,7 @@ HttpUsers = function () {
             var strHandle = handle.toString();
             if (this.httpClients.hasOwnProperty(strHandle))
             {
-                var user = this.httpClients[strHandle]
+                var user = this.httpClients[strHandle];
                 //console.log ('Deleted handle(' + strHandle + ') for user: "' + user.getUserName() + '".');
                 delete this.httpClients[strHandle];
             }
@@ -255,7 +255,7 @@ return {
             var handle = 0;
             var returnValue = 0;
             var errorString = '';
-            try 
+            try
             {
                 handle = httpUsers.add (userName, password);
             }
@@ -345,9 +345,9 @@ return {
             var headerExist = false;
             var returnValue = 0;
             var errorString = '';
-            try 
+            try
             {
-                headerExist = httpUsers.headerExist (handle, header)
+                headerExist = httpUsers.headerExist (handle, header);
             }
             catch (error)
             {

@@ -22,7 +22,6 @@ SDG
   |_______/   /___/  /__/     /_______/  /_______/SDG
  */
 
-#include "DataTypes.h"
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "EggShell.h"

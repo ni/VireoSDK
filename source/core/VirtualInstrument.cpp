@@ -74,8 +74,7 @@ void VirtualInstrument::ClearTopVIParamBlock()
     // this will clear out any non flat data.
     for (Int32 i = 0; i < count; i++) {
         TypeRef eltType = viParamType->GetSubElement(i);
-        
-        if (!eltType->IsFlat() &&  (eltType->IsInputParam() || eltType->IsOutputParam())) {
+        if (!eltType->IsFlat() &&  (eltType->IsInputParam() || eltType->IsOutputParam())) {            
             eltType->ClearData(((AQBlock1*)pParamData) + eltType->ElementOffset());
         }
     }
@@ -1171,6 +1170,9 @@ class VIDataProcsClass : public IDataProcs
     virtual NIError ClearData(TypeRef type, void* pData)
     {
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pData;
+        if (null == vio)
+            return kNIError_Success;
+        
         VirtualInstrument* vi = vio->ObjBegin();
         
         VIClump *pClump = vi->Clumps()->Begin();

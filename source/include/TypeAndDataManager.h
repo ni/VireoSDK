@@ -23,9 +23,8 @@ SDG
     #include <map>
 #endif
 
-#include <stdio.h>
-#include "Thread.h"
 #include "DataTypes.h"
+#include "Thread.h"
 #include "StringUtilities.h"
 #include "Instruction.h"
 

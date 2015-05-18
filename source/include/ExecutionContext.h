@@ -95,7 +95,7 @@ public:
 
 private:
     ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
-    ECONTEXT    IntSmall        _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
+    ECONTEXT    Int32           _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
 
 public:
     ECONTEXT    Timer           _timer;             // TODO, can be moved out of the execcontext once instruction can take injected parameters.

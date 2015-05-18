@@ -554,7 +554,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (fOptions.Significant > 0){
                                 fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-strlen(fOptions.NumericLength));
                                 tempFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
-                                length = snprintf(formattedNumber, kTempCStringLength, "%lld", intValue);
+                                length = snprintf(formattedNumber, kTempCStringLength, "%lld", (long long)intValue);
                                 RefactorLabviewNumeric(&fOptions, formattedNumber, &length, 0, 0);
                             }
                         }
@@ -2028,7 +2028,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 IntIndex dimensionL = 0;
                 IntIndex d = 0;
                 line.EatRawChars(1);
-                Int64 intValue = 0;
+                IntMax intValue = 0;
                 while (line.ReadInt(&intValue)) {
                     line.EatRawChars(1);
                     dimensionL = (IntIndex)intValue;
