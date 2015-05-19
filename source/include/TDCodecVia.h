@@ -96,7 +96,7 @@ public:
     void    ParseData(TypeRef type, void* pData);
     Boolean EatJSONPath(SubString* path);
     NIError ParseREPL();
-    void    ParseEnqueue();
+    TypeRef ParseEnqueue();
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);

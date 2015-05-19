@@ -97,25 +97,37 @@ void TDViaParser::RepinLineNumberBase()
     _originalStart = _string.Begin();
 }
 //------------------------------------------------------------
-void TDViaParser::ParseEnqueue()
+TypeRef TDViaParser::ParseEnqueue()
 {
+    TypeRef type = BadType();
+
     //! TODO merge with runtime enqueue function
     SubString viName;
     
-    if (! _string.EatChar('('))
-        return LOG_EVENT(kHardDataError, "'(' missing");
+    if (! _string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return type;
+    }
     
-    _string.ReadToken(&viName);
+    TypeRef vit = ParseType();  // Could be a type or inlined VI.
     
-    if (! _string.EatChar(')'))
-        return LOG_EVENT(kHardDataError, "')' missing");
+    if (! _string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return type;
+    }
     
-    VirtualInstrumentObjectRef vio = (VirtualInstrumentObjectRef)_typeManager->FindObject(&viName);
+    VirtualInstrumentObjectRef vio = null;
+    if (vit && /*vit->IsA() && */ vit->IsZDA()) {
+        vio = *(VirtualInstrumentObjectRef*) vit->Begin(kPARead);
+    }
+    
     if (vio && vio->ObjBegin()) {
         vio->ObjBegin()->PressGo();
+        type = vit;
     } else {
-        return LOG_EVENTV(kHardDataError,"VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
+        LOG_EVENTV(kHardDataError,"VI not found '%.*s'", FMT_LEN_BEGIN(&viName));
     }
+    return type;
 }
 //------------------------------------------------------------
 NIError TDViaParser::ParseREPL()
@@ -222,7 +234,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
     } else if (typeFunction.CompareCStr(tsEnqueueTypeToken)) {
-        ParseEnqueue();
+        type = ParseEnqueue();
     } else {
         _string = save;
         type = ParseLiteral(patternType);
@@ -1050,18 +1062,19 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             }
             hasName = _string.ReadNameToken(&name);
         }
-    } else {
-    TypeRef type1 = this->ParseType();
-
+    } else if (!_string.ComparePrefixCStr("clump")) {
         // Old school way of loading VIs
-    _string.EatLeadingSpaces();
-    
-    if (_string.ComparePrefixCStr("c") && !_string.ComparePrefixCStr("clump")) {
-        // If there are two clusters the first was actually the parameter block,
-        // The next will be the data space
+
+        // if there is something other than clump, it should be an unnamed type.
+        TypeRef type1 = this->ParseType();
+        
+        _string.EatLeadingSpaces();
+        if (_string.ComparePrefixCStr("c") && !_string.ComparePrefixCStr("clump")) {
+            // If there are two clusters the first was actually the parameter block,
+            // The next will be the data space
             paramsType = type1;
             localsType = this->ParseType();
-    } else {
+        } else {
             localsType = type1;
         }
     }

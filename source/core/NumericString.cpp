@@ -23,8 +23,8 @@ SDG
     #include <math.h>
 #endif
 
-namespace Vireo
-{
+namespace Vireo {
+
 //------------------------------------------------------------
 struct FormatOptions {
     Int32 ArgumentOrder; // 3$, 2$ negative number means default order
@@ -595,9 +595,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         break;
                     case 'T':
                     {
-                        Int32 timezone = Date::getLocaletimeZone();
+                        Int32 tz = Date::getLocaletimeZone();
                         if (!fOptions.EngineerNotation) {
-                             timezone = 0;
+                             tz = 0;
                         }
                         SubString strDateType("Timestamp");
                         TypeRef argType = arguments[argumentIndex]._paramType;
@@ -611,7 +611,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         while(tempFormat.ReadRawChar(&subCode)) {
                             if (subCode == '^') {
-                                timezone = 0;
+                                tz = 0;
                             } else if (subCode == '<') {
                                 datetimeFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
                             } else if (subCode == '>') {
@@ -641,13 +641,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         if (argType->IsA(&strDateType)) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
-                            Date date(time, timezone);
+                            Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         } else {
                             Double tempDouble;
                             ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
                             Timestamp time(tempDouble);
-                            Date date(time, timezone);
+                            Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         }
                          argumentIndex++;
@@ -2187,4 +2187,4 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
 DEFINE_VIREO_END()
 
-} // namespace Vireo
+}

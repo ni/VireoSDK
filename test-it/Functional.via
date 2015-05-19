@@ -1,0 +1,19 @@
+// Using the more functional approach to type
+// composition, literals and anonymous vis.
+
+enqueue( dv(.VirtualInstrument (
+    clump(
+        Println("Hello, functions. I can compose.")
+    )
+) ) )
+
+enqueue(define (MyVI dv(.VirtualInstrument (
+    clump(
+        Println("Hello, named functional funcion.")
+    )
+) ) ) )
+
+// Next up:
+// > dv -> typed literals
+// > enqueue -> Start
+// > revist clump grammar

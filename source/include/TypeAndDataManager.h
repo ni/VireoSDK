@@ -245,7 +245,6 @@ public:
     TypeRef FindType(ConstCStr name);
     TypeRef FindType(const SubString* name);
     NamedTypeRef FindTypeCore(const SubString* name);
-    TypedObjectRef FindObject(SubString* name);
     TypeRef BadType();
 
     Int32   AQAlignment(Int32 size);

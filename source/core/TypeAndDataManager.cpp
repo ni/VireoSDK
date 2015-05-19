@@ -400,19 +400,6 @@ TypeRef TypeManager::FindType(const SubString* name)
     return type;
 }
 //------------------------------------------------------------
-// A value stored in a ZDA is a bit more of a traditional "object"
-// that is, it is an entity with an address that multiple observers
-// can access and it has a name. FindNamedObject returns a pointer to
-// the inner value. TODO add access mode
-TypedObjectRef TypeManager::FindObject(SubString* name)
-{
-    TypeRef type = FindType(name);
-    if (type && type->IsZDA()) {
-        return *(TypedObjectRef*) type->Begin(kPARead);
-    }
-    return null;
-}
-//------------------------------------------------------------
 NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
 {
     MUTEX_SCOPE()
