@@ -350,11 +350,13 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
 //------------------------------------------------------------
 NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload)
 {
-    // Storage for the string used by the dictionary is part of
-    // NamedType so once it is created Name() is used to
-    // get pointers to the storage types internal name. The local is temporary, but the
-    // pointers in it last as long as the type, which is longer than
-    // the map entry that poionts to it.
+    // Storage for the string used by the dictionary is the same
+    // buffer that is embedded at the end of the NamedType instance.
+    // Once the object is created then obj->Name() is used to
+    // get pointers to the internal name. This storage
+    // sharing works since the types last as long as the
+    // the dictinary does.
+    
     Boolean bNewInThisTM = existingOverload ? (existingOverload->TheTypeManager() != this) : true;
     
     NamedTypeRef namedType = NamedType::New(this, typeName, type, existingOverload);
@@ -362,8 +364,8 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
         SubString permanentTypeName = namedType->Name();
         _typeNameDictionary.insert(std::make_pair(permanentTypeName, namedType));
     } else {
-        // If it is already in this TypeManager the new type is threaded of of the
-        // Original one define.
+        // If it is already in this TypeManager the new type is
+        // threaded off of the first one defined.
     }
     return namedType;
 }
@@ -391,8 +393,13 @@ TypeRef TypeManager::FindType(const SubString* name)
     }
 
     if (!type && name->ComparePrefixCStr(tsTemplatePrefix)) {
-        // Names that start with $ are parameters.
-        // They are all direct derivatives of "*" and are allocated as needed.
+        // Names that start with $ are template parameters.
+        // They are all named derivatives of the common wild card
+        // type named "*". This means template fields can be replaced
+        // by any type.
+        // FUTURE: It could also be reasonable to make parameters that
+        // have a stricter IsA relationship with a designated base type.
+        
         TypeRef genericType = FindType(tsWildCard);
         type = NewNamedType(name, genericType, null);
     }
@@ -554,7 +561,7 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _isValid        = false;    // Must be reset by derived class.
     _hasCustomDefault = false;
     _hasPadding     = false;
-    _hasGenericType = false;
+    _isTemplate     = false;
     _isBitLevel     = false;     // Is a bit block or bit cluster
     _encoding       = kEncoding_None;
     _pointerType    = kPTNotAPointer;
@@ -728,7 +735,7 @@ Boolean TypeCommon::IsA(TypeRef otherType)
     SubString otherTypeName = otherType->Name();
     
     SubString angle("<");
-    if (otherType->HasGenericType()) {
+    if (otherType->IsTemplate()) {
         SubString name = Name();
         IntIndex i = name.FindFirstMatch(&angle, 0, false);
         if (i>0) {
@@ -784,7 +791,7 @@ WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
     _hasCustomDefault = _wrapped->HasCustomDefault();
     _isMutableValue = _wrapped->IsMutableValue();
     _hasPadding     = _wrapped->HasPadding();
-    _hasGenericType = _wrapped->HasGenericType();
+    _isTemplate     = _wrapped->IsTemplate();
     _encoding       = _wrapped->BitEncoding();
     _isBitLevel     = _wrapped->IsBitLevel();
     _pointerType    = _wrapped->PointerType();
@@ -824,6 +831,9 @@ NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef 
         nextOverload->_nextOverload = this;
     }
     _name.Assign(name->Begin(), name->Length());
+    if (name->ComparePrefixCStr(tsTemplatePrefix)) {
+        _isTemplate = name->ComparePrefixCStr(tsTemplatePrefix);
+    }
 }
 //------------------------------------------------------------
 // AggregateType
@@ -887,12 +897,10 @@ BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, Encoding
     _aqAlignment = 0;   // BitBlocks are not addressable, no alignment
     _isValid = true;
     _isBitLevel = true;
-    _hasGenericType = false;
+    _isTemplate = false;
     _encoding = encoding;
 
-    if (encoding == kEncoding_Generic) {
-        _hasGenericType = true;
-    } else if (encoding == kEncoding_None && length > 0) {
+    if (encoding == kEncoding_None && length > 0) {
         // TODO revisit interms of bounded and template
         _isValid = false;
     }
@@ -916,7 +924,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     Boolean isFlat = true;
     Boolean isValid = true;
     Boolean hasCustomValue = false;
-    Boolean hasGenericType = false;
+    Boolean isTemplateType = false;
     Boolean isVariableSize = false;
     EncodingEnum encoding = kEncoding_None;
     
@@ -934,8 +942,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
         isFlat  &= element->IsFlat();
         isValid  |= element->IsValid();
         hasCustomValue |= element->HasCustomDefault();
-        hasGenericType |= element->HasGenericType();
-        
+        isTemplateType |= element->IsTemplate();
         encoding = element->BitEncoding();
     }
     
@@ -947,7 +954,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     _isValid = isValid;
     _isBitLevel = true;
     _hasCustomDefault = hasCustomValue;
-    _hasGenericType = hasGenericType;
+    _isTemplate = isTemplateType;
     if (_elements.Length() > 1)
         encoding = kEncoding_Cluster;
     _encoding = encoding;
@@ -1077,7 +1084,7 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
     : AggregateType(typeManager, elements, count)
 {
     Boolean hasCustomValue = false;
-    Boolean hasGenericType = false;
+    Boolean isTemplateType = false;
     EncodingEnum encoding = kEncoding_None;
     Boolean isBitLevel = false;
     
@@ -1094,7 +1101,7 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
 #endif
         
         hasCustomValue |= element->HasCustomDefault();
-        hasGenericType |= element->HasGenericType();
+        isTemplateType |= element->IsTemplate();
         encoding = element->BitEncoding();
         isBitLevel = element->IsBitLevel();
     }
@@ -1106,7 +1113,7 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
     _isFlat = alignmentCalculator.IsFlat;
     _hasCustomDefault = hasCustomValue;
     _hasPadding = alignmentCalculator.IncludesPadding;
-    _hasGenericType = hasGenericType;
+    _isTemplate = isTemplateType;
     if (_elements.Length() == 1 && isBitLevel) {
         _encoding = encoding;
     } else {
@@ -1308,9 +1315,17 @@ ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex r
     _encoding = kEncoding_Array;
     _isBitLevel = false;
     _hasCustomDefault = false;
-    _hasGenericType = _wrapped->HasGenericType();
+    _isTemplate = _wrapped->IsTemplate();
 
     memcpy(_dimensionLengths, dimensionLengths, rank * sizeof(IntIndex));
+    
+    IntIndexItr iDim( DimensionLengths(), Rank());
+    while (iDim.HasNext()) {
+        if (IsTemplateDim(iDim.Read())) {
+            _isTemplate |= true;
+            break;
+        }
+    }
 }
 //------------------------------------------------------------
 NIError ArrayType::InitData(void* pData, TypeRef pattern)
@@ -1357,11 +1372,11 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
     TypeRef elementType = pSource->ElementType();
     TypeRef elementTypeDest = pDest->ElementType();
     
-    // Update generic destination if its different.
-    // Otherwise the source and dest are assumed to match. That should have been
-    // determined when the instruction was generated.
-    if (elementTypeDest != elementType && elementTypeDest->HasGenericType())
+    // If the destination element type pattern is generic then
+    // the actual element type needs to adapt if there is a change.
+    if (elementTypeDest != elementType && (elementTypeDest->BitEncoding() == kEncoding_Generic)) {
         pDest->SetElementType(elementType, false);
+    }
 
     if (!pDest->ResizeToMatchOrEmpty(pSource)) {
         return kNIError_kInsufficientResources;
@@ -1479,7 +1494,7 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     : AggregateType(typeManager, elements, count)
 {
     Boolean isFlat = true;
-    Boolean hasGenericType = false;
+    Boolean isTemplateType = false;
     //  Boolean hasVarArg = false; TODO look for upto one and only one var arg type
     
     // The param block describes the structure allocated for a single instuction object
@@ -1497,7 +1512,7 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
         alignmentCalculator.AlignNextElement(element);
 #endif
 
-        hasGenericType |= element->HasGenericType();
+        isTemplateType |= element->IsTemplate();
         UsageTypeEnum ute = element->ElementUsageType();
         if (ute == kUsageTypeStatic || ute == kUsageTypeTemp) {
             // static and temp values are owned by the instruction, not the VIs data space
@@ -1511,8 +1526,8 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     _isValid = alignmentCalculator.IsValid;
     _aqAlignment = alignmentCalculator.AggregateAlignment;
     _topAQSize = alignmentCalculator.AggregateSize;
-    _isFlat = isFlat;  //should be false ??
-    _hasGenericType = hasGenericType;
+    _isFlat = isFlat;  // TODO alwasy should be false ?? param blocks
+    _isTemplate = isTemplateType;
     _encoding = kEncoding_ParameterBlock;
 }
 //------------------------------------------------------------

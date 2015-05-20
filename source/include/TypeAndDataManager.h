@@ -417,7 +417,7 @@ protected:
 
     UInt16  _hasCustomDefault:1;// ( 3) A non 0 non null value
     UInt16  _isMutableValue:1;  // ( 4) "default" value can be changed after creation.
-    UInt16  _hasGenericType:1;  // ( 5) The type contians some generic types
+    UInt16  _isTemplate:1;      // ( 5) The type contians some generic types
     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
     
     //  properties unique to prototype elements. they are never merged up
@@ -456,9 +456,8 @@ public:
     Boolean IsBitLevel()            { return _isBitLevel != 0; }
     //! True if TopAQSize includes internal or external padding necessary for proper aligmnet of multiple elements.
     Boolean HasPadding()            { return _hasPadding != 0; }
-    //! True if the type contains one or more generic types.
-    Boolean HasGenericType()        { return _hasGenericType != 0; }
-
+    //! True if the type contains one or more template parameter types.
+    Boolean IsTemplate()            { return _isTemplate != 0; }
     //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam()          { return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput); }
     //! True if aggregate element is used as an output parameter.

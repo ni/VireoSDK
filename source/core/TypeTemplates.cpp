@@ -107,7 +107,7 @@ IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBad(TypeRef type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -118,7 +118,7 @@ void TypeTemplateVisitor::VisitBad(TypeRef type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -129,7 +129,7 @@ void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -140,7 +140,7 @@ void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitCluster(ClusterType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -162,7 +162,7 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -173,7 +173,7 @@ void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -196,7 +196,7 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitArray(ArrayType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -223,7 +223,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
 void TypeTemplateVisitor::VisitElement(ElementType* type)
 {
     IntIndex offset;
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         offset = _alignmentCalculator->AlignNextElement(type->BaseType());
         VIREO_ASSERT(type->ElementOffset() == offset);
@@ -241,7 +241,7 @@ void TypeTemplateVisitor::VisitElement(ElementType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitNamed(NamedType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -316,7 +316,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitPointer(PointerType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -331,7 +331,7 @@ void TypeTemplateVisitor::VisitPointer(PointerType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -348,7 +348,7 @@ void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitDefaultPointer(DefaultPointerType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }
@@ -359,7 +359,7 @@ void TypeTemplateVisitor::VisitDefaultPointer(DefaultPointerType* type)
 //------------------------------------------------------------
 void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
 {
-    if (!type->HasGenericType()) {
+    if (!type->IsTemplate()) {
         _newType = type;
         return;
     }

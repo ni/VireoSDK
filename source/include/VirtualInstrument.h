@@ -32,7 +32,7 @@ class VIClump;
     e(.TypeManager TypeManager)     \
     e(a(.*) Params)                 \
     e(a(.*) Locals)                 \
-    e(a(.Clump *) Clumps)         \
+    e(a(.Clump *) Clumps)           \
     e(.Int32 LineNumberBase)        \
     e(.SubString ClumpSource)       \
 ))"
@@ -307,7 +307,6 @@ public:
     void            InternalAddArg(TypeRef actualType, void* address);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);
     Boolean         VarArgParameterDetected()   { return _pVarArgCount != null; }
-    Boolean         GenericFunction()           { return _instructionType->HasGenericType(); }
     void            AddVarArgCount();
     void            MarkPerch(SubString* perchToken);
     void            AddBranchTargetArgument(SubString* branchTargetToken);

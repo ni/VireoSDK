@@ -1,0 +1,28 @@
+// Ints of differnet sizes
+define (Int8_5 Int8<5>)
+define (Int8_50 Int8<5>)
+// Should be clipped with warning. 127 should be the largest value.
+define (Int8_500 Int8<5>)
+define (Int8_5000 Int8<5000>)
+define (Int8_50000 Int8<50000>)
+
+// Singles wont retain the same precision
+define (Single_Num Single<1.2345678901234567890>)
+define (Double_Num Double<1.2345678901234567890>)
+
+enqueue( dv(VirtualInstrument (
+    clump(
+        Println(Int8_5)
+        Println(Int8_50)
+        Println(Int8_500)
+        Println(Int8_5000)
+        Println(Int8_50000)
+        Printf("%1.20f\n"Single_Num)
+        Printf("%1.20f\n"Double_Num)
+    )
+) ) )
+
+// dv can be removed for VIs
+enqueue( VirtualInstrument< (
+    clump( Println("VIs can be typed literals as well."))
+) > )

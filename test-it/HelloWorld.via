@@ -1,10 +1,5 @@
-define(HelloWorld dv(.VirtualInstrument (
-    Locals:c(
-        e("Hello, sky. I can fly." str)
-    )
+enqueue( dv(VirtualInstrument (
     clump(
-        Println(str)
+        Println("Hello, sky. I can fly.")
     )
 ) ) )
-
-enqueue(HelloWorld)

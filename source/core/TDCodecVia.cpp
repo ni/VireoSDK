@@ -241,12 +241,17 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     }
 
     if (_string.EatChar('<')) {
-        // Build a list of parameters.
-        FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-        for(IntIndex i = 0; !_string.EatChar('>'); i++) {
-            templateParameters.Append(ParseType());
+        if (type->IsTemplate()) {
+            // Build a list of parameters.
+            FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
+            for(IntIndex i = 0; !_string.EatChar('>'); i++) {
+                templateParameters.Append(ParseType());
+            }
+            type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
+        } else {
+            type = ParseType(type);
+            _string.EatChar('>');
         }
-        type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
     }
     
     return type;
