@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -80,11 +80,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\source\CommandLine\main.cpp" />
     <ClCompile Include="..\..\source\core\Array.cpp" />
+    <ClCompile Include="..\..\source\core\Assert.cpp" />
     <ClCompile Include="..\..\source\core\CEntryPoints.cpp" />
     <ClCompile Include="..\..\source\core\DataQueue.cpp" />
     <ClCompile Include="..\..\source\core\EggShell.cpp" />
@@ -92,17 +90,20 @@
     <ClCompile Include="..\..\source\core\ExecutionContext.cpp" />
     <ClCompile Include="..\..\source\core\GenericFunctions.cpp" />
     <ClCompile Include="..\..\source\core\Math.cpp" />
+    <ClCompile Include="..\..\source\core\NumericString.cpp" />
     <ClCompile Include="..\..\source\core\Queue.cpp" />
     <ClCompile Include="..\..\source\core\String.cpp" />
     <ClCompile Include="..\..\source\core\StringUtilities.cpp" />
+    <ClCompile Include="..\..\source\core\Synchronization.cpp" />
     <ClCompile Include="..\..\source\core\TDCodecLVFlat.cpp" />
     <ClCompile Include="..\..\source\core\TDCodecVia.cpp" />
     <ClCompile Include="..\..\source\core\Thread.cpp" />
-    <ClCompile Include="..\..\source\core\TimeTypes.cpp" />
+    <ClCompile Include="..\..\source\core\Timestamp.cpp" />
     <ClCompile Include="..\..\source\core\TypeAndDataManager.cpp" />
+    <ClCompile Include="..\..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\..\source\core\TypeDefiner.cpp" />
+    <ClCompile Include="..\..\source\core\TypeTemplates.cpp" />
     <ClCompile Include="..\..\source\core\VirtualInstrument.cpp" />
-    <ClCompile Include="..\..\source\io\DebugGPIO.cpp" />
     <ClCompile Include="..\..\source\io\FileIO.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -114,11 +115,11 @@
     <ClInclude Include="..\..\source\include\ExecutionContext.h" />
     <ClInclude Include="..\..\source\include\Instruction.h" />
     <ClInclude Include="..\..\source\include\StringUtilities.h" />
+    <ClInclude Include="..\..\source\include\Synchronization.h" />
     <ClInclude Include="..\..\source\include\TDCodecLVFlat.h" />
     <ClInclude Include="..\..\source\include\TDCodecVia.h" />
     <ClInclude Include="..\..\source\include\TDCodecVib.h" />
     <ClInclude Include="..\..\source\include\Thread.h" />
-    <ClInclude Include="..\..\source\include\TimeTypes.h" />
     <ClInclude Include="..\..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\..\source\include\VirtualInstrument.h" />
