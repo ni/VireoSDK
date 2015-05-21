@@ -22,9 +22,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\source\core\Array.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -79,13 +76,25 @@
     <ClCompile Include="..\..\source\core\TypeDefiner.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\core\TimeTypes.cpp">
+    <ClCompile Include="..\..\source\core\Thread.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\io\DebugGPIO.cpp">
-      <Filter>VireoSource\IO</Filter>
+    <ClCompile Include="..\..\source\core\Assert.cpp">
+      <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\core\Thread.cpp">
+    <ClCompile Include="..\..\source\core\NumericString.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\Synchronization.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\Timestamp.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\TypeAndDataReflection.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\TypeTemplates.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -132,10 +141,10 @@
     <ClInclude Include="..\..\source\include\Thread.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\include\TimeTypes.h">
+    <ClInclude Include="..\..\source\include\TypeDefiner.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\include\TypeDefiner.h">
+    <ClInclude Include="..\..\source\include\Synchronization.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>

@@ -201,8 +201,6 @@ SDG
 
 #elif (kVireoOS_win32U || kVireoOS_win64U)
     #define snprintf _snprintf
-    #define isinf !_finite
-    #define isnan _isnan
 
     #undef VIREO_MAIN
     #define VIREO_MAIN  __cdecl main
