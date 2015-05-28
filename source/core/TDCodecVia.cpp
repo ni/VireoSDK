@@ -140,6 +140,7 @@ NIError TDViaParser::ParseREPL()
         } else if (_string.ComparePrefixCStr(tsDefineTypeToken)
                    || _string.ComparePrefixCStr(tsEnqueueTypeToken)
                    || _string.ComparePrefixCStr(tsContextTypeToken)
+                   || _string.ComparePrefixCStr("start")
                    ) {
             ParseType();
         } else {
@@ -196,7 +197,6 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     SubString typeFunction;
     TokenTraits tt = _string.ReadToken(&typeFunction);
     
-    
     if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr(tsDefineTypeToken)) {
         // Legacy work around
         _string.EatLeadingSpaces();
@@ -233,24 +233,30 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
-    } else if (typeFunction.CompareCStr(tsEnqueueTypeToken)) {
+    } else if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr("start")) {
         type = ParseEnqueue();
     } else {
         _string = save;
         type = ParseLiteral(patternType);
     }
 
-    if (_string.EatChar('<')) {
-        if (type->IsTemplate()) {
-            // Build a list of parameters.
-            FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-            for(IntIndex i = 0; !_string.EatChar('>'); i++) {
-                templateParameters.Append(ParseType());
+    while(true) {
+        if (_string.EatChar('<')) {
+            if (type->IsTemplate()) {
+                // Build a list of parameters.
+                FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
+                for(IntIndex i = 0; !_string.EatChar('>'); i++) {
+                    templateParameters.Append(ParseType());
+                }
+                type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
+            } else {
+                // If not a template then its a typed literal. Use the type
+                // as a guide to parse the initializer(s)
+                type = ParseType(type);
+                _string.EatChar('>');
             }
-            type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
         } else {
-            type = ParseType(type);
-            _string.EatChar('>');
+            break;
         }
     }
     
@@ -274,7 +280,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
             if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
                 literalsType = patternType;
             }
-        } else if ((enc == kEncoding_Array) && (tt == TokenTraits_NestedExpression)) {
+        } else if (((enc == kEncoding_Array) || (enc == kEncoding_Cluster)) && (tt == TokenTraits_NestedExpression)) {
             literalsType = patternType;
         }
     }
@@ -952,7 +958,6 @@ Boolean EatJSONItem(SubString* input)
         input->ReadToken(&token);
     }
     return true;
-
 }
 //------------------------------------------------------------
 //! Find the location in JSON string based on an indexing path.
@@ -1221,7 +1226,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     if (!_string.EatChar('('))
         return LOG_EVENT(kHardDataError, "'(' missing");
     
-
     // Read first instruction, or firecount. If no instruction then the closing paren
     // of the clump will be found immediately
     _string.ReadToken(&token);

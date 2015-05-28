@@ -32,7 +32,8 @@ struct MallocInfo {
 // this is not thread local so the rutime is not ready for
 // multithread execution.
 VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
-//------------------------------------------------------------    
+//------------------------------------------------------------
+//! Factory method to create a new TypeManager.
 TypeManagerRef TypeManager::New(TypeManagerRef tmParent)
 {
     // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
@@ -86,6 +87,7 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
     }
 }
 //------------------------------------------------------------
+//! Static memory allocator used for all TM memory management.
 void* TypeManager::GlobalMalloc(size_t countAQ)
 {
     void* pBuffer = malloc(countAQ);
@@ -95,11 +97,13 @@ void* TypeManager::GlobalMalloc(size_t countAQ)
     return pBuffer;
 }
 //------------------------------------------------------------
+//! Static memory deallocator used for all TM memory manaagement.
 void TypeManager::GlobalFree(void* pBuffer)
 {
     free(pBuffer);
 }
 //------------------------------------------------------------
+//! Private static Malloc used by TM.
 void* TypeManager::Malloc(size_t countAQ)
 {
     VIREO_ASSERT(countAQ != 0);
@@ -133,6 +137,7 @@ void* TypeManager::Malloc(size_t countAQ)
     return pBuffer;
 }
 //------------------------------------------------------------
+//! Private static Realloc used by TM.
 void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
 {
     VIREO_ASSERT(countAQ != 0);
@@ -169,6 +174,7 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
     return pNewBuffer;
 }
 //------------------------------------------------------------
+//! Private static Free used by TM.
 void TypeManager::Free(void* pBuffer)
 {
     if (pBuffer) {
@@ -282,6 +288,7 @@ TypeRef TypeManager::DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProc
     }
 }
 //------------------------------------------------------------
+//! Add a newly created type to the TM list of types it owns.
 void TypeManager::TrackType(TypeRef type)
 {
     VIREO_ASSERT(null != type)
@@ -289,13 +296,16 @@ void TypeManager::TrackType(TypeRef type)
     _typeList = type;
 }
 //------------------------------------------------------------
+//! Remove the last type added to the TM list of types it owns.
 void TypeManager::UntrackLastType(TypeRef type)
 {
+    // Used when the last type created is determined to already exist.
     VIREO_ASSERT(_typeList == type)
     _typeList = type->_next;
     type->_next = null;
 }
 //------------------------------------------------------------
+//! Debit or credit an allocation against a TM's quota.
 void TypeManager::TrackAllocation(void* id, size_t countAQ, Boolean bAlloc)
 {
     VIREO_ASSERT(countAQ != 0)
@@ -313,6 +323,7 @@ void TypeManager::TrackAllocation(void* id, size_t countAQ, Boolean bAlloc)
     }
 }
 //------------------------------------------------------------
+//! Fill an array with all types a TM owns.
 void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
 {
     MUTEX_SCOPE()
@@ -336,6 +347,7 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
     }
 }
 //------------------------------------------------------------
+//! Define a new symbol by adding a type to the symbol table.
 TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
 {
     MUTEX_SCOPE()
@@ -348,6 +360,7 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
     return NewNamedType(typeName, type, existingOverload);
 }
 //------------------------------------------------------------
+//! Private method to add a new symbol table entry or link it into an existing entry.
 NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload)
 {
     // Storage for the string used by the dictionary is the same
@@ -370,12 +383,14 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     return namedType;
 }
 //------------------------------------------------------------
+//! Find a type by is symbol name in null terminated C string form.
 TypeRef TypeManager::FindType(ConstCStr name)
 {
     SubString ssName(name);
     return FindType(&ssName);
 }
 //------------------------------------------------------------
+//! Find a type by is symbol name.
 TypeRef TypeManager::FindType(const SubString* name)
 {
     MUTEX_SCOPE()
@@ -2560,6 +2575,23 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
 }
 #endif
 
+//------------------------------------------------------------
+//! Parse through a path from a starting point to target sub element.
+VIREO_FUNCTION_SIGNATURE4(TypeGetSubElementFromPath, StaticType, void, StringRef, TypeRef)
+{
+    TypeRef type = _ParamPointer(0);
+    void* pValue = _ParamPointer(1);
+    SubString path = _Param(2)->MakeSubStringAlias();
+    
+    void* pTargetValue;
+    
+    TypeRef targetType = type->GetSubElementAddressFromPath(&path, pValue, &pTargetValue, true);
+    _Param(3) = targetType;
+  //  TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
+  //  tm->PointerToSymbolPath(_Param(1), _Param(2), _Param(3));
+    return _NextInstruction();
+}
+
 #if defined(VIREO_INSTRUCTION_REFLECTION)
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
@@ -2650,6 +2682,7 @@ DEFINE_VIREO_BEGIN(TypeManager)
     DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
+    DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(.StaticTypeAndData)i(.String)o(.Type))");
     DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");
     DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
     DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(.Instruction)i(.Int32)o(.DataPointer))");

@@ -1,19 +1,16 @@
-// Using the more functional approach to type
-// composition, literals and anonymous vis.
-
-enqueue( dv(.VirtualInstrument (
+// Enqueue can take a VI as a typed literal.
+enqueue(VirtualInstrument< (
     clump(
-        Println("Hello, functions. I can compose.")
-    )
-) ) )
+        // Print a simple string literal.
+        Println("Hello, anonymous function.")
 
-enqueue(define (MyVI dv(.VirtualInstrument (
-    clump(
-        Println("Hello, named functional funcion.")
-    )
-) ) ) )
+        // Print a simple numeric literal. Its an Int32.
+        Println(5)
 
-// Next up:
-// > dv -> typed literals
-// > enqueue -> Start
-// > revist clump grammar
+        // Print a typed literal.
+        Println(Int8<5>)
+
+        // VI typed literals can be parameters as well.
+        Start(VirtualInstrument< (clump(Println("Hi Dustyn!"))) > )
+    )
+) > )

@@ -146,6 +146,10 @@ TokenTraits SubString::ClassifyNextToken() const
     SubString token;
     
     TokenTraits tt = temp.ReadToken(&token);
+    
+    if (temp.ComparePrefixCStr("<")) {
+        tt = TokenTraits_TemplateExpression;
+    }
     return tt;
 }
 //------------------------------------------------------------
@@ -547,9 +551,26 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
             tt = TokenTraits_NestedExpression;
         }
     } while (tt && (depth>0));
-    
-    // The loop has reached an end state, go back and
-    // add tokens that were skipped over to get to this point.
+
+    // Look for template parameters
+    while (*_begin == '<') {
+        EatChar('<');
+        tt = TokenTraits_TemplateExpression;
+        // If the expression is folowed by template parameters.
+        // Then eat the arguments and closing brace
+        while (true) {
+            if (EatChar('>')) {
+                break;
+            }
+            SubString templateParam;
+            if (!ReadSubexpressionToken(&templateParam)) {
+                break;
+            }
+        }
+    }
+
+    // The loop has reached an end state, go back and add
+    // tokens that were skipped over to get to this point.
     token->AliasAssign(begin, this->Begin());
     
     return tt;

@@ -79,10 +79,10 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("-------\n")
 
 
-        EnqueueRunQueue(vi1)
+        Start(vi1)
 
         HelloWorld0()                   // Call as a shared VI
-        EnqueueRunQueue(HelloWorld0)    // Press the run button
+        Start(HelloWorld0)    // Press the run button
 
         //-------------------------------------------------
         // Now define some types then load code that needs them
@@ -90,11 +90,11 @@ define(HelloWorld dv(.VirtualInstrument (
         TypeManagerDefineType(tm myVeryOwnStringName stringType)
         FromString(goodProgram2 vi2 errorLog)   // FromString() will create the instance in the current TypeManager
         Println(errorLog)
-        EnqueueRunQueue(vi2)    // Press the run button
+        Start(vi2)    // Press the run button
         Printf("-------\n")
 
 //      Not quite ready to work, the VI value exists but is not quire initialized correctly
-//      EnqueueRunQueue(viValue)
+//      Start(viValue)
 //      vi1()
     )
 ) ) )

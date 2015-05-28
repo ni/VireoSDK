@@ -3,41 +3,48 @@
 // instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
 
 define(ConverterToStaticLinkCPP dv(.VirtualInstrument (
+    Params: c(
+            i(VirtualInstrument vi)
+        )
     Locals: c(
-        e(.Type     dsType)
-        e(.Int32    count)
-        e(.Int32    index)
-        e(.Int32    zero)
-        e(.Type     eltType)
-        e(.String   typeName)
-        e(.String   eltName)
-        e(.String   eltValue)
-        e(a(.Clump *) clumps) // alias to the array of clumps
-        e(.Clump clump)
-        e(.Instruction inst)
-        e(.Type  instructionType)
-        e(.Type  parameterListType)
-        e(.String internalName)
+        e(Type     dsType)
+        e(Int32    count)
+        e(Int32    index)
+        e(Int32    zero)
+        e(Type     eltType)
+        e(String   typeName)
+        e(String   eltName)
+        e(String   eltValue)
+        e(a(Clump *) clumps) // alias to the array of clumps
+        e(Clump clump)
+        e(Instruction inst)
+        e(Type  instructionType)
+        e(Type  parameterListType)
+        e(String internalName)
 
         // For iterating through parameter types
-        e(.Int32    count2)
-        e(.Int32    index2)
-        e(.Int32    clumpIndex)
-        e(.Int32    clumpCount)
-        e(.Int32    argPointerCategory)
-        e(.Type     argType)
+        e(Int32    count2)
+        e(Int32    index2)
+        e(Int32    clumpIndex)
+        e(Int32    clumpCount)
+        e(Int32    argPointerCategory)
+        e(Type     argType)
 
-        e(.DataPointer argValuePointer)
-        e(.String argSymbolName)
+        e(DataPointer argValuePointer)
+        e(String argSymbolName)
     )
     clump (
-    //    TypeTopAQSize(.Int32Point global_int)
-    //    Printf("size is %s\n" global_int)
+        // Get locals for the target VI
+//        ArrayElementType(vi.Locals dsType)
+        TypeGetSubElementFromPath(vi "Locals.eltValue" dsType)
+    //    TypeSubElementCount(dsType count)
+
+        //    ArrayElementType(dsType dsType)
 
         ArrayElementType(HelloWorld.Locals dsType)
 
-        // Print the dataspace type
-
+        // 1. Print the type.
+        // How many elements are in the the type?
         TypeSubElementCount(dsType count)
         Printf("//-------------------------\n")
         Printf("class DST_HelloWorld {  \n" )
@@ -50,18 +57,12 @@ define(ConverterToStaticLinkCPP dv(.VirtualInstrument (
         BranchIfLT(0 index count)
         Printf("};\n")
 
-        // Print the dataspace initializer
-
+        // 2. Print the initializer
         Init(index)
         Printf("//-------------------------\n")
-        Printf("DST_HelloWorld  ds = {  \n" )
-        Perch(1)
-            TypeGetSubElement(dsType index eltType)
-            DefaultValueToString(eltType eltValue)
-            Printf("  %s,\n" eltValue)
-            Add(index 1 index)
-        BranchIfLT(1 index count)
-        Printf("};\n")
+        Printf("DST_HelloWorld  ds = " )
+        ToString(HelloWorld.Locals "C" eltValue)
+        Printf("%s;\n" eltValue)
 
         // Print clump initializer
 
@@ -144,8 +145,8 @@ define(DoublePoint
 
 define(HelloWorld dv(.VirtualInstrument (
     c(
-        e(dv(.Int32     6)      vInt32)
-        e(dv(.Boolean  t) vBool)
+        e(Int32<6>      vInt32)
+        e(Boolean<true>    vBool)
         e(dv(.UInt8     1)      vUInt8)
         e(dv(.Int8      2)      vInt8)
         e(dv(.UInt16    3)      vUInt16)
@@ -199,4 +200,10 @@ define(HelloWorld dv(.VirtualInstrument (
     )
 ) ) )
 
-enqueue(ConverterToStaticLinkCPP)
+define(ConverterCaller dv(.VirtualInstrument (
+    clump(
+        ConverterToStaticLinkCPP(HelloWorld)
+    )
+)))
+
+enqueue(ConverterCaller)

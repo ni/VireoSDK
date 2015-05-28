@@ -33,8 +33,9 @@ enum TokenTraits
     TokenTraits_Punctuation,    // ,  (Many 'punctuation' are resered: * @ $ _)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
-    TokenTraits_Nesting,        // ()    typically added to others to allow expressions
-    TokenTraits_NestedExpression,//( ) { } [ ] < >
+    TokenTraits_Nesting,        // ( ) [ ] { }
+    TokenTraits_NestedExpression,//( )
+    TokenTraits_TemplateExpression,// < >
 };
 
 //------------------------------------------------------------

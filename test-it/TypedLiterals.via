@@ -1,6 +1,7 @@
 // Ints of differnet sizes
 define (Int8_5 Int8<5>)
 define (Int8_50 Int8<5>)
+
 // Should be clipped with warning. 127 should be the largest value.
 define (Int8_500 Int8<5>)
 define (Int8_5000 Int8<5000>)
@@ -17,8 +18,18 @@ enqueue( dv(VirtualInstrument (
         Println(Int8_500)
         Println(Int8_5000)
         Println(Int8_50000)
-        Printf("%1.20f\n"Single_Num)
-        Printf("%1.20f\n"Double_Num)
+
+        Println(Int8<5>)
+        Println(Int8<50>)
+        Println(Int8<500>)
+        Println(Int8<5000>)
+        Println(Int8<50000>)
+
+        Printf("%1.20f\n" Single_Num)
+        Printf("%1.20f\n" Double_Num)
+
+        Printf("%1.20f\n" Single<1.2345678901234567890>)
+        Printf("%1.20f\n" Double<1.2345678901234567890>)
     )
 ) ) )
 

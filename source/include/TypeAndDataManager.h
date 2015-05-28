@@ -138,6 +138,7 @@ enum PointerTypeEnum {
     kPTGenericFucntionPropType,
     kPTGenericFunctionCodeGen,
     kPTTypeManager,
+    kPTTypeCommand,
 };
 
 // PointerTypeEnum defines how a pointer to data will be used.
@@ -147,7 +148,7 @@ enum PointerAccessEnum {
     kPAWrite = 2,               // for write with no care about previous value
     kPAReadWrite = 3,           // for read or write with
     kPAClear = 4,               // for object destruction
-    kPASoftRead = 5,            // for read, but only if it exists
+    kPASoftRead = 5,            // for read, but only if it exists. Will not trigger allocation.
 };
 
 //------------------------------------------------------------
@@ -286,10 +287,11 @@ public:
     Int32 TotalAllocations()        { return _totalAllocations; }
     size_t MaxAllocated()           { return _maxAllocated; }
     
-public:
+private:
     static void* GlobalMalloc(size_t countAQ);
     static void GlobalFree(void* pBuffer);
-    
+
+public:
     // Read or write values accessible to this TM as described by a symbolic path
     NIError ReadValue(SubString* objectName, SubString* path, Double *value);
     NIError WriteValue(SubString* objectName, SubString* path, Double value);
@@ -774,7 +776,6 @@ public:
             return kNIError_kInsufficientResources;
         }
 };
-
 //------------------------------------------------------------
 //! A type that is a multi-dimension collection of another type.
 class ArrayType : public WrappedType
@@ -886,25 +887,25 @@ public:
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
         { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
 };
-
+//------------------------------------------------------------
 //! The core C++ implimentation for ArrayType typed data's value.
 class TypedArrayCore
 {
 protected:
-    // Pointer to the array's first element (AFEP)
+    //! Pointer to the array's first element.
     AQBlock1*               _pRawBufferBegin;
     
-    // Array's type may be more generic than a spefic instance of an array.
+    //! Array's type. 
     TypeRef                 _typeRef;
 
-    // Specific type an instance is an array of.
+    //! Specific type an instance is an array of.
     TypeRef                 _eltTypeRef;
 
-    // Number of total elements there is capacity for in the managed block of memory.
+    //! Total number of elements there is capacity for in the managed block of memory.
     IntIndex                _capacity;
 
-    // _dimensionAndSlabLengths works as follows
-    // For example, in an array of Rank 2, there will be 2 DimensionLengths followed by
+    // _dimensionAndSlabLengths works as follows:
+    // In an array of Rank 2, there will be 2 DimensionLengths followed by
     // 2 slabLengths. slabLengths are precalculated in AQSize used for indexing.
     // For the inner most dimension the slab length is the length of the element.
     // Final offset is the dot product of the index vector and the slabLength vector.
@@ -1044,7 +1045,6 @@ public:
                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendViaDecoded(SubString *string);
     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
-
 
     void InsertSubString(IntIndex position, SubString* string)
                                                 { Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin()); }

@@ -1129,7 +1129,7 @@ void ClumpParseState::CommitClump()
     }
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(EnqueueRunQueue, VirtualInstrumentObjectRef)
+VIREO_FUNCTION_SIGNATURE1(Start, VirtualInstrumentObjectRef)
 {
     if (_Param(0))
         _Param(0)->ObjBegin()->PressGo();
@@ -1230,7 +1230,7 @@ DEFINE_VIREO_BEGIN(VirtualInstrument)
     DEFINE_VIREO_TYPE(EmptyParameterList, "c()");
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);
     DEFINE_VIREO_TYPE(ReentrantVirtualInstrument, ".VirtualInstrument");  // A case of simple inheritance
-    DEFINE_VIREO_FUNCTION(EnqueueRunQueue, "p(i(.VirtualInstrument))");
+    DEFINE_VIREO_FUNCTION(Start, "p(i(.VirtualInstrument))");
 DEFINE_VIREO_END()
 
 } // namespace Vireo

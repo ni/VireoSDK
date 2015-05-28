@@ -1,0 +1,38 @@
+define(TestPointGeneric
+    c(
+        e($0 x)
+        e($0 y)
+    )
+)
+
+define(TestPointInt8 TestPointGeneric<Int8>)
+define(TestPointInt32 TestPointGeneric<Int32>)
+define(TestPointDouble TestPointGeneric<Double>)
+define(TestPointComplexDouble TestPointGeneric<ComplexDouble>)
+
+define(TestPointInt8_2_3 TestPointInt8<(2 3)>)
+define(TestPointAllInOneWithValues TestPointGeneric<Double><(2.1 -3.4)>)
+
+start( dv(VirtualInstrument (
+    clump(
+
+        Println(TestPointGeneric)
+        Println(TestPointInt8)
+        Println(TestPointInt32)
+        Println(TestPointComplexDouble)
+
+        Println(TestPointInt8_2_3)
+        Println(TestPointInt8<(2 3)>)
+        Println(TestPointDouble<(2.1 -3.4)>)
+        Println(TestPointAllInOneWithValues)
+        Println(TestPointGeneric<Double><(2.1 -3.4)>)
+        Println(TestPointComplexDouble<((-1 -1)(5 5))>)
+        Println(TestPointGeneric<ComplexDouble><((-1 -1)(5 5))>)
+        Println(TestPointGeneric<ComplexSingle><((-1 -1)(5 5))>)
+
+        // A bit odd but its legal.
+        Println(Int32<8><1><0><4>)
+        Println(TestPointGeneric<String>)
+        Println(TestPointGeneric<String><("top-left" "bottom-right")>)
+        )
+) ) )

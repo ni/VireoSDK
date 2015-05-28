@@ -12,20 +12,7 @@ class DST_HelloWorld {
   ComplexSingle _vComplexSingle;
   ComplexDouble _vComplexDouble;
 };
-DST_HelloWorld  ds = {  
-  6,
-  true,
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  3.14,
-  6.28,
-  (3.14 -3.14),
-  (6.28 -6.28),
-};
+DST_HelloWorld  ds = {6,true,1,2,3,4,5,6,3.14,6.28,{3.14,-3.14},{6.28,-6.28}};
 
 Instructions _clump0_instructions = {
    _I3(AddInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32, HelloWorld.Locals.vInt32)

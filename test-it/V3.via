@@ -12,11 +12,10 @@ define(ConverterToStaticLinkCPP dv(VirtualInstrument (
     clump (
         Println("Convert <")
         Println(vi_in)
-        EnqueueRunQueue(vi_in)
+        Start(vi_in)
         Println("Convert >")
     )
 ) ) )
-// =================================================================
 
 define(SampleVI dv(VirtualInstrument (
 

@@ -16,9 +16,8 @@ SDG
 namespace Vireo
 {
 
-TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, TypeRef replacements);
-
 //------------------------------------------------------------
+//! Visits a type replacing template elements with the template parameters.
 class TypeTemplateVisitor : public TypeVisitor
 {
  public:
