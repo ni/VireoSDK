@@ -49,7 +49,8 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
@@ -65,14 +66,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "Viaduino.via"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "Bug_Capcity.via"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "ArrayFillNDV.via"
+            argument = "TypedTemplatedLiterals.via"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "Functional.via"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -117,7 +118,8 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Debug"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "479AFE74170DCD49002C0FF0"
