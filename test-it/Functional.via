@@ -1,5 +1,5 @@
 // Enqueue can take a VI as a typed literal.
-enqueue(VirtualInstrument< (
+start(VirtualInstrument< (
     clump(
         // Print a simple string literal.
         Println("Hello, anonymous function.")

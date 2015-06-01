@@ -1,5 +1,5 @@
-enqueue( dv(VirtualInstrument (
+start( VirtualInstrument<(
     clump(
         Println("Hello, sky. I can fly.")
     )
-) ) )
+) > )
