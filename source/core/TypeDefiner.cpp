@@ -219,7 +219,6 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "BranchTarget", ".DataPointer");
     Define(tm, "Instruction", ".DataPointer");
-    Define(tm, "VI", ".DataPointer");  // Parameter is name, it gets resolved to first clump for SubVI
 
     // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
     Define(tm, tsTypeType, ".DataPointer");

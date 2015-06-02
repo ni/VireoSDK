@@ -1,4 +1,4 @@
-start( VirtualInstrument<(
+start( VI<(
     clump(
         Println("Hello, sky. I can fly.")
     )

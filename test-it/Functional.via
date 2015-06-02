@@ -1,5 +1,5 @@
 // Enqueue can take a VI as a typed literal.
-start(VirtualInstrument< (
+start(VI< (
     clump(
         // Print a simple string literal.
         Println("Hello, anonymous function.")
@@ -11,6 +11,6 @@ start(VirtualInstrument< (
         Println(Int8<5>)
 
         // VI typed literals can be parameters as well.
-        Start(VirtualInstrument< (clump(Println("Hi Dustyn!"))) > )
+        Start(VI< (clump(Println("Hi Dustyn!"))) > )
     )
 ) > )

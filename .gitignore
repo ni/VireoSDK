@@ -62,3 +62,10 @@ test-it/node_modules
 make-it/emsdk_portable
 slmicro
 vilib/analysis/source
+Eclipse-workspace/Task-00-ProjectTemplate
+Eclipse-workspace/Task-01-Blink
+Eclipse-workspace/Task-02-Button
+Eclipse-workspace/Task-03-Interrupts
+Eclipse-workspace/Task-04-SysTick
+Eclipse-workspace/Task-05-Serial
+Eclipse-workspace/Task-07VTest
