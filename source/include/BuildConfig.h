@@ -22,6 +22,7 @@ SDG
 	#define kVireoOS_win32U 1
 #endif
 
+
 // Definitions common for most platforms
 // Platform specific overrides are found in the sections below
 #define VIVM_UNROLL_EXEC
@@ -130,22 +131,20 @@ SDG
 
     #define VIREO_TYPE_CONSTRUCTION 1
 
-//    #define VIREO_MULTI_THREAD 1
+    // TODO #define VIREO_MULTI_THREAD 1
 
     // FILEIO covers read and write operation, perhaps only for stdio.
     #define VIREO_POSIX_FILEIO 1
 
     // FILESYSTEM covers open/close operations
-    #define VIREO_FILESYSTEM 1
+    // -D VIREO_FILESYSTEM=1
 
-    // FILESYSTEM covers open/close operations
-    #define VIREO_FILESYSTEM_DIRLIST 1
+    // VIREO_FILESYSTEM_DIRLIST directory listing functions
+    // -D VIREO_FILESYSTEM_DIRLIST 1
 
     #define VIREO_PERF_COUNTERS
 
 #endif
-
-#define USE_C99_TYPES
 
 // TODO allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL

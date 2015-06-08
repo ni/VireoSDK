@@ -56,7 +56,9 @@ void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
     } else {
+#if defined(VIREO_STDIO)
         printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
+#endif
     }
 #endif
 }
@@ -111,7 +113,9 @@ void* TypeManager::Malloc(size_t countAQ)
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures ++;
         THREAD_EXEC()->ClearBreakout();
+#if defined(VIREO_STDIO)
         printf("Exceeded allocation limit\n");
+#endif
         return null;
     }
 
@@ -1478,7 +1482,9 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         SubString pathTail;
         path->SplitString(&pathHead, &pathTail, '.');
 
+#if defined(VIREO_STDIO)
         printf(" Using array indexes in paths\n");
+#endif
         // If the path has a tail it needs to index the array.
         // There may be more than one way to do so raw1d indexes, or multidim
         // may allow end point relative as well ???
@@ -2508,13 +2514,6 @@ struct TypeMakeClusterType : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-
-VIREO_FUNCTION_SIGNATUREV(TypeMakeClusterType, TypeMakeClusterType)
-{
-//  TypeManagerRef tm = _ParamPointer(tm) ? _Param(tm) : THREAD_TADM();
-//   _Param(3) = ArrayType::New(tm, _Param(1), 1, _ParamPointer(2));
-    return _NextInstruction();
-}
 #endif
 
 #if defined(VIREO_TYPE_VARIANT)
@@ -2714,7 +2713,6 @@ DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_CONSTRUCTION)
     DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(.TypeManager) o(.Type) i(.Type) i(.Int32))");
-  //  DEFINE_VIREO_FUNCTION(TypeMakeClusterType, "p(i(.VarArgCount) i(.TypeManager) o(.Type) i(.Type))");
 #endif
 
 DEFINE_VIREO_END()

@@ -125,7 +125,7 @@ PlatformTickType PlatformTime::TickCount()
     return TickCount;
     
 #else
-#error MicroSecondCount not defined
+//#error MicroSecondCount not defined
     return 0;
 #endif
 }
@@ -183,7 +183,7 @@ PlatformTickType PlatformTime::MicrosecondsToTickCount(Int64 microseconds)
     return microseconds * 333333 / 10000;
     
 #else
-#error MicroSecondCount not defined
+// #error MicroSecondCount not defined
     return 0;
 #endif
 }
@@ -230,7 +230,7 @@ Int64 PlatformTime::TickCountToMicroseconds(PlatformTickType ticks)
     return ticks * 10000 / 333333;
 
 #else
-#error MicroSecondCount not defined
+//#error MicroSecondCount not defined
     return 0;
 #endif
 }

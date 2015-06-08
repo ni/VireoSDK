@@ -10,6 +10,7 @@ SDG
 /*! \file
  */
 
+#include <stdio.h>
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 
@@ -76,13 +77,15 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
     
     Int32 length;
     if (lineNumber > 0) {
-        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", lineNumber, preamble, message);
+        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", (int)lineNumber, preamble, message);
     } else {
         length = snprintf(buffer, sizeof(buffer), "(%s \"%s.\")\n", preamble, message);
     }
     
     if (_errorLog == StdOut) {
+#if defined(VIREO_STDIO)
         printf("%s", buffer);
+#endif
     } else if (_errorLog) {
         _errorLog->Append(length, (const Utf8Char*)buffer);
     }

@@ -29,31 +29,17 @@ void RunExec();
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    Boolean showStats = false;
     Boolean noShell = false;
     ConstCStr fileName = null;
         
-    Int32 i = 1;
-    while ( i < argc) {
-        if (strcmp(argv[i],"-s") == 0) {
-            showStats = true;
-        } else if (strcmp(argv[i],"-h") == 0) {
-            printf(" Vireo SDG\n");
-            printf("  -v  version \n");
-            printf("  -h  help \n");
-            printf("  -s  show stats \n");
-        } else if (strcmp(argv[i],"-v") == 0) {
-            printf(" Vireo EggShell built %s\n",__TIME__ );
-        } else {
-            fileName = argv[i];
-        }
-        i++;
+    if (argc == 2) {
+        fileName = argv[1];
     }
     
     gShells._pRootShell = EggShell::Create(null);
-    gShells._pRootShell->ShowStats = showStats;
+    gShells._pRootShell->ShowStats = false;
     gShells._pUserShell = EggShell::Create(gShells._pRootShell);
-    gShells._pUserShell->ShowStats = showStats;
+    gShells._pUserShell->ShowStats = false;
     
     SubString  input;
     if (fileName) {
@@ -81,7 +67,9 @@ int VIREO_MAIN(int argc, const char * argv[])
         // once IO primitivs are al there.
         NIError err = kNIError_Success;
         while (err == kNIError_Success) {
+#if defined(VIREO_STDIO)
             printf(">");
+#endif
             err = gShells._pUserShell->ReadStdinLine(&input);
             if (err == kNIError_Success) {
                 err = gShells._pUserShell->REPL(&input);

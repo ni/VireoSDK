@@ -8,10 +8,11 @@ SDG
 */
 
 /*! \file
-    \brief Native Verio VIA functions.
+    \brief Parser for VI assembly.
  */
 
 #include <stdarg.h>
+#include <stdio.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
@@ -26,7 +27,7 @@ SDG
 
 // LOG_EVENT Note: variadic macros were defined as part of C99 but exactly what happens when no extra parameter are
 // passed is not consistent so there are two versions, one for only the two base parameters,
-// and one for three or more arguments. If the descrepancies are resolverd in a later standard, the two can be merged.
+// and one for three or more arguments. If the discrepancies are resolved in a later standard, the two can be merged.
 #define LOG_EVENT(_severity_, _message_)  _pLog->LogEvent(EventLog::_severity_, CalcCurrentLine(), _message_);
 #define LOG_EVENTV(_severity_, _message_, ...)  _pLog->LogEvent(EventLog::_severity_, CalcCurrentLine(), _message_, __VA_ARGS__);
 

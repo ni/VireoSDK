@@ -82,6 +82,9 @@ else
     endif
 endif
 
+# Add common desktop modules.
+CFLAGS+= -DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1
+
 .PHONY: install clean v32 v64 lARMv5 help
 .DEFAULT_GOAL=help
 

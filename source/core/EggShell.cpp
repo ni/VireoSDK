@@ -79,7 +79,9 @@ NIError EggShell::REPL(SubString *commandBuffer)
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {
+#if defined(VIREO_STDIO)
         printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
+#endif
     }
     
     return err;
@@ -94,7 +96,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
     #define POSIX_NAME(_name_) _##_name_ 
 	typedef size_t ssize_t;
 	#include <share.h>
-#else 
+#elif defined (VIREO_STDIO)
 	#include <unistd.h>
 	#include <fcntl.h>
 	#include <sys/stat.h>
@@ -103,6 +105,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
 //------------------------------------------------------------
 NIError EggShell::ReadFile(ConstCStr name, SubString *string)
 {
+#if defined(VIREO_STDIO)
     struct stat fileInfo;
 #if (kVireoOS_win32U || kVireoOS_win64U)
     // This will go away once its written as a VI, then it will be hidden the FileSystem functions
@@ -112,15 +115,20 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
     int h = open(name, O_RDONLY, 0777);
 #endif
     if (h<0) {
+#if defined(VIREO_STDIO)
         printf("(Error \"file <%s> not found\")\n", name);
+#endif
     } else {
         fstat(h, &fileInfo);
         size_t bytesToRead = (size_t)fileInfo.st_size;
         _mallocBuffer =  (char*) _typeManger->Malloc(bytesToRead);
         if (h && _mallocBuffer) {
             
+#if defined(VIREO_STDIO)
             ssize_t bytesRead = POSIX_NAME(read)(h, _mallocBuffer, (UInt32)bytesToRead);
-
+#else
+            ssize_t bytesRead = 0;
+#endif
             string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer+bytesRead);
             
             if (string->ComparePrefixCStr("#!")) {
@@ -134,12 +142,14 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
             return kNIError_Success;
         }
     }
+#endif
     string->AliasAssign(null, null);
     return kNIError_kResourceNotFound;
 }
 //------------------------------------------------------------
 NIError EggShell::ReadStdinLine(SubString *string)
 {
+#if defined (VIREO_STDIO)
     const int lenlen = 10;
     Int32 i = 0;
     char c;
@@ -198,6 +208,8 @@ NIError EggShell::ReadStdinLine(SubString *string)
         string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + i);
         return ((c == (char)EOF) && (0 == i)) ? kNIError_kResourceNotFound : kNIError_Success;
     }
+#endif
+    return kNIError_Success;
 }
     
 } // namespace Vireo

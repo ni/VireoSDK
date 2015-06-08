@@ -16,7 +16,6 @@ SDG
     #include <stdlib.h>
 
     #define POSIX_NAME(_name_) _name_
-//#include "stdio.h"
 
 #elif defined (kVireoOS_ZynqARM)
 

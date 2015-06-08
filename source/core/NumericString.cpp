@@ -14,6 +14,7 @@ SDG
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
@@ -427,7 +428,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (precision >= 0) {
                             sprintf(formatCode, "%%.*%se", fOptions.NumericLength);
                             // formatCode : %.*he
-                            sizeOfNumericString = snprintf(asciiReplacementString, kTempCStringLength, "%.*e", precision, tempDouble);
+                            sizeOfNumericString = snprintf(asciiReplacementString, kTempCStringLength, "%.*e", (int)precision, tempDouble);
                         } else {
                             sprintf(formatCode, "%%%se", fOptions.NumericLength);
                             // formatCode : %he
@@ -631,9 +632,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 fractionLen = 3;
                             }
                             if (fractionLen>0) {
-                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", fractionLen);
+                            	//  The %<digit>u is deep in this string.
+                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
                             } else {
-                                sprintf(defaultFormatString, "%%#I:%%M:%%S %%p %%m/%%d/%%Y");
+                                strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
                             }
                             defaultTimeFormat.AppendCStr(defaultFormatString);
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
@@ -832,7 +834,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
             } else {
                 // we can use %d safely, because the exponent part is never long than Int32 in double
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (Int32)exponent);
+                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
             TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
@@ -859,7 +861,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                     baseIndex ++;
                 }
             } else {
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (Int32)exponent);
+                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
             TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
@@ -942,7 +944,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
     if (formatOptions->LeftJustify) {
         width = width - leadingPart.Length();
         width = width>0? width : 0;
-        *pSize = snprintf(bufferBegin, kTempCStringLength, "%s%-*s", leadingPart.BeginCStr(), width, numberPart->BeginCStr());
+        *pSize = snprintf(bufferBegin, kTempCStringLength, "%s%-*s", leadingPart.BeginCStr(), (int)width, numberPart->BeginCStr());
     } else {
         // calculate the padding
         width = width - leadingPart.Length();
@@ -951,9 +953,9 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
             *pSize = snprintf(bufferBegin, kTempCStringLength, "%s%s", leadingPart.BeginCStr(), numberPart->BeginCStr());
         } else {
             if (formatOptions->ZeroPad) {
-                *pSize = snprintf(bufferBegin, kTempCStringLength, "%s%0*d%s", leadingPart.BeginCStr(), width, 0, numberPart->BeginCStr());
+                *pSize = snprintf(bufferBegin, kTempCStringLength, "%s%0*d%s", leadingPart.BeginCStr(), (int)width, 0, numberPart->BeginCStr());
             } else {
-                *pSize = snprintf(bufferBegin, kTempCStringLength, "%*s%s%s", width, " ", leadingPart.BeginCStr(), numberPart->BeginCStr());
+                *pSize = snprintf(bufferBegin, kTempCStringLength, "%*s%s%s", (int)width, " ", leadingPart.BeginCStr(), numberPart->BeginCStr());
             }
          }
     }
@@ -1644,9 +1646,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         char days[10];
                         Int32 size = 0;
                         if (fOption.RemoveLeading) {
-                            size = sprintf(days, "%d", date.Day() + 1);
+                            size = sprintf(days, "%d", (int)(date.Day() + 1));
                         } else {
-                            size = sprintf(days, "%02d", date.Day() + 1);
+                            size = sprintf(days, "%02d", (int)(date.Day() + 1));
                         }
                         output->Append(size, (Utf8Char*)days);
                     }
@@ -1656,9 +1658,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         char hours[10];
                         Int32 size = 0;
                         if (fOption.RemoveLeading) {
-                            size = sprintf(hours, "%d", date.Hour());
+                            size = sprintf(hours, "%d", (int)date.Hour());
                         } else {
-                            size = sprintf(hours, "%02d", date.Hour());
+                            size = sprintf(hours, "%02d", (int)date.Hour());
                         }
                         hourFormat = 24;
                         output->Append(size, (Utf8Char*)hours);
@@ -1671,9 +1673,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 hour12 = (date.Hour() > 12) ? (date.Hour() - 12) : date.Hour();
                         hour12 = hour12 == 0? 12:hour12;
                         if (fOption.RemoveLeading) {
-                            size = sprintf(hours12String, "%d", hour12);
+                            size = sprintf(hours12String, "%d", (int)hour12);
                         } else {
-                            size = sprintf(hours12String, "%02d", hour12);
+                            size = sprintf(hours12String, "%02d", (int)hour12);
                         }
                         hourFormat = 12;
                         output->Append(size, (Utf8Char*)hours12String);
@@ -1685,9 +1687,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 daynumber = (Int32) (1+date.SecondsOfYear()/(24*3600));
                         if (fOption.RemoveLeading) {
-                            size = sprintf(dayNumberString, "%d", daynumber);
+                            size = sprintf(dayNumberString, "%d", (int)daynumber);
                         } else {
-                            size = sprintf(dayNumberString, "%03d", daynumber);
+                            size = sprintf(dayNumberString, "%03d", (int)daynumber);
                         }
                         output->Append(size, (Utf8Char*)dayNumberString);
                     }
@@ -1698,9 +1700,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 monthofYear = 1 + date.Month();
                         if (fOption.RemoveLeading) {
-                            size = sprintf(monthString, "%d", monthofYear);
+                            size = sprintf(monthString, "%d", (int)monthofYear);
                         } else {
-                            size = sprintf(monthString, "%02d", monthofYear);
+                            size = sprintf(monthString, "%02d", (int)monthofYear);
                         }
                         output->Append(size, (Utf8Char*)monthString);
                     }
@@ -1711,9 +1713,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 minute = date.Minute();
                         if (fOption.RemoveLeading) {
-                            size = sprintf(minuteString, "%d", minute);
+                            size = sprintf(minuteString, "%d", (int)minute);
                         } else {
-                            size = sprintf(minuteString, "%02d", minute);
+                            size = sprintf(minuteString, "%02d", (int)minute);
                         }
                         output->Append(size, (Utf8Char*)minuteString);
                     }
@@ -1729,9 +1731,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 second = date.Second();
                         if (fOption.RemoveLeading) {
-                            size = sprintf(secondString, "%d", second);
+                            size = sprintf(secondString, "%d", (int)second);
                         } else {
-                            size = sprintf(secondString, "%02d", second);
+                            size = sprintf(secondString, "%02d", (int)second);
                         }
                         output->Append(size, (Utf8Char*)secondString);
                     }
@@ -1751,7 +1753,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         if (fractionLen<=0) {
                             output->AppendCStr(".");
                         } else {
-                            size = sprintf(fractionString, "%.*f", fractionLen, date.FractionSecond());
+                            size = sprintf(fractionString, "%.*f", (int)fractionLen, date.FractionSecond());
                             output->Append(size-1, (Utf8Char*)fractionString+1);
                         }
                     }
@@ -1764,9 +1766,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         // First Monday as week one.
                         weekofyear = (Int32) ((date.SecondsOfYear()/(24*3600)+ 7-date.FirstWeekDay())/7);
                         if (fOption.RemoveLeading) {
-                            size = sprintf(weekNumberString, "%d", weekofyear);
+                            size = sprintf(weekNumberString, "%d", (int)weekofyear);
                         } else {
-                            size = sprintf(weekNumberString, "%02d", weekofyear);
+                            size = sprintf(weekNumberString, "%02d", (int)weekofyear);
                         }
                         output->Append(size, (Utf8Char*)weekNumberString);
                     }
@@ -1775,7 +1777,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                     {
                         char weekday[10];
                         Int32 size = 0;
-                        size = sprintf(weekday, "%d", (date.WeekDay()+1)%7);
+                        size = sprintf(weekday, "%d", (int)((date.WeekDay()+1)%7));
                         output->Append(size, (Utf8Char*)weekday);
                     }
                         break;
@@ -1791,9 +1793,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                             weekofyear = (Int32) (1 + (date.SecondsOfYear()/(24*3600) - (6 - date.FirstWeekDay()))/7);
                         }
                         if (fOption.RemoveLeading) {
-                            size = sprintf(weekNumberString, "%d", weekofyear);
+                            size = sprintf(weekNumberString, "%d", (int)weekofyear);
                         } else {
-                            size = sprintf(weekNumberString, "%02d", weekofyear);
+                            size = sprintf(weekNumberString, "%02d", (int)weekofyear);
                         }
                         output->Append(size, (Utf8Char*)weekNumberString);
                     }
@@ -1807,7 +1809,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         } else if (fOption.Precision == 2) {
                             localeFormatString.AppendCStr("%a, %b %d, %Y");
                         } else {
-                            // to do locale specifi format
+                            // to do locale specific format
                             localeFormatString.AppendCStr("%m/%d/%Y");
                         }
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
@@ -1829,7 +1831,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         localeFormatString.AppendCStr("%#I:%M:%S");
                         if (fractionLen > 0) {
                             char fractionPart[kTempCStringLength];
-                            sprintf(fractionPart, "%%.%du", fractionLen);
+                            sprintf(fractionPart, "%%.%du", (int)fractionLen);
                             localeFormatString.AppendCStr(fractionPart);
                         }
                         localeFormatString.AppendCStr(" %p");
@@ -1843,9 +1845,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 year = date.Year() % 100;
                         if (fOption.RemoveLeading) {
-                            size = sprintf(yearString, "%d", year);
+                            size = sprintf(yearString, "%d", (int)year);
                         } else {
-                            size = sprintf(yearString, "%02d", year);
+                            size = sprintf(yearString, "%02d", (int)year);
                         }
                         output->Append(size, (Utf8Char*)yearString);
                     }
@@ -1856,9 +1858,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 size = 0;
                         Int32 year = date.Year();
                         if (fOption.RemoveLeading) {
-                            size = sprintf(yearString, "%d", year);
+                            size = sprintf(yearString, "%d", (int)year);
                         } else {
-                            size = sprintf(yearString, "%04d", year);
+                            size = sprintf(yearString, "%04d", (int)year);
                         }
                         output->Append(size, (Utf8Char*)yearString);
                     }
@@ -1872,7 +1874,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 seconddiff = totalSeconds%60;
                         char difference[64];
                         Int32 size = 0;
-                        size = sprintf(difference, "%02d:%02d:%02d", hourdiff, mindiff, seconddiff);
+                        size = sprintf(difference, "%02d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
                         output->Append(size, (Utf8Char*)difference);
                     }
                         break;
@@ -1940,7 +1942,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
                 if (i != 0) {
                     output->AppendCStr(",");
                 }
-                snprintf(dimensionString, kTempCStringLength, "%d", index[rank - 1 - i]);
+                snprintf(dimensionString, kTempCStringLength, "%d", (int)index[rank - 1 - i]);
                 output->AppendCStr(dimensionString);
             }
             output->AppendCStr("]");
