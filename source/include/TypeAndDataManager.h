@@ -286,10 +286,6 @@ public:
     size_t TotalAQAllocated()       { return _totalAQAllocated; }
     Int32 TotalAllocations()        { return _totalAllocations; }
     size_t MaxAllocated()           { return _maxAllocated; }
-    
-private:
-    static void* GlobalMalloc(size_t countAQ);
-    static void GlobalFree(void* pBuffer);
 
 public:
     // Read or write values accessible to this TM as described by a symbolic path

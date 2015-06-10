@@ -83,9 +83,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
     }
     
     if (_errorLog == StdOut) {
-#if defined(VIREO_STDIO)
-        printf("%s", buffer);
-#endif
+        PlatformIO::Print(buffer);
     } else if (_errorLog) {
         _errorLog->Append(length, (const Utf8Char*)buffer);
     }

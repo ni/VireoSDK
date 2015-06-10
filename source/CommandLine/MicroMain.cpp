@@ -19,7 +19,7 @@ using namespace Vireo;
 int VIREO_MAIN(int argc, const char * argv[])
 {
     ExecutionState status;
-    printf("start\n");
+    PlatformIO::Print("start\n");
     
     // TODO: load VI from binary data
     
@@ -27,7 +27,7 @@ int VIREO_MAIN(int argc, const char * argv[])
         status = THREAD_EXEC()->ExecuteSlices(10, 10);
     } while (status != kExecutionState_None);
     
-    printf("done\n");
+    PlatformIO::Print("done\n");
     return 0;
 }
 

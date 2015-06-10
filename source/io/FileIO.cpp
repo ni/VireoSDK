@@ -44,7 +44,7 @@ typedef Int32 FileHandle;
 
 #ifdef VIREO_FILESYSTEM
 
-struct OpenStruct : public InstructionCore
+struct FileOpenInstruction : public InstructionCore
 {
     _ParamDef(StringRef, path);
     
@@ -81,7 +81,7 @@ struct OpenStruct : public InstructionCore
         AccessModes_writeOnly = 2,
     } ;
     
-VIREO_FUNCTION_SIGNATURET(FileOpen, OpenStruct)
+VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
 {
     AccessMode access = (AccessMode)_Param(access);
 
@@ -213,19 +213,6 @@ VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedArrayCoreRef, Int32)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-struct SetFilePositionStruct : public InstructionCore
-{
-    _ParamDef(FileHandle, refnum);
-    _ParamDef(Int32, offset);
-    
-    // from options:
-    // 0 - start
-    // 1 - end
-    // 2 - current
-    _ParamDef(Int32, from);
-    
-    _ParamDef(Int32, error);
-};
 VIREO_FUNCTION_SIGNATURE4(StreamSetPosition, FileHandle, IntIndex, IntIndex, Int32)
 {
     enum StartPositions
@@ -322,12 +309,7 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
     Format(&format, count, arguments, tempString.Value);
-    ssize_t result = POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
-    
-    if (result<0) {
-        THREAD_EXEC()->LogEvent(EventLog::kWarning, "Write error");
-    }
-
+    PlatformIO::Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -338,11 +320,8 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
         TDViaFormatter formatter(tempString.Value, false);
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
         tempString.Value->Append('\n');
-        ssize_t result = POSIX_NAME(write)(STDOUT_FILENO,(const char*)tempString.Value->Begin(),tempString.Value->Length());
 
-        if (result<0) {
-            THREAD_EXEC()->LogEvent(EventLog::kWarning, "Write error");
-        }
+        PlatformIO::Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     }
     return _NextInstruction();
 }
@@ -356,7 +335,6 @@ DEFINE_VIREO_BEGIN(FileSystem)
     DEFINE_VIREO_VALUE(StdOut, STDOUT_FILENO, ".FileHandle")
     DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, ".FileHandle")
     // Primitives
-    // Print is like PrintLn
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(Println, "p(i(.StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(Printf, "p(i(.VarArgCount)i(.String)i(.StaticTypeAndData))")

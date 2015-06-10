@@ -17,30 +17,6 @@ SDG
 #include "DataTypes.h"
 
 namespace Vireo {
-//------------------------------------------------------------
-#if defined (__ARDUINO__)
-    typedef UInt32 PlatformTickType;
-#elif kVireoOS_emscripten
-	#include <emscripten.h>
-    typedef Int64 PlatformTickType;
-//  typedef Double PlatformTickType; (slightly more native for JavaScript/emscripten)
-#else
-    typedef Int64 PlatformTickType;
-#endif
-
-//------------------------------------------------------------
-//! Suport for the higest resolution timer available on the target platfrom
-class PlatformTime
-{
-public:
-    static PlatformTickType TickCount();
-    static PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
-    static PlatformTickType SecondsToTickCount(Double seconds);
-    static Int64 TickCountToMilliseconds(PlatformTickType);
-    static Int64 TickCountToMicroseconds(PlatformTickType);
-    static PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);
-    static PlatformTickType MicrosecondsFromNowToTickCount(Int64 microseconds);
-};
 
 //------------------------------------------------------------
 //! A 64.64 bit fixed point use to represent seconds since Jan 1, 1904 GMT

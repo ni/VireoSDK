@@ -29,7 +29,6 @@ void RunExec();
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    Boolean noShell = false;
     ConstCStr fileName = null;
         
     if (argc == 2) {
@@ -61,15 +60,14 @@ int VIREO_MAIN(int argc, const char * argv[])
         gShells._pRootShell->Delete();
 #endif
 
-    } else if (!noShell) {
+    } else {
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program
-        // once IO primitivs are al there.
+        // once IO primitivs are all there.
         NIError err = kNIError_Success;
         while (err == kNIError_Success) {
-#if defined(VIREO_STDIO)
-            printf(">");
-#endif
+            PlatformIO::Print(">");
+            
             err = gShells._pUserShell->ReadStdinLine(&input);
             if (err == kNIError_Success) {
                 err = gShells._pUserShell->REPL(&input);
@@ -91,7 +89,6 @@ int VIREO_MAIN(int argc, const char * argv[])
 void RunExec() {
     TypeManagerScope scope(gShells._pUserShell->TheTypeManager());
     gShells._eState = gShells._pUserShell->TheTypeManager()->TheExecutionContext()->ExecuteSlices(400, 10000000);
-    // TODO control frame rate based on time till next thing to exec
 
     if (gShells._eState == kExecutionState_None) {
         // No more to execute

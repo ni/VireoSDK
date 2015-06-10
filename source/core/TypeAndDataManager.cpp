@@ -37,7 +37,7 @@ VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 TypeManagerRef TypeManager::New(TypeManagerRef tmParent)
 {
     // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
-    TypeManagerRef tm = (TypeManagerRef) TypeManager::GlobalMalloc(sizeof(TypeManager));
+    TypeManagerRef tm = (TypeManagerRef) PlatformMemory::Malloc(sizeof(TypeManager));
     new (tm) TypeManager(tmParent);
     tm->TrackAllocation(tm, sizeof(TypeManager), true);
     return tm;
@@ -47,7 +47,7 @@ void TypeManager::Delete(TypeManagerRef tm)
 {    
     // Free up mutex, and any other members with destructors.
     tm->~TypeManager();
-    TypeManager::GlobalFree(tm);
+    PlatformMemory::Free(tm);
 }
 //------------------------------------------------------------
 void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
@@ -56,9 +56,7 @@ void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
     } else {
-#if defined(VIREO_STDIO)
-        printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
-#endif
+        PlatformIO::Printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
     }
 #endif
 }
@@ -89,22 +87,6 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
     }
 }
 //------------------------------------------------------------
-//! Static memory allocator used for all TM memory management.
-void* TypeManager::GlobalMalloc(size_t countAQ)
-{
-    void* pBuffer = malloc(countAQ);
-    if (pBuffer) {
-        memset(pBuffer, 0, countAQ);
-    }
-    return pBuffer;
-}
-//------------------------------------------------------------
-//! Static memory deallocator used for all TM memory manaagement.
-void TypeManager::GlobalFree(void* pBuffer)
-{
-    free(pBuffer);
-}
-//------------------------------------------------------------
 //! Private static Malloc used by TM.
 void* TypeManager::Malloc(size_t countAQ)
 {
@@ -113,9 +95,7 @@ void* TypeManager::Malloc(size_t countAQ)
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures ++;
         THREAD_EXEC()->ClearBreakout();
-#if defined(VIREO_STDIO)
-        printf("Exceeded allocation limit\n");
-#endif
+        PlatformIO::Print("Exceeded allocation limit\n");
         return null;
     }
 
@@ -127,7 +107,7 @@ void* TypeManager::Malloc(size_t countAQ)
     allocationCount = countAQ;
 #endif
 
-    void* pBuffer =  GlobalMalloc(countAQ);
+    void* pBuffer =  PlatformMemory::Malloc(countAQ);
     if (pBuffer) {
         TrackAllocation(pBuffer, allocationCount, true);
 
@@ -191,7 +171,7 @@ void TypeManager::Free(void* pBuffer)
 #endif
     
         TrackAllocation(pBuffer, allocationCount, false);
-        return GlobalFree(pBuffer);
+        return PlatformMemory::Free(pBuffer);
     }
 }
 //------------------------------------------------------------
@@ -736,7 +716,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
   
 #if 0
     if (!bMatch && otherType->Name().Length() == 0) {
-        printf(" whoas!!\n");
+        PlatformIO::Print(" found it!!\n");
     }
 #endif
 
@@ -1482,9 +1462,8 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         SubString pathTail;
         path->SplitString(&pathHead, &pathTail, '.');
 
-#if defined(VIREO_STDIO)
-        printf(" Using array indexes in paths\n");
-#endif
+        PlatformIO::Print(" Using array indexes in paths\n");
+
         // If the path has a tail it needs to index the array.
         // There may be more than one way to do so raw1d indexes, or multidim
         // may allow end point relative as well ???

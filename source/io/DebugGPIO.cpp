@@ -10,15 +10,7 @@ SDG
 #include "TypeDefiner.h"
 #include "Instruction.h"
 
-#if defined (VIREO_DEBUG_GPIO_STDIO)
-
-    #include <unistd.h>
-    #include <stdlib.h>
-
-    #define POSIX_NAME(_name_) _name_
-
-#elif defined (kVireoOS_ZynqARM)
-
+#if defined (kVireoOS_ZynqARM)
     #include "xgpiops.h"
     #define kuZED_LED_PIN 47
     #define kuZED_Button_PIN 51
@@ -32,7 +24,7 @@ SDG
         _gpGPIOPsConfig = XGpioPs_LookupConfig(XPAR_PS7_GPIO_0_DEVICE_ID);
         status = XGpioPs_CfgInitialize(&_gGPIO, _gpGPIOPsConfig, _gpGPIOPsConfig->BaseAddr);
         if (status != XST_SUCCESS) {
-            printf(" Zynq GPIO init failure\n");
+            PlatformIO::Print(" Zynq GPIO init failure\n");
         }
 
          XGpioPs_SetDirectionPin(&_gGPIO, kuZED_LED_PIN, 1);
@@ -48,10 +40,7 @@ VIREO_FUNCTION_SIGNATURE1(DebugLED, Boolean)
 #if defined (VIREO_DEBUG_GPIO_STDIO)
     
     const char* s = _Param(0) ? "t\n" : "f\n";
-    
-    if (POSIX_NAME(write)(STDOUT_FILENO, s, 2)) {
-        /* Ignore return value */
-    }
+    PlatformIO::Print(s);
     
 #elif defined(kVireoOS_ZynqARM)
 	if (!_gpGPIOPsConfig)

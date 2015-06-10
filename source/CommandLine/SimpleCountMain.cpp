@@ -73,7 +73,7 @@ ExecutionState  gState;
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    printf("Simple Counting Vireo Egg Shell built %s\n",__TIME__ );
+    PlatformIO::Printf("Simple Counting Vireo Egg Shell built %s\n",__TIME__ );
     SubString  subString(VireoProgram);
     
     gpShell = EggShell::Create(null);

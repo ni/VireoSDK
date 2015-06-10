@@ -79,9 +79,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {
-#if defined(VIREO_STDIO)
-        printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
-#endif
+        PlatformIO::Printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
     }
     
     return err;
@@ -115,9 +113,7 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
     int h = open(name, O_RDONLY, 0777);
 #endif
     if (h<0) {
-#if defined(VIREO_STDIO)
-        printf("(Error \"file <%s> not found\")\n", name);
-#endif
+        PlatformIO::Printf("(Error \"file <%s> not found\")\n", name);
     } else {
         fstat(h, &fileInfo);
         size_t bytesToRead = (size_t)fileInfo.st_size;
@@ -137,7 +133,7 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
                 string->EatToEol();
             }
             if (ShowStats) {
-                printf(" Total bytes read %ld\n", (long) bytesRead);
+                PlatformIO::Printf(" Total bytes read %ld\n", (long) bytesRead);
             }
             return kNIError_Success;
         }
@@ -174,24 +170,19 @@ NIError EggShell::ReadStdinLine(SubString *string)
             _typeManger->Free(_mallocBuffer);
         }
         _mallocBuffer = (char*) _typeManger->Malloc((size_t)packetSize);
-        printf("packet size %d\n", (int) packetSize);
+        PlatformIO::Printf("packet size %d\n", (int) packetSize);
 
-#if 1
         for (i = 0; i < packetSize; i++) {
             c = fgetc(stdin);
             _mallocBuffer[i] = c;
             if ((i % 2000) == 0) {
-            	printf(".");
+                PlatformIO::Print(".");
             }
         }
-    	printf("\n");
+        PlatformIO::Print("\n");
 
-#else
-        // Hangs when reading large buffers from debug console.
-        size_t sz = fread(_mallocBuffer, sizeof(char), packetSize, stdin);
-#endif
         string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);
-        printf("packet read complete <%d>\n", (int)packetSize);
+        PlatformIO::Printf("packet read complete <%d>\n", (int)packetSize);
         return kNIError_Success;
     } else {
         const int MaxCommandLine = 20000;

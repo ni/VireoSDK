@@ -1904,7 +1904,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
         if (existingPath) {
             parser.ParseData(_ParamPointer(1), _ParamPointer(2));
         } else {
-            // printf("not found\n");
+            // PlatformIO::Print("not found\n");
         }
     } else {
         parser.ParseData(_ParamPointer(1), _ParamPointer(2));

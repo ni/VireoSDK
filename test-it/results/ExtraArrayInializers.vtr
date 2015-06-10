@@ -1,5 +1,5 @@
+(Line 4 Warning "Ignoring extra array initializer elements.")
+(Line 5 Warning "Ignoring extra array initializer elements.")
 (1 2 3 4 6 7 8)
 (1 2 3 4 6)
 (1 2 3 4 6)
-(Line 4 Warning "Ignoring extra array initializer elements.")
-(Line 5 Warning "Ignoring extra array initializer elements.")

@@ -110,7 +110,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
         // helpful section of development
         SubString ss = type->Name();
         if (ss.CompareCStr("VirtualInstrument")) {
-            printf("found");
+            PlatformIO::Print("found\n");
         }
 #endif
         Accept(type, type->Begin(kPASoftRead));

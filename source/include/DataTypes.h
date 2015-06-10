@@ -76,6 +76,8 @@ typedef union {
 //  is much less predictable.
 #define null  0
 
+#include "Platform.h"
+
 namespace Vireo
 {
 

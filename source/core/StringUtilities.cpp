@@ -925,13 +925,13 @@ void PrintUTF8ArrayHex(const char* buffer, Int32 length)
     for (; length;) {
         Int32 x = SubString::NextChar((const Utf8Char*) buffer) - buffer;
         for(; x; x--) {
-            printf("%02X",  (UInt8)(*buffer));
+            PlatformIO::Printf("%02X", (UInt8)(*buffer));
             buffer++;
             length--;
         }
-        printf(" ");
+        PlatformIO::Print(" ");
     }
-    printf("\n");
+    PlatformIO::Print("\n");
 }
 #endif
 } // namespace Vireo
