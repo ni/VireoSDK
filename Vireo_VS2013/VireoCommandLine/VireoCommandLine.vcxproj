@@ -51,7 +51,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/../../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -91,6 +91,7 @@
     <ClCompile Include="..\..\source\core\GenericFunctions.cpp" />
     <ClCompile Include="..\..\source\core\Math.cpp" />
     <ClCompile Include="..\..\source\core\NumericString.cpp" />
+    <ClCompile Include="..\..\source\core\Platform.cpp" />
     <ClCompile Include="..\..\source\core\Queue.cpp" />
     <ClCompile Include="..\..\source\core\String.cpp" />
     <ClCompile Include="..\..\source\core\StringUtilities.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="..\..\source\include\EventLog.h" />
     <ClInclude Include="..\..\source\include\ExecutionContext.h" />
     <ClInclude Include="..\..\source\include\Instruction.h" />
+    <ClInclude Include="..\..\source\include\Platform.h" />
     <ClInclude Include="..\..\source\include\StringUtilities.h" />
     <ClInclude Include="..\..\source\include\Synchronization.h" />
     <ClInclude Include="..\..\source\include\TDCodecLVFlat.h" />
