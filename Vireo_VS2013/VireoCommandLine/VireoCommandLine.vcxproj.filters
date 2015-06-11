@@ -97,6 +97,9 @@
     <ClCompile Include="..\..\source\core\TypeTemplates.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\core\Platform.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\include\BuildConfig.h">
@@ -145,6 +148,9 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\include\Synchronization.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\include\Platform.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>
