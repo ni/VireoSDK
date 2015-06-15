@@ -27,14 +27,11 @@ public:
 
 private:
     TypeManagerRef _typeManger;
-    char*   _mallocBuffer;
     
 public:
     NIError REPL(SubString *commandBuffer);
-    NIError ReadFile(ConstCStr name, SubString *string);
-    NIError ReadStdinLine(SubString *string);
     Boolean ShowStats;
-    NIError Delete();    
+    void Delete();
     TypeManagerRef TheTypeManager()  { return _typeManger; }
     
 private:

@@ -213,6 +213,7 @@ ExecutionContext::ExecutionContext()
     _breakoutCount = 0;
     _runningQueueElt = (VIClump*) null;
     _timer._observerList = null;
+    _state = kExecutionState_None;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -324,6 +325,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         reply = kExecutionState_None;
     }
 #endif
+    _state = reply;
     return reply;
 }
 //------------------------------------------------------------
@@ -332,6 +334,7 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
     VIREO_ASSERT((NULL == elt->_next))
     VIREO_ASSERT((0 == elt->_shortCount))
     _runQueue.Enqueue(elt);
+    _state = (ExecutionState) (_state | kExecutionState_ClumpsInRunQueue);
 }
 //------------------------------------------------------------
 void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)

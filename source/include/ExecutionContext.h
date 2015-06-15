@@ -96,7 +96,7 @@ public:
 private:
     ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
     ECONTEXT    Int32           _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
-
+    ECONTEXT    ExecutionState  _state;
 public:
     ECONTEXT    Timer           _timer;             // TODO, can be moved out of the execcontext once instruction can take injected parameters.
 
@@ -115,7 +115,7 @@ public:
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-
+    ECONTEXT    ExecutionState  State() { return _state; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
   

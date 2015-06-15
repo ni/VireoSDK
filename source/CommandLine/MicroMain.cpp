@@ -18,14 +18,14 @@ using namespace Vireo;
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    ExecutionState status;
+    ExecutionState state = HREAD_EXEC()->State();
     PlatformIO::Print("start\n");
     
     // TODO: load VI from binary data
     
-    do {
+    while (state != kExecutionState_None) {
         status = THREAD_EXEC()->ExecuteSlices(10, 10);
-    } while (status != kExecutionState_None);
+    }
     
     PlatformIO::Print("done\n");
     return 0;

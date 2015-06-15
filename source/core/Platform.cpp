@@ -16,6 +16,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "TypeandDataManager.h"
+
 #if (kVireoOS_win32U || kVireoOS_win64U)
   #define NOMINMAX
   #include <Windows.h>
@@ -35,7 +37,7 @@
 namespace Vireo {
 
 //============================================================
-//! Static memory allocator used for all TM memory management.
+//! Static memory allocator used primarily by the TM
 void* PlatformMemory::Malloc(size_t countAQ)
 {
     void* pBuffer = malloc(countAQ);
@@ -45,7 +47,7 @@ void* PlatformMemory::Malloc(size_t countAQ)
     return pBuffer;
 }
 //------------------------------------------------------------
-//! Static memory deallocator used for all TM memory manaagement.
+//! Static memory deallocator used primarily by the TM.
 void PlatformMemory::Free(void* pBuffer)
 {
     free(pBuffer);
@@ -71,6 +73,99 @@ void PlatformIO::Printf(ConstCStr format, ...)
     vprintf(format, args);
     va_end (args);
 }
+//------------------------------------------------------------
+//! Static memory deallocator used for all TM memory manaagement.
+void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
+{
+    NIError err = kNIError_Success;
+    FILE* h = fopen(name, "r");
+    if (h == 0) {
+        PlatformIO::Printf("(Error \"file <%s> not found\")\n", name);
+        err = kNIError_kResourceNotFound;
+    } else {
+        fseek(h, 0L, SEEK_END);
+        IntIndex bytesToRead = (IntIndex)ftell(h);
+        rewind(h);
+        
+        buffer->Resize1DOrEmpty(bytesToRead);
+        if (buffer->Length() == bytesToRead) {
+            ssize_t bytesRead = fread(buffer->Begin(), 1, (size_t)bytesToRead, h);
+            buffer->Resize1DOrEmpty((IntIndex)bytesRead);
+        } else {
+            err = kNIError_kInsufficientResources;
+        }
+    }
+}
+//------------------------------------------------------------
+void PlatformIO::ReadStdin(StringRef buffer)
+{
+    buffer->Resize1D(0);
+    buffer->Reserve(5000);
+    char c = fgetc(stdin);
+    while(true) {
+        if ((c == (char)EOF) || (c == '\n')) {
+            break;
+        }
+        buffer->Append(c);
+        c = fgetc(stdin);
+    }
+}
+
+#if 0
+    //------------------------------------------------------------
+    NIError PlatformIO::ReadStdin(StringRef buffer)
+    {
+        const int lenlen = 10;
+        Int32 i = 0;
+        char c;
+        
+        c = fgetc(stdin);
+        if (c == '<') {
+            //  <count>xxxxxxxx "<4>exit"
+            // comand starts with a size
+            char packetHeader[lenlen];
+            do {
+                c = fgetc(stdin);
+                if (i < lenlen) {
+                    packetHeader[i++] = c;
+                }
+            } while ( c !=  '>' );
+            SubString packet((Utf8Char*)packetHeader, (Utf8Char*)packetHeader+i);
+            IntMax packetSize = 0;
+            packet.ReadInt(&packetSize);
+            
+            PlatformIO::Printf("packet size %d\n", (int) packetSize);
+            
+            for (i = 0; i < packetSize; i++) {
+                c = fgetc(stdin);
+                _mallocBuffer[i] = c;
+                if ((i % 2000) == 0) {
+                    PlatformIO::Print(".");
+                }
+            }
+            PlatformIO::Print("\n");
+            
+            string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);
+            PlatformIO::Printf("packet read complete <%d>\n", (int)packetSize);
+            return kNIError_Success;
+        } else {
+            const int MaxCommandLine = 20000;
+            while(true) {
+                if ((c == (char)EOF) || (c == '\n') || i >= MaxCommandLine) {
+                    break;
+                }
+                _mallocBuffer[i++] = c;
+                c = fgetc(stdin);
+            }
+            string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + i);
+            return ((c == (char)EOF) && (0 == i)) ? kNIError_kResourceNotFound : kNIError_Success;
+        }
+        return kNIError_Success;
+    }
+
+#endif
+
+
 //============================================================
 PlatformTickType PlatformTime::TickCount()
 {
