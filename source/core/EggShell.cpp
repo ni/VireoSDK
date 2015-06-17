@@ -43,19 +43,19 @@ EggShell* EggShell::Create(EggShell* parent)
 //------------------------------------------------------------
 EggShell::EggShell(TypeManagerRef tm)
 {
-    _typeManger     = tm;
+    _typeManager     = tm;
     _mallocBuffer   = null;
 }
 //------------------------------------------------------------
 NIError EggShell::Delete()
 {
-    TypeManagerRef pTADM = _typeManger;
+    TypeManagerRef pTADM = _typeManager;
     if (ShowStats) {
         pTADM->PrintMemoryStat("ES Delete begin", false);
     }
 
     if (_mallocBuffer) {
-        _typeManger->Free(_mallocBuffer);
+        _typeManager->Free(_mallocBuffer);
         _mallocBuffer = null;
     }
     
@@ -70,12 +70,12 @@ NIError EggShell::Delete()
 //------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
 {
-    TypeManagerScope scope(_typeManger);
+    TypeManagerScope scope(_typeManager);
     
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
     
-    TDViaParser parser(_typeManger, commandBuffer, &log, 1);
+    TDViaParser parser(_typeManager, commandBuffer, &log, 1);
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {
@@ -117,7 +117,7 @@ NIError EggShell::ReadFile(ConstCStr name, SubString *string)
     } else {
         fstat(h, &fileInfo);
         size_t bytesToRead = (size_t)fileInfo.st_size;
-        _mallocBuffer =  (char*) _typeManger->Malloc(bytesToRead);
+        _mallocBuffer =  (char*) _typeManager->Malloc(bytesToRead);
         if (h && _mallocBuffer) {
             
 #if defined(VIREO_STDIO)
@@ -167,9 +167,9 @@ NIError EggShell::ReadStdinLine(SubString *string)
         
         if (_mallocBuffer) {
             // Free the old buffer.
-            _typeManger->Free(_mallocBuffer);
+            _typeManager->Free(_mallocBuffer);
         }
-        _mallocBuffer = (char*) _typeManger->Malloc((size_t)packetSize);
+        _mallocBuffer = (char*) _typeManager->Malloc((size_t)packetSize);
         PlatformIO::Printf("packet size %d\n", (int) packetSize);
 
         for (i = 0; i < packetSize; i++) {
@@ -187,7 +187,7 @@ NIError EggShell::ReadStdinLine(SubString *string)
     } else {
         const int MaxCommandLine = 20000;
         if (!_mallocBuffer) {
-            _mallocBuffer = (char*) _typeManger->Malloc(MaxCommandLine);
+            _mallocBuffer = (char*) _typeManager->Malloc(MaxCommandLine);
         }
         while(true) {
             if ((c == (char)EOF) || (c == '\n') || i >= MaxCommandLine) {

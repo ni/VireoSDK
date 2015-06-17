@@ -43,7 +43,7 @@ class VirtualInstrument
 {
     friend class VIDataProcsClass;
 private:
-    TypeManagerRef          _typeManger;
+    TypeManagerRef          _typeManager;
     TypedObjectRef          _params;        // All clumps in subVI share the same param block
     TypedObjectRef          _locals;        // All clumps in subVI share the same locals
     TypedArray1D<VIClump>*  _clumps;
@@ -60,7 +60,7 @@ public :
 
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
-    TypeManagerRef TheTypeManager()     { return _typeManger; }
+    TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypedObjectRef Params()             { return _params; }
     TypedObjectRef Locals()             { return _locals; }
     TypedArray1D<VIClump>* Clumps()     { return _clumps; }
