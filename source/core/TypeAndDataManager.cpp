@@ -64,8 +64,6 @@ void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
 TypeManager::TypeManager(TypeManagerRef parentTm)
 {
 #ifdef VIREO_PERF_COUNTERS
-    _lookUpsFound = 0;
-    _lookUpsRoutedToOwner = 0;
     _typesShared = 0;
 #endif
     _totalAllocations = 0;
@@ -422,14 +420,7 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
     NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : null;
     
     if (type == null && _baseTypeManager) {
-#ifdef VIREO_PERF_COUNTERS
-        _lookUpsRoutedToOwner++;
-#endif
         type = _baseTypeManager->FindTypeCore(name);
-    } else {
-#ifdef VIREO_PERF_COUNTERS
-        _lookUpsFound++;
-#endif
     }
     
     return type;

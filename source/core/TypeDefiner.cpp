@@ -81,7 +81,7 @@ void TypeDefiner::InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* modul
     }
 }
 //------------------------------------------------------------
-//! Verifiy a required module has been loaded. Called by registration visitor callbacks.
+//! Verify a required module has been loaded. Called by registration visitor callbacks.
 Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
 {
     TypeDefiner* pDefiner = _gpTypeDefinerList;
@@ -106,7 +106,7 @@ TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
     return parser.ParseType();
 }
 //------------------------------------------------------------
-//! Define a namned type from C strings.
+//! Define a named type from C strings.
 TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeString)
 {
     SubString typeName(name);
@@ -114,7 +114,7 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeStr
     return Define(tm, &typeName, &wrappedTypeString);
 }
 //------------------------------------------------------------
-//! Define a namned type from SubStrings.
+//! Define a named type from SubStrings.
 TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
 {
     TypeManagerScope scope(tm);

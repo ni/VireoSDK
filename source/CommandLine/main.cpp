@@ -24,10 +24,18 @@ static struct {
 
 void RunExec();
 
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+  extern "C" void std_cpp_init();
+#endif
+
 //------------------------------------------------------------
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    ConstCStr fileName = null;
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+	std_cpp_init();
+#endif
+
+	ConstCStr fileName = null;
     
     if (argc == 2) {
         fileName = argv[1];
@@ -45,6 +53,10 @@ int VIREO_MAIN(int argc, const char * argv[])
             STACK_VAR(String, buffer);
             
             PlatformIO::ReadFile(fileName, buffer.Value);
+            if (buffer.Value->Length() == 0) {
+                PlatformIO::Printf("(Error \"file <%s> empty\")\n", fileName);
+            }
+            
             SubString input = buffer.Value->MakeSubStringAlias();
             if (gShells._pUserShell->REPL(&input) != kNIError_Success) {
                 gShells._keepRunning = false;
@@ -77,6 +89,12 @@ int VIREO_MAIN(int argc, const char * argv[])
             }
         }
     }
+
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+    while (true) {
+    	;
+    }
+#endif
     return 0;
 }
 //------------------------------------------------------------

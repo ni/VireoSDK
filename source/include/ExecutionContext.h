@@ -120,7 +120,7 @@ public:
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
   
 public:
-    // Method for runtime errors to be routined through.
+    // Method for runtime errors to be routed through.
     ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
 
 private:

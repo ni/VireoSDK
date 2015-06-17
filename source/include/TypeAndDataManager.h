@@ -295,14 +295,9 @@ public:
     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
 
 #ifdef VIREO_PERF_COUNTERS
-private:
-    Int64 _lookUpsFound;
-    Int64 _lookUpsRoutedToOwner;
 public:
     Int32 _typesShared;
 
-    Int64 LookUpsFound()            { return _lookUpsFound;}
-    Int64 LookUpsRoutedToOwner()    { return _lookUpsRoutedToOwner;}
 #endif
 };
 

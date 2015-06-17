@@ -53,19 +53,19 @@ void PlatformMemory::Free(void* pBuffer)
     free(pBuffer);
 }
 //============================================================
-//! Static memory deallocator used for all TM memory manaagement.
+//! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(ConstCStr string)
 {
     fwrite (string , 1, strlen(string), stdout);
 }
 //------------------------------------------------------------
-//! Static memory deallocator used for all TM memory manaagement.
+//! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(Int32 len, ConstCStr string)
 {
     fwrite (string , 1, len, stdout);
 }
 //------------------------------------------------------------
-//! Static memory deallocator used for all TM memory manaagement.
+//! Static memory deallocator used for all TM memory management.
 void PlatformIO::Printf(ConstCStr format, ...)
 {
     va_list args;
@@ -74,15 +74,13 @@ void PlatformIO::Printf(ConstCStr format, ...)
     va_end (args);
 }
 //------------------------------------------------------------
-//! Static memory deallocator used for all TM memory manaagement.
+//! Static memory deallocator used for all TM memory management.
 void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
 {
-    NIError err = kNIError_Success;
+    buffer->Resize1DOrEmpty(0);
+#if defined(VIREO_STDIO)
     FILE* h = fopen(name, "r");
-    if (h == 0) {
-        PlatformIO::Printf("(Error \"file <%s> not found\")\n", name);
-        err = kNIError_kResourceNotFound;
-    } else {
+    if (h != 0) {
         fseek(h, 0L, SEEK_END);
         IntIndex bytesToRead = (IntIndex)ftell(h);
         rewind(h);
@@ -91,15 +89,25 @@ void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
         if (buffer->Length() == bytesToRead) {
             size_t bytesRead = fread(buffer->Begin(), 1, (size_t)bytesToRead, h);
             buffer->Resize1DOrEmpty((IntIndex)bytesRead);
-        } else {
-            err = kNIError_kInsufficientResources;
         }
     }
+#endif
 }
 //------------------------------------------------------------
+
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+char sampleProgram[] =
+	"start( VI<( clump( "
+	"    Println('Hello, sky. I can fly.') "
+	") ) > ) ";
+#endif
+
 void PlatformIO::ReadStdin(StringRef buffer)
 {
     buffer->Resize1D(0);
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+    buffer->AppendCStr(sampleProgram);
+#else
     buffer->Reserve(5000);
     char c = fgetc(stdin);
     while(true) {
@@ -109,6 +117,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
         buffer->Append(c);
         c = fgetc(stdin);
     }
+#endif
 }
 
 #if 0
