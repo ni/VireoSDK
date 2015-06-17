@@ -18,6 +18,9 @@
 
 namespace Vireo {
 
+class String;
+typedef String *StringRef;
+
 //------------------------------------------------------------
 //! Process level fucntions for memory allocation.
 class PlatformMemory
@@ -35,7 +38,8 @@ public:
     static void Print(Int32 len, ConstCStr string);
     static void Print(ConstCStr string);
     static void Printf(ConstCStr format, ...);
-    // input is a bit trickier :) 
+    static void ReadFile(ConstCStr name, StringRef buffer);
+    static void ReadStdin(StringRef buffer);
 };
 
 //------------------------------------------------------------
