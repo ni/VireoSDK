@@ -34,8 +34,30 @@
   #include <emscripten.h>
 #endif
 
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+  extern "C" void std_cpp_init();
+  extern "C" void std_io_init();
+  extern "C" void _exit();
+#endif
+
 namespace Vireo {
 
+//============================================================
+void PlatformSetup()
+{
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+    std_io_init();
+    std_cpp_init();
+#endif
+}
+
+void PlatformShutdown()
+{
+#if defined(VIREO_EMBEDDED_EXPERIMENT)
+    _exit();
+#endif
+}
+    
 //============================================================
 //! Static memory allocator used primarily by the TM
 void* PlatformMemory::Malloc(size_t countAQ)
@@ -98,7 +120,7 @@ void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
 char sampleProgram[] =
 	"start( VI<( clump( "
-	"    Println('Hello, sky. I can fly.') "
+	"    Println('Hello, M4. I can fly to the store.') "
 	") ) > ) ";
 #endif
 

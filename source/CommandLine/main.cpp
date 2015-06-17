@@ -24,16 +24,11 @@ static struct {
 
 void RunExec();
 
-#if defined(VIREO_EMBEDDED_EXPERIMENT)
-  extern "C" void std_cpp_init();
-#endif
 
 //------------------------------------------------------------
 int VIREO_MAIN(int argc, const char * argv[])
 {
-#if defined(VIREO_EMBEDDED_EXPERIMENT)
-	std_cpp_init();
-#endif
+    PlatformSetup();
 
 	ConstCStr fileName = null;
     
@@ -89,12 +84,8 @@ int VIREO_MAIN(int argc, const char * argv[])
             }
         }
     }
-
-#if defined(VIREO_EMBEDDED_EXPERIMENT)
-    while (true) {
-    	;
-    }
-#endif
+    
+    PlatformShutdown();
     return 0;
 }
 //------------------------------------------------------------

@@ -26,6 +26,16 @@ THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "stm32f4xx_gpio.h"
+#include "stm32f4xx_rcc.h"
+#include "stm32f4xx_usart.h"
+
+#ifndef STDIN_FILENO
+	#define STDIN_FILENO 0
+	#define STDOUT_FILENO 1
+	#define STDERR_FILENO 2
+#endif
+
 //------------------------------------------------------------
 //! Venerable global error global still used by math libraries.
 error_t errno;
@@ -76,6 +86,62 @@ void std_cpp_init()
 		__init_array_start[i] ();
 	}
 }
+
+//------------------------------------------------------------
+void std_io_init()
+{
+	// enable the peripheral clocks
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+
+	// This sequence sets up the TX and RX GPIO pins so they work correctly
+	// with the USART peripheral
+	GPIO_InitTypeDef usartGPIO;
+	usartGPIO.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6; // Pin 5 (TX), Pin 6 (RX)
+	usartGPIO.GPIO_Mode = GPIO_Mode_AF;
+	usartGPIO.GPIO_Speed = GPIO_Speed_50MHz;
+	usartGPIO.GPIO_OType = GPIO_OType_PP;
+	usartGPIO.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOD, &usartGPIO);
+
+	// The RX and TX pins are now connected to their AF
+	// so that the USART1 can take over control of the pins
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource5, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOD, GPIO_PinSource6, GPIO_AF_USART2);
+
+	// Define the properties of USART
+	USART_InitTypeDef consoleUSART;
+	consoleUSART.USART_BaudRate = 115200;
+//	consoleUSART.USART_BaudRate = 9600;
+	consoleUSART.USART_WordLength = USART_WordLength_8b;
+	consoleUSART.USART_StopBits = USART_StopBits_1;
+	consoleUSART.USART_Parity = USART_Parity_No;
+	consoleUSART.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	consoleUSART.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+	USART_Init(USART2, &consoleUSART);
+
+	// finally enable the USART peripheral
+	USART_Cmd(USART2, ENABLE);
+}
+//------------------------------------------------------------
+void usart_putchar(USART_TypeDef* USARTx, const char c)
+{
+	// wait until data register is empty
+	while( !(USARTx->SR & USART_FLAG_TC) );
+	USART_SendData(USARTx, c);
+}
+//------------------------------------------------------------
+void usart_write(USART_TypeDef* USARTx, const char* s, int len)
+{
+	while(len){
+		if (*s == '\n') {
+			usart_putchar(USARTx, '\r');
+		}
+		usart_putchar(USARTx, *s);
+		s++;
+		len--;
+	}
+}
 //------------------------------------------------------------
 int _getpid()
 {
@@ -106,6 +172,9 @@ int _read(int file, char *ptr, int len)
 //------------------------------------------------------------
 int _write(int file, char *ptr, int len)
 {
+	if (file == STDOUT_FILENO) {
+		usart_write(USART2, ptr, len);
+	}
 	return -1;
 }
 //------------------------------------------------------------

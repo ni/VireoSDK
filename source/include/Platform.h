@@ -22,6 +22,10 @@ class String;
 typedef String *StringRef;
 
 //------------------------------------------------------------
+void PlatformSetup();
+void PlatformShutdown();
+
+//------------------------------------------------------------
 //! Process level fucntions for memory allocation.
 class PlatformMemory
 {

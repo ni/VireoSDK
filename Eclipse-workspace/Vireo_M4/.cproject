@@ -41,6 +41,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.2083814713" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common" valueType="string"/>
 								<option id="gnu.c.compiler.option.dialect.std.135378314" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
@@ -57,6 +58,7 @@
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.2082571707" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
@@ -93,6 +95,39 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1631966881" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.debug.532835615.656411366" name="/" resourcePath="VireoSource">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.debug.1767228998" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.debug" unusedChildren="">
+							<option id="cdt.managedbuild.option.gnu.cross.prefix.938206592.708385113" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix.938206592"/>
+							<option id="cdt.managedbuild.option.gnu.cross.path.98825965.2020907495" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path.98825965"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.1650874355" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.1238077236">
+								<option id="gnu.c.compiler.option.include.paths.1229449744" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${eclipse_home:/Task-00-ProjectTemplate/includes/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1221462035" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.1702827187" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.688984272">
+								<option id="gnu.cpp.compiler.option.include.paths.503413665" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1380857377" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.309302992" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.2079813242"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1114313203" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.1846407239"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.587311739" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.1882404810"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.1611176680" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.2026519939">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.670385731" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -136,6 +171,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${eclipse_home}/Task-00-ProjectTemplate/includes/&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.847765503" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.962762525" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -151,6 +187,7 @@
 									<listOptionValue builtIn="false" value="USE_STDPERIPH_DRIVER"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.paths.1373624370" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
@@ -187,6 +224,39 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1527458217" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="cdt.managedbuild.config.gnu.cross.exe.release.1112242265.2085533780" name="/" resourcePath="VireoSource">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.cross.exe.release.325530954" name="Cross GCC" superClass="cdt.managedbuild.toolchain.gnu.cross.exe.release" unusedChildren="">
+							<option id="cdt.managedbuild.option.gnu.cross.prefix.2045832569.295926801" name="Prefix" superClass="cdt.managedbuild.option.gnu.cross.prefix.2045832569"/>
+							<option id="cdt.managedbuild.option.gnu.cross.path.823862954.79964493" name="Path" superClass="cdt.managedbuild.option.gnu.cross.path.823862954"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="cdt.managedbuild.targetPlatform.gnu.cross"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.compiler.643863702" name="Cross GCC Compiler" superClass="cdt.managedbuild.tool.gnu.cross.c.compiler.554848064">
+								<option id="gnu.c.compiler.option.include.paths.1541848659" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.753342518" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.2113941959" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler.161332541">
+								<option id="gnu.cpp.compiler.option.include.paths.136169061" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1026443528" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.1416335975" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker.243421275"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.422730141" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker.34543724"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.archiver.676063441" name="Cross GCC Archiver" superClass="cdt.managedbuild.tool.gnu.cross.archiver.693546484"/>
+							<tool id="cdt.managedbuild.tool.gnu.cross.assembler.578930344" name="Cross GCC Assembler" superClass="cdt.managedbuild.tool.gnu.cross.assembler.1428921639">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.859968989" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
