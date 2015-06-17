@@ -43,12 +43,12 @@ EggShell* EggShell::Create(EggShell* parent)
 //------------------------------------------------------------
 EggShell::EggShell(TypeManagerRef tm)
 {
-    _typeManger     = tm;
+    _typeManager     = tm;
 }
 //------------------------------------------------------------
 void EggShell::Delete()
 {
-    TypeManagerRef pTADM = _typeManger;
+    TypeManagerRef pTADM = _typeManager;
     if (ShowStats) {
         pTADM->PrintMemoryStat("ES Delete begin", false);
     }
@@ -62,7 +62,7 @@ void EggShell::Delete()
 //------------------------------------------------------------
 NIError EggShell::REPL(SubString *commandBuffer)
 {
-    TypeManagerScope scope(_typeManger);
+    TypeManagerScope scope(_typeManager);
     
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
@@ -73,7 +73,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
         commandBuffer->EatToEol();
     }
 
-    TDViaParser parser(_typeManger, commandBuffer, &log, 1);
+    TDViaParser parser(_typeManager, commandBuffer, &log, 1);
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {

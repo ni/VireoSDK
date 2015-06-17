@@ -23,12 +23,12 @@ namespace Vireo
 //------------------------------------------------------------
 NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* clumpSource)
 {
-    VIREO_ASSERT(_typeManger == null)
+    VIREO_ASSERT(_typeManager == null)
     VIREO_ASSERT( sizeof(VIClump) == _clumps->ElementType()->TopAQSize() )
 
     // The preliminary initialization defines a generic VI
     // finish it out by defining its type.
-    _typeManger = tm;
+    _typeManager = tm;
     _params->SetElementType(paramsType, false);
     _locals->SetElementType(localsType, false);
     _clumps->Resize1D(clumpCount);

@@ -89,7 +89,7 @@ void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
         
         buffer->Resize1DOrEmpty(bytesToRead);
         if (buffer->Length() == bytesToRead) {
-            ssize_t bytesRead = fread(buffer->Begin(), 1, (size_t)bytesToRead, h);
+            size_t bytesRead = fread(buffer->Begin(), 1, (size_t)bytesToRead, h);
             buffer->Resize1DOrEmpty((IntIndex)bytesRead);
         } else {
             err = kNIError_kInsufficientResources;
