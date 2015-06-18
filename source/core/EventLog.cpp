@@ -83,7 +83,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
     }
     
     if (_errorLog == StdOut) {
-        PlatformIO::Print(buffer);
+        gPlatform.IO.Print(buffer);
     } else if (_errorLog) {
         _errorLog->Append(length, (const Utf8Char*)buffer);
     }

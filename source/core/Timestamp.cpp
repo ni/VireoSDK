@@ -57,19 +57,19 @@ namespace Vireo
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
 {
-    _Param(0) = PlatformTime::TickCount();
+    _Param(0) = gPlatform.Timer.TickCount();
     return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64)
 {
-    _Param(0) = PlatformTime::TickCountToMicroseconds(PlatformTime::TickCount());
+    _Param(0) = gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
     return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
 {
-    _Param(0) = (UInt32) PlatformTime::TickCountToMilliseconds(PlatformTime::TickCount());
+    _Param(0) = (UInt32) gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
     return _NextInstruction();
 }
 

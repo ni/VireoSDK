@@ -77,7 +77,7 @@ NIError EggShell::REPL(SubString *commandBuffer)
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {
-        PlatformIO::Printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
+        gPlatform.IO.Printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
     }
     return err;
 }

@@ -37,7 +37,7 @@ VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 TypeManagerRef TypeManager::New(TypeManagerRef tmParent)
 {
     // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
-    TypeManagerRef tm = (TypeManagerRef) PlatformMemory::Malloc(sizeof(TypeManager));
+    TypeManagerRef tm = (TypeManagerRef) gPlatform.Mem.Malloc(sizeof(TypeManager));
     new (tm) TypeManager(tmParent);
     tm->TrackAllocation(tm, sizeof(TypeManager), true);
     return tm;
@@ -47,7 +47,7 @@ void TypeManager::Delete(TypeManagerRef tm)
 {    
     // Free up mutex, and any other members with destructors.
     tm->~TypeManager();
-    PlatformMemory::Free(tm);
+    gPlatform.Mem.Free(tm);
 }
 //------------------------------------------------------------
 void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
@@ -56,7 +56,7 @@ void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
         // If bLast is true then silence is success.
     } else {
-        PlatformIO::Printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
+        gPlatform.IO.Printf("Allocations %4d, AQCount %5zd, ShareTypes %d (%s)\n", (int)_totalAllocations, _totalAQAllocated, _typesShared, message);
     }
 #endif
 }
@@ -93,7 +93,7 @@ void* TypeManager::Malloc(size_t countAQ)
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures ++;
         THREAD_EXEC()->ClearBreakout();
-        PlatformIO::Print("Exceeded allocation limit\n");
+        gPlatform.IO.Print("Exceeded allocation limit\n");
         return null;
     }
 
@@ -105,7 +105,7 @@ void* TypeManager::Malloc(size_t countAQ)
     allocationCount = countAQ;
 #endif
 
-    void* pBuffer =  PlatformMemory::Malloc(countAQ);
+    void* pBuffer = gPlatform.Mem.Malloc(countAQ);
     if (pBuffer) {
         TrackAllocation(pBuffer, allocationCount, true);
 
@@ -133,7 +133,7 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
     preserveAQ += sizeof(MallocInfo);
 #endif
 
-    void* pNewBuffer = realloc(pBuffer, countAQ);
+    void* pNewBuffer = gPlatform.Mem.Realloc(pBuffer, countAQ);
     
     if (pNewBuffer != null) {
         if (preserveAQ < countAQ) {
@@ -169,7 +169,7 @@ void TypeManager::Free(void* pBuffer)
 #endif
     
         TrackAllocation(pBuffer, allocationCount, false);
-        return PlatformMemory::Free(pBuffer);
+        return gPlatform.Mem.Free(pBuffer);
     }
 }
 //------------------------------------------------------------
@@ -1453,7 +1453,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         SubString pathTail;
         path->SplitString(&pathHead, &pathTail, '.');
 
-        PlatformIO::Print(" Using array indexes in paths\n");
+        gPlatform.IO.Print(" Using array indexes in paths\n");
 
         // If the path has a tail it needs to index the array.
         // There may be more than one way to do so raw1d indexes, or multidim

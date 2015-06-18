@@ -243,7 +243,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 {
     VIREO_ASSERT((_runningQueueElt == null))
 
-    PlatformTickType currentTime  = PlatformTime::TickCount();
+    PlatformTickType currentTime  = gPlatform.Timer.TickCount();
     PlatformTickType breakOutTime = currentTime + tickCount;
 
     _timer.QuickCheckTimers(currentTime);
@@ -272,7 +272,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
 #endif
         } while (_breakoutCount-- > 0);
 
-        currentTime = PlatformTime::TickCount();
+        currentTime = gPlatform.Timer.TickCount();
         _timer.QuickCheckTimers(currentTime);
 
         if (currentTime < breakOutTime) {

@@ -38,12 +38,52 @@
   extern "C" void std_cpp_init();
   extern "C" void std_io_init();
   extern "C" void _exit();
+
+#include <new>
+#include <malloc.h>
+
+using namespace Vireo;
+
+void* operator new(std::size_t size) {
+    return gPlatform.Mem.Malloc(size);
+}
+
+void* operator new[](std::size_t size) {
+    return gPlatform.Mem.Malloc(size);
+}
+
+void operator delete(void* ptr) {
+    return gPlatform.Mem.Free(ptr);
+}
+
+void operator delete[](void* ptr) {
+    return gPlatform.Mem.Free(ptr);
+}
+
+void* operator new(std::size_t size, const std::nothrow_t&) {
+    return gPlatform.Mem.Malloc(size);
+}
+
+void* operator new[](std::size_t size, const std::nothrow_t&) {
+    return gPlatform.Mem.Malloc(size);
+}
+
+void operator delete(void* ptr, const std::nothrow_t&) {
+    return gPlatform.Mem.Free(ptr);
+}
+
+void operator delete[](void* ptr, const std::nothrow_t&) {
+    return gPlatform.Mem.Free(ptr);
+}
 #endif
+
 
 namespace Vireo {
 
+Platform gPlatform;
+
 //============================================================
-void PlatformSetup()
+void Platform::Setup()
 {
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
     std_io_init();
@@ -51,7 +91,7 @@ void PlatformSetup()
 #endif
 }
 
-void PlatformShutdown()
+void Platform::Shutdown()
 {
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
     _exit();
@@ -59,19 +99,60 @@ void PlatformShutdown()
 }
     
 //============================================================
+PlatformMemory gPlatformMem;
+
 //! Static memory allocator used primarily by the TM
 void* PlatformMemory::Malloc(size_t countAQ)
 {
+#if defined(VIREO_TRACK_MALLOC)
+    size_t logicalSize = countAQ;
+    countAQ += sizeof(size_t);
+#endif
     void* pBuffer = malloc(countAQ);
     if (pBuffer) {
         memset(pBuffer, 0, countAQ);
+#if defined(VIREO_TRACK_MALLOC)
+        _totalAllocated += logicalSize;
+        *(size_t*)pBuffer = logicalSize;
+        pBuffer = (size_t*)pBuffer + 1;
+#else
+        _totalAllocated++;
+#endif
     }
+    return pBuffer;
+}
+//------------------------------------------------------------
+//! Static memory deallocator used primarily by the TM.
+void* PlatformMemory::Realloc(void* pBuffer, size_t countAQ)
+{
+#if defined(VIREO_TRACK_MALLOC)
+    pBuffer = (size_t*)pBuffer - 1;
+    size_t currentLogicalSize = *(size_t*)pBuffer;
+    size_t newLogicalSize = countAQ;
+    countAQ += sizeof(size_t);
+#endif
+    
+    pBuffer = realloc(pBuffer, countAQ);
+
+#if defined(VIREO_TRACK_MALLOC)
+    if (pBuffer) {
+        _totalAllocated = _totalAllocated - currentLogicalSize + newLogicalSize;
+        *(size_t*)pBuffer = newLogicalSize;
+        pBuffer = (size_t*)pBuffer + 1;
+    }
+#endif
     return pBuffer;
 }
 //------------------------------------------------------------
 //! Static memory deallocator used primarily by the TM.
 void PlatformMemory::Free(void* pBuffer)
 {
+#if defined(VIREO_TRACK_MALLOC)
+    pBuffer = (size_t*)pBuffer - 1;
+    _totalAllocated -= *(size_t*)pBuffer;
+#else
+    _totalAllocated--;
+#endif
     free(pBuffer);
 }
 //============================================================
@@ -198,7 +279,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
 
 
 //============================================================
-PlatformTickType PlatformTime::TickCount()
+PlatformTickType PlatformTimer::TickCount()
 {
 #if defined(_WIN32) || defined(_WIN64)
     
@@ -274,22 +355,22 @@ PlatformTickType PlatformTime::TickCount()
 }
 
 //------------------------------------------------------------
-PlatformTickType PlatformTime::MicrosecondsFromNowToTickCount(Int64 microsecondCount)
+PlatformTickType PlatformTimer::MicrosecondsFromNowToTickCount(Int64 microsecondCount)
 {
-    return PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(microsecondCount);
+    return TickCount() + MicrosecondsToTickCount(microsecondCount);
 }
 //------------------------------------------------------------
-PlatformTickType PlatformTime::MillisecondsFromNowToTickCount(Int64 millisecondCount)
+PlatformTickType PlatformTimer::MillisecondsFromNowToTickCount(Int64 millisecondCount)
 {
-    return PlatformTime::TickCount() + PlatformTime::MicrosecondsToTickCount(millisecondCount * 1000);
+    return TickCount() + MicrosecondsToTickCount(millisecondCount * 1000);
 }
 //------------------------------------------------------------
-PlatformTickType PlatformTime::SecondsToTickCount(Double seconds)
+PlatformTickType PlatformTimer::SecondsToTickCount(Double seconds)
 {
     return MicrosecondsToTickCount(seconds * 1000000.0);
 }
 //------------------------------------------------------------
-PlatformTickType PlatformTime::MicrosecondsToTickCount(Int64 microseconds)
+PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
 {
 #if defined(_WIN32) || defined(_WIN64)
     
@@ -331,12 +412,12 @@ PlatformTickType PlatformTime::MicrosecondsToTickCount(Int64 microseconds)
 #endif
 }
 //------------------------------------------------------------
-Int64 PlatformTime::TickCountToMilliseconds(PlatformTickType ticks)
+Int64 PlatformTimer::TickCountToMilliseconds(PlatformTickType ticks)
 {
     return (TickCountToMicroseconds(ticks) / 1000);
 }
 //------------------------------------------------------------
-Int64 PlatformTime::TickCountToMicroseconds(PlatformTickType ticks)
+Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 {
 #if defined(_WIN32) || defined(_WIN64)
     

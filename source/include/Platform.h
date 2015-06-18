@@ -22,28 +22,34 @@ class String;
 typedef String *StringRef;
 
 //------------------------------------------------------------
-void PlatformSetup();
-void PlatformShutdown();
-
-//------------------------------------------------------------
 //! Process level fucntions for memory allocation.
-class PlatformMemory
-{
-public:
-    static void* Malloc(size_t countAQ);
-    static void Free(void* pBuffer);
+class PlatformMemory {
+  private:
+    size_t _totalAllocated;
+  public:
+    void* Malloc(size_t countAQ);
+    void* Realloc(void* pBuffer, size_t countAQ);
+    void Free(void* pBuffer);
+    size_t TotalAllocated() { return _totalAllocated; }
 };
 
+//#define VIREO_TRACK_MALLOC
+
+#if defined(VIREO_TRACK_MALLOC)
+  #define LOG_PLATFORM_MEM(message)    gPlatform.IO.Printf(message " %d\n", (int)gPlatform.Mem.TotalAllocated());
+#else
+  #define LOG_PLATFORM_MEM(message)
+#endif
+    
 //------------------------------------------------------------
 //! Process level fucntions for stdio.
-class PlatformIO
-{
-public:
-    static void Print(Int32 len, ConstCStr string);
-    static void Print(ConstCStr string);
-    static void Printf(ConstCStr format, ...);
-    static void ReadFile(ConstCStr name, StringRef buffer);
-    static void ReadStdin(StringRef buffer);
+class PlatformIO {
+  public:
+    void Print(Int32 len, ConstCStr string);
+    void Print(ConstCStr string);
+    void Printf(ConstCStr format, ...);
+    void ReadFile(ConstCStr name, StringRef buffer);
+    void ReadStdin(StringRef buffer);
 };
 
 //------------------------------------------------------------
@@ -52,25 +58,33 @@ public:
     typedef UInt32 PlatformTickType;
 #elif kVireoOS_emscripten
     typedef Int64 PlatformTickType;
-    //  typedef Double PlatformTickType; (slightly more native for JavaScript/emscripten)
 #else
     typedef Int64 PlatformTickType;
 #endif
 
-class PlatformTime
-{
-public:
-    static PlatformTickType TickCount();
-    static PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
-    static PlatformTickType SecondsToTickCount(Double seconds);
-    static Int64 TickCountToMilliseconds(PlatformTickType);
-    static Int64 TickCountToMicroseconds(PlatformTickType);
-    static PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);
-    static PlatformTickType MicrosecondsFromNowToTickCount(Int64 microseconds);
+class PlatformTimer {
+  public:
+    PlatformTickType TickCount();
+    PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
+    PlatformTickType SecondsToTickCount(Double seconds);
+    Int64 TickCountToMilliseconds(PlatformTickType);
+    Int64 TickCountToMicroseconds(PlatformTickType);
+    PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);
+    PlatformTickType MicrosecondsFromNowToTickCount(Int64 microseconds);
 };
 
-
-
+//------------------------------------------------------------
+//! Single class to gather platform classes.
+class Platform {
+  public:
+    void Setup();
+    void Shutdown();
+  public:
+    PlatformMemory  Mem;
+    PlatformIO      IO;
+    PlatformTimer   Timer;
+};
+extern Platform gPlatform;
 
 }
 

@@ -21,7 +21,7 @@ void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int lin
 {
     if (!test) {
         ConstCStr filename = (strrchr(file, '/') ? strrchr(file, '/') + 1 : strrchr(file, '\\') ? strrchr(file, '\\') + 1 : file);
-        PlatformIO::Printf("assert %s failed in %s, line %d\n", message, filename, line);
+        gPlatform.IO.Printf("assert %s failed in %s, line %d\n", message, filename, line);
 #ifdef VIREO_DYNAMIC_LIB
         // When called as a DLL/Shared library throwing a C++ exception
         // may be prefered.

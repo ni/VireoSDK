@@ -309,7 +309,7 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     
     Format(&format, count, arguments, tempString.Value);
-    PlatformIO::Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
+    gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -321,7 +321,7 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
         tempString.Value->Append('\n');
 
-        PlatformIO::Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
+        gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     }
     return _NextInstruction();
 }

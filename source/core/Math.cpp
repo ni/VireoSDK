@@ -455,7 +455,7 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
     static Boolean seeded = false;
     if (_ParamPointer(0)) {
         if (!seeded) {
-            srand((unsigned int)PlatformTime::TickCount());
+            srand((unsigned int)gPlatform.Timer.TickCount());
             seeded = true;
         }
         _Param(0) = rand() / ((Double) RAND_MAX + 1);

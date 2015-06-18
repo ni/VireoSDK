@@ -656,7 +656,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                         break;
                     default:
-                        PlatformIO::Printf("special error character %c\n",fOptions.FormatChar );
+                        gPlatform.IO.Printf("special error character %c\n",fOptions.FormatChar );
                         // This is just part of the format specifier, let it become part of the percent format
                     break;
                 }

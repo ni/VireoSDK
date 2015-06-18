@@ -141,19 +141,19 @@ void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickC
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
-    PlatformTickType future = PlatformTime::MicrosecondsFromNowToTickCount(_Param(0));
+    PlatformTickType future = gPlatform.Timer.MicrosecondsFromNowToTickCount(_Param(0));
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(_Param(0));
+    PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(_Param(0));
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
 {
-    return THREAD_CLUMP()->WaitUntilTickCount(PlatformTime::MicrosecondsToTickCount(_Param(0)), _NextInstruction());
+    return THREAD_CLUMP()->WaitUntilTickCount(gPlatform.Timer.MicrosecondsToTickCount(_Param(0)), _NextInstruction());
 }
 //------------------------------------------------------------
 void OccurrenceCore::SetOccurrence()
@@ -187,7 +187,7 @@ VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        PlatformTickType future = PlatformTime::MillisecondsFromNowToTickCount(msTimeout);
+        PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout);
         pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
         pOcc->InsertObserver(pObserver+1, pOcc->Count()+1);
         return clump->WaitOnObservableObject(_this);
@@ -297,7 +297,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));
         pQV->InsertObserver(pObserver+1, -1);
         return clump->WaitOnObservableObject(_this);
     } else {
@@ -336,7 +336,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
     } else if (timeOut != 0) {
         // This is the initial call and a timeout has been supplied.
         // Wait on the queue and the timeout. -1 will wait forever.
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, PlatformTime::MillisecondsFromNowToTickCount(timeOut));
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));
         pQV->InsertObserver(pObserver+1, 1);
         return clump->WaitOnObservableObject(_this);
     } else {

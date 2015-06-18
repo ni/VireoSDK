@@ -28,7 +28,7 @@ void RunExec();
 //------------------------------------------------------------
 int VIREO_MAIN(int argc, const char * argv[])
 {
-    PlatformSetup();
+    gPlatform.Setup();
 
 	ConstCStr fileName = null;
     
@@ -41,21 +41,24 @@ int VIREO_MAIN(int argc, const char * argv[])
     gShells._pUserShell = EggShell::Create(gShells._pRootShell);
     gShells._pUserShell->ShowStats = false;
     gShells._keepRunning = true;
-    
+    LOG_PLATFORM_MEM("Mem after init")
+
     if (fileName) {
         {
             TypeManagerScope scope(gShells._pUserShell->TheTypeManager());
             STACK_VAR(String, buffer);
             
-            PlatformIO::ReadFile(fileName, buffer.Value);
+            gPlatform.IO.ReadFile(fileName, buffer.Value);
             if (buffer.Value->Length() == 0) {
-                PlatformIO::Printf("(Error \"file <%s> empty\")\n", fileName);
+                gPlatform.IO.Printf("(Error \"file <%s> empty\")\n", fileName);
             }
             
             SubString input = buffer.Value->MakeSubStringAlias();
             if (gShells._pUserShell->REPL(&input) != kNIError_Success) {
                 gShells._keepRunning = false;
             }
+            
+            LOG_PLATFORM_MEM("Mem after load")
         }
 
 #if defined(kVireoOS_emscripten)
@@ -70,11 +73,11 @@ int VIREO_MAIN(int argc, const char * argv[])
         // the core loop should be processed by by a vireo program
         // once IO primitives are all there.
         while (gShells._keepRunning) {
-            PlatformIO::Print(">");
+            gPlatform.IO.Print(">");
             {
             TypeManagerScope scope(gShells._pUserShell->TheTypeManager());
             STACK_VAR(String, buffer);
-            PlatformIO::ReadStdin(buffer.Value);
+            gPlatform.IO.ReadStdin(buffer.Value);
             SubString input = buffer.Value->MakeSubStringAlias();
             gShells._pUserShell->REPL(&input);
             }
@@ -85,7 +88,7 @@ int VIREO_MAIN(int argc, const char * argv[])
         }
     }
     
-    PlatformShutdown();
+    gPlatform.Shutdown();
     return 0;
 }
 //------------------------------------------------------------
@@ -100,8 +103,10 @@ void RunExec() {
 #if defined(kVireoOS_emscripten)
         emscripten_cancel_main_loop();
 #endif
+        LOG_PLATFORM_MEM("Mem after execution")
         gShells._pUserShell->Delete();
         gShells._pRootShell->Delete();
+        LOG_PLATFORM_MEM("Mem after cleanup")
     }
 }
 
