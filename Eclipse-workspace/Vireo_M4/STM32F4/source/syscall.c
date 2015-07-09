@@ -111,8 +111,7 @@ void std_io_init()
 
 	// Define the properties of USART
 	USART_InitTypeDef consoleUSART;
-	consoleUSART.USART_BaudRate = 115200;
-//	consoleUSART.USART_BaudRate = 9600;
+	consoleUSART.USART_BaudRate = 115200;  //9600;
 	consoleUSART.USART_WordLength = USART_WordLength_8b;
 	consoleUSART.USART_StopBits = USART_StopBits_1;
 	consoleUSART.USART_Parity = USART_Parity_No;
@@ -122,6 +121,17 @@ void std_io_init()
 
 	// finally enable the USART peripheral
 	USART_Cmd(USART2, ENABLE);
+
+	// Initialize SysTick timer
+//	SysTick_Config(SystemCoreClock / 1000);
+}
+
+uint32_t gTickCount = 0;
+
+//------------------------------------------------------------
+void SysTick_Handler()
+{
+	gTickCount++;
 }
 //------------------------------------------------------------
 void usart_putchar(USART_TypeDef* USARTx, const char c)

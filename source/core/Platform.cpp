@@ -35,12 +35,14 @@
 #endif
 
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
-  extern "C" void std_cpp_init();
-  extern "C" void std_io_init();
-  extern "C" void _exit();
 
 #include <new>
 #include <malloc.h>
+
+extern "C" void std_cpp_init();
+extern "C" void std_io_init();
+extern "C" void _exit();
+extern uint32_t gTickCount;
 
 using namespace Vireo;
 
@@ -348,9 +350,11 @@ PlatformTickType PlatformTimer::TickCount()
     lastScuTickCount = scuTickCount;
     return TickCount;
     
-#else
+#elif defined (VIREO_EMBEDDED_EXPERIMENT)
     //#error MicroSecondCount not defined
-    return 0;
+    return gTickCount;
+#else
+    retrn 0;
 #endif
 }
 
@@ -406,6 +410,10 @@ PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
     // Still experimental.
     return microseconds * 333333 / 10000;
     
+#elif defined (VIREO_EMBEDDED_EXPERIMENT)
+
+    return microseconds / 1000;
+
 #else
     // #error MicroSecondCount not defined
     return 0;
@@ -453,6 +461,10 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
     // Still experimental.
     return ticks * 10000 / 333333;
     
+#elif defined (VIREO_EMBEDDED_EXPERIMENT)
+
+    return ticks * 1000;
+
 #else
     //#error MicroSecondCount not defined
     return 0;

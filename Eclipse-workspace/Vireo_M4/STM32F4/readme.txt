@@ -1,13 +1,15 @@
 /*
- Headers for the STM32F4 are needed to compile this project 
- For the sample eagle-armstrap target the headers are 
- included in the preconfigured eclipse embedded ARM image.
 
- The gcc and g++ compileir settings are set to look for 
- the headers next to eclipse, or in this directory.
+ This folder contains a snapshot of the headers provided with the sample 
+ projecs for the armstrap eagle board, and serve only as a reference.
+
+ A large number of the headers are part of the CMSIS (Cortex Microcontroller
+ Softeare Interface Standard) which serves as a standard set of macros and
+ functions for working with different series in the cortex family.
  
- Note that the headers are not inclued as part of the
- VireoSDK git repo.
-  
+ Places to find more recent information include:
+ http://www.arm.com/products/processors/cortex-m/cortex-microcontroller-software-interface-standard.php
+ https://github.com/mbedmicro/mbed/tree/master/libraries/mbed/targets/cmsis
+
  */
 

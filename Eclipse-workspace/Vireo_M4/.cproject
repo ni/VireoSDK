@@ -38,10 +38,9 @@
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.1791631741" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.2083814713" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common" valueType="string"/>
 								<option id="gnu.c.compiler.option.dialect.std.135378314" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
@@ -60,9 +59,9 @@
 								<option id="gnu.cpp.compiler.option.include.paths.2082571707" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/tarrget/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.354977444" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1911287135" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
@@ -168,10 +167,9 @@
 								</option>
 								<option id="gnu.c.compiler.option.include.paths.457189004" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${eclipse_home}/Task-00-ProjectTemplate/includes/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.847765503" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.962762525" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -189,9 +187,9 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1373624370" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ECLIPSE_HOME:/Task-00-ProjectTemplate/includes/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/VireoSource/include}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/CMSIS}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/includes/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/tarrget/CMSIS}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/STM32F4/target/STM32F4xx_StdPeriph_Driver/inc}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.278865716" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -MD -fno-common -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.851264364" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
@@ -208,7 +206,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.nostart.1904455573" name="Do not use standard start files (-nostartfiles)" superClass="gnu.cpp.link.option.nostart" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nostdlibs.1394034440" name="No startup or default libs (-nostdlib)" superClass="gnu.cpp.link.option.nostdlibs" value="true" valueType="boolean"/>
-								<option id="gnu.cpp.link.option.strip.903419228" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.strip.903419228" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nodeflibs.51513958" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.cpp.link.option.nodeflibs" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1034371941" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

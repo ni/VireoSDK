@@ -116,6 +116,8 @@ SDG
     #define VIREO_TYPE_Canvas2D  1
     #define VIREO_TYPE_HttpClient 1
     #define VIREO_DEBUG_GPIO_STDIO 1
+    #define VIREO_TIME_FORMATTING 1
+    #define VIREO_SPREADSHEET_FORMATTING 1
 
  // Vireo can be configured to assume all strings are 7 bit ASCII
  // This means String ArrayLength will alwasy equal StringLength
