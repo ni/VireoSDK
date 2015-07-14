@@ -1,0 +1,29 @@
+{
+  "name": "vireo",
+  "version": "2.0.1",
+  "description": "Experimental vireo runtime engine",
+  "dependencies": {
+    "diff": "^1.4.0",
+    "http-server": "^0.8.0",
+    "shelljs": "^0.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "cd test-it && ./run-tests.sh",
+    "make-n64": "cd make-it && node make n64"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NI/VireoSDK.git"
+  },
+  "keywords": [
+    "LabVIEW",
+    "vireo"
+  ],
+  "author": "See 'AUTHORS' file",
+  "license": "SEE LICENSE IN 'LICENSE.txt'",
+  "bugs": {
+    "url": "https://github.com/NI/VireoSDK/issues"
+  },
+  "homepage": "https://github.com/NI/VireoSDK#readme"
+}
