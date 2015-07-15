@@ -3,6 +3,7 @@
 //------------------------------------------------------------
 require('shelljs/make');
 sh = require('shelljs');
+fs = require('fs');
 path = require('path');
 
 //------------------------------------------------------------
@@ -18,74 +19,96 @@ buildOptions = {
     "filesToLink": ""
 };
 //------------------------------------------------------------
-function compileCommandMSCL(opts, fileName) {
-    var objFileName = opts.objRoot + path.basename(fileName) + '.o';
-    var command =
-        'cl ' +
-        opts.sourceRoot + fileName + ' ' +
-         '/nologo /Oy- /c /DWIN32  /Zi /MTd /Faasm\\ /Foobjs\\ /Fdobjs\\vc100.pdb' +
-        (opts.debug ? '/D_DEBUG' : '') +
-        '/I' + opts.include + ' ' +
-        opts.define + ' ';
+function fileIsNewer(sourceFilePath, objectFilePath) {
+    if (!sh.test('-e', objectFilePath)) {
+        return sh.test('-e', sourceFilePath);
+    } else {
+        return ( fs.statSync(sourceFilePath).mtime.getTime() -
+                 fs.statSync(objectFilePath).mtime.getTime()) > 0;
+    }
+}
+//------------------------------------------------------------
+function compileCommandMSCL(opts, filePath) {
+    var objFilePath = opts.objRoot + 'win/' + path.parse(filePath).name + '.obj';
+    var command = '';
+    if (fileIsNewer(filePath, objFilePath)) {
+        command =
+            'cl ' +
+            filePath + ' ' +
+             '/nologo /Oy- /c /DWIN32  /Zi /MTd /Faobjs\\win\\ /Foobjs\\win\\ /Fdobjs\\win\\vc100.pdb ' +
+            (opts.debug ? '/D_DEBUG ' : '') +
+            '/I' + opts.include + ' ' +
+            opts.define + ' ';
+    }
+    opts.filesToLink += ' ' + objFilePath;
 
-    opts.filesToLink += ' ' + objFileName;
     return command;
 }
 //------------------------------------------------------------
-function compileClangCommand(opts, fileName) {
-    var objFileName = opts.objRoot + path.basename(fileName) + '.o';
-    var command =
-        'clang++ ' +
-        '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 -c ' +
-        (opts.debug ? '-O0 ' : '-Oz ') +
-        '-I' + opts.include + ' ' +
-        opts.define + ' ' +
-        '-o ' + objFileName + ' ' +
-        opts.sourceRoot + fileName;
-
-    opts.filesToLink += ' ' + objFileName;
+function compileClangCommand(opts, filePath) {
+    var objFilePath = opts.objRoot + 'clang/' + path.parse(filePath).name + '.o';
+    var command = '';
+    if (fileIsNewer(filePath, objFilePath)) {
+        command =
+            'clang++ ' +
+            '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 -c ' +
+            (opts.debug ? '-O0 ' : '-Oz ') +
+            '-I' + opts.include + ' ' +
+            opts.define + ' ' +
+            '-o ' + objFilePath + ' ' +
+            filePath;
+    }
+    opts.filesToLink += ' ' + objFilePath;
     return command;
 }
 //------------------------------------------------------------
-function compileEmscriptenCommand(opts, fileName) {
-    var objFileName = opts.objRoot + path.basename(fileName) + '.bc';
-    var command =
-        'emcc ' +
-        '-pthread -Wall -MMD -fno-rtti -fno-exceptions -std=c++11 ' +
-        '-s NO_EXIT_RUNTIME=1 ' +
-        '-fno-exceptions ' +
-        '--memory-init-file 0 ' +
-        '-DkVireoOS_emscripten -DVIREO_LEAN ' +
-        (opts.debug ? '-O0 ' : '-Os ') +
-        '-I' + opts.include + ' ' +
-        opts.define + ' ' +
-        '-o ' + objFileName + ' ' +
-        opts.sourceRoot + fileName;
-
-    opts.filesToLink += ' ' + objFileName;
+function compileEmscriptenCommand(opts, filePath) {
+    var objFilePath = opts.objRoot + 'ems/' + path.parse(filePath).name + '.bc';
+    var command = '';
+    if (fileIsNewer(filePath, objFilePath)) {
+        command =
+            'emcc ' +
+            '-pthread -Wall -MMD -fno-rtti -fno-exceptions -std=c++11 ' +
+            // Main will never exits so save some memory.
+            '-s NO_EXIT_RUNTIME=1 ' +
+            '-fno-exceptions ' +
+            '--memory-init-file 0 ' +
+            '-DkVireoOS_emscripten -DVIREO_LEAN ' +
+            (opts.debug ? '-O0 ' : '-Os ') +
+            '-I' + opts.include + ' ' +
+            opts.define + ' ' +
+            '-o ' + objFilePath + ' ' +
+            filePath;
+    }
+    opts.filesToLink += ' ' + objFilePath;
     return command;
 }
 //------------------------------------------------------------
-function compileGccCommand(opts, fileName) {
-    var objFileName = opts.objRoot + path.basename(fileName) + '.o';
+function compileGccCommand(opts, filePath) {
+    var objFilePath = opts.objRoot + 'gcc/' + path.parse(filePath).name + '.o';
     var command =
         'g++ ' +
         '-pthread -fdata-sections -ffunction-sections' +
         (opts.debug ? '-O0' : '-O2') +
         '-I' + opts.include + ' ' +
         opts.define + ' ' +
-        '-o ' + objFileName + ' ' +
-        opts.sourceRoot + fileName;
+        '-o ' + objFilePath + ' ' +
+        filePath;
 
-    opts.filesToLink += ' ' + objFileName;
+    opts.filesToLink += ' ' + objFilePath;
     return command;
 }
 //------------------------------------------------------------
 function compile(opts, fileName) {
-    var command = opts.ccCommand(opts, fileName);
-    console.log('Compiling ' + fileName);
-    // console.log(command);
-    sh.exec(command);
+    var sourceFilePath = opts.sourceRoot + fileName;
+    var command = opts.ccCommand(opts, sourceFilePath);
+    if (command.length > 0) {
+        console.log('Compiling ' + fileName);
+        // console.log(command);
+        sh.exec(command);
+    } else {
+        console.log('Skipping (looks up to date) ' + fileName);
+    }
 }
 //------------------------------------------------------------
 function link(opts) {
@@ -109,21 +132,25 @@ function configureSettings(opts, targetPlatform) {
     var compilerPath = "";
     opts.filesToLink = "";
     if (targetPlatform === 'darwin') {
+        sh.mkdir('-p', buildOptions.objRoot + 'clang/');
         opts.ccCommand = compileClangCommand;
         opts.link = 'clang++';
         opts.ldflags = '-dead_strip -m64 ';
         opts.strip = 'strip';
     } else if (targetPlatform === 'linux') {
+        sh.mkdir('-p', buildOptions.objRoot + 'gcc/');
         opts.ccCommand = compileGccCommand;
         opts.link   = 'g++';
         opts.ldflags= '-s -Wl,--gc-sections';
         opts.strip = 'strip';
     } else if (targetPlatform === 'uBlaze') {
+        sh.mkdir('-p', buildOptions.objRoot + 'uBlaze/');
         opts.ccCommand = compileGccCommand;
         opts.cc     = 'mb-g++';
         //opts.cflags = '-DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax';
         // LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
     } else if (targetPlatform === 'emscripten') {
+        sh.mkdir('-p', buildOptions.objRoot + 'ems/');
         compilerPath = which('emcc');
         if (compilerPath) {
             console.log('using emcc at <' + compilerPath + '>');
@@ -166,6 +193,7 @@ function configureSettings(opts, targetPlatform) {
         opts.targetFile = 'vireo.js';
 
     } else if (targetPlatform === 'win32' || targetPlatform === 'win64') {
+        sh.mkdir('-p', buildOptions.objRoot + 'win/');
         compilerPath = sh.which('cl');
         if (compilerPath) {
             console.log('using cl at <' + compilerPath + '>');
@@ -245,10 +273,8 @@ target.clean = function() {
     console.log("Clean all.");
     sh.rm('-rf', buildOptions.objRoot);
     sh.rm('-f', buildOptions.targetFile);
-    sh.mkdir(buildOptions.objRoot);
 
     if (process.platform === 'win32' || process.platform === 'win64') {
         sh.rm('-rf', './asm');
-        sh.mkdir( './asm');
     }
 };

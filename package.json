@@ -10,6 +10,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "cd test-it && ./run-tests.sh",
+    "make": "cd make-it && node make",
     "make-v64": "cd make-it && node make v64"
   },
   "repository": {
