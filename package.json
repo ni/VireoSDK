@@ -1,0 +1,28 @@
+{
+  "name": "vireo-sdk",
+  "version": "2.0.0-alpha.5",
+  "description": "SDK for experimental vireo runtime engine.",
+  "dependencies": {
+    "diff": "^1.4.0",
+    "http-server": "^0.8.0",
+    "shelljs": "^0.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "cd test-it && ./run-tests.sh",
+    "make": "cd make-it && node make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NI/VireoSDK.git"
+  },
+  "keywords": [
+    "vireo"
+  ],
+  "author": "See 'AUTHORS' file",
+  "license": "SEE LICENSE IN 'LICENSE.txt'",
+  "bugs": {
+    "url": "https://github.com/NI/VireoSDK/issues"
+  },
+  "homepage": "https://github.com/NI/VireoSDK#readme"
+}

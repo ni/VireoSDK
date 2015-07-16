@@ -18,25 +18,11 @@ SDG
 #include "Timestamp.h"      // For seeding random numbers
 #include "TypeDefiner.h"
 
-// With non-unique names(AKA overlodaed) only the C entlry points are appended.
+// With non-unique names(AKA overlodaed) only the C entry points are appended.
 #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
 #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
 
 using namespace Vireo;
-
-#if (kVireoOS_win32U || kVireoOS_win64U)
-    #define log2(x) log(x)/log(2.)
-    Double rint(Double x)
-    {
-        Double fracPart, intPart;
-        fracPart = modf(x, &intPart);
-        if (abs(fracPart) > 0.5)
-            intPart += (x > 0) - (x < 0);
-        else if ((abs(fracPart) == 0.5) && (((long long int) intPart) % 2))
-            intPart += (x > 0) - (x < 0);
-        return intPart;
-    }
-#endif
 
 // Different compilers expose different sets of function signatures for
 // integer abs, so we define our own.
