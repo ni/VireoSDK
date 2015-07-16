@@ -24,20 +24,6 @@ SDG
 
 using namespace Vireo;
 
-#if (kVireoOS_win32U || kVireoOS_win64U)
-    #define log2(x) log(x)/log(2.)
-    Double rint(Double x)
-    {
-        Double fracPart, intPart;
-        fracPart = modf(x, &intPart);
-        if (abs(fracPart) > 0.5)
-            intPart += (x > 0) - (x < 0);
-        else if ((abs(fracPart) == 0.5) && (((long long int) intPart) % 2))
-            intPart += (x > 0) - (x < 0);
-        return intPart;
-    }
-#endif
-
 // Different compilers expose different sets of function signatures for
 // integer abs, so we define our own.
 inline Int8  IntAbs(Int8  value) { return abs(value); }

@@ -33,7 +33,7 @@ Int32 SubString::CharLength(const Utf8Char* begin)
     // see:  http://tools.ietf.org/html/rfc3629
     
     Utf8Char leadByte = *begin;
-    if (!leadByte & 0x80) {
+    if ((leadByte & 0x80) == 0x00) {
         return 1;
     } else if ((leadByte & 0xE0) == 0xC0) {
         return 2;

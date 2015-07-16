@@ -1,5 +1,5 @@
 //------------------------------------------------------------
-// makefile for vireo base on node.js and shelljs
+// makefile for vireo based on node.js and shelljs
 //------------------------------------------------------------
 require('shelljs/make');
 sh = require('shelljs');
@@ -35,10 +35,20 @@ function compileCommandMSCL(opts, filePath) {
         command =
             'cl ' +
             filePath + ' ' +
-             '/nologo /Oy- /c /DWIN32  /Zi /MTd /Faobjs\\win\\ /Foobjs\\win\\ /Fdobjs\\win\\vc100.pdb ' +
+            '/nologo /DWIN32 ' +
+            '/c ' +       // Compile to object file ojnly, dont link.
+            '/Oxy ' +     // Full optimization, supress frame pointers where possible.
+            '/EHsc ' +    // C++ exceptions only, no structured exceptions (* see below)
+            '/Zi ' +      // Build pdb file for symbol information.
+            '/MT ' +      // Statically link to the multi-threaded c runtime library.
+            '/Faobjs\\win\\ /Foobjs\\win\\ /Fdobjs\\win\\vc100.pdb ' +
             (opts.debug ? '/D_DEBUG ' : '') +
             '/I' + opts.include + ' ' +
             opts.define + ' ';
+
+        // * vireo does not use exceptions, however the MS string header files
+        // generated warnings for some system classes that used exceptions.
+        // so some execption support is turned on for windows builds.
     }
     opts.filesToLink += ' ' + objFilePath;
 
@@ -112,16 +122,11 @@ function compile(opts, fileName) {
 }
 //------------------------------------------------------------
 function link(opts) {
-    var command = opts.link + ' ' +
-        '-o ' + opts.targetFile + ' ' +
-        opts.ldflags + ' ' +
-        opts.filesToLink;
-
     console.log('Linking...');
-    console.log(command);
-    sh.exec(command);
-    if (opts.strip) {
-        sh.exec('strip ' + opts.targetFile);
+    console.log(opts.linkCommand);
+    sh.exec(opts.linkCommand + opts.filesToLink);
+    if (opts.stripCommand) {
+        sh.exec(opts.stripCommand);
     }
 }
 //------------------------------------------------------------
@@ -132,17 +137,16 @@ function configureSettings(opts, targetPlatform) {
     var compilerPath = "";
     opts.filesToLink = "";
     if (targetPlatform === 'darwin') {
+        // OSX Desktop
         sh.mkdir('-p', buildOptions.objRoot + 'clang/');
         opts.ccCommand = compileClangCommand;
-        opts.link = 'clang++';
-        opts.ldflags = '-dead_strip -m64 ';
-        opts.strip = 'strip';
+        opts.linkCommand = 'clang++ -dead_strip -m64 -o esh';
+        opts.stripCommand = 'strip esh';
     } else if (targetPlatform === 'linux') {
         sh.mkdir('-p', buildOptions.objRoot + 'gcc/');
         opts.ccCommand = compileGccCommand;
-        opts.link   = 'g++';
-        opts.ldflags= '-s -Wl,--gc-sections';
-        opts.strip = 'strip';
+        opts.linkCommand = 'g++ -s -Wl,--gc-sections -o esh ';
+        opts.strip = 'strip esh';
     } else if (targetPlatform === 'uBlaze') {
         sh.mkdir('-p', buildOptions.objRoot + 'uBlaze/');
         opts.ccCommand = compileGccCommand;
@@ -163,16 +167,17 @@ function configureSettings(opts, targetPlatform) {
         // SITEDIR=../Documents/gh-pages/playground
 
         opts.ccCommand = compileEmscriptenCommand;
-        opts.link = 'emcc';
-        opts.ldflags = '-dead_strip ';
-        opts.ldflags += '-Os ';
-        opts.ldflags += '-fno-exceptions ';
-        opts.ldflags += '--memory-init-file 0 ';
-        opts.ldflags += '--js-library ' + opts.sourceRoot + 'io/library_canvas2d.js ';
-        opts.ldflags += '--js-library ' + opts.sourceRoot + 'io/library_httpClient.js ';
-        opts.ldflags += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
-        opts.ldflags += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
-        opts.ldflags += '-s NO_EXIT_RUNTIME=1 ';
+        opts.linkCommand = 'emcc';
+        opts.linkCommand += '-dead_strip ';
+        opts.linkCommand += '-Os ';
+        opts.linkCommand += '-fno-exceptions ';
+        opts.linkCommand += '--memory-init-file 0 ';
+        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_canvas2d.js ';
+        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_httpClient.js ';
+        opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
+        opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
+        opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
+        opts.linkCommand += '-o vireo.js ';
 
         var EM_EXPORTS = '-s EXPORTED_FUNCTIONS="[' +
         '\'_Vireo_Version\',' +
@@ -189,8 +194,7 @@ function configureSettings(opts, targetPlatform) {
         '\'_Data_WriteInt32\',' +
         '\'_Data_WriteUInt32\'' +
         ']" -s RESERVED_FUNCTION_POINTERS=10 ';
-        opts.ldflags += EM_EXPORTS;
-        opts.targetFile = 'vireo.js';
+        opts.linkCommand += EM_EXPORTS;
 
     } else if (targetPlatform === 'win32' || targetPlatform === 'win64') {
         sh.mkdir('-p', buildOptions.objRoot + 'win/');
@@ -198,12 +202,12 @@ function configureSettings(opts, targetPlatform) {
         if (compilerPath) {
             console.log('using cl at <' + compilerPath + '>');
         } else {
-            console.log('This command shell does not the Microsoft cl compiler in its path.');
+            console.log('This shell is not configured to use the Microsoft C++ compiler.');
             exit(1);
         }
         // The build tool will use the compiler that is configured.
         opts.ccCommand = compileCommandMSCL;
-        opts.ldflags= '/NOLOGO /DEBUG /OUT:esh.exe';
+        opts.linkCommand = 'link /NOLOGO /OUT:esh.exe ';
     } else if (targetPlatform === 'xcompile-ARMv5') {
         console.log("target TBD");
         sh.exit(1);
@@ -221,6 +225,7 @@ function configureSettings(opts, targetPlatform) {
 }
 //------------------------------------------------------------
 function compileVireo(platform) {
+    console.log('Build for the <' + platform + '> platform');
     var opts = configureSettings(buildOptions, platform);
     // opts.debug = true;
 

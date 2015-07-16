@@ -1,5 +1,5 @@
 {
-  "name": "vireo",
+  "name": "vireo-sdk",
   "version": "2.0.0-alpha.5",
   "description": "SDK for experimental vireo runtime engine.",
   "dependencies": {
