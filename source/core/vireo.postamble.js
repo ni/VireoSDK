@@ -211,6 +211,8 @@ HttpUsers = function () {
 
 var httpUsers = new HttpUsers();
 
+var WebSocketConnection;
+
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
 
@@ -377,6 +379,20 @@ return {
             NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
             return returnValue;
+        },
+    addWebSocketUser:
+        function (url, protocol) {
+            var returnValue = 0;
+            try
+            {
+                WebSocketConnection = new WebSocket(url);
+            }
+            catch (error)
+            {
+                returnValue = -1;
+            }
+            NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
         }
 };
 
