@@ -1,0 +1,42 @@
+define(g1 dv(a(.String *) ('Numeric 1' )))
+define(g2 dv(a(.String *) ('string 2' )))
+define(g3 dv(a(.String *) ('array' )))
+
+
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String
+            // Wei's mena test, note the \name as a line feed in it.
+            '{"Numeric 1":12,"string 2":"id\name","array":[11, 12 , 13]}'
+            ) v1)
+        e(dv(.String 'Numeric 1') field)
+        e(.Double dVal)
+        e(.Int32 iVal)
+        e(.String sVal)
+        e(a(.Int32 *) aiVal)
+        e(.String errorVal)
+        e(.Int32 errorNum)
+    )
+    clump (
+        Println(v1)
+
+        UnflattenFromJSON(v1 dVal g1 true false false)
+        Printf("Item %s in JSON is |%s|\n" "Numeric 1" dVal)
+
+        UnflattenFromJSON(v1 iVal g1 true false false)
+        Printf("Item %s in JSON is |%s|\n" "Numeric 1" iVal)
+
+        UnflattenFromJSON(v1 sVal g2 true false false)
+        Printf("Item %s in JSON is |%s|\n" "string 2" sVal)
+
+        UnflattenFromJSON(v1 aiVal g3 true false false)
+        Printf("Item %s in JSON is |%s|\n" "array" aiVal)
+        
+        Println(errorNum)
+        WebSocketClientOpen(sVal sVal errorNum errorVal)
+        Println(errorNum)
+    )
+) ) )
+
+enqueue(HelloWorld)

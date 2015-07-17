@@ -1,0 +1,41 @@
+
+/*
+
+
+
+// ctx become a first class object in the type class list
+// it is some what akin to a name space. at lwast thats the case when
+// it has a name. ther could be anonymous contexts as well.
+// this could be used to make structure that have private internals
+
+defines a symbol in one context that is a new context
+define(Foo ctx(
+
+
+all definitions are inside this context
+
+
+
+))
+
+
+
+*/
+
+define(Earth  context(
+
+//a context will process it own REPL
+
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String "Hello, world. I can fly.") variable1)
+    )
+    clump (
+       Printf("-%59s-\n" variable1)
+    )
+) ) )
+
+))
+
+enqueue(Earth.HelloWorld)

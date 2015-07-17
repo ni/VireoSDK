@@ -381,8 +381,9 @@ return {
             return returnValue;
         },
     addWebSocketUser:
-        function (url, protocol) {
-            var returnValue = 0;
+        function (url, protocol, errorMessage) {
+            var returnValue = 100;
+            var errorString = 'noen';
             try
             {
                 WebSocketConnection = new WebSocket(url);
@@ -390,9 +391,11 @@ return {
             catch (error)
             {
                 returnValue = -1;
+                errorString = "Something went wrong with WebSocket intilaization: " + error.message;
             }
-            NationalInstruments.Vireo.dataWriteString(list, listText, listText.length);
+            console.log('wow');
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
         }
 };
 

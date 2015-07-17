@@ -167,13 +167,14 @@ function configureSettings(opts, targetPlatform) {
         // SITEDIR=../Documents/gh-pages/playground
 
         opts.ccCommand = compileEmscriptenCommand;
-        opts.linkCommand = 'emcc';
+        opts.linkCommand = 'emcc ';
         opts.linkCommand += '-dead_strip ';
         opts.linkCommand += '-Os ';
         opts.linkCommand += '-fno-exceptions ';
         opts.linkCommand += '--memory-init-file 0 ';
         opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_canvas2d.js ';
         opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_httpClient.js ';
+        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_WebSocketClient.js ';
         opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
         opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
@@ -241,6 +242,7 @@ function compileVireo(platform) {
     compile(opts, 'io/DebugGPIO.cpp');
     compile(opts, 'io/Linx.cpp');
     compile(opts, 'io/Canvas2d.cpp');
+    compile(opts, 'io/WebSocketClient.cpp');
 
     link(opts);
 }

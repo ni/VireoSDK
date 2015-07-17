@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <meta name="description" content="">
+                        <meta name="author" content="">
+                            <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+                                <title>Starter Template for Bootstrap</title>
+
+                                <!-- Bootstrap core CSS -->
+                                <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+
+                                    </head>
+
+    <body>
+        <div class="container-fluid" style="padding:9px" >
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="btn-toolbar" role="toolbar" style="padding-bottom:9px">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="OpenFile"><span class="glyphicon glyphicon-floppy-open"></span></button>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                                <span class="caret"></span>
+                            </button>
+
+                            <ul class="dropdown-menu">
+                                <li><a id="ParallelSample">Parallel</a></li>
+                                <li><a id="MandelbrotSample">Mandelbrot</a></li>
+                                <li><a id="PiSample">π calculator</a></li>
+                                <li><a id="TicTockSample">TicTock</a></li>
+                                <li><a id="SineWaveSample">SineWave</a></li>
+                                <li><a id="WebSocketTest">WebSocket</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+
+
+                            <button type="button" class="btn btn-default" onclick="VRunRun()"><span class="glyphicon glyphicon-retweet"></span></button>
+                            <button type="button" class="btn btn-default" id="VRun"><span class="glyphicon glyphicon-play"></span></button>
+                            <button type="button" class="btn btn-default" id="VPause"><span class="glyphicon glyphicon-pause"></span></button>
+                            <!--
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-backward"></span></button>
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-step-forward"></span></button>
+                            -->
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default" id="LVLink"><span class="glyphicon glyphicon-transfer"></span></button>
+                        </div>
+                    </div>
+<pre id="VireoSource" style="height:500px">
+define(g1 dv(a(.String *) ('Numeric 1' )))
+define(g2 dv(a(.String *) ('string 2' )))
+define(g3 dv(a(.String *) ('array' )))
+
+
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.String
+            // Wei's mena test, note the \name as a line feed in it.
+            '{"Numeric 1":12,"string 2":"id\name","array":[11, 12 , 13]}'
+            ) v1)
+        e(dv(.String 'Numeric 1') field)
+        e(.Double dVal)
+        e(.Int32 iVal)
+        e(.String sVal)
+        e(a(.Int32 *) aiVal)
+        e(dv(.String 'wss://echo.websocket.org') url)
+        e(.String errorVal)
+        e(.Int32 errorNum)
+        e(dv(.String 'koo') event)
+        e(dv(.String 'we did it!') response)
+    )
+    clump (
+        Println(v1)
+
+        UnflattenFromJSON(v1 dVal g1 true false false)
+        Printf("Item %s in JSON is |%s|\n" "Numeric 1" dVal)
+
+        UnflattenFromJSON(v1 iVal g1 true false false)
+        Printf("Item %s in JSON is |%s|\n" "Numeric 1" iVal)
+
+        UnflattenFromJSON(v1 sVal g2 true false false)
+        Printf("Item %s in JSON is |%s|\n" "string 2" sVal)
+
+        UnflattenFromJSON(v1 aiVal g3 true false false)
+        Printf("Item %s in JSON is |%s|\n" "array" aiVal)
+        
+        Println(errorNum)
+        WebSocketClientConnect(url sVal errorNum errorVal)
+        Println(errorNum)
+        
+        WebSocketClientEventListener(event response errorNum)
+        
+        WebSocketClientSend(event response errorNum)
+    )
+) ) )
+
+enqueue(HelloWorld)
+</pre>
+                    <input  id="in_state" value="*"></input>
+                    <input  id="in_address" value="localhost"></input>
+                    <input  id="link" value="foo"></input>
+                </div>
+                <div class="col-xs-6">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#StdOut" data-toggle="tab">Console</a></li>
+                        <li><a href="#Canvas" data-toggle="tab">Canvas</a></li>
+                        <li><a href="#Explore" data-toggle="tab">Explore</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="StdOut">
+                            <pre id="VireoOutput"  style="height:500px"> </pre>
+                        </div>
+                        <div class="tab-pane" id="Canvas">
+                            <div class="row" >
+                                <canvas id="theCanvas" height="400" width="500" style="background-color:transparent;left:0;top:0">
+                            </div>
+                            <div class="row" id="FpTable">
+                                <table>
+                                    <tr>
+                                        <td>Alpha </td>
+                                        <td><input type="range" id="fp1" step= 0.01 min=0.0 max=1.0 value=0.5 style="width:400px;padding:9px"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Noise </td>
+                                        <td><input type="range" id="fp2" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:400px;padding:9px"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Amplitude </td>
+                                        <td><input type="range" id="fp3" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:400px;padding:9px"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>DeltaT </td>
+                                        <td><input type="range" id="fp4" step= 0.01 min=0.0 max=0.1 value=0.001 style="width:400px;padding:9px"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delay </td>
+                                        <td><input type="range" id="fp5" step= 1.0 min=0 max=100 value=20.0 style="width:400px;padding:9px"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Data FPS </td>
+                                        <td><input type="text" id="frameCounter" value="1" /></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="Explore">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container -->
+
+        <!-- JavaScript ================================================== -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.0/ace.js" type="text/javascript" charset="utf-8"></script>
+
+        <script src="../../../make-it/vireo.js" type="text/javascript" charset="utf-8"></script>
+
+        <script>
+            var editor2;
+            NationalInstruments.Vireo.core.print = function(text){ editor2.insert(text + "\n") };
+            var v_state = document.getElementById("in_state")
+            var v_address = document.getElementById("in_address")
+            var v_link = document.getElementById("link")
+
+            // Define global Vireo functions
+            // might use embind instead
+            var esh = NationalInstruments.Vireo;
+            esh.repeat = false;
+            esh.pause = false;
+
+            var theCanvas = document.getElementById("theCanvas");
+            var ctx = theCanvas.getContext("2d");
+            var editor1 = ace.edit("VireoSource");
+            editor2 = ace.edit("VireoOutput");
+
+            function VRun()
+            {
+                esh.reboot();
+                esh.loadVia(editor1.getValue());
+                esh.execCount = 0
+                esh.startTime = Date.now();
+                v_state.value = "started";
+                setTimeout(VireoRunProc,0);
+                setTimeout(UpdateFrontPanel,0);
+            }
+            function VRunRun()
+            {
+                esh.repeat = !esh.repeat;
+                VRun();
+            }
+            function VPause()
+            {
+                esh.pause = !esh.pause;
+                if (!esh.pause) {
+                    setTimeout(VireoRunProc, 0);
+                    setTimeout(UpdateFrontPanel, 0);
+                }
+            }
+
+        $("#VPause").click(function(){VPause();} );
+        $("#VRun").click(function(){VRun();} );
+        $("#VRunRun").click(function(){VRunRun();} );
+        $("#PiSample").click(function(){LoadSample("Pi.via");} );
+        $("#TicTockSample").click(function(){LoadSample("TicTock.via");} );
+        $("#SineWaveSample").click(function(){LoadSample("SineWave.via");} );
+        $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
+        $("#ParallelSample").click(function(){LoadSample("Parallel.via");} );
+        $("#WebSocketTest").click(function(){LoadSample("WebSocketTest.via");} );
+        $("#LVLink").click(function(){LVLink();} );
+
+
+        $("#fp1").on('change', function(){LVDoubleControl("#fp1", "_v7_Alpha");} );
+        $("#fp2").on('change', function(){LVDoubleControl("#fp2", "_v5_NoiseLevel");} );
+        $("#fp3").on('change', function(){LVDoubleControl("#fp3", "_v4_Amplitude");} );
+        $("#fp4").on('change', function(){LVDoubleControl("#fp4", "_v3_DeltaT");} );
+        $("#fp5").on('change', function(){LVDoubleControl("#fp5", "_v6_milliseconds%20to%20wait");} );
+
+
+        /*
+        BuildFPTab();
+        function  BuildFPTab()
+        {
+            $("#FpTable").html.insert(' <input type="range" id="fpValue1" step= 0.01 min=0.0 max=1.0 value=0.5 style="width:500px;padding:9px"/>' +
+                                      '<input type="range" id="fpValue2" step= 0.01 min=0.0 max=50.0 value=5.0 style="width:500px;padding:9px"/>');
+        }
+        */
+
+        function LVDoubleControl(v, varName)
+        {
+            controlValue = $(v).val();
+            esh.writeDouble("_VireoScope3%2Evi", varName, controlValue);
+            v_state.value = $(v).val();
+        }
+
+
+        $("#Mandelbrot").bind(function(e){ alert("MandelBrot"); e.preventDefault(); });
+
+        function LVLink()
+        {
+            var the_url = "http://" + v_address.value +  ":6340/ViaCode";
+            // LabVIEW does a long poll response
+            LVLink.Count += 1;
+            v_link.value = "ping " + LVLink.Count;
+            $.ajax({
+                   type: "GET",
+                   url: the_url,
+                   dataType: "jsonp",
+                   timout:10000,
+                   error: function(x,t,m) {
+                   setTimeout(LVLink, 100);
+                    }
+                   })
+        }
+        LVLink.Count = 0;
+
+        function JSONP_ViaLoadCode(text, name)
+        {
+            // If we get a time-out, then retry for few time then give up.
+
+            v_link.value = "load";
+
+            if ( typeof JSONP_ViaLoadCode.counter == 'undefined' ) {
+                JSONP_ViaLoadCode.counter = 0;
+            } else {
+                JSONP_ViaLoadCode.counter++;
+            }
+
+            v_state.value = "got new code" + JSONP_ViaLoadCode.counter;
+            if (text != "") {
+                editor1.setValue(text)
+                editor1.gotoLine(0,0,false);
+            }
+            setTimeout(LVLink, 100);
+        }
+
+        function JSONP_ViaRun(name)
+        {
+            v_link.value = "run";
+            editor2.setValue("");
+            v_state.value = "runing code";
+            VRun();
+            setTimeout(LVLink, 100);
+        }
+
+        oldFrameCount = 0;
+        function UpdateFrontPanel()
+        {
+            if (esh.pause)
+                return;
+            // Estimate of data frame count
+            newFrameCount = esh.readDouble("_VireoScope3%2Evi", "_v9_FrameCount");
+            $("#frameCounter").val((newFrameCount - oldFrameCount)*2);
+            oldFrameCount = newFrameCount;
+            setTimeout(UpdateFrontPanel, 500);
+        }
+
+        function VireoRunProc()
+        {
+            // Run a chunk of code. if there is more pending
+            // Then restart soon, else restart when it makes sense.
+            if (esh.pause)
+                return;
+
+            var x = esh.executeSlices(1000);
+            esh.execCount += 1;
+            if (x>0) {
+                // periodically sleep for 50 ms or so.
+                setTimeout(VireoRunProc, 0);
+            } else {
+                v_state.value = "done " + esh.execCount + " time " + (Date.now() - esh.startTime);
+                if (esh.repeat) {
+                    setTimeout(VRun, 100);
+                }
+            }
+        }
+        function LoadSample(sampleName)
+        {
+            $.get(sampleName, function(data) { editor1.setValue(data); editor1.gotoLine(0,0,false); }, "text")  .fail(function() { alert( "error" );})
+        }
+        </script>
+    </body>
+</html>
