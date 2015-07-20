@@ -1,44 +1,55 @@
 var _connection;
 var _cases;
+var waitingMessages;
 //initialize connection, onopen, onmessage, onclose, send, close
 var WebSocketClient =
 {
     jsWebSocketClientConnect: function (url, urlLength, protocol, protocolLength, errorMessage) {
         //return NationalInstruments.Vireo.addWebSocketUser('url', 'protocol', errorMessage);
         console.log('made it to the js lib');
-
+        
         _connection = new WebSocket(Pointer_stringify(url, urlLength));
-        _cases = { _default: 'Tehdefault' };
-
+        _cases = { _default: 'default' };
+        waitingMessages = [];
+        
         _connection.onopen = function(evt){
             console.log('connect');
-            //_connection.send('koo');
+            for(var index = 0; index < waitingMessages.length; index++) {
+                _connection.send(waitingMessages[index]);
+            }
         }
-
+        
         _connection.onmessage = function(evt){
             console.log("Message recieved: " + evt.data);
-            console.log(_cases);
-            _cases[ evt.data ] ? _cases[ evt.data ] : _cases._default;
+            console.log(_cases[ evt.data ] ? _cases[ evt.data ] : _cases._default);
         }
-
+        
         _connection.onclose = function(evt){
             console.log("Closing");
         }
-
+        
         _connection.onerror = function(evt){
             console.log(evt);
         }
-
+        
         return 0;
+        
     },
     jsWebSocketClientEventListener: function (event, eventLength, response, responseLength) {
         console.log("Setting message listener!");
-        alert(_cases[Pointer_stringify(event, eventLength)] = Pointer_stringify(response, responseLength));
+        _cases[Pointer_stringify(event, eventLength)] = Pointer_stringify(response, responseLength);
         return 0;
     },
     jsWebSocketClientSend: function (event, eventLength, message, messageLength) {
-        console.log('Sending!');
-        _connection.send(Pointer_stringify(event,eventLength));
+        console.log('Sending');
+        // If connection is established, sends message normally
+        // If readyState is still in CONNECTING phase, attaches send to onopen event
+        if(_connection.readyState == 1) {
+            console.log('no wait');
+            _connection.send(Pointer_stringify(event,eventLength));
+        } else if(_connection.readyState == 0) {
+            waitingMessages.push(Pointer_stringify(event,eventLength));
+        }
         return 0;
     }
 

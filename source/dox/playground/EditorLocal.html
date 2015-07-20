@@ -75,6 +75,8 @@ define(HelloWorld dv(.VirtualInstrument (
         e(.Int32 errorNum)
         e(dv(.String 'koo') event)
         e(dv(.String 'we did it!') response)
+        e(dv(.String 'we did it!') message)
+        e(dv(.UInt32 1000)  oneHundred)
     )
     clump (
         Println(v1)
@@ -97,7 +99,14 @@ define(HelloWorld dv(.VirtualInstrument (
         
         WebSocketClientEventListener(event response errorNum)
         
-        WebSocketClientSend(event response errorNum)
+        WebSocketClientSend(event message errorNum)
+        
+        WebSocketClientSend(event message errorNum)
+        
+        WaitMilliseconds(oneHundred)
+        
+        WebSocketClientSend(event message errorNum)
+        
     )
 ) ) )
 
