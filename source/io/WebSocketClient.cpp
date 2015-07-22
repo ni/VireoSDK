@@ -27,9 +27,10 @@ using namespace Vireo;
 
 
 extern "C" {
-    extern Int32 jsWebSocketClientConnect(const char *, int, const char*, int, StringRef);
+    extern Int32 jsWebSocketClientConnect(const char *, int, const char*, int, StringRef, StringRef, OccurrenceRef);
     extern Int32 jsWebSocketClientEventListener(const char *, int, const char*, int);
-    extern Int32 jsWebSocketClientSend(const char *, int, const char*, int);
+    extern Int32 jsWebSocketClientSend(const char *, int, const char *, int, StringRef);
+    extern Int32 jsWebSocketClientRead(const char *, int, Int32, StringRef, StringRef, OccurrenceRef);
     /*extern Int32 jsHttpClientClose(UInt32, StringRef);
     extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
@@ -41,45 +42,93 @@ extern "C" {
 #endif
 
 //------------------------------------------------------------
-// url(0), protocol(1), errorCode(2), errorMessage(3)
-VIREO_FUNCTION_SIGNATURE4(WebSocketClientConnect, StringRef, StringRef, Int32, StringRef)
+// url(0), protocol(1), connection(2), errorCode(3), errorMessage(4), occurrence(5)
+VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    _Param(2) = jsWebSocketClientConnect(
-        (char*)_Param(0)->Begin(), _Param(0)->Length(),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
-        _Param(3)
+    OccurrenceCore *pOcc = _Param(5)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+    if(!pObserver) {
+        // This is the initial call, call the js function
+        _Param(3) = jsWebSocketClientConnect(
+            (char*)_Param(0)->Begin(), _Param(0)->Length(),
+            (char*)_Param(1)->Begin(), _Param(1)->Length(),
+            _Param(2),
+            _Param(4),
+            _Param(5)
         );
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+    } else {
+        // re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+    }
 #endif
     return _NextInstruction();
 }
 
 //------------------------------------------------------------
 // url(0), protocol(1), errorCode(2)
+//will be removed
 VIREO_FUNCTION_SIGNATURE3(WebSocketClientEventListener, StringRef, StringRef, Int32)
 {
 #if kVireoOS_emscripten
     _Param(2) = jsWebSocketClientEventListener(
         (char*)_Param(0)->Begin(), _Param(0)->Length(),
         (char*)_Param(1)->Begin(), _Param(1)->Length()
-        );
+    );
 #endif
     return _NextInstruction();
 }
 
 //------------------------------------------------------------
-// url(0), protocol(1), errorCode(2)
-VIREO_FUNCTION_SIGNATURE3(WebSocketClientSend, StringRef, StringRef, Int32)
+// connection(0), message(1), errorCode(2). errorMessage(3)
+VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, StringRef, StringRef, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(2) = jsWebSocketClientSend(
         (char*)_Param(0)->Begin(), _Param(0)->Length(),
-        (char*)_Param(1)->Begin(), _Param(1)->Length()
-        );
+        (char*)_Param(1)->Begin(), _Param(1)->Length(),
+        _Param(3)
+    );
 #endif
     return _NextInstruction();
 }
 
+//------------------------------------------------------------
+// connection(0), timeout(1), data(2), errorCode(3), errorMessage(4), occurence(5)
+// NOTE: ocurrence is inserted by the Vireo Compiler
+VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, StringRef, Int32, StringRef, Int32, StringRef, OccurrenceRef)
+{
+#if kVireoOS_emscripten
+    OccurrenceCore *pOcc = _Param(5)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+    if(!pObserver) {
+        // This is the initial call, call the js function
+        _Param(3) = jsWebSocketClientRead(
+            (char*)_Param(0)->Begin(), _Param(0)->Length(),
+            _Param(1),
+            _Param(2),
+            _Param(4),
+            _Param(5)
+        );
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+    } else {
+        // re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+    }
+#endif
+    return _NextInstruction();
+}
 
 /*
 
@@ -352,9 +401,10 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(WebSocketClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(WebSocketClientConnect, "p(i(.String) i(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientConnect, "p(i(.String) i(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(WebSocketClientEventListener, "p(i(.String) i(.String) io(.Int32))")
-    DEFINE_VIREO_FUNCTION(WebSocketClientSend, "p(i(.String) i(.String) io(.Int32))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientSend, "p(io(.String) i(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientRead, "p(io(.String) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))")
     /*DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
     DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")

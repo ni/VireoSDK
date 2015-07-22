@@ -242,6 +242,7 @@ function compileVireo(platform) {
     compile(opts, 'io/DebugGPIO.cpp');
     compile(opts, 'io/Linx.cpp');
     compile(opts, 'io/Canvas2d.cpp');
+    compile(opts, 'io/HttpClient.cpp');
     compile(opts, 'io/WebSocketClient.cpp');
 
     link(opts);

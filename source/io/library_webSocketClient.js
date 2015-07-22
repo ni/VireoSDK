@@ -4,7 +4,7 @@ var waitingMessages;
 //initialize connection, onopen, onmessage, onclose, send, close
 var WebSocketClient =
 {
-    jsWebSocketClientConnect: function (url, urlLength, protocol, protocolLength, errorMessage) {
+    jsWebSocketClientConnect: function (url, urlLength, protocol, protocolLength, connection, errorMessage, occurrenceRef) {
         //return NationalInstruments.Vireo.addWebSocketUser('url', 'protocol', errorMessage);
         console.log('made it to the js lib');
         
@@ -14,15 +14,14 @@ var WebSocketClient =
         
         _connection.onopen = function(evt){
             console.log('connect');
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
             for(var index = 0; index < waitingMessages.length; index++) {
+                console.log('sending after waiting');
                 _connection.send(waitingMessages[index]);
             }
         }
         
-        _connection.onmessage = function(evt){
-            console.log("Message recieved: " + evt.data);
-            console.log(_cases[ evt.data ] ? _cases[ evt.data ] : _cases._default);
-        }
+       
         
         _connection.onclose = function(evt){
             console.log("Closing");
@@ -40,17 +39,32 @@ var WebSocketClient =
         _cases[Pointer_stringify(event, eventLength)] = Pointer_stringify(response, responseLength);
         return 0;
     },
-    jsWebSocketClientSend: function (event, eventLength, message, messageLength) {
-        console.log('Sending');
-        // If connection is established, sends message normally
-        // If readyState is still in CONNECTING phase, attaches send to onopen event
-        if(_connection.readyState == 1) {
-            console.log('no wait');
-            _connection.send(Pointer_stringify(event,eventLength));
-        } else if(_connection.readyState == 0) {
-            waitingMessages.push(Pointer_stringify(event,eventLength));
-        }
+    jsWebSocketClientSend: function (connection, connectionLength, message, messageLength, errorMessage) {
+        //console.log('Sending');
+        _connection.send(Pointer_stringify(message, messageLength));
         return 0;
+    },
+    jsWebSocketClientRead: function (connection, connectionLength, timeout, data, errorMessage, occurrenceRef) {
+        //console.log('made it to read!');
+        //NationalInstruments.Vireo.dataWriteString(data, errorString, errorString.length);
+        
+        _connection.onmessage = function(evt){
+            NationalInstruments.Vireo.dataWriteString(data, evt.data, evt.data.length);
+            //console.log("Message recieved: " + evt.data);
+            clearTimeout(time);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            return 0;
+        }
+        
+        var time = setTimeout(function(){
+            //console.log('failed out');
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            return 1;
+        }, timeout);
+        
+        
+        
+        
     }
 
     /*
