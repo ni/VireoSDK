@@ -1,0 +1,24 @@
+start( VI<(
+    c(
+        e(UInt32 b1)
+        e(UInt32 b2)
+        e(UInt32 b3)
+        e(Double value)
+    )
+    clump(
+        // Is it Ok to move raw bits to an UInt format
+        // note that they might get truncated in some cases.
+
+        // Are there fucntions to determine bit size of a field?
+
+    //    Copy(value b1)
+    //    Convert(value.fields.exponent b1)
+        Convert(b1 value.fields.exponent)
+
+/*                Copy(value.sign b1)
+        Copy(value.exponent b2)
+        Copy(value.fraction b3)
+        Println("Hello, sky. I can fly.")
+*/
+    )
+) > )
