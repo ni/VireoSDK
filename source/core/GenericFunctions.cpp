@@ -27,7 +27,7 @@ ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
     if (((uintptr_t) pSource % aqSize != 0) || ((uintptr_t) pDest % aqSize != 0))
         return null;
 
-    switch(aqSize) {
+    switch (aqSize) {
         case 1:     return "Copy1";   break;
         case 2:     return "Copy2";   break;
         case 4:     return "Copy4";   break;
@@ -211,7 +211,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     if (sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
         goalType = sourceXType;
         isAccumulator = true;
-    }else if (sourceXType->BitEncoding() == kEncoding_Cluster && sourceYType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
+    } else if (sourceXType->BitEncoding() == kEncoding_Cluster && sourceYType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
         goalType = sourceXType;
         isAccumulator = true;
     } else if (destType->BitEncoding() == kEncoding_Boolean) { //some kind of comparison
@@ -221,9 +221,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         goalType = sourceXType;
     }
 
-    switch(goalType->BitEncoding())
-    {
-    case kEncoding_Array:
+    switch (goalType->BitEncoding()) {
+        case kEncoding_Array:
         {
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
@@ -264,8 +263,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             
             // Create the accumulator snippet
-            if (isAccumulator)
-            {
+            if (isAccumulator) {
                 TempStackCString opToken(&savedOperation);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
@@ -299,8 +297,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, clusterOp, binOpArgId);
 
-            for (Int32 i = 0; i < goalType->SubElementCount(); i++)
-            {
+            for (Int32 i = 0; i < goalType->SubElementCount(); i++) {
                 TypeRef arg1Type, arg2Type, arg3Type;
                 void    *arg1Data, *arg2Data, *arg3Data;
                 
@@ -331,8 +328,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             
-            if (isAccumulator) // create the accumulator snippet
-            {
+            if (isAccumulator) {
+                // create the accumulator snippet
                 TempStackCString opToken(&savedOperation);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
@@ -390,9 +387,9 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
     }
 
-    switch(destType->BitEncoding())
-    {
-    case kEncoding_Array:
+    
+    switch(destType->BitEncoding()) {
+        case kEncoding_Array:
         {
             ConstCStr pVectorUnOpName = "VectorUnaryOp";
             SubString vectorUnOpToken(pVectorUnOpName);
@@ -424,14 +421,12 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             // Recurse on the sub elemets
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
-            for (Int32 i = 0; i < destType->SubElementCount(); i++)
-            {
+            for (Int32 i = 0; i < destType->SubElementCount(); i++) {
  
                 TypeRef destSub = destType->GetSubElement(i);
                 TypeRef sourceSub = sourceXType;
                 void* sourceData = null;
-                if (sourceXType->BitEncoding() == kEncoding_Cluster)
-                {
+                if (sourceXType->BitEncoding() == kEncoding_Cluster) {
                     sourceSub = sourceXType->GetSubElement(i);
                     sourceData =  (void*)(size_t)sourceSub->ElementOffset();
                 }
@@ -506,13 +501,11 @@ VIREO_FUNCTION_SIGNATURET(Search1DArrayInternal, Search1DArrayInstruction)
     IntIndex arrayLength = array->Length();
     IntIndex elementSize = array->ElementType()->TopAQSize();
     Boolean found = false;
-    if (startIndex < arrayLength)
-    {
+    if (startIndex < arrayLength) {
         snippet->_p0 = array->BeginAt(startIndex);
         snippet->_p2 = &found;
         
-        for (IntIndex i = startIndex; i < arrayLength; i++)
-        {
+        for (IntIndex i = startIndex; i < arrayLength; i++) {
             _PROGMEM_PTR(snippet, _function)(snippet);
             if (found) {
                 _Param(FoundIndex) = i;
@@ -533,7 +526,7 @@ struct VectorOpInstruction : public InstructionCore
     _ParamImmediateDef(Boolean, IsIdentityOne);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()          { return this->_piNext; }
+    inline InstructionCore* Next()      { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
@@ -610,10 +603,10 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
         default:
         {
             switch(elementSize) {
-            case 1: *(Int8  *) scalarOpSnippet->_p2 = isIdentityOne; break;
-            case 2: *(Int16 *) scalarOpSnippet->_p2 = isIdentityOne; break;
-            case 4: *(Int32 *) scalarOpSnippet->_p2 = isIdentityOne; break;
-            case 8: *(Int64 *) scalarOpSnippet->_p2 = isIdentityOne; break;
+                case 1: *(Int8  *) scalarOpSnippet->_p2 = isIdentityOne; break;
+                case 2: *(Int16 *) scalarOpSnippet->_p2 = isIdentityOne; break;
+                case 4: *(Int32 *) scalarOpSnippet->_p2 = isIdentityOne; break;
+                case 8: *(Int64 *) scalarOpSnippet->_p2 = isIdentityOne; break;
             }
         }
     }
@@ -635,8 +628,7 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
 
     // Skip the arg count and output array arguments.  Then, for each input add an argument which
     // indicates whether input's type is the same as ArrayOut's type or ArrayOut's element type.
-    for (Int32 i = 2; i < argCount; i++)
-    {
+    for (Int32 i = 2; i < argCount; i++) {
         if (pDestType->CompareType(pInstructionBuilder->_argTypes[i])) // input is an array
             pInstructionBuilder->InternalAddArg(null, pInstructionBuilder->_argPointers[i]);
         else if (pDestType->GetSubElement(0)->CompareType(pInstructionBuilder->_argTypes[i])) // input is a single element
@@ -723,8 +715,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
         // If there is an accumulator call it instead.
         // It will loop through the snippets settign the boolean result
         // In the third parameter. All boolean results point to the same location.
-        while(ExecutionContext::IsNotCulDeSac(snippet))
-        {
+        while(ExecutionContext::IsNotCulDeSac(snippet)) {
             Boolean bNestedAccumulator =   (snippet->_function == (InstructionFunction)VectorVectorBinaryAccumulatorOp)
                                         || (snippet->_function == (InstructionFunction)ClusterBinaryOp);
 
@@ -740,8 +731,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
         }
          _PROGMEM_PTR(accumulator, _function)(accumulator);
         snippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
-        while(ExecutionContext::IsNotCulDeSac(snippet))
-        {
+        while(ExecutionContext::IsNotCulDeSac(snippet)) {
             Boolean bNestedAccumulator =   (snippet->_function == (InstructionFunction)VectorVectorBinaryAccumulatorOp)
                                         || (snippet->_function == (InstructionFunction)ClusterBinaryOp);
 
@@ -755,8 +745,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             }
         }
     } else {
-        while(ExecutionContext::IsNotCulDeSac(snippet))
-        {
+        while(ExecutionContext::IsNotCulDeSac(snippet)) {
             snippet->_p0 += (size_t)_ParamPointer(SX);
             snippet->_p1 += (size_t)_ParamPointer(SY);
             snippet->_p2 += (size_t)_ParamPointer(SDest);
@@ -774,8 +763,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnaryOp, AggregateUnOpInstruction)
 {
     Instruction2<AQBlock1, AQBlock1>* pInstruction = (Instruction2<AQBlock1, AQBlock1>* )_ParamMethod(Snippet());
     
-    while(ExecutionContext::IsNotCulDeSac(pInstruction))
-    {
+    while(ExecutionContext::IsNotCulDeSac(pInstruction)) {
         pInstruction->_p0 += (size_t)_ParamPointer(SSource);
         pInstruction->_p1 += (size_t)_ParamPointer(SDest);
         InstructionCore* next = _PROGMEM_PTR(pInstruction,_function)(pInstruction); //execute inline for now. TODO yield to the scheduler
@@ -797,8 +785,7 @@ VIREO_FUNCTION_SIGNATURE1(IsEQAccumulator, void)
     if ((binop->_p0 == null) || (binop->_p1 == null)) {
         *dest = binop->_p0 == binop->_p1;
     } else {
-        while(ExecutionContext::IsNotCulDeSac(pInstruction))
-        {
+        while(ExecutionContext::IsNotCulDeSac(pInstruction)) {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if (!*dest)
                 return null;
@@ -816,8 +803,7 @@ VIREO_FUNCTION_SIGNATURE1(IsNEAccumulator, void)
     if ((binop->_p0 == null) || (binop->_p1 == null)) {
         *dest = binop->_p0 != binop->_p1;
     } else {
-        while(ExecutionContext::IsNotCulDeSac(pInstruction))
-        {
+        while(ExecutionContext::IsNotCulDeSac(pInstruction)) {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if (*dest)
                 return null;
@@ -838,8 +824,7 @@ VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
         *dest = true;
         return null;
     } else {
-        while(ExecutionContext::IsNotCulDeSac(binop))
-        {
+        while(ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
                 return null;
@@ -873,8 +858,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGTAccumulator, void)
         *dest = true;
         return null;
     } else {
-        while(ExecutionContext::IsNotCulDeSac(binop))
-        {
+        while(ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
                 return null;
