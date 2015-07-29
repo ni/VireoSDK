@@ -361,10 +361,17 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     return _NextInstruction();
 }
 
+//#define VIREO_VECTOR_SPECIALIZATION_TEST
 
-#if 0
+#if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
+
+#if defined(kVireoOS_macosxU)
+    #include <Accelerate/Accelerate.h>
+#else
+#endif
+
 // Some early experimental GPU accelerated functions on the Mac/iOS
-VIREO_FUNCTION_SIGNATURE3(MulVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArray1D*)
+VIREO_FUNCTION_SIGNATURE3(Mul_VDouble, TypedArray1D<Double>*, TypedArray1D<Double>*, TypedArray1D<Double>*)
 {
     IntIndex inputASize = _Param(0)->Length();
     IntIndex inputBSize = _Param(1)->Length();
@@ -375,14 +382,21 @@ VIREO_FUNCTION_SIGNATURE3(MulVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArra
     {
         _Param(2)->Resize1D(minSize);
     }
-#ifdef __APPLE__
-  //  vDSP_vmulD(_Param(0)->Begin(), 1, _Param(1)->Begin(), 1, _Param(2)->Begin(), 1, minSize);
+    gPlatform.IO.Printf("Accelerated Vector Multiply\n");
+    
+    Double *pSrcA = _Param(0)->Begin();
+    Double *pSrcB = _Param(1)->Begin();
+    Double *pDestC = _Param(2)->Begin();
+    
+#if defined(kVireoOS_macosxU)
+    vDSP_vmulD(pSrcA, 1, pSrcB, 1, pDestC, 1, minSize);
 #else
 #endif
     return _NextInstruction();
 }
+
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(AddVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArray1D*)
+VIREO_FUNCTION_SIGNATURE3(Add_VDouble, TypedArray1D<Double>*, TypedArray1D<Double>*, TypedArray1D<Double>*)
 {
     IntIndex inputASize = _Param(0)->Length();
     IntIndex inputBSize = _Param(1)->Length();
@@ -393,8 +407,15 @@ VIREO_FUNCTION_SIGNATURE3(AddVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArra
     {
         _Param(2)->Resize1D(minSize);
     }
-#if define(kVireoOS_macosxU)
-    // vDSP_vaddD(_Param(0)->Begin(), 1, _Param(1)->Begin(), 1, _Param(2)->Begin(), 1, minSize);
+
+    gPlatform.IO.Printf("Accelerated Vector Add\n");
+
+    Double *pSrcA = _Param(0)->Begin();
+    Double *pSrcB = _Param(1)->Begin();
+    Double *pDestC = _Param(2)->Begin();
+
+#if defined(kVireoOS_macosxU)
+    vDSP_vaddD(pSrcA, 1, pSrcB, 1, pDestC, 1, minSize);
 #else
 #endif
     return _NextInstruction();
@@ -402,6 +423,13 @@ VIREO_FUNCTION_SIGNATURE3(AddVDouble, DoubleArray1D*, DoubleArray1D*, DoubleArra
 #endif
 
 DEFINE_VIREO_BEGIN(Array)
+
+#if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
+    DEFINE_VIREO_FUNCTION_CUSTOM(Mul, Mul_VDouble, "p(i(a(Double *))i(a(Double *))o(a(Double *)))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, Add_VDouble, "p(i(a(Double *))i(a(Double *))o(a(Double *)))");
+#endif
+
     DEFINE_VIREO_FUNCTION(ArrayFill, "p(o(.Array) i(.Int32) i(.*))")
     DEFINE_VIREO_FUNCTION(ArrayCapacity, "p(i(.Array) o(.Int32))")
     DEFINE_VIREO_FUNCTION(ArrayLength, "p(i(.Array) o(.Int32))")
