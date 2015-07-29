@@ -837,7 +837,6 @@ Int32 AggregateType::SubElementCount()
 //------------------------------------------------------------
 TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    TypeRef subType = null;
     *end = null;
     
     if (path->Length() == 0) {
@@ -851,18 +850,25 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 
     // If the head matches one of the AggregateType's elements, add the offset.
     for (ElementTypeRef* pType = _elements.Begin(); pType != _elements.End(); pType++) {
-        if ( pathHead.Compare((*pType)->_elementName.Begin(), (*pType)->_elementName.Length()) ) {
-            subType = (*pType);
-            *end = (AQBlock1*)start + ((*pType)->ElementOffset());
+    
+        ElementTypeRef subType = *pType;
+        if ((_elements.Length() == 1) && (subType->_elementName.Length() == 0) && pathTail.Length()) {
+            // Simple cluster wrappers have only one element, and that element has no name.
+            // skip past cluster and look for the tail inside what it wraps.
+            return subType->GetSubElementAddressFromPath(path, *end, end, allowDynamic);
+        } else if ( pathHead.Compare(subType->_elementName.Begin(), subType->_elementName.Length()) ) {
+            *end = (AQBlock1*)start + (subType->ElementOffset());
             
             // If there is a tail recurse, repin start and recurse.
             if (pathTail.Length()) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
+            } else {
+                return subType;
             }
-            break;
         }
     }
-    return subType;
+    
+    return null;
 }
 //------------------------------------------------------------
 TypeRef AggregateType::GetSubElement(Int32 index)
@@ -2096,7 +2102,7 @@ NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
     Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
-            switch(aqSize) {
+            switch (aqSize) {
                 case 4: value = RoundToEven(*(Single*)pData);  break;
                 case 8: value = RoundToEven(*(Double*)pData);  break;
                 default: err = kNIError_kCantDecode;           break;
@@ -2104,7 +2110,7 @@ NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
             break;
         case kEncoding_SInt2C:
         case kEncoding_IntDim:
-            switch(aqSize) {
+            switch (aqSize) {
                 case 1: value = *(Int8*)pData;                 break;
                 case 2: value = *(Int16*)pData;                break;
                 case 4: value = *(Int32*)pData;                break;
@@ -2114,7 +2120,7 @@ NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
             break;
         case kEncoding_UInt:
             // Use unsigned int casts to avoid sign extension
-            switch(aqSize) {
+            switch (aqSize) {
                 case 1:  value = *(UInt8*)pData;                break;
                 case 2:  value = *(UInt16*)pData;               break;
                 case 4:  value = *(UInt32*)pData;               break;
@@ -2123,7 +2129,7 @@ NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
             }
             break;
         case kEncoding_Boolean:
-            switch(aqSize) {
+            switch (aqSize) {
                 case 1:  value = (*(UInt8*)pData) ? 1:0;        break;
                 default: err = kNIError_kCantDecode;            break;
             }
@@ -2217,17 +2223,17 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
             }
             break;
         case kEncoding_Boolean:
-            switch(aqSize) {
+            switch (aqSize) {
                 case 1:  value = (*(UInt8*)pData) ? 1.0:0.0;break;
                 default: err = kNIError_kCantDecode;        break;
             }
             break;
         case kEncoding_Cluster:
-          if (type->IsA("Timestamp")) {
+            if (type->IsA("Timestamp")) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
-          }
-          break;
+            }
+            break;
         default: err = kNIError_kCantDecode; break;
     }
     *pValue = value;
@@ -2305,7 +2311,6 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerBaseTypeManager, TypeManagerRef, TypeManage
     }
     return _NextInstruction();
 }
-
 //------------------------------------------------------------
 struct AllocationStatistics {
     Int64   _totalAllocations;
