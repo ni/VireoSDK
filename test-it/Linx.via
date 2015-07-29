@@ -1,7 +1,7 @@
 start( VI<(
     Locals: c(
         e(LinxHandle linx)
-        e(Int32 dio)
+        e(UInt8 dio)
         e(Double aio)
         e(a(Int32 *) diov)
         e(a(Double *) aiov)
@@ -24,11 +24,13 @@ start( VI<(
         AnalogWrite(linx 0 aio)
 
         // Single channel PWM
-        PWMWrite(linx 0 dio)
+        PWMWrite(linx 0 aio)
 
+/*
+        // TODO the inline array constants are getting caught up in function over loading 
         // Vectors DIO
         DigitalRead(linx (0 1 2) diov)
-        Printf(" diov value %s \n" diov)
+         Printf(" diov value %s \n" diov)
         DigitalWrite(linx (0 1 2) diov)
 
         // Vectors AIO
@@ -38,7 +40,7 @@ start( VI<(
 
         // Vectors PWM
         PWMWrite(linx (2 3) (60.0 25.0))
-
+*/
         Close(linx)
         Printf(" linx handle after close %s \n" linx)
     )
