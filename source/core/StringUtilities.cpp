@@ -924,7 +924,7 @@ void PrintUTF8ArrayHex(const char* buffer, Int32 length)
 {
     for (; length;) {
         Int32 x = SubString::NextChar((const Utf8Char*) buffer) - buffer;
-        for(; x; x--) {
+        for (; x; x--) {
             PlatformIO::Printf("%02X", (UInt8)(*buffer));
             buffer++;
             length--;
