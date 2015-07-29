@@ -246,7 +246,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
             if (type->IsTemplate()) {
                 // Build a list of parameters.
                 FixedCArray<TypeRef, ClumpParseState::kMaxArguments> templateParameters;
-                for(IntIndex i = 0; !_string.EatChar('>'); i++) {
+                for (IntIndex i = 0; !_string.EatChar('>'); i++) {
                     templateParameters.Append(ParseType());
                 }
                 type = InstantiateTypeTemplate(_typeManager, type, &templateParameters);
@@ -1273,8 +1273,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             state.MarkPerch(&perchName);
         } else {
             Boolean keepTrying = state.StartInstruction(&instructionNameToken) != null;
-            if (!keepTrying)
-                LOG_EVENTV(kSoftDataError, "Function not found '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
 
             // Start reading actual parameters
             if (!_string.EatChar('('))
@@ -1282,7 +1280,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             
             // Parse the arguments once and determine how many were passed to the function.
             Int32 argCount = 0;
-            for(; true; argCount++) {
+            for (; true; argCount++) {
                 _string.ReadSubexpressionToken(&token);
                 if (token.Length() == 0 || token.CompareCStr(")")) {
                     break;
@@ -1296,7 +1294,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             }
             
             while(keepTrying) {
-                for(Int32 i = 0; (i < argCount) && keepTrying; i++) {
+                for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
                 
                     token = argExpressionTokens[i];
                     TypeRef formalType  = state.ReadFormalParameterType();
@@ -1345,24 +1343,16 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     // If there were no arg mismatches then one was found.
                     keepTrying = false;
                 } else {
-                    // Else see if there is another overload to try.
+                    // See if there is another overload to try.
                     keepTrying = state.StartNextOverload() != null;
                 }
             }
-            state.EmitInstruction();
-#if 0
-            if (state.LastArgumentError()) {
-                state.LogArgumentProcessing(CalcCurrentLine());
+            InstructionCore* instruction = state.EmitInstruction();
+            if (!instruction) {
+                LOG_EVENTV(kSoftDataError, "Instruction not generated '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
             }
-#endif
         }
         _string.ReadToken(&instructionNameToken);
-
-#if 0         
-        if (instructionNameToken.CompareCStr(",")) {
-            _string.ReadToken(&instructionNameToken);
-        }
-#endif
     }
     state.CommitClump();
 
@@ -1568,8 +1558,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
 void TDViaFormatter::FormatEncoding(EncodingEnum value)
 {
     ConstCStr str = null;
-    switch(value)
-    {
+    switch (value) {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
         case kEncoding_SInt2C:          str = tsSInt;           break;
@@ -1585,8 +1574,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
 void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
 {
     ConstCStr str = null;
-    switch(value)
-    {
+    switch (value) {
         case kUsageTypeSimple:          str = tsElementToken;           break;
         case kUsageTypeInput:           str = tsInputParamToken;        break;
         case kUsageTypeOutput:          str = tsOutputParamToken;       break;
@@ -1895,7 +1883,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedA
     TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat);
     if (itemPath->Length()>0) {
         Boolean existingPath = true;
-        for(IntIndex i=0; existingPath && i< itemPath->Length();i++) {
+        for (IntIndex i=0; existingPath && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
             if(!parser.EatJSONPath(&p)) {
                 existingPath = false;

@@ -16,14 +16,16 @@
                 Add(variable1 variable1 variable1)
             )
         )
-(Line 4 Error "Function not found 'PrintZZZX'.")
+(Line 4 Error "Instruction not generated 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
+(Line 5 Error "Instruction not generated 'Println'.")
 
 -------
 Somewhat of a lambda, Hello world.
 Could this be a simple reentrant VI?, Hello world.
-(Line 4 Error "Function not found 'PrintZZZX'.")
+(Line 4 Error "Instruction not generated 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
+(Line 5 Error "Instruction not generated 'Println'.")
 
 -------
 Could this be a simple reentrant VI?, Hello world.

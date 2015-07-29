@@ -439,7 +439,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
         default:
         {
-            pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "(Error \"Fucntion <%.*s> did not resolve to specific type\")\n", &savedOperation);
+            // Leave pInstruction null. Error reported by caller.
             break;
         }
     }
