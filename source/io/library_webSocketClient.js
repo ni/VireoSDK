@@ -9,25 +9,14 @@ var WebSocketClient =
         console.log('made it to the js lib');
         
         _connection = new WebSocket(Pointer_stringify(url, urlLength));
-        _cases = { _default: 'default' };
-        waitingMessages = [];
         
         _connection.onopen = function(evt){
-            console.log('connect');
+            console.log('Connection Opened');
             NationalInstruments.Vireo.setOccurence(occurrenceRef);
-            for(var index = 0; index < waitingMessages.length; index++) {
-                console.log('sending after waiting');
-                _connection.send(waitingMessages[index]);
-            }
-        }
-        
-       
-        
-        _connection.onclose = function(evt){
-            console.log("Closing");
         }
         
         _connection.onerror = function(evt){
+            console.log('oops, there was an error');
             console.log(evt);
         }
         
@@ -37,11 +26,6 @@ var WebSocketClient =
     jsWebSocketClientEventListener: function (event, eventLength, response, responseLength) {
         console.log("Setting message listener!");
         _cases[Pointer_stringify(event, eventLength)] = Pointer_stringify(response, responseLength);
-        return 0;
-    },
-    jsWebSocketClientSend: function (connection, connectionLength, message, messageLength, errorMessage) {
-        //console.log('Sending');
-        _connection.send(Pointer_stringify(message, messageLength));
         return 0;
     },
     jsWebSocketClientRead: function (connection, connectionLength, timeout, data, errorMessage, occurrenceRef) {
@@ -61,10 +45,18 @@ var WebSocketClient =
             NationalInstruments.Vireo.setOccurence(occurrenceRef);
             return 1;
         }, timeout);
+    },
+    jsWebSocketClientClose: function (connection, connectionLength, errorMessage) {
+        console.log('Closing');
+        _connection.onclose = function(evt){
+            console.log("Connection Closed");
+            return 0;
+        }
+        _connection.close();
         
-        
-        
-        
+    },
+    jsWebSocketClientState: function (connection, connectionLength, state, errorMessage) {
+        NationalInstruments.Vireo.dataWriteString(state, _connection.readyState, evt.readyState.length);
     }
 
     /*
