@@ -1278,7 +1278,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!_string.EatChar('('))
                 return LOG_EVENT(kHardDataError, "'(' missing");
             
-            // Parse the arguments once and determine how many were passed to the function.
+            // Parse the arguments once and determine how many were passed to the instruction.
             Int32 argCount = 0;
             for (; true; argCount++) {
                 _string.ReadSubexpressionToken(&token);

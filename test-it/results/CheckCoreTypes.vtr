@@ -6,9 +6,9 @@
  e(.Int32)  // encoding:10 usage:0 baseType:c(e(bb(32 SInt2c))) dv:false generic:false
  e(.Int64)  // encoding:10 usage:0 baseType:c(e(bb(64 SInt2c))) dv:false generic:false
  e(.UInt8)  // encoding: 9 usage:0 baseType:c(e(bb(8 UInt))) dv:false generic:false
- e(.UInt16)  // encoding: 9 usage:0 baseType:c(e(bb(16 UInt))) dv:false generic:false
- e(.UInt32)  // encoding: 9 usage:0 baseType:eq(e(.UInt32Atomic)e(.UInt32Cluster)) dv:false generic:false
- e(.UInt64)  // encoding: 9 usage:0 baseType:c(e(bb(64 UInt))) dv:false generic:false
+ e(.UInt16)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(16 UInt))))e(c(e(.UInt8 lo)e(.UInt8 hi)) UInt8s)) dv:false generic:false
+ e(.UInt32)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(32 UInt))))e(c(e(.UInt16 lo)e(.UInt16 hi)) UInt16s)) dv:false generic:false
+ e(.UInt64)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(64 UInt))))e(c(e(.UInt32 lo)e(.UInt32 hi)) UInt32s)) dv:false generic:false
  e(.Single)  // encoding:12 usage:0 baseType:eq(e(.SingleAtomic value)e(.SingleCluster fields)) dv:false generic:false
  e(.Double)  // encoding:12 usage:0 baseType:eq(e(.DoubleAtomic value)e(.DoubleCluster fields)) dv:false generic:false
  e(.ComplexSingle)  // encoding: 1 usage:0 baseType:c(e(.Single real)e(.Single imaginary)) dv:false generic:false

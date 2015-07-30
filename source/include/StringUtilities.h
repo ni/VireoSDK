@@ -210,7 +210,7 @@ public:
     //! Skip all tokens and comments up to the next eol sequence
     void EatToEol();
     
-    //! Skip the next char if it matches the singel character token specified
+    //! Skip the next char if it matches the single character token specified
     Boolean EatChar(char token);
     
     //! Skip the next sequence of chars that match a speciic trait (e.g. hexadecimal)

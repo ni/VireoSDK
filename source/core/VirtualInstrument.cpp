@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Native Vireo VI functions
+    \brief Virtual Instrument support
  */
 
 #include "TypeDefiner.h"
@@ -445,7 +445,7 @@ TypeRef ClumpParseState::StartNextOverload()
     }
     
     if (t && t->BitEncoding() == kEncoding_Pointer) {
-        // Looks like it resolved to a native function
+        // Looks like it resolved to a native instruction
         _instructionPointerType = t;
         _instructionType = _instructionPointerType->GetSubElement(0);
     } else if (t && (t->IsA(_baseViType))) {
@@ -715,7 +715,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
                 InternalAddArgNeedingPatch(PatchInfo::Perch, (void**)&_perches[perchIndex]);
             }
         } else {
-           // TODO function too complex
+           // TODO instruction too complex
         }
     } else {
         _argumentState = kArgumentNotResolved;
