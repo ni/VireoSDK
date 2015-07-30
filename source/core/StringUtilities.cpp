@@ -472,8 +472,9 @@ TokenTraits SubString::ReadToken(SubString* token)
         } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for booleanish tokens.
             tokenTraits = TokenTraits_Boolean;
-        } else if (('0' == c) && (*_begin == 'x')) {
+        } else if (idToken.ComparePrefixCStr("0x")) {
             // Look for hexidecimal tokens.
+            idToken._begin += 2;
             if (idToken.EatCharsByTrait(kACT_Hex) && idToken.Length() == 0) {
                 tokenTraits = TokenTraits_Integer;
             }
@@ -866,7 +867,7 @@ void SubString::EatLeadingSpaces()
         }
     }
 }
-
+//------------------------------------------------------------
 void SubString::EatWhiteSpaces()
 {
     while (_begin < _end){
