@@ -34,7 +34,16 @@ SDG
 // ARM uses registers always, and clang x86/x64 uses registers
 #define VIVM_FASTCALL
 
+//------------------------------------------------------------
+// Define endianness for the target being compiled for.
+// This may be different than the target doing the compiling.
+#ifndef VIREO_BIG_ENDIAN
+    #define VIREO_LITLE_ENDIAN
+#endif
 
+//------------------------------------------------------------
+// For static-link the symbols need to be linkable from out side
+// the compile module wiht simple unmangled names.
 #ifdef VIREO_STATIC_LINK
     #define VIREO_INSTRUCTION_LINKAGE extern "C"
 #else

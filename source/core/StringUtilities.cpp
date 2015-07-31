@@ -147,7 +147,7 @@ TokenTraits SubString::ClassifyNextToken() const
     
     TokenTraits tt = temp.ReadToken(&token);
     
-    if (temp.ComparePrefixCStr("<")) {
+    if (temp.ComparePrefix('<')) {
         tt = TokenTraits_TemplateExpression;
     }
     return tt;
@@ -472,8 +472,9 @@ TokenTraits SubString::ReadToken(SubString* token)
         } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for booleanish tokens.
             tokenTraits = TokenTraits_Boolean;
-        } else if (('0' == c) && (*_begin == 'x')) {
+        } else if (idToken.ComparePrefixCStr("0x")) {
             // Look for hexidecimal tokens.
+            idToken._begin += 2;
             if (idToken.EatCharsByTrait(kACT_Hex) && idToken.Length() == 0) {
                 tokenTraits = TokenTraits_Integer;
             }
@@ -650,7 +651,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
     // Three formats are supported
     // 1. nnn   Simple integers negative or positive
     // 2. *     Which means variable or unspceified
-    // 3  $n    Which also means variable but is identifies as a template parameter
+    // 3  #n    Which also means variable but is identifies as a template parameter
     // Meta ints can only be used where the reasonable range of value does not
     // include extreme negative numbers.
     
@@ -660,7 +661,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
             _begin++;
             *pValue = kArrayVariableLengthSentinel;
             return true;
-        } else if (*_begin == '$') {
+        } else if (*_begin == *tsMetaIdPrefix) {
             IntMax templateIndex;
             SubString innerString(_begin+1, _end);
             if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths ) {
@@ -866,7 +867,7 @@ void SubString::EatLeadingSpaces()
         }
     }
 }
-
+//------------------------------------------------------------
 void SubString::EatWhiteSpaces()
 {
     while (_begin < _end){
@@ -924,7 +925,7 @@ void PrintUTF8ArrayHex(const char* buffer, Int32 length)
 {
     for (; length;) {
         Int32 x = SubString::NextChar((const Utf8Char*) buffer) - buffer;
-        for(; x; x--) {
+        for (; x; x--) {
             PlatformIO::Printf("%02X", (UInt8)(*buffer));
             buffer++;
             length--;

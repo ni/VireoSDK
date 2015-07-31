@@ -1,0 +1,16 @@
+start( VI<(
+    Locals:c(
+        e(Int32 x)
+    )
+    clump(
+        // At one point a soft argument parsing error in a var arg instructions
+        // prevented the var arg flag from being reset.
+        Printf("foo\n" x.a)
+
+        // That meant if another var arg instruciton followed then
+        // an assert was hit.
+        Printf("foo\n" x)
+
+        // Once fixed the first printf should simply generate the error.
+    )
+) > )

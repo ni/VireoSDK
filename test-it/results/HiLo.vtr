@@ -1,0 +1,20 @@
+whole FACE
+parts 0
+hi    FA
+lo    CE
+whole 12345678
+parts (22136 4660)
+hi    1234
+lo    5678
+hi.hi 12
+hi.lo 34
+lo.hi 56
+lo.lo 78
+whole 123456789ABCDEF0
+parts (2596069104 305419896)
+hi    12345678
+lo    9ABCDEF0
+hi.hi 1234
+hi.lo 5678
+lo.hi 9ABC
+lo.lo DEF0

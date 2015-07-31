@@ -10,7 +10,6 @@
 #include "TypeDefiner.h"
 #include "Instruction.h"
 
-#define VIREO_LINX
 #ifdef VIREO_LINX
 //Stubbing out functions for now.
 //#include "LINX/device/LINX_Device.h"
@@ -91,23 +90,24 @@ VIREO_FUNCTION_SIGNATURE3(AnalogWriteN, LinxHandle, TypedArray1D<UInt8>*, TypedA
 DEFINE_VIREO_BEGIN(Linx)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 
+    // Linx Handle
     DEFINE_VIREO_TYPE(LinxHandle, ".Int32")
     DEFINE_VIREO_FUNCTION(Open, "p(o(LinxHandle))");
     DEFINE_VIREO_FUNCTION(Close, "p(i(LinxHandle))");
 
     // DIO - Single channel and multichannel
-    DEFINE_VIREO_FUNCTION(DigitalRead, "p(i(LinxHandle) i(a(UInt8 *) channels) i(UInt8 value))");
-    DEFINE_VIREO_FUNCTION(DigitalWrite, "p(i(LinxHandle) i(a(UInt8 *) channels) o(UInt8 value))");
+    DEFINE_VIREO_FUNCTION(DigitalRead, "p(i(LinxHandle) i(UInt8 channel) i(UInt8 value))");
+    DEFINE_VIREO_FUNCTION(DigitalWrite, "p(i(LinxHandle) i(UInt8 channel) o(UInt8 value))");
     DEFINE_VIREO_FUNCTION_CUSTOM(DigitalRead, DigitalReadN, "p(i(LinxHandle) i(a(UInt8 *) channels) i(a(Int32 *) values))");
     DEFINE_VIREO_FUNCTION_CUSTOM(DigitalWrite, DigitalWriteN, "p(i(LinxHandle) i(a(UInt8 *) channels) o(a(Int32 *) values))");
 
     // PWM - Single channel and multichannel
-    DEFINE_VIREO_FUNCTION(PWMWrite, "p(i(LinxHandle) i(a(UInt8 *) channels) o(Double value))");
+    DEFINE_VIREO_FUNCTION(PWMWrite, "p(i(LinxHandle) i(UInt8 channel) o(Double value))");
     DEFINE_VIREO_FUNCTION_CUSTOM(PWMWrite, PWMWriteN, "p(i(LinxHandle) i(a(UInt8 *) channels) o(a(Double *) values))");
 
     // AIO - Single channel and multichannel
-    DEFINE_VIREO_FUNCTION(AnalogRead, "p(i(LinxHandle) i(a(UInt8 *) channels) i(Double value))");
-    DEFINE_VIREO_FUNCTION(AnalogWrite, "p(i(LinxHandle) i(a(UInt8 *) channels) o(Double value))");
+    DEFINE_VIREO_FUNCTION(AnalogRead, "p(i(LinxHandle) i(UInt8 channel) i(Double value))");
+    DEFINE_VIREO_FUNCTION(AnalogWrite, "p(i(LinxHandle) i(UInt8 channel) o(Double value))");
     DEFINE_VIREO_FUNCTION_CUSTOM(AnalogRead, AnaloglReadN, "p(i(LinxHandle) i(a(UInt8 *) channels) i(a(Double *) values))");
     DEFINE_VIREO_FUNCTION_CUSTOM(AnalogWrite, AnalogWriteN, "p(i(LinxHandle) i(a(UInt8 *) channels) o(a(Double *) values))");
 DEFINE_VIREO_END()

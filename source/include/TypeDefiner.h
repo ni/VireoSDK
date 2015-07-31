@@ -23,6 +23,7 @@ class EventLog;
 class TypeDefiner;
 typedef ConstCStr (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef typeManager);
 
+//------------------------------------------------------------
 //! Facilitate the registration of Vireo types that are defined in C++ code.
 class TypeDefiner
 {

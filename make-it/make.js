@@ -10,7 +10,7 @@ path = require('path');
 // Default setup
 buildOptions = {
     "debug": false,
-    "define": "-DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1",
+    "define": "-DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1 -DVIREO_LINX=1",
     "optimization": "",
     "include": "../source/include",
         "sourceRoot": "../source/",
@@ -266,6 +266,7 @@ target.install = function() {
     if (!sh.test('-e', '/Applications/Vireo')) {
         sh.mkdir('/Applications/Vireo');
     }
+    console.log(" Copying <" + buildOptions.targetFile + "> to </Applications/Vireo>." );
     sh.cp('-f', buildOptions.targetFile, '/Applications/Vireo');
 };
 //------------------------------------------------------------

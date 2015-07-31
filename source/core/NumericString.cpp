@@ -213,7 +213,7 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             buffer->AppendCStr("%T");
             return ;
         }
-        switch(argType->BitEncoding()) {
+        switch (argType->BitEncoding()) {
 
         case kEncoding_UInt: {
             buffer->AppendCStr("%u");
@@ -972,7 +972,7 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
         if (i+2< charSet->Length() && (*(begin + 1 + i)=='-')) {
             IntIndex range = *(begin + 2 + i) - *(begin+i);
 
-            for( IntIndex j = 0; j<= range; j++) {
+            for (IntIndex j = 0; j<= range; j++) {
                 Utf8Char rangeChar = *(begin + i)+j;
                 if (candidate == rangeChar) {
                     return true;
@@ -2137,7 +2137,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 if (elemIndex[dim]>=array->GetLength(dim)) {
                     dim++;
                     elemIndex[dim] = 1;
-                    for(IntIndex i =0; i< dim; i++) {
+                    for (IntIndex i =0; i< dim; i++) {
                         elemIndex[i] = 0;
                     }
                 }

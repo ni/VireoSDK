@@ -253,7 +253,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
 
     // Case 1: The name is a template parameter name like '$0', '$1', ...
     // In this case the type get substituted with the parameter value.
-    if (name.EatChar(*tsTemplatePrefix)) {
+    if (name.EatChar(*tsMetaIdPrefix)) {
         IntMax i;
         name.ReadInt(&i);
         if (i >= 0 && i < nTParams) {

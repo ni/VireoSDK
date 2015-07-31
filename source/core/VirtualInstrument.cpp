@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Native Vireo VI functions
+    \brief Virtual Instrument support
  */
 
 #include "TypeDefiner.h"
@@ -445,7 +445,7 @@ TypeRef ClumpParseState::StartNextOverload()
     }
     
     if (t && t->BitEncoding() == kEncoding_Pointer) {
-        // Looks like it resolved to a native function
+        // Looks like it resolved to a native instruction
         _instructionPointerType = t;
         _instructionType = _instructionPointerType->GetSubElement(0);
     } else if (t && (t->IsA(_baseViType))) {
@@ -480,7 +480,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     *ppData = null;
     
     // "." prefixed symbols are type symbols from the TypeManager
-    if (argument->ComparePrefixCStr(".")) {
+    if (argument->ComparePrefix('.')) {
         _actualArgumentType = _clump->TheTypeManager()->FindType(tsTypeType);
         
         Utf8Char dot;
@@ -715,7 +715,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
                 InternalAddArgNeedingPatch(PatchInfo::Perch, (void**)&_perches[perchIndex]);
             }
         } else {
-           // TODO function too complex
+           // TODO instruction too complex
         }
     } else {
         _argumentState = kArgumentNotResolved;
@@ -1023,8 +1023,10 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
 //! Emit the instruction resolved to by general clump parser.
 InstructionCore* ClumpParseState::EmitInstruction()
 {
-    if (!_instructionType)
+    if (!_instructionType) {
+        _pVarArgCount = null;
         return null;
+        }
     
     if (_bIsVI) {
         return EmitCallVIInstruction();
@@ -1035,11 +1037,11 @@ InstructionCore* ClumpParseState::EmitInstruction()
         if (genericResolver != null) {
             return genericResolver(this);
         }
-        // If there is no generic resolver function assume the underlying function
+        // If there is no generic resolver function assume the underlying instruction
         // can take the parameters as is (e.g. it is runtime polymorphic)
     }
 
-    // If extra parameters exist for the matched function is that OK?
+    // If extra parameters exist for the matched instruction is that OK?
     Int32 formalArgCount = _instructionType->SubElementCount();
     if (formalArgCount > _argCount) {
 //      Boolean foundMissing = false;

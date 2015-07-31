@@ -187,31 +187,36 @@ TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventL
 //------------------------------------------------------------
 void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 {
-    // Numeric types and Boolean
-    Define(tm, "Boolean",       "c(e(bb(1 Boolean)))");
+    // The basics
+    Define(tm, tsBooleanType,   "c(e(bb(1 Boolean)))");
     Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
-    // Integer
-    Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
+
+    // Signed (2's compliment) integers
     Define(tm, "Int8",          "c(e(bb(8 SInt2c)))");
-    Define(tm, "UInt16",        "c(e(bb(16 UInt)))");
     Define(tm, "Int16",         "c(e(bb(16 SInt2c)))");
-    // UInt32
-    Define(tm, "UInt32Atomic",  "c(e(bb(32 UInt)))");
-    Define(tm, "UInt32Cluster", "c(e(.UInt16 HiWord) e(.UInt16 LoWord))");
-    Define(tm, "UInt32",        "eq(e(.UInt32Atomic) e(.UInt32Cluster))");
-    // Integer Int32
-    Define(tm, "Int32",         "c(e(bb(32 SInt2c)))");
-    Define(tm, "UInt64",        "c(e(bb(64 UInt)))");
+    Define(tm, tsInt32Type,     "c(e(bb(32 SInt2c)))");
     Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
-    
+
+    // Unsigned integers
+    Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
+#if defined(VIREO_LITLE_ENDIAN)
+    Define(tm, "UInt16",        "eq(e(c(e(bb(16 UInt)))) e(c(e(UInt8 lo) e(UInt8 hi)) UInt8s))");
+    Define(tm, "UInt32",        "eq(e(c(e(bb(32 UInt)))) e(c(e(UInt16 lo) e(UInt16 hi)) UInt16s))");
+    Define(tm, "UInt64",        "eq(e(c(e(bb(64 UInt)))) e(c(e(UInt32 lo) e(UInt32 hi)) UInt32s))");
+#else
+    Define(tm, "UInt16",        "eq(e(c(e(bb(16 UInt)))) e(c(e(UInt8 hi) e(UInt8 lo)) UInt8s))");
+    Define(tm, "UInt32",        "eq(e(c(e(bb(32 UInt)))) e(c(e(UInt16 hi) e(UInt16 lo)) UInt16s))");
+    Define(tm, "UInt64",        "eq(e(c(e(bb(64 UInt)))) e(c(e(UInt32 hi) e(UInt32 lo)) UInt32s))");
+#endif
+    // Large blocks of bytes for copies
     Define(tm, "Block128",      "c(e(bb(128 Bits)))");
     Define(tm, "Block256",      "c(e(bb(256 Bits)))");
 
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
     Define(tm, "Utf32Char", ".Int32");              // A single Unicode codepoint (no special encoding or escapes)
-    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should bevalid UTF-8 encoding. No partial or overlong elements
-    Define(tm, "String", ".Utf8Array1D");
+    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
+    Define(tm, tsStringType, ".Utf8Array1D");
     Define(tm, "StringArray1D", "a(.String *)");
 
     // Special types for the execution system.
@@ -220,9 +225,8 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "BranchTarget", ".DataPointer");
     Define(tm, "Instruction", ".DataPointer");
 
-    // Type - describes a variable that is of type Type. (e.g. pointer to TypeRef)
+    // Type Type describes a variable that is a pointer to a TypeRef
     Define(tm, tsTypeType, ".DataPointer");
-//    Define(tm, tsTypeManagerType, ".DataPointer");
 
     Define(tm, "Object", ".DataPointer");
     Define(tm, "Array", ".DataPointer");    // Object with Rank > 0

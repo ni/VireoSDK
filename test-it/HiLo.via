@@ -1,0 +1,31 @@
+start( VI<(
+    Locals: c(
+        e(UInt16<0xFACE> x)
+        e(UInt32<0x12345678> y)
+        e(UInt64<0x123456789ABCDEF0> z)
+    )
+    clump(
+        Printf("whole %x\n" x)
+        Printf("parts %x\n"    x.UInt8s)
+        Printf("hi    %x\n"    x.UInt8s.hi)
+        Printf("lo    %x\n"    x.UInt8s.lo)
+
+        Printf("whole %x\n" y)
+        Printf("parts %s\n"    y.UInt16s)
+        Printf("hi    %x\n"    y.UInt16s.hi)
+        Printf("lo    %x\n"    y.UInt16s.lo)
+        Printf("hi.hi %x\n"    y.UInt16s.hi.UInt8s.hi)
+        Printf("hi.lo %x\n"    y.UInt16s.hi.UInt8s.lo)
+        Printf("lo.hi %x\n"    y.UInt16s.lo.UInt8s.hi)
+        Printf("lo.lo %x\n"    y.UInt16s.lo.UInt8s.lo)
+
+        Printf("whole %x\n" z)
+        Printf("parts %s\n"    z.UInt32s)
+        Printf("hi    %x\n"    z.UInt32s.hi)
+        Printf("lo    %x\n"    z.UInt32s.lo)
+        Printf("hi.hi %x\n"    z.UInt32s.hi.UInt16s.hi)
+        Printf("hi.lo %x\n"    z.UInt32s.hi.UInt16s.lo)
+        Printf("lo.hi %x\n"    z.UInt32s.lo.UInt16s.hi)
+        Printf("lo.lo %x\n"    z.UInt32s.lo.UInt16s.lo)
+    )
+) > )
