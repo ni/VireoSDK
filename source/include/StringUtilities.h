@@ -187,9 +187,9 @@ const UInt8 AsciiCharTraits[] =
     
 //------------------------------------------------------------
 //! JSON style separator between field name and value.
-#define tsNameSuffix       ":"
+#define tsNameSuffix    ":"
 //! Prefix for meta identifiers used for template parameters.
-#define tsTemplatePrefix   "$"
+#define tsMetaIdPrefix  "$"
 
 //------------------------------------------------------------
 //! The core class for working with strings. The SubString never owns the data it points to.

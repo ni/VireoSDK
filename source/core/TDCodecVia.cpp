@@ -1602,7 +1602,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
             format = tsWildCard;
         } else if (IsVariableLengthDim((IntIndex)value)) {
             value = value - kArrayVariableLengthSentinel - 1;
-            format = tsTemplatePrefix "%*lld";
+            format = tsMetaIdPrefix "%*lld";
         } else {
             format = "%*lld";
         }
@@ -1938,7 +1938,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         Int64 parsedValue;
 
         // ParseData needs to be given an integer type so that it parses the string as a decimal string.
-        TypeRef parseType = THREAD_TADM()->FindType("Int64");
+        TypeRef parseType = THREAD_TADM()->FindType(tsInt64Type);
 
         parser.ParseData(parseType, &parsedValue);
 

@@ -389,8 +389,8 @@ TypeRef TypeManager::FindType(const SubString* name)
         type = subType;
     }
 
-    if (!type && name->ComparePrefix(*tsTemplatePrefix)) {
-        // Names that start with # are template parameters.
+    if (!type && name->ComparePrefix(*tsMetaIdPrefix)) {
+        // Names that start with $ are template parameters.
         // They are all named derivatives of the common wild card
         // type named "*". This means template fields can be replaced
         // by any type.
@@ -821,8 +821,8 @@ NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef 
         nextOverload->_nextOverload = this;
     }
     _name.Assign(name->Begin(), name->Length());
-    if (name->ComparePrefix(*tsTemplatePrefix)) {
-        _isTemplate = name->ComparePrefix(*tsTemplatePrefix);
+    if (name->ComparePrefix(*tsMetaIdPrefix)) {
+        _isTemplate = name->ComparePrefix(*tsMetaIdPrefix);
     }
 }
 //------------------------------------------------------------

@@ -661,7 +661,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
             _begin++;
             *pValue = kArrayVariableLengthSentinel;
             return true;
-        } else if (*_begin == *tsTemplatePrefix) {
+        } else if (*_begin == *tsMetaIdPrefix) {
             IntMax templateIndex;
             SubString innerString(_begin+1, _end);
             if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths ) {

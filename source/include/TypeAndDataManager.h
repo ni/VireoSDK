@@ -66,6 +66,14 @@ typedef TypeManager *TypeManagerRef;
 // Instead of a TypeRef*
 typedef TypeCommon StaticType;
 
+//------------------------------------------------------------
+//! Names for some cores types.
+#define tsBooleanType       "Boolean"
+#define tsInt32Type         "Int32"
+#define tsInt64Type         "Int64"
+#define tsDoubleType        "Double"
+#define tsStringType        "String"
+#define tsTypeType          "Type"
 #define tsWildCard          "*"
 
 //------------------------------------------------------------
@@ -119,8 +127,8 @@ enum EncodingEnum {
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
 
-// UsageTypeEnum defines how parameters in a native function of VIs ParamBlock will be used.
-// Note kUsageTypeInput..kUsageTypeAlias are all forms of alias'
+// UsageTypeEnum defines how parameters in a native instruction or VIs ParamBlock will be used.
+// Note, kUsageTypeInput..kUsageTypeAlias are all forms of alias'
 enum UsageTypeEnum {
     kUsageTypeSimple = 0,       // Default for clusters, code assumed to read and write at will, not allowed in ParamBlock
     kUsageTypeInput = 1,        // Caller copies in value, VI will not change it.

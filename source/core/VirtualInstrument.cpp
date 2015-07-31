@@ -1035,11 +1035,11 @@ InstructionCore* ClumpParseState::EmitInstruction()
         if (genericResolver != null) {
             return genericResolver(this);
         }
-        // If there is no generic resolver function assume the underlying function
+        // If there is no generic resolver function assume the underlying instruction
         // can take the parameters as is (e.g. it is runtime polymorphic)
     }
 
-    // If extra parameters exist for the matched function is that OK?
+    // If extra parameters exist for the matched instruction is that OK?
     Int32 formalArgCount = _instructionType->SubElementCount();
     if (formalArgCount > _argCount) {
 //      Boolean foundMissing = false;
