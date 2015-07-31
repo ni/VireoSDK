@@ -1023,8 +1023,10 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
 //! Emit the instruction resolved to by general clump parser.
 InstructionCore* ClumpParseState::EmitInstruction()
 {
-    if (!_instructionType)
+    if (!_instructionType) {
+        _pVarArgCount = null;
         return null;
+        }
     
     if (_bIsVI) {
         return EmitCallVIInstruction();

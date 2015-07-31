@@ -1,0 +1,2 @@
+(Line 23 Error "Argument not resolved 'x.a'.")
+(Line 23 Error "Instruction not generated 'Printf'.")
