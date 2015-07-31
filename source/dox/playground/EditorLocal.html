@@ -56,9 +56,10 @@
 define(HelloWorld dv(.VirtualInstrument (
     Locals:
     c(
-        e(dv(.String 'wss://echo.websocket.org') url)
+        e(dv(.String 'ws://lvd-9l3vnl1.amer.corp.natinst.com:5000') url)
         e(.String protocol)
-        e(.String connection)
+        e(.UInt32 connection)
+        e(.UInt32 connection2)
         e(.String errorVal)
         e(.Int32 errorNum)
         e(dv(.String 'koo') event)
@@ -68,28 +69,21 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.Int32 1000)  oneThousand)
         e(.String data1)
         e(.String data2)
-        e(dv(.UInt32 6) http1)
-        e(dv(.String '6') http2)
-        e(dv(.Int32 6) http3)
-        e(dv(.String '6') http4)
+        e(.Int32 state)
     )
     clump (
         
         Println(errorNum)
         WebSocketClientConnect(url protocol connection errorNum errorVal)
-        Println(errorNum)
+        Println(connection)
+        WebSocketClientConnect(url protocol connection2 errorNum errorVal)
+        Println(connection2)
         
-        //WebSocketClientEventListener(event response errorNum errorVal)
-        
-        HttpClientListHeaders(http1 http2 http3 http4)
-        
-        Println(http4)
-        
-        WebSocketClientSend(event message errorNum errorVal)
+        WebSocketClientSend(connection message errorNum errorVal)
         
         WaitMilliseconds(oneHundred)
         
-        WebSocketClientSend(event message errorNum errorVal)
+        WebSocketClientSend(connection message errorNum errorVal)
         
         WebSocketClientRead(connection oneThousand data1 errorNum errorVal)
         
@@ -99,7 +93,13 @@ define(HelloWorld dv(.VirtualInstrument (
         
         Println(data1)
         
+        WebSocketClientState(connection state errorNum errorVal)
+        
+        Println(state)
+        
         WebSocketClientRead(connection oneThousand data2 errorNum errorVal)
+        
+        WebSocketClientClose(connection errorNum errorVal)
         
     )
 ) ) )

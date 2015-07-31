@@ -27,11 +27,11 @@ using namespace Vireo;
 
 
 extern "C" {
-    extern Int32 jsWebSocketClientConnect(const char *, int, const char*, int, StringRef, StringRef, OccurrenceRef);
-    extern Int32 jsWebSocketClientSend(const char *, int, const char *, int, StringRef);
-    extern Int32 jsWebSocketClientRead(const char *, int, Int32, StringRef, StringRef, OccurrenceRef);
-    extern Int32 jsWebSocketClientClose(const char *, int, StringRef);
-    extern Int32 jsWebSocketClientState(const char *, int, StringRef, StringRef);
+    extern Int32 jsWebSocketClientConnect(const char*, int, const char*, int, UInt32 *, StringRef, OccurrenceRef);
+    extern Int32 jsWebSocketClientSend(UInt32, const char *, int, StringRef);
+    extern Int32 jsWebSocketClientRead(UInt32, Int32, StringRef, StringRef, OccurrenceRef);
+    extern Int32 jsWebSocketClientClose(UInt32, StringRef);
+    extern Int32 jsWebSocketClientState(UInt32, Int32 *, StringRef);
     /*extern Int32 jsHttpClientClose(UInt32, StringRef);
     extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
@@ -44,7 +44,7 @@ extern "C" {
 
 //------------------------------------------------------------
 // url(0), protocol(1), connection(2), errorCode(3), errorMessage(4), occurrence(5)
-VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
+VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, UInt32, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(5)->ObjBegin();
@@ -55,7 +55,7 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, StringRe
         _Param(3) = jsWebSocketClientConnect(
             (char*)_Param(0)->Begin(), _Param(0)->Length(),
             (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            _Param(2),
+            _ParamPointer(2),
             _Param(4),
             _Param(5)
         );
@@ -75,11 +75,11 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, StringRe
 
 //------------------------------------------------------------
 // connection(0), message(1), errorCode(2). errorMessage(3)
-VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, StringRef, StringRef, Int32, StringRef)
+VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, UInt32, StringRef, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(2) = jsWebSocketClientSend(
-        (char*)_Param(0)->Begin(), _Param(0)->Length(),
+        _Param(0),
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
         _Param(3)
     );
@@ -90,7 +90,7 @@ VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, StringRef, StringRef, Int32, Stri
 //------------------------------------------------------------
 // connection(0), timeout(1), data(2), errorCode(3), errorMessage(4), occurence(5)
 // NOTE: ocurrence is inserted by the Vireo Compiler
-VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, StringRef, Int32, StringRef, Int32, StringRef, OccurrenceRef)
+VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, UInt32, Int32, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(5)->ObjBegin();
@@ -99,7 +99,7 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, StringRef, Int32, StringRef, Int3
     if(!pObserver) {
         // This is the initial call, call the js function
         _Param(3) = jsWebSocketClientRead(
-            (char*)_Param(0)->Begin(), _Param(0)->Length(),
+            _Param(0),
             _Param(1),
             _Param(2),
             _Param(4),
@@ -120,11 +120,11 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, StringRef, Int32, StringRef, Int3
 
 //------------------------------------------------------------
 // connection(0), errorCode(1), errorMessage(2)
-VIREO_FUNCTION_SIGNATURE3(WebSocketClientClose, StringRef, Int32, StringRef)
+VIREO_FUNCTION_SIGNATURE3(WebSocketClientClose, UInt32, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(1) = jsWebSocketClientClose(
-        (char*)_Param(0)->Begin(), _Param(0)->Length(),
+        _Param(0),
         _Param(2)
     );
 #endif
@@ -133,12 +133,12 @@ VIREO_FUNCTION_SIGNATURE3(WebSocketClientClose, StringRef, Int32, StringRef)
 
 //------------------------------------------------------------
 // connection(0), state(1), errorCode(2), errorMessage(3)
-VIREO_FUNCTION_SIGNATURE4(WebSocketClientState, StringRef, StringRef, Int32, StringRef)
+VIREO_FUNCTION_SIGNATURE4(WebSocketClientState, UInt32, Int32, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(2) = jsWebSocketClientState(
-        (char*)_Param(0)->Begin(), _Param(0)->Length(),
-        _Param(1),
+        _Param(0),
+        _ParamPointer(1),
         _Param(3)
     );
 #endif
@@ -418,11 +418,11 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(WebSocketClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(WebSocketClientConnect, "p(i(.String) i(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(WebSocketClientSend, "p(io(.String) i(.String) io(.Int32) o(.String))")
-    DEFINE_VIREO_FUNCTION(WebSocketClientRead, "p(io(.String) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(WebSocketClientClose, "p(i(.String) o(.Int32) o(.String))")
-    DEFINE_VIREO_FUNCTION(WebSocketClientState, "p(i(.String) o(.String) o(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientConnect, "p(i(.String) i(.String) o(.UInt32) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientSend, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientRead, "p(io(.UInt32) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(WebSocketClientState, "p(i(.UInt32) o(.Int32) io(.Int32) o(.String))")
     /*DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
     DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")

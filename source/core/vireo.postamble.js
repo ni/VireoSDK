@@ -209,13 +209,69 @@ HttpUsers = function () {
     }
 };
 
+WebSocketUser = function () {
+    "use strict";
+    
+    
+};
+
+WebSocketUsers = function () {
+    "use strict";
+    //Properties
+    this.webSocketClients = {};
+    
+    if (typeof this.WebSocketUsersMethods !== 'function') {
+        var proto = WebSocketUsers.prototype;
+        proto.WebSocketUsersMethods = function () {
+        };
+        
+        proto.add = function (url, protocol) {
+            var webSocketUser = new WebSocket(url); //put protocol in later
+            var handle = Object.keys(this.webSocketClients).length + 1;
+            var strHandle = handle.toString();
+            this.webSocketClients[strHandle] = webSocketUser;
+            console.log('Created handle(' + handle + ')');
+            return handle;
+        };
+
+        proto.remove = function (handle) {
+            var strHandle = handle.toString();
+            if (this.webSocketClients.hasOwnProperty(strHandle))
+            {
+                var user = this.webSocketClients[strHandle];
+                //console.log ('Deleted handle(' + strHandle + ') for user: "' + user.getUserName() + '".');
+                delete this.webSocketClients[strHandle];
+            }
+            else
+            {
+                throw new Error('Unknown handle(' + handle + ').');
+            }
+        };
+
+        proto.get = function (handle) {
+            var strHandle = handle.toString();
+            if (this.webSocketClients.hasOwnProperty(strHandle))
+            {
+                var user = this.webSocketClients[strHandle];
+                
+                return user;
+            }
+            else
+            {
+                return null;
+            }
+        };
+    }
+}
+
+
 var httpUsers = new HttpUsers();
 
-var WebSocketConnection;
+var webSocketUsers = new WebSocketUsers();
+
 
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
-
     readDouble:
         function(vi, path)
         { return Module.v_readDouble(Module.v_userShell, vi, path); },
@@ -330,7 +386,7 @@ return {
             var errorString = '';
             try
             {
-                valueText = httpUsers.getHeaderValue (handle, header);
+                valueText = httpUsers.getHeaderValue(handle, header);
             }
             catch (error)
             {
@@ -349,7 +405,7 @@ return {
             var errorString = '';
             try
             {
-                headerExist = httpUsers.headerExist (handle, header);
+                headerExist = httpUsers.headerExist(handle, header);
             }
             catch (error)
             {
@@ -381,21 +437,43 @@ return {
             return returnValue;
         },
     addWebSocketUser:
-        function (url, protocol, errorMessage) {
-            var returnValue = 100;
-            var errorString = 'noen';
+        function (handlePointer, url, protocol, errorMessage) {
+            var handle = 0;
+            var returnValue = 0;
+            var errorString = '';
             try
             {
-                WebSocketConnection = new WebSocket(url);
+                handle = webSocketUsers.add(url, protocol);
+            }
+            catch (error)
+            {
+                handle = 0;
+                returnValue = -1;
+                errorString = "Unable to open WebSocket handle: " + error.message;
+            }
+            NationalInstruments.Vireo.dataWriteUInt32(handlePointer, handle);
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            return returnValue;
+        },
+    removeWebSocketUser:
+        function (handle, errorMessage) {
+            var returnValue = 0;
+            var errorString = '';
+            try
+            {
+                webSocketUsers.remove(handle);
             }
             catch (error)
             {
                 returnValue = -1;
-                errorString = "Something went wrong with WebSocket intilaization: " + error.message;
+                errorString = "Unable to close WebSocket handle: " + error.message;
             }
-            console.log('wow');
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
             return returnValue;
+        },
+    getWebSocketUser:
+        function (handle) {
+            return webSocketUsers.get(handle);
         }
 };
 
