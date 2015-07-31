@@ -66,6 +66,8 @@ typedef TypeManager *TypeManagerRef;
 // Instead of a TypeRef*
 typedef TypeCommon StaticType;
 
+#define tsWildCard          "*"
+
 //------------------------------------------------------------
 class TypedArrayCore;
 typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock; // TODO get rid of TypedBlock   ->TypeBlock ObjectRef??
@@ -103,7 +105,7 @@ enum EncodingEnum {
     kEncoding_Enum,
     kEncoding_UInt,
     kEncoding_SInt2C,           // 2s compliment
-    kEncoding_IntDim,           // Like SInt2C, also includes variable and sentinels ($n, *) 
+    kEncoding_IntDim,           // Like SInt2C, also includes variable and sentinels (#n, *) 
     kEncoding_IEEE754Binary,
     kEncoding_Ascii,
     kEncoding_Unicode,

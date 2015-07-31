@@ -417,7 +417,7 @@ Int32 Date::getLocaletimeZone()
     EventLog log(EventLog::DevNull);
     SubString valueString(result.Begin(), result.End());
     TDViaParser parser(THREAD_TADM(), &valueString, &log, 1);
-    TypeRef parseType = THREAD_TADM()->FindType("Int32");
+    TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
     Int32 minutes;
     parser.ParseData(parseType, &minutes);
     _SystemLocaletimeZone = minutes * 60;

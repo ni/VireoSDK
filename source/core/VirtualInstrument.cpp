@@ -480,7 +480,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     *ppData = null;
     
     // "." prefixed symbols are type symbols from the TypeManager
-    if (argument->ComparePrefixCStr(".")) {
+    if (argument->ComparePrefix('.')) {
         _actualArgumentType = _clump->TheTypeManager()->FindType(tsTypeType);
         
         Utf8Char dot;

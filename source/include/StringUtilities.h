@@ -186,6 +186,12 @@ const UInt8 AsciiCharTraits[] =
 };
     
 //------------------------------------------------------------
+//! JSON style separator between field name and value.
+#define tsNameSuffix       ":"
+//! Prefix for meta identifiers used for template parameters.
+#define tsTemplatePrefix   "$"
+
+//------------------------------------------------------------
 //! The core class for working with strings. The SubString never owns the data it points to.
 class SubString : public SubVector<Utf8Char>
 {
@@ -234,6 +240,7 @@ public:
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
+    Boolean ComparePrefix(char asciiChar) const { return (_begin != _end) && (*_begin == asciiChar); }
     Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
 
     //! Compare with the encoded string

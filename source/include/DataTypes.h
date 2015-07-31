@@ -97,13 +97,6 @@ enum {
     kArrayMaxRank = 15,
     };
 
-//------------------------------------------------------------
-//! Some core token grammar items core to Vireo. Others are in TDCodecVia.h
-// Carlos Glz: These definitions look odd here. I think we should send them to TDCodecVia.h. All core token grammar items should be together and not on different files.
-#define tsTypeType         "Type"
-#define tsWildCard         "*"
-#define tsNameSuffix       ":"
-#define tsTemplatePrefix   "$"
 
 typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
 

@@ -23,6 +23,15 @@ class EventLog;
 class TypeDefiner;
 typedef ConstCStr (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef typeManager);
 
+//------------------------------------------------------------
+//! Names for some cores types used by the runtime.
+#define tsBooleanType       "Boolean"
+#define tsInt32Type         "Int32"
+#define tsDoubleType        "Double"
+#define tsStringType        "String"
+#define tsTypeType          "Type"
+
+//------------------------------------------------------------
 //! Facilitate the registration of Vireo types that are defined in C++ code.
 class TypeDefiner
 {

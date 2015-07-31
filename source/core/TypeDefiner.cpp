@@ -188,13 +188,13 @@ TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventL
 void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 {
     // The basics
-    Define(tm, "Boolean",       "c(e(bb(1 Boolean)))");
+    Define(tm, tsBooleanType,   "c(e(bb(1 Boolean)))");
     Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
 
     // Signed (2's compliment) integers
     Define(tm, "Int8",          "c(e(bb(8 SInt2c)))");
     Define(tm, "Int16",         "c(e(bb(16 SInt2c)))");
-    Define(tm, "Int32",         "c(e(bb(32 SInt2c)))");
+    Define(tm, tsInt32Type,     "c(e(bb(32 SInt2c)))");
     Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
 
     // Unsigned integers
@@ -216,7 +216,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
     Define(tm, "Utf32Char", ".Int32");              // A single Unicode codepoint (no special encoding or escapes)
     Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
-    Define(tm, "String", ".Utf8Array1D");
+    Define(tm, tsStringType, ".Utf8Array1D");
     Define(tm, "StringArray1D", "a(.String *)");
 
     // Special types for the execution system.

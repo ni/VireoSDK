@@ -136,7 +136,7 @@ NIError TDViaParser::ParseREPL()
     SubString command;
     _string.EatLeadingSpaces();
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
-        if (_string.ComparePrefixCStr(")")) {
+        if (_string.ComparePrefix(')')) {
             break;
         } else if (_string.ComparePrefixCStr(tsDefineTypeToken)
                    || _string.ComparePrefixCStr(tsEnqueueTypeToken)
@@ -203,7 +203,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         _string.EatLeadingSpaces();
     }
     
-    Boolean bTypeFunction = _string.ComparePrefixCStr("(");
+    Boolean bTypeFunction = _string.ComparePrefix('(');
     if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
         // Eat the dot prefix if it exists.
         typeFunction.EatChar('.');
@@ -288,13 +288,13 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     
     if (literalsType == null) {
         if (tt == TokenTraits_Integer) {
-            tName = "Int32";
+            tName = tsInt32Type;
         } else if (tt == TokenTraits_IEEE754) {
-            tName = "Double";
+            tName = tsDoubleType;
         } else if (tt == TokenTraits_Boolean) {
-            tName = "Boolean";
+            tName = tsBooleanType;
         } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
-            tName = "String";
+            tName = tsStringType;
         }
         literalsType = _typeManager->FindType(tName);
     }
@@ -569,7 +569,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     // other than a closing paren.
     
     _string.EatLeadingSpaces();
-    if (!_string.ComparePrefixCStr(")")) {
+    if (!_string.ComparePrefix(')')) {
         ParseData(subType, cdt->Begin(kPAInit));
     }
 
@@ -1992,7 +1992,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
         Double parsedValue;
 
         // ParseData needs to be given a floating point type so that it parses the string as an exponential string.
-        TypeRef parseType = THREAD_TADM()->FindType("Double");
+        TypeRef parseType = THREAD_TADM()->FindType(tsDoubleType);
 
         parser.ParseData(parseType, &parsedValue);
 

@@ -147,7 +147,7 @@ TokenTraits SubString::ClassifyNextToken() const
     
     TokenTraits tt = temp.ReadToken(&token);
     
-    if (temp.ComparePrefixCStr("<")) {
+    if (temp.ComparePrefix('<')) {
         tt = TokenTraits_TemplateExpression;
     }
     return tt;
@@ -651,7 +651,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
     // Three formats are supported
     // 1. nnn   Simple integers negative or positive
     // 2. *     Which means variable or unspceified
-    // 3  $n    Which also means variable but is identifies as a template parameter
+    // 3  #n    Which also means variable but is identifies as a template parameter
     // Meta ints can only be used where the reasonable range of value does not
     // include extreme negative numbers.
     
@@ -661,7 +661,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
             _begin++;
             *pValue = kArrayVariableLengthSentinel;
             return true;
-        } else if (*_begin == '$') {
+        } else if (*_begin == *tsTemplatePrefix) {
             IntMax templateIndex;
             SubString innerString(_begin+1, _end);
             if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths ) {
