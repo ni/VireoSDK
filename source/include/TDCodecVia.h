@@ -106,6 +106,7 @@ public:
     SubString* TheString() {return &_string;}
     
 public:
+    static NIError StaticRepl(TypeManagerRef typeManager, SubString *replStream);
     static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
     static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
     

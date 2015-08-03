@@ -11,6 +11,18 @@ SDG
     \brief Tools to define data types, manage their data, and a TypeManager to manage those types.
  */
 
+/*_____        ____    ____
+ |   |       /   /   /   /  ====|\
+ |   |      /   /   /   /       |X}==================
+ |   |     /   /   /   /  ======|/
+ |   |    /   /   /   /  ___ __   ________   ________
+ |   |   /   /   /   /  /  //_ / /  __   /  /  _    /
+ |   |  /   /   /   /  /   /    /  /_/  /  /  / /  /
+ |   | /   /   /   /  /  /     /  ____ /  /  / /  /
+ |   |/   /   /   /  /  /     /  /____   /  /_/  /
+ |_______/   /___/  /__/     /_______/  /_______/SDG
+ */
+ 
 #ifndef TypeAndDataManager_h
 #define TypeAndDataManager_h
 

@@ -133,6 +133,12 @@ TypeRef TDViaParser::ParseEnqueue()
 //------------------------------------------------------------
 NIError TDViaParser::ParseREPL()
 {
+    if (_string.ComparePrefixCStr("#!")) {
+        // Files can start with a shabang if they are used as  script files.
+        // skip the rest of the line.
+        _string.EatToEol();
+    }
+
     SubString command;
     _string.EatLeadingSpaces();
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
@@ -1395,6 +1401,23 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
         typeEnd = typeList;
         typeList = tm->TypeList();
     }
+}
+//------------------------------------------------------------
+//! Create a parser and process all the declaraions in the stream.
+NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
+{
+    TypeManagerScope scope(tm);
+    
+    STACK_VAR(String, errorLog);
+    EventLog log(errorLog.Value);
+    
+    TDViaParser parser(tm, replStream, &log, 1);
+    NIError err = parser.ParseREPL();
+    
+    if (errorLog.Value->Length() > 0) {
+        gPlatform.IO.Printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());
+    }
+    return err;
 }
 //------------------------------------------------------------
 //------------------------------------------------------------

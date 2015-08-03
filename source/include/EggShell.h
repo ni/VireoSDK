@@ -28,7 +28,6 @@ private:
 
 public:
     NIError REPL(SubString *commandBuffer);
-    Boolean ShowStats;
     void Delete();
     TypeManagerRef TheTypeManager()  { return _typeManager; }
 

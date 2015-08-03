@@ -37,9 +37,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     }
     
     gShells._pRootShell = EggShell::Create(null);
-    gShells._pRootShell->ShowStats = false;
     gShells._pUserShell = EggShell::Create(gShells._pRootShell);
-    gShells._pUserShell->ShowStats = false;
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
 
