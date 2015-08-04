@@ -474,6 +474,12 @@ return {
     getWebSocketUser:
         function (handle) {
             return webSocketUsers.get(handle);
+        },
+    setOccurenceAndError:
+        function (occurrenceRef, errorMessage, errorString, errorNum) {
+            NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
+            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            return errorNum;
         }
 };
 
