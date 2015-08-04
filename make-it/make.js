@@ -231,7 +231,6 @@ function compileVireo(platform) {
 
     compile(opts, 'CommandLine/main.cpp');
 
-    compile(opts, 'core/EggShell.cpp');
     compile(opts, 'core/VireoMerged.cpp');
     compile(opts, 'core/Thread.cpp');
     compile(opts, 'core/Timestamp.cpp');

@@ -8,7 +8,7 @@ SDG
 */
 
 #include "ExecutionContext.h"
-#include "EggShell.h"
+#include "TDCodecVia.h"
 
 #if kVireoOS_emscripten
     #include <emscripten.h>
@@ -17,8 +17,8 @@ SDG
 using namespace Vireo;
 
 static struct {
-    EggShell *_pRootShell;
-    EggShell *_pUserShell;
+    TypeManagerRef _pRootShell;
+    TypeManagerRef _pUserShell;
     Boolean _keepRunning;
 } gShells;
 
@@ -36,14 +36,14 @@ int VIREO_MAIN(int argc, const char * argv[])
         fileName = argv[1];
     }
     
-    gShells._pRootShell = EggShell::Create(null);
-    gShells._pUserShell = EggShell::Create(gShells._pRootShell);
+    gShells._pRootShell = TypeManager::New(null);
+    gShells._pUserShell = TypeManager::New(gShells._pRootShell);
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
 
     if (fileName) {
         {
-            TypeManagerScope scope(gShells._pUserShell->TheTypeManager());
+            TypeManagerScope scope(gShells._pUserShell);
             STACK_VAR(String, buffer);
             
             gPlatform.IO.ReadFile(fileName, buffer.Value);
@@ -52,7 +52,7 @@ int VIREO_MAIN(int argc, const char * argv[])
             }
             
             SubString input = buffer.Value->MakeSubStringAlias();
-            if (gShells._pUserShell->REPL(&input) != kNIError_Success) {
+            if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
                 gShells._keepRunning = false;
             }
             
@@ -73,11 +73,11 @@ int VIREO_MAIN(int argc, const char * argv[])
         while (gShells._keepRunning) {
             gPlatform.IO.Print(">");
             {
-            TypeManagerScope scope(gShells._pUserShell->TheTypeManager());
+            TypeManagerScope scope(gShells._pUserShell);
             STACK_VAR(String, buffer);
             gPlatform.IO.ReadStdin(buffer.Value);
             SubString input = buffer.Value->MakeSubStringAlias();
-            gShells._pUserShell->REPL(&input);
+            TDViaParser::StaticRepl(gShells._pUserShell, &input);
             }
             
             while (gShells._keepRunning) {
@@ -92,7 +92,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 //------------------------------------------------------------
 //! Execution pump.
 void RunExec() {
-    TypeManagerRef tm = gShells._pUserShell->TheTypeManager();
+    TypeManagerRef tm = gShells._pUserShell;
     TypeManagerScope scope(tm);
     gShells._keepRunning = tm->TheExecutionContext()->ExecuteSlices(400, 10000000) != kExecutionState_None;
 

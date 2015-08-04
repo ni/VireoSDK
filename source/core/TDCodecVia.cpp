@@ -34,26 +34,6 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM)
-{
-    TypeManagerRef newTADM = TypeManager::New(parentTADM);
-    {
-        // Set it up as the active scope, allocations will now go through this TADM.
-        TypeManagerScope scope(newTADM);
-        
-        if (!parentTADM) {
-            // In the beginning... creating a new universe, add some core types.
-            TypeDefiner::DefineStandardTypes(newTADM);
-            TypeDefiner::DefineTypes(newTADM);
-            ExecutionContextRef exec = TADM_NEW_PLACEMENT(ExecutionContext)();
-            newTADM->SetExecutionContext(exec);
-        }
-        
-        // Once standard types have been loaded an execution context can be constructed
-        return newTADM;
-    }
-}
-//------------------------------------------------------------
 TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format)
 {
     _pLog = pLog;
@@ -171,7 +151,7 @@ NIError TDViaParser::ParseREPL()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
 {
-    TypeManagerRef newTADM = ConstructTypeManagerAndExecutionContext(parentTADM);
+    TypeManagerRef newTADM = TypeManager::New(parentTADM);
     TypeRef eType = _typeManager->FindType(tsTypeManagerType);
     TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
     

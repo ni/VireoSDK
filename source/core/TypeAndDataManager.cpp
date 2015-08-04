@@ -32,20 +32,17 @@ struct MallocInfo {
 // this is not thread local so the rutime is not ready for
 // multithread execution.
 VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
+
 //------------------------------------------------------------
-//! Factory method to create a new TypeManager.
-TypeManagerRef TypeManager::New(TypeManagerRef tmParent)
+void TypeManager::Delete()
 {
-    // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
-    TypeManagerRef tm = (TypeManagerRef) gPlatform.Mem.Malloc(sizeof(TypeManager));
-    new (tm) TypeManager(tmParent);
-    tm->TrackAllocation(tm, sizeof(TypeManager), true);
-    return tm;
-}
-//------------------------------------------------------------
-void TypeManager::Delete(TypeManagerRef tm)
-{    
-    // Free up mutex, and any other members with destructors.
+    TypeManagerRef tm = this;
+    
+    // Delete all types owned bye the tm.
+    tm->DeleteTypes(true);
+    tm->PrintMemoryStat("ES Delete end", true);
+    
+    // Give C++ an chance to clean up any memeber data.
     tm->~TypeManager();
     gPlatform.Mem.Free(tm);
 }
@@ -2633,7 +2630,41 @@ VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
 }
 
 //------------------------------------------------------------
+// Most of the TypeManager knows nothing of the TDCodecVia
+// of the type definer, but definitions cannot be parsed without them
+
+
 #include "TypeDefiner.h"
+
+namespace Vireo {
+//------------------------------------------------------------
+TypeManagerRef TypeManager::New(TypeManagerRef parentTADM)
+{
+
+    // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
+    TypeManagerRef newTADM = (TypeManagerRef) gPlatform.Mem.Malloc(sizeof(TypeManager));
+    new (newTADM) TypeManager(parentTADM);
+    newTADM->TrackAllocation(newTADM, sizeof(TypeManager), true);
+
+    {
+        // Set it up as the active scope, allocations will now go through this TADM.
+        TypeManagerScope scope(newTADM);
+        
+        if (!parentTADM) {
+            // In the beginning... creating a new universe, add some core types.
+            TypeDefiner::DefineStandardTypes(newTADM);
+            TypeDefiner::DefineTypes(newTADM);
+            ExecutionContextRef exec = TADM_NEW_PLACEMENT(ExecutionContext)();
+            newTADM->SetExecutionContext(exec);
+        }
+        
+        // Once standard types have been loaded an execution context can be constructed
+        return newTADM;
+    }
+}
+
+} // namespace
+
 using namespace Vireo;
 DEFINE_VIREO_BEGIN(TypeManager)
 

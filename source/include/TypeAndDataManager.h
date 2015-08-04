@@ -215,9 +215,11 @@ inline IntIndex Max(IntIndex a, IntIndex b) { return a > b ? a : b; }
 class TypeManager
 {
 public:
-    static TypeManagerRef New(TypeManagerRef tm);
-    static void Delete(TypeManagerRef tm);
     
+    //! Create a Execution and Typemanager pair.
+    static TypeManagerRef New(TypeManagerRef tm);
+    void Delete();
+
 private:
     TypeManagerRef      _baseTypeManager;   // Base is null when the instance is a root.
     ExecutionContextRef _executionContext;

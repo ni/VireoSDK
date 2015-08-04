@@ -14,15 +14,15 @@ SDG
 using namespace Vireo;
 
 //------------------------------------------------------------
-//! EggShell functions
+//! TypeManager functions
 VIREO_EXPORT Int32 Vireo_Version();
-VIREO_EXPORT void* EggShell_Create(EggShell* parent);
-VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const char* commands);
-VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices);
-VIREO_EXPORT void EggShell_Delete(EggShell* pShell);
-VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
-VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
-VIREO_EXPORT void Data_WriteString(EggShell* pShell, StringRef stringObject, const unsigned char* buffer, Int32 length);
+VIREO_EXPORT void* EggShell_Create(TypeManagerRef tm);
+VIREO_EXPORT void EggShell_REPL(TypeManagerRef tm, const char* commands);
+VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices);
+VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm);
+VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
+VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
+VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length);
 VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value);
 VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value);
 //------------------------------------------------------------

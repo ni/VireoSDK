@@ -8,7 +8,6 @@ SDG
 */
 
 #include "TypeAndDataManager.h"
-#include "EggShell.h"
 #include "ExecutionContext.h"
 
 #if kVireoOS_emscripten
@@ -68,8 +67,7 @@ enqueue (Loop)\
 #endif
 
 void RunExec();
-EggShell        *gpShell;
-ExecutionState  gState;
+TypeManagerRef  gpShell;
 
 int VIREO_MAIN(int argc, const char * argv[])
 {

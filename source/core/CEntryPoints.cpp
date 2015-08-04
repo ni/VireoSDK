@@ -14,7 +14,6 @@ SDG
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 #include "TypeDefiner.h"
-#include "EggShell.h"
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 
@@ -24,44 +23,44 @@ using namespace Vireo;
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
-    return 0x00020001; // TODO
+    return 0x00020002; // TODO
 }
 //------------------------------------------------------------
 //! Create a new shell with a designated parent, or null for a new root.
-VIREO_EXPORT void* EggShell_Create(EggShell* parent)
+VIREO_EXPORT void* EggShell_Create(TypeManagerRef parent)
 {
-    return EggShell::Create(parent);
+    return TypeManager::New(parent);
 }
 //------------------------------------------------------------
-VIREO_EXPORT void EggShell_REPL(EggShell* pShell, const Utf8Char* commands, Int32 length)
+VIREO_EXPORT void EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length)
 {
     if (length == -1) {
         length = (Int32)strlen((const char*)commands);
     }
-    SubString  comandBuffer(commands, commands + length);
-    pShell->REPL(&comandBuffer);
+    SubString  input(commands, commands + length);
+    TDViaParser::StaticRepl(tm, &input);
 }
 //------------------------------------------------------------
 //! Run the vireo execution system for a few slices.
-VIREO_EXPORT Int32 EggShell_ExecuteSlices(EggShell* pShell, Int32 numSlices)
+VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices)
 {
-    TypeManagerScope scope(pShell->TheTypeManager());
-    return pShell->TheTypeManager()->TheExecutionContext()->ExecuteSlices(numSlices, 20);
+    TypeManagerScope scope(tm);
+    return tm->TheExecutionContext()->ExecuteSlices(numSlices, 20);
 }
 //------------------------------------------------------------
-VIREO_EXPORT TypeRef EggShell_GetTypeList(EggShell* eggShell)
+VIREO_EXPORT TypeRef EggShell_GetTypeList(TypeManagerRef tm)
 {
-    return eggShell->TheTypeManager()->TypeList();
+    return tm->TypeList();
 }
 //------------------------------------------------------------
 //! Delete a shell and all the types it owns.
-VIREO_EXPORT void EggShell_Delete(EggShell* pShell)
+VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm)
 {
-    if (pShell != null)
-        pShell->Delete();
+    if (tm != null)
+        tm->Delete();
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
+VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     memset(buffer, 0, bufferSize);
     
@@ -69,11 +68,11 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
     
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return -1;
 
-    TypeManagerScope scope(pShell->TheTypeManager());
+    TypeManagerScope scope(tm);
     STACK_VAR(String, flatDataString);
 
     // Write flattened data to the string
@@ -86,17 +85,17 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(EggShell* pShell, const char* viName, con
     return flatDataSize;
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
+VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     void *pData = null;
 
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return -1;
     
-    TypeManagerScope scope(pShell->TheTypeManager());
+    TypeManagerScope scope(tm);
     SubBinaryBuffer subBuffer((UInt8*)buffer, (UInt8*)buffer+bufferSize);
 
     // Write unflattened data to the element
@@ -108,13 +107,13 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(EggShell* pShell, const char* viName, con
 }
 //------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.
-VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, const char* eltName, Double d)
+VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
 {
     void *pData = null;
     
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return;
     
@@ -122,12 +121,12 @@ VIREO_EXPORT void EggShell_WriteDouble(EggShell* pShell, const char* viName, con
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
-VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, const char* eltName)
+VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName)
 {
     void *pData = null;
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return -1;
 
@@ -137,9 +136,9 @@ VIREO_EXPORT Double EggShell_ReadDouble(EggShell* pShell, const char* viName, co
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format, const char* value)
+VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format, const char* value)
 {
-    TypeManagerScope scope(pShell->TheTypeManager());
+    TypeManagerScope scope(tm);
 
     void *pData = null;
     
@@ -147,25 +146,25 @@ VIREO_EXPORT void EggShell_WriteValueString(EggShell* pShell, const char* viName
     SubString path(eltName);
     SubString valueString(value);
 
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return;
 
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
-    TDViaParser parser(pShell->TheTypeManager(), &valueString, &log, 1, &formatss);
+    TDViaParser parser(tm, &valueString, &log, 1, &formatss);
     parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* viName, const char* eltName, const char* format)
+VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format)
 {
-    TypeManagerScope scope(pShell->TheTypeManager());
+    TypeManagerScope scope(tm);
     void *pData = null;
     
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = pShell->TheTypeManager()->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return null;
     
@@ -190,11 +189,11 @@ VIREO_EXPORT const char* EggShell_ReadValueString(EggShell* pShell, const char* 
     return "";
 }
 //------------------------------------------------------------
-VIREO_EXPORT void Data_WriteString(EggShell* pShell, StringRef stringObject, const unsigned char* buffer, Int32 length)
+VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));
     // Scope needs to be setup for allocations
-    TypeManagerScope scope(pShell->TheTypeManager());
+    TypeManagerScope scope(tm);
     stringObject->CopyFrom(length, buffer);
 }
 //------------------------------------------------------------

@@ -24,9 +24,6 @@ class VIClump;
 class VirtualInstrument;
 class InstructionAllocator;
 
-//! Create a Execution and Typemanager pair.
-TypeManagerRef ConstructTypeManagerAndExecutionContext(TypeManagerRef parentTADM);
-
 //! Punctuation and options used by the TDViaFormatter
 enum ViaFormat {
     kViaFormat_NoFieldNames = 0,
