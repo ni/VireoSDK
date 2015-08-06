@@ -29,11 +29,10 @@ void RunExec();
 int VIREO_MAIN(int argc, const char * argv[])
 {
     gPlatform.Setup();
-
-	ConstCStr fileName = null;
+    SubString fileName;
     
     if (argc == 2) {
-        fileName = argv[1];
+        fileName.AliasAssignCStr(argv[1]);
     }
     
     gShells._pRootShell = TypeManager::New(null);
@@ -41,12 +40,12 @@ int VIREO_MAIN(int argc, const char * argv[])
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
 
-    if (fileName) {
+    if (fileName.Length()) {
         {
             TypeManagerScope scope(gShells._pUserShell);
             STACK_VAR(String, buffer);
             
-            gPlatform.IO.ReadFile(fileName, buffer.Value);
+            gPlatform.IO.ReadFile(&fileName, buffer.Value);
             if (buffer.Value->Length() == 0) {
                 gPlatform.IO.Printf("(Error \"file <%s> empty\")\n", fileName);
             }

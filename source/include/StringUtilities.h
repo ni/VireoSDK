@@ -258,7 +258,7 @@ public:
     //! Read the next set of code points that make up a single grapheme.
     Boolean ReadGraphemeCluster(SubString* token);
 
-    //! Read a line from the Utf-8 sequence
+    //! Read a line from the UTF-8 sequence
     Boolean ReadLine(SubString* line);
 
     //! Read the next sequence of digits and parse them as an integer.

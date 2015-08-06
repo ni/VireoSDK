@@ -18,6 +18,7 @@
 
 namespace Vireo {
 
+class SubString;
 class String;
 typedef String *StringRef;
 
@@ -48,7 +49,7 @@ class PlatformIO {
     void Print(Int32 len, ConstCStr string);
     void Print(ConstCStr string);
     void Printf(ConstCStr format, ...);
-    void ReadFile(ConstCStr name, StringRef buffer);
+    void ReadFile(SubString *name, StringRef buffer);
     void ReadStdin(StringRef buffer);
 };
 

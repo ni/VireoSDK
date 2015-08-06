@@ -34,7 +34,6 @@
 		474A5F76199E72130013F8C5 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
 		474A5F77199E72130013F8C5 /* TypeAndDataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */; };
 		474A5F78199E72130013F8C5 /* CEntryPoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD417C2A271009053DB /* CEntryPoints.cpp */; };
-		474A5F79199E72130013F8C5 /* EggShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDA17C2A271009053DB /* EggShell.cpp */; };
 		474A5F7A199E72130013F8C5 /* EventLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 470F626B1886F53F003146BF /* EventLog.cpp */; };
 		474A5F7B199E72130013F8C5 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		474A5F7C199E72130013F8C5 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
@@ -60,7 +59,6 @@
 		47D84DE717C2A271009053DB /* Array.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD317C2A271009053DB /* Array.cpp */; };
 		47D84DE817C2A271009053DB /* CEntryPoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD417C2A271009053DB /* CEntryPoints.cpp */; };
 		47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DD717C2A271009053DB /* DataQueue.cpp */; };
-		47D84DEE17C2A271009053DB /* EggShell.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDA17C2A271009053DB /* EggShell.cpp */; };
 		47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		47D84DF317C2A271009053DB /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		47D84DF417C2A271009053DB /* Thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE017C2A271009053DB /* Thread.cpp */; };
@@ -239,7 +237,6 @@
 		47D7C8E019E325A400FACB8E /* TypeManager.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = TypeManager.md; path = ../source/dox/TypeManager.md; sourceTree = "<group>"; };
 		47D84DC417C2A258009053DB /* BuildConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = BuildConfig.h; path = ../source/include/BuildConfig.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DC917C2A258009053DB /* DataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataTypes.h; path = ../source/include/DataTypes.h; sourceTree = "<group>"; };
-		47D84DCA17C2A258009053DB /* EggShell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EggShell.h; path = ../source/include/EggShell.h; sourceTree = "<group>"; };
 		47D84DCB17C2A258009053DB /* ExecutionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ExecutionContext.h; path = ../source/include/ExecutionContext.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DCC17C2A258009053DB /* Instruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Instruction.h; path = ../source/include/Instruction.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		47D84DCE17C2A258009053DB /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Thread.h; path = ../source/include/Thread.h; sourceTree = "<group>"; };
@@ -249,7 +246,6 @@
 		47D84DD317C2A271009053DB /* Array.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Array.cpp; path = ../source/core/Array.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DD417C2A271009053DB /* CEntryPoints.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = CEntryPoints.cpp; path = ../source/core/CEntryPoints.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DD717C2A271009053DB /* DataQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataQueue.cpp; path = ../source/core/DataQueue.cpp; sourceTree = "<group>"; };
-		47D84DDA17C2A271009053DB /* EggShell.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = EggShell.cpp; path = ../source/core/EggShell.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DDB17C2A271009053DB /* ExecutionContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = ExecutionContext.cpp; path = ../source/core/ExecutionContext.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DDF17C2A271009053DB /* Math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Math.cpp; path = ../source/core/Math.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DE017C2A271009053DB /* Thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Thread.cpp; path = ../source/core/Thread.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -554,7 +550,6 @@
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
 				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
-				47D84DDA17C2A271009053DB /* EggShell.cpp */,
 				470F626B1886F53F003146BF /* EventLog.cpp */,
 				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
 				47D84DDF17C2A271009053DB /* Math.cpp */,
@@ -587,7 +582,6 @@
 				476CE4EB18F590DF00399E88 /* Timestamp.h */,
 				47D84DC417C2A258009053DB /* BuildConfig.h */,
 				47D84DC917C2A258009053DB /* DataTypes.h */,
-				47D84DCA17C2A258009053DB /* EggShell.h */,
 				470F626A1886F522003146BF /* EventLog.h */,
 				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
 				478BB8031AEFDEEF00BF9DB6 /* Synchronization.h */,
@@ -802,7 +796,6 @@
 				474A5F83199E72130013F8C5 /* VirtualInstrument.cpp in Sources */,
 				474A5F82199E72130013F8C5 /* Timestamp.cpp in Sources */,
 				474A5F75199E72130013F8C5 /* TDCodecVia.cpp in Sources */,
-				474A5F79199E72130013F8C5 /* EggShell.cpp in Sources */,
 				474A5F7E199E72130013F8C5 /* Thread.cpp in Sources */,
 				472A078B1AA6204A008109FA /* NumericString.cpp in Sources */,
 				474A5F77199E72130013F8C5 /* TypeAndDataManager.cpp in Sources */,
@@ -822,7 +815,6 @@
 				47D84DE817C2A271009053DB /* CEntryPoints.cpp in Sources */,
 				47A877761AE6DAEB00EC5D77 /* HttpClient.cpp in Sources */,
 				47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */,
-				47D84DEE17C2A271009053DB /* EggShell.cpp in Sources */,
 				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
 				47D84DF317C2A271009053DB /* Math.cpp in Sources */,

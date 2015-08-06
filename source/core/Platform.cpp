@@ -180,11 +180,13 @@ void PlatformIO::Printf(ConstCStr format, ...)
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
-void PlatformIO::ReadFile(ConstCStr name, StringRef buffer)
+void PlatformIO::ReadFile(SubString *name, StringRef buffer)
 {
     buffer->Resize1DOrEmpty(0);
 #if defined(VIREO_STDIO)
-    FILE* h = fopen(name, "r");
+    TempStackCString    cString(name);
+
+    FILE* h = fopen(cString.BeginCStr(), "r");
     if (h != 0) {
         fseek(h, 0L, SEEK_END);
         IntIndex bytesToRead = (IntIndex)ftell(h);
