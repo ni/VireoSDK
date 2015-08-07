@@ -160,7 +160,7 @@ enum PointerTypeEnum {
     kPTGenericFucntionPropType,
     kPTGenericFunctionCodeGen,
     kPTTypeManager,
-    kPTTypeCommand,
+    kPTTypeFunction,
 };
 
 // PointerTypeEnum defines how a pointer to data will be used.
@@ -1068,7 +1068,6 @@ public:
 typedef String *StringRef;
 typedef TypedArray1D< UInt8 > BinaryBuffer, *BinaryBufferRef;
 typedef TypedArray1D< Int32 > Int32Array1D;
-typedef TypedArray1D< StringRef > StringArray1D, *StringArray1DRef;
 typedef TypedArray1D< TypeRef > TypeRefArray1D;
 
 //------------------------------------------------------------
@@ -1082,7 +1081,45 @@ public:
 };
 
 //------------------------------------------------------------
+//! Create a specialization of a template type.
 TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, SubVector<TypeRef>*);
+
+//------------------------------------------------------------
+//! Template class to dynamically create an instance of a Vireo typed variable.
+template <class T>
+class StackVar
+{
+public:
+    T *Value;
+    
+    //! Construct and instance of the type using the name passed by the macro.
+    StackVar(ConstCStr name)
+    {
+        TypeRef type = TypeManagerScope::Current()->FindType(name);
+        VIREO_ASSERT(type->IsArray() && !type->IsFlat());
+        Value = null;
+        if (type) {
+            type->InitData(&Value);
+        }
+    }
+    //! Remove ownership of the managed value.
+    T* DetachValue()
+    {
+        T* temp = Value;
+        Value = null;
+        return temp;
+    }
+    //! Free any storage used by the value if it is still managed.
+    ~StackVar()
+    {
+        if (Value) {
+            Value->Type()->ClearData(&Value);
+        }
+    }
+};
+    
+//! Declare a variable using a Vireo type.
+#define STACK_VAR(_t_, _v_) StackVar<_t_> _v_(#_t_)
 
 } // namespace Vireo
 

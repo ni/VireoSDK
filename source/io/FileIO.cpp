@@ -260,7 +260,7 @@ VIREO_FUNCTION_SIGNATURE2(FileDelete, StringRef, Int32)
 VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 {
     TempStackCStringFromString    cString(_Param(0));
-    StringArray1D* fileNames = _Param(1);
+    TypedArray1D<StringRef>* fileNames = _Param(1);
 
     struct dirent **dirInfos;
     Int32 count = scandir(cString.BeginCStr(), &dirInfos, 0, alphasort);

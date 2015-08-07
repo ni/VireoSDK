@@ -127,6 +127,7 @@ NIError TDViaParser::ParseREPL()
         } else if (_string.ComparePrefixCStr(tsDefineTypeToken)
                    || _string.ComparePrefixCStr(tsEnqueueTypeToken)
                    || _string.ComparePrefixCStr(tsContextTypeToken)
+                   || _string.ComparePrefixCStr(tsRequireTypeToken)
                    || _string.ComparePrefixCStr("start")
                    ) {
             ParseType();
@@ -149,25 +150,55 @@ NIError TDViaParser::ParseREPL()
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM)
+TypeRef TDViaParser::ParseRequire(TypeManagerRef parentTADM)
+{
+    TypeRef type = BadType();
+    
+    if (!_string.EatChar('(')) {
+        LOG_EVENT(kHardDataError, "'(' missing");
+        return type;
+    }
+
+    SubString packageName;
+    _string.ReadToken(&packageName);
+    packageName.TrimQuotedString();
+    
+    if (!_string.EatChar(')')) {
+        LOG_EVENT(kHardDataError, "')' missing");
+        return type;
+    }
+
+    STACK_VAR(String, buffer);
+    TypeDefiner::ResolvePackage(&packageName, buffer.Value);
+    if (buffer.Value->Length() == 0) {
+        gPlatform.IO.Printf("(Error \"Package <%.*s> empty\")\n", FMT_LEN_BEGIN(&packageName));
+    } else {
+        SubString input = buffer.Value->MakeSubStringAlias();
+        TDViaParser parser(_typeManager, &input, _pLog, CalcCurrentLine());
+        type = parser.ParseContext(_typeManager, false);
+    }
+    return type;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM, Boolean parseParens)
 {
     TypeManagerRef newTADM = TypeManager::New(parentTADM);
     TypeRef eType = _typeManager->FindType(tsTypeManagerType);
     TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
     
-    if (!_string.EatChar('(')) {
+    if (parseParens && !_string.EatChar('(')) {
         LOG_EVENT(kHardDataError, "'(' missing");
         return BadType();
     }
     
-    {   // Parse the nested section using the newly created TADM/Context pair.
+    {   // Parse the nested section using the newly created type manager.
         TypeManagerScope scope(newTADM);
         TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine());
         parser.ParseREPL();
         _string.AliasAssign(parser.TheString());
     }
 
-    if (!_string.EatChar(')')) {
+    if (parseParens && !_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
         return BadType();
     }
@@ -210,8 +241,10 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         type = ParseBitBlock();
     } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
+    } else if (typeFunction.CompareCStr(tsRequireTypeToken)) {
+        type = ParseRequire(_typeManager);
     } else if (typeFunction.CompareCStr(tsContextTypeToken)) {
-        type = ParseContext(_typeManager);
+        type = ParseContext(_typeManager, true);
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {

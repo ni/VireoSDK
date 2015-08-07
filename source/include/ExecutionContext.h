@@ -143,39 +143,6 @@ public:
     #define THREAD_EXEC() (THREAD_TADM()->TheExecutionContext())
     #define THREAD_CLUMP() (THREAD_EXEC()->CurrentClump())
 #endif
-
-//------------------------------------------------------------
-//! Template class to dynamically create instances of a Vireo typed variable.
-template <class T>
-class StackVar
-{
-public:
-    T *Value;
-    StackVar(ConstCStr name)
-    {
-        TypeRef type = TypeManagerScope::Current()->FindType(name);
-        VIREO_ASSERT(type->IsArray() && !type->IsFlat());
-        Value = null;
-        if (type) {
-            type->InitData(&Value);
-        }
-    }
-    T* DetachValue()
-    {
-        T* temp = Value;
-        Value = null;
-        return temp;
-    }
-    ~StackVar()
-    {
-        if (Value) {
-            Value->Type()->ClearData(&Value);
-        }
-    };
-};
-
-//! Declare a variable using a Vireo type.
-#define STACK_VAR(_t_, _v_) StackVar<_t_> _v_(#_t_)
     
 } // namespace Vireo
 

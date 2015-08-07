@@ -185,6 +185,20 @@ TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventL
     return parser.ParseType(patternType);
 }
 //------------------------------------------------------------
+//! Map package name to contents
+void TypeDefiner::ResolvePackage(SubString* packageName, StringRef packageContents)
+{
+    // This is just a start, need to manage duplicate requests
+    // internal packages, and dynamically loaded native packages (e.g. *.so)
+    STACK_VAR(String, fileName);
+    fileName.Value->AppendSubString(packageName);
+    fileName.Value->AppendCStr(".via");
+    SubString ssFileName = fileName.Value->MakeSubStringAlias();
+    
+    gPlatform.IO.ReadFile(&ssFileName, packageContents);
+}
+//------------------------------------------------------------
+//! Define standard core types.
 void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 {
     // The basics

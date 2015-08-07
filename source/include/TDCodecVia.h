@@ -115,7 +115,8 @@ private :
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
     TypeRef ParseDefine();
-    TypeRef ParseContext(TypeManagerRef parentTADM);
+    TypeRef ParseRequire(TypeManagerRef tm);
+    TypeRef ParseContext(TypeManagerRef tm, Boolean parseParens);
     TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseNamedType();
@@ -186,6 +187,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsBitClusterTypeToken   "bc"
 #define tsBitBlockTypeToken     "bb"
 #define tsClusterTypeToken      "c"
+#define tsRequireTypeToken      "require"
 #define tsContextTypeToken      "context"
 #define tsDefineTypeToken       "define"
 #define tsEnqueueTypeToken      "enqueue"

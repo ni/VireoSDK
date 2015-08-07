@@ -52,6 +52,7 @@ class TypeDefiner
     static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
     static Boolean HasRequiredModule(TypeDefiner* _this, ConstCStr name);
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
+
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
 #else
@@ -62,6 +63,10 @@ class TypeDefiner
   private:
     static TypeDefiner* _gpTypeDefinerList;
     //@}
+    
+    //! Basic PackageResolver
+  public:
+    static void ResolvePackage( SubString* packageName, StringRef packageContents);
 };
 
 }
@@ -92,6 +97,8 @@ class TypeDefiner
 
     #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _allocClass_)
 
+    #define DEFINE_VIREO_TYPE_FUNCTION(_name_)
+
 #else
 
     #define DEFINE_VIREO_BEGIN(_module_) \
@@ -118,6 +125,10 @@ class TypeDefiner
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen, #_name_));
+
+    #define DEFINE_VIREO_TYPE_FUNCTION(_name_, _typeTypeString_, _genericEmitProc_) \
+    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTTypeFunction, #_name_));
+
 #else
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction));
@@ -127,6 +138,10 @@ class TypeDefiner
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen));
+
+    #define DEFINE_VIREO_TYPE_FUNCTION(_name_, _typeTypeString_, _genericEmitProc_) \
+    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTTypeFunction));
+
 #endif
 
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_) \
