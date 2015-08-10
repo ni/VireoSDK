@@ -2,14 +2,14 @@
 var WebSocketClient =
 {
     jsWebSocketClientConnect: function (url, urlLength, protocol, protocolLength, connectionPointer, errorMessage, occurrenceRef) {
-        console.log('Connecting');
+        //console.log('Connecting');
         
         NationalInstruments.Vireo.addWebSocketUser(connectionPointer, Pointer_stringify(url, urlLength), Pointer_stringify(protocol, protocolLength), errorMessage);
         
         var ws = NationalInstruments.Vireo.getWebSocketUser(getValue(connectionPointer, 'i32'));
         
         ws.onopen = function(evt){
-            console.log('Connection Opened');
+            //console.log('Connection Opened');
             NationalInstruments.Vireo.setOccurenceAndError(occurrenceRef, errorMessage, '', 0);
         }
         
@@ -38,10 +38,10 @@ var WebSocketClient =
         }, timeout);
     },
     jsWebSocketClientClose: function (connection, errorMessage) {
-        console.log('Closing');
+        //console.log('Closing');
         var ws = NationalInstruments.Vireo.getWebSocketUser(connection);
         ws.onclose = function(evt){
-            console.log("Connection Closed");
+            //console.log("Connection Closed");
             return 0;
         }
         ws.close();
