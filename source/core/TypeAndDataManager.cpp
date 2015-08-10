@@ -1534,6 +1534,15 @@ DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valu
     return type;
 }
 //------------------------------------------------------------
+DefaultValueType* DefaultValueType::New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue, void* pointerValue)
+{
+    DefaultValueType* type = TADM_NEW_PLACEMENT_DYNAMIC(DefaultValueType, valuesType)(typeManager, valuesType, mutableValue);
+    
+    void** pPointerValue = (void**)type->Begin(kPAInit);
+    *pPointerValue = pointerValue;
+    return type->FinalizeDVT();
+}
+//------------------------------------------------------------
 DefaultValueType* DefaultValueType::FinalizeDVT()
 {
     // Constants can ( e.g. could) be shared but it has to be carefully boot strapped

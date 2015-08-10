@@ -150,7 +150,8 @@ NIError TDViaParser::ParseREPL()
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseRequire(TypeManagerRef parentTADM)
+//! Parse a require block
+TypeRef TDViaParser::ParseRequire()
 {
     TypeRef type = BadType();
     
@@ -159,53 +160,81 @@ TypeRef TDViaParser::ParseRequire(TypeManagerRef parentTADM)
         return type;
     }
 
-    SubString packageName;
-    _string.ReadToken(&packageName);
-    packageName.TrimQuotedString();
+    SubString moduleName;
+    _string.ReadToken(&moduleName);
+    moduleName.TrimQuotedString();
     
     if (!_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
         return type;
     }
+    
+    TypeManagerRef newTADM = TypeManager::New(_typeManager);
+    TypeRef eType = _typeManager->FindType(tsTypeManagerType);
+    type = DefaultValueType::New(_typeManager, eType, true, newTADM);
 
-    STACK_VAR(String, buffer);
-    TypeDefiner::ResolvePackage(&packageName, buffer.Value);
-    if (buffer.Value->Length() == 0) {
-        gPlatform.IO.Printf("(Error \"Package <%.*s> empty\")\n", FMT_LEN_BEGIN(&packageName));
+    if (false /* TypeDefiner::DefineBuiltinModule(newTADM, &moduleName) */) {
+        // The module was a built-in one.
+        return type;
     } else {
-        SubString input = buffer.Value->MakeSubStringAlias();
-        TDViaParser parser(_typeManager, &input, _pLog, CalcCurrentLine());
-        type = parser.ParseContext(_typeManager, false);
+        // Its not built-in so make subExpression the contents of a module file.
+        STACK_VAR(String, buffer);
+        TypeDefiner::ResolvePackage(&moduleName, buffer.Value);
+        SubString module = buffer.Value->MakeSubStringAlias();
+        
+        if (buffer.Value->Length() == 0) {
+            gPlatform.IO.Printf("(Error \"Package <%.*s> empty\")\n", FMT_LEN_BEGIN(&moduleName));
+        } else {
+            TypeManagerScope scope(newTADM);
+            TDViaParser parser(newTADM, &module, _pLog, CalcCurrentLine());
+            parser.ParseREPL();
+        }
     }
     return type;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseContext(TypeManagerRef parentTADM, Boolean parseParens)
+//! Parse a context block by creating sub context then recursing the REPL.
+TypeRef TDViaParser::ParseContext()
 {
-    TypeManagerRef newTADM = TypeManager::New(parentTADM);
-    TypeRef eType = _typeManager->FindType(tsTypeManagerType);
-    TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
-    
-    if (parseParens && !_string.EatChar('(')) {
+    if (!_string.EatChar('(')) {
         LOG_EVENT(kHardDataError, "'(' missing");
         return BadType();
     }
+  
+#if 0 
+    DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
-    {   // Parse the nested section using the newly created type manager.
+    // The initializer value is optional, so check to see there is something
+    // other than a closing paren.
+    
+    _string.EatLeadingSpaces();
+    if (!_string.ComparePrefix(')')) {
+        ParseData(subType, cdt->Begin(kPAInit));
+    }
+#endif
+
+    TypeManagerRef newTADM = TypeManager::New(_typeManager);
+    TypeRef eType = _typeManager->FindType(tsTypeManagerType);
+    TypeRef type = DefaultValueType::New(_typeManager, eType, true, newTADM);
+    
+//    TypeRef type = DefaultPointerType::New(_typeManager, eType, newTADM, kPTTypeManager);
+    
+    // Parse the subExpression using the newly created type manager.
+    {
         TypeManagerScope scope(newTADM);
         TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine());
         parser.ParseREPL();
         _string.AliasAssign(parser.TheString());
     }
 
-    if (parseParens && !_string.EatChar(')')) {
+    if (!_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
         return BadType();
     }
-    
     return type;
 }
 //------------------------------------------------------------
+//! Parse a general type expresssion.
 TypeRef TDViaParser::ParseType(TypeRef patternType)
 {
     TypeManagerScope scope(_typeManager);
@@ -242,9 +271,9 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     } else if (typeFunction.CompareCStr(tsArrayTypeToken)) {
         type = ParseArray();
     } else if (typeFunction.CompareCStr(tsRequireTypeToken)) {
-        type = ParseRequire(_typeManager);
+        type = ParseRequire();
     } else if (typeFunction.CompareCStr(tsContextTypeToken)) {
-        type = ParseContext(_typeManager, true);
+        type = ParseContext();
     } else if (typeFunction.CompareCStr(tsDefaultValueToken)) {
         type = ParseDefaultValue(false);
     } else if (typeFunction.CompareCStr(tsVarValueToken)) {

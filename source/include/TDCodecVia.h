@@ -115,8 +115,8 @@ private :
     TypeRef ParseBitCluster();
     TypeRef ParseCluster();
     TypeRef ParseDefine();
-    TypeRef ParseRequire(TypeManagerRef tm);
-    TypeRef ParseContext(TypeManagerRef tm, Boolean parseParens);
+    TypeRef ParseRequire();
+    TypeRef ParseContext();
     TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
     TypeRef ParseNamedType();

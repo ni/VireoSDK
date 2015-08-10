@@ -1205,7 +1205,6 @@ class VIDataProcsClass : public IDataProcs
         }
         return subType;
     }
-
 };
 VIDataProcsClass gVIDataProcs;
 //------------------------------------------------------------

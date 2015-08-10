@@ -54,9 +54,9 @@ class TypeDefiner
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString,PointerTypeEnum pointerType, ConstCStr cname);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString, PointerTypeEnum pointerType, ConstCStr cname);
 #else
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString,PointerTypeEnum pointerType);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString, PointerTypeEnum pointerType);
 #endif
     static void DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString);
     static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeString);
@@ -95,7 +95,7 @@ class TypeDefiner
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_)
 
-    #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _allocClass_)
+    #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _dataProcs_)
 
     #define DEFINE_VIREO_TYPE_FUNCTION(_name_)
 
@@ -147,8 +147,8 @@ class TypeDefiner
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_) \
       (TypeDefiner::DefineCustomValue(tm, #_name_, value, _typeTypeString_));
 
-    #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _allocClass_) \
-      (TypeDefiner::DefineCustomDataProcs(tm, #_name_, _allocClass_, _type_));
+    #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _dataProcs_) \
+      (TypeDefiner::DefineCustomDataProcs(tm, #_name_, _dataProcs_, _type_));
 
 #endif
 

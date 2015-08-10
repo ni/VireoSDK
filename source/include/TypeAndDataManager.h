@@ -152,18 +152,15 @@ enum UsageTypeEnum {
     kUsageTypeImmediate =  7,   // For native function value in instruction block is imediate value not a pointer
 };
 
-// PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.
+//! PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.
 enum PointerTypeEnum {
     kPTNotAPointer = 0,
-    kPTInt,
     kPTInstructionFunction,
-    kPTGenericFucntionPropType,
     kPTGenericFunctionCodeGen,
     kPTTypeManager,
-    kPTTypeFunction,
 };
 
-// PointerTypeEnum defines how a pointer to data will be used.
+//! PointerAccessEnum defines how a pointer to data will be used.
 enum PointerAccessEnum {
     kPAInit = 0,                // for object construction
     kPARead = 1,                // for read only operations (some constants allocate on demand)
@@ -576,7 +573,7 @@ public:
     virtual NIError ClearData(void* pData)              { return _wrapped->ClearData(pData); }
 };
 
-// TODO forward declarations ( this covers asynchronous resolution of sub VIs as well
+// TODO forward declarations (this covers asynchronous resolution of sub VIs as well)
 // for the most part types are not mutable.
 // here might be the exceptions
 // 1. if a name is not resolved it can be kept on a short list. when the name is introduced
@@ -833,6 +830,9 @@ private:
     DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
     static size_t   StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
 public:
+    //! Create a default value for a pointer and set the value in one operation.
+    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue, void* pointerValue);
+    //!
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
     DefaultValueType* FinalizeDVT();
 public:
@@ -841,7 +841,7 @@ public:
     virtual NIError InitData(void* pData, TypeRef pattern = null);
 };
 //------------------------------------------------------------
-//! A type describes a pointer to another type.
+//! A type describes a pointer to another type. Initial value will be null.
 class PointerType : public WrappedType
 {
 protected:
@@ -854,7 +854,7 @@ public:
     // TODO Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
-//! A type describes a pointer with a predefined value. For example the address to a C function.
+//! A type describes a pointer with a predefined value. For example, the address to a C function.
 class DefaultPointerType : public PointerType
 {
 private:
@@ -883,7 +883,7 @@ public:
         { return type->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
 };
 //------------------------------------------------------------
-//! A type that has custom Init/Copy/Clear functions
+//! A type that has custom Init/Copy/Clear/GetSubElement functions
 class CustomDataProcType : public WrappedType
 {
 protected:
@@ -894,7 +894,7 @@ public:
     virtual void    Accept(TypeVisitor *tv)
         { tv->VisitCustomDataProc(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
-        { return _pDataProcs->InitData(_wrapped, pData, pattern ? pattern : this); }
+        { return _pDataProcs->InitData(_wrapped, pData, pattern); }
     virtual NIError CopyData(const void* pData, void* pDataCopy)
         { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
     virtual NIError ClearData(void* pData)

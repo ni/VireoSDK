@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
 
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -383,11 +383,11 @@ VIREO_FUNCTION_SIGNATURE3(Mul_VDouble, TypedArray1D<Double>*, TypedArray1D<Doubl
         _Param(2)->Resize1D(minSize);
     }
     gPlatform.IO.Printf("Accelerated Vector Multiply\n");
-    
+
     Double *pSrcA = _Param(0)->Begin();
     Double *pSrcB = _Param(1)->Begin();
     Double *pDestC = _Param(2)->Begin();
-    
+
 #if defined(kVireoOS_macosxU)
     vDSP_vmulD(pSrcA, 1, pSrcB, 1, pDestC, 1, minSize);
 #else
@@ -469,6 +469,3 @@ DEFINE_VIREO_BEGIN(Waveform)
     DEFINE_VIREO_TYPE(DigitalWaveform, "c(e(a(.UInt8 * *) data)e(a(.UInt32 *) transitions))")
 DEFINE_VIREO_END()
 #endif
-
-
-
