@@ -47,7 +47,7 @@ int VIREO_MAIN(int argc, const char * argv[])
             
             gPlatform.IO.ReadFile(&fileName, buffer.Value);
             if (buffer.Value->Length() == 0) {
-                gPlatform.IO.Printf("(Error \"file <%s> empty\")\n", fileName);
+                gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
             }
             
             SubString input = buffer.Value->MakeSubStringAlias();
@@ -57,7 +57,6 @@ int VIREO_MAIN(int argc, const char * argv[])
             
             LOG_PLATFORM_MEM("Mem after load")
         }
-
 #if defined(kVireoOS_emscripten)
         emscripten_set_main_loop(RunExec, 40, null);
 #else
