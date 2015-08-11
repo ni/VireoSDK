@@ -122,9 +122,11 @@ function compile(opts, fileName) {
 }
 //------------------------------------------------------------
 function link(opts) {
-    console.log('Linking...');
-    console.log(opts.linkCommand);
-    sh.exec(opts.linkCommand + opts.filesToLink);
+    if (opts.linkCommand) {
+        console.log('Linking...');
+        console.log(opts.linkCommand);
+        sh.exec(opts.linkCommand + opts.filesToLink);
+    }
     if (opts.stripCommand) {
         sh.exec(opts.stripCommand);
     }
@@ -167,7 +169,7 @@ function configureSettings(opts, targetPlatform) {
         // SITEDIR=../Documents/gh-pages/playground
 
         opts.ccCommand = compileEmscriptenCommand;
-        opts.linkCommand = 'emcc';
+        opts.linkCommand = 'emcc ';
         opts.linkCommand += '-dead_strip ';
         opts.linkCommand += '-Os ';
         opts.linkCommand += '-fno-exceptions ';
@@ -177,7 +179,7 @@ function configureSettings(opts, targetPlatform) {
         opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
         opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
-        opts.linkCommand += '-o vireo.js ';
+        opts.linkCommand += '-o ../target-support/js/vireo.js ';
 
         var EM_EXPORTS = '-s EXPORTED_FUNCTIONS="[' +
         '\'_Vireo_Version\',' +
@@ -195,6 +197,7 @@ function configureSettings(opts, targetPlatform) {
         '\'_Data_WriteUInt32\'' +
         ']" -s RESERVED_FUNCTION_POINTERS=10 ';
         opts.linkCommand += EM_EXPORTS;
+        opts.strip = null;
 
     } else if (targetPlatform === 'win32' || targetPlatform === 'win64') {
         sh.mkdir('-p', buildOptions.objRoot + 'win/');
