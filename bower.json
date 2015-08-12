@@ -1,6 +1,6 @@
 {
   "name": "vireo",
-  "version": "2.0.0-alpha.8",
+  "version": "2.0.0-alpha.9",
   "homepage": "https://github.com/NI/VireoSDK",
   "authors": [
     "SEE AUTHORS"
@@ -21,12 +21,12 @@
     "bower_components",
     "Documents",
     "Eclipse-workspace",
-    "Vireo_Xcode"
-    "make-it"
-    "source"
-    "test-it"
-    "package.json"
-    "README.md"
+    "Vireo_Xcode",
+    "make-it",
+    "source",
+    "test-it",
+    "package.json",
+    "README.md",
     "AUTHORS"
   ]
 }
