@@ -1,6 +1,0 @@
-# Ignore everything in this directory...
-*
-
-# ...except this file.  So, the directory will be tracked, but remain empty.
-!.gitignore
-

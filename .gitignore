@@ -75,3 +75,5 @@ poly2
 poly3
 birdwatcher
 source/antlr/gen-js
+local
+npm-debug.log

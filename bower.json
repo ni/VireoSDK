@@ -1,0 +1,32 @@
+{
+  "name": "vireo",
+  "version": "2.0.0-alpha.8",
+  "homepage": "https://github.com/NI/VireoSDK",
+  "authors": [
+    "SEE AUTHORS"
+  ],
+  "description": "Javascript build of the VireoSDK.",
+  "main": "vireo.js",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "vireo"
+  ],
+  "license": "SEE LICENSE IN 'LICENSE.txt'",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "Documents",
+    "Eclipse-workspace",
+    "Vireo_Xcode"
+    "make-it"
+    "source"
+    "test-it"
+    "package.json"
+    "README.md"
+    "AUTHORS"
+  ]
+}

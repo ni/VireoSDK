@@ -179,7 +179,7 @@ function configureSettings(opts, targetPlatform) {
         opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
         opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
-        opts.linkCommand += '-o ../target-support/js/vireo.js ';
+        opts.linkCommand += '-o ../dist/vireo.js ';
 
         var EM_EXPORTS = '-s EXPORTED_FUNCTIONS="[' +
         '\'_Vireo_Version\',' +
