@@ -215,6 +215,8 @@ WebSocketUser = function () {
     
 };
 
+
+//TODO: tnelligan change name to reflect it is a collection of connections
 WebSocketUsers = function () {
     "use strict";
     //Properties
@@ -269,7 +271,7 @@ var httpUsers = new HttpUsers();
 
 var webSocketUsers = new WebSocketUsers();
 
-
+//TODO: tnelligan break this up into generic, http, websockets
 return {
     version: Module.cwrap('Vireo_Version', 'number', []),
     readDouble:
@@ -471,10 +473,12 @@ return {
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
             return returnValue;
         },
+    //TODO: tnelligan add try catch and errorMessage and return value
     getWebSocketUser:
         function (handle) {
             return webSocketUsers.get(handle);
         },
+    //TODO: tnelligan refactor so that http and websockets both use this
     setOccurenceAndError:
         function (occurrenceRef, errorMessage, errorString, errorNum) {
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
