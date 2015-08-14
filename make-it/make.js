@@ -9,21 +9,21 @@ path = require('path');
 //------------------------------------------------------------
 // Default setup
 buildOptions = {
-    "debug": false,
-    "define": "-DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1 -DVIREO_LINX=1",
-    "optimization": "",
-    "include": "../source/include",
-        "sourceRoot": "../source/",
-    "objRoot": "./objs/",
-    "targetFile": "esh",
-    "filesToLink": ""
+    'debug': false,
+    'define': '-DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1 -DVIREO_LINX=1',
+    'optimization': '',
+    'include': '../source/include',
+        'sourceRoot': '../source/',
+    'objRoot': './objs/',
+    'targetFile': 'esh',
+    'filesToLink': ''
 };
 //------------------------------------------------------------
 function fileIsNewer(sourceFilePath, objectFilePath) {
     if (!sh.test('-e', objectFilePath)) {
         return sh.test('-e', sourceFilePath);
     } else {
-        return ( fs.statSync(sourceFilePath).mtime.getTime() -
+        return (fs.statSync(sourceFilePath).mtime.getTime() -
                  fs.statSync(objectFilePath).mtime.getTime()) > 0;
     }
 }
@@ -136,8 +136,8 @@ function configureSettings(opts, targetPlatform) {
     // Set options based on platformm being run on, or
     // in some cases for cross platfrom compiling.
     // the latter has not yet been done.
-    var compilerPath = "";
-    opts.filesToLink = "";
+    var compilerPath = '';
+    opts.filesToLink = '';
     if (targetPlatform === 'darwin') {
         // OSX Desktop
         sh.mkdir('-p', buildOptions.objRoot + 'clang/');
@@ -165,14 +165,14 @@ function configureSettings(opts, targetPlatform) {
             exit(1);
         }
 
-        // SITESOURCEDIR=../source/dox/playground
-        // SITEDIR=../Documents/gh-pages/playground
-
         opts.ccCommand = compileEmscriptenCommand;
         opts.linkCommand = 'emcc ';
+        // remove unaccesed functions and data
         opts.linkCommand += '-dead_strip ';
+        // optimize for size
         opts.linkCommand += '-Os ';
         opts.linkCommand += '-fno-exceptions ';
+        // bundle memory initialization into core js file
         opts.linkCommand += '--memory-init-file 0 ';
         opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_canvas2d.js ';
         opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_httpClient.js ';
@@ -180,8 +180,10 @@ function configureSettings(opts, targetPlatform) {
         opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
         opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
+        // dist directory is where bower wante the js file.
         opts.linkCommand += '-o ../dist/vireo.js ';
 
+        // Specify symbols to export so the names wont get minified.
         var EM_EXPORTS = '-s EXPORTED_FUNCTIONS="[' +
         '\'_Vireo_Version\',' +
         '\'_EggShell_Create\',' +
@@ -252,15 +254,28 @@ function compileVireo(platform) {
 //------------------------------------------------------------
 //------------------------------------------------------------
 target.all = function() {
-    console.log(" make options: ");
-    console.log(" node make v64     // local native 64 bit ");
-    console.log(" node make vjs     // vireo.js ");
-    console.log(" node make dox     // build doxygen executable ");
-    console.log(" node make clean   // delete objects ");
+    console.log(' make options: ');
+    console.log('');
+    console.log('   node make v64     // local native 64 bit ');
+    console.log('   node make vjs     // vireo.js ');
+    console.log('   node make dox     // build doxygen executable ');
+    console.log('   node make clean   // delete objects ');
+
+    console.log('');
+    console.log(' If you are using npm, the following commands should work ');
+    console.log(' from any directory within the vireo project.');
+    console.log('');
+    console.log('   npm run make -- <make options from list above> ');
+    console.log('');
+
+
+
+
+vjs_playground
 };
 //------------------------------------------------------------
 target.dox = function() {
-    console.log(" Build Doxygen.");
+    console.log(' Build Doxygen.');
     sh.exec('cd ../source && doxygen');
 };
 //------------------------------------------------------------
@@ -268,7 +283,7 @@ target.install = function() {
     if (!sh.test('-e', '/Applications/Vireo')) {
         sh.mkdir('/Applications/Vireo');
     }
-    console.log(" Copying <" + buildOptions.targetFile + "> to </Applications/Vireo>." );
+    console.log(' Copying <' + buildOptions.targetFile + '> to </Applications/Vireo>.' );
     sh.cp('-f', buildOptions.targetFile, '/Applications/Vireo');
 };
 //------------------------------------------------------------
@@ -280,8 +295,14 @@ target.vjs = function() {
     compileVireo('emscripten');
 };
 //------------------------------------------------------------
+target.vjs_playground = function() {
+    compileVireo('emscripten');
+    // copy file to the gh-pages playgournd as well.
+    sh.cp('-f', '../dist/vireo.js', '../Documents/gh-pages/playground');
+};
+//------------------------------------------------------------
 target.clean = function() {
-    console.log("Clean all.");
+    console.log('Clean all.');
     sh.rm('-rf', buildOptions.objRoot);
     sh.rm('-f', buildOptions.targetFile);
 

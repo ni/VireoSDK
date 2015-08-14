@@ -1,10 +1,9 @@
 # The emscripten C++ to JavaScript tool chain is portable
 # It does not need an installer and can be placed any where
-# If you not using it for multiple projects it make be simple
-# to just put in a sub folder of the project and to set
-# it set environment variables when needed.
+# If you are not using it for multiple projects it may make sene
+# to just put in a sub directory of make-it
 
-# That is what this file is for. If you set up a more central 
+# That is what this file is for. If you set up a more central
 # shared version, then ignore this file.
 
 # usage:

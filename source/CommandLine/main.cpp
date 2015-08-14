@@ -30,11 +30,11 @@ int VIREO_MAIN(int argc, const char * argv[])
 {
     gPlatform.Setup();
     SubString fileName;
-    
+
     if (argc == 2) {
         fileName.AliasAssignCStr(argv[1]);
     }
-    
+
     gShells._pRootShell = TypeManager::New(null);
     gShells._pUserShell = TypeManager::New(gShells._pRootShell);
     gShells._keepRunning = true;
@@ -44,17 +44,17 @@ int VIREO_MAIN(int argc, const char * argv[])
         {
             TypeManagerScope scope(gShells._pUserShell);
             STACK_VAR(String, buffer);
-            
+
             gPlatform.IO.ReadFile(&fileName, buffer.Value);
             if (buffer.Value->Length() == 0) {
                 gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
             }
-            
+
             SubString input = buffer.Value->MakeSubStringAlias();
             if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
                 gShells._keepRunning = false;
             }
-            
+
             LOG_PLATFORM_MEM("Mem after load")
         }
 #if defined(kVireoOS_emscripten)
@@ -77,13 +77,13 @@ int VIREO_MAIN(int argc, const char * argv[])
             SubString input = buffer.Value->MakeSubStringAlias();
             TDViaParser::StaticRepl(gShells._pUserShell, &input);
             }
-            
+
             while (gShells._keepRunning) {
                 RunExec();
             }
         }
     }
-    
+
     gPlatform.Shutdown();
     return 0;
 }
@@ -105,4 +105,3 @@ void RunExec() {
         LOG_PLATFORM_MEM("Mem after cleanup")
     }
 }
-
