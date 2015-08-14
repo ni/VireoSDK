@@ -124,6 +124,7 @@ SDG
     #define VIREO_TYPE_Timestamp 1
     #define VIREO_TYPE_Canvas2D  1
     #define VIREO_TYPE_HttpClient 1
+    #define VIREO_TYPE_WebSocketClient 1
     #define VIREO_DEBUG_GPIO_STDIO 1
     #define VIREO_TIME_FORMATTING 1
     #define VIREO_SPREADSHEET_FORMATTING 1
