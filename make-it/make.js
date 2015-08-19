@@ -7,6 +7,32 @@ fs = require('fs');
 path = require('path');
 
 //------------------------------------------------------------
+/*
+    Moving from a make file to a make script.
+
+    Basic flow is as follows
+    (1) using shelljs 'node make target' will call one
+        of the target.XXX() functions
+    (2) the target invokes one or more BuildXXX functions
+    (3) the BuildXXX fucntion configures the opts object, compiles each
+    component in the target and then links them.
+
+    Each compiler tool chain has two function. The compileXXX functions
+    generates the command line calls the compiler and adds the object file
+    to a list of files to link by the linkerXXX function.
+
+    compileMSCL()
+    compileClang()
+    compileEmscripten()
+    compileGcc()
+
+    linkMSCL()
+    linkClang()
+    linkEmscripten()
+    linkGcc()
+
+*/
+//------------------------------------------------------------
 // Default setup
 buildOptions = {
     'debug': false,
@@ -28,8 +54,11 @@ function fileIsNewer(sourceFilePath, objectFilePath) {
     }
 }
 //------------------------------------------------------------
-function compileCommandMSCL(opts, filePath) {
+//------------------------------------------------------------
+function compileMSCL(opts, filePath) {
     var objFilePath = opts.objRoot + 'win/' + path.parse(filePath).name + '.obj';
+    opts.filesToLink += ' ' + objFilePath;
+
     var command = '';
     if (fileIsNewer(filePath, objFilePath)) {
         command =
@@ -49,14 +78,14 @@ function compileCommandMSCL(opts, filePath) {
         // * vireo does not use exceptions, however the MS string header files
         // generated warnings for some system classes that used exceptions.
         // so some execption support is turned on for windows builds.
+        sh.exec(command);
     }
-    opts.filesToLink += ' ' + objFilePath;
-
-    return command;
 }
 //------------------------------------------------------------
-function compileClangCommand(opts, filePath) {
+function compileClang(opts, filePath) {
     var objFilePath = opts.objRoot + 'clang/' + path.parse(filePath).name + '.o';
+    opts.filesToLink += ' ' + objFilePath;
+
     var command = '';
     if (fileIsNewer(filePath, objFilePath)) {
         command =
@@ -67,35 +96,38 @@ function compileClangCommand(opts, filePath) {
             opts.define + ' ' +
             '-o ' + objFilePath + ' ' +
             filePath;
+
+        sh.exec(command);
     }
-    opts.filesToLink += ' ' + objFilePath;
-    return command;
 }
 //------------------------------------------------------------
-function compileEmscriptenCommand(opts, filePath) {
+function compileEmscripten(opts, filePath) {
     var objFilePath = opts.objRoot + 'ems/' + path.parse(filePath).name + '.bc';
+    opts.filesToLink += ' ' + objFilePath;
+
     var command = '';
     if (fileIsNewer(filePath, objFilePath)) {
         command =
             'emcc ' +
             '-pthread -Wall -MMD -fno-rtti -fno-exceptions -std=c++11 ' +
             // Main will never exits so save some memory.
-            '-s NO_EXIT_RUNTIME=1 ' +
-            '-fno-exceptions ' +
-            '--memory-init-file 0 ' +
+        //    '-s NO_EXIT_RUNTIME=1 ' +
+        //    '--memory-init-file 0 ' +
             '-DkVireoOS_emscripten -DVIREO_LEAN ' +
             (opts.debug ? '-O0 ' : '-Os ') +
             '-I' + opts.include + ' ' +
             opts.define + ' ' +
             '-o ' + objFilePath + ' ' +
             filePath;
+        console.log(command);
+        sh.exec(command);
     }
-    opts.filesToLink += ' ' + objFilePath;
-    return command;
 }
 //------------------------------------------------------------
-function compileGccCommand(opts, filePath) {
+function compileGcc(opts, filePath) {
     var objFilePath = opts.objRoot + 'gcc/' + path.parse(filePath).name + '.o';
+    opts.filesToLink += ' ' + objFilePath;
+
     var command =
         'g++ ' +
         '-pthread -fdata-sections -ffunction-sections' +
@@ -105,106 +137,141 @@ function compileGccCommand(opts, filePath) {
         '-o ' + objFilePath + ' ' +
         filePath;
 
-    opts.filesToLink += ' ' + objFilePath;
+    sh.exec(command);
+}
+//------------------------------------------------------------
+//------------------------------------------------------------
+function linkClang(opts, fileName) {
+    var command = 'clang++ ';
+        command += '-dead_strip -m64 ';
+        command += '-o ' + fileName + ' ';
+        command += opts.filesToLink;
+
+    console.log(command);
+    sh.exec(command);
+    console.log('stripping out symbols...');
+    sh.exec('strip esh');
+}
+//------------------------------------------------------------
+function linkGcc(opts, fileName) {
+    var command = 'g++ ';
+        command += '-s -Wl,--gc-sections ';
+        command += '-o ' + fileName + ' ';
+        command += opts.filesToLink;
+
+    console.log(command);
+    sh.exec(command);
+    console.log('stripping out symbols...');
+    sh.exec('strip esh');
+}
+//------------------------------------------------------------
+function linkMSCL(opts, fileName) {
+    var command = 'link /NOLOGO /OUT:' + fileName + '.exe';
+        command += opts.filesToLink;
+
+    console.log(command);
+    sh.exec(command);
+}
+//------------------------------------------------------------
+function linkEmscripten(opts, fileName) {
+    var filePath =  '../dist/' + fileName + '.js';
+
+    // Use emscripten compiler (tool that wraps clang).
+    var command = 'emcc ';
+
+    // Optimize for size, turn off fancy C++ stuff
+    command += '-Os ';
+    command += '-fno-exceptions ';
+    command += '-fno-rtti ';
+
+    command += '--memory-init-file 0 ';
+
+    // Add native javascript libaries.
+    if (opts.jsLibraries) {
+        opts.jsLibraries.map( function(item) {
+            command += '--js-library ' + opts.sourceRoot + item + ' ';
+        });
+    }
+
+    command += '-s NO_EXIT_RUNTIME=1 ';
+    command += '-g0 ';
+
+    if (opts.sharedLibrary) {
+        command += '-s SIDE_MODULE=1 ';
+    } else {
+        // MAIN_MODULE=2 triggers dead code stripping in the main module.
+        // so any symbol need by the side module most be referenced by code
+        // or added to the EXPORTED_FUNCTIONS set.
+        command += '-s MAIN_MODULE=2 ';
+        command += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
+        command += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
+    }
+
+    if (opts.exports) {
+        var exports_string = '\'' + opts.exports.join('\',\'') +  '\'';
+        command += '-s EXPORTED_FUNCTIONS="[' + exports_string + ']" ';
+    }
+    command += '-s NO_FILESYSTEM=1 ';
+    // command += '-s RESERVED_FUNCTION_POINTERS=10 ';
+
+    // dist directory is where bower wants the js file.
+    command += '-o ' + filePath;
+
+    // Add the list files to link.
+    command += opts.filesToLink  + ' ';
+
+    console.log(command);
+    sh.exec(command);
+    sh.exec(' ls -l ' + filePath);
+
     return command;
 }
 //------------------------------------------------------------
 function compile(opts, fileName) {
     var sourceFilePath = opts.sourceRoot + fileName;
-    var command = opts.ccCommand(opts, sourceFilePath);
-    if (command.length > 0) {
-        console.log('Compiling ' + fileName);
-        // console.log(command);
-        sh.exec(command);
-    } else {
-        console.log('Skipping (looks up to date) ' + fileName);
-    }
+    console.log('Compiling ' + fileName);
+    opts.compiler(opts, sourceFilePath);
 }
 //------------------------------------------------------------
-function link(opts) {
-    if (opts.linkCommand) {
-        console.log('Linking...');
-        console.log(opts.linkCommand);
-        sh.exec(opts.linkCommand + opts.filesToLink);
-    }
-    if (opts.stripCommand) {
-        sh.exec(opts.stripCommand);
-    }
+function link(opts, fileName) {
+    console.log('linking...');
+    opts.linker(opts, fileName);
 }
 //------------------------------------------------------------
 function configureSettings(opts, targetPlatform) {
     // Set options based on platformm being run on, or
     // in some cases for cross platfrom compiling.
     // the latter has not yet been done.
-    var compilerPath = '';
-    opts.filesToLink = '';
+
     if (targetPlatform === 'darwin') {
         // OSX Desktop
-        sh.mkdir('-p', buildOptions.objRoot + 'clang/');
-        opts.ccCommand = compileClangCommand;
-        opts.linkCommand = 'clang++ -dead_strip -m64 -o esh';
-        opts.stripCommand = 'strip esh';
+        opts.objPlatformSuffix =  'clang/';
+        opts.compiler = compileClang;
+        opts.linker = linkClang;
     } else if (targetPlatform === 'linux') {
-        sh.mkdir('-p', buildOptions.objRoot + 'gcc/');
-        opts.ccCommand = compileGccCommand;
-        opts.linkCommand = 'g++ -s -Wl,--gc-sections -o esh ';
-        opts.strip = 'strip esh';
+        opts.objPlatformSuffix =  'gcc/';
+        opts.compiler = compileGcc;
+        opts.linker = linkGcc;
     } else if (targetPlatform === 'uBlaze') {
-        sh.mkdir('-p', buildOptions.objRoot + 'uBlaze/');
-        opts.ccCommand = compileGccCommand;
-        opts.cc     = 'mb-g++';
-        //opts.cflags = '-DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax';
+        opts.objPlatformSuffix =  'uBlaze/';
+        opts.compiler = compileGcc;
+        // opts.cc     = 'mb-g++';
+        // opts.cflags = '-DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax';
         // LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
     } else if (targetPlatform === 'emscripten') {
-        sh.mkdir('-p', buildOptions.objRoot + 'ems/');
-        compilerPath = which('emcc');
-        if (compilerPath) {
-            console.log('using emcc at <' + compilerPath + '>');
+        opts.objPlatformSuffix =  'ems/';
+        var emscriptenPath = which('emcc');
+        if (emscriptenPath) {
+            console.log('using emcc at <' + emscriptenPath + '>');
         } else {
             console.log('Emscripten\'s "emcc" compiler must be configured for this shell.');
             exit(1);
         }
-
-        opts.ccCommand = compileEmscriptenCommand;
-        opts.linkCommand = 'emcc ';
-        // remove unaccesed functions and data
-        opts.linkCommand += '-dead_strip ';
-        // optimize for size
-        opts.linkCommand += '-Os ';
-        opts.linkCommand += '-fno-exceptions ';
-        // bundle memory initialization into core js file
-        opts.linkCommand += '--memory-init-file 0 ';
-        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_canvas2d.js ';
-        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_httpClient.js ';
-        opts.linkCommand += '--js-library ' + opts.sourceRoot + 'io/library_WebSocketClient.js ';
-        opts.linkCommand += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
-        opts.linkCommand += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
-        opts.linkCommand += '-s NO_EXIT_RUNTIME=1 ';
-        // dist directory is where bower wante the js file.
-        opts.linkCommand += '-o ../dist/vireo.js ';
-
-        // Specify symbols to export so the names wont get minified.
-        var EM_EXPORTS = '-s EXPORTED_FUNCTIONS="[' +
-        '\'_Vireo_Version\',' +
-        '\'_EggShell_Create\',' +
-        '\'_EggShell_REPL\',' +
-        '\'_EggShell_ExecuteSlices\',' +
-        '\'_EggShell_Delete\',' +
-        '\'_EggShell_ReadDouble\',' +
-        '\'_EggShell_WriteDouble\',' +
-        '\'_EggShell_ReadValueString\',' +
-        '\'_EggShell_WriteValueString\',' +
-        '\'_Occurrence_Set\',' +
-        '\'_Data_WriteString\',' +
-        '\'_Data_WriteInt32\',' +
-        '\'_Data_WriteUInt32\'' +
-        ']" -s RESERVED_FUNCTION_POINTERS=10 ';
-        opts.linkCommand += EM_EXPORTS;
-        opts.strip = null;
-
+        opts.compiler = compileEmscripten;
+        opts.linker = linkEmscripten;
     } else if (targetPlatform === 'win32' || targetPlatform === 'win64') {
         sh.mkdir('-p', buildOptions.objRoot + 'win/');
-        compilerPath = sh.which('cl');
+        var compilerPath = sh.which('cl');
         if (compilerPath) {
             console.log('using cl at <' + compilerPath + '>');
         } else {
@@ -212,8 +279,8 @@ function configureSettings(opts, targetPlatform) {
             exit(1);
         }
         // The build tool will use the compiler that is configured.
-        opts.ccCommand = compileCommandMSCL;
-        opts.linkCommand = 'link /NOLOGO /OUT:esh.exe ';
+        opts.compiler = compileMSCL;
+        opts.linker = linkMSCL;
     } else if (targetPlatform === 'xcompile-ARMv5') {
         console.log("target TBD");
         sh.exit(1);
@@ -227,29 +294,79 @@ function configureSettings(opts, targetPlatform) {
         console.log("target TBD");
         sh.exit(1);
     }
+
+    opts.filesToLink = '';
+    opts.jsLibrries = null;
+    opts.exports = null;
+    opts.sharedLibrary = null;
+    if (opts.objPlatformSuffix) {
+        sh.mkdir('-p', buildOptions.objRoot + opts.objPlatformSuffix);
+    }
     return opts;
 }
+
 //------------------------------------------------------------
-function compileVireo(platform) {
-    console.log('Build for the <' + platform + '> platform');
+function buildVireo(platform, outputName) {
+    console.log('Build vireo for the <' + platform + '> platform');
     var opts = configureSettings(buildOptions, platform);
-    // opts.debug = true;
 
     compile(opts, 'CommandLine/main.cpp');
-
     compile(opts, 'core/VireoMerged.cpp');
+
     compile(opts, 'core/Thread.cpp');
     compile(opts, 'core/Timestamp.cpp');
     compile(opts, 'core/CEntryPoints.cpp');
 
     compile(opts, 'io/FileIO.cpp');
     compile(opts, 'io/DebugGPIO.cpp');
-    compile(opts, 'io/Linx.cpp');
-    compile(opts, 'io/Canvas2d.cpp');
     compile(opts, 'io/HttpClient.cpp');
     compile(opts, 'io/WebSocketClient.cpp');
+    compile(opts, 'io/Linx.cpp');       // to be pulled into side module
+    compile(opts, 'io/Canvas2d.cpp');   // to be pulled into side module
 
-    link(opts);
+    // Exported symbole are initially just used for JS builds
+    // other targets will ingore this set.
+    opts.exports = [
+        '_Vireo_Version',
+        '_EggShell_Create',
+        '_EggShell_REPL',
+        '_EggShell_ExecuteSlices',
+        '_EggShell_Delete',
+        '_EggShell_ReadDouble',
+        '_EggShell_WriteDouble',
+        '_EggShell_ReadValueString',
+        '_EggShell_WriteValueString',
+        '_Occurrence_Set',
+        '_Data_WriteString',
+        '_Data_WriteInt32',
+        '_Data_WriteUInt32'
+    ];
+
+    opts.jsLibraries = [
+        'io/library_httpClient.js',
+        'io/library_WebSocketClient.js',
+        'io/library_canvas2d.js'        // to be pulled into side module
+    ];
+
+    link(opts, outputName);
+}
+//------------------------------------------------------------
+function buildCanvas2d(platform) {
+    var opts = configureSettings(buildOptions, platform);
+    opts.sharedLibrary = true;
+    compile(opts, 'io/Canvas2d.cpp');
+    opts.jsLibraries = [
+        'io/library_canvas2d.js'
+    ];
+
+    link(opts, 'canvas2d');
+}
+//------------------------------------------------------------
+function buildLinx(platform) {
+    var opts = configureSettings(buildOptions, platform);
+    opts.sharedLibrary = true;
+    compile(opts, 'io/Linx.cpp');
+    link(opts, 'linx');
 }
 //------------------------------------------------------------
 //------------------------------------------------------------
@@ -267,11 +384,6 @@ target.all = function() {
     console.log('');
     console.log('   npm run make -- <make options from list above> ');
     console.log('');
-
-
-
-
-vjs_playground
 };
 //------------------------------------------------------------
 target.dox = function() {
@@ -288,15 +400,25 @@ target.install = function() {
 };
 //------------------------------------------------------------
 target.v64 = function() {
-    compileVireo(process.platform);
+    buildVireo(process.platform, 'esh');
 };
 //------------------------------------------------------------
 target.vjs = function() {
-    compileVireo('emscripten');
+    buildVireo('emscripten', 'vireo');
+};
+//------------------------------------------------------------
+target.vjs_canvas2d = function() {
+    buildCanvas2d('emscripten');
+};
+//------------------------------------------------------------
+target.vjs_linx = function() {
+    buildLinx('emscripten');
 };
 //------------------------------------------------------------
 target.vjs_playground = function() {
-    compileVireo('emscripten');
+    buildVireo('emscripten', 'vireo');
+    buildLinx('emscripten');
+    buildCanvas2d('emscripten');
     // copy file to the gh-pages playgournd as well.
     sh.cp('-f', '../dist/vireo.js', '../Documents/gh-pages/playground');
 };
@@ -305,6 +427,7 @@ target.clean = function() {
     console.log('Clean all.');
     sh.rm('-rf', buildOptions.objRoot);
     sh.rm('-f', buildOptions.targetFile);
+    sh.rm('-f', '../dist/*');
 
     if (process.platform === 'win32' || process.platform === 'win64') {
         sh.rm('-rf', './asm');

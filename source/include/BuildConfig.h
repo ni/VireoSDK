@@ -42,13 +42,9 @@ SDG
 #endif
 
 //------------------------------------------------------------
-// For static-link the symbols need to be linkable from out side
-// the compile module wiht simple unmangled names.
-#ifdef VIREO_STATIC_LINK
-    #define VIREO_INSTRUCTION_LINKAGE extern "C"
-#else
-    #define VIREO_INSTRUCTION_LINKAGE static
-#endif
+// Instructions have unmangled names so they can be linked
+// from C, or from generic prototypes.
+#define VIREO_INSTRUCTION_LINKAGE extern "C"
 
 #ifdef VIREO_MICRO
     // For Vireo-micro there is a dispatch table statically linked at build time
