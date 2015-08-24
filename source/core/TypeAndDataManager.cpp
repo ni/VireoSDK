@@ -2681,53 +2681,53 @@ DEFINE_VIREO_BEGIN(TypeManager)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 #endif
 
-    DEFINE_VIREO_TYPE(TypeManager, ".DataPointer");
+    DEFINE_VIREO_TYPE(TypeManager, "DataPointer");
 
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
-    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(TypeManager) i(String) i(String) o(Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(TypeManager) i(String) i(String) i(Double))");
 #endif
 
     DEFINE_VIREO_TYPE(AllocationStatistics, AllocationStatistics_TypeString);
-    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(.TypeManager) o(.AllocationStatistics))");
-    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerBaseTypeManager, "p(i(.TypeManager) o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
-    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(TypeManager) o(AllocationStatistics))");
+    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerBaseTypeManager, "p(i(TypeManager) o(TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(TypeManager) o(a(Type *)))");
+    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(TypeManager) i(String) i(Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(.StaticTypeAndData)i(.String)o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
-    DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(.Instruction)i(.Int32)o(.DataPointer))");
-    DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(.Instruction)o(.Instruction))");
+    DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(StaticTypeAndData)i(String)o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(TypeManager)i(Type)i(DataPointer)o(String)o(Int32))");
+    DEFINE_VIREO_FUNCTION(InstructionType, "p(i(Instruction)o(Type )o(String))");
+    DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(Instruction)i(Int32)o(DataPointer))");
+    DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(Instruction)o(Instruction))");
 #endif
 
 #if defined(VIREO_TYPE_VARIANT)
-    DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(.TypeManager) i(.String) i(.Type) i(.Boolean) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeSetValue, "p(io(.Type) i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(TypeGetValue, "p(i(.Type) o(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(.Type) i(.String) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(TypeManager) i(String) i(Type) i(Boolean) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeSetValue, "p(io(Type) i(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeGetValue, "p(i(Type) o(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(Type) i(String) o(Type))");
 #endif
 
-    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(.StaticType) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeAlignment, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeEncoding, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeIsFlat, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeIsArray, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasCustomDefault, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasPadding, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasGenericType, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeName, "p(i(.Type) o(.String))");
-    DEFINE_VIREO_FUNCTION(TypeElementName, "p(i(.Type) o(.String))");
-    DEFINE_VIREO_FUNCTION(TypeBaseType, "p(i(.Type) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(.Type) i(.Int32) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(StaticType) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeAlignment, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeEncoding, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeIsFlat, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeIsArray, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasCustomDefault, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasPadding, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasGenericType, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeName, "p(i(Type) o(String))");
+    DEFINE_VIREO_FUNCTION(TypeElementName, "p(i(Type) o(String))");
+    DEFINE_VIREO_FUNCTION(TypeBaseType, "p(i(Type) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(Type) i(Int32) o(Type))");
 
 #if defined(VIREO_TYPE_CONSTRUCTION)
-    DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(.TypeManager) o(.Type) i(.Type) i(.Int32))");
+    DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(TypeManager) o(Type) i(Type) i(Int32))");
 #endif
 
 DEFINE_VIREO_END()

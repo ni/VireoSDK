@@ -2188,18 +2188,18 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
 //-------------------------------------------------------------------
 DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_REQUIRE(Timestamp)
-    DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(.String) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringFormat, "p(i(.VarArgCount) o(.String) i(.String) i(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(.String) o(.String) i(.String) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(.VarArgCount) i(.String) o(.String) i(.String) i(.UInt32) o(.UInt32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(String) i(String) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String) i(String) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) o(StaticTypeAndData))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
-    DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(.String) i(.String) i(.String) i(.Array))")
-    DEFINE_VIREO_FUNCTION(SpreadsheetStringtoArray, "p(i(.String) i(.String) i(.String) o(.Array))")
+    DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
+    DEFINE_VIREO_FUNCTION(SpreadsheetStringtoArray, "p(i(String) i(String) i(String) o(Array))")
 #endif
     
 #if defined(VIREO_TIME_FORMATTING)
-    DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(.String) i(.String) i(.Timestamp) i(.Boolean))")
+    DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(String) i(String) i(Timestamp) i(Boolean))")
 #endif
 
 DEFINE_VIREO_END()

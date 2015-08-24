@@ -2093,16 +2093,16 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
-    DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
-    DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
-    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))")
-    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(.String) o(.StaticTypeAndData) i(a(.String *)) i(.Boolean) i(.Boolean) i(.Boolean) )")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
-    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
+    DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(Type)o(String))")
+    DEFINE_VIREO_FUNCTION(ToString, "p(i(StaticTypeAndData) i(Int16) o(String))")
+    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(StaticTypeAndData) i(Boolean) o(String))")
+    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(String) o(StaticTypeAndData) i(a(String *)) i(Boolean) i(Boolean) i(Boolean) )")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(StaticTypeAndData) i(String) o(String))")
+    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(StaticTypeAndData) o(String))")
 #endif
-    DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")
-    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(FromString, "p(i(String) o(StaticTypeAndData) o(String))")
+    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(String) i(Int32) i(.*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(.*) o(Int32) o(StaticTypeAndData))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo

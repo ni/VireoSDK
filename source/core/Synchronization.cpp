@@ -348,26 +348,26 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 DEFINE_VIREO_BEGIN(Synchronization)
 
     // Timers
-    DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(.UInt32))")
-    DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(.Int64))")
-    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(.UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(Int64))")
+    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(UInt32))")
 
     // Base ObservableObject
-    DEFINE_VIREO_TYPE(Observer, "c(e(.DataPointer object)e(.DataPointer next)e(.DataPointer clump)e(.Int64 info))");
+    DEFINE_VIREO_TYPE(Observer, "c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))");
 
     // Occurrences
-    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(.DataPointer firstState)e(.Int32 setCount)")
-    DEFINE_VIREO_TYPE(Occurrence, "a(.OccurrenceValue)")
-    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(.Occurrence)i(.Boolean ignorePrevious)i(.Int32 timeout)s(.Int32 staticCount))")
-    DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(.Occurrence))")
+    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(DataPointer firstState)e(Int32 setCount)")
+    DEFINE_VIREO_TYPE(Occurrence, "a(OccurrenceValue)")
+    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)s(Int32 staticCount))")
+    DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
     // Queues
-    DEFINE_VIREO_TYPE(QueueValue, "c(e(.DataPointer firstState)e(a(.$0 $1)elements)e(.Int32 insert)e(.Int32 count))")
-    DEFINE_VIREO_TYPE(Queue, "a(.QueueValue)")
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count))")
+    DEFINE_VIREO_TYPE(Queue, "a(QueueValue)")
 
-    DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(.String name))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue queue)i(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue queue)o(.* element)i(.Int32 timeOut)o(.Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(.Queue queue)i(String name))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue queue)i(.* element)i(Int32 timeOut)o(Boolean timedOut))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue queue)o(.* element)i(Int32 timeOut)o(Boolean timedOut))")
 
     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(.Queue<.$1> queue)i(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")
     // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(.Queue<.$1> queue)o(.$1 element)i(.Int32 timeOut)o(.Boolean timedOut))")

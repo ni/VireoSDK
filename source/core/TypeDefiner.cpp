@@ -228,39 +228,39 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
-    Define(tm, "Utf32Char", ".Int32");              // A single Unicode codepoint (no special encoding or escapes)
-    Define(tm, "Utf8Array1D", "a(.Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
-    Define(tm, tsStringType, ".Utf8Array1D");
-    Define(tm, "StringArray1D", "a(.String *)");
+    Define(tm, "Utf32Char", "Int32");              // A single Unicode codepoint (no special encoding or escapes)
+    Define(tm, "Utf8Array1D", "a(Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
+    Define(tm, tsStringType, "Utf8Array1D");
+    Define(tm, "StringArray1D", "a(String *)");
 
     // Special types for the execution system.
     Define(tm, "CodePointer", "c(e(bb(HostPointerSize Pointer)))");
     Define(tm, "DataPointer", "c(e(bb(HostPointerSize Pointer)))");
-    Define(tm, "BranchTarget", ".DataPointer");
-    Define(tm, "Instruction", ".DataPointer");
+    Define(tm, "BranchTarget", "DataPointer");
+    Define(tm, "Instruction", "DataPointer");
 
     // Type Type describes a variable that is a pointer to a TypeRef
-    Define(tm, tsTypeType, ".DataPointer");
+    Define(tm, tsTypeType, "DataPointer");
 
-    Define(tm, "Object", ".DataPointer");
-    Define(tm, "Array", ".DataPointer");    // Object with Rank > 0
-    Define(tm, "Array1D", ".DataPointer");
-    Define(tm, "Variant", ".DataPointer");  // TODO is this any different from the Type type if the type has a default value?
+    Define(tm, "Object", "DataPointer");
+    Define(tm, "Array", "DataPointer");    // Object with Rank > 0
+    Define(tm, "Array1D", "DataPointer");
+    Define(tm, "Variant", "DataPointer");  // TODO is this any different from the Type type if the type has a default value?
 
     // VarArgCount - Used in prototypes for vararg functions.
     // This parameter will be constant number, not a pointer to a number
-    Define(tm, "VarArgCount", ".DataPointer");
+    Define(tm, "VarArgCount", "DataPointer");
 
     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
-    Define(tm, "StaticType", ".DataPointer");
+    Define(tm, "StaticType", "DataPointer");
     
     // StaticTypeAndData - Used in prototypes for polymorphic functions.
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
-    Define(tm, "StaticTypeAndData", "c(e(.StaticType) e(.DataPointer))");
+    Define(tm, "StaticTypeAndData", "c(e(StaticType) e(DataPointer))");
  
-    Define(tm, "SubString", "c(e(.DataPointer begin)e(.DataPointer end))");
+    Define(tm, "SubString", "c(e(DataPointer begin)e(DataPointer end))");
 }
 
 }  // namespace Vireo

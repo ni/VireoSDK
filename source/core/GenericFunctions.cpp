@@ -1158,107 +1158,107 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
 }
 //------------------------------------------------------------      
 DEFINE_VIREO_BEGIN(Generics)
-    DEFINE_VIREO_FUNCTION(Init, "p(i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(Clear, "p(i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(ZeroOutTop, "p(i(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(Init, "p(i(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(Clear, "p(i(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(ZeroOutTop, "p(i(StaticTypeAndData))")
 
     DEFINE_VIREO_TYPE(GenericBinOp, "p(i(.*) i(.*) o(.*))")
     DEFINE_VIREO_TYPE(GenericUnOp, "p(i(.*) o(.*))")
 
     // Copy and CopyTop share the same generic emitter, it checks the name of the instruction
     // to determine the correct behaviour.
-    DEFINE_VIREO_GENERIC(Copy, ".GenericUnOp", EmitGenericCopyInstruction);
-    DEFINE_VIREO_GENERIC(CopyTop, ".GenericUnOp", EmitGenericCopyInstruction);
+    DEFINE_VIREO_GENERIC(Copy, "GenericUnOp", EmitGenericCopyInstruction);
+    DEFINE_VIREO_GENERIC(CopyTop, "GenericUnOp", EmitGenericCopyInstruction);
     
     // Internal copy operation for flat blocks of of data.
-    DEFINE_VIREO_FUNCTION(Copy1, "p(i(.Int8) o(.Int8))");
-    DEFINE_VIREO_FUNCTION(Copy2, "p(i(.Int16)  o(.Int16))");
-    DEFINE_VIREO_FUNCTION(Copy4, "p(i(.Int32)  o(.Int32))");
-    DEFINE_VIREO_FUNCTION(Copy8, "p(i(.Int64)  o(.Int64))");
-    DEFINE_VIREO_FUNCTION(Copy16, "p(i(.Block128) o(.Block128))");
-    DEFINE_VIREO_FUNCTION(Copy32, "p(i(.Block256) o(.Block256))");
-    DEFINE_VIREO_FUNCTION(CopyN, "p(i(.DataPointer) o(.DataPointer) i(.Int32))");
+    DEFINE_VIREO_FUNCTION(Copy1, "p(i(Int8) o(.Int8))");
+    DEFINE_VIREO_FUNCTION(Copy2, "p(i(Int16)  o(Int16))");
+    DEFINE_VIREO_FUNCTION(Copy4, "p(i(Int32)  o(Int32))");
+    DEFINE_VIREO_FUNCTION(Copy8, "p(i(Int64)  o(Int64))");
+    DEFINE_VIREO_FUNCTION(Copy16, "p(i(Block128) o(Block128))");
+    DEFINE_VIREO_FUNCTION(Copy32, "p(i(Block256) o(Block256))");
+    DEFINE_VIREO_FUNCTION(CopyN, "p(i(DataPointer) o(DataPointer) i(Int32))");
     
     // Deep copy where needed for objects/arrays/strings.
-    DEFINE_VIREO_FUNCTION(CopyObject, "p(i(.Object) o(.Object))")
+    DEFINE_VIREO_FUNCTION(CopyObject, "p(i(Object) o(Object))")
 
     // Deep copy for clusters
-    DEFINE_VIREO_FUNCTION(CopyStaticTypedBlock, "p(i(.DataPointer) o(.DataPointer) i(.StaticType))")
+    DEFINE_VIREO_FUNCTION(CopyStaticTypedBlock, "p(i(DataPointer) o(DataPointer) i(StaticType))")
 
     // Generic math operations
-    DEFINE_VIREO_GENERIC(Not, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(And, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Or, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Xor, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Nand, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Nor, ".GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Not, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(And, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Or, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Xor, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Nand, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Nor, "GenericBinOp", EmitGenericBinOpInstruction);
 
-    DEFINE_VIREO_GENERIC(IsEQ, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsNE, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsLT, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsGT, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsLE, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsGE, ".GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsEQ, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsNE, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsLT, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsGT, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsLE, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsGE, "GenericBinOp", EmitGenericBinOpInstruction);
     
-    DEFINE_VIREO_GENERIC(Add, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Sub, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Mul, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Div, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Mod, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Quotient, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Remainder, ".GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Add, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Sub, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Mul, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Div, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Mod, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Quotient, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Remainder, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Split, "p(i(.*) o(.*) o(.*))", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Join, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Sine, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Cosine, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Tangent, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Secant, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Cosecant, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Log10, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Log, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Log2, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Exp, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(SquareRoot, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Pow, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(ArcSine, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(ArcCosine, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(ArcTan, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(ArcTan2, ".GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(Ceil, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Absolute, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Norm, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Phase, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Conjugate, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Floor, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Convert, ".GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(Sign, ".GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Join, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Sine, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Cosine, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Tangent, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Secant, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Cosecant, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Log10, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Log, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Log2, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Exp, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(SquareRoot, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Pow, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(ArcSine, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(ArcCosine, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(ArcTan, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(ArcTan2, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(Ceil, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Absolute, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Norm, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Phase, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Conjugate, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Floor, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
 
-    DEFINE_VIREO_GENERIC(Search1DArray, "p(i(.*) i(.*) i(.Int32) o(.Int32) s(.Instruction))", EmitSearchInstruction);
-    DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(.Array) i(.*) i(.Int32) o(.Int32) s(.Instruction))")
-    DEFINE_VIREO_GENERIC(ArrayConcatenate, "p(i(.VarArgCount) o(.Array output) i(.*))", EmitArrayConcatenateInstruction);
-    DEFINE_VIREO_FUNCTION(ArrayConcatenateInternal, "p(i(.VarArgCount) o(.Array output) i(.*))" )
-    DEFINE_VIREO_GENERIC(AddElements, "p(i(.Array) o(.* output))", EmitVectorOp);
-    DEFINE_VIREO_GENERIC(MultiplyElements, "p(i(.Array) o(.* output))", EmitVectorOp);
-    DEFINE_VIREO_GENERIC(AndElements, "p(i(.Array) o(.* output))", EmitVectorOp);
-    DEFINE_VIREO_GENERIC(OrElements, "p(i(.Array) o(.* output))", EmitVectorOp);
-    DEFINE_VIREO_FUNCTION(VectorOpInternal, "p(i(.Array) o(.* output) i(.Boolean))" )
+    DEFINE_VIREO_GENERIC(Search1DArray, "p(i(.*) i(.*) i(Int32) o(Int32) s(Instruction))", EmitSearchInstruction);
+    DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(Array) i(.*) i(Int32) o(Int32) s(Instruction))")
+    DEFINE_VIREO_GENERIC(ArrayConcatenate, "p(i(VarArgCount) o(Array output) i(.*))", EmitArrayConcatenateInstruction);
+    DEFINE_VIREO_FUNCTION(ArrayConcatenateInternal, "p(i(VarArgCount) o(Array output) i(.*))" )
+    DEFINE_VIREO_GENERIC(AddElements, "p(i(Array) o(.* output))", EmitVectorOp);
+    DEFINE_VIREO_GENERIC(MultiplyElements, "p(i(Array) o(.* output))", EmitVectorOp);
+    DEFINE_VIREO_GENERIC(AndElements, "p(i(Array) o(.* output))", EmitVectorOp);
+    DEFINE_VIREO_GENERIC(OrElements, "p(i(Array) o(.* output))", EmitVectorOp);
+    DEFINE_VIREO_FUNCTION(VectorOpInternal, "p(i(Array) o(.* output) i(Boolean))" )
 
-    DEFINE_VIREO_FUNCTION(ClusterBinaryOp, "p(i(.*) i(.*) o(.*) s(.Instruction) s(.Instruction))")
-    DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(.*) o(.*) s(.Instruction))")
-    DEFINE_VIREO_FUNCTION(IsEQAccumulator, "p(i(.GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsNEAccumulator, "p(i(.GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsLTAccumulator, "p(i(.GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(.GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(.GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(.GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(ClusterBinaryOp, "p(i(.*) i(.*) o(.*) s(Instruction) s(Instruction))")
+    DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(.*) o(.*) s(Instruction))")
+    DEFINE_VIREO_FUNCTION(IsEQAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(IsNEAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(IsLTAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(GenericBinOp))");
     
     // Vector operations
-    DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(.Array) i(.Array) o(.Array) s(.Instruction))" )
-    DEFINE_VIREO_FUNCTION(VectorVectorBinaryAccumulatorOp, "p(i(.Array) i(.Array) o(.Array) s(.Instruction) s(.Instruction))" )
-    DEFINE_VIREO_FUNCTION(VectorVectorSplitOp, "p(i(.Array) o(.Array) o(.Array) s(.Instruction))" )
-    DEFINE_VIREO_FUNCTION(ScalarVectorBinaryOp, "p(i(.*) i(.Array) o(.Array) s(.Instruction))" )
-    DEFINE_VIREO_FUNCTION(VectorScalarBinaryOp, "p(i(.Array) i(.*) o(.Array) s(.Instruction))" )
-    DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(.Array) o(.Array) s(.Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(Array) i(Array) o(Array) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorBinaryAccumulatorOp, "p(i(Array) i(Array) o(Array) s(Instruction) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorVectorSplitOp, "p(i(Array) o(Array) o(Array) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(ScalarVectorBinaryOp, "p(i(.*) i(Array) o(Array) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorScalarBinaryOp, "p(i(Array) i(.*) o(Array) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(Array) o(Array) s(Instruction))" )
 
 DEFINE_VIREO_END()
 } // namespace Vireo
