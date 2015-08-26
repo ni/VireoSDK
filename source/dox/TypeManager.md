@@ -69,7 +69,7 @@ define(DoubleCluster
     c(e(bc(
         // Clusters or BitCluster elements can have field names.
         e(bb(1  Boolean)      sign) 
-        e(bb(11 IntBiased)   exponent)
+        e(bb(11 BiasedInt)   exponent)
         e(bb(52 Q1)          fraction)
     )))
 )

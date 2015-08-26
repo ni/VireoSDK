@@ -166,18 +166,17 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
 #define tsBoolean         "Boolean"
 #define tsGeneric         "Generic"     //!< Generic template place holder
-#define tsBits            "Bits"        // Boolean values, 0 = false, off, 1 = true, on. No numeric significance
 #define tsEnum            "Enum"        //!< no numeric significance
-#define tsUInt            "UInt"        //!< unsigned integer 0 == 00000b, max = 1111b
-#define tsSInt            "SInt2c"      //!< signed integer two's compliment.  for 4 bits min=1000b(-8), 0 = 0000b, max = 0111b
-#define tsInt1sCompliment "SInt1c"      //!< signed integer ones's compliment. for 4 bits min=1000b(-7), 0 = 0000b or 1111b, max = 0111b
+#define tsUInt            "UInt"   //!< unsigned integer 0 == 00000b, max = 1111b
+#define tsSInt            "S2cInt"      //!< signed integer two's compliment.  for 4 bits min=1000b(-8), 0 = 0000b, max = 0111b
+#define tsInt1sCompliment "S1cInt"      //!< signed integer ones's compliment. for 4 bits min=1000b(-7), 0 = 0000b or 1111b, max = 0111b
 #define tsFixedPoint      "Q"           //!< .xxxx fractional part of fixed point numbers   TODO fractional bits??? Q.n
 #define ts1plusFractional "Q1"          //!< 1.xxxx  used in floating-point formats
 #define tsUnusedBits      "XBits"
 #define tsAscii           "Ascii"       //!< always single byte  ISO-8859-1
 #define tsUnicode         "Unicode"     //!< Utf8, Utf16, Utf32    (Basic Multilingual Plane 0 only right now TODO support more?)
-#define tsIntBiased       "IntBiased"   //!< example, for 4 bits : -max=0000,  0 = 1xxx, max = 1111
-#define tsZigZag          "IntZigZag"   //!< used in Google's protocol buffers.
+#define tsBiasedInt       "BiasedInt"   //!< example, for 4 bits : -max=0000,  0 = 1xxx, max = 1111
+#define tsZigZagInt       "ZigZagInt"   //!< used in Google's protocol buffers.
 #define tsIEEE754Binary   "IEEE754B"    //!< Formats defined for 16,32,64 and 128 bit floating-point numbers
 
 #define tsPointer         "Pointer"     // CodePointer - necessary distinction for Harvard architecture machines

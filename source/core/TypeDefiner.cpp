@@ -162,7 +162,7 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
 
     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);
 
-    if (cdt->BitEncoding() == kEncoding_SInt2C && cdt->TopAQSize() == 4) {
+    if (cdt->BitEncoding() == kEncoding_S2CInt && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;
 
         string.AliasAssignCStr(name);
@@ -206,10 +206,10 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
 
     // Signed (2's compliment) integers
-    Define(tm, "Int8",          "c(e(bb(8 SInt2c)))");
-    Define(tm, "Int16",         "c(e(bb(16 SInt2c)))");
-    Define(tm, tsInt32Type,     "c(e(bb(32 SInt2c)))");
-    Define(tm, "Int64",         "c(e(bb(64 SInt2c)))");
+    Define(tm, "Int8",          "c(e(bb(8 S2cInt)))");
+    Define(tm, "Int16",         "c(e(bb(16 S2cInt)))");
+    Define(tm, tsInt32Type,     "c(e(bb(32 S2cInt)))");
+    Define(tm, "Int64",         "c(e(bb(64 S2cInt)))");
 
     // Unsigned integers
     Define(tm, "UInt8",         "c(e(bb(8 UInt)))");
@@ -222,9 +222,10 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "UInt32",        "eq(e(c(e(bb(32 UInt)))) e(c(e(UInt16 hi) e(UInt16 lo)) UInt16s))");
     Define(tm, "UInt64",        "eq(e(c(e(bb(64 UInt)))) e(c(e(UInt32 hi) e(UInt32 lo)) UInt32s))");
 #endif
+
     // Large blocks of bytes for copies
-    Define(tm, "Block128",      "c(e(bb(128 Bits)))");
-    Define(tm, "Block256",      "c(e(bb(256 Bits)))");
+    Define(tm, "Block128",      "c(e(bb(128 Boolean)))");
+    Define(tm, "Block256",      "c(e(bb(256 Boolean)))");
 
     // String and character types
     Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet

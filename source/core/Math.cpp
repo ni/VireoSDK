@@ -487,14 +487,14 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
   // Floating-point Single
   #if defined(VIREO_TYPE_Single)
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bb(32 IEEE754B)))");
-    DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))");
+    DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))");
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic value) e(.SingleCluster fields))");
   #endif
 
   // Floating-point Double
   #if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_TYPE(DoubleAtomic, "c(e(bb(64 IEEE754B)))");
-    DEFINE_VIREO_TYPE(DoubleCluster, "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 IntBiased)  exponent)  e(bb(52 Q1)  fraction))))");
+    DEFINE_VIREO_TYPE(DoubleCluster, "c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 BiasedInt)  exponent)  e(bb(52 Q1)  fraction))))");
     DEFINE_VIREO_TYPE(Double, "eq(e(.DoubleAtomic value) e(.DoubleCluster fields))");
   #endif
 
@@ -688,7 +688,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if 0
     // TODO, once type dpendecy sequencing works these definitions can be moved here.
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bc(e(bb(32 IEEE754B)))))")
-    DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 IntBiased) exponent) e(bb(23 Q1) fraction))))")
+    DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))")
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")
 #endif
 

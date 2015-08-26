@@ -325,7 +325,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     
     if (patternType) {
         EncodingEnum enc = patternType->BitEncoding();
-        if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+        if (enc == kEncoding_S2CInt || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
             if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
                 literalsType = patternType;
             }
@@ -577,19 +577,17 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsUInt)) {
         enc = kEncoding_UInt;
     } else if (string->CompareCStr(tsSInt)) {
-        enc = kEncoding_SInt2C;
+        enc = kEncoding_S2CInt;
     } else if (string->CompareCStr(tsFixedPoint)) {
         enc = kEncoding_Q;
     } else if (string->CompareCStr(ts1plusFractional)) {
         enc = kEncoding_Q1;
-    } else if (string->CompareCStr(tsIntBiased)) {
-        enc = kEncoding_IntBiased;
+    } else if (string->CompareCStr(tsBiasedInt)) {
+        enc = kEncoding_BiasedInt;
     } else if (string->CompareCStr(tsInt1sCompliment)) {
-        enc = kEncoding_SInt1C;
+        enc = kEncoding_S1CInt;
     } else if (string->CompareCStr(tsAscii)) {
         enc = kEncoding_Ascii;
-    } else if (string->CompareCStr(tsBits)) {
-        enc = kEncoding_Bits;
     } else if (string->CompareCStr(tsUnicode)) {
         enc = kEncoding_Unicode;
     } else if (string->CompareCStr(tsGeneric)) {
@@ -817,7 +815,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_UInt:
-        case kEncoding_SInt2C:
+        case kEncoding_S2CInt:
             {
                 IntMax value = 0;
                 Boolean readSuccess = _string.ReadInt(&value);
@@ -1484,7 +1482,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
-        _pFormatter->FormatInt(kEncoding_IntDim, length);
+        _pFormatter->FormatInt(kEncoding_DimInt, length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1529,7 +1527,7 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            _pFormatter->FormatInt(kEncoding_IntDim, *pDimension);
+            _pFormatter->FormatInt(kEncoding_DimInt, *pDimension);
             pDimension++;
         }
         _pFormatter->_string->AppendCStr(")");
@@ -1626,8 +1624,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
     switch (value) {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
-        case kEncoding_SInt2C:          str = tsSInt;           break;
-        case kEncoding_Bits:            str = tsBits;           break;
+        case kEncoding_S2CInt:          str = tsSInt;           break;
         case kEncoding_Pointer:         str = tsPointer;        break;
         case kEncoding_IEEE754Binary:   str = tsIEEE754Binary;  break;
         case kEncoding_Ascii:           str = tsAscii;          break;
@@ -1658,11 +1655,11 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = null;
 
-    if (encoding == kEncoding_SInt2C) {
+    if (encoding == kEncoding_S2CInt) {
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
-    } else if (encoding == kEncoding_IntDim) {
+    } else if (encoding == kEncoding_DimInt) {
         if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
         } else if (IsVariableLengthDim((IntIndex)value)) {
@@ -1851,8 +1848,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     
     switch (encoding) {
         case kEncoding_UInt:
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             IntMax intValue;
             ReadIntFromMemory(type, pData, &intValue);
             FormatInt(type->BitEncoding(), intValue);

@@ -687,8 +687,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         
         if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
             bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
-        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_SInt2C || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
-            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt2C || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
+        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_S2CInt || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
+            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_S2CInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
@@ -2081,7 +2081,7 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
                 value = ~mask;
             }
         }
-    } else if (encoding == kEncoding_SInt2C) {
+    } else if (encoding == kEncoding_S2CInt) {
         IntMax mask = ((IntMax)-1) << ((size * 8) - 1);
         if (value >= 0) {
             if (value & mask) {
@@ -2114,8 +2114,8 @@ NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
                 default: err = kNIError_kCantDecode;           break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1: value = *(Int8*)pData;                 break;
                 case 2: value = *(Int16*)pData;                break;
@@ -2160,8 +2160,8 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
                 default: err = kNIError_kCantEncode;            break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;          break;
                 case 2:  *(Int16*)pData = (Int16)value;         break;
@@ -2209,8 +2209,8 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
                 default: err = kNIError_kCantDecode;        break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  value = *(Int8*)pData;             break;
                 case 2:  value = *(Int16*)pData;            break;
@@ -2260,8 +2260,8 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;      break;
                 case 2:  *(Int16*)pData = (Int16)value;     break;

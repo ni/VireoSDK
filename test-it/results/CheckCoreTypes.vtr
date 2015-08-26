@@ -1,28 +1,28 @@
  Total number of types 3
 (.Boolean .Int8 .Int16 .Int32 .Int64 .UInt8 .UInt16 .UInt32 .UInt64 .Single .Double .ComplexSingle .ComplexDouble .String .Utf8Char .Utf32Char .Timestamp .Type .TypeManager .VI .Clump .BranchTarget .Instruction .InstructionBlock .Array .Object)
  e(.Boolean)  // encoding: 6 usage:0 baseType:c(e(bb(1 Boolean))) dv:false generic:false
- e(.Int8)  // encoding:10 usage:0 baseType:c(e(bb(8 SInt2c))) dv:false generic:false
- e(.Int16)  // encoding:10 usage:0 baseType:c(e(bb(16 SInt2c))) dv:false generic:false
- e(.Int32)  // encoding:10 usage:0 baseType:c(e(bb(32 SInt2c))) dv:false generic:false
- e(.Int64)  // encoding:10 usage:0 baseType:c(e(bb(64 SInt2c))) dv:false generic:false
- e(.UInt8)  // encoding: 9 usage:0 baseType:c(e(bb(8 UInt))) dv:false generic:false
- e(.UInt16)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(16 UInt))))e(c(e(.UInt8 lo)e(.UInt8 hi)) UInt8s)) dv:false generic:false
- e(.UInt32)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(32 UInt))))e(c(e(.UInt16 lo)e(.UInt16 hi)) UInt16s)) dv:false generic:false
- e(.UInt64)  // encoding: 9 usage:0 baseType:eq(e(c(e(bb(64 UInt))))e(c(e(.UInt32 lo)e(.UInt32 hi)) UInt32s)) dv:false generic:false
- e(.Single)  // encoding:12 usage:0 baseType:eq(e(.SingleAtomic value)e(.SingleCluster fields)) dv:false generic:false
- e(.Double)  // encoding:12 usage:0 baseType:eq(e(.DoubleAtomic value)e(.DoubleCluster fields)) dv:false generic:false
+ e(.Int8)  // encoding: 9 usage:0 baseType:c(e(bb(8 S2cInt))) dv:false generic:false
+ e(.Int16)  // encoding: 9 usage:0 baseType:c(e(bb(16 S2cInt))) dv:false generic:false
+ e(.Int32)  // encoding: 9 usage:0 baseType:c(e(bb(32 S2cInt))) dv:false generic:false
+ e(.Int64)  // encoding: 9 usage:0 baseType:c(e(bb(64 S2cInt))) dv:false generic:false
+ e(.UInt8)  // encoding: 8 usage:0 baseType:c(e(bb(8 UInt))) dv:false generic:false
+ e(.UInt16)  // encoding: 8 usage:0 baseType:eq(e(c(e(bb(16 UInt))))e(c(e(.UInt8 lo)e(.UInt8 hi)) UInt8s)) dv:false generic:false
+ e(.UInt32)  // encoding: 8 usage:0 baseType:eq(e(c(e(bb(32 UInt))))e(c(e(.UInt16 lo)e(.UInt16 hi)) UInt16s)) dv:false generic:false
+ e(.UInt64)  // encoding: 8 usage:0 baseType:eq(e(c(e(bb(64 UInt))))e(c(e(.UInt32 lo)e(.UInt32 hi)) UInt32s)) dv:false generic:false
+ e(.Single)  // encoding:11 usage:0 baseType:eq(e(.SingleAtomic value)e(.SingleCluster fields)) dv:false generic:false
+ e(.Double)  // encoding:11 usage:0 baseType:eq(e(.DoubleAtomic value)e(.DoubleCluster fields)) dv:false generic:false
  e(.ComplexSingle)  // encoding: 1 usage:0 baseType:c(e(.Single real)e(.Single imaginary)) dv:false generic:false
  e(.ComplexDouble)  // encoding: 1 usage:0 baseType:c(e(.Double real)e(.Double imaginary)) dv:false generic:false
  e(.String)  // encoding: 3 usage:0 baseType:.Utf8Array1D dv:false generic:false
- e(.Utf8Char)  // encoding:14 usage:0 baseType:c(e(bb(8 <TODO>))) dv:false generic:false
- e(.Utf32Char)  // encoding:10 usage:0 baseType:.Int32 dv:false generic:false
+ e(.Utf8Char)  // encoding:13 usage:0 baseType:c(e(bb(8 <TODO>))) dv:false generic:false
+ e(.Utf32Char)  // encoding: 9 usage:0 baseType:.Int32 dv:false generic:false
  e(.Timestamp)  // encoding: 1 usage:0 baseType:c(e(.Int64 seconds)e(.UInt64 fraction)) dv:false generic:false
- e(.Type)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
- e(.TypeManager)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.Type)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.TypeManager)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false
  e(.VI)  // encoding: 3 usage:0 baseType:.VirtualInstrument dv:false generic:false
  e(.Clump)  // encoding: 1 usage:0 baseType:c(e(.InstructionBlock CodeStart)e(.DataPointer Next)e(.Int64 WakeUpInfo)e(.DataPointer Owner)e(.DataPointer NextWaitingCaller)e(.DataPointer Caller)e(.Instruction SavePC)e(.Int32 FireCount)e(.Int32 ShortCount)e(.Int32 WaitCount)e(.Observer Observer)e(.Observer Observer)) dv:false generic:false
- e(.BranchTarget)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
- e(.Instruction)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
- e(.InstructionBlock)  // encoding:15 usage:0 baseType:cdp(.Instruction) dv:false generic:false
- e(.Array)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
- e(.Object)  // encoding:15 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.BranchTarget)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.Instruction)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.InstructionBlock)  // encoding:14 usage:0 baseType:cdp(.Instruction) dv:false generic:false
+ e(.Array)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false
+ e(.Object)  // encoding:14 usage:0 baseType:.DataPointer dv:false generic:false

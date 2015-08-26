@@ -107,34 +107,34 @@ class TypedArray1D;
 #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
     
-// EncodingEnum defines the base set of encodings used to annotate the underlying semantics
-// of a low level bit block. It is the key for serialization to and from binary, ASCII
-// or other formats.
+// EncodingEnum defines the base set of encodings that describe the symantics
+// of bits in bitblock. Some good background information icludes:
+// * Integer encodings: https://en.wikipedia.org/wiki/Signed_number_representations
 enum EncodingEnum {
     kEncoding_None = 0,
-    // Aggregates and References
-    kEncoding_Cluster,
-    kEncoding_ParameterBlock,
-    kEncoding_Array,
-    kEncoding_Generic,
-    kEncoding_Stream,           // Like array but can't assume random acess.
     
-    //Bitblock
+    // Aggregates and References
+    kEncoding_Cluster,          // Inlined aggregate of other strucures
+    kEncoding_ParameterBlock,   // Like cluster except each element is a poionter to the sub type
+    kEncoding_Array,            // Inline or reference to array of a sub stype
+    kEncoding_Generic,          // Open, place-holder definition used for genetic types
+    kEncoding_Stream,           // TBD Like array but can't assume random acess
+    
+    //Bitblock encodings
     kEncoding_Boolean,
-    kEncoding_Bits,
-    kEncoding_Enum,
-    kEncoding_UInt,
-    kEncoding_SInt2C,           // 2s compliment
-    kEncoding_IntDim,           // Like SInt2C, also includes variable and sentinels (#n, *) 
-    kEncoding_IEEE754Binary,
-    kEncoding_Ascii,
-    kEncoding_Unicode,
-    kEncoding_Pointer,          // Some systems may have more than one pointer type cdoe/data
+    kEncoding_Enum,             // TBD
+    kEncoding_UInt,             // Simple non negative whole numbers
+    kEncoding_S2CInt,           // Signed 2s compliment integer (AKA signed)
+    kEncoding_DimInt,           // Like S2CInt, also includes variable and sentinels ($n, *)
+    kEncoding_IEEE754Binary,    // https://en.wikipedia.org/wiki/IEEE_floating_point
+    kEncoding_Ascii,            // 7-BIT Ascii
+    kEncoding_Unicode,          // UTF-8, UTF-16, UTF-32 based on block size
+    kEncoding_Pointer,          // platform specific data memory address
     kEncoding_Q,                // 0.bbb fixed point
     kEncoding_Q1,               // 1.bbb fixed point
-    kEncoding_IntBiased,
-    kEncoding_ZigZag,           // For future use
-    kEncoding_SInt1C,           // In case we ever run on a CDC 170 Cyber mainframe ;)
+    kEncoding_BiasedInt,        // Used for IEEE754 exponents
+    kEncoding_ZigZagInt,        // Protocol buffers
+    kEncoding_S1CInt,           // In case we ever run on a CDC 170 Cyber mainframe ;)
     
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
