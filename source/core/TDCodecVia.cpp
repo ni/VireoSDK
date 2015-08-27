@@ -251,8 +251,9 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     
     Boolean bTypeFunction = _string.ComparePrefix('(');
     if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
-        // Eat the dot prefix if it exists.
+        // Eat the deprecated dot prefix if it exists.
         typeFunction.EatChar('.');
+        
         type = _typeManager->FindType(&typeFunction);
         if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
@@ -322,6 +323,11 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     TokenTraits tt = expressionToken.ClassifyNextToken();
     ConstCStr tName = null;
     TypeRef literalsType = null;
+    
+    if (tt == TokenTraits_WildCard) {
+        // The wild card has no value parse so just return it.
+        return _typeManager->FindType(tsWildCard);
+    }
     
     if (patternType) {
         EncodingEnum enc = patternType->BitEncoding();
@@ -2098,8 +2104,8 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(StaticTypeAndData) o(String))")
 #endif
     DEFINE_VIREO_FUNCTION(FromString, "p(i(String) o(StaticTypeAndData) o(String))")
-    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(String) i(Int32) i(.*) o(Int32) o(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(.*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo

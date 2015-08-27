@@ -9,10 +9,10 @@ Since textual languages are read sequentially it is easy to describe sequential 
 // Parallel.via - Do two things at once
 define (Parallel dv(.VirtualInstrument (
      c(
-        e(v(.Int32 1000)  oneThousand)
-        e(v(.Int32 500)  fiveHundred)
-        e(v(.String 'Pat you head.') sHead)
-        e(v(.String 'Rub your tummy.') sTummy)
+        e(v(Int32 1000)  oneThousand)
+        e(v(Int32 500)  fiveHundred)
+        e(v(String 'Pat you head.') sHead)
+        e(v(String 'Rub your tummy.') sTummy)
     ) 
     clump(              // Clump 0 (the root clump)
          Trigger(1)     // Trigger Clump #1        

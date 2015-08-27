@@ -13,12 +13,12 @@ define (Calc  dv(.VirtualInstrument  (
     c(
         // Each element field in the cluster is a type defiition.
         // Some have non zero default values.
-        e(dv(.Int32 6)  i)
-        e(dv(.Int32 7)  j)
-        e(.Int32  k)
-        e(dv(.Double 6.0)  x)
-        e(dv(.Double 7.0)  y)
-        e(.Double  z)
+        e(dv(Int32 6)  i)
+        e(dv(Int32 7)  j)
+        e(Int32  k)
+        e(dv(Double 6.0)  x)
+        e(dv(Double 7.0)  y)
+        e(Double  z)
     )
     
     // Specify a clump of instructions. Clumps are raw data used in the VIs definition.
@@ -87,25 +87,25 @@ Internal types used in Vireo also have type definitions. Though the details are 
 define (VirtualInstrument 
     a(c(                               
         e(.ExecutionContext Context)   
-        e(a(.*) Params)             
-        e(a(.*) Locals)              
-        e(a(.Clump *) Clumps)     // An array of clumps, see definition below.      
-        e(.Int32 lineNumberBase)    // Internal fields for maping back to souce code    
-        e(.SubString ClumpSource)
+        e(a(*) Params)             
+        e(a(*) Locals)              
+        e(a(Clump *) Clumps)     // An array of clumps, see definition below.      
+        e(Int32 lineNumberBase)    // Internal fields for maping back to souce code    
+        e(SubString ClumpSource)
     ))
 )
 
 define (VIClump
     c(                                     
-        e(.InstructionBlock CodeStart)         
-        e(.DataPointer Next)                
-        e(.DataPointer Owner)               
-        e(.DataPointer NextWaitingCaller)   
-        e(.DataPointer Caller)              
-        e(.Instruction SavePC)              
-        e(.Int64 WakeUpInfo)                
-        e(.Int32 FireCount)                 
-        e(.Int32 ShortCount)                
+        e(InstructionBlock CodeStart)         
+        e(DataPointer Next)                
+        e(DataPointer Owner)               
+        e(DataPointer NextWaitingCaller)   
+        e(DataPointer Caller)              
+        e(Instruction SavePC)              
+        e(Int64 WakeUpInfo)                
+        e(Int32 FireCount)                 
+        e(Int32 ShortCount)                
     )
 )
 ~~~
@@ -118,13 +118,13 @@ The signatures for internal functions are also defined as standard types. The ty
 ~~~
 // The print function takes one parameter, This is the raw parameter block definition
 //
-//            p(i(.StaticTypeAndData))
+//            p(i(StaticTypeAndData))
 // 
 // To bind the type to an actual function it will be part of the following:
 
 DEFINE_VIREO_BEGIN(FileSystem)
     ... 
-    DEFINE_VIREO_FUNCTION(Print, "p(i(.StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(Print, "p(i(StaticTypeAndData))");
     ...
 DEFINE_VIREO_END()
 ~~~
@@ -136,7 +136,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     ...
     // If many functions take a common signature then the signare can be it own named
     // type. The Generic binOp type takes three anythings.
-    DEFINE_VIREO_TYPE(GenericBinOp, "p(i(.*) i(.*) o(.*))")
+    DEFINE_VIREO_TYPE(GenericBinOp, "p(i(*) i(*) o(*))")
     ...
     // The simple "Mul" function is generic. This means the function will be called at
     // load time and it will generate the appropriate runtime instruction. It is up

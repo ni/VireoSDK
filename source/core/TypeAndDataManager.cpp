@@ -973,7 +973,7 @@ AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManagerRef tm)
 void AggregateAlignmentCalculator::Finish()
 {
     // Round up the size of the aggregate to a multiple the largest alignment requirement
-    // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
+    // For example, (Double Int8) is size 16, not 9. Note the padding if added.
     AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
     IncludesPadding |= AggregateSize != _aqOffset;
 }
@@ -2323,7 +2323,7 @@ struct AllocationStatistics {
     Int64   _totalAllocated;
     Int64   _maxAllocated;
 };
-#define AllocationStatistics_TypeString "c(e(.Int64 totalAllocations) e(.Int64 totalAllocated) e(.Int64 maxAllocated) )"
+#define AllocationStatistics_TypeString "c(e(Int64 totalAllocations) e(Int64 totalAllocated) e(Int64 maxAllocated) )"
 
 VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, AllocationStatistics)
 {

@@ -91,7 +91,7 @@ DEFINE_VIREO_BEGIN(Linx)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 
     // Linx Handle
-    DEFINE_VIREO_TYPE(LinxHandle, ".Int32")
+    DEFINE_VIREO_TYPE(LinxHandle, "Int32")
     DEFINE_VIREO_FUNCTION(Open, "p(o(LinxHandle))");
     DEFINE_VIREO_FUNCTION(Close, "p(i(LinxHandle))");
 

@@ -29,12 +29,12 @@ class VIClump;
 //! The VIA definition for a VirtualInstrument. Must match the C++ definition.
 #define VI_TypeString               \
 "a(c(                               \
-    e(.TypeManager TypeManager)     \
-    e(a(.*) Params)                 \
-    e(a(.*) Locals)                 \
-    e(a(.Clump *) Clumps)           \
-    e(.Int32 LineNumberBase)        \
-    e(.SubString ClumpSource)       \
+    e(TypeManager TypeManager)     \
+    e(a(*) Params)                 \
+    e(a(*) Locals)                 \
+    e(a(Clump *) Clumps)           \
+    e(Int32 LineNumberBase)        \
+    e(SubString ClumpSource)       \
 ))"
 
 //------------------------------------------------------------
@@ -79,19 +79,19 @@ public:
 //------------------------------------------------------------
 //! The VIA definition for a Clump. Must match the C++ definition.
 #define Clump_TypeString              \
-"c(                                     \
-    e(.InstructionBlock CodeStart)      \
-    e(.DataPointer Next)                \
-    e(.Int64 WakeUpInfo)                \
-    e(.DataPointer Owner)               \
-    e(.DataPointer NextWaitingCaller)   \
-    e(.DataPointer Caller)              \
-    e(.Instruction SavePC)              \
-    e(.Int32 FireCount)                 \
-    e(.Int32 ShortCount)                \
-    e(.Int32 WaitCount)                 \
-    e(.Observer Observer)               \
-    e(.Observer Observer)               \
+"c(\
+    e(InstructionBlock CodeStart)\
+    e(DataPointer Next)\
+    e(Int64 WakeUpInfo)\
+    e(DataPointer Owner)\
+    e(DataPointer NextWaitingCaller)\
+    e(DataPointer Caller)\
+    e(Instruction SavePC)\
+    e(Int32 FireCount)\
+    e(Int32 ShortCount)\
+    e(Int32 WaitCount)\
+    e(Observer Observer)\
+    e(Observer Observer)\
 )"
 
 // Initially all clump had the ability to wait on timers, now that has grown to

@@ -619,7 +619,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(String) o(String))")
     DEFINE_VIREO_FUNCTION(StringViaDecode, "p(i(String) o(String))")
     // StringConcatenate input can be string, or array of string.
-    DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(VarArgCount) o(String) i(.*))" )
+    DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(VarArgCount) o(String) i(*))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(BranchTarget) i(String) i(String))");
     DEFINE_VIREO_FUNCTION(BranchIfLTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
