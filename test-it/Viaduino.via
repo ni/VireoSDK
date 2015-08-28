@@ -2,7 +2,7 @@
 // to generate source for building a static linked version of the run time
 // instructions like InstructionType require the VIREO_INSTRUCTION_REFLECTION flag
 
-define(ConverterToStaticLinkCPP dv(.VirtualInstrument (
+define(ConverterToStaticLinkCPP dv(VirtualInstrument (
     Params: c(
             i(VirtualInstrument vi)
         )
@@ -120,14 +120,14 @@ define(ConverterToStaticLinkCPP dv(.VirtualInstrument (
 
 // =================================================================
 
-define(number_two dv(.Int32 2))
-define(global_int var(.Int32 2))
+define(number_two dv(Int32 2))
+define(global_int var(Int32 2))
 
 define(Int32Point
   dv(
     c(
-        e(.Int32 x)
-        e(.Int32 y)
+        e(Int32 x)
+        e(Int32 y)
     )
     (4 5)
   )
@@ -136,27 +136,27 @@ define(Int32Point
 define(DoublePoint
   dv(
     c(
-        e(.Double x)
-        e(.Double y)
+        e(Double x)
+        e(Double y)
     )
     (3.14 6.28)
   )
 )
 
-define(HelloWorld dv(.VirtualInstrument (
+define(HelloWorld dv(VirtualInstrument (
     c(
         e(Int32<6>      vInt32)
         e(Boolean<true>    vBool)
-        e(dv(.UInt8     1)      vUInt8)
-        e(dv(.Int8      2)      vInt8)
-        e(dv(.UInt16    3)      vUInt16)
-        e(dv(.Int16     4)      vInt16)
-        e(dv(.UInt32    5)      vUInt32)
-        e(dv(.Int32     6)      vInt32)
-        e(dv(.Single  3.14)     vSingle)
-        e(dv(.Double  6.28)     vDouble)
-        e(dv(.ComplexSingle  (3.14 -3.14))     vComplexSingle)
-        e(dv(.ComplexDouble  (6.28 -6.28))     vComplexDouble)
+        e(dv(UInt8     1)      vUInt8)
+        e(dv(Int8      2)      vInt8)
+        e(dv(UInt16    3)      vUInt16)
+        e(dv(Int16     4)      vInt16)
+        e(dv(UInt32    5)      vUInt32)
+        e(dv(Int32     6)      vInt32)
+        e(dv(Single  3.14)     vSingle)
+        e(dv(Double  6.28)     vDouble)
+        e(dv(ComplexSingle  (3.14 -3.14))     vComplexSingle)
+        e(dv(ComplexDouble  (6.28 -6.28))     vComplexDouble)
     )
     clump (
         // Try address from different types of symbols
