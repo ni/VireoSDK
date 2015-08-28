@@ -993,6 +993,11 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
 //----------------------------------------------------------------------------------------------------
 Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
 {
+    if (argument == null)
+        return false;
+
+    TypeRef argumentType = argument->_paramType;
+    
     SubString in(inputString);
     TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
@@ -1009,9 +1014,8 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     truncateInput.Append(&in);
     char* inpBegin = truncateInput.BeginCStr();
     char* endPointer = null;
-    TypeRef argumentType = argument->_paramType;
-    EncodingEnum encoding = argumentType->BitEncoding();
-    switch (encoding) {
+    
+    switch (argumentType->BitEncoding()) {
     case kEncoding_UInt: {
         IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
@@ -1239,7 +1243,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
  * The return value is the offset of the input string after the scan.
  * Several Special Scan rules:
  * */
-Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData arguments[])
+Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticTypeAndData arguments[])
 {
     // the rules for ScanString in Labview is a subset of the sscanf.
     // p will be treated as f;
@@ -1279,12 +1283,13 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
             }
             TempStackCString formatString;
             IntIndex endPointer;
-            while (!parseFinished){
+            while (!parseFinished) {
+                StaticTypeAndData *pArg = (argumentIndex < argCount) ? &(arguments[argumentIndex]) : null;
                 parseFinished = true;
                 switch (fOptions.FormatChar) {
                 case 'b': case 'B':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
@@ -1296,7 +1301,7 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
                 case 'o': case 'u':
                 case 'x': case 'X':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
                     if  (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
@@ -1308,7 +1313,7 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
                 case 'e': case 'E':
                 case 'f': case 'F':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
@@ -1318,7 +1323,7 @@ Int32 FormatScan(SubString *input, SubString *format, StaticTypeAndData argument
                 break;
                 case 's': case '[':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, &(arguments[argumentIndex]), &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
@@ -1490,7 +1495,7 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
     SubString input= inputString->MakeSubStringAlias();
-    FormatScan(&input, &format, &Value);
+    FormatScan(&input, &format, 1, &Value);
     if (remainingString!= NULL) {
         remainingString->Resize1D(input.Length());
         TypeRef elementType = remainingString->ElementType();
@@ -1516,7 +1521,12 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    FormatScan(&input, &format, arguments);
+    
+    // Calculate number of parameters.
+    // Each scan parameters has both type and data.
+    Int32 argCount = (_ParamVarArgCount() - 5) / 2;
+    FormatScan(&input, &format, argCount, arguments);
+    
     _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();
@@ -2084,7 +2094,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         while ((next = input.FindFirstMatch(&delimiter, split, false))>-1) {
             elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
             Value._pData = array->BeginAtND(rank, elemIndex);
-            FormatScan(&elemString, &format, &Value);
+            FormatScan(&elemString, &format, 1, &Value);
             split=next+delimiter.Length();
             elemIndex[0]++;
         }
@@ -2092,7 +2102,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             elemString.AliasAssign(input.Begin()+split, input.End());
             if (elemString.Length()>0) {
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, &Value);
+                FormatScan(&elemString, &format, 1, &Value);
             }
         }
     } else if (rank == 2) {
@@ -2110,7 +2120,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                 elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, &Value);
+                FormatScan(&elemString, &format, 1, &Value);
                 split=next+delimiter.Length();
                 elemIndex[0]++;
             }
@@ -2118,7 +2128,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 line.AliasAssign(line.Begin()+split, line.End());
                 if (line.Length()>0) {
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&line, &format, &Value);
+                    FormatScan(&line, &format, 1, &Value);
                 }
             }
             lineIndex++;
@@ -2154,7 +2164,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                     elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&elemString, &format, &Value);
+                    FormatScan(&elemString, &format, 1, &Value);
                     split=next+delimiter.Length();
                     elemIndex[0]++;
                 }
@@ -2162,7 +2172,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                     line.AliasAssign(line.Begin()+split, line.End());
                     if (line.Length()>0) {
                         Value._pData = array->BeginAtND(rank, elemIndex);
-                        FormatScan(&line, &format, &Value);
+                        FormatScan(&line, &format, 1, &Value);
                     }
                 }
             }

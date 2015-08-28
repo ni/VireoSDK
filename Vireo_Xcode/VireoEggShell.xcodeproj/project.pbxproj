@@ -226,11 +226,7 @@
 		47CAD28E17FDFD0100DDDB46 /* BranchInstructions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BranchInstructions.via; path = "../test-it/BranchInstructions.via"; sourceTree = "<group>"; };
 		47CAD28F17FDFD0100DDDB46 /* BranchErrors.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BranchErrors.via; path = "../test-it/BranchErrors.via"; sourceTree = "<group>"; };
 		47CAD29017FDFD0100DDDB46 /* BooleanFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BooleanFunctions.via; path = "../test-it/BooleanFunctions.via"; sourceTree = "<group>"; };
-		47CAD29317FDFD2D00DDDB46 /* vc2012.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vc2012.bat; path = "../make-it/vc2012.bat"; sourceTree = "<group>"; };
-		47CAD29417FDFD2D00DDDB46 /* vc2010.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vc2010.bat; path = "../make-it/vc2010.bat"; sourceTree = "<group>"; };
 		47CAD29517FDFD4200DDDB46 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "../make-it/Makefile"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.sh; };
-		47CAD29617FDFD4200DDDB46 /* make.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = make.bat; path = "../make-it/make.bat"; sourceTree = "<group>"; };
-		47CAD29717FDFD4200DDDB46 /* HelloWorld.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloWorld.via; path = "../make-it/HelloWorld.via"; sourceTree = "<group>"; };
 		47D1884118A93EC9008AB15D /* CopyingVIs.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CopyingVIs.via; path = "../test-it/CopyingVIs.via"; sourceTree = "<group>"; };
 		47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CalVIMultipleTimesObserveOldValues.via; path = "../test-it/CalVIMultipleTimesObserveOldValues.via"; sourceTree = "<group>"; };
 		47D1AE5518122F5F003B850F /* Generics.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Generics.via; path = "../test-it/Generics.via"; sourceTree = "<group>"; };
@@ -620,10 +616,6 @@
 			children = (
 				475317961AC9EA050030094A /* New Group */,
 				47CAD29517FDFD4200DDDB46 /* Makefile */,
-				47CAD29617FDFD4200DDDB46 /* make.bat */,
-				47CAD29717FDFD4200DDDB46 /* HelloWorld.via */,
-				47CAD29317FDFD2D00DDDB46 /* vc2012.bat */,
-				47CAD29417FDFD2D00DDDB46 /* vc2010.bat */,
 			);
 			name = "Make-It";
 			sourceTree = "<group>";
@@ -1063,7 +1055,7 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"VIREO_LEAN=1",
 					"VIREO_STDIO=1",
