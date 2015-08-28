@@ -952,7 +952,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         if (!found) {
                             return ;
                         }
-                        if (baseOffset == null){
+                        if (baseOffset == null) {
                             elementData = baseOffset ;
                             return ;
                         }
@@ -1045,7 +1045,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
             }
         }
         return false;
-    } else if (_string.EatChar('[')){
+    } else if (_string.EatChar('[')) {
         // labview could use the path as the index integer to access the array element.
         // only support 1d array
         IntMax arrayIndex = -1;

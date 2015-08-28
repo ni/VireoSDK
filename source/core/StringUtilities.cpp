@@ -192,7 +192,7 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
                 Int32 secondByte = *next + 1;
                 Int32 code = firstByte * 0x100 + secondByte;
                 // it only support cluster some extending LATIN character
-                if (code >= 0xCC80 && code <= 0xCDAF ){
+                if (code >= 0xCC80 && code <= 0xCDAF ) {
                     characterEnd = false;
                 } else {
                     characterEnd = true;
@@ -621,11 +621,11 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
     while (ss.ReadRawChar(&c)) {
         if (c == '+') {
             decodedC = ' ';
-        } else if (c!= '%'){
+        } else if (c!= '%') {
             decodedC = c;
         } else {
             Int32 value = 0;
-            if (ss.ReadHex(&value)){
+            if (ss.ReadHex(&value)) {
                 decodedC = (Utf8Char)value;
             } else {
                 decodedC = '%';
@@ -870,7 +870,7 @@ void SubString::EatLeadingSpaces()
 //------------------------------------------------------------
 void SubString::EatWhiteSpaces()
 {
-    while (_begin < _end){
+    while (_begin < _end) {
         if(IsSpaceChar(*_begin)) {
             _begin++;
         } else {

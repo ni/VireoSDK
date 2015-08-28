@@ -316,7 +316,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 parseFinished = true;
             }
 
-            while (!parseFinished){
+            while (!parseFinished) {
                 parseFinished = true;
                 switch (fOptions.FormatChar)
                 {
@@ -552,7 +552,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (fOptions.Significant == 0) {
                                 fOptions.Significant++;
                             }
-                            if (fOptions.Significant > 0){
+                            if (fOptions.Significant > 0) {
                                 fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-strlen(fOptions.NumericLength));
                                 tempFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
                                 length = snprintf(formattedNumber, kTempCStringLength, "%lld", (long long)intValue);
@@ -828,7 +828,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[siIndex] != '0' ){
+                if (siPrefixesTable[siIndex] != '0' ) {
                     tempNumber[baseIndex] = siPrefixesTable[siIndex];
                     baseIndex ++;
                 }
@@ -857,7 +857,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[siIndex] != '0' ){
+                if (siPrefixesTable[siIndex] != '0' ) {
                     tempNumber[baseIndex] = siPrefixesTable[siIndex];
                     baseIndex ++;
                 }
@@ -1002,7 +1002,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
         IntIndex leadingSpace = 0;
-        for (IntIndex i =0; i< in.Length(); i++) {
+        for (IntIndex i = 0; i< in.Length(); i++) {
             if (isspace(*(in.Begin()+i))) {
                 leadingSpace++;
             } else {
@@ -1141,7 +1141,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 if (!found) {
                     return false;
                 } else {
-                    if (i==in.Length()){
+                    if (i==in.Length()) {
                         // reach the end of the input
                         i--;
                     }
@@ -1157,7 +1157,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 charSet->AliasAssign(charSet->Begin()+1,charSet->End()-1);
                 if (charSet->Length() == 0) {
                     return false;
-                } else if (*((char *)charSet->Begin()) == '^'){
+                } else if (*((char *)charSet->Begin()) == '^') {
                     if (charSet->Length() == 1) {
                         return false;
                     } else {
@@ -1179,7 +1179,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                         if (!found) {
                             return false;
                         } else {
-                            if (i==in.Length()){
+                            if (i==in.Length()) {
                             // reach the end of the input
                                 i--;
                             }
@@ -1209,7 +1209,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                     if (!found) {
                         return false;
                     } else {
-                        if (i==in.Length()){
+                        if (i==in.Length()) {
                         // reach the end of the input
                             i--;
                         }
@@ -1258,8 +1258,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
     Utf8Char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
-    while (canScan && input->Length()>0 && f.ReadRawChar(&c))
-    {
+    while (canScan && input->Length()>0 && f.ReadRawChar(&c)) {
         if (isspace(c)) {
             // eat all spaces
             const Utf8Char* begin = input->Begin();
@@ -1421,7 +1420,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
                     tempformat.Append(&format);
                     DefaultFormatCode(1,&Value, &tempformat);
                     break;
-                } else if (fOptions.ConsumeArgument){
+                } else if (fOptions.ConsumeArgument) {
                     remainingFormat.AliasAssign(format.Begin(), format.End());
                     format.AliasAssign(formatString->Begin(), format.Begin());
                     tempformat.Append(&format);
@@ -1435,6 +1434,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     Format(&format, 1, &Value, output);
     output->AppendSubString(&remainingFormat);
 }
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
     StringRef output = _Param(0);
@@ -1938,7 +1938,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
     STACK_VAR(String, temp);
     if (dimension == 1) {
         // generate the value of this 1d array as a row.
-        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++){
+        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++) {
             index[dimension-1]=i;
             StaticTypeAndData arrayElem;
             arrayElem._paramType = array->ElementType();
@@ -1950,7 +1950,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             output->Append(temp.Value);
         }
         output->AppendCStr("\n");
-    } else if (dimension >= 2){
+    } else if (dimension >= 2) {
         if (rank >=3 && dimension ==2 && array->DimensionLengths()[1]>0) {
             // generate the first index line
             output->AppendCStr("[");
@@ -1965,7 +1965,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
             output->AppendCStr("]");
             output->AppendCStr("\n");
         }
-        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++){
+        for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++) {
             index[dimension-1]=i;
             for (IntIndex j=0; j<dimension-1;j++) {
                 index [j] = 0;
@@ -2065,7 +2065,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 if (rowlen>dimensionLength[0]) {
                     dimensionLength[0] = rowlen;
                 }
-                if (lineIndex>dimensionLength[1]){
+                if (lineIndex>dimensionLength[1]) {
                     dimensionLength[1] = lineIndex;
                 }
             }
