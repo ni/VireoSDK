@@ -292,7 +292,8 @@ public:
     Int32 StringLength();
     
     //! Remove quotes (single or double) from the ends of a string
-    void TrimQuotedString();
+    //! based on previously determined token trait.
+    void TrimQuotedString(TokenTraits tt);
     
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };

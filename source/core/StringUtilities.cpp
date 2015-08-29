@@ -888,13 +888,15 @@ Int32 SubString::EatCharsByTrait(UInt8 trait)
     return (Int32)(_begin - initialBegin);
 }
 //------------------------------------------------------------
-void SubString::TrimQuotedString()
+void SubString::TrimQuotedString(TokenTraits tt)
 {
-    if (Length() >= 3 && *_begin == '@' ) {
-        _begin  += 2;
-        _end    -= 1;
-    } else if (Length() >=2) {
+    // Warning: Trust TokenTrait information from ReadToken
+    // So that checking is not done back to back.
+    if (tt == TokenTraits_String && (Length() >= 2)) {
         _begin  += 1;
+        _end    -= 1;
+    } else if (tt == TokenTraits_VerbatimString && (Length() >= 3)) {
+        _begin  += 2;  // remove '@' as well.
         _end    -= 1;
     }
 }

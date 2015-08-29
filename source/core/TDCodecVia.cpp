@@ -132,10 +132,19 @@ NIError TDViaParser::ParseREPL()
                    ) {
             ParseType();
         } else {
-            _string.ReadToken(&command);
+            TokenTraits tt = _string.ReadToken(&command);
             if (command.CompareCStr("exit")) {
                 _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
                 return kNIError_kResourceNotFound;
+            } else if ((tt == TokenTraits_SymbolName || tt == TokenTraits_String )
+                        && _string.EatChar(':')) {
+                // A JSONish style REPL level definition. Keys can be unquoted.
+                command.TrimQuotedString(tt);
+                TypeRef type = ParseType();
+                TypeRef namedType = _typeManager->Define(&command, type);
+                if (!namedType) {
+                    LOG_EVENT(kHardDataError, "Can't define symbol");
+                }
             } else {
                 LOG_EVENT(kHardDataError, "bad egg");
                 break;
@@ -161,8 +170,8 @@ TypeRef TDViaParser::ParseRequire()
     }
 
     SubString moduleName;
-    _string.ReadToken(&moduleName);
-    moduleName.TrimQuotedString();
+    TokenTraits tt = _string.ReadToken(&moduleName);
+    moduleName.TrimQuotedString(tt);
     
     if (!_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
@@ -700,14 +709,14 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
-        TokenTraits tokenTrait = _string.ReadToken(&token);
-        if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
+        TokenTraits tt = _string.ReadToken(&token);
+        if ((rank == 1) && ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
-            token.TrimQuotedString();
+            token.TrimQuotedString(tt);
             const Utf8Char *pBegin = token.Begin();
             Int32 charCount = token.Length();
             
-            if (tokenTrait == TokenTraits_String) {
+            if (tt == TokenTraits_String) {
                 // Adjust count for escapes
                 charCount = token.LengthAferProcessingEscapes();
                 pArray->Resize1D(charCount);
@@ -880,13 +889,15 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Ascii:
         case kEncoding_Unicode:
-            _string.ReadToken(&token);
-            token.TrimQuotedString();
+            {
+            TokenTraits tt = _string.ReadToken(&token);
+            token.TrimQuotedString(tt);
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
             } else {
                 LOG_EVENT(kSoftDataError, "Scalar that is unicode");
                 // TODO support escaped chars, more error checking
+            }
             }
             break;
         case kEncoding_Enum:
