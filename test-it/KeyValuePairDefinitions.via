@@ -1,0 +1,39 @@
+// REPL level definitions can be be formatted as
+// Key-Value pairs as is they are elements as a cluster.
+// at a REPL level parser they are treated as symbol
+// table definitions in stead of fields.
+
+
+// Simple symbol name is prefered
+message1: "Hello, non-quoted "
+
+"": "Hello, empty symbol "
+
+// Suport JSON syntax
+"message2": "Hello, double-quoted"
+
+// Suport single quotes as well.
+'message3': "Hello, single-quoted"
+
+topVI: VI<(
+    clump(
+        Println("Hello, sky. I can fly.")
+        Println(message1)
+        Println(message2)
+        Println(message3)
+    )
+)>
+
+// REPL loops are at the root of each context.
+subContext: context(
+    innerVI: VI<(
+        clump(
+            Println("Hello InnerVI")
+        )
+    )>
+    start(innerVI)
+)
+
+// TODO drilling into a context is in a stash.
+// start(subContext.innerVI)
+start(topVI)

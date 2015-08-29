@@ -756,11 +756,98 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
     return false;
 }
 //------------------------------------------------------------
-//! Parse an element path by name. Base class knows nothing about sub elements.
+//! Parse an element path by name. Base class only knows
+//! about structural attributes.
 TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    *end = null;
-    return null;
+    // TODO this is a bit experimental.
+    // Its important to note that drilling down structureal attributes
+    // is not generally useful. For example
+    //
+    // x.$BaseType.$TopAQSize
+    //
+    // Does not yield the TopAQSize of X's BaseType
+    // if Yields the TopAQSize of Type.
+    
+    if (path->Length() == 0) {
+        *end = start;
+        return this;
+    }
+    
+    TypeRef subType = null;
+    if (path->ComparePrefix(*tsMetaIdPrefix)) {
+        SubString pathHead;
+        SubString pathTail;
+        path->SplitString(&pathHead, &pathTail, '.');
+        if (pathHead.CompareCStr("$TopAQSize")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsInt32Type);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Int32* pValue = (Int32*) cdt->Begin(kPAInit);
+            *pValue = this->TopAQSize();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$Rank")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsInt32Type);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Int32* pValue = (Int32*) cdt->Begin(kPAInit);
+            *pValue = this->Rank();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$IsFlat")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsBooleanType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Boolean* pValue = (Boolean*) cdt->Begin(kPAInit);
+            *pValue = this->IsFlat();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$Type")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsTypeType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            TypeRef* pValue = (TypeRef*) cdt->Begin(kPAInit);
+            *pValue = this;
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$BaseType")) {
+            // Where is the storage allocated?
+            subType = this->BaseType()->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+            /*
+             subType = THREAD_TADM()->FindType(tsTypeType);
+             DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+             TypeRef* pValue = (TypeRef*) cdt->Begin(kPAInit);
+             *pValue = this->BaseType();
+             cdt = cdt->FinalizeDVT();
+             *end = cdt->Begin(kPARead);
+             */
+        } else if (pathHead.CompareCStr("$Name")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsStringType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            StringRef* pValue = (StringRef*) cdt->Begin(kPAInit);
+            SubString name = this->Name();
+            (*pValue)->AppendSubString(&name);
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$ElementName")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsStringType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            StringRef* pValue = (StringRef*) cdt->Begin(kPAInit);
+            SubString name = this->ElementName();
+            (*pValue)->AppendSubString(&name);
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        }
+        
+        if (subType && pathTail.Length()) {
+            subType = subType->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+        }
+    }
+    
+    return subType;
 }
 //------------------------------------------------------------
 // WrappedType
@@ -782,6 +869,17 @@ WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
     _encoding       = _wrapped->BitEncoding();
     _isBitLevel     = _wrapped->IsBitLevel();
     _pointerType    = _wrapped->PointerType();
+}
+//------------------------------------------------------------
+TypeRef WrappedType::GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+{
+    // Names that start with a '$' may be structural attributes handled by TypeCommon.
+    if (name->ComparePrefix(*tsMetaIdPrefix)) {
+        TypeRef subType = TypeCommon::GetSubElementAddressFromPath(name, start, end, allowDynamic);
+        if (subType)
+            return subType;
+    }
+    return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic);
 }
 //------------------------------------------------------------
 // ElementType
@@ -836,10 +934,10 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 {
     *end = null;
     
-    if (path->Length() == 0) {
-        *end = start;
-        return this;
-    }
+    // Check for strucutural attributes
+    TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
+    if (type)
+        return type;
     
     SubString pathHead;
     SubString pathTail;
@@ -1451,6 +1549,13 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
             subType = subType->GetSubElementAddressFromPath(path, *end, end, allowDynamic);
         }
     } else {
+        TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
+        if (type)
+            return type;
+        
+        // Check DynamicType, element Type, perhaps dynamic type is not possible?
+        // it is if allow dynamic is true, byt where to store it?        
+
         // Split the path into a head & tail
         SubString pathHead;
         SubString pathTail;

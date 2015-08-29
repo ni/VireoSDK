@@ -361,7 +361,8 @@ public:
 };
 
 //------------------------------------------------------------
-//! A class to help dynamic classes/structures that end with an array whose size is set at construction time.
+//! A class to help dynamic classes/structures that end with an
+// array whose size is set at construction time.
 template <class T>
 class InlineArray
 {
@@ -560,8 +561,7 @@ public:
     virtual TypeRef BaseType()                          { return _wrapped; }
     virtual Int32   SubElementCount()                   { return _wrapped->SubElementCount(); }
     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped->GetSubElement(index); }
-    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
-        { return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic); }
+    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
     virtual IntIndex BitLength()                        { return _wrapped->BitLength(); }
     virtual SubString Name()                            { return _wrapped->Name(); }
     virtual IntIndex* DimensionLengths()                { return _wrapped->DimensionLengths(); }

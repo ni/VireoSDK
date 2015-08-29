@@ -1,0 +1,30 @@
+start( VI<(
+    Locals: c(
+        e(Int32 x)
+)
+    clump(
+        Printf("Double Rank %s \n" Double.$Rank)
+        Printf("Double TopAQSize %s \n" Double.$TopAQSize)
+        Printf("Double Name %s \n" Double.$Name)
+        Printf("Double IsFlat %s \n" Double.$IsFlat)
+        Printf("Double IsFlat type %s \n" Double.$IsFlat.$Type)
+        Printf("Double IsFlat size %s \n" Double.$IsFlat.$TopAQSize)
+        Printf("Double Type %s \n" Double.$Type)
+        Printf("Double Base Type %s \n" Double.$BaseType.$Name)
+        Printf("------------\n")
+
+        Printf("String IsFlat %s \n" String.$IsFlat)
+        Printf("String Rank %s \n" String.$Rank)
+
+        Printf("Int8 TopAQSize %s \n" Int8.$TopAQSize)
+        Printf("Int16 TopAQSize %s \n" Int16.$TopAQSize)
+        Printf("Int32 TopAQSize %s \n" Int32.$TopAQSize)
+        Printf("Int64 TopAQSize %s \n" Int64.$TopAQSize)
+
+
+    //    Printf("%s is mutable? %s \n" x x.$IsMutable)
+    //    Printf("%s is mutable? %s \n" Int32 Int32.$IsMutable)
+        Printf("------------\n")
+        Printf("String Rank %s \n" String.$Rank)
+        )
+) > )
