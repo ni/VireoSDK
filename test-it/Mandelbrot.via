@@ -7,15 +7,15 @@ define(Mandelbrot dv(.VirtualInstrument (
     // Dataspace
     c(
         e(.Int32 i)
-        e(dv(.Int32 50) c50)
     )
     clump (1
         Init(i)
-        Init(z)  
+        Init(z)
         Perch(0)
             Mul(z z z)
             Add(z a z)
-        ForLoopTail(0 i c50)
+            Add(i 1 i)
+        BranchIfLT(0 i 50)
     )
 )))
 

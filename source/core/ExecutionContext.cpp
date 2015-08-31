@@ -192,18 +192,6 @@ VIREO_FUNCTION_SIGNATURE1(Branch, InstructionCore)
     return _ParamPointer(0);
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE3(ForLoopTail, InstructionCore, Int32, Int32)
-{
-    Int32 i = _Param(1) + 1;
-    if (i < _Param(2)) {
-        _Param(1) = i;
-        return _ParamPointer(0);
-    } else {
-        // fall out of loop, don't update i
-        return _NextInstruction();
-    }
-}
-//------------------------------------------------------------
 ExecutionContext::ExecutionContext()
 {
     if (!_classInited) {
@@ -366,7 +354,6 @@ DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(UInt32))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
-    DEFINE_VIREO_FUNCTION(ForLoopTail, "p(i(BranchTarget) i(Int32) o(Int32))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")
     DEFINE_VIREO_FUNCTION(CallVI, "p(i(Clump) i(Instruction copyInProc) i(Instruction copyOutProc))")
     DEFINE_VIREO_FUNCTION(Done, "p()")
