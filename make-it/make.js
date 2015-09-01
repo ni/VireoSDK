@@ -140,6 +140,21 @@ function compileGcc(opts, filePath) {
     sh.exec(command);
 }
 //------------------------------------------------------------
+//!
+function compileLint(opts, filePath) {
+    // TODO
+    var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.parse(filePath).name + '.lint';
+    opts.filesToLink += ' ' + objFilePath;
+
+    var command =
+        'python cpplint/cpplint.py ' +
+        '--linelength=120 ' +
+        '--filter=-build/namespaces ' +
+        filePath;
+
+    sh.exec(command);
+}
+//------------------------------------------------------------
 //------------------------------------------------------------
 function linkClang(opts, fileName) {
     var command = 'clang++ ';
@@ -248,6 +263,10 @@ function configureSettings(opts, targetPlatform) {
         opts.objPlatformSuffix =  'clang/';
         opts.compiler = compileClang;
         opts.linker = linkClang;
+    } else if (targetPlatform === 'lint') {
+        opts.objPlatformSuffix =  'lint/';
+        opts.compiler = compileLint;
+        opts.linker = function(){};
     } else if (targetPlatform === 'linux') {
         opts.objPlatformSuffix =  'gcc/';
         opts.compiler = compileGcc;
@@ -397,6 +416,10 @@ target.install = function() {
     }
     console.log(' Copying <' + buildOptions.targetFile + '> to </Applications/Vireo>.' );
     sh.cp('-f', buildOptions.targetFile, '/Applications/Vireo');
+};
+//------------------------------------------------------------
+target.lint = function() {
+    buildVireo('lint');
 };
 //------------------------------------------------------------
 target.v64 = function() {

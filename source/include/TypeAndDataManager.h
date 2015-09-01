@@ -952,7 +952,7 @@ public:
 public:
     void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs
     AQBlock1* RawBegin()            { return _pRawBufferBegin; }
-    void* BeginAtAQ(IntIndex index) { return RawBegin() + index; }
+    template<typename CT> CT BeginAtAQ(IntIndex index) { return reinterpret_cast<CT>(RawBegin() + index); }
     BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()->TopAQSize(), Length()); }
 
 public:
@@ -1029,7 +1029,7 @@ public:
     T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }
     T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) { return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes); }
 
-    template <class T2> T2 AtAQ(IntIndex index)         { return *(T2*)BeginAtAQ(index); }
+    template <class T2> T2 AtAQ(IntIndex index)         { return *BeginAtAQ<T2*>(index); }
     
     NIError Append(T element)                           { return Insert1D(Length(), 1, &element); }
     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }

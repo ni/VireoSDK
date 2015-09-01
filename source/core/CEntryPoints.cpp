@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -23,7 +23,8 @@ using namespace Vireo;
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
-    return 0x00020002; // TODO
+    // TODO(paul) need to tie into symantic version numbers
+    return 0x00020003;
 }
 //------------------------------------------------------------
 //! Create a new shell with a designated parent, or null for a new root.
@@ -60,12 +61,13 @@ VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm)
         tm->Delete();
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
+VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm,
+        const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     memset(buffer, 0, bufferSize);
-    
+
     void *pData = null;
-    
+
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
@@ -85,7 +87,8 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, co
     return flatDataSize;
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
+VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
+        const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
     void *pData = null;
 
@@ -94,9 +97,9 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, co
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return -1;
-    
+
     TypeManagerScope scope(tm);
-    SubBinaryBuffer subBuffer((UInt8*)buffer, (UInt8*)buffer+bufferSize);
+    SubBinaryBuffer subBuffer(reinterpret_cast<UInt8*>(buffer), reinterpret_cast<UInt8*>(buffer)+bufferSize);
 
     // Write unflattened data to the element
     if (UnflattenData(&subBuffer, true, 0, null, actualType, pData) == -1) {
@@ -110,13 +113,13 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, co
 VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
 {
     void *pData = null;
-    
+
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return;
-    
+
     WriteDoubleToMemory(actualType, pData, d);
 }
 //------------------------------------------------------------
@@ -136,12 +139,13 @@ VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, c
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format, const char* value)
+VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
+        const char* viName, const char* eltName, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
 
     void *pData = null;
-    
+
     SubString objectName(viName);
     SubString path(eltName);
     SubString valueString(value);
@@ -157,17 +161,18 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viNam
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format)
+VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
+        const char* viName, const char* eltName, const char* format)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
-    
+
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null)
         return null;
-    
+
     static StringRef returnBuffer = null;
     if (returnBuffer == null) {
         // Allocate a string the first time it is used.
@@ -199,17 +204,17 @@ VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, co
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value)
 {
-	*destination = value;
+    *destination = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value)
 {
-	*destination = value;
+    *destination = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {
-    //   TypeManagerScope scope(typeManager);
+    // TypeManagerScope scope(typeManager);
     return TypeDefiner::Define(typeManager, typeName, typeString);
 }
 //------------------------------------------------------------
@@ -252,13 +257,7 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
 VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer)
 {
     SubString name = typeRef->Name();
-    *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
-}
-//------------------------------------------------------------
-VIREO_EXPORT void TypeRef_ElementName(TypeRef typeRef, Int32* bufferSize, char* buffer)
-{
-    SubString name = typeRef->ElementName();
-    *bufferSize = name.CopyToBoundedBuffer(*bufferSize, (Utf8Char*)buffer);
+    *bufferSize = name.CopyToBoundedBuffer(*bufferSize, reinterpret_cast<Utf8Char*>(buffer));
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)
@@ -299,25 +298,25 @@ VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index)
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     return object->AQBlockLength(object->Length());
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_Length(TypedBlock* object)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     return object->Length();
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef Data_Type(TypedBlock* object)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     return object->Type();
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_GetLength(TypedBlock* object, Int32 dimension)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     return object->GetLength(dimension);
 }
 //------------------------------------------------------------
@@ -329,86 +328,86 @@ VIREO_EXPORT void Data_Resize1D(TypedBlock* object, Int32 size)
 //------------------------------------------------------------
 VIREO_EXPORT void Data_ResizeDimensions(TypedBlock* object, Int32 rank, IntIndex* sizes)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     object->ResizeDimensions(rank, sizes, false);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_RawPointerFromOffset(TypedBlock* object, Int32 offset)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
     return object->RawBegin() + offset;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Read1Byte(TypedBlock* object, Int32 offset, Int8* value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *value = *(Int8*)object->BeginAtAQ(offset);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *value = *object->BeginAtAQ<Int8*>(offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Write1Byte(TypedBlock* object, Int32 offset, Int8 value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *(Int8*)object->BeginAtAQ(offset) = value;
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *object->BeginAtAQ<Int8*>(offset) = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Read2Bytes(TypedBlock* object, Int32 offset, Int16* value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *value = *(Int16*)object->BeginAtAQ(offset);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *value = *object->BeginAtAQ<Int16*>(offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Write2Bytes(TypedBlock* object, Int32 offset, Int16 value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *(Int16*)object->BeginAtAQ(offset) = value;
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *object->BeginAtAQ<Int16*>(offset) = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Read4Bytes(TypedBlock* object, Int32 offset, Int32* value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *value = *(Int32*)object->BeginAtAQ(offset);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *value = *object->BeginAtAQ<Int32*>(offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Write4Bytes(TypedBlock* object, Int32 offset, Int32 value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *(Int32*)object->BeginAtAQ(offset) = value;
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *object->BeginAtAQ<Int32*>(offset) = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Read8Bytes(TypedBlock* object, Int32 offset, Int64* value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *value = *(Int64*)object->BeginAtAQ(offset);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *value = *object->BeginAtAQ<Int64*>(offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_Write8Bytes(TypedBlock* object, Int32 offset, Int64 value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *(Int64*)object->BeginAtAQ(offset) = value;
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *object->BeginAtAQ<Int64*>(offset) = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_ReadPointer(TypedBlock* object, Int32 offset, void** value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *value = *(void**)object->BeginAtAQ(offset);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *value = *object->BeginAtAQ<void**>(offset);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WritePointer(TypedBlock* object, Int32 offset, void* value)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    *(void**)object->BeginAtAQ(offset) = value;
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    *object->BeginAtAQ<void**>(offset) = value;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_ReadBytes(TypedBlock* object, Int32 offset, Int32 count, Int32* buffer)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    memcpy(buffer, object->BeginAtAQ(offset), count);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    memcpy(buffer, object->BeginAtAQ<void*>(offset), count);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count, Int32* buffer)
 {
-    VIREO_ASSERT( TypedBlock::ValidateHandle(object));
-    memcpy(object->BeginAtAQ(offset), buffer, count);
+    VIREO_ASSERT(TypedBlock::ValidateHandle(object));
+    memcpy(object->BeginAtAQ<void*>(offset), buffer, count);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)

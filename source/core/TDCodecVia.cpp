@@ -972,7 +972,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.ReadToken(&fieldName);
                         fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
                         _string.EatWhiteSpaces();
-                        _string.EatChar(':');
+                        _string.EatChar(*tsNameSuffix);
                         Boolean found = false;
                         TypeRef elementType = null;
                         for (elmIndex = 0;!found && elmIndex<type->SubElementCount(); elmIndex++) {
@@ -1026,7 +1026,7 @@ Boolean EatJSONItem(SubString* input)
         while (input->Length()>0 && !input->EatChar('}')) {
             input->ReadToken(&token);
             input->EatWhiteSpaces();
-            if (!input->EatChar(':')) {
+            if (!input->EatChar(*tsNameSuffix)) {
                 return false;
             }
             EatJSONItem(input);
@@ -1061,7 +1061,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
             _string.ReadToken(&fieldName);
             fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
             _string.EatWhiteSpaces();
-            _string.EatChar(':');
+            _string.EatChar(*tsNameSuffix);
             Boolean found = false;
             if (path!=null) {
                 // attention: not compare the encoded string.
@@ -1869,7 +1869,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
 
             if (useQuotes)
                 _string->Append('\"');
-            _string->Append(':');
+            _string->Append(*tsNameSuffix);
         }
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
