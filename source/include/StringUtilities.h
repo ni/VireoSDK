@@ -188,6 +188,7 @@ const UInt8 AsciiCharTraits[] =
 //------------------------------------------------------------
 //! JSON style separator between field name and value.
 #define tsNameSuffix    ":"
+#define tsEqualSuffix   "="
 //! Prefix for meta identifiers used for template parameters.
 #define tsMetaIdPrefix  "$"
 

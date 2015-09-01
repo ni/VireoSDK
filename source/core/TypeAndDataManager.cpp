@@ -1660,6 +1660,7 @@ DefaultValueType* DefaultValueType::FinalizeDVT()
     // Non flat could be merged, but are not yet. To do so the entire sub-value would have to match.
     // partial mathces are not currently allowed since there is not a provision for sharing ownership for sparse
     // sets of data in deeply structured data. The root of the value must own all elements beneath it.
+    // That menas two arays of constant strings cannot share strings instances that happen to be the same.
     
     if (!IsMutableValue() && IsFlat()) {
         // The binary name is not set yet.

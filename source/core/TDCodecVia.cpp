@@ -121,6 +121,7 @@ NIError TDViaParser::ParseREPL()
 
     SubString command;
     _string.EatLeadingSpaces();
+    TypeRef type;
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
         if (_string.ComparePrefix(')')) {
             break;
@@ -130,23 +131,34 @@ NIError TDViaParser::ParseREPL()
                    || _string.ComparePrefixCStr(tsRequireTypeToken)
                    || _string.ComparePrefixCStr("start")
                    ) {
-            ParseType();
+            type = ParseType();
         } else {
+            // Move this to core parser.
             TokenTraits tt = _string.ReadToken(&command);
             if (command.CompareCStr("exit")) {
+                // This needs to change. Perhas end/exit method an set context variable.
                 _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
                 return kNIError_kResourceNotFound;
-            } else if ((tt == TokenTraits_SymbolName || tt == TokenTraits_String )
-                        && _string.EatChar(':')) {
-                // A JSONish style REPL level definition. Keys can be unquoted.
+            } else if (tt == TokenTraits_SymbolName || tt == TokenTraits_String ) {
                 command.TrimQuotedString(tt);
-                TypeRef type = ParseType();
-                TypeRef namedType = _typeManager->Define(&command, type);
-                if (!namedType) {
-                    LOG_EVENT(kHardDataError, "Can't define symbol");
+                // A JSONish style REPL level definition. Keys can be unquoted.
+                if (_string.EatChar(*tsNameSuffix)) {
+                    // For colon the concepts is the keys value takes on the the value on the right
+                    // a bit like it inherits the value. The keys valu is not considered immutable.
+                    TypeRef subType = ParseType();
+                    DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, true);
+                    cdt = cdt->FinalizeDVT();
+                
+                    type = _typeManager->Define(&command, cdt);
+                } else if (_string.EatChar(*tsEqualSuffix)) {
+                    // For equal, taek the matematical immutable equvalence perspective.
+                    TypeRef subType = ParseType();
+                    type = _typeManager->Define(&command, subType);
                 }
-            } else {
-                LOG_EVENT(kHardDataError, "bad egg");
+            }
+            
+            if (!type) {
+                LOG_EVENT(kHardDataError, "Error in epxression");
                 break;
             }
         }
@@ -334,7 +346,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     TypeRef literalsType = null;
     
     if (tt == TokenTraits_WildCard) {
-        // The wild card has no value parse so just return it.
+        // The wild card has no value to parse so just return it.
         return _typeManager->FindType(tsWildCard);
     }
     
@@ -358,6 +370,13 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
             tName = tsBooleanType;
         } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
             tName = tsStringType;
+        } else if (tt == TokenTraits_NestedExpression) {
+            printf("compound value\n");
+            
+            // Sniff the expression to determin what type it is.
+            // 1. nda arry of a single type.
+            // 2. ndarray of mixed numeric type, use widest
+            // 3. mixed type, cluster. some field may have named.
         }
         literalsType = _typeManager->FindType(tName);
     }
@@ -369,6 +388,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
         type = cdt;
     } else {
         LOG_EVENTV(kHardDataError, "Unrecognized literal '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
+        type = BadType();
     }
     return type;
 }
@@ -615,8 +635,9 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 {
-    //  syntax:   dv ( type value )
-
+    //  syntax:  dv ( type value ) or dv( type )
+    //  for the second case, the value will be the inner types default value.
+    
     if (!_string.EatChar('('))
         return BadType();
     
@@ -626,7 +647,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
-    // The initializer value is optional, so check to see there is something
+    // The initializer value is optional, so check to see if there is something
     // other than a closing paren.
     
     _string.EatLeadingSpaces();
@@ -634,7 +655,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
         ParseData(subType, cdt->Begin(kPAInit));
     }
 
-    // Simple constants can resolved to a unique instance.
+    // Simple constants can resolve to a unique shared instance.
     // Perhaps even deeper constant values, let the type system figure it out.
     cdt = cdt->FinalizeDVT();
     
