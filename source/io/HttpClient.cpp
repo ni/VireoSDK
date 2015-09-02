@@ -18,7 +18,7 @@ SDG
 #if defined (VIREO_TYPE_HttpClient)
 
 #if kVireoOS_emscripten
-#include "emscripten.h"
+#include <emscripten.h>
 #endif
 
 using namespace Vireo;
@@ -41,7 +41,9 @@ extern "C" {
     extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
     extern Int32 jsHttpClientHeaderExist(UInt32, const char *, int, UInt32 *, StringRef);
     extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char*,
+        int, const char *, int, const char *, int, Int32, StringRef,
+        StringRef, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
@@ -56,8 +58,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, Boole
         (char*)_Param(2)->Begin(), _Param(2)->Length(),
         _Param(3),
         _ParamPointer(4),
-        _Param(6)
-        );
+        _Param(6));
 #endif
     return _NextInstruction();
 }
@@ -200,8 +201,8 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
             kHead,
             _Param(0),
             (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            null,0,
-            null,0,
+            null, 0,
+            null, 0,
             _Param(2),
             _Param(3),
             null,
@@ -272,7 +273,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
             _Param(0),
             (char*)_Param(1)->Begin(), _Param(1)->Length(),
             (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            null,0,
+            null, 0,
             _Param(3),
             _Param(4),
             _Param(5),
@@ -293,8 +294,10 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 }
 
 //------------------------------------------------------------
-// handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5), body(6), errorCode(7), errorMessage(8), occurrence(9)
-VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
+// handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5),
+// body(6), errorCode(7), errorMessage(8), occurrence(9)
+VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef,
+        StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(9)->ObjBegin();
@@ -340,7 +343,7 @@ DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(UInt32) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(UInt32) i(String) i(Int32) o(String) io(Int32) o(String) s(Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(UInt32) i(String) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(UInt32) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(UInt32) i(String) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(UInt32) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String)s(Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(UInt32)i(String)i(String)i(String)i(Int32)o(String)o(String)io(Int32)o(String)s(Occurrence))")
 DEFINE_VIREO_END()
 #endif

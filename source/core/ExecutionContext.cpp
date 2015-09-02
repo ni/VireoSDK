@@ -16,7 +16,7 @@ SDG
 #include "VirtualInstrument.h"
 
 #if kVireoOS_emscripten
-#include "emscripten.h"
+#include <emscripten.h>
 #endif
 
 namespace Vireo {

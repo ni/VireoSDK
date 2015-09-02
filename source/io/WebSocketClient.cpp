@@ -18,7 +18,7 @@ SDG
 #if defined (VIREO_TYPE_WebSocketClient)
 
 #if kVireoOS_emscripten
-#include "emscripten.h"
+#include <emscripten.h>
 #endif
 
 using namespace Vireo;
@@ -41,25 +41,24 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientConnect, StringRef, StringRef, UInt32, 
 {
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(5)->ObjBegin();
-	VIClump* clump = THREAD_CLUMP();
-	Observer* pObserver = clump->GetObservationStates(2);
-    if(!pObserver) {
+    VIClump* clump = THREAD_CLUMP();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (!pObserver) {
         // This is the initial call, call the js function
         _Param(3) = jsWebSocketClientConnect(
             (char*)_Param(0)->Begin(), _Param(0)->Length(),
             (char*)_Param(1)->Begin(), _Param(1)->Length(),
             _ParamPointer(2),
             _Param(4),
-            _Param(5)
-        );
+            _Param(5));
         pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-		return clump->WaitOnObservableObject(_this);
+        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+        return clump->WaitOnObservableObject(_this);
     } else {
         // re-entering the instruction and the operation is done or it timed out.
-		// the clump should continue.
-		clump->ClearObservationStates();
-		return _NextInstruction();
+        // the clump should continue.
+        clump->ClearObservationStates();
+        return _NextInstruction();
     }
 #endif
     return _NextInstruction();
@@ -74,8 +73,7 @@ VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, UInt32, StringRef, Int32, StringR
     _Param(2) = jsWebSocketClientSend(
         _Param(0),
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
-        _Param(3)
-    );
+        _Param(3));
 #endif
     return _NextInstruction();
 }
@@ -87,25 +85,24 @@ VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, UInt32, Int32, StringRef, Int32, 
 {
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(5)->ObjBegin();
-	VIClump* clump = THREAD_CLUMP();
-	Observer* pObserver = clump->GetObservationStates(2);
-    if(!pObserver) {
+    VIClump* clump = THREAD_CLUMP();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (!pObserver) {
         // This is the initial call, call the js function
         _Param(3) = jsWebSocketClientRead(
             _Param(0),
             _Param(1),
             _Param(2),
             _Param(4),
-            _Param(5)
-        );
+            _Param(5));
         pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-		return clump->WaitOnObservableObject(_this);
+        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+        return clump->WaitOnObservableObject(_this);
     } else {
         // re-entering the instruction and the operation is done or it timed out.
-		// the clump should continue.
-		clump->ClearObservationStates();
-		return _NextInstruction();
+        // the clump should continue.
+        clump->ClearObservationStates();
+        return _NextInstruction();
     }
 #endif
     return _NextInstruction();
@@ -118,8 +115,7 @@ VIREO_FUNCTION_SIGNATURE3(WebSocketClientClose, UInt32, Int32, StringRef)
 #if kVireoOS_emscripten
     _Param(1) = jsWebSocketClientClose(
         _Param(0),
-        _Param(2)
-    );
+        _Param(2));
 #endif
     return _NextInstruction();
 }
@@ -132,8 +128,7 @@ VIREO_FUNCTION_SIGNATURE4(WebSocketClientState, UInt32, Int32, Int32, StringRef)
     _Param(2) = jsWebSocketClientState(
         _Param(0),
         _ParamPointer(1),
-        _Param(3)
-    );
+        _Param(3));
 #endif
     return _NextInstruction();
 }

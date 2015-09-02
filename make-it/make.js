@@ -142,14 +142,18 @@ function compileGcc(opts, filePath) {
 //------------------------------------------------------------
 //!
 function compileLint(opts, filePath) {
-    // TODO
     var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.parse(filePath).name + '.lint';
     opts.filesToLink += ' ' + objFilePath;
 
     var command =
         'python cpplint/cpplint.py ' +
-        '--linelength=120 ' +
-        '--filter=-build/namespaces ' +
+        // For now, allow lines this long.
+        '--linelength=150 ' +
+        // Filter: allow 'using namespace Vireo'
+        '--filter=-build/namespaces' +
+        // Filter allow old style c casts turned to reinterpret_cast<> style
+        ',-readability/casting ' +
+        // The file to lint
         filePath;
 
     sh.exec(command);
