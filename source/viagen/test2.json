@@ -1,0 +1,402 @@
+{
+    "t": "vi",
+    "S": "1;{\\:PC\\:Function.gvi:#1;}",
+    "name": "\\:Function.gvi:",
+    "r": 0,
+    "d": true,
+    "I": [{
+        "n": "Numeric",
+        "T": "fD",
+        "I": 0,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 0
+    }, {
+        "n": "Graph",
+        "T": "[1,iL]",
+        "I": 1,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 1
+    }, {
+        "n": "Sum",
+        "T": "iL",
+        "I": 2,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 2
+    }, {
+        "n": "Sum_2",
+        "T": "iL",
+        "I": 3,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 3
+    }, {
+        "n": "Numeric_2",
+        "T": "fD",
+        "I": 4,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 4
+    }, {
+        "n": "Graph_2",
+        "T": "[1,iL]",
+        "I": 5,
+        "c": 3,
+        "i": -1,
+        "b": 1,
+        "l": false,
+        "v": 5
+    }],
+    "D": [{
+        "t": "diagram",
+        "S": "1;{\\:PC\\:Function.gvi:#13;}",
+        "N": [{
+            "t": "data",
+            "S": "1;{\\:PC\\:Function.gvi:#63;}",
+            "n": "Numeric_2",
+            "I": 4,
+            "o": [{
+                "I": 27,
+                "S": "1;{\\:PC\\:Function.gvi:#63#Value;}",
+                "T": "fD"
+            }],
+            "U": 17,
+            "O": [32]
+        }, {
+            "t": "coerce",
+            "S": "1;{\\:PC\\:Function.gvi:#62;}",
+            "inplace": 2,
+            "i": [{
+                "I": 62,
+                "S": "1;{\\:PC\\:Function.gvi:#62;}",
+                "T": "fD"
+            }],
+            "o": [{
+                "I": 63,
+                "S": "1;{\\:PC\\:Function.gvi:#62;}",
+                "T": "iL"
+            }]
+        }, {
+            "t": "for",
+            "S": "1;{\\:PC\\:Function.gvi:#52;}",
+            "c": 0,
+            "D": [{
+                "t": "diagram",
+                "S": "1;{\\:PC\\:Function.gvi:#53;}",
+                "N": [{
+                    "t": "primitive",
+                    "S": "1;{\\:PC\\:Function.gvi:#85;}",
+                    "p": 1051,
+                    "i": [{
+                        "I": 42,
+                        "S": "1;{\\:PC\\:Function.gvi:#85#y;}",
+                        "T": "iL"
+                    }, {
+                        "I": 43,
+                        "S": "1;{\\:PC\\:Function.gvi:#85#x;}",
+                        "T": "iL"
+                    }],
+                    "o": [{
+                        "I": 41,
+                        "S": "1;{\\:PC\\:Function.gvi:#85#x-y;}",
+                        "T": "iL"
+                    }],
+                    "U": 25,
+                    "O": [29]
+                }, {
+                    "t": "data",
+                    "S": "1;{\\:PC\\:Function.gvi:#59;}",
+                    "n": "sum_2",
+                    "I": 3,
+                    "i": [{
+                        "I": 47,
+                        "S": "1;{\\:PC\\:Function.gvi:#59#Value;}",
+                        "T": "iL"
+                    }]
+                }, {
+                    "t": "dbgPt",
+                    "S": "1;{\\:PC\\:Function.gvi:#53;}",
+                    "ifd": true,
+                    "i": [{
+                        "I": 48,
+                        "S": "1;{\\:PC\\:Function.gvi:#56#Output;}",
+                        "T": "iL"
+                    }]
+                }, {
+                    "t": "dbgPt",
+                    "S": "1;{\\:PC\\:Function.gvi:#85;}",
+                    "ifd": false,
+                    "i": [{
+                        "I": 49,
+                        "S": "1;{\\:PC\\:Function.gvi:#85#x-y;}",
+                        "T": "iL"
+                    }],
+                    "U": 29
+                }],
+                "W": [{
+                    "S": "1;{\\:PC\\:Function.gvi:#57;}",
+                    "T": [31, 35, 42, 43, 48]
+                }, {
+                    "S": "1;{\\:PC\\:Function.gvi:#60;}",
+                    "T": [41, 47, 49]
+                }]
+            }],
+            "B": [{
+                "t": "idx",
+                "S": "1;{\\:PC\\:Function.gvi:#56;}",
+                "o": [{
+                    "I": 31,
+                    "S": "1;{\\:PC\\:Function.gvi:#56#Output;}",
+                    "T": "iL"
+                }]
+            }, {
+                "t": "max",
+                "S": "1;{\\:PC\\:Function.gvi:#54;}",
+                "i": [{
+                    "I": 32,
+                    "S": "1;{\\:PC\\:Function.gvi:#54#52;}",
+                    "T": "iL"
+                }],
+                "o": [{
+                    "I": 33,
+                    "S": "1;{\\:PC\\:Function.gvi:#54#53;}",
+                    "T": "iL"
+                }]
+            }, {
+                "t": "tnl",
+                "S": "1;{\\:PC\\:Function.gvi:#55;}",
+                "d": 4,
+                "m": 1,
+                "?": false,
+                "o": [{
+                    "I": 34,
+                    "S": "1;{\\:PC\\:Function.gvi:#55#o0;}",
+                    "T": "[1,iL]"
+                }],
+                "i": [{
+                    "I": 35,
+                    "S": "1;{\\:PC\\:Function.gvi:#55#i0;}",
+                    "T": "iL"
+                }]
+            }],
+            "U": 19,
+            "O": [34]
+        }, {
+            "t": "data",
+            "S": "1;{\\:PC\\:Function.gvi:#64;}",
+            "n": "Graph_2",
+            "I": 5,
+            "i": [{
+                "I": 53,
+                "S": "1;{\\:PC\\:Function.gvi:#64#Value;}",
+                "T": "[1,iL]"
+            }]
+        }, {
+            "t": "data",
+            "S": "1;{\\:PC\\:Function.gvi:#21;}",
+            "n": "Numeric",
+            "I": 0,
+            "o": [{
+                "I": 0,
+                "S": "1;{\\:PC\\:Function.gvi:#21#Value;}",
+                "T": "fD"
+            }],
+            "U": 2,
+            "O": [32]
+        }, {
+            "t": "coerce",
+            "S": "1;{\\:PC\\:Function.gvi:#19;}",
+            "inplace": 2,
+            "i": [{
+                "I": 58,
+                "S": "1;{\\:PC\\:Function.gvi:#19;}",
+                "T": "fD"
+            }],
+            "o": [{
+                "I": 59,
+                "S": "1;{\\:PC\\:Function.gvi:#19;}",
+                "T": "iL"
+            }]
+        }, {
+            "t": "for",
+            "S": "1;{\\:PC\\:Function.gvi:#15;}",
+            "c": 0,
+            "D": [{
+                "t": "diagram",
+                "S": "1;{\\:PC\\:Function.gvi:#16;}",
+                "N": [{
+                    "t": "primitive",
+                    "S": "1;{\\:PC\\:Function.gvi:#42;}",
+                    "p": 1050,
+                    "i": [{
+                        "I": 15,
+                        "S": "1;{\\:PC\\:Function.gvi:#42#c0t0v;}",
+                        "T": "iL"
+                    }, {
+                        "I": 16,
+                        "S": "1;{\\:PC\\:Function.gvi:#42#c1t0v;}",
+                        "T": "iL"
+                    }],
+                    "o": [{
+                        "I": 14,
+                        "S": "1;{\\:PC\\:Function.gvi:#42#o;}",
+                        "T": "iL"
+                    }],
+                    "U": 10,
+                    "O": [14]
+                }, {
+                    "t": "data",
+                    "S": "1;{\\:PC\\:Function.gvi:#47;}",
+                    "n": "sum",
+                    "I": 2,
+                    "i": [{
+                        "I": 20,
+                        "S": "1;{\\:PC\\:Function.gvi:#47#Value;}",
+                        "T": "iL"
+                    }]
+                }, {
+                    "t": "dbgPt",
+                    "S": "1;{\\:PC\\:Function.gvi:#16;}",
+                    "ifd": true,
+                    "i": [{
+                        "I": 21,
+                        "S": "1;{\\:PC\\:Function.gvi:#18#Output;}",
+                        "T": "iL"
+                    }]
+                }, {
+                    "t": "dbgPt",
+                    "S": "1;{\\:PC\\:Function.gvi:#42;}",
+                    "ifd": false,
+                    "i": [{
+                        "I": 22,
+                        "S": "1;{\\:PC\\:Function.gvi:#42#o;}",
+                        "T": "iL"
+                    }],
+                    "U": 14
+                }],
+                "W": [{
+                    "S": "1;{\\:PC\\:Function.gvi:#39;}",
+                    "T": [4, 8, 15, 16, 21]
+                }, {
+                    "S": "1;{\\:PC\\:Function.gvi:#50;}",
+                    "T": [14, 20, 22]
+                }]
+            }],
+            "B": [{
+                "t": "idx",
+                "S": "1;{\\:PC\\:Function.gvi:#18;}",
+                "o": [{
+                    "I": 4,
+                    "S": "1;{\\:PC\\:Function.gvi:#18#Output;}",
+                    "T": "iL"
+                }]
+            }, {
+                "t": "max",
+                "S": "1;{\\:PC\\:Function.gvi:#17;}",
+                "i": [{
+                    "I": 5,
+                    "S": "1;{\\:PC\\:Function.gvi:#17#15;}",
+                    "T": "iL"
+                }],
+                "o": [{
+                    "I": 6,
+                    "S": "1;{\\:PC\\:Function.gvi:#17#16;}",
+                    "T": "iL"
+                }]
+            }, {
+                "t": "tnl",
+                "S": "1;{\\:PC\\:Function.gvi:#40;}",
+                "d": 4,
+                "m": 1,
+                "?": false,
+                "o": [{
+                    "I": 7,
+                    "S": "1;{\\:PC\\:Function.gvi:#40#o0;}",
+                    "T": "[1,iL]"
+                }],
+                "i": [{
+                    "I": 8,
+                    "S": "1;{\\:PC\\:Function.gvi:#40#i0;}",
+                    "T": "iL"
+                }]
+            }],
+            "U": 4,
+            "O": [33]
+        }, {
+            "t": "data",
+            "S": "1;{\\:PC\\:Function.gvi:#27;}",
+            "n": "Graph",
+            "I": 1,
+            "i": [{
+                "I": 26,
+                "S": "1;{\\:PC\\:Function.gvi:#27#Value;}",
+                "T": "[1,iL]"
+            }]
+        }, {
+            "t": "dbgPt",
+            "S": "1;{\\:PC\\:Function.gvi:#13;}",
+            "ifd": true,
+            "i": [{
+                "I": 54,
+                "S": "1;{\\:PC\\:Function.gvi:#21#Value;}",
+                "T": "fD"
+            }, {
+                "I": 55,
+                "S": "1;{\\:PC\\:Function.gvi:#63#Value;}",
+                "T": "fD"
+            }],
+            "U": 32
+        }, {
+            "t": "dbgPt",
+            "S": "1;{\\:PC\\:Function.gvi:#15;}",
+            "ifd": false,
+            "i": [{
+                "I": 56,
+                "S": "1;{\\:PC\\:Function.gvi:#40#o0;}",
+                "T": "[1,iL]"
+            }],
+            "U": 33
+        }, {
+            "t": "dbgPt",
+            "S": "1;{\\:PC\\:Function.gvi:#52;}",
+            "ifd": false,
+            "i": [{
+                "I": 57,
+                "S": "1;{\\:PC\\:Function.gvi:#55#o0;}",
+                "T": "[1,iL]"
+            }],
+            "U": 34
+        }],
+        "W": [{
+            "S": "1;{\\:PC\\:Function.gvi:#62;}",
+            "T": [27, 62, 55]
+        }, {
+            "S": "1;{\\:PC\\:Function.gvi:#62;}",
+            "T": [63, 32]
+        }, {
+            "S": "1;{\\:PC\\:Function.gvi:#65;}",
+            "T": [34, 53, 57]
+        }, {
+            "S": "1;{\\:PC\\:Function.gvi:#19;}",
+            "T": [0, 58, 54]
+        }, {
+            "S": "1;{\\:PC\\:Function.gvi:#19;}",
+            "T": [59, 5]
+        }, {
+            "S": "1;{\\:PC\\:Function.gvi:#41;}",
+            "T": [7, 26, 56]
+        }]
+    }]
+}
