@@ -3,7 +3,7 @@
 // of nodes and a list of wires. Wirestich creates
 // wire node objects (complete with terminals) 
 // and connects them to the instruction nodes they
-// refere to using the termnal IDs.
+// refer to using the termnal IDs.
 
 module.exports = function(){
   'use strict';
