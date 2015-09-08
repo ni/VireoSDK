@@ -87,7 +87,10 @@ classMap: {
   vi:"DfirRoot",
   coerce:"CoercionNode",
   primitive:"Primitive",
-  dbgPt:"DebugPoint"
+  dbgPt:"DebugPoint",
+  idx:"LoopIndex",
+  max:"LoopMax",
+  tnl:"Tunnel"
 },
 
 // Some initial prim Ids
