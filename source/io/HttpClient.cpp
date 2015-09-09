@@ -34,7 +34,7 @@ enum HttpClientMethodId {
 };
 
 extern "C" {
-    extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, Boolean, UInt32 *, StringRef);
+    extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, UInt32, UInt32 *, StringRef);
     extern Int32 jsHttpClientClose(UInt32, StringRef);
     extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
@@ -47,7 +47,7 @@ extern "C" {
 
 //------------------------------------------------------------
 // Cookie file(0), userName(1), password(2), verify Server(3), handle(4), error code(5), error message(6)
-VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, Boolean, UInt32, Int32, StringRef)
+VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(5) = jsHttpClientOpen(
@@ -330,7 +330,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.Boolean) o(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.UInt32) o(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
     DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")
