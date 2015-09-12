@@ -1,104 +1,104 @@
 // Ids used in json data.
 module.exports = {
 
-// Class hierarchy for diagram nodes
+// Class hierarchy for diagram nodes.
+// Names will map to methods on visitor so they
+// need to fit js naming conventions. Thath is
+// one reason they start with lowercase letters.
 classMap: {
-  // Some internals
-  Node:null,
-  Daigram:"Node",
-  Wire:"Node",
-  ClumpStart:"Node",
-  ClumpEnd:"Node",
-  MethodCall:"Node",
-  Primitive:"Node",
-  CallByReference:"MethodCall",
-  CallChain:"Node",
-  PlugInNode:"Node",
-  DataAccessor:"Node",
-  DebugPoint:"Node",
-  DfirRoot:"Structure",
+    // Some internals
+    node:null,
+    daigram:"node",
+    wire:"node",
+    clumpStart:"node",
+    clumpEnd:"node",
+    methodCall:"node",
+    primitive:"node",
+    callByReference:"methodCall",
+    callChain:"node",
+    plugInNode:"node",
+    dataAccessor:"node",
+    debugPoint:"node",
+    dfirRoot:"structure",
 
-  // Core strucutre
-  Structure:"Node",
-  Loop:"Structure",
-  ForLoop:"Loop",
-  WhileLoop:"Loop",
-  CaseStructure:"Structure",
-  DisableStructure:"Structure",
-  InplaceElementStructure:"Structure",
+    // Core strucutre
+    structure:"node",
+    loop:"structure",
+    forLoop:"loop",
+    whileLoop:"loop",
+    caseStructure:"structure",
+    disableStructure:"structure",
+    inplaceElementStructure:"structure",
 
-  // Core structure border nodes
-  BorderNode:"Node",
-  Tunnel:"BorderNode",
-  SiblingTunnel:"Tunnel",
-  CaseSelector:"BorderNode",       // the '?' terminal
-  LeftShiftRegister:"BorderNode",
-  RightShiftRegister:"BorderNode",
-  LoopCondition:"BorderNode",
-  LoopIndex:"BorderNode",          // i
-  LoopMax:"BorderNode",            // N on the for loop
-  FeedbackInitNode:"BorderNode",
-  FeedbackInputNode:"BorderNode",
-  FeedbackOutputNode:"BorderNode",
+    // Core structure border nodes
+    borderNode:"node",
+    tunnel:"borderNode",
+    siblingTunnel:"tunnel",
+    caseSelector:"borderNode",       // the '?' terminal
+    leftShiftRegister:"borderNode",
+    rightShiftRegister:"borderNode",
+    loopCondition:"borderNode",
+    loopIndex:"borderNode",          // i
+    loopMax:"borderNode",            // N on the for loop
+    feedbackInitNode:"borderNode",
+    feedbackInputNode:"borderNode",
+    feedbackOutputNode:"borderNode",
 
-  // Simple prims/nodes operations
-  Constant:"Node",
-  CompoundArithmeticNode:"Node",
-  WaitNode:"Node",
-  WaitUntilNextMultipleNode:"Node",
-  TickCountNode:"Node",
-  CoercionNode:"Node",
+    // Simple prims/nodes operations
+    constant:"node",
+    compoundArithmeticNode:"node",
+    waitNode:"node",
+    waitUntilNextMultipleNode:"node",
+    tickCountNode:"node",
+    coercionNode:"node",
 
-  // Array operations
-  InitializeArryNode:"Node",
-  ArrayIndexNode:"Node",
-  ReshapeArrayNode:"Node",
-  Decimate1DArrayNode:"Node",
-  DeleteFromArrayNode:"Node",
-  ArraySubsetNode:"Node",
-  AutomaticErrorHanlerNode:"Node",
+    // Array operations
+    initializeArryNode:"node",
+    arrayIndexNode:"node",
+    reshapeArrayNode:"node",
+    decimate1DArrayNode:"node",
+    deleteFromArrayNode:"node",
+    arraySubsetNode:"node",
+    automaticErrorHanlerNode:"node",
 
-  // Cluster operations
-  BuildClusterNode:"Node",
-  BuildClusterArrayNode:"Node",
+    // Cluster operations
+    buildClusterNode:"node",
+    buildClusterArrayNode:"node",
 
-  // Events
-  CreateUserEvent:"Node",
-  DestroyUserEvent:"Node",
-  FlushEventQueue:"Node",
-  UnRegisterForEvents:"Node",
-  RegisterForEvents:"Node",
-  GenerateUserEvent:"Node",
-  EventStructure:"Node",
+    // Events
+    createUserEvent:"node",
+    destroyUserEvent:"node",
+    flushEventQueue:"node",
+    unRegisterForEvents:"node",
+    registerForEvents:"node",
+    generateUserEvent:"node",
+    eventStructure:"node",
 
-  // String operations
-  FormatIntoStringNode:"Node",
-  Concatenate:"Node",
+    // String operations
+    formatIntoStringNode:"node",
+    concatenate:"node",
 
-  // Other operations
-  LoopTimerNode:"TimingNodeBase",
-  TimingNodeBase:"Node",
+    // Other operations
+    loopTimerNode:"timingNodeBase",
+    timingNodeBase:"node",
 
-  // Abbreviations
-  diagram:"Diagram",
-  data:"DataAccessor",
-  constant:"Constant",
-  "for":"ForLoop",
-  vi:"DfirRoot",
-  coerce:"CoercionNode",
-  primitive:"Primitive",
-  dbgPt:"DebugPoint",
-  idx:"LoopIndex",
-  max:"LoopMax",
-  tnl:"Tunnel"
+    // Abbreviations
+    data:"dataAccessor",
+    "for":"forLoop",
+    vi:"dfirRoot",
+    coerce:"coercionNode",
+    dbgPt:"debugPoint",
+    idx:"loopIndex",
+    max:"loopMax",
+    tnl:"tunnel"
 },
 
 // Some initial prim Ids
 primIds:{
-  1050:"Add",
-  1051:"Sub",
-  1052:"Mul",
-  1053:"Mul",
-  1911:"AndArrayElementsPrimitive",
+    1050:"Add",
+    1051:"Sub",
+    1052:"Mul",
+    1053:"Mul",
+    1911:"AndArrayElementsPrimitive",
 }
 };
