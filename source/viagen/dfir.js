@@ -17,6 +17,7 @@ module.exports = function() {
 var dfirNodes = require('./dfir-nodes.js');
 
 var dfir = {
+//------------------------------------------------------------
 accept: function(visitor, node) {
   // Check for a function assigned for the specific class.
   // Perhaps for primites allow sub keys ( e.g. Primitive_1911)
@@ -39,6 +40,15 @@ accept: function(visitor, node) {
   }
   console.log("Nothing to accept the visit to: " + node.t);
 },
+//------------------------------------------------------------
+primIdToName: function(id) {
+    var name = dfirNodes.primIds[id];
+    if (name === undefined) {
+        name = '_Unknown_Prim_ID_' + id;
+    }
+    return name;
+},
+//------------------------------------------------------------
 nodeMethods: {
   //--------------------------
   nodeIsA: function(typeName) {
@@ -58,6 +68,7 @@ nodeMethods: {
       return this.i[0];
   },
 },
+//------------------------------------------------------------
 terminalMethods: {
   //--------------------------
   isConnected: function(node){

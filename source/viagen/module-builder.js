@@ -9,12 +9,12 @@ module.exports = function(){
     // is easily done.
 
 //------------------------------------------------------------
-var DataBuilder = function DataBuilder() {
+var Data = function Data() {
     this.value = 0;
     this.lifeTime = 0;
     this.permitReuse = true;
 };
-DataBuilder.prototype = {
+Data.prototype = {
     addDependency: function() {
         if(this.permitReuse) this.lifeTime++;
     },
@@ -32,7 +32,7 @@ DataBuilder.prototype = {
     }
 };
 //------------------------------------------------------------
-function ClumpBuilder(vi, id) {
+function Clump(vi, id) {
     this.vi = vi;
     this.id = id;
     this.fireCount = 0;
@@ -40,20 +40,21 @@ function ClumpBuilder(vi, id) {
     this.labels = [];
     this.nextInstructionHasNeedsLabel = false;
 }
-ClumpBuilder.prototype = {
+Clump.prototype = {
     defineLabel: function() {
     },
     markLabel: function() {
     },
     emitMove: function() {
     },
-    emit: function() {
+    emit: function(instruction) {
+        this.instructions.push(instruction);
     },
     addInstructionComment: function() {
     }
 };
 //------------------------------------------------------------
-function VIBuilder(name) {
+function VI(name) {
     this.name = name;
     this.locals = [];
     this.clumps = [];
@@ -61,19 +62,20 @@ function VIBuilder(name) {
     this.isReentrant = false;
     this.reentrantCloneCount = 0;
 }
-VIBuilder.prototype = {
+VI.prototype = {
     defineLocal: function(dataType) {
-        var db = new DataBuilder();
+        var db = new Data();
         this.locals.push(db);
         return db;
     },
     logError: function() {
     },
     resolveClumpId: function(id) {
-        var clump = clump[id];
-        if (clump === null) {
-            clump = new ClumpBuilder(this, id);
-            clump[id] = clump;
+        // Finds an existing clump or creates one.
+        var clump = this.clumps[id];
+        if (clump === undefined) {
+            clump = new Clump(this, id);
+            this.clumps[id] = clump;
         }
         return clump;
     },
@@ -81,26 +83,32 @@ VIBuilder.prototype = {
     },
     addReentrantCaller: function(clump) {
     },
-    defineOrGetClump: function() {
-    },
     isSubVI: function() {
         return true;
     }
 };
 //------------------------------------------------------------
 function ModuleBuilder() {
+    this.constants = [];
+    this.globals = [];
+    this.vis = [];
 }
 ModuleBuilder.prototype = {
-    defineGlobal: function(name, value) {
-        return new DataBuilder();
-    },
     defineConstant: function(value) {
-        return new DataBuilder();
+        var db = new Data();
+        this.constants.push(db);
+        return db;
+    },
+    defineGlobal: function(name, value) {
+        var db = new Data();
+        this.globals.push(db);
+        return db;
     },
     defineVI: function(name) {
-        // return a VIBuilder object
-        return new VIBuilder(name);
-    }
+        var vi = new VI(name);
+        this.vis.push(vi);
+        return vi;
+    },
 };
 //------------------------------------------------------------
 return ModuleBuilder;

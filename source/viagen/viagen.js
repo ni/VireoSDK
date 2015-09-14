@@ -5,7 +5,7 @@ var dfir = require('./dfir.js');
 var ModuleBuilder = require('./module-builder.js');
 var AllocatorVisitor = require('./allocator-visitor.js');
 var wirestichVisitor = require('./wirestich-visitor.js');
-
+var Emit = require('./via-emitter.js');
 function Run() {
     'use strict';
 
@@ -25,9 +25,13 @@ function Run() {
 
         var mb = new ModuleBuilder();
         var av = new AllocatorVisitor(mb);
+        var emit = new Emit();
 
         dfir.accept(wirestichVisitor, dfirRoot);
         dfir.accept(av, dfirRoot);
+        var viaText = emit.emitModule(mb);
+
+        console.log(viaText);
     } else {
         console.log("Usage: node viagen.js filename");
     }
