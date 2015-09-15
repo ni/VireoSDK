@@ -48,11 +48,23 @@ module.exports = function(){
             }
         },
         //------------------------------------------------------
-        structure: function(visitor, nStructure) {
+        loop: function(visitor, nStructure) {
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.preStructure);
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.loopPrologue);
+
+            // visit the diagram
             nStructure.D.map(function(item){dfir.accept(visitor, item);});
-            if (nStructure.B) {
-                nStructure.B.map(function(item){dfir.accept(visitor, item);});
-            }
+
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.loopEpilogue);
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.postStructure);
+        },
+        //------------------------------------------------------
+        structure: function(visitor, nStructure) {
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.preStructure);
+
+            nStructure.D.map(function(item){dfir.accept(visitor, item);});
+
+            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.postStructure);
         },
         //------------------------------------------------------
         diagram: function(visitor, nDaigram) {
@@ -63,9 +75,21 @@ module.exports = function(){
         }
     };
 
+    //------------------------------------------------------
     var AllocatorVisitor = function AllocatorVisitor(moduleBuilder) {
         this.mb = moduleBuilder;
         this.visitors = visitorMethods;
+    };
+    AllocatorVisitor.prototype = {
+        visitBorderNodesByStage: function(nStructure, stage) {
+            var visitor = this;
+            if (nStructure.B) {
+                if (stage === dfir.vistStage.postStructure) {
+                    // temporarily just visit them them last time.
+                    nStructure.B.map(function(item){dfir.accept(visitor, item);});
+                }
+            }
+        }
     };
     return AllocatorVisitor;
 }();

@@ -49,6 +49,16 @@ primIdToName: function(id) {
     return name;
 },
 //------------------------------------------------------------
+// passes used with border nodes.
+vistStage: {
+    preStructure:1,
+    postStructure:2,
+    loopPrologue:3,
+    loopEpilogue:4,
+    preDiagram:5,
+    postDiageam:6,
+},
+//------------------------------------------------------------
 nodeMethods: {
   //--------------------------
   nodeIsA: function(typeName) {
