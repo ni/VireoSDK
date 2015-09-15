@@ -64,6 +64,10 @@ wirestichVisitor.visitors.structure = function(visitor, nStructure) {
             dfir.accept(visitor, item);
             item.owningStructure = nStructure;
         });
+    } else {
+        // Add an empty array so tests are not
+        // needed everywhere.
+        nStructure.B = [];
     }
     nStructure.D.map(function(item){dfir.accept(visitor, item);});
     visitor.visitors.node(visitor, nStructure);
@@ -83,6 +87,9 @@ wirestichVisitor.visitors.diagram = function(visitor, nDiagram) {
     // TODO(viagen) insert wires so they are come before their downstream nodes.
     // perhaps note the node index when they are created. Avoid insertin into the
     // the node list while iterating through it.
+
+    // Raw wire objects are no longer needed. Allowed them to be GC'd
+    nDiagram.W = null;
     nDiagram.N = nDiagram.N.concat(createdWireNodes);
 };
 return wirestichVisitor;
