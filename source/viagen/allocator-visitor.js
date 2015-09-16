@@ -20,51 +20,73 @@ module.exports = function(){
         },
         //------------------------------------------------------
         node: function(visitor, nNode) {
+            visitor.allocateNode(nNode);
         },
         //------------------------------------------------------
         dataAccessor: function(visitor, nData) {
         },
         //------------------------------------------------------
         primitive: function(visitor, nPrim) {
-            var instruction = {
-                name:dfir.primIdToName(nPrim.p),
-                args:[]
-                };
-
-            nPrim.i.map(function(item) {instruction.args.push(item);});
-            nPrim.o.map(function(item) {instruction.args.push(item);});
-            visitor.clump.emit(instruction);
+            // may switch to using id numbers, but trying to move
+            // away from those.
+            switch(dfir.primIdToName(nPrim))  {
+                default:
+                    visitor.visitors.node(visitor, nPrim)
+            }    
         },
         //------------------------------------------------------
         constant: function(visitor, nConstant) {
         },
+    
+        //------------------------------------------------------
+        concatenateNode: function(visitor, nConcat) {
+            // Try to make first output inplace to input.
+            var firstDb = visitor.allocateTerminal(nConcat.i[0], false, null);
+            visitor.allocateTerminal(nConcat.o[0], false, firstDb);
+            // Allocate the rest normally.
+            for ( var i = 1; i < nConcat.o.length; i++ ) {
+                visitor.allocateTerminal(nConcat.i[i], false, firstDb);
+            } 
+        },    
         //------------------------------------------------------
         loopIndex: function(visitor, nIndex) {
-            var term = nIndex.outputTerm();
-            if (nIndex.owningStructure.nodeIsA('whileLoop') && !term.isConnected()) {
-                return; // Ignore unwired while loops
-            } else {
-                term.db = visitor.vi.defineLocal(term.dataType, null);
+            var term = nIndex.o[0];            
+            switch(visitor.stage) {
+                case dfir.visitStage.loopPrologue:
+                    var isRequired = nIndex.owningStructure.nodeIsA('forLoop')
+                    term.db = visitor.allocateTerminal(term, isRequired, null);
+                    if (term.db !== null) {
+                        term.db.addDependency();
+                    }
+                    break;
+                case dfir.visitStage.loopEpilogue:
+                    if (term.db !== null) {
+                        term.db.fillDependency();
+                    }
+                    break;
+                default:
+                    visitor.mb.logError("unrecognized stage in allocate visitor");
+                    break;
             }
         },
         //------------------------------------------------------
         loop: function(visitor, nStructure) {
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.preStructure);
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.loopPrologue);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.preStructure);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.loopPrologue);
 
             // visit the diagram
             nStructure.D.map(function(item){dfir.accept(visitor, item);});
 
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.loopEpilogue);
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.postStructure);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.loopEpilogue);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.postStructure);
         },
         //------------------------------------------------------
         structure: function(visitor, nStructure) {
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.preStructure);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.preStructure);
 
             nStructure.D.map(function(item){dfir.accept(visitor, item);});
 
-            visitor.visitBorderNodesByStage(nStructure, dfir.vistStage.postStructure);
+            visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.postStructure);
         },
         //------------------------------------------------------
         diagram: function(visitor, nDaigram) {
@@ -80,10 +102,72 @@ module.exports = function(){
         this.mb = moduleBuilder;
         this.visitors = visitorMethods;
     };
-    AllocatorVisitor.prototype = {
+    AllocatorVisitor.prototype = {    
+        //------------------------------------------------------
         visitBorderNodesByStage: function(nStructure, stage) {
             var visitor = this;
+            visitor.stage = stage;
             nStructure.B.map(function(item){dfir.accept(visitor, item);});
+            visitor.stage = 0;
+        },
+        //------------------------------------------------------
+        allocateNode: function(node, allowInplace) {
+            if (allowInplace) {
+                // Allocate inputs first, so output have a chance at reusing them.
+                this.allocateTerminalSets(node.i, node.o);   
+            } else {
+                // Allocate outputs first so inputs wont be in the pool.
+                this.allocateTerminalSets(node.o, node.i);
+            }
+        },
+        //------------------------------------------------------
+        allocateTerminalSets: function(a, b) {
+            var visitor = this;
+            if (a !== undefined) {
+                a.map(function(item){visitor.allocateTerminal(item, false, null);});
+            }
+            if (b !== undefined) {
+                b.map(function(item){visitor.allocateTerminal(item, false, null);});     
+            }
+        },
+        //------------------------------------------------------
+        allocateTerminal: function(terminal, isRequired, preferred) {
+            var db = terminal.db;
+            if (terminal.isInput) {
+                if (terminal.isConnected() && db !== null) {
+                    db.fillDependency();
+                } else if (isRequired && (db === null)) {
+                    // input not wired create a constant
+                }
+            } else /* output */ {
+                if (isRequired || terminal.isConnected()) {
+                    if (db === null) {
+                       // TODO defeind local 
+                    }  else {
+                        if (terminal.isConnected()) {
+                            db.addDependency();
+                        }
+                       // TODO defeind local 
+                    }
+                }
+            }
+            return db;
+        },
+        forceAllocateTerminal: function(terminal, db) {
+            if (terminal.isInput) {
+                // TODO(viagen)
+            } else if (db === null) {
+                return null; 
+            }  else {
+                var existingDb = terminal.db;
+                if (existingDb === null) {
+                    terminal.db = db;
+                    if (terminal.isConnected) {
+                        // TODO does add Dependency aply to terminal or db
+                        db.addDependency();
+                    }
+                }
+            }      
         }
     };
     return AllocatorVisitor;

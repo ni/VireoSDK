@@ -43,6 +43,7 @@ function updateTeminalMap(visitor, node, terminal, isInput) {
     visitor.tMap[terminal.I] = terminal;
     terminal.owner = node;
     terminal.isInput = isInput;
+    terminal.db = null; // set now so 'undefined' does not happen.
     Object.setPrototypeOf(terminal, dfir.terminalMethods);
 }
 //------------------------------------------------------

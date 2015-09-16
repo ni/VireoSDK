@@ -93,12 +93,15 @@ classMap: {
     tnl:"tunnel"
 },
 
+primClass: {
+    simple:{}   // coerce all inputs to output type.
+},
 // Some initial prim Ids
 primIds:{
-    1050:"Add",
-    1051:"Sub",
-    1052:"Mul",
-    1053:"Mul",
-    1911:"AndArrayElementsPrimitive",
+    1050:{name:"Add","class":"simple"},
+    1051:{name:"Sub","class":"simple"},
+    1052:{name:"Mul","class":"simple"},
+    1053:{name:"Mul","class":"simple"},
+    1911:{name:"AndArrayElementsPrimitive"},
 }
 };

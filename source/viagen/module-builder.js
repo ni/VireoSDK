@@ -92,8 +92,12 @@ function ModuleBuilder() {
     this.constants = [];
     this.globals = [];
     this.vis = [];
+    this.errors = [];
 }
 ModuleBuilder.prototype = {
+    logError: function(value) {
+        this.errors.push(value);
+    },
     defineConstant: function(value) {
         var db = new Data();
         this.constants.push(db);
