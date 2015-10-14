@@ -88,6 +88,16 @@ terminalMethods: {
     innerTerminal: function(node){
         return {};
     },
+    //--------------------------    
+    addDependency: function() {
+        if (this.db !== null) 
+            this.db.addDependency();
+    },
+    //--------------------------
+    fillDependency: function() {
+        if (this.db !== null) 
+            this.db.fillDependency();
+    }
 }
 };
 return dfir;

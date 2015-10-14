@@ -130,6 +130,7 @@
 		47271717183A8CA800238283 /* ArrayDemo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayDemo.via; path = "../test-it/ArrayDemo.via"; sourceTree = "<group>"; };
 		47271718183AC7AC00238283 /* SubVIParallelCalls.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SubVIParallelCalls.via; path = "../test-it/SubVIParallelCalls.via"; sourceTree = "<group>"; };
 		47271719183BC64B00238283 /* TypeValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = TypeValues.via; path = "../test-it/TypeValues.via"; sourceTree = "<group>"; };
+		47295B1F1BCF011700C6C2E2 /* make.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = make.js; path = "../make-it/make.js"; sourceTree = "<group>"; };
 		472A07891AA6204A008109FA /* NumericString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NumericString.cpp; path = ../source/core/NumericString.cpp; sourceTree = "<group>"; };
 		472A078C1AA67EAE008109FA /* JavaScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScript.cpp; path = ../source/io/JavaScript.cpp; sourceTree = "<group>"; };
 		472A078F1AA67EF8008109FA /* DebugGPIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugGPIO.cpp; path = ../source/io/DebugGPIO.cpp; sourceTree = "<group>"; };
@@ -367,13 +368,6 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		475317961AC9EA050030094A /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "New Group";
-			sourceTree = "<group>";
-		};
 		4754290717C67A750096898B /* Test-It */ = {
 			isa = PBXGroup;
 			children = (
@@ -525,7 +519,7 @@
 				472D7ACC18C683A10023C688 /* LICENSE.txt */,
 				4799F8AE18C78F060019E214 /* AUTHORS */,
 				47E220B31950E91400988185 /* Micro */,
-				47B3D49A17304C4400944D32 /* Wraps */,
+				47B3D49A17304C4400944D32 /* CommandLine */,
 				479AFEBE170DDA76002C0FF0 /* include */,
 				479AFE8C170DCFB2002C0FF0 /* core */,
 				475F6F0117C3E70900285242 /* IO */,
@@ -601,20 +595,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		47B3D49A17304C4400944D32 /* Wraps */ = {
+		47B3D49A17304C4400944D32 /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
 				4700BD771949017000794482 /* MicroMain.cpp */,
 				4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */,
 				4737987517D0EBBB00C3BC2A /* main.cpp */,
 			);
-			name = Wraps;
+			name = CommandLine;
 			sourceTree = "<group>";
 		};
 		47C84E7D17DA800500828A54 /* Make-It */ = {
 			isa = PBXGroup;
 			children = (
-				475317961AC9EA050030094A /* New Group */,
+				47295B1F1BCF011700C6C2E2 /* make.js */,
 				47CAD29517FDFD4200DDDB46 /* Makefile */,
 			);
 			name = "Make-It";

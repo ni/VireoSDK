@@ -161,13 +161,13 @@ void PlatformMemory::Free(void* pBuffer)
 //! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(ConstCStr string)
 {
-    fwrite (string , 1, strlen(string), stdout);
+    fwrite(string, 1, strlen(string), stdout);
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(Int32 len, ConstCStr string)
 {
-    fwrite (string , 1, len, stdout);
+    fwrite(string, 1, len, stdout);
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
@@ -176,7 +176,7 @@ void PlatformIO::Printf(ConstCStr format, ...)
     va_list args;
     va_start(args, format);
     vprintf(format, args);
-    va_end (args);
+    va_end(args);
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.

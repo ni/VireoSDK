@@ -4,6 +4,24 @@ module.exports = function(){
     var dfir = require('./dfir.js');
     var path = require('path');
 
+/*
+    basic algorithm
+        nodes know their data types. tha has been established by upstreat dfir transforms
+        
+        thus each wire has a allocation.
+        
+        nodes may need allocaiton during code gen as well
+        
+        those allocaiotn can be added to the nodes as well. 
+        
+        then do an allocaiton pass with in the clump merging pieces to gether?
+
+        first pass allocate
+        
+        reduce to lower level?
+        
+        thath should make it simpler. finallly!!
+*/
     var visitorMethods = {
         //------------------------------------------------------
         vi: function(visitor, nNode) {
@@ -55,20 +73,76 @@ module.exports = function(){
                 case dfir.visitStage.loopPrologue:
                     var isRequired = nIndex.owningStructure.nodeIsA('forLoop')
                     term.db = visitor.allocateTerminal(term, isRequired, null);
-                    if (term.db !== null) {
-                        term.db.addDependency();
-                    }
+                    term.db.addDependency();
                     break;
                 case dfir.visitStage.loopEpilogue:
-                    if (term.db !== null) {
-                        term.db.fillDependency();
-                    }
+                    term.db.fillDependency();
                     break;
                 default:
                     visitor.mb.logError("unrecognized stage in allocate visitor");
                     break;
             }
         },
+        //------------------------------------------------------
+        loopMax: function(visitor, nMax) {
+            var term = nMax.o[0];            
+            switch(visitor.stage) {
+                case dfir.visitStage.loopPrologue:
+                    nMax.outerTerm().addDendency();
+                    forceAllocation(nMax.innerTerm(), nMax.outerTerm())
+                    nMax.innerTerm().addDependency();
+                    break;
+                case dfir.visitStage.loopEpilogue:
+                    nMax.outerTerm.fillDependency();
+                    nMax.innerTerm.fillDependency();
+                    break;
+                default:
+                    visitor.mb.logError("unrecognized stage in allocate visitor");
+                    break;
+            }
+        },
+        //------------------------------------------------------
+        loopConditional: function(visitor, nConditional) {
+            if (visitor.stage === dfir.visitStage.loopEpilogue) {
+                visitor.allocateTerminal(nConditional.i[0]);
+            }
+        },        
+/*
+void AllocatorVisitor::Visit(DFIR::LoopMax& loopMax)
+	{
+		switch(GetVisitStage(loopMax))
+		{
+		case VIVM::LoopPrologueStage:
+			{
+			DFIR::Terminal& t = loopMax.GetInnerTerminal(0,0);
+			DataBuilder* NMinus1 = _viBuilder->DefineLocal(t.GetDataType());
+			_allocMap->Add(loopMax, NMinus1); // internal node storage for "NMinusOne"
+			// need to ensure NMinus1 does not get unified with anything (including the loopmax terminal) for duration of loop.
+			// This would be cleaner if we didn't need both locations (they could be unified if 4loop was a pretest loop).
+			NMinus1->AddDependency(); 
+
+			DataBuilder* outer = _allocateTerminal(loopMax.GetOuterTerminal(0), false, NULL);
+
+			_forceAllocateTerminal(loopMax.GetInnerTerminal(0,0), outer);
+			outer->AddDependency(); //loop diagram dependency.
+			break;
+			}
+		case VIVM::LoopEpilogueStage:
+			{
+				_allocMap->Find(loopMax)->FillDependency();
+				DataBuilder* inner = _allocMap->Find(loopMax.GetInnerTerminal(0,0));
+				if(inner != NULL)
+				{
+					inner->FillDependency();
+				}
+			break;
+			}
+        default:
+            break;
+		}
+	}
+ 
+*/
         //------------------------------------------------------
         loop: function(visitor, nStructure) {
             visitor.visitBorderNodesByStage(nStructure, dfir.visitStage.preStructure);
