@@ -1,9 +1,9 @@
 /**
- 
+
  Copyright (c) 2014-2015 National Instruments Corp.
- 
+
  This software is subject to the terms described in the LICENSE.TXT file
- 
+
  SDG
  */
 
@@ -16,7 +16,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "TypeandDataManager.h"
+#include "TypeAndDataManager.h"
 
 #if (kVireoOS_win32U || kVireoOS_win64U)
   #define NOMINMAX
@@ -99,7 +99,7 @@ void Platform::Shutdown()
     _exit();
 #endif
 }
-    
+
 //============================================================
 PlatformMemory gPlatformMem;
 
@@ -133,7 +133,7 @@ void* PlatformMemory::Realloc(void* pBuffer, size_t countAQ)
     size_t newLogicalSize = countAQ;
     countAQ += sizeof(size_t);
 #endif
-    
+
     pBuffer = realloc(pBuffer, countAQ);
 
 #if defined(VIREO_TRACK_MALLOC)
@@ -191,7 +191,7 @@ void PlatformIO::ReadFile(SubString *name, StringRef buffer)
         fseek(h, 0L, SEEK_END);
         IntIndex bytesToRead = (IntIndex)ftell(h);
         rewind(h);
-        
+
         buffer->Resize1DOrEmpty(bytesToRead);
         if (buffer->Length() == bytesToRead) {
             size_t bytesRead = fread(buffer->Begin(), 1, (size_t)bytesToRead, h);
@@ -234,7 +234,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
         const int lenlen = 10;
         Int32 i = 0;
         char c;
-        
+
         c = fgetc(stdin);
         if (c == '<') {
             //  <count>xxxxxxxx "<4>exit"
@@ -249,9 +249,9 @@ void PlatformIO::ReadStdin(StringRef buffer)
             SubString packet((Utf8Char*)packetHeader, (Utf8Char*)packetHeader+i);
             IntMax packetSize = 0;
             packet.ReadInt(&packetSize);
-            
+
             PlatformIO::Printf("packet size %d\n", (int) packetSize);
-            
+
             for (i = 0; i < packetSize; i++) {
                 c = fgetc(stdin);
                 _mallocBuffer[i] = c;
@@ -260,7 +260,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
                 }
             }
             PlatformIO::Print("\n");
-            
+
             string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);
             PlatformIO::Printf("packet read complete <%d>\n", (int)packetSize);
             return kNIError_Success;
@@ -286,33 +286,33 @@ void PlatformIO::ReadStdin(StringRef buffer)
 PlatformTickType PlatformTimer::TickCount()
 {
 #if defined(_WIN32) || defined(_WIN64)
-    
+
     // System returns 100ns count.
     FILETIME now;
     GetSystemTimeAsFileTime(&now);
     return now.dwLowDateTime;
-    
+
 #elif (kVireoOS_macosxU)
-    
+
     return mach_absolute_time();
-    
+
 #elif (kVireoOS_wiring)
-    
+
     return micros();
-    
+
 #elif (kVireoOS_linuxU)
-    
+
     timespec time;
     clock_gettime(CLOCK_MONOTONIC, &time);
     return ((Int64)time.tv_sec * 1000000000) + (Int64)time.tv_nsec;
-    
+
 #elif (kVireoOS_emscripten)
-    
+
     // milliseconds
     return (PlatformTickType) emscripten_get_now();
-    
+
 #elif (kVireoOS_ZynqARM)
-    
+
     // Hard coded to the max Zynq7000 clock rate for now.
     // the clock register is only 32 bits so it can wrap around
     // pretty quick, depending on the prescalar.
@@ -322,26 +322,26 @@ PlatformTickType PlatformTimer::TickCount()
     static UInt64		lastScuTickCount = 0;
     static XScuTimer    Timer;
     static XScuTimer 	*pTimer = NULL;
-    
+
     if (!pTimer) {
         pTimer = &Timer;
-        
+
         pConfig = XScuTimer_LookupConfig(XPAR_XSCUTIMER_0_DEVICE_ID);
-        
+
         Int32 reply = XScuTimer_CfgInitialize(pTimer, pConfig, pConfig->BaseAddr);
         if (reply != XST_SUCCESS) {
             return 0;
         }
-        
+
         XScuTimer_SetPrescaler(pTimer, 10);
         XScuTimer_LoadTimer(pTimer, 0xFFFFFFFF);
         XScuTimer_EnableAutoReload(pTimer);
         XScuTimer_Start(pTimer);
         lastScuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer));
     }
-    
+
     scuTickCount = ((UInt64)XScuTimer_GetCounterValue(pTimer));
-    
+
     if (scuTickCount > lastScuTickCount) {
         // Wrapped around, the last one should be close to 0
         // the current one should be close to max Int32
@@ -351,7 +351,7 @@ PlatformTickType PlatformTimer::TickCount()
     }
     lastScuTickCount = scuTickCount;
     return TickCount;
-    
+
 #elif defined (VIREO_EMBEDDED_EXPERIMENT)
     //#error MicroSecondCount not defined
     return gTickCount;
@@ -379,39 +379,39 @@ PlatformTickType PlatformTimer::SecondsToTickCount(Double seconds)
 PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    
+
     // Windows filetime base tick count is 100ns
     return microseconds * 10;
-    
+
 #elif (kVireoOS_macosxU)
-    
+
     // Scaling according to the kernel parameters.
     static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
     if (sTimebaseInfo.denom == 0) {
         (void) mach_timebase_info(&sTimebaseInfo);
     }
     return (microseconds * 1000) * sTimebaseInfo.denom / sTimebaseInfo.numer;
-    
+
 #elif (kVireoOS_wiring)
-    
+
     // tick count is microseconds for arduino's wiring
     return ticks;
-    
+
 #elif (kVireoOS_linuxU)
-    
+
     // tick count is nanoseconds for linux
     return microseconds * 1000;
-    
+
 #elif (kVireoOS_emscripten)
-    
+
     // Scale milliseconds to microseconds
     return microseconds / 1000;
-    
+
 #elif (kVireoOS_ZynqARM)
-    
+
     // Still experimental.
     return microseconds * 333333 / 10000;
-    
+
 #elif defined (VIREO_EMBEDDED_EXPERIMENT)
 
     return microseconds / 1000;
@@ -430,39 +430,39 @@ Int64 PlatformTimer::TickCountToMilliseconds(PlatformTickType ticks)
 Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    
+
     // Windows filetime base tick count is 100ns
     return ticks / 10;
-    
+
 #elif (kVireoOS_macosxU)
-    
+
     // Get scale factor used to convert to nanoseconds
     static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
     if (sTimebaseInfo.denom == 0) {
         (void) mach_timebase_info(&sTimebaseInfo);
     }
     return (ticks * sTimebaseInfo.numer / sTimebaseInfo.denom) / 1000;
-    
+
 #elif (kVireoOS_wiring)
-    
+
     // tick count is microseconds for arduino's wiring
     return ticks;
-    
+
 #elif (kVireoOS_linuxU)
-    
+
     // tick count is nanoseconds for linux
     return ticks / 1000;
-    
+
 #elif (kVireoOS_emscripten)
-    
+
     // Scale milliseconds to microseconds
     return ticks * 1000;
-    
+
 #elif (kVireoOS_ZynqARM)
-    
+
     // Still experimental.
     return ticks * 10000 / 333333;
-    
+
 #elif defined (VIREO_EMBEDDED_EXPERIMENT)
 
     return ticks * 1000;
@@ -474,4 +474,3 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 }
 
 } // namespace Vireo
-
