@@ -11,6 +11,7 @@
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include <stdio.h>
 
 #if defined (VIREO_TYPE_Canvas2D)
 

@@ -131,13 +131,13 @@ function compileGcc(opts, filePath) {
 
     var command =
         'g++ ' +
-        '-pthread -fdata-sections -ffunction-sections' +
-        (opts.debug ? '-O0' : '-O2') +
+        '-pthread -fdata-sections -ffunction-sections -c' + ' ' +
+        (opts.debug ? '-O0' : '-O2') + ' '+
         '-I' + opts.include + ' ' +
         opts.define + ' ' +
-        '-o ' + objFilePath + ' ' +
+        ' -o ' + objFilePath + ' '+
         filePath;
-
+    console.log(command);
     sh.exec(command);
 }
 //------------------------------------------------------------
