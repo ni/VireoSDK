@@ -13,6 +13,7 @@ SDG
 
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
+#include "TypeAndDataManager.h"
 
 using namespace Vireo;
 
@@ -203,27 +204,60 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
 
     return _NextInstruction();
 }
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, TypedArrayCoreRef)
-{
-    TypedArrayCoreRef arrayOut = _Param(0);
-    TypedArrayCoreRef arrayIn = _Param(1);
-    IntIndex idx = _Param(2);
-    TypedArrayCoreRef subArray = _Param(3);
 
-    if (arrayOut == subArray) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReplaceSubset inplace");
-        return THREAD_EXEC()->Stop();
-    }
+//------------------------------------------------------------
+struct ArrayReplaceSubsetStruct : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+
+    Int32 count = (_ParamVarArgCount() -2)/2;
+
+    Int32 i = 0;
 
     if (arrayOut != arrayIn) {
         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
-        arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
+        arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
     }
 
-    if (idx >= 0 && idx < arrayOut->Length()) {
-        IntIndex length = Min(subArray->Length(), arrayOut->Length() - idx);
-        arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
+    while (i < count) {
+
+        IntMax idx;
+        TypeRef argType = arguments[i]._paramType;
+        ReadIntFromMemory(argType, arguments[i]._pData, &idx);
+        i++;
+        TypedArrayCoreRef subArray = null;
+        void* element = arguments[i]._pData;
+        argType = arguments[i]._paramType;
+        if (argType->IsArray()) {
+            subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
+        }
+
+        i++;
+
+        // TypedArrayCoreRef subArray = _Param(3);
+        if (arrayOut == subArray) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReplaceSubset inplace");
+            return THREAD_EXEC()->Stop();
+        }
+
+        if (idx >= 0 && idx < arrayOut->Length()) {
+            if (subArray != null) {
+                IntIndex length = Min(subArray->Length(), arrayOut->Length() - idx);
+                arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
+            } else {
+                arrayIn->ElementType()->CopyData(element, arrayOut->BeginAt(idx), 1);
+            }
+        }
     }
     return _NextInstruction();
 }
@@ -442,7 +476,8 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayIndexElt, "p(i(Array) i(Int32) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayAppendElt, "p(io(Array) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, "p(o(Array) i(Array) i(Int32) i(*))")
-    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
+    //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
