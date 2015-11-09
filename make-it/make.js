@@ -176,6 +176,9 @@ function linkClang(opts, fileName) {
 //------------------------------------------------------------
 function linkGcc(opts, fileName) {
     var command = 'g++ ';
+        // -lrt for clock_gettime (linux)
+        command += '-lrt ';
+        // gc-sections for dead stripping
         command += '-s -Wl,--gc-sections ';
         command += '-o ' + fileName + ' ';
         command += opts.filesToLink;
