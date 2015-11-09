@@ -91,11 +91,12 @@ function compileClang(opts, filePath) {
     if (fileIsNewer(filePath, objFilePath)) {
         command =
             'clang++ ' +
-            '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 -c ' +
-            (opts.debug ? '-O0 ' : '-Oz ') +
+            '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 ' +
+            (opts.debug ? '-O0' : '-Oz') + ' ' +
             '-I' + opts.include + ' ' +
             opts.define + ' ' +
-            '-o ' + objFilePath + ' ' +
+            // -c Build a library (not executable) 
+            '-c -o ' + objFilePath + ' ' +
             filePath;
 
         sh.exec(command);
@@ -131,13 +132,13 @@ function compileGcc(opts, filePath) {
 
     var command =
         'g++ ' +
-        '-pthread -fdata-sections -ffunction-sections -c' + ' ' +
-        (opts.debug ? '-O0' : '-O2') + ' '+
+        '-pthread -fdata-sections -ffunction-sections' + ' ' +
+        (opts.debug ? '-O0' : '-O2') + ' ' +
         '-I' + opts.include + ' ' +
         opts.define + ' ' +
-        ' -o ' + objFilePath + ' '+
+        '-c -o ' + objFilePath + ' ' +
         filePath;
-    console.log(command);
+
     sh.exec(command);
 }
 //------------------------------------------------------------
@@ -226,7 +227,7 @@ function linkEmscripten(opts, fileName) {
         // MAIN_MODULE=2 triggers dead code stripping in the main module.
         // so any symbol need by the side module most be referenced by code
         // or added to the EXPORTED_FUNCTIONS set.
-        
+
         // command += '-s MAIN_MODULE=2 ';
         command += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         command += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';
