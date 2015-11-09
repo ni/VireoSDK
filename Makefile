@@ -11,4 +11,4 @@ all:
 
 test:
 	echo "Testing goes here"
-	cd test-it; ./run-tests
+	cd test-it; ./run-tests.sh
