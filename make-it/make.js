@@ -57,7 +57,7 @@ function fileIsNewer(sourceFilePath, objectFilePath) {
 //------------------------------------------------------------
 //------------------------------------------------------------
 function compileMSCL(opts, filePath) {
-    var objFilePath = opts.objRoot + 'win/' + path.parse(filePath).name + '.obj';
+    var objFilePath = opts.objRoot + 'win/' + path.basename(filePath) + '.obj';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
@@ -84,7 +84,7 @@ function compileMSCL(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileClang(opts, filePath) {
-    var objFilePath = opts.objRoot + 'clang/' + path.parse(filePath).name + '.o';
+    var objFilePath = opts.objRoot + 'clang/' + path.basename(filePath) + '.o';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
@@ -95,7 +95,7 @@ function compileClang(opts, filePath) {
             (opts.debug ? '-O0' : '-Oz') + ' ' +
             '-I' + opts.include + ' ' +
             opts.define + ' ' +
-            // -c Build a library (not executable) 
+            // -c Build a library (not executable)
             '-c -o ' + objFilePath + ' ' +
             filePath;
 
@@ -104,7 +104,7 @@ function compileClang(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileEmscripten(opts, filePath) {
-    var objFilePath = opts.objRoot + 'ems/' + path.parse(filePath).name + '.bc';
+    var objFilePath = opts.objRoot + 'ems/' + path.basename(filePath) + '.bc';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
@@ -127,7 +127,7 @@ function compileEmscripten(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileGcc(opts, filePath) {
-    var objFilePath = opts.objRoot + 'gcc/' + path.parse(filePath).name + '.o';
+    var objFilePath = opts.objRoot + 'gcc/' + path.basename(filePath) + '.o';
     opts.filesToLink += ' ' + objFilePath;
 
     var command =
@@ -144,7 +144,7 @@ function compileGcc(opts, filePath) {
 //------------------------------------------------------------
 //!
 function compileLint(opts, filePath) {
-    var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.parse(filePath).name + '.lint';
+    var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.basename(filePath) + '.lint';
     opts.filesToLink += ' ' + objFilePath;
 
     var command =
