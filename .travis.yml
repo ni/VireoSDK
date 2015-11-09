@@ -2,4 +2,6 @@ language: cpp
 compiler:
     - clang
     - gcc
-script: make && make test
+script:
+    - npm install
+    - make && make test
