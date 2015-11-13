@@ -395,6 +395,39 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(3);
+
+    TypeRef deletedPartType = _ParamPointer(1);
+
+    IntIndex length = _Param(4);
+    IntIndex offset = _Param(5);
+
+    IntIndex startIndex = offset > 0? offset : 0;
+    IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
+
+    IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
+    arrayOut->Resize1D(arrayOutLength);
+    if (startIndex > 0) {
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0), arrayOut->BeginAt(0), startIndex);
+    }
+    if (deletedPartType->IsArray()) {
+        TypedArrayCoreRef deletedArray = _Param(3);
+        deletedArray->Resize1D(endIndex - startIndex);
+        deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
+    } else if (endIndex - startIndex > 0 ){
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
+    }
+
+    if (endIndex < arrayIn->Length()) {
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
+    }
+
+    return _NextInstruction();
+}
+
 //#define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
@@ -483,6 +516,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
 
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
