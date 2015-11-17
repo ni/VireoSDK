@@ -128,6 +128,66 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
     }
     return _NextInstruction();
 }
+
+//indexing on 2d array, the row argument comes before column argument
+//which is different from the indexing used in normal N dimension functions(e.g 0 d index, 1st d index, 3nd d index ...)
+VIREO_FUNCTION_SIGNATURE6(ArrayIndexElt2DV, TypedArrayCoreRef, StaticType, void, StaticType, void, void)
+{
+    TypedArrayCoreRef arrayIn = _Param(0);
+    Boolean pickRow = false;
+    Boolean pickCol = false;
+    IntIndex row, col;
+    IntIndex rank = 2;
+    TypeRef type = _ParamPointer(1);
+    IntIndex* lengths = arrayIn->DimensionLengths();
+    if (type->IsA("Int32")) {
+        row = *((IntIndex*)_ParamPointer(2));
+        pickRow = true;
+    } else {
+        row = -1;
+    }
+    type = _ParamPointer(3);
+    if (type->IsA("Int32")) {
+        col = *((IntIndex*)_ParamPointer(4));
+        pickCol = true;
+    } else {
+        col = -1;
+    }
+    TypedArrayCoreRef arrayOut;
+    if (pickCol && pickRow) {
+        if (row >=0 && row < lengths[1] && col>=0 && col <lengths[0]) {
+            IntIndex index2D[2];
+            index2D[0] = col;
+            index2D[1] = row;
+            arrayIn->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), _ParamPointer(5));
+        }
+    } else {
+        IntIndex index2D[2];
+        arrayOut=  *((TypedArrayCoreRef*)_ParamPointer(5));
+        if (pickCol) {
+            if (col >= 0 && col < lengths[0]) {
+                arrayOut->Resize1D(lengths[1]);
+                index2D[0] = col;
+                for (IntIndex i = 0; i < arrayOut->Length(); i++) {
+                    index2D[1] = i;
+                    arrayOut->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), arrayOut->BeginAt(i));
+                }
+            }
+        } else {
+            if (!pickRow) { row = 0;}
+            if (row >= 0 && row < lengths[1]) {
+                arrayOut->Resize1D(lengths[0]);
+                index2D[1] = row;
+                for (IntIndex i = 0; i < arrayOut->Length(); i++) {
+                    index2D[0] = i;
+                    arrayOut->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), arrayOut->BeginAt(i));
+                }
+            }
+        }
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 struct ArrayReplaceNDVParamBlock : public VarArgInstruction
 {
@@ -228,12 +288,14 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
         arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
     }
-
+    IntMax idx = -1;
     while (i < count) {
-
-        IntMax idx;
         TypeRef argType = arguments[i]._paramType;
-        ReadIntFromMemory(argType, arguments[i]._pData, &idx);
+        if (argType->IsA("Int32")) {
+            ReadIntFromMemory(argType, arguments[i]._pData, &idx);
+        } else {
+            idx >= 0? idx++ : idx = 0;
+        }
         i++;
         TypedArrayCoreRef subArray = null;
         void* element = arguments[i]._pData;
@@ -258,6 +320,91 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
                 arrayIn->ElementType()->CopyData(element, arrayOut->BeginAt(idx), 1);
             }
         }
+    }
+    return _NextInstruction();
+}
+
+void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void* newElem, IntIndex row, IntIndex col, IntIndex elemRank)
+{
+    IntIndex rank = arrayOut->Rank();
+    IntIndex* lengths = arrayIn->DimensionLengths();
+    if (elemRank == 1) {
+        TypedArrayCoreRef subArray = (TypedArrayCoreRef)newElem;
+        IntIndex index2D[2];
+        if (col >= 0) {
+             if (col < lengths[0]) {
+                 index2D[0] = col;
+                 int l = lengths[1];
+                 if (l > subArray->Length()) { l = subArray->Length(); }
+                 for (IntIndex i = 0; i < l; i++) {
+                     index2D[1] = i;
+                     arrayOut->ElementType()->CopyData(subArray->BeginAt(i), arrayOut->BeginAtND(rank, index2D));
+                 }
+             }
+         } else {
+             if (row < -1) { row = 0;}
+             if (row < lengths[1]) {
+                 index2D[1] = row;
+                 int l = lengths[0];
+                 if (l > subArray->Length()) { l = subArray->Length(); }
+                 for (IntIndex i = 0; i < l; i++) {
+                     index2D[0] = i;
+                     arrayOut->ElementType()->CopyData(subArray->BeginAt(i), arrayOut->BeginAtND(rank, index2D));
+                 }
+             }
+         }
+    } else {
+        IntIndex index[2];
+        index[0] = col;
+        index[1] = row;
+        if (index[0] >= 0 && index[0] < lengths[0] \
+                && index[1] >= 0 && index[1] < lengths[1]) {
+            arrayOut->ElementType()->CopyData(newElem, arrayOut->BeginAtND(rank, index));
+        }
+    }
+}
+
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+
+    Int32 count = (_ParamVarArgCount() -2)/2;
+
+    Int32 i = 0;
+    if (arrayOut != arrayIn) {
+       arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
+    }
+    IntIndex row = -1;
+    IntIndex col = -1;
+    while (i < count) {
+        TypeRef argType = arguments[i]._paramType;
+
+        if (argType->IsA("Int32")) {
+            row = *((IntIndex*)arguments[i]._pData);
+        } else {
+            row = -1;
+        }
+        i++;
+        argType = arguments[i]._paramType;
+
+        if (argType->IsA("Int32")) {
+            col = *((IntIndex*)arguments[i]._pData);
+        } else {
+            col = -1;
+        }
+        i++;
+        TypedArrayCoreRef subArray = null;
+        void* element = arguments[i]._pData;
+        argType = arguments[i]._paramType;
+        if (argType->IsArray()) {
+            subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
+            replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);
+        } else {
+            replace2dArray(arrayOut, arrayIn, element, row, col, 0);
+        }
+        i++;
     }
     return _NextInstruction();
 }
@@ -395,6 +542,69 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex)
+{
+    TypedArrayCoreRef array1st = _Param(0);
+    TypedArrayCoreRef array2nd = _Param(1);
+    TypedArrayCoreRef arrayIn = _Param(2);
+    IntIndex index = _Param(3);
+    IntIndex length1 = 0;
+    IntIndex length2 = arrayIn->Length();
+    if (index < 0)
+    {
+        index = 0;
+        length1 = 0;
+    } else if (index >= arrayIn->Length()) {
+        index = arrayIn->Length();
+        length1 = length2;
+        length2 = 0;
+    } else {
+        length1 = index;
+        length2 = length2 - index;
+    }
+    array1st->Resize1D(length1);
+    if (length1 > 0) {
+        array1st->ElementType()->CopyData(arrayIn->BeginAt(0), array1st->BeginAt(0), length1);
+    }
+    array2nd->Resize1D(length2);
+    if (length2 > 0) {
+        array2nd->ElementType()->CopyData(arrayIn->BeginAt(index), array2nd->BeginAt(0), length2);
+    }
+    return _NextInstruction();
+}
+
+//DEFINE_VIREO_FUNCTION(ArrayMaxMin, "p(o(*) o(Int32) o(*) o(Int32) i(Array))")
+VIREO_FUNCTION_SIGNATURE5(ArrayMaxMin, void, IntIndex, void, IntIndex, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef arrayIn = _Param(4);
+    if (arrayIn->Length() <= 0) {
+        _Param(1) = -1;
+        _Param(3) = -1;
+        return _NextInstruction();
+    }
+    IntIndex max = 0;
+    IntIndex min = 0;
+    void* maxValue = arrayIn->BeginAt(max);
+    void* minValue = arrayIn->BeginAt(min);
+    TypeRef elementType = arrayIn->ElementType();
+    for (IntIndex i = 1; i < arrayIn->Length(); i++) {
+        void* value = arrayIn->BeginAt(i);
+        if (elementType->CompareValue(value, maxValue) > 0) {
+            max = i;
+            maxValue = value;
+        }
+        if (elementType->CompareValue(value, minValue) == -1) {
+            min = i;
+            minValue = value;
+        }
+    }
+    elementType->CopyData(maxValue, _ParamPointer(0));
+    _Param(1) = max;
+    elementType->CopyData(minValue, _ParamPointer(2));
+    _Param(3) = min;
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -408,13 +618,17 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     IntIndex startIndex = offset > 0? offset : 0;
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
 
+    if (endIndex <= 0) {
+        return _NextInstruction();
+    }
     IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
     arrayOut->Resize1D(arrayOutLength);
     if (startIndex > 0) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0), arrayOut->BeginAt(0), startIndex);
+
     }
     if (deletedPartType->IsArray()) {
-        TypedArrayCoreRef deletedArray = _Param(3);
+        TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
         deletedArray->Resize1D(endIndex - startIndex);
         deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
     } else if (endIndex - startIndex > 0 ){
@@ -517,9 +731,12 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
-
+    DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayMaxMin, "p(o(*) o(Int32) o(*) o(Int32) i(Array))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
+    DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(StaticTypeAndData) i(StaticTypeAndData) o(*))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(VarArgCount) i(Array) o(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )")
     // It might be helpful to have indexing functions that take the

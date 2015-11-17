@@ -674,6 +674,57 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     } 
     return false;
 }
+
+//-------------------------------------------------------------
+//Compare the value A and value B of the same type
+//Only support flat type.
+Int32 TypeCommon::CompareValue(void* valueA, void* valueB)
+{
+    if (IsFlat()) {
+        EncodingEnum encoding = BitEncoding();
+        Int32 aqSize = TopAQSize();
+        switch (encoding) {
+            case kEncoding_IEEE754Binary:
+            {
+                double a, b;
+                ReadDoubleFromMemory(this, valueA, &a);
+                ReadDoubleFromMemory(this, valueB, &b);
+                if (a > b) {
+                    return 1;
+                } else if (a < b) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+                break;
+            case kEncoding_S2CInt:
+            case kEncoding_DimInt:
+            case kEncoding_UInt:
+            case kEncoding_Boolean:
+            {
+                Int64 a, b;
+                ReadIntFromMemory(this, valueA, &a);
+                ReadIntFromMemory(this, valueB, &b);
+                if (a > b) {
+                    return 1;
+                } else if (a < b) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+                break;
+            default:
+                //not supported yet, like double
+                return -2;
+                break;
+        }
+    } else {
+        return -2;
+    }
+}
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 {
