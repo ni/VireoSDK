@@ -535,7 +535,6 @@ public:
     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
     
     Boolean CompareType(TypeRef otherType);
-    Int32 CompareValue(void* valueA, void* valueB);
     Boolean IsA(const SubString* otherTypeName);
     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);

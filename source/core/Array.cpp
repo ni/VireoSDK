@@ -273,7 +273,7 @@ struct ArrayReplaceSubsetStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-//------------------------------------------------------------
+//ArrayReplaceSubset function for 1d array, support multiple inputs
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -364,6 +364,7 @@ void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void*
     }
 }
 
+//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -573,38 +574,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, Type
     return _NextInstruction();
 }
 
-//DEFINE_VIREO_FUNCTION(ArrayMaxMin, "p(o(*) o(Int32) o(*) o(Int32) i(Array))")
-VIREO_FUNCTION_SIGNATURE5(ArrayMaxMin, void, IntIndex, void, IntIndex, TypedArrayCoreRef)
-{
-    TypedArrayCoreRef arrayIn = _Param(4);
-    if (arrayIn->Length() <= 0) {
-        _Param(1) = -1;
-        _Param(3) = -1;
-        return _NextInstruction();
-    }
-    IntIndex max = 0;
-    IntIndex min = 0;
-    void* maxValue = arrayIn->BeginAt(max);
-    void* minValue = arrayIn->BeginAt(min);
-    TypeRef elementType = arrayIn->ElementType();
-    for (IntIndex i = 1; i < arrayIn->Length(); i++) {
-        void* value = arrayIn->BeginAt(i);
-        if (elementType->CompareValue(value, maxValue) > 0) {
-            max = i;
-            maxValue = value;
-        }
-        if (elementType->CompareValue(value, minValue) == -1) {
-            min = i;
-            minValue = value;
-        }
-    }
-    elementType->CopyData(maxValue, _ParamPointer(0));
-    _Param(1) = max;
-    elementType->CopyData(minValue, _ParamPointer(2));
-    _Param(3) = min;
-    return _NextInstruction();
-}
-
+// ArrayDelete function, can delete single element or multiple elements in 1d Array
 VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
@@ -638,7 +608,6 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     if (endIndex < arrayIn->Length()) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
     }
-
     return _NextInstruction();
 }
 
@@ -732,7 +701,6 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
-    DEFINE_VIREO_FUNCTION(ArrayMaxMin, "p(o(*) o(Int32) o(*) o(Int32) i(Array))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(StaticTypeAndData) i(StaticTypeAndData) o(*))")
