@@ -1,0 +1,26 @@
+define(c1 dv(a(.Int32 *) (1 2 3 4 5) ) )
+//---------------------------------------------------
+//VI Definition: ArraySplit.vi
+define(videf1 dv(.VirtualInstrument (
+    c(
+        e(a(.Int32 *)     firstArray)
+        e(a(.Int32 *)     secondArray)
+    )
+    clump(1 
+        Println("testing array Split at position 2")
+        //arguments: firstoutput second output input index
+        ArraySplit(firstArray secondArray c1 2)      
+        Println(firstArray)
+        Println(secondArray)
+        Println("test index outof boundary")
+        ArraySplit(firstArray secondArray c1 -3)      
+        Println(firstArray)
+        Println(secondArray)
+        Println("test index outof boundary")
+        ArraySplit(firstArray secondArray c1 9)      
+        Println(firstArray)
+        Println(secondArray)
+//--- end of vi
+    )
+)))
+enqueue(videf1)
