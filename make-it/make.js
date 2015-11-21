@@ -381,7 +381,7 @@ function buildVireo(targetOptions, outputName) {
 
     opts.jsLibraries = [
         'io/library_httpClient.js',
-        'io/library_WebSocketClient.js',
+        'io/library_webSocketClient.js',
         'io/library_canvas2d.js'        // to be pulled into side module
     ];
 

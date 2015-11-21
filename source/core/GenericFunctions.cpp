@@ -477,12 +477,8 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, searchOp, snippetArgId);
-    snippetBuilder.StartInstruction(&EQName);
-    snippetBuilder.InternalAddArg(elementType, null);
-    snippetBuilder.InternalAddArg(elementType, pInstructionBuilder->_argPointers[1]);
-    snippetBuilder.InternalAddArg(booleanType, null);
+    snippetBuilder.EmitInstruction(&EQName, 3, elementType, (void*)null, elementType, pInstructionBuilder->_argPointers[1], booleanType, (void*)null);
 
-    snippetBuilder.EmitInstruction();
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&searchOp->_piNext);
 
