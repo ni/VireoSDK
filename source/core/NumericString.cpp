@@ -353,9 +353,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     break;
                     case 'f': case 'F':
                     {
-                        Double tempDouble;
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
+                        Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                         Int32 leadingZero = 0;
                         Int32 exponent = 0;
                         Int32 precision = fOptions.Precision;
@@ -402,9 +401,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     break;
                     case 'e': case 'E':
                     {
-                        Double tempDouble;
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
+                        Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                         Int32 precision = fOptions.Precision;
                         if (precision>0 && fOptions.EngineerNotation) {
                             Int32 exponent = 0;
@@ -467,10 +465,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString formattedNumber;
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        IntMax intValue;
                         Int32 intSize = 8*argType->TopAQSize();
-
-                        ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
+                        IntMax intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         char BinaryString[2*kTempCStringLength];
                         char bits [2];
                         bits[0] = '0';
@@ -533,18 +529,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         char formattedNumber[2*kTempCStringLength];
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         IntMax intValue;
-                        if (argType->BitEncoding() == kEncoding_IEEE754Binary) {
+                        EncodingEnum enc = argType->BitEncoding();
+                        if (enc == kEncoding_IEEE754Binary) {
                             // When reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
-                                ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
+                                intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                                 intValue = ConvertNumericRange(kEncoding_UInt, 4, intValue);
                             } else {
-                                ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
+                                intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                                 intValue = ConvertNumericRange(kEncoding_S2CInt, 4, intValue);
                             }
-
+                        } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt) {
+                            intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         } else {
-                            ReadIntFromMemory(argType, arguments[argumentIndex]._pData, &intValue);
+                            intValue = 0;
                         }
 
                         Int32 length = snprintf(formattedNumber, kTempCStringLength, tempFormat.BeginCStr(), intValue);
@@ -646,8 +644,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         } else {
-                            Double tempDouble;
-                            ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData, &tempDouble);
+                            Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                             Timestamp time(tempDouble);
                             Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);

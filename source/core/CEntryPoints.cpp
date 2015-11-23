@@ -133,9 +133,7 @@ VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, c
     if (actualType == null)
         return -1;
 
-    Double d;
-    ReadDoubleFromMemory(actualType, pData, &d);
-    return d;
+    return ReadDoubleFromMemory(actualType, pData);
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.

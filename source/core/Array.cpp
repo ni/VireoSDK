@@ -285,11 +285,11 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
         arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
     }
-    IntMax idx = -1;
+    IntIndex idx = -1;
     while (i < count) {
         TypeRef argType = arguments[i]._paramType;
         if (arguments[i]._pData != NULL) {
-            ReadIntFromMemory(argType, arguments[i]._pData, &idx);
+            idx = (IntIndex) ReadIntFromMemory(argType, arguments[i]._pData);
         } else {
             idx >= 0? idx++ : idx = 0;
         }
@@ -536,8 +536,7 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     IntIndex arrayInLength = arrayIn->Length();
     arrayOut->Resize1D(arrayInLength);
 
-    if (arrayInLength > 0)
-    {
+    if (arrayInLength > 0) {
         offset = offset % arrayInLength;
         if (offset < 0)
             offset += arrayInLength;
@@ -557,8 +556,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, Type
     IntIndex index = _Param(3);
     IntIndex length1 = 0;
     IntIndex length2 = arrayIn->Length();
-    if (index < 0)
-    {
+    if (index < 0) {
         index = 0;
         length1 = 0;
     } else if (index >= arrayIn->Length()) {
@@ -632,8 +630,7 @@ VIREO_FUNCTION_SIGNATURE3(Mul_VDouble, TypedArray1D<Double>*, TypedArray1D<Doubl
     IntIndex outputSize = _Param(2)->Length();
     IntIndex minSize = inputASize > inputBSize ? inputBSize : inputASize;
 
-    if (outputSize != minSize)
-    {
+    if (outputSize != minSize) {
         _Param(2)->Resize1D(minSize);
     }
     gPlatform.IO.Printf("Accelerated Vector Multiply\n");
@@ -657,8 +654,7 @@ VIREO_FUNCTION_SIGNATURE3(Add_VDouble, TypedArray1D<Double>*, TypedArray1D<Doubl
     IntIndex outputSize = _Param(2)->Length();
     IntIndex minSize = inputASize > inputBSize ? inputBSize : inputASize;
 
-    if (outputSize != minSize)
-    {
+    if (outputSize != minSize) {
         _Param(2)->Resize1D(minSize);
     }
 

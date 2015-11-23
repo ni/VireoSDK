@@ -91,12 +91,10 @@ IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
         TypeRef type = LookupParameter(i);
         if (type) {
             // Use its value.
-            IntMax newValue = 0;
-            ReadIntFromMemory(type, type->Begin(kPARead), &newValue);
-            return (IntIndex) newValue;
+            return (IntIndex) ReadIntFromMemory(type, type->Begin(kPARead));
         } else {
             // If no parameter is supplied then change it to simply being variable size
-            // or shift its position?, thats not hard either.
+            // TODO(templates) or shift its position?, thats not hard either.
             return kArrayVariableLengthSentinel;
         }
     } else {
