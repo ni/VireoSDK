@@ -57,7 +57,7 @@ function fileIsNewer(sourceFilePath, objectFilePath) {
 //------------------------------------------------------------
 //------------------------------------------------------------
 function compileMSCL(opts, filePath) {
-    var objFilePath = opts.objRoot + 'win/' + path.parse(filePath).name + '.obj';
+    var objFilePath = opts.objRoot + 'win/' + path.basename(filePath) + '.obj';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
@@ -84,18 +84,19 @@ function compileMSCL(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileClang(opts, filePath) {
-    var objFilePath = opts.objRoot + 'clang/' + path.parse(filePath).name + '.o';
+    var objFilePath = opts.objRoot + 'clang/' + path.basename(filePath) + '.o';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
     if (fileIsNewer(filePath, objFilePath)) {
         command =
             'clang++ ' +
-            '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 -c ' +
-            (opts.debug ? '-O0 ' : '-Oz ') +
+            '-pthread -Wall -m64 -MMD -fno-rtti -fno-exceptions -std=c++11 ' +
+            (opts.debug ? '-O0' : '-Oz') + ' ' +
             '-I' + opts.include + ' ' +
             opts.define + ' ' +
-            '-o ' + objFilePath + ' ' +
+            // -c Build a library (not executable)
+            '-c -o ' + objFilePath + ' ' +
             filePath;
 
         sh.exec(command);
@@ -103,7 +104,7 @@ function compileClang(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileEmscripten(opts, filePath) {
-    var objFilePath = opts.objRoot + 'ems/' + path.parse(filePath).name + '.bc';
+    var objFilePath = opts.objRoot + 'ems/' + path.basename(filePath) + '.bc';
     opts.filesToLink += ' ' + objFilePath;
 
     var command = '';
@@ -126,24 +127,24 @@ function compileEmscripten(opts, filePath) {
 }
 //------------------------------------------------------------
 function compileGcc(opts, filePath) {
-    var objFilePath = opts.objRoot + 'gcc/' + path.parse(filePath).name + '.o';
+    var objFilePath = opts.objRoot + 'gcc/' + path.basename(filePath) + '.o';
     opts.filesToLink += ' ' + objFilePath;
 
     var command =
         'g++ ' +
-        '-pthread -fdata-sections -ffunction-sections -c' + ' ' +
-        (opts.debug ? '-O0' : '-O2') + ' '+
+        '-pthread -fdata-sections -ffunction-sections' + ' ' +
+        (opts.debug ? '-O0' : '-O2') + ' ' +
         '-I' + opts.include + ' ' +
         opts.define + ' ' +
-        ' -o ' + objFilePath + ' '+
+        '-c -o ' + objFilePath + ' ' +
         filePath;
-    console.log(command);
+
     sh.exec(command);
 }
 //------------------------------------------------------------
 //!
 function compileLint(opts, filePath) {
-    var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.parse(filePath).name + '.lint';
+    var objFilePath = opts.objRoot + opts.objPlatformSuffix + path.basename(filePath) + '.lint';
     opts.filesToLink += ' ' + objFilePath;
 
     var command =
@@ -175,9 +176,12 @@ function linkClang(opts, fileName) {
 //------------------------------------------------------------
 function linkGcc(opts, fileName) {
     var command = 'g++ ';
+        // gc-sections for dead stripping
         command += '-s -Wl,--gc-sections ';
         command += '-o ' + fileName + ' ';
-        command += opts.filesToLink;
+        command += opts.filesToLink + ' ';
+        // -lrt for clock_gettime (linux)
+        command += '-lrt ';
 
     console.log(command);
     sh.exec(command);
@@ -226,7 +230,7 @@ function linkEmscripten(opts, fileName) {
         // MAIN_MODULE=2 triggers dead code stripping in the main module.
         // so any symbol need by the side module most be referenced by code
         // or added to the EXPORTED_FUNCTIONS set.
-        
+
         // command += '-s MAIN_MODULE=2 ';
         command += '--pre-js ' + opts.sourceRoot + 'core/vireo.preamble.js ';
         command += '--post-js ' + opts.sourceRoot + 'core/vireo.postamble.js ';

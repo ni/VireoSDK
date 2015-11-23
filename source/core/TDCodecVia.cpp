@@ -1718,8 +1718,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr pBuff = buffer;
-    Double value;
-    ReadDoubleFromMemory(type, pData, &value);
+    Double value = ReadDoubleFromMemory(type, pData);
 
     Int32 len;
     if (isnan(value)) {
@@ -1888,9 +1887,10 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_UInt:
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
-            IntMax intValue;
-            ReadIntFromMemory(type, pData, &intValue);
+            {
+            IntMax intValue = ReadIntFromMemory(type, pData);
             FormatInt(type->BitEncoding(), intValue);
+            }
             break;
         case kEncoding_IEEE754Binary:
             FormatIEEE754(type, pData);

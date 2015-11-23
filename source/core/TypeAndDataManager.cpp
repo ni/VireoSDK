@@ -492,7 +492,7 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *p
         return kNIError_kResourceNotFound;
     }
     
-    ReadDoubleFromMemory(actualType, pData, pValue);
+    *pValue = ReadDoubleFromMemory(actualType, pData);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -2207,50 +2207,66 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 }
 //------------------------------------------------------------
 //! Read an integer value from memory converting as necessary.
-NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
+IntMax ReadIntFromMemory(TypeRef type, void* pData)
 {
-    NIError err = kNIError_Success;
+    Boolean isErr = false;
     IntMax value = 0;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
-                case 4: value = RoundToEven(*(Single*)pData);  break;
-                case 8: value = RoundToEven(*(Double*)pData);  break;
-                default: err = kNIError_kCantDecode;           break;
+                case 0: value = 0;                              break;
+                case 4: value = RoundToEven(*(Single*)pData);   break;
+                case 8: value = RoundToEven(*(Double*)pData);   break;
+                default: isErr = true;                          break;
             }
             break;
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1: value = *(Int8*)pData;                 break;
-                case 2: value = *(Int16*)pData;                break;
-                case 4: value = *(Int32*)pData;                break;
-                case 8: value = *(Int64*)pData;                break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = *(Int8*)pData;                  break;
+                case 2: value = *(Int16*)pData;                 break;
+                case 4: value = *(Int32*)pData;                 break;
+                case 8: value = *(Int64*)pData;                 break;
+                default: isErr = true;                          break;
             }
             break;
         case kEncoding_UInt:
             // Use unsigned int casts to avoid sign extension
             switch (aqSize) {
-                case 1:  value = *(UInt8*)pData;                break;
-                case 2:  value = *(UInt16*)pData;               break;
-                case 4:  value = *(UInt32*)pData;               break;
-                case 8:  value = *(UInt64*)pData;               break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = *(UInt8*)pData;                 break;
+                case 2: value = *(UInt16*)pData;                break;
+                case 4: value = *(UInt32*)pData;                break;
+                case 8: value = *(UInt64*)pData;                break;
+                default: isErr = true;                          break;
             }
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
-                case 1:  value = (*(UInt8*)pData) ? 1:0;        break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = (*(UInt8*)pData) ? 1 : 0;       break;
+                default: isErr = true;                          break;
             }
             break;
-        default: err = kNIError_kCantDecode; break;
+        case kEncoding_Cluster:
+            if (type->IsA("Timestamp")) {
+                Timestamp* t = (Timestamp*) pData;
+                value = t->Integer();
+            }
+            break;
+        default:
+            isErr = true;
+            break;
         }
-    *pValue = value;
-    return err;
+    
+    if (isErr) {
+    //    gPlatform.IO.Printf("(Error \"ReadIntFromMemory encoding:%d aqSize:%d\")\n", (int)encoding, (int)aqSize);
+    }
+
+    return value;
 }
 //------------------------------------------------------------
 //! Write an integer value to memory converting as necessary.
@@ -2302,9 +2318,9 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
 }
 //------------------------------------------------------------
 //! Read a IEEE754 double value from memory converting as necessary.
-NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
+Double ReadDoubleFromMemory(TypeRef type, void* pData)
 {
-    NIError err = kNIError_Success;
+    Boolean isErr = false;
     Double value = 0.0;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
@@ -2313,7 +2329,7 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
             switch (aqSize) {
                 case 4:  value = *(Single*)pData;           break;
                 case 8:  value = *(Double*)pData;           break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_S2CInt:
@@ -2323,7 +2339,7 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
                 case 2:  value = *(Int16*)pData;            break;
                 case 4:  value = *(Int32*)pData;            break;
                 case 8:  value = *(Int64*)pData;            break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_UInt:
@@ -2332,13 +2348,13 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
                 case 2:  value = *(UInt16*)pData;           break;
                 case 4:  value = *(UInt32*)pData;           break;
                 case 8:  value = *(UInt64*)pData;           break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
                 case 1:  value = (*(UInt8*)pData) ? 1.0:0.0;break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_Cluster:
@@ -2347,10 +2363,16 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
               value = t->ToDouble();
             }
             break;
-        default: err = kNIError_kCantDecode; break;
+        default:
+            isErr = kNIError_kCantDecode;
+            break;
     }
-    *pValue = value;
-    return err;
+    
+    if (isErr) {
+        gPlatform.IO.Printf("(Error \"ReadDoubleFromMemory encoding:%d aqSize:%d\")\n", (int)encoding, (int)aqSize);
+    }
+
+    return value;
 }
 //------------------------------------------------------------
 //! Write a IEEE754 double value to memory converting as necessary.
