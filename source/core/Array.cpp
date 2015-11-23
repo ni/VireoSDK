@@ -13,6 +13,7 @@ SDG
 
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
+#include "TypeAndDataManager.h"
 
 using namespace Vireo;
 
@@ -127,6 +128,65 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
     }
     return _NextInstruction();
 }
+
+//indexing on 2d array, the row argument comes before column argument
+//which is different from the indexing used in normal N dimension functions(e.g 0 d index, 1st d index, 3nd d index ...)
+// Arguments: inputArray, row, column, outputElement/Array
+VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
+{
+    TypedArrayCoreRef arrayIn = _Param(0);
+    Boolean pickRow = false;
+    Boolean pickCol = false;
+    IntIndex row, col;
+    IntIndex rank = 2;
+    IntIndex* lengths = arrayIn->DimensionLengths();
+    if (_ParamPointer(1) != NULL) {
+        row = *((IntIndex*)_ParamPointer(1));
+        pickRow = true;
+    } else {
+        row = -1;
+    }
+    if (_ParamPointer(2) != NULL) {
+        col = *((IntIndex*)_ParamPointer(2));
+        pickCol = true;
+    } else {
+        col = -1;
+    }
+    TypedArrayCoreRef arrayOut;
+    if (pickCol && pickRow) {
+        if (row >=0 && row < lengths[1] && col>=0 && col <lengths[0]) {
+            IntIndex index2D[2];
+            index2D[0] = col;
+            index2D[1] = row;
+            arrayIn->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), _ParamPointer(3));
+        }
+    } else {
+        IntIndex index2D[2];
+        arrayOut=  *((TypedArrayCoreRef*)_ParamPointer(3));
+        if (pickCol) {
+            if (col >= 0 && col < lengths[0]) {
+                arrayOut->Resize1D(lengths[1]);
+                index2D[0] = col;
+                for (IntIndex i = 0; i < arrayOut->Length(); i++) {
+                    index2D[1] = i;
+                    arrayOut->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), arrayOut->BeginAt(i));
+                }
+            }
+        } else {
+            if (!pickRow) { row = 0;}
+            if (row >= 0 && row < lengths[1]) {
+                arrayOut->Resize1D(lengths[0]);
+                index2D[1] = row;
+                for (IntIndex i = 0; i < arrayOut->Length(); i++) {
+                    index2D[0] = i;
+                    arrayOut->ElementType()->CopyData(arrayIn->BeginAtND(rank, index2D), arrayOut->BeginAt(i));
+                }
+            }
+        }
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 struct ArrayReplaceNDVParamBlock : public VarArgInstruction
 {
@@ -203,27 +263,155 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
 
     return _NextInstruction();
 }
+
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(ArrayReplaceSubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, TypedArrayCoreRef)
+// arguments: output array, input array, index1, newElement1/subarray1(, indexk, newElementk/subarrayk)
+struct ArrayReplaceSubsetStruct : public VarArgInstruction
 {
-    TypedArrayCoreRef arrayOut = _Param(0);
-    TypedArrayCoreRef arrayIn = _Param(1);
-    IntIndex idx = _Param(2);
-    TypedArrayCoreRef subArray = _Param(3);
-
-    if (arrayOut == subArray) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReplaceSubset inplace");
-        return THREAD_EXEC()->Stop();
-    }
-
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+//ArrayReplaceSubset function for 1d array, support multiple inputs
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    Int32 count = (_ParamVarArgCount() -2)/2;
+    Int32 i = 0;
     if (arrayOut != arrayIn) {
         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
-        arrayIn->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
+        arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
     }
+    IntMax idx = -1;
+    while (i < count) {
+        TypeRef argType = arguments[i]._paramType;
+        if (arguments[i]._pData != NULL) {
+            ReadIntFromMemory(argType, arguments[i]._pData, &idx);
+        } else {
+            idx >= 0? idx++ : idx = 0;
+        }
+        i++;
+        TypedArrayCoreRef subArray = null;
+        void* element = arguments[i]._pData;
+        argType = arguments[i]._paramType;
+        //whether the input is single element or not. The argType needn't to be flat to specify single element
+        //. e.g. string type
+        if (!argType->IsA(arrayIn->ElementType())) {
+            subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
+        }
+        i++;
+        if (arrayOut == subArray) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayReplaceSubset inplace");
+            return THREAD_EXEC()->Stop();
+        }
 
-    if (idx >= 0 && idx < arrayOut->Length()) {
-        IntIndex length = Min(subArray->Length(), arrayOut->Length() - idx);
-        arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
+        if (idx >= 0 && idx < arrayOut->Length()) {
+            if (subArray != null) {
+                IntIndex length = Min(subArray->Length(), arrayOut->Length() - idx);
+                arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
+            } else {
+                arrayIn->ElementType()->CopyData(element, arrayOut->BeginAt(idx), 1);
+            }
+        }
+    }
+    return _NextInstruction();
+}
+
+//function called by ArrayReplaceSubset2DV for each pair of input.
+//arguments: output array, input array, newElem/newArray, row, column, rankofthenewElem.
+//elemRank specify the rank of the input element. in this case (2D input), it can only be 1 or 0.
+void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void* newElem, IntIndex row, IntIndex col, IntIndex elemRank)
+{
+    IntIndex rank = arrayOut->Rank();
+    IntIndex* lengths = arrayIn->DimensionLengths();
+    if (elemRank == 1) {
+        TypedArrayCoreRef subArray = (TypedArrayCoreRef)newElem;
+        IntIndex index2D[2];
+        if (col >= 0) {
+             if (col < lengths[0]) {
+                 index2D[0] = col;
+                 int l = lengths[1];
+                 if (l > subArray->Length()) { l = subArray->Length(); }
+                 for (IntIndex i = 0; i < l; i++) {
+                     index2D[1] = i;
+                     arrayOut->ElementType()->CopyData(subArray->BeginAt(i), arrayOut->BeginAtND(rank, index2D));
+                 }
+             }
+         } else {
+             if (row < -1) { row = 0;}
+             if (row < lengths[1]) {
+                 index2D[1] = row;
+                 int l = lengths[0];
+                 if (l > subArray->Length()) { l = subArray->Length(); }
+                 for (IntIndex i = 0; i < l; i++) {
+                     index2D[0] = i;
+                     arrayOut->ElementType()->CopyData(subArray->BeginAt(i), arrayOut->BeginAtND(rank, index2D));
+                 }
+             }
+         }
+    } else {
+        IntIndex index[2];
+        index[0] = col;
+        index[1] = row;
+        if (index[0] >= 0 && index[0] < lengths[0] \
+                && index[1] >= 0 && index[1] < lengths[1]) {
+            arrayOut->ElementType()->CopyData(newElem, arrayOut->BeginAtND(rank, index));
+        }
+    }
+}
+
+//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    Int32 count = (_ParamVarArgCount() -2)/2;
+    Int32 i = 0;
+    if (arrayOut != arrayIn) {
+       arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
+    }
+    IntIndex row = -1;
+    IntIndex col = -1;
+
+    while (i < count) {
+        Boolean wireRow = false;
+        Boolean wireCol = false;
+        TypeRef argType = arguments[i]._paramType;
+        if (arguments[i]._pData != NULL) {
+            row = *((IntIndex*)arguments[i]._pData);
+            wireRow = true;
+        } else {
+            row >= 0? row++ : row = 0;
+        }
+
+        i++;
+        argType = arguments[i]._paramType;
+        if (arguments[i]._pData != NULL) {
+            col = *((IntIndex*)arguments[i]._pData);
+            wireCol = true;
+        } else {
+            col >= 0? col++ : col = 0;
+        }
+
+        i++;
+        TypedArrayCoreRef subArray = null;
+        void* element = arguments[i]._pData;
+        argType = arguments[i]._paramType;
+
+        if (!argType->IsA(arrayIn->ElementType())) {
+            subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
+            // if no index wired, column becomes disabled
+            if(!wireRow && !wireCol) {col = -1;}
+            replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);
+        } else {
+            if(!wireRow && !wireCol) {row > 0? row-- : row = 0;}
+            replace2dArray(arrayOut, arrayIn, element, row, col, 0);
+        }
+        i++;
     }
     return _NextInstruction();
 }
@@ -361,6 +549,72 @@ VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, Int
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex)
+{
+    TypedArrayCoreRef array1st = _Param(0);
+    TypedArrayCoreRef array2nd = _Param(1);
+    TypedArrayCoreRef arrayIn = _Param(2);
+    IntIndex index = _Param(3);
+    IntIndex length1 = 0;
+    IntIndex length2 = arrayIn->Length();
+    if (index < 0)
+    {
+        index = 0;
+        length1 = 0;
+    } else if (index >= arrayIn->Length()) {
+        index = arrayIn->Length();
+        length1 = length2;
+        length2 = 0;
+    } else {
+        length1 = index;
+        length2 = length2 - index;
+    }
+    array1st->Resize1D(length1);
+    if (length1 > 0) {
+        array1st->ElementType()->CopyData(arrayIn->BeginAt(0), array1st->BeginAt(0), length1);
+    }
+    array2nd->Resize1D(length2);
+    if (length2 > 0) {
+        array2nd->ElementType()->CopyData(arrayIn->BeginAt(index), array2nd->BeginAt(0), length2);
+    }
+    return _NextInstruction();
+}
+
+// ArrayDelete function, can delete single element or multiple elements in 1d Array
+VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(3);
+    TypeRef deletedPartType = _ParamPointer(1);
+    IntIndex length = _Param(4);
+    IntIndex offset = _Param(5);
+    IntIndex startIndex = offset > 0? offset : 0;
+    IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
+
+    if (endIndex <= 0) {
+        return _NextInstruction();
+    }
+    IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
+    arrayOut->Resize1D(arrayOutLength);
+    if (startIndex > 0) {
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0), arrayOut->BeginAt(0), startIndex);
+    }
+
+    // check whether to delete single element or subArray from the input array
+    if (!deletedPartType->IsA(arrayIn->ElementType())) {
+        TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
+        deletedArray->Resize1D(endIndex - startIndex);
+        deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
+    } else if (endIndex - startIndex > 0 ){
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
+    }
+
+    if (endIndex < arrayIn->Length()) {
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
+    }
+    return _NextInstruction();
+}
+
 //#define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
@@ -442,15 +696,19 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayIndexElt, "p(i(Array) i(Int32) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayAppendElt, "p(io(Array) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, "p(o(Array) i(Array) i(Int32) i(*))")
-    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
+    //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
-
+    DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
+    DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(VarArgCount) i(Array) o(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )")
     // It might be helpful to have indexing functions that take the

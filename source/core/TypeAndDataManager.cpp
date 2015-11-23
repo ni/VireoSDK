@@ -674,6 +674,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     } 
     return false;
 }
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 {
