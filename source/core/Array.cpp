@@ -14,6 +14,8 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include <vector>
+#include <algorithm>
 
 using namespace Vireo;
 
@@ -578,6 +580,86 @@ VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, Type
     return _NextInstruction();
 }
 
+struct Sort1DArrayInstruction : public InstructionCore
+{
+    _ParamDef(TypedArrayCoreRef, OutArray);
+    _ParamDef(TypedArrayCoreRef, InArray);
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()      { return this->_piNext; }
+};
+//Emit the sort instruction for specific type
+//------------------------------------------------------------
+InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
+{
+    ConstCStr pSortOpName = "Sort1DArrayInternal";
+    SubString sortOpToken(pSortOpName);
+
+    pInstructionBuilder->ReresolveInstruction(&sortOpToken, false);
+    InstructionCore* pInstruction = null;
+    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
+    TypeRef elementType  = arrayArg->ElementType();
+    SubString LTName("IsLT");
+    // Add param slot to hold the snippet
+    Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+    Sort1DArrayInstruction* sortOp = (Sort1DArrayInstruction*) pInstructionBuilder->EmitInstruction();
+    pInstruction = sortOp;
+    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsBooleanType);
+
+    ClumpParseState snippetBuilder(pInstructionBuilder);
+    pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);
+
+    pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+    pInstructionBuilder->RecordNextHere(&sortOp->_piNext);
+
+    return pInstruction;
+}
+
+struct comparetor
+{
+private:
+    Instruction3<void, void, Boolean>* _snippet;
+public:
+    comparetor(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
+    bool operator()(AQBlock1* i, AQBlock1* j)
+    {
+        Boolean less = false;
+        _snippet->_p0 = i;
+        _snippet->_p1 = j;
+        _snippet->_p2 = &less;
+        _PROGMEM_PTR(_snippet, _function)(_snippet);
+        return less;
+    }
+};
+
+// using the stl vector and sort algorithm to sort the array. the compare function is defined above
+VIREO_FUNCTION_SIGNATURET(Sort1DArrayInternal, Sort1DArrayInstruction)
+{
+    TypedArrayCoreRef arrayOut = _Param(OutArray);
+    TypedArrayCoreRef arrayIn = _Param(InArray);
+    Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    IntIndex len = arrayIn->Length();
+    arrayOut->Resize1D(len);
+    std::vector<AQBlock1*> myVector;
+    AQBlock1* base = arrayIn->BeginAt(0);
+    Int32 elementSize = arrayIn->ElementType()->TopAQSize();
+    for (IntIndex i = 0; i < len; i++) {
+        myVector.push_back(base);
+        base += elementSize;
+    }
+    comparetor myComparetor(snippet);
+    std::vector<AQBlock1*>::iterator it;
+    std::sort(myVector.begin(), myVector.end(), myComparetor);
+    IntIndex i = 0;
+    for (it = myVector.begin(); it != myVector.end(); it++) {
+        AQBlock1* element = *it;
+        arrayOut->ElementType()->CopyData(element, arrayOut->BeginAt(i));
+        i++;
+    }
+    return _NextInstruction();
+}
+
 // ArrayDelete function, can delete single element or multiple elements in 1d Array
 VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
 {
@@ -701,6 +783,8 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
+    DEFINE_VIREO_GENERIC(Sort1DArray, "p(o(Array) i(Array) s(Instruction))", EmitSortInstruction);
+    DEFINE_VIREO_FUNCTION(Sort1DArrayInternal, "p(o(Array) i(Array) s(Instruction))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")
