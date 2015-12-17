@@ -1,0 +1,38 @@
+define (c0 .Int32 )
+define (g1 dv(a(.Double *) (2.7 12 2 6 3.2 4 1.2 8 )))
+define (c2 dv(.Double 5))
+define (c3 dv(.Int32 2))
+define (c4 dv(.Int32 5))
+define (c5 dv(.Int32 3))
+define (c6 dv(.Int32 1))
+define(g2 dv(a(.Int32 *) (7676 -898 4000 4000 4 6000 3000 8000 ) ) )
+define (g7 dv(a(.Double * *) ((11 12 )(21 22 )(31 32 )(41 42 )(51 52 ))))
+define (c8 dv(.Double 5))
+define (g8 dv(.Int32 5000))
+define (c9 dv(.Int32 1))
+define(Point c(e(.Double x)e(.Double y)))
+define (ac1 dv(a(Point *) ((1 2)(2 3)(3 4)(4 5))))
+//---------------------------------------------------
+//VI Definition: Function.gvi
+define (_%46unction%2Egvi dv(.VirtualInstrument (
+    Locals: c(   // Data Space1
+        e(a(.Double *) local10)   // VariableArray
+        e(a(.Int32 *) local11)   // VariableArray
+        e(a(.Double * *) local12)
+        e(dv(.Double -2.5) d1) 
+        e(dv(.Double 2.5) d2) 
+        e(.Double local14)   // Double
+        e(.Double local15)   // Double
+        e(dv(a(Point *) ((1 3)(2 5)(4 9)(6 13))) localArray)
+    )
+        clump(1 
+         Println("interpolate array")        
+         ArrayInterpolate(local14 ac1 d1 )
+         Println(local14)        
+         ArrayInterpolate(local15 localArray d2 )
+         Println(local15)        
+/* Clump Ended. */    )
+)))
+enqueue (_%46unction%2Egvi)
+//Finished!! :D
+

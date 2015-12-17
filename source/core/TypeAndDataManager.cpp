@@ -67,8 +67,9 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
     _totalAQAllocated = 0;
     _totalAllocationFailures = 0;
     _maxAllocated = 0;
-    _allocationLimit = 16777216;  //16 meg for starters
-    
+    //_allocationLimit = 16777216;  //16 meg for starters
+    _allocationLimit = 524288000;  //500 meg
+
     _typeList = null;
     _baseTypeManager = parentTm;
     _executionContext = parentTm ? parentTm->TheExecutionContext() : null;

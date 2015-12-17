@@ -14,6 +14,9 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include <vector>
+#include <algorithm>
+#include <cmath>
 
 using namespace Vireo;
 
@@ -578,14 +581,166 @@ VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, Type
     return _NextInstruction();
 }
 
+struct Sort1DArrayInstruction : public InstructionCore
+{
+    _ParamDef(TypedArrayCoreRef, OutArray);
+    _ParamDef(TypedArrayCoreRef, InArray);
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()      { return this->_piNext; }
+};
+//Emit the sort instruction for specific type
+//------------------------------------------------------------
+InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
+{
+    ConstCStr pSortOpName = "Sort1DArrayInternal";
+    SubString sortOpToken(pSortOpName);
+
+    pInstructionBuilder->ReresolveInstruction(&sortOpToken, false);
+    InstructionCore* pInstruction = null;
+    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
+    TypeRef elementType  = arrayArg->ElementType();
+    SubString LTName("IsLT");
+    // Add param slot to hold the snippet
+    Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+    Sort1DArrayInstruction* sortOp = (Sort1DArrayInstruction*) pInstructionBuilder->EmitInstruction();
+    pInstruction = sortOp;
+    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsBooleanType);
+
+    ClumpParseState snippetBuilder(pInstructionBuilder);
+    pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);
+
+    pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+    pInstructionBuilder->RecordNextHere(&sortOp->_piNext);
+
+    return pInstruction;
+}
+
+struct comparetor
+{
+private:
+    Instruction3<void, void, Boolean>* _snippet;
+public:
+    comparetor(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
+    bool operator()(AQBlock1* i, AQBlock1* j)
+    {
+        Boolean less = false;
+        _snippet->_p0 = i;
+        _snippet->_p1 = j;
+        _snippet->_p2 = &less;
+        _PROGMEM_PTR(_snippet, _function)(_snippet);
+        return less;
+    }
+};
+
+// using the stl vector and sort algorithm to sort the array. the compare function is defined above
+VIREO_FUNCTION_SIGNATURET(Sort1DArrayInternal, Sort1DArrayInstruction)
+{
+    TypedArrayCoreRef arrayOut = _Param(OutArray);
+    TypedArrayCoreRef arrayIn = _Param(InArray);
+    Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    IntIndex len = arrayIn->Length();
+    arrayOut->Resize1D(len);
+    std::vector<AQBlock1*> myVector;
+    AQBlock1* base = arrayIn->BeginAt(0);
+    Int32 elementSize = arrayIn->ElementType()->TopAQSize();
+    for (IntIndex i = 0; i < len; i++) {
+        myVector.push_back(base);
+        base += elementSize;
+    }
+    comparetor myComparetor(snippet);
+    std::vector<AQBlock1*>::iterator it;
+    std::sort(myVector.begin(), myVector.end(), myComparetor);
+    IntIndex i = 0;
+    for (it = myVector.begin(); it != myVector.end(); it++) {
+        AQBlock1* element = *it;
+        arrayOut->ElementType()->CopyData(element, arrayOut->BeginAt(i));
+        i++;
+    }
+    return _NextInstruction();
+}
+
+struct FindArrayMaxMinInstruction : public InstructionCore
+{
+    _ParamDef(TypedArrayCoreRef, InArray);
+    _ParamDef(void, MaxValue);
+    _ParamDef(IntIndex, MaxIndex);
+    _ParamDef(void, MinValue);
+    _ParamDef(IntIndex, MinIndex);
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()      { return this->_piNext; }
+};
+
+InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
+{
+    ConstCStr pMaxMinOpName = "ArrayMaxMinInternal";
+    SubString findMaxMinOpToken(pMaxMinOpName);
+
+    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
+    InstructionCore* pInstruction = null;
+    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
+    TypeRef elementType  = arrayArg->ElementType();
+    SubString LTName("IsLT");
+    // Add param slot to hold the snippet
+    Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+    FindArrayMaxMinInstruction* findOp = (FindArrayMaxMinInstruction*) pInstructionBuilder->EmitInstruction();
+    pInstruction = findOp;
+    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsBooleanType);
+
+    ClumpParseState snippetBuilder(pInstructionBuilder);
+    pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, findOp, snippetArgId);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);
+
+    pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+    pInstructionBuilder->RecordNextHere(&findOp->_piNext);
+    return pInstruction;
+}
+
+VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
+{
+    TypedArrayCoreRef arrayIn = _Param(InArray);
+    Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    IntIndex len = arrayIn->Length();
+    if (arrayIn->Length() == 0) {
+        _Param(MaxIndex) =  _Param(MinIndex) = -1;
+    }
+    AQBlock1* minValue = arrayIn->BeginAt(0);
+    AQBlock1* maxValue = minValue;
+    for (IntIndex i = 0; i < len; i++) {
+        Boolean less;
+        snippet->_p0 = arrayIn->BeginAt(i);
+        snippet->_p1 = minValue;
+        snippet->_p2 = &less;
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        if(less) {
+            minValue = arrayIn->BeginAt(i);
+            _Param(MinIndex) = i;
+        }
+        snippet->_p0 = maxValue;
+        snippet->_p1 = arrayIn->BeginAt(i);
+        snippet->_p2 = &less;
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        if(less) {
+            maxValue = arrayIn->BeginAt(i);
+            _Param(MaxIndex) = i;
+        }
+    }
+    arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+    arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+    return _NextInstruction();
+}
+
 // ArrayDelete function, can delete single element or multiple elements in 1d Array
 VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(3);
     TypeRef deletedPartType = _ParamPointer(1);
-    IntIndex length = _Param(4);
-    IntIndex offset = _Param(5);
+    IntIndex length = (_ParamPointer(4) == NULL)? 1 : _Param(4);
+    IntIndex offset = (_ParamPointer(5) == NULL)? arrayIn->Length() - 1 : _Param(5);;
+
     IntIndex startIndex = offset > 0? offset : 0;
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
 
@@ -613,6 +768,366 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     return _NextInstruction();
 }
 
+struct ArrayReshapeStruct : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(IntIndex*, Dimension1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+//Array Iterator
+class ArrayIterator
+{
+private:
+    ArrayDimensionVector  _indexStack;
+    IntIndex _indexDim;
+    IntIndex*  dimensions;
+    IntIndex  _rank;
+    TypedArrayCoreRef _array;
+public:
+    ArrayIterator(TypedArrayCoreRef array)
+    {
+        _array = array;
+        _rank = array->Rank();
+        _indexDim = 0;
+        dimensions = array->DimensionLengths();
+        for (IntIndex i = 0; i < _rank; i++) {
+            _indexStack[i] = 0;
+        }
+    };
+    void* Begin()
+    {
+        for (IntIndex i = 0; i < _rank; i++) {
+            _indexStack[i] = 0;
+        }
+        _indexDim = 0;
+        return _array->BeginAtND(_rank, _indexStack);
+    }
+    void* Next()
+    {
+        _indexStack[_indexDim]++;
+        if (dimensions[_indexDim] <= _indexStack[_indexDim]) {
+            while (dimensions[_indexDim] <= _indexStack[_indexDim]) {
+                _indexDim++;
+                _indexStack[_indexDim]++;
+            }
+            if (_indexDim >= _rank) {
+                return NULL;
+            }
+            for (IntIndex i = 0; i < _indexDim; i++) {
+                _indexStack[i] = 0;
+                _indexDim = 0;
+            }
+        }
+        return (void*)_array->BeginAtND(_rank, _indexStack);
+    };
+};
+
+//ArrayReshape function
+VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    IntIndex **newDimensions = _ParamImmediate(Dimension1);
+
+    Int32 count = _ParamVarArgCount() -2;
+    Int32 rank = arrayOut->Rank();
+    ArrayDimensionVector  dimensions;
+    for (IntIndex i = 0; i < count; i++) {
+        IntIndex* pDim = newDimensions[count - 1 -i];
+        IntIndex size = pDim? *pDim : 0;
+        if (size <= 0){
+            for (IntIndex j = 0; j < rank; j++) {
+                dimensions[j] = 0;
+            }
+            arrayOut->ResizeDimensions(rank, dimensions, false);
+            return _NextInstruction();
+        } else {
+            dimensions[i] = size;
+        }
+    }
+    arrayOut->ResizeDimensions(rank, dimensions, false);
+    //IntIndex* inputDimensions = arrayOut->DimensionLengths();
+    IntIndex inputRank = arrayIn->Rank();
+    ArrayIterator iteratorIn(arrayIn);
+    ArrayIterator iteratorOut(arrayOut);
+    void* input = iteratorIn.Begin();
+    void* output = iteratorOut.Begin();
+    while (input != NULL && output != NULL) {
+        arrayOut->ElementType()->CopyData(input, output);
+        input = iteratorIn.Next();
+        output = iteratorOut.Next();
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(ArrayTranspose, TypedArrayCoreRef, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(1);
+    if (arrayOut->Rank() != 2 || arrayIn->Rank() != 2) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Only process 2d Array");
+    }
+    IntIndex* pLengths = arrayIn->DimensionLengths();
+    IntIndex newLengths[2];
+    newLengths[0] = pLengths[1];
+    newLengths[1] = pLengths[0];
+    arrayOut->ResizeDimensions(2, newLengths, true);
+    IntIndex originalIndex[2];
+    IntIndex transposeIndex[2];
+    TypeRef elementType = arrayIn->ElementType();
+    for(IntIndex i = 0; i < pLengths[0]; i++) {
+        originalIndex[0] = i;
+        transposeIndex[1] = i;
+        for(IntIndex j = 0; j < pLengths[1]; j++) {
+            originalIndex[1] = j;
+            transposeIndex[0] = j;
+            elementType->CopyData(arrayIn->BeginAtND(2, originalIndex), arrayOut->BeginAtND(2, transposeIndex));
+        }
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType, void)
+{
+    TypedArrayCoreRef arrayIn = _Param(1);
+    Double fractionalIndex = ReadDoubleFromMemory(_ParamPointer(2), _ParamPointer(3));
+    IntIndex left = 0;
+    IntIndex right = arrayIn->Length()-1;
+    if(left == right) {
+        return _NextInstruction();
+    }
+    if (arrayIn->ElementType()->IsCluster()) {
+        TypeRef clusterType = arrayIn->ElementType();
+        if (clusterType->SubElementCount() < 2) {
+            gPlatform.IO.Printf("(Error \"Cluster should contain at least x field and y field:%d\")\n");
+            return _NextInstruction();
+        }
+        TypeRef elementXType = clusterType->GetSubElement(0);
+        TypeRef elementYType = clusterType->GetSubElement(1);
+        IntIndex fieldOffsetX = elementXType->ElementOffset();
+        IntIndex fieldOffsetY = elementYType->ElementOffset();
+        Double leftX;
+        Double rightX;
+        Double leftY;
+        Double rightY;
+        for (IntIndex i = 0; i < arrayIn->Length(); i++) {
+            void* xPtr = arrayIn->BeginAt(i) + fieldOffsetX;
+            void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;
+            Double x = ReadDoubleFromMemory(elementXType, xPtr);
+            Double y = ReadDoubleFromMemory(elementYType, yPtr);
+            if (i == 0) {
+                leftX = x;
+                leftY = y;
+            } else if (i == 1){
+                rightX = x;
+                rightY = y;
+            } else {
+                if(rightX < fractionalIndex) {
+                    leftX = rightX;
+                    leftY = rightY;
+                    rightX = x;
+                    rightY = y;
+                } else {
+                    break;
+                }
+            }
+        }
+        *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
+    } else {
+        while (right - left > 1) {
+            if (left + 1 <= fractionalIndex) { left++; }
+            if (right - 1 > fractionalIndex) { right--; }
+        }
+        Double leftD = (Double)left;
+        Double rightD = (Double)right;
+        Double leftValue = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(left));
+        Double rightValue = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(right));
+        Double y = rightValue*(fractionalIndex - leftD)/(rightD - leftD) + leftValue*(rightD - fractionalIndex)/(rightD - leftD);
+        *(Double*)_ParamPointer(0) = y;
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, IntIndex)
+{
+    TypedArrayCoreRef arrayIn = _Param(1);
+    Double thresholdY = _Param(2);
+    IntIndex startIndex = _ParamPointer(3) == NULL? 0 : _Param(3);
+    if(arrayIn->Length() == 0) {
+        _Param(0) = NAN;
+    }
+    TypeRef elementType = arrayIn->ElementType();
+    Double left, right;
+    Double leftValue, rightValue;
+    if(elementType->IsCluster()) {
+        TypeRef elementXType = elementType->GetSubElement(0);
+        TypeRef elementYType = elementType->GetSubElement(1);
+        IntIndex fieldOffsetX = elementXType->ElementOffset();
+        IntIndex fieldOffsetY = elementYType->ElementOffset();
+        for(IntIndex i = startIndex; i < arrayIn->Length(); i++) {
+            void* xPtr = arrayIn->BeginAt(i) + fieldOffsetX;
+            void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;
+            Double x = ReadDoubleFromMemory(elementXType, xPtr);
+            Double y = ReadDoubleFromMemory(elementYType, yPtr);
+            if (i == startIndex) { right = left = i;}
+            if (y < thresholdY) {
+                left = x;
+                leftValue = y;
+                right = left;
+            } else {
+                left = right;
+                right = x;
+                rightValue = y;
+                break;
+            }
+        }
+    } else {
+        for(IntIndex i = startIndex; i < arrayIn->Length(); i++) {
+            Double y = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(i));
+            if (i == startIndex) { left = right = (Double)startIndex;}
+            if (y < thresholdY) {
+                left = (Double)i;
+                leftValue = y;
+                right = left;
+            } else {
+                left = right;
+                right = (Double)i;
+                rightValue = y;
+                break;
+            }
+        }
+    }
+    if (left == right) {
+        if(left == startIndex) {
+            _Param(0) = startIndex;
+        }else {
+            _Param(0) = arrayIn->Length() - 1;
+        }
+    } else {
+        if (leftValue == rightValue) {
+            _Param(0) = (left + right)/2;
+        } else {
+            _Param(0) = left*(rightValue - thresholdY)/(rightValue - leftValue) + right*(thresholdY - leftValue)/(rightValue - leftValue);
+        }
+    }
+    return _NextInstruction();
+}
+
+struct ArrayInterleaveParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamImmediateDef(TypedArrayCoreRef*, ArrayPrimitives[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);
+    IntIndex numberOfInput = (_ParamVarArgCount() -1);
+    IntIndex length = (*arrayInputs[0])->Length();
+    for(IntIndex i = 0; i < numberOfInput; i++) {
+        if (length > (*arrayInputs[i])->Length()) {
+            length = (*arrayInputs[i])->Length();
+        }
+    }
+    arrayOut->Resize1D(length*numberOfInput);
+    for (IntIndex i = 0; i < length; i++) {
+        for(IntIndex k = 0; k < numberOfInput; k++) {
+            TypedArrayCoreRef arrayK = *arrayInputs[k];
+            arrayOut->ElementType()->CopyData(arrayK->BeginAt(i), arrayOut->BeginAt(i*numberOfInput + k));
+        }
+    }
+    return _NextInstruction();
+}
+
+struct IndexBundleClusterArrayParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayCluster);
+    _ParamImmediateDef(TypedArrayCoreRef*, ArrayPrimitives[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+VIREO_FUNCTION_SIGNATUREV(IndexBundleClusterArray, IndexBundleClusterArrayParamBlock)
+{
+    TypedArrayCoreRef arrayCluster = _Param(ArrayCluster);
+    TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);
+    IntIndex numberOfFields = (_ParamVarArgCount() -1);
+    IntIndex length = (*(arrayInputs[0]))->Length();
+
+    for (IntIndex i = 1; i < numberOfFields; i++) {
+        if (length > (*(arrayInputs[i]))->Length()) {
+            length = (*(arrayInputs[i]))->Length();
+        }
+    }
+    arrayCluster->Resize1D(length);
+    TypeRef clusterType = arrayCluster->ElementType();
+    for (IntIndex i = 0; i < length; i++) {
+        AQBlock1 *clusterElement = arrayCluster->BeginAt(i);
+        for (IntIndex d = 0; d < numberOfFields; d++) {
+            TypeRef elementType = clusterType->GetSubElement(d);
+            IntIndex offset = elementType->ElementOffset();
+            AQBlock1 *pElement = clusterElement + offset;
+            TypedArrayCoreRef arrayInput = *(arrayInputs[d]);
+            elementType->CopyData(arrayInput->BeginAt(i), pElement);
+        }
+    }
+    return _NextInstruction();
+}
+
+struct BuildClusterArrayParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayCluster);
+    _ParamImmediateDef(void*, ArrayPrimitives[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(BuildClusterArray, BuildClusterArrayParamBlock)
+{
+    TypedArrayCoreRef arrayCluster = _Param(ArrayCluster);
+    void **inputElements = _ParamImmediate(ArrayPrimitives);
+    IntIndex arrayLength = (_ParamVarArgCount() -1);
+    arrayCluster->Resize1D(arrayLength);
+    TypeRef clusterType = arrayCluster->ElementType();
+    for (IntIndex i = 0; i < arrayCluster->Length(); i++) {
+       AQBlock1 *clusterElement = arrayCluster->BeginAt(i);
+       TypeRef elementType = clusterType->GetSubElement(0);
+       IntIndex offset = elementType->ElementOffset();
+       AQBlock1 *pElement = clusterElement + offset;
+       elementType->CopyData(inputElements[i], pElement);
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE3(ArrayToCluster, StaticType, void, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef arrayIn = _Param(2);
+    void* cluster = _ParamPointer(1);
+    TypeRef clusterType = _ParamPointer(0);
+    for (IntIndex i = 0; i < arrayIn->Length() && i < clusterType->SubElementCount(); i++) {
+         TypeRef elementType = clusterType->GetSubElement(i);
+         IntIndex offset = elementType->ElementOffset();
+         AQBlock1 *pElement = (AQBlock1*)cluster + offset;
+         elementType->CopyData(arrayIn->BeginAt(i), pElement);
+      }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE3(ClusterToArray, TypedArrayCoreRef, StaticType, void)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    void* cluster = _ParamPointer(2);
+    TypeRef clusterType = _ParamPointer(1);
+    arrayOut->Resize1D( clusterType->SubElementCount());
+    for (IntIndex i = 0; i < arrayOut->Length(); i++) {
+         TypeRef elementType = clusterType->GetSubElement(i);
+         IntIndex offset = elementType->ElementOffset();
+         AQBlock1 *pElement = (AQBlock1*)cluster + offset;
+         elementType->CopyData(pElement, arrayOut->BeginAt(i));
+      }
+    return _NextInstruction();
+}
 //#define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
@@ -673,7 +1188,7 @@ VIREO_FUNCTION_SIGNATURE3(Add_VDouble, TypedArray1D<Double>*, TypedArray1D<Doubl
 #endif
 
 DEFINE_VIREO_BEGIN(Array)
-
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
     DEFINE_VIREO_FUNCTION_CUSTOM(Mul, Mul_VDouble, "p(i(a(Double *))i(a(Double *))o(a(Double *)))");
@@ -701,6 +1216,22 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
+    DEFINE_VIREO_GENERIC(Sort1DArray, "p(o(Array) i(Array) s(Instruction))", EmitSortInstruction);
+    DEFINE_VIREO_FUNCTION(Sort1DArrayInternal, "p(o(Array) i(Array) s(Instruction))")
+
+    DEFINE_VIREO_GENERIC(ArrayMaxMin, "p(i(Array) o(*) o(Int32) o(*) o(Int32))", EmitMaxMinInstruction);
+    DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, "p(i(Array) o(*) o(Int32) o(*) o(Int32) s(Instruction))");
+
+    DEFINE_VIREO_FUNCTION(ArrayReshape, "p(i(VarArgCount) o(Array) i(Array) i(Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayTranspose, "p(o(Array) i(Array))")
+    DEFINE_VIREO_FUNCTION(ArrayInterpolate, "p(o(*) i(Array) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ArrayThreshold, "p(o(Double) i(Array) i(Double) i(Int32))")
+    DEFINE_VIREO_FUNCTION(ArrayInterleave, "p(i(VarArgCount) o(Array) i(Array))")
+
+    DEFINE_VIREO_FUNCTION(IndexBundleClusterArray, "p(i(VarArgCount) o(Array) i(Array))")
+    DEFINE_VIREO_FUNCTION(BuildClusterArray, "p(i(VarArgCount) o(Array) i(*))")
+    DEFINE_VIREO_FUNCTION(ArrayToCluster, "p(o(StaticTypeAndData) i(Array))")
+    DEFINE_VIREO_FUNCTION(ClusterToArray, "p(o(Array) i(StaticTypeAndData))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")

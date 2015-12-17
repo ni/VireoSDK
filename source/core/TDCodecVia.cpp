@@ -688,7 +688,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     while (depth >= 0) {
         dimIndex = (rank - depth) - 1;
 
-        if(!tempString.ReadToken(&token)) {
+        if(!ReadArrayItem(&tempString, &token)) {
              // Avoid infinite loop for incorrect input.
              break;
         }
@@ -718,6 +718,27 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
         }
     }
 }
+
+TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token)
+{
+   if (input->EatChar('{')) {
+       input->EatWhiteSpaces();
+       while (input->Length()>0 && !input->EatChar('}')) {
+           input->ReadToken(token);
+           input->EatWhiteSpaces();
+           if (!input->EatChar(*tsNameSuffix)) {
+               return TokenTraits_Unrecognized;
+           }
+           if (!ReadArrayItem(input, token)) { return TokenTraits_Unrecognized; }
+           input->EatChar(',');
+       }
+       return TokenTraits_NestedExpression;
+   } else {
+       return input->ReadToken(token);
+   }
+   return TokenTraits_Unrecognized;
+}
+
 //------------------------------------------------------------
 void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
@@ -788,7 +809,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             Int32 dimIndex = rank - level - 1;
             IntIndex step = pSlabs[dimIndex];
             Int32 length = pLengths[dimIndex];
-
             IntIndex elementCount = 0;
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
@@ -1015,6 +1035,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
     }
 }
+
 //------------------------------------------------------------
 //! Skip over a JSON item.  TODO merge with ReadSubexpression
 Boolean EatJSONItem(SubString* input)
@@ -1030,6 +1051,7 @@ Boolean EatJSONItem(SubString* input)
                 return false;
             }
             EatJSONItem(input);
+            input->EatChar(',');
         }
     } else if (input->EatChar('[')) {
         while (input->Length()>0 && !input->EatChar(']')) {
