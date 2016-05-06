@@ -445,6 +445,76 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     }
     return pInstruction;
 }
+
+//----------------------------------------------------------------------------
+struct MaxMinValueInstruction : public InstructionCore
+{
+    _ParamDef(void, ValueX);
+    _ParamDef(void, ValueY);
+    _ParamImmediateDef(StaticTypeAndData, MaxValue[1]);
+    _ParamImmediateDef(StaticTypeAndData, MinValue[1]);
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()      { return this->_piNext; }
+};
+//------------------------------------------------------------
+InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder)
+{
+    ConstCStr pMaxMinOpName = "MaxMinValueInternal";
+    SubString findMaxMinOpToken(pMaxMinOpName);
+
+    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
+    InstructionCore* pInstruction = null;
+    TypeRef argType =  pInstructionBuilder->_argTypes[0];
+    TypeRef argType2 = pInstructionBuilder->_argTypes[1];
+    if(!argType->CompareType(argType2)) {
+        return null;
+    }
+    TypeRef outputType = pInstructionBuilder->_argTypes[3];
+    TypeRef outputType2 = pInstructionBuilder->_argTypes[5];
+    if(!outputType->CompareType(outputType2)) {
+        return null;
+    }
+    if(!argType2->CompareType(outputType2)) {
+        return null;
+    }
+    SubString LTName("IsLT");
+    // Add param slot to hold the snippet
+    Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+    MaxMinValueInstruction* maxMinOp = (MaxMinValueInstruction*)pInstructionBuilder->EmitInstruction();
+
+    pInstruction = maxMinOp;
+    TypeRef booleanType = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsBooleanType);
+
+    ClumpParseState snippetBuilder(pInstructionBuilder);
+    pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
+    snippetBuilder.EmitInstruction(&LTName, 3, argType, (void*)null, argType, (void*)null, booleanType, (void*)null);
+
+    pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+    pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
+    return pInstruction;
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURET(MaxMinValueInternal, MaxMinValueInstruction)
+{
+    Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    Boolean isLT;
+
+    snippet->_p0 = _ParamPointer(ValueX);
+    snippet->_p1 = _ParamPointer(ValueY);
+    snippet->_p2 = &isLT;
+    TypeRef type = _ParamImmediate(MinValue)->_paramType;
+
+    _PROGMEM_PTR(snippet, _function)(snippet);
+    if(isLT) {
+        type->CopyData(_ParamPointer(ValueX), _ParamImmediate(MinValue)->_pData);
+        type->CopyData(_ParamPointer(ValueY), _ParamImmediate(MaxValue)->_pData);
+    } else {
+        type->CopyData(_ParamPointer(ValueY), _ParamImmediate(MinValue)->_pData);
+        type->CopyData(_ParamPointer(ValueX), _ParamImmediate(MaxValue)->_pData);
+    }
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 struct Search1DArrayInstruction : public InstructionCore
 {
@@ -1228,6 +1298,9 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(Floor, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
+
+    DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
+    DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
 
     DEFINE_VIREO_GENERIC(Search1DArray, "p(i(*) i(*) i(Int32) o(Int32) s(Instruction))", EmitSearchInstruction);
     DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(Array) i(*) i(Int32) o(Int32) s(Instruction))")
