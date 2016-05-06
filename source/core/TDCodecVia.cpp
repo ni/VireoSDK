@@ -721,22 +721,22 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
 
 TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token)
 {
-   if (input->EatChar('{')) {
-       input->EatWhiteSpaces();
-       while (input->Length()>0 && !input->EatChar('}')) {
-           input->ReadToken(token);
-           input->EatWhiteSpaces();
-           if (!input->EatChar(*tsNameSuffix)) {
+    if (input->EatChar('{')) {
+        input->EatWhiteSpaces();
+        while (input->Length()>0 && !input->EatChar('}')) {
+            input->ReadToken(token);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(*tsNameSuffix)) {
                return TokenTraits_Unrecognized;
-           }
-           if (!ReadArrayItem(input, token)) { return TokenTraits_Unrecognized; }
-           input->EatChar(',');
-       }
-       return TokenTraits_NestedExpression;
-   } else {
-       return input->ReadToken(token);
-   }
-   return TokenTraits_Unrecognized;
+            }
+            if (!ReadArrayItem(input, token)) { return TokenTraits_Unrecognized; }
+            input->EatChar(',');
+        }
+        return TokenTraits_NestedExpression;
+    } else {
+        return input->ReadToken(token);
+    }
+    return TokenTraits_Unrecognized;
 }
 
 //------------------------------------------------------------
