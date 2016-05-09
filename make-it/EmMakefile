@@ -75,7 +75,6 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
 EM_BC_FILES = objs/VireoMerged.bc\
-    objs/EggShell.bc\
     objs/Thread.bc\
     objs/Timestamp.bc\
     objs/Canvas2d.bc\
@@ -90,7 +89,6 @@ vjs:
 	mkdir -p objs
 	mkdir -p $(TARGETDIR)
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/VireoMerged.cpp -o objs/VireoMerged.bc
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/EggShell.cpp -o objs/EggShell.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/Thread.cpp -o objs/Thread.bc
 	emcc $(EMFLAGS) $(CORESOURCEDIR)/Timestamp.cpp -o objs/Timestamp.bc
 	emcc $(EMFLAGS) $(IOSOURCEDIR)/Canvas2d.cpp -o objs/Canvas2d.bc
