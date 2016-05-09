@@ -5,7 +5,7 @@ INCDIR=../source/include
 BIN=../bin
 
 COMMANDLINE = main.cpp
-CORE = EggShell.cpp VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
+CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp Linx.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
