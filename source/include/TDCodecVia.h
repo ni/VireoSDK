@@ -95,6 +95,7 @@ public:
     NIError ParseREPL();
     TypeRef ParseEnqueue();
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
+    TokenTraits ReadArrayItem(SubString* input, SubString* token);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);
