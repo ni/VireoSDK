@@ -18,7 +18,7 @@ SDG
 #if defined (VIREO_TYPE_HttpClient)
 
 #if kVireoOS_emscripten
-#include <emscripten.h>
+#include "emscripten.h"
 #endif
 
 using namespace Vireo;
@@ -26,30 +26,28 @@ using namespace Vireo;
 #if kVireoOS_emscripten
 
 enum HttpClientMethodId {
-    kGet = 0,
-    kHead = 1,
-    kPut = 2,
-    kPost = 3,
-    kDelete
+	kGet = 0,
+	kHead = 1,
+	kPut = 2,
+	kPost = 3,
+	kDelete
 };
 
 extern "C" {
-    extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, Boolean, UInt32 *, StringRef);
+    extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, UInt32, UInt32 *, StringRef);
     extern Int32 jsHttpClientClose(UInt32, StringRef);
     extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
     extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
     extern Int32 jsHttpClientHeaderExist(UInt32, const char *, int, UInt32 *, StringRef);
     extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char*,
-        int, const char *, int, const char *, int, Int32, StringRef,
-        StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
 //------------------------------------------------------------
 // Cookie file(0), userName(1), password(2), verify Server(3), handle(4), error code(5), error message(6)
-VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, Boolean, UInt32, Int32, StringRef)
+VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, Int32, StringRef)
 {
 #if kVireoOS_emscripten
     _Param(5) = jsHttpClientOpen(
@@ -58,7 +56,8 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, Boole
         (char*)_Param(2)->Begin(), _Param(2)->Length(),
         _Param(3),
         _ParamPointer(4),
-        _Param(6));
+        _Param(6)
+        );
 #endif
     return _NextInstruction();
 }
@@ -124,7 +123,7 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, Stri
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
         _ParamPointer(2),
         _Param(5));
-
+    
     if ((_Param(4) == 0) && (_Param(2) == 1)) {
         _Param(4) = jsHttpClientGetHeader(
             _Param(0),
@@ -157,34 +156,34 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientListHeaders, UInt32, StringRef, Int32, Strin
 VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(8)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kGet,
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            null, 0,
-            _Param(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            _Param(7),
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kGet,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			null, 0,
+			_Param(3),
+			_Param(4),
+			_Param(5),
+			_ParamPointer(6),
+			_Param(7),
+			_Param(8));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	} else {
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -192,35 +191,35 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(6)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kHead,
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            null, 0,
-            null, 0,
-            _Param(2),
-            _Param(3),
-            null,
-            _ParamPointer(4),
-            _Param(5),
-            _Param(6));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(6)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kHead,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			null,0,
+			null,0,
+			_Param(2),
+			_Param(3),
+			null,
+			_ParamPointer(4),
+			_Param(5),
+			_Param(6));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	} else {
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -228,34 +227,34 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(9)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kPut,
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            (char*)_Param(3)->Begin(), _Param(3)->Length(),
-            _Param(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            _Param(8),
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kPut,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(4),
+			_Param(5),
+			_Param(6),
+			_ParamPointer(7),
+			_Param(8),
+			_Param(9));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	} else {
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -263,87 +262,85 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(8)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kDelete,
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            null, 0,
-            _Param(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            _Param(7),
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(8)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kDelete,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			null,0,
+			_Param(3),
+			_Param(4),
+			_Param(5),
+			_ParamPointer(6),
+			_Param(7),
+			_Param(8));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	} else {
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
-// handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5),
-// body(6), errorCode(7), errorMessage(8), occurrence(9)
-VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef,
-        StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
+// handle(0), url(1), output file(2), buffer(3), timeOut(4), headers(5), body(6), errorCode(7), errorMessage(8), occurrence(9)
+VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    OccurrenceCore *pOcc = _Param(9)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kPost,
-            _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
-            (char*)_Param(2)->Begin(), _Param(2)->Length(),
-            (char*)_Param(3)->Begin(), _Param(3)->Length(),
-            _Param(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            _Param(8),
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // re-entering the instruction and the operation is done or it timed out.
-        // the clump should continue.
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
+	OccurrenceCore *pOcc = _Param(9)->ObjBegin();
+	VIClump* clump = THREAD_CLUMP();
+	Observer* pObserver = clump->GetObservationStates(2);
+	if (!pObserver) {
+		// This is the initial call, call the js function
+		jsHttpClientMethod(
+			kPost,
+			_Param(0),
+			(char*)_Param(1)->Begin(), _Param(1)->Length(),
+			(char*)_Param(2)->Begin(), _Param(2)->Length(),
+			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(4),
+			_Param(5),
+			_Param(6),
+			_ParamPointer(7),
+			_Param(8),
+			_Param(9));
+		pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+		pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+		return clump->WaitOnObservableObject(_this);
+	} else {
+		// re-entering the instruction and the operation is done or it timed out.
+		// the clump should continue.
+		clump->ClearObservationStates();
+		return _NextInstruction();
+	}
 #endif
-    return _NextInstruction();
+	return _NextInstruction();
 }
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(String) i(String) i(String) i(Boolean) o(UInt32) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(UInt32) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(UInt32) i(String) i(String) io(Int32) o(String) )")
-    DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(UInt32) i(String) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientGetHeader, "p(io(UInt32) i(String) o(String) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientHeaderExist, "p(io(UInt32) i(String) o(UInt32) o(String) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(UInt32) o(String) io(Int32) o(String))")
-    DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(UInt32) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(UInt32) i(String) i(Int32) o(String) io(Int32) o(String) s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(UInt32) i(String) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String) s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(UInt32) i(String) i(String) i(Int32) o(String) o(String) io(Int32) o(String)s(Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(UInt32)i(String)i(String)i(String)i(Int32)o(String)o(String)io(Int32)o(String)s(Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.UInt32) o(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
+    DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientGetHeader, "p(io(.UInt32) i(.String) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientHeaderExist, "p(io(.UInt32) i(.String) o(.UInt32) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(.UInt32) o(.String) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(.UInt32) i(.String) i(.Int32) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(.Int32) o(.String) s(.Occurrence))")
 DEFINE_VIREO_END()
 #endif
