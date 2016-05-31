@@ -2749,6 +2749,11 @@ def CheckSpacingForFunctionCall(filename, clean_lines, linenum, error):
   """
   line = clean_lines.elided[linenum]
 
+  # Prevent expression in #if and #ifdef from looking like
+  # argument lists.
+  if (Search(r'^\s*#if', line) or Search(r'^\s*#elif', line)):
+    return
+
   # Since function calls often occur inside if/for/while/switch
   # expressions - which have their own, more liberal conventions - we
   # first see if we should be looking inside such an expression for a
@@ -3910,9 +3915,16 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # used for brace initializers inside function calls.  We don't detect this
     # perfectly: we just don't complain if the last non-whitespace character on
     # the previous non-blank line is ',', ';', ':', '(', '{', or '}', or if the
-    # previous line starts a preprocessor block.
+    # previous line starts a preprocessor block. Also need to allow
+    # for previous line(s) that are a function declaration.
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
-    looksLikeFunction = Search(r'^[a-z,A-Z]', prevline)
+
+    # function generally have symbol in column 1, if it is broken into multiple
+    # lines then the previous line will not have the open paren. multi-line ifs
+    # could slip through this, but most of them will have an open paren as well.
+    looksLikeFunction = Search(r'^[a-z,A-Z]', prevline) or \
+        (not Search(r'^.*\(.*', prevline))
+
     if (not Search(r'[,;:}{(]\s*$', prevline) and
         not Match(r'\s*#', prevline) and
         not looksLikeFunction

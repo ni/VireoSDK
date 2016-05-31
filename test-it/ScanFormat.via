@@ -48,8 +48,8 @@ define(HelloWorld dv(.VirtualInstrument (
 	e(dv(.String "  2140483647") int32max)
 	e(dv(.String "  4290967295") uint32max)
     )
-    clump (1
-	Printf ("---test scan float------ (%s) \n" input1)
+    clump (
+        Printf ("---test scan float------ (%s) \n" input1)
       	StringScan(input1 remaining "%f %e" 0 passed f1 d1)
 	Printf ("passed:<%d>, remaining:(%s)\n:<%f> <%f> \n" passed remaining f1 d1 )
 	StringScan(input1 remaining "%f %e" 0 passed i2 i1)

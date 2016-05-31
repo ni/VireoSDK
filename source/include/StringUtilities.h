@@ -188,6 +188,7 @@ const UInt8 AsciiCharTraits[] =
 //------------------------------------------------------------
 //! JSON style separator between field name and value.
 #define tsNameSuffix    ":"
+#define tsEqualSuffix   "="
 //! Prefix for meta identifiers used for template parameters.
 #define tsMetaIdPrefix  "$"
 
@@ -292,11 +293,13 @@ public:
     Int32 StringLength();
     
     //! Remove quotes (single or double) from the ends of a string
-    void TrimQuotedString();
+    //! based on previously determined token trait.
+    void TrimQuotedString(TokenTraits tt);
     
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
+//------------------------------------------------------------
 //! Macro to help with %.* formats. Example => printf("%.*s", FMT_LEN_BEGIN(arg))
 #define FMT_LEN_BEGIN(_substring_)   (int)(_substring_)->Length(), (_substring_)->Begin()
 
@@ -330,24 +333,32 @@ class ComapreSubString
 };
 
 //------------------------------------------------------------
-//! A null terminated copy of a SubString. Used for calling OS APIs
-
+//! A class for makking temporary null terminated strings for calling OS APIs
 #define kTempCStringLength 255
  
 class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 {
 public:
+    //! Construct a empty string.
     TempStackCString() {}
+
+    //! Construct a null terminated from an existing SubString.
     TempStackCString(SubString* string) : FixedCArray(string) {}
+    
+    //! Construct a null terminated from rwa block of UTF-8 characters.
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) {}
     
+    //! Append a SubString.
     Boolean Append(SubString* string)
     {
         return FixedCArray::Append(string->Begin(), (size_t)string->Length());
     }
-    // Append a Null Terminated String
+    
+    //! Append a null terminated String.
     Boolean AppendCStr(ConstCStr cstr) { return FixedCArray::Append((Utf8Char*)cstr, (IntIndex)strlen(cstr)); }
 
+    //! Get the standard char* pointer to the null terminated string.
+    //! The pointer is only valid during the scope of the TempStackCString instance
     char* BeginCStr()
     {
         return (char*) _buffer;

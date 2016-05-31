@@ -32,7 +32,6 @@ define(MandelbrotMain dv(.VirtualInstrument (
         e(.Int32 i)
         e(dv(.Int32 0) c0)
         e(dv(.Int32 1) c1)
-        e(dv(.Int32 50) c50)
         e(.ComplexDouble    z)
 
         e(.String           buffer)
@@ -41,7 +40,7 @@ define(MandelbrotMain dv(.VirtualInstrument (
         e(.Int64            tDone)
         )
     clump (1
-        ArrayFill(buffer c50  char2)
+        ArrayFill(buffer 50 char2)
         ArrayResize(buffer c0)
         GetMicrosecondTickCount(tStart)
         Copy(yFirst y)
@@ -60,8 +59,8 @@ define(MandelbrotMain dv(.VirtualInstrument (
                 Perch(4)
                     Mul(z z z)
                     Add(z cmplxIn z)
-                ForLoopTail(4 i c50)
-
+                    Add(i 1 i)
+                BranchIfLT(4 i 50)
                 Absolute(z abs)
 
                 BranchIfLT(2 abs two)

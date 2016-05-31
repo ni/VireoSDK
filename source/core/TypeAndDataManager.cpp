@@ -492,7 +492,7 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *p
         return kNIError_kResourceNotFound;
     }
     
-    ReadDoubleFromMemory(actualType, pData, pValue);
+    *pValue = ReadDoubleFromMemory(actualType, pData);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -674,6 +674,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     } 
     return false;
 }
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 {
@@ -687,8 +688,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         
         if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
             bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
-        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_SInt2C || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
-            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_SInt2C || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
+        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_S2CInt || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
+            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_S2CInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
@@ -756,11 +757,98 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
     return false;
 }
 //------------------------------------------------------------
-//! Parse an element path by name. Base class knows nothing about sub elements.
+//! Parse an element path by name. Base class only knows
+//! about structural attributes.
 TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    *end = null;
-    return null;
+    // TODO this is a bit experimental.
+    // Its important to note that drilling down structureal attributes
+    // is not generally useful. For example
+    //
+    // x.$BaseType.$TopAQSize
+    //
+    // Does not yield the TopAQSize of X's BaseType
+    // if Yields the TopAQSize of Type.
+    
+    if (path->Length() == 0) {
+        *end = start;
+        return this;
+    }
+    
+    TypeRef subType = null;
+    if (path->ComparePrefix(*tsMetaIdPrefix)) {
+        SubString pathHead;
+        SubString pathTail;
+        path->SplitString(&pathHead, &pathTail, '.');
+        if (pathHead.CompareCStr("$TopAQSize")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsInt32Type);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Int32* pValue = (Int32*) cdt->Begin(kPAInit);
+            *pValue = this->TopAQSize();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$Rank")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsInt32Type);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Int32* pValue = (Int32*) cdt->Begin(kPAInit);
+            *pValue = this->Rank();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$IsFlat")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsBooleanType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            Boolean* pValue = (Boolean*) cdt->Begin(kPAInit);
+            *pValue = this->IsFlat();
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$Type")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsTypeType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            TypeRef* pValue = (TypeRef*) cdt->Begin(kPAInit);
+            *pValue = this;
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$BaseType")) {
+            // Where is the storage allocated?
+            subType = this->BaseType()->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+            /*
+             subType = THREAD_TADM()->FindType(tsTypeType);
+             DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+             TypeRef* pValue = (TypeRef*) cdt->Begin(kPAInit);
+             *pValue = this->BaseType();
+             cdt = cdt->FinalizeDVT();
+             *end = cdt->Begin(kPARead);
+             */
+        } else if (pathHead.CompareCStr("$Name")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsStringType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            StringRef* pValue = (StringRef*) cdt->Begin(kPAInit);
+            SubString name = this->Name();
+            (*pValue)->AppendSubString(&name);
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        } else if (pathHead.CompareCStr("$ElementName")) {
+            // Where is the storage allocated?
+            subType = THREAD_TADM()->FindType(tsStringType);
+            DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
+            StringRef* pValue = (StringRef*) cdt->Begin(kPAInit);
+            SubString name = this->ElementName();
+            (*pValue)->AppendSubString(&name);
+            cdt = cdt->FinalizeDVT();
+            *end = cdt->Begin(kPARead);
+        }
+        
+        if (subType && pathTail.Length()) {
+            subType = subType->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+        }
+    }
+    
+    return subType;
 }
 //------------------------------------------------------------
 // WrappedType
@@ -782,6 +870,17 @@ WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
     _encoding       = _wrapped->BitEncoding();
     _isBitLevel     = _wrapped->IsBitLevel();
     _pointerType    = _wrapped->PointerType();
+}
+//------------------------------------------------------------
+TypeRef WrappedType::GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+{
+    // Names that start with a '$' may be structural attributes handled by TypeCommon.
+    if (name->ComparePrefix(*tsMetaIdPrefix)) {
+        TypeRef subType = TypeCommon::GetSubElementAddressFromPath(name, start, end, allowDynamic);
+        if (subType)
+            return subType;
+    }
+    return _wrapped->GetSubElementAddressFromPath(name, start, end, allowDynamic);
 }
 //------------------------------------------------------------
 // ElementType
@@ -836,10 +935,10 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 {
     *end = null;
     
-    if (path->Length() == 0) {
-        *end = start;
-        return this;
-    }
+    // Check for strucutural attributes
+    TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
+    if (type)
+        return type;
     
     SubString pathHead;
     SubString pathTail;
@@ -973,7 +1072,7 @@ AggregateAlignmentCalculator::AggregateAlignmentCalculator(TypeManagerRef tm)
 void AggregateAlignmentCalculator::Finish()
 {
     // Round up the size of the aggregate to a multiple the largest alignment requirement
-    // For example, (.Double .Int8) is size 16, not 9. Note the padding if added.
+    // For example, (Double Int8) is size 16, not 9. Note the padding if added.
     AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
     IncludesPadding |= AggregateSize != _aqOffset;
 }
@@ -1451,6 +1550,13 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
             subType = subType->GetSubElementAddressFromPath(path, *end, end, allowDynamic);
         }
     } else {
+        TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
+        if (type)
+            return type;
+        
+        // Check DynamicType, element Type, perhaps dynamic type is not possible?
+        // it is if allow dynamic is true, byt where to store it?        
+
         // Split the path into a head & tail
         SubString pathHead;
         SubString pathTail;
@@ -1555,6 +1661,7 @@ DefaultValueType* DefaultValueType::FinalizeDVT()
     // Non flat could be merged, but are not yet. To do so the entire sub-value would have to match.
     // partial mathces are not currently allowed since there is not a provision for sharing ownership for sparse
     // sets of data in deeply structured data. The root of the value must own all elements beneath it.
+    // That menas two arays of constant strings cannot share strings instances that happen to be the same.
     
     if (!IsMutableValue() && IsFlat()) {
         // The binary name is not set yet.
@@ -2081,7 +2188,7 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
                 value = ~mask;
             }
         }
-    } else if (encoding == kEncoding_SInt2C) {
+    } else if (encoding == kEncoding_S2CInt) {
         IntMax mask = ((IntMax)-1) << ((size * 8) - 1);
         if (value >= 0) {
             if (value & mask) {
@@ -2100,50 +2207,66 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 }
 //------------------------------------------------------------
 //! Read an integer value from memory converting as necessary.
-NIError ReadIntFromMemory(TypeRef type, void* pData, IntMax *pValue)
+IntMax ReadIntFromMemory(TypeRef type, void* pData)
 {
-    NIError err = kNIError_Success;
+    Boolean isErr = false;
     IntMax value = 0;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
-                case 4: value = RoundToEven(*(Single*)pData);  break;
-                case 8: value = RoundToEven(*(Double*)pData);  break;
-                default: err = kNIError_kCantDecode;           break;
+                case 0: value = 0;                              break;
+                case 4: value = RoundToEven(*(Single*)pData);   break;
+                case 8: value = RoundToEven(*(Double*)pData);   break;
+                default: isErr = true;                          break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
-                case 1: value = *(Int8*)pData;                 break;
-                case 2: value = *(Int16*)pData;                break;
-                case 4: value = *(Int32*)pData;                break;
-                case 8: value = *(Int64*)pData;                break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = *(Int8*)pData;                  break;
+                case 2: value = *(Int16*)pData;                 break;
+                case 4: value = *(Int32*)pData;                 break;
+                case 8: value = *(Int64*)pData;                 break;
+                default: isErr = true;                          break;
             }
             break;
         case kEncoding_UInt:
             // Use unsigned int casts to avoid sign extension
             switch (aqSize) {
-                case 1:  value = *(UInt8*)pData;                break;
-                case 2:  value = *(UInt16*)pData;               break;
-                case 4:  value = *(UInt32*)pData;               break;
-                case 8:  value = *(UInt64*)pData;               break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = *(UInt8*)pData;                 break;
+                case 2: value = *(UInt16*)pData;                break;
+                case 4: value = *(UInt32*)pData;                break;
+                case 8: value = *(UInt64*)pData;                break;
+                default: isErr = true;                          break;
             }
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
-                case 1:  value = (*(UInt8*)pData) ? 1:0;        break;
-                default: err = kNIError_kCantDecode;            break;
+                case 0: value = 0;                              break;
+                case 1: value = (*(UInt8*)pData) ? 1 : 0;       break;
+                default: isErr = true;                          break;
             }
             break;
-        default: err = kNIError_kCantDecode; break;
+        case kEncoding_Cluster:
+            if (type->IsA("Timestamp")) {
+                Timestamp* t = (Timestamp*) pData;
+                value = t->Integer();
+            }
+            break;
+        default:
+            isErr = true;
+            break;
         }
-    *pValue = value;
-    return err;
+    
+    if (isErr) {
+    //    gPlatform.IO.Printf("(Error \"ReadIntFromMemory encoding:%d aqSize:%d\")\n", (int)encoding, (int)aqSize);
+    }
+
+    return value;
 }
 //------------------------------------------------------------
 //! Write an integer value to memory converting as necessary.
@@ -2160,8 +2283,8 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
                 default: err = kNIError_kCantEncode;            break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;          break;
                 case 2:  *(Int16*)pData = (Int16)value;         break;
@@ -2195,9 +2318,9 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
 }
 //------------------------------------------------------------
 //! Read a IEEE754 double value from memory converting as necessary.
-NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
+Double ReadDoubleFromMemory(TypeRef type, void* pData)
 {
-    NIError err = kNIError_Success;
+    Boolean isErr = false;
     Double value = 0.0;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
@@ -2206,17 +2329,17 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
             switch (aqSize) {
                 case 4:  value = *(Single*)pData;           break;
                 case 8:  value = *(Double*)pData;           break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  value = *(Int8*)pData;             break;
                 case 2:  value = *(Int16*)pData;            break;
                 case 4:  value = *(Int32*)pData;            break;
                 case 8:  value = *(Int64*)pData;            break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_UInt:
@@ -2225,13 +2348,13 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
                 case 2:  value = *(UInt16*)pData;           break;
                 case 4:  value = *(UInt32*)pData;           break;
                 case 8:  value = *(UInt64*)pData;           break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
                 case 1:  value = (*(UInt8*)pData) ? 1.0:0.0;break;
-                default: err = kNIError_kCantDecode;        break;
+                default: isErr = true;                      break;
             }
             break;
         case kEncoding_Cluster:
@@ -2240,10 +2363,16 @@ NIError ReadDoubleFromMemory(TypeRef type, void* pData, Double *pValue)
               value = t->ToDouble();
             }
             break;
-        default: err = kNIError_kCantDecode; break;
+        default:
+            isErr = kNIError_kCantDecode;
+            break;
     }
-    *pValue = value;
-    return err;
+    
+    if (isErr) {
+        gPlatform.IO.Printf("(Error \"ReadDoubleFromMemory encoding:%d aqSize:%d\")\n", (int)encoding, (int)aqSize);
+    }
+
+    return value;
 }
 //------------------------------------------------------------
 //! Write a IEEE754 double value to memory converting as necessary.
@@ -2260,8 +2389,8 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
             switch (aqSize) {
                 case 1:  *(Int8*)pData  = (Int8)value;      break;
                 case 2:  *(Int16*)pData = (Int16)value;     break;
@@ -2323,7 +2452,7 @@ struct AllocationStatistics {
     Int64   _totalAllocated;
     Int64   _maxAllocated;
 };
-#define AllocationStatistics_TypeString "c(e(.Int64 totalAllocations) e(.Int64 totalAllocated) e(.Int64 maxAllocated) )"
+#define AllocationStatistics_TypeString "c(e(Int64 totalAllocations) e(Int64 totalAllocated) e(Int64 maxAllocated) )"
 
 VIREO_FUNCTION_SIGNATURE2(TypeManagerAllocationStatistics, TypeManagerRef, AllocationStatistics)
 {
@@ -2681,53 +2810,53 @@ DEFINE_VIREO_BEGIN(TypeManager)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 #endif
 
-    DEFINE_VIREO_TYPE(TypeManager, ".DataPointer");
+    DEFINE_VIREO_TYPE(TypeManager, "DataPointer");
 
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(.TypeManager) i(.String) i(.String) o(.Double))");
-    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(.TypeManager) i(.String) i(.String) i(.Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerReadValue, TypeManagerReadValueDouble, "p(i(TypeManager) i(String) i(String) o(Double))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(TypeManagerWriteValue, TypeManagerWriteValueDouble, "p(i(TypeManager) i(String) i(String) i(Double))");
 #endif
 
     DEFINE_VIREO_TYPE(AllocationStatistics, AllocationStatistics_TypeString);
-    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(.TypeManager) o(.AllocationStatistics))");
-    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerBaseTypeManager, "p(i(.TypeManager) o(.TypeManager))");
-    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(.TypeManager) o(a(.Type *)))");
-    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(.TypeManager) i(.String) i(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerAllocationStatistics, "p(i(TypeManager) o(AllocationStatistics))");
+    DEFINE_VIREO_FUNCTION(TypeManagerCurrentTypeManager, "p(o(TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerBaseTypeManager, "p(i(TypeManager) o(TypeManager))");
+    DEFINE_VIREO_FUNCTION(TypeManagerGetTypes, "p(i(TypeManager) o(a(Type *)))");
+    DEFINE_VIREO_FUNCTION(TypeManagerDefineType, "p(i(TypeManager) i(String) i(Type))");
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(.StaticTypeAndData)i(.String)o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(.TypeManager)i(.Type)i(.DataPointer)o(.String)o(.Int32))");
-    DEFINE_VIREO_FUNCTION(InstructionType, "p(i(.Instruction)o(.Type )o(.String))");
-    DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(.Instruction)i(.Int32)o(.DataPointer))");
-    DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(.Instruction)o(.Instruction))");
+    DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(StaticTypeAndData)i(String)o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(TypeManager)i(Type)i(DataPointer)o(String)o(Int32))");
+    DEFINE_VIREO_FUNCTION(InstructionType, "p(i(Instruction)o(Type )o(String))");
+    DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(Instruction)i(Int32)o(DataPointer))");
+    DEFINE_VIREO_FUNCTION(InstructionNext, "p(i(Instruction)o(Instruction))");
 #endif
 
 #if defined(VIREO_TYPE_VARIANT)
-    DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(.TypeManager) i(.String) i(.Type) i(.Boolean) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeSetValue, "p(io(.Type) i(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(TypeGetValue, "p(i(.Type) o(.StaticTypeAndData))");
-    DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(.Type) i(.String) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeManagerObtainValueType, "p(i(TypeManager) i(String) i(Type) i(Boolean) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeSetValue, "p(io(Type) i(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeGetValue, "p(i(Type) o(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(TypeWriteValue, "p(i(Type) i(String) o(Type))");
 #endif
 
-    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(.StaticType) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeAlignment, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeEncoding, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeIsFlat, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeIsArray, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasCustomDefault, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasPadding, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeHasGenericType, "p(i(.Type) o(.Boolean))");
-    DEFINE_VIREO_FUNCTION(TypeName, "p(i(.Type) o(.String))");
-    DEFINE_VIREO_FUNCTION(TypeElementName, "p(i(.Type) o(.String))");
-    DEFINE_VIREO_FUNCTION(TypeBaseType, "p(i(.Type) o(.Type))");
-    DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(.Type) o(.Int32))");
-    DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(.Type) i(.Int32) o(.Type))");
+    DEFINE_VIREO_FUNCTION(TypeOf, "p(i(StaticType) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeTopAQSize, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeAlignment, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeEncoding, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeIsFlat, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeIsArray, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasCustomDefault, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasPadding, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeHasGenericType, "p(i(Type) o(Boolean))");
+    DEFINE_VIREO_FUNCTION(TypeName, "p(i(Type) o(String))");
+    DEFINE_VIREO_FUNCTION(TypeElementName, "p(i(Type) o(String))");
+    DEFINE_VIREO_FUNCTION(TypeBaseType, "p(i(Type) o(Type))");
+    DEFINE_VIREO_FUNCTION(TypeUsageType, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeSubElementCount, "p(i(Type) o(Int32))");
+    DEFINE_VIREO_FUNCTION(TypeGetSubElement, "p(i(Type) i(Int32) o(Type))");
 
 #if defined(VIREO_TYPE_CONSTRUCTION)
-    DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(.TypeManager) o(.Type) i(.Type) i(.Int32))");
+    DEFINE_VIREO_FUNCTION(TypeMakeVectorType, "p(i(TypeManager) o(Type) i(Type) i(Int32))");
 #endif
 
 DEFINE_VIREO_END()

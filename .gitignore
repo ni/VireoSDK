@@ -77,3 +77,4 @@ birdwatcher
 source/antlr/gen-js
 local
 npm-debug.log
+make-it/linktest

@@ -8,7 +8,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(0.0       z0)
         e(0         z1)
         e(Int32     z2)
-        e(c(e(bb(32 SInt2c))) z3)
+        e(c(e(bb(32 S2cInt))) z3)
         e("0"       z4)
         e(@"0"      z5)
         e('0'       z6)

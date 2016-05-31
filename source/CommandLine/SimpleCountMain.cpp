@@ -20,9 +20,9 @@ using namespace Vireo;
 const char* VireoProgram = "\
 define (Loop  v(.VirtualInstrument (\
  c(\
-   e(v(.UInt32 1)    one)\
-   e(v(.UInt32 1000) oneThousand)\
-   e(.UInt32         x)\
+   e(v(UInt32 1)    one)\
+   e(v(UInt32 1000) oneThousand)\
+   e(UInt32         x)\
    )\
  clump(1\
    Perch(0)\
@@ -38,13 +38,13 @@ enqueue (Loop)\
 const char* VireoProgram = "\
 define (Loop  v(.VirtualInstrument (\
 c(\
-    e(dv(.Int32 20) framePause)\
-    e(dv(.Double 400) width)\
-    e(dv(.Double 400) height)\
-    e(dv(.Double 0) cZero)\
-    e(dv(.Double 1) cOne)\
-    e(dv(.Double -40) cNeg40)\
-    e(dv(.Double 0) angle)\
+    e(dv(Int32 20) framePause)\
+    e(dv(Double 400) width)\
+    e(dv(Double 400) height)\
+    e(dv(Double 0) cZero)\
+    e(dv(Double 1) cOne)\
+    e(dv(Double -40) cNeg40)\
+    e(dv(Double 0) angle)\
 )\
 1\
  clump(1\

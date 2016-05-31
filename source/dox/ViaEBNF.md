@@ -51,8 +51,8 @@ bit_block               := 'bb' '(' bit_count encoding ')'
   bit_count             := natural_number_token
 
   encoding              := 'Cluster' | 'ParamBlock' | 'Array' | 'Generic' |
-                         | 'Boolean' | 'Bits' | 'UInt' | 'SInt' | 'Unicode' | 'Ascii'
-                         | 'IntBiased' | 'IEEE754B' | 'Pointer'
+                         | 'Boolean' | 'UInt' | 'S2cInt' | 'Unicode' | 'Ascii'
+                         | 'BiasedInt' | 'IEEE754B' | 'Pointer'
                          | 'Q' | 'Q1' |
 
 default_value_type      := 'dv' '(' type { data_element } ')'

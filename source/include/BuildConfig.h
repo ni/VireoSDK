@@ -90,8 +90,7 @@ SDG
 
     // #define VIREO_MULTI_THREAD
     #undef VIREO_FILESYSTEM
-    #undef VIREO_FILESYSTEM_DIRLIST
-    
+
     // FILEIO covers read and write operation, perhaps only for stdio.
     #define VIREO_POSIX_FILEIO 1
 
@@ -219,21 +218,18 @@ SDG
     #define VIREO_EXPORT extern "C" __declspec(dllexport)
 
     #define VIREO_DATE_TIME_STDLIB
-    #undef VIREO_FILESYSTEM_DIRLIST
 
 #elif kVireoOS_linuxU
     #define VIREO_DATE_TIME_STDLIB
 
 #elif defined (kVireoOS_emscripten)
     #define VIREO_DATE_TIME_STDLIB
-    #undef VIREO_FILESYSTEM_DIRLIST
 #elif kVireoOS_vxworks
     #undef VIREO_POSIX_FILEIO
     #define VIREO_DATE_TIME_VXWORKS
 
 #elif kVireoOS_ZynqARM
     #undef VIREO_FILESYSTEM
-    #undef VIREO_FILESYSTEM_DIRLIST
 
 #endif
 

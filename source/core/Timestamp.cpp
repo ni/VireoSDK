@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -20,8 +20,8 @@ SDG
 
 #if defined(VIREO_DATE_TIME_STDLIB)
 #if kVireoOS_win32U
-	#include <windows.h>
-	#include <time.h>
+    #include <windows.h>
+    #include <time.h>
 #else
     #include <sys/time.h>
 #endif
@@ -43,14 +43,10 @@ SDG
 #include <pthread.h>
 #include <time.h>
 #elif kVireoOS_ZynqARM
-#include "xscutimer.h"
+#include <xscutimer.h>
 #elif kVireoOS_emscripten
 #include <emscripten.h>
 #endif
-
-
-
-using namespace Vireo;
 
 namespace Vireo
 {
@@ -84,11 +80,11 @@ enum FloatComparisonMethod {
 // January 1, 1904 (the epoch of AbsTime128) in FILETIME
 static const Timestamp k_1904FileTime = Timestamp(0x0153b281e0fb4000ull, 0);
 #if 0
-Timestamp ATime128FromHILOTime(const uInt32 &high,const uInt32 &low)
+Timestamp ATime128FromHILOTime(const uInt32 &high, const uInt32 &low)
 {
-	NITime temp(high,low, 0,0);
-	temp -= k_1904FileTime;
-	return Timestamp(temp /1E7);
+    NITime temp(high, low, 0, 0);
+    temp -= k_1904FileTime;
+    return Timestamp(temp /1E7);
 }
 #endif
 
@@ -98,33 +94,33 @@ Timestamp ATime128FromHILOTime(const uInt32 &high,const uInt32 &low)
 void GetCurrentTimestamp(Timestamp *t)
 {
 #if WIN32
-	struct timeval tv;
-	Int32 retval;
-	FILETIME ft;
-	UInt64    stdTime = 0;
+    struct timeval tv;
+    Int32 retval;
+    FILETIME ft;
+    UInt64    stdTime = 0;
 
-	GetSystemTimeAsFileTime(&ft);
- 
+    GetSystemTimeAsFileTime(&ft);
+
     stdTime |= ft.dwHighDateTime;
     stdTime <<= 32;
     stdTime |= ft.dwLowDateTime;
 
-	stdTime -= 11644473600000000Ui64;	// DELTA_EPOCH_IN_MICROSECS
-	stdTime /= 10;						// Convert to microseconds
-	*t = Timestamp( (Double) (stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
+    stdTime -= 11644473600000000Ui64;    // DELTA_EPOCH_IN_MICROSECS
+    stdTime /= 10;                        // Convert to microseconds
+    *t = Timestamp((Double)(stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
 
 #elif defined(VIREO_DATE_TIME_STDLIB)
-	struct timeval tv;
-	Int32 retval;
- 
-	retval = gettimeofday(&tv, null);
-	if (retval == -1)
-		*t = Timestamp(0,0);
-	else {
-	//	uInt32 tempTime = (uInt32) tv.tv_sec;
-	//	TToStd(&tempTime);
-		*t = Timestamp( (Double) tv.tv_sec, tv.tv_usec / 1E6);
-	}
+    struct timeval tv;
+    Int32 retval;
+
+    retval = gettimeofday(&tv, null);
+    if (retval == -1) {
+        *t = Timestamp(0, 0);
+    } else {
+    //    uInt32 tempTime = (uInt32) tv.tv_sec;
+    //    TToStd(&tempTime);
+        *t = Timestamp((Double)tv.tv_sec, tv.tv_usec / 1E6);
+    }
 #elif defined(VIREO_DATE_TIME_VXWORKS)
     struct timespec ts;
     Int32 retval;
@@ -135,7 +131,7 @@ void GetCurrentTimestamp(Timestamp *t)
     } else {
         uInt32 tempTime = static_cast<uInt32>(ts.tv_sec);
         TToStd(&tempTime);
-        *t = Timestamp( static_cast<Double>(tempTime), ts.tv_nsec / 1E9);
+        *t = Timestamp(static_cast<Double>(tempTime), ts.tv_nsec / 1E9);
     }
 #endif
 }
@@ -260,153 +256,158 @@ VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-Int64 SecondsFromBaseYear (Int64 year, Int64 baseYear)
+Int64 SecondsFromBaseYear(Int64 year, Int64 baseYear)
 {
-	Int64 secondsInyear = 31536000;
-	Int64 secondsInLeap = 31622400;
-	Int64 numberOfLeap = (year-1)/4 - (year-1)/100 + (year-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
-	Int64 totalSeconds = numberOfLeap*secondsInLeap + (year - baseYear - numberOfLeap)*secondsInyear;
-	return totalSeconds;
+    Int64 secondsInyear = 31536000;
+    Int64 secondsInLeap = 31622400;
+    Int64 numberOfLeap = (year-1)/4 - (year-1)/100 + (year-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
+    Int64 totalSeconds = numberOfLeap*secondsInLeap + (year - baseYear - numberOfLeap)*secondsInyear;
+    return totalSeconds;
 }
 //------------------------------------------------------------
 Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* weekDays)
 {
     // Does not account for leap seconds.
-	Int64 secondsInyear = 31536000;
-	Int64 secondsInLeap = 31622400;
-	Int32 baseYear = 1903;
-	Int32 baseWeek = 3;// Thursday, January 01, 1903
-	Int32 currentYear = baseYear;
-	Int32 yearMax = (Int32)(wholeSeconds/secondsInyear);
-	Int32 yearMin = (Int32)(wholeSeconds/secondsInLeap);
+    Int64 secondsInyear = 31536000;
+    Int64 secondsInLeap = 31622400;
+    // Thursday, January 01, 1903
+    Int32 baseYear = 1903;
+    Int32 baseWeek = 3;
+    Int32 currentYear = baseYear;
+    Int32 yearMax = (Int32)(wholeSeconds/secondsInyear);
+    Int32 yearMin = (Int32)(wholeSeconds/secondsInLeap);
 
-	if (wholeSeconds>=0) {
-		for (Int32 i = yearMin; i <= yearMax; i++) {
-			Int32 year = baseYear + i;
-			Int32 numberOfLeap = 0;
-			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
-			Int32 nextyear = baseYear + i +1;
-			numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
-			Int64 totalSecondsNext = numberOfLeap*secondsInLeap + (i+1-numberOfLeap)*secondsInyear;
-			if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
-				currentYear = nextyear;
-				*yearSeconds = (Int32)(wholeSeconds - totalSeconds);
-				break;
-			}
-		}
-	} else if (wholeSeconds<0) {
-		for (Int32 i = yearMax; i <= yearMin; i++) {
-			Int32 year = baseYear + i;
-			Int32 numberOfLeap = 0;
-			numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-			Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
-			Int32 previousyear = baseYear + i - 1;
-			numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400) - (baseYear/4-baseYear/100+baseYear/400);
-			Int64 totalSecondsPrevious = numberOfLeap*secondsInLeap + (i-1-numberOfLeap)*secondsInyear;
-			if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
-				currentYear = year;
-				// this will make sure the *yearSeconds is always positive
-				*yearSeconds = (Int32)(wholeSeconds - totalSecondsPrevious);
-				break;
-			}
-
-		}
-	} else {
-		*yearSeconds = 0;
-		currentYear = 1904;
-	}
-	Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
-	Int64 totalSeconds = numberOfLeap*secondsInLeap + (currentYear - baseYear - numberOfLeap)*secondsInyear;
-	Int32 weekdaysOfyear = (totalSeconds/(24*3600) + baseWeek)%7;
-	weekdaysOfyear = weekdaysOfyear<0? weekdaysOfyear+7 : weekdaysOfyear;
-	*weekDays = weekdaysOfyear;
-	return currentYear;
+    if (wholeSeconds >= 0) {
+        for (Int32 i = yearMin; i <= yearMax; i++) {
+            Int32 year = baseYear + i;
+            Int32 numberOfLeap = 0;
+            numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
+            Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
+            Int32 nextyear = baseYear + i +1;
+            numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
+            Int64 totalSecondsNext = numberOfLeap*secondsInLeap + (i+1-numberOfLeap)*secondsInyear;
+            if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
+                currentYear = nextyear;
+                *yearSeconds = (Int32)(wholeSeconds - totalSeconds);
+                break;
+            }
+        }
+    } else if (wholeSeconds < 0) {
+        for (Int32 i = yearMax; i <= yearMin; i++) {
+            Int32 year = baseYear + i;
+            Int32 numberOfLeap = 0;
+            numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
+            Int64 totalSeconds = numberOfLeap*secondsInLeap + (i-numberOfLeap)*secondsInyear;
+            Int32 previousyear = baseYear + i - 1;
+            numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400)
+                    - (baseYear/4-baseYear/100+baseYear/400);
+            Int64 totalSecondsPrevious = numberOfLeap*secondsInLeap + (i-1-numberOfLeap)*secondsInyear;
+            if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
+                currentYear = year;
+                // this will make sure the *yearSeconds is always positive
+                *yearSeconds = (Int32)(wholeSeconds - totalSecondsPrevious);
+                break;
+            }
+        }
+    } else {
+        *yearSeconds = 0;
+        currentYear = 1904;
+    }
+    Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400
+            - (baseYear/4-baseYear/100+baseYear/400);
+    Int64 totalSeconds = numberOfLeap*secondsInLeap + (currentYear - baseYear - numberOfLeap)*secondsInyear;
+    Int32 weekdaysOfyear = (totalSeconds/(24*3600) + baseWeek)%7;
+    weekdaysOfyear = (weekdaysOfyear < 0) ? (weekdaysOfyear + 7) : weekdaysOfyear;
+    *weekDays = weekdaysOfyear;
+    return currentYear;
 }
 //------------------------------------------------------------
-void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr, Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL, Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL, Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
+void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
+             Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL,
+             Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL,
+             Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
 {
-	Int32 secondsOfYear = 0;
-	Int32 firstweekDay = 0;
+    Int32 secondsOfYear = 0;
+    Int32 firstweekDay = 0;
 
-	Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsOfYear, &firstweekDay);
-	if (yearPtr!= NULL) {
-		*yearPtr = year;
-	}
-	if (weekOfFirstDay != NULL) {
-		// get the first week day for this year
-		*weekOfFirstDay = firstweekDay;
-	}
-	if (secondofYearPtr != NULL) {
-		*secondofYearPtr = secondsOfYear;
-	}
-	Int32 currentMonth = -2;
-	Int32 secondsofMonth = -2;
-	if(year%4==0 && (year%100 != 0 || year%400 == 0)) {
-		// leap year
-		Int32 dayofMonth[]={31, 29,31,30,31,30,31,31,30,31,30,31};
-		Int32 seconds=0;
-		for (Int32 i = 0;i<12;i++) {
-			secondsofMonth = seconds;
-			seconds+=24*3600*dayofMonth[i];
-			if (seconds > secondsOfYear) {
-				currentMonth = i;
-				secondsofMonth = secondsOfYear - secondsofMonth;
-				break;
-			}
-		}
-	} else {
-		Int32 dayofMonth[]={31, 28,31,30,31,30,31,31,30,31,30,31};
-		Int32 seconds=0;
-		for (Int32 i = 0;i<12;i++) {
-			secondsofMonth = seconds;
-			seconds+=24*3600*dayofMonth[i];
-			if (seconds > secondsOfYear) {
-				currentMonth = i;
-				secondsofMonth = secondsOfYear - secondsofMonth;
-				break;
-			}
-		}
-	}
-	Int32 days = secondsofMonth/(24*3600);
-	Int32 secondsofHour = secondsofMonth%(24*3600);
-	Int32 hours = secondsofHour/3600;
-	Int32 secondsofMinutes = secondsofHour%(3600);
-	Int32 minutes = secondsofMinutes/60;
-	Int32 seconds= secondsofMinutes%60;
-	if (monthPtr!=NULL) {
-		*monthPtr = currentMonth;
-	}
-	if (dayPtr != NULL) {
-		*dayPtr = days;
-	}
-	if (hourPtr!=NULL) {
-		*hourPtr = hours;
-	}
-	if (minPtr!=NULL) {
-		*minPtr = minutes;
-	}
-	if (secondPtr !=NULL) {
-		*secondPtr = seconds;
-	}
-	if (fractionPtr != NULL) {
-		*fractionPtr = timestamp.ToDouble() - timestamp.Integer();
-	}
-	if (weekPtr != NULL) {
-		*weekPtr = (secondsOfYear/(24*3600)+firstweekDay)%7;
-	}
- }
+    Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsOfYear, &firstweekDay);
+    if (yearPtr!= NULL) {
+        *yearPtr = year;
+    }
+    if (weekOfFirstDay != NULL) {
+        // get the first week day for this year
+        *weekOfFirstDay = firstweekDay;
+    }
+    if (secondofYearPtr != NULL) {
+        *secondofYearPtr = secondsOfYear;
+    }
+    Int32 currentMonth = -2;
+    Int32 secondsofMonth = -2;
+    if ((year%4 == 0) && ((year%100 != 0) || (year%400 == 0))) {
+        // leap year
+        Int32 dayofMonth[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        Int32 seconds = 0;
+        for (Int32 i = 0; i < 12; i++) {
+            secondsofMonth = seconds;
+            seconds+=24*3600*dayofMonth[i];
+            if (seconds > secondsOfYear) {
+                currentMonth = i;
+                secondsofMonth = secondsOfYear - secondsofMonth;
+                break;
+            }
+        }
+    } else {
+        Int32 dayofMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        Int32 seconds = 0;
+        for (Int32 i = 0; i < 12; i++) {
+            secondsofMonth = seconds;
+            seconds+=24*3600*dayofMonth[i];
+            if (seconds > secondsOfYear) {
+                currentMonth = i;
+                secondsofMonth = secondsOfYear - secondsofMonth;
+                break;
+            }
+        }
+    }
+    Int32 days = secondsofMonth/(24*3600);
+    Int32 secondsofHour = secondsofMonth%(24*3600);
+    Int32 hours = secondsofHour/3600;
+    Int32 secondsofMinutes = secondsofHour%(3600);
+    Int32 minutes = secondsofMinutes/60;
+    Int32 seconds = secondsofMinutes%60;
+    if (monthPtr != NULL) {
+        *monthPtr = currentMonth;
+    }
+    if (dayPtr != NULL) {
+        *dayPtr = days;
+    }
+    if (hourPtr != NULL) {
+        *hourPtr = hours;
+    }
+    if (minPtr != NULL) {
+        *minPtr = minutes;
+    }
+    if (secondPtr != NULL) {
+        *secondPtr = seconds;
+    }
+    if (fractionPtr != NULL) {
+        *fractionPtr = timestamp.ToDouble() - timestamp.Integer();
+    }
+    if (weekPtr != NULL) {
+        *weekPtr = (secondsOfYear/(24*3600)+firstweekDay)%7;
+    }
+}
 Int32 Date::_SystemLocaletimeZone = 0;
 
 //------------------------------------------------------------
 Date::Date(Timestamp timestamp, Int32 timeZone)
 {
-	_timeZoneOffset = timeZone;
-	// get date will get the accurate date from the time stamp, so we need minus the timeZone
-	Timestamp local = timestamp - _timeZoneOffset;
-	getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
+    _timeZoneOffset = timeZone;
+    // get date will get the accurate date from the time stamp, so we need minus the timeZone
+    Timestamp local = timestamp - _timeZoneOffset;
+    getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
             &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay);
-	_DTS = isDTS();
+    _DTS = isDTS();
 }
 //------------------------------------------------------------
 Int32 Date::getLocaletimeZone()
@@ -425,12 +426,12 @@ Int32 Date::getLocaletimeZone()
     // doesn't support yet
     _SystemLocaletimeZone = 0;
 #endif
-        	return _SystemLocaletimeZone;
- };
+            return _SystemLocaletimeZone;
+};
 //------------------------------------------------------------
 Int32 Date::isDTS()
 {
-	return 0;
+    return 0;
 }
 #endif
 
@@ -439,29 +440,28 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 
     // Low level time functions
-    DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(.Int64))")
-    DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(.Int64))")
-    DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(.UInt32))")
+    DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(Int64))")
+    DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(Int64))")
+    DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(UInt32))")
 
 #if defined(VIREO_TYPE_Timestamp)
-    DEFINE_VIREO_TYPE(Timestamp, "c(e(.Int64 seconds) e(.UInt64 fraction))")
-    DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(.Timestamp))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsLE, IsLETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsGE, IsGETimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsGT, IsGTTimestamp, "p(i(.Timestamp) i(.Timestamp) o(.Boolean))")
+    DEFINE_VIREO_TYPE(Timestamp, "c(e(Int64 seconds) e(UInt64 fraction))")
+    DEFINE_VIREO_FUNCTION(GetTimestamp, "p(o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsLT, IsLTTimestamp, "p(i(Timestamp) i(Timestamp) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsLE, IsLETimestamp, "p(i(Timestamp) i(Timestamp) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsGE, IsGETimestamp, "p(i(Timestamp) i(Timestamp) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsGT, IsGTTimestamp, "p(i(Timestamp) i(Timestamp) o(Boolean))")
 
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32R, "p(i(.Timestamp) i(.Int32) o(.Timestamp))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32L, "p(i(.Int32) i(.Timestamp) o(.Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32R, "p(i(Timestamp) i(Int32) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32L, "p(i(Int32) i(Timestamp) o(Timestamp))")
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestamp, "p(i(.Timestamp) i(.Timestamp)o(.Double))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(.Double)i(.Timestamp)o(.Timestamp))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(.Timestamp)i(.Double)o(.Timestamp))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(.Timestamp) o(.Double))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestamp, "p(i(Timestamp) i(Timestamp)o(Double))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(Double)i(Timestamp)o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(Timestamp)i(Double)o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(Timestamp) o(Double))")
 
 #endif
 #endif
 
 DEFINE_VIREO_END()
-}
-
+}  // namespace Vireo

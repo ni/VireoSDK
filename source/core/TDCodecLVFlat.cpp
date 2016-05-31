@@ -265,6 +265,6 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
 using namespace Vireo;
 
 DEFINE_VIREO_BEGIN(TDCodecLVFlat)
-    DEFINE_VIREO_FUNCTION(FlattenToString, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))");
-    DEFINE_VIREO_FUNCTION(UnflattenFromString, "p(i(.String) i(.Boolean) i(.StaticTypeAndData) o(.String) o(.*) o(.Boolean))");
+    DEFINE_VIREO_FUNCTION(FlattenToString, "p(i(StaticTypeAndData) i(Boolean) o(String))");
+    DEFINE_VIREO_FUNCTION(UnflattenFromString, "p(i(String) i(Boolean) i(StaticTypeAndData) o(String) o(*) o(Boolean))");
 DEFINE_VIREO_END()

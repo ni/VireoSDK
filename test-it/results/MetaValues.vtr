@@ -1,0 +1,17 @@
+Double Rank 0 
+Double TopAQSize 8 
+Double Name Double 
+Double IsFlat true 
+Double IsFlat type .Boolean 
+Double IsFlat size 1 
+Double Type .Double 
+Double Base Type String 
+------------
+String IsFlat false 
+String Rank 1 
+Int8 TopAQSize 1 
+Int16 TopAQSize 2 
+Int32 TopAQSize 4 
+Int64 TopAQSize 8 
+------------
+String Rank 1 

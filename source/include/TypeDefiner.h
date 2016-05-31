@@ -101,6 +101,13 @@ class TypeDefiner
 
 #else
 
+
+    #define DEFINE_VIREO_BEGIN_DYNAMIC_MODULE(_module_) \
+    static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
+    extern "C" RegisterDynamicVireoModule() {} \
+    static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) (TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
+    static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
+
     #define DEFINE_VIREO_BEGIN(_module_) \
       static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
       static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) (TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \

@@ -211,8 +211,8 @@ HttpUsers = function () {
 
 WebSocketUser = function () {
     "use strict";
-    
-    
+
+
 };
 
 
@@ -221,12 +221,12 @@ WebSocketUsers = function () {
     "use strict";
     //Properties
     this.webSocketClients = {};
-    
+
     if (typeof this.WebSocketUsersMethods !== 'function') {
         var proto = WebSocketUsers.prototype;
         proto.WebSocketUsersMethods = function () {
         };
-        
+
         proto.add = function (url, protocol) {
             var webSocketUser = new WebSocket(url); //put protocol in later
             var handle = Object.keys(this.webSocketClients).length + 1;
@@ -255,7 +255,7 @@ WebSocketUsers = function () {
             if (this.webSocketClients.hasOwnProperty(strHandle))
             {
                 var user = this.webSocketClients[strHandle];
-                
+
                 return user;
             }
             else

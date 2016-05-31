@@ -1225,14 +1225,14 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 DEFINE_VIREO_BEGIN(VirtualInstrument)
     DEFINE_VIREO_REQUIRE(TypeManager)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_TYPE(ExecutionContext, ".DataPointer");  // TODO define as type string
-    DEFINE_VIREO_CUSTOM_DP(InstructionBlock, ".Instruction", &gInstructionBlockDataProcs);
+    DEFINE_VIREO_TYPE(ExecutionContext, "DataPointer");  // TODO define as type string
+    DEFINE_VIREO_CUSTOM_DP(InstructionBlock, "Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(Clump, Clump_TypeString);
     DEFINE_VIREO_TYPE(EmptyParameterList, "c()");
     DEFINE_VIREO_CUSTOM_DP(VirtualInstrument, VI_TypeString, &gVIDataProcs);
-    DEFINE_VIREO_TYPE(VI, ".VirtualInstrument");
-    DEFINE_VIREO_TYPE(ReentrantVirtualInstrument, ".VirtualInstrument");  // A case of simple inheritance
-    DEFINE_VIREO_FUNCTION(Start, "p(i(.VirtualInstrument))");
+    DEFINE_VIREO_TYPE(VI, "VirtualInstrument");
+    DEFINE_VIREO_TYPE(ReentrantVirtualInstrument, "VirtualInstrument");  // A case of simple inheritance
+    DEFINE_VIREO_FUNCTION(Start, "p(i(VirtualInstrument))");
 DEFINE_VIREO_END()
 
 } // namespace Vireo

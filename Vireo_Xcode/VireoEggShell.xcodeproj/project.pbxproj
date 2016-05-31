@@ -130,6 +130,7 @@
 		47271717183A8CA800238283 /* ArrayDemo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayDemo.via; path = "../test-it/ArrayDemo.via"; sourceTree = "<group>"; };
 		47271718183AC7AC00238283 /* SubVIParallelCalls.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = SubVIParallelCalls.via; path = "../test-it/SubVIParallelCalls.via"; sourceTree = "<group>"; };
 		47271719183BC64B00238283 /* TypeValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = TypeValues.via; path = "../test-it/TypeValues.via"; sourceTree = "<group>"; };
+		47295B1F1BCF011700C6C2E2 /* make.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = make.js; path = "../make-it/make.js"; sourceTree = "<group>"; };
 		472A07891AA6204A008109FA /* NumericString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NumericString.cpp; path = ../source/core/NumericString.cpp; sourceTree = "<group>"; };
 		472A078C1AA67EAE008109FA /* JavaScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScript.cpp; path = ../source/io/JavaScript.cpp; sourceTree = "<group>"; };
 		472A078F1AA67EF8008109FA /* DebugGPIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugGPIO.cpp; path = ../source/io/DebugGPIO.cpp; sourceTree = "<group>"; };
@@ -226,11 +227,7 @@
 		47CAD28E17FDFD0100DDDB46 /* BranchInstructions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BranchInstructions.via; path = "../test-it/BranchInstructions.via"; sourceTree = "<group>"; };
 		47CAD28F17FDFD0100DDDB46 /* BranchErrors.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BranchErrors.via; path = "../test-it/BranchErrors.via"; sourceTree = "<group>"; };
 		47CAD29017FDFD0100DDDB46 /* BooleanFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BooleanFunctions.via; path = "../test-it/BooleanFunctions.via"; sourceTree = "<group>"; };
-		47CAD29317FDFD2D00DDDB46 /* vc2012.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vc2012.bat; path = "../make-it/vc2012.bat"; sourceTree = "<group>"; };
-		47CAD29417FDFD2D00DDDB46 /* vc2010.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vc2010.bat; path = "../make-it/vc2010.bat"; sourceTree = "<group>"; };
 		47CAD29517FDFD4200DDDB46 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "../make-it/Makefile"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.sh; };
-		47CAD29617FDFD4200DDDB46 /* make.bat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = make.bat; path = "../make-it/make.bat"; sourceTree = "<group>"; };
-		47CAD29717FDFD4200DDDB46 /* HelloWorld.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloWorld.via; path = "../make-it/HelloWorld.via"; sourceTree = "<group>"; };
 		47D1884118A93EC9008AB15D /* CopyingVIs.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CopyingVIs.via; path = "../test-it/CopyingVIs.via"; sourceTree = "<group>"; };
 		47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = CalVIMultipleTimesObserveOldValues.via; path = "../test-it/CalVIMultipleTimesObserveOldValues.via"; sourceTree = "<group>"; };
 		47D1AE5518122F5F003B850F /* Generics.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = Generics.via; path = "../test-it/Generics.via"; sourceTree = "<group>"; };
@@ -369,13 +366,6 @@
 				474A5F55199E71810013F8C5 /* Vireo-Prefix.pch */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		475317961AC9EA050030094A /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "New Group";
 			sourceTree = "<group>";
 		};
 		4754290717C67A750096898B /* Test-It */ = {
@@ -529,7 +519,7 @@
 				472D7ACC18C683A10023C688 /* LICENSE.txt */,
 				4799F8AE18C78F060019E214 /* AUTHORS */,
 				47E220B31950E91400988185 /* Micro */,
-				47B3D49A17304C4400944D32 /* Wraps */,
+				47B3D49A17304C4400944D32 /* CommandLine */,
 				479AFEBE170DDA76002C0FF0 /* include */,
 				479AFE8C170DCFB2002C0FF0 /* core */,
 				475F6F0117C3E70900285242 /* IO */,
@@ -605,25 +595,21 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		47B3D49A17304C4400944D32 /* Wraps */ = {
+		47B3D49A17304C4400944D32 /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
 				4700BD771949017000794482 /* MicroMain.cpp */,
 				4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */,
 				4737987517D0EBBB00C3BC2A /* main.cpp */,
 			);
-			name = Wraps;
+			name = CommandLine;
 			sourceTree = "<group>";
 		};
 		47C84E7D17DA800500828A54 /* Make-It */ = {
 			isa = PBXGroup;
 			children = (
-				475317961AC9EA050030094A /* New Group */,
+				47295B1F1BCF011700C6C2E2 /* make.js */,
 				47CAD29517FDFD4200DDDB46 /* Makefile */,
-				47CAD29617FDFD4200DDDB46 /* make.bat */,
-				47CAD29717FDFD4200DDDB46 /* HelloWorld.via */,
-				47CAD29317FDFD2D00DDDB46 /* vc2012.bat */,
-				47CAD29417FDFD2D00DDDB46 /* vc2010.bat */,
 			);
 			name = "Make-It";
 			sourceTree = "<group>";
@@ -1063,7 +1049,7 @@
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"VIREO_LEAN=1",
 					"VIREO_STDIO=1",

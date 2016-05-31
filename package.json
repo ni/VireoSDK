@@ -3,14 +3,17 @@
   "version": "2.0.0-alpha.9",
   "description": "SDK for experimental vireo runtime engine.",
   "dependencies": {
+    "colors": "^1.1.2",
     "diff": "^1.4.0",
     "http-server": "^0.8.0",
+    "path": "^0.12.7",
     "shelljs": "^0.5.1"
   },
   "devDependencies": {},
   "scripts": {
     "test": "cd test-it && ./run-tests.sh",
-    "make": "cd make-it && node make"
+    "make": "cd make-it && node make",
+    "serve-dox": "cd documents/gh-pages && http-server -p 6502"
   },
   "repository": {
     "type": "git",

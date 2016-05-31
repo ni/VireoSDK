@@ -121,6 +121,7 @@ NIError TDViaParser::ParseREPL()
 
     SubString command;
     _string.EatLeadingSpaces();
+    TypeRef type;
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
         if (_string.ComparePrefix(')')) {
             break;
@@ -130,14 +131,34 @@ NIError TDViaParser::ParseREPL()
                    || _string.ComparePrefixCStr(tsRequireTypeToken)
                    || _string.ComparePrefixCStr("start")
                    ) {
-            ParseType();
+            type = ParseType();
         } else {
-            _string.ReadToken(&command);
+            // Move this to core parser.
+            TokenTraits tt = _string.ReadToken(&command);
             if (command.CompareCStr("exit")) {
+                // This needs to change. Perhas end/exit method an set context variable.
                 _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
                 return kNIError_kResourceNotFound;
-            } else {
-                LOG_EVENT(kHardDataError, "bad egg");
+            } else if (tt == TokenTraits_SymbolName || tt == TokenTraits_String ) {
+                command.TrimQuotedString(tt);
+                // A JSONish style REPL level definition. Keys can be unquoted.
+                if (_string.EatChar(*tsNameSuffix)) {
+                    // For colon the concepts is the keys value takes on the the value on the right
+                    // a bit like it inherits the value. The keys valu is not considered immutable.
+                    TypeRef subType = ParseType();
+                    DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, true);
+                    cdt = cdt->FinalizeDVT();
+                
+                    type = _typeManager->Define(&command, cdt);
+                } else if (_string.EatChar(*tsEqualSuffix)) {
+                    // For equal, taek the matematical immutable equvalence perspective.
+                    TypeRef subType = ParseType();
+                    type = _typeManager->Define(&command, subType);
+                }
+            }
+            
+            if (!type) {
+                LOG_EVENT(kHardDataError, "Error in epxression");
                 break;
             }
         }
@@ -161,8 +182,8 @@ TypeRef TDViaParser::ParseRequire()
     }
 
     SubString moduleName;
-    _string.ReadToken(&moduleName);
-    moduleName.TrimQuotedString();
+    TokenTraits tt = _string.ReadToken(&moduleName);
+    moduleName.TrimQuotedString(tt);
     
     if (!_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
@@ -251,8 +272,9 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     
     Boolean bTypeFunction = _string.ComparePrefix('(');
     if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
-        // Eat the dot prefix if it exists.
+        // Eat the deprecated dot prefix if it exists.
         typeFunction.EatChar('.');
+        
         type = _typeManager->FindType(&typeFunction);
         if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
@@ -323,9 +345,14 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     ConstCStr tName = null;
     TypeRef literalsType = null;
     
+    if (tt == TokenTraits_WildCard) {
+        // The wild card has no value to parse so just return it.
+        return _typeManager->FindType(tsWildCard);
+    }
+    
     if (patternType) {
         EncodingEnum enc = patternType->BitEncoding();
-        if (enc == kEncoding_SInt2C || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+        if (enc == kEncoding_S2CInt || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
             if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
                 literalsType = patternType;
             }
@@ -343,6 +370,13 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
             tName = tsBooleanType;
         } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
             tName = tsStringType;
+        } else if (tt == TokenTraits_NestedExpression) {
+            printf("compound value\n");
+            
+            // Sniff the expression to determin what type it is.
+            // 1. nda arry of a single type.
+            // 2. ndarray of mixed numeric type, use widest
+            // 3. mixed type, cluster. some field may have named.
         }
         literalsType = _typeManager->FindType(tName);
     }
@@ -354,6 +388,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
         type = cdt;
     } else {
         LOG_EVENTV(kHardDataError, "Unrecognized literal '%.*s'",  FMT_LEN_BEGIN(&expressionToken));
+        type = BadType();
     }
     return type;
 }
@@ -577,19 +612,17 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
     } else if (string->CompareCStr(tsUInt)) {
         enc = kEncoding_UInt;
     } else if (string->CompareCStr(tsSInt)) {
-        enc = kEncoding_SInt2C;
+        enc = kEncoding_S2CInt;
     } else if (string->CompareCStr(tsFixedPoint)) {
         enc = kEncoding_Q;
     } else if (string->CompareCStr(ts1plusFractional)) {
         enc = kEncoding_Q1;
-    } else if (string->CompareCStr(tsIntBiased)) {
-        enc = kEncoding_IntBiased;
+    } else if (string->CompareCStr(tsBiasedInt)) {
+        enc = kEncoding_BiasedInt;
     } else if (string->CompareCStr(tsInt1sCompliment)) {
-        enc = kEncoding_SInt1C;
+        enc = kEncoding_S1CInt;
     } else if (string->CompareCStr(tsAscii)) {
         enc = kEncoding_Ascii;
-    } else if (string->CompareCStr(tsBits)) {
-        enc = kEncoding_Bits;
     } else if (string->CompareCStr(tsUnicode)) {
         enc = kEncoding_Unicode;
     } else if (string->CompareCStr(tsGeneric)) {
@@ -602,8 +635,9 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
 {
-    //  syntax:   dv ( type value )
-
+    //  syntax:  dv ( type value ) or dv( type )
+    //  for the second case, the value will be the inner types default value.
+    
     if (!_string.EatChar('('))
         return BadType();
     
@@ -613,7 +647,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, subType, mutableValue);
     
-    // The initializer value is optional, so check to see there is something
+    // The initializer value is optional, so check to see if there is something
     // other than a closing paren.
     
     _string.EatLeadingSpaces();
@@ -621,7 +655,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
         ParseData(subType, cdt->Begin(kPAInit));
     }
 
-    // Simple constants can resolved to a unique instance.
+    // Simple constants can resolve to a unique shared instance.
     // Perhaps even deeper constant values, let the type system figure it out.
     cdt = cdt->FinalizeDVT();
     
@@ -654,7 +688,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     while (depth >= 0) {
         dimIndex = (rank - depth) - 1;
 
-        if(!tempString.ReadToken(&token)) {
+        if(!ReadArrayItem(&tempString, &token)) {
              // Avoid infinite loop for incorrect input.
              break;
         }
@@ -684,6 +718,27 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
         }
     }
 }
+
+TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token)
+{
+    if (input->EatChar('{')) {
+        input->EatWhiteSpaces();
+        while (input->Length()>0 && !input->EatChar('}')) {
+            input->ReadToken(token);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(*tsNameSuffix)) {
+               return TokenTraits_Unrecognized;
+            }
+            if (!ReadArrayItem(input, token)) { return TokenTraits_Unrecognized; }
+            input->EatChar(',');
+        }
+        return TokenTraits_NestedExpression;
+    } else {
+        return input->ReadToken(token);
+    }
+    return TokenTraits_Unrecognized;
+}
+
 //------------------------------------------------------------
 void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
@@ -696,14 +751,14 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         // Read one token; it should either be a '(' indicating a collection
         // or an alternate array expression such as a string.
         SubString  token;
-        TokenTraits tokenTrait = _string.ReadToken(&token);
-        if ((rank == 1) && ((tokenTrait == TokenTraits_String) || (tokenTrait == TokenTraits_VerbatimString))) {
+        TokenTraits tt = _string.ReadToken(&token);
+        if ((rank == 1) && ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString))) {
             // First option, if it is the inner most dimension, and the initializer is a string then that is OK
-            token.TrimQuotedString();
+            token.TrimQuotedString(tt);
             const Utf8Char *pBegin = token.Begin();
             Int32 charCount = token.Length();
             
-            if (tokenTrait == TokenTraits_String) {
+            if (tt == TokenTraits_String) {
                 // Adjust count for escapes
                 charCount = token.LengthAferProcessingEscapes();
                 pArray->Resize1D(charCount);
@@ -754,7 +809,6 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             Int32 dimIndex = rank - level - 1;
             IntIndex step = pSlabs[dimIndex];
             Int32 length = pLengths[dimIndex];
-
             IntIndex elementCount = 0;
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
@@ -817,7 +871,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_UInt:
-        case kEncoding_SInt2C:
+        case kEncoding_S2CInt:
             {
                 IntMax value = 0;
                 Boolean readSuccess = _string.ReadInt(&value);
@@ -876,13 +930,15 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Ascii:
         case kEncoding_Unicode:
-            _string.ReadToken(&token);
-            token.TrimQuotedString();
+            {
+            TokenTraits tt = _string.ReadToken(&token);
+            token.TrimQuotedString(tt);
             if (aqSize == 1 && token.Length() >= 1) {
                 *(Utf8Char*)pData = *token.Begin();
             } else {
                 LOG_EVENT(kSoftDataError, "Scalar that is unicode");
                 // TODO support escaped chars, more error checking
+            }
             }
             break;
         case kEncoding_Enum:
@@ -936,7 +992,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.ReadToken(&fieldName);
                         fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
                         _string.EatWhiteSpaces();
-                        _string.EatChar(':');
+                        _string.EatChar(*tsNameSuffix);
                         Boolean found = false;
                         TypeRef elementType = null;
                         for (elmIndex = 0;!found && elmIndex<type->SubElementCount(); elmIndex++) {
@@ -948,7 +1004,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         if (!found) {
                             return ;
                         }
-                        if (baseOffset == null){
+                        if (baseOffset == null) {
                             elementData = baseOffset ;
                             return ;
                         }
@@ -979,6 +1035,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
     }
 }
+
 //------------------------------------------------------------
 //! Skip over a JSON item.  TODO merge with ReadSubexpression
 Boolean EatJSONItem(SubString* input)
@@ -990,10 +1047,11 @@ Boolean EatJSONItem(SubString* input)
         while (input->Length()>0 && !input->EatChar('}')) {
             input->ReadToken(&token);
             input->EatWhiteSpaces();
-            if (!input->EatChar(':')) {
+            if (!input->EatChar(*tsNameSuffix)) {
                 return false;
             }
             EatJSONItem(input);
+            input->EatChar(',');
         }
     } else if (input->EatChar('[')) {
         while (input->Length()>0 && !input->EatChar(']')) {
@@ -1025,7 +1083,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
             _string.ReadToken(&fieldName);
             fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
             _string.EatWhiteSpaces();
-            _string.EatChar(':');
+            _string.EatChar(*tsNameSuffix);
             Boolean found = false;
             if (path!=null) {
                 // attention: not compare the encoded string.
@@ -1041,7 +1099,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
             }
         }
         return false;
-    } else if (_string.EatChar('[')){
+    } else if (_string.EatChar('[')) {
         // labview could use the path as the index integer to access the array element.
         // only support 1d array
         IntMax arrayIndex = -1;
@@ -1484,7 +1542,7 @@ private:
     {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
-        _pFormatter->FormatInt(kEncoding_IntDim, length);
+        _pFormatter->FormatInt(kEncoding_DimInt, length);
         _pFormatter->_string->Append(' ');
         _pFormatter->FormatEncoding(type->BitEncoding());
         _pFormatter->_string->Append(')');
@@ -1529,7 +1587,7 @@ private:
 
         for (Int32 rank = type->Rank(); rank>0; rank--) {
             _pFormatter->_string->Append(' ');
-            _pFormatter->FormatInt(kEncoding_IntDim, *pDimension);
+            _pFormatter->FormatInt(kEncoding_DimInt, *pDimension);
             pDimension++;
         }
         _pFormatter->_string->AppendCStr(")");
@@ -1626,8 +1684,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
     switch (value) {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
-        case kEncoding_SInt2C:          str = tsSInt;           break;
-        case kEncoding_Bits:            str = tsBits;           break;
+        case kEncoding_S2CInt:          str = tsSInt;           break;
         case kEncoding_Pointer:         str = tsPointer;        break;
         case kEncoding_IEEE754Binary:   str = tsIEEE754Binary;  break;
         case kEncoding_Ascii:           str = tsAscii;          break;
@@ -1658,11 +1715,11 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = null;
 
-    if (encoding == kEncoding_SInt2C) {
+    if (encoding == kEncoding_S2CInt) {
         format = "%*lld";
     } else if (encoding == kEncoding_UInt) {
         format = "%*llu";
-    } else if (encoding == kEncoding_IntDim) {
+    } else if (encoding == kEncoding_DimInt) {
         if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
         } else if (IsVariableLengthDim((IntIndex)value)) {
@@ -1683,8 +1740,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr pBuff = buffer;
-    Double value;
-    ReadDoubleFromMemory(type, pData, &value);
+    Double value = ReadDoubleFromMemory(type, pData);
 
     Int32 len;
     if (isnan(value)) {
@@ -1834,7 +1890,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
 
             if (useQuotes)
                 _string->Append('\"');
-            _string->Append(':');
+            _string->Append(*tsNameSuffix);
         }
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)pData + offset;
@@ -1851,11 +1907,12 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     
     switch (encoding) {
         case kEncoding_UInt:
-        case kEncoding_SInt2C:
-        case kEncoding_IntDim:
-            IntMax intValue;
-            ReadIntFromMemory(type, pData, &intValue);
+        case kEncoding_S2CInt:
+        case kEncoding_DimInt:
+            {
+            IntMax intValue = ReadIntFromMemory(type, pData);
             FormatInt(type->BitEncoding(), intValue);
+            }
             break;
         case kEncoding_IEEE754Binary:
             FormatIEEE754(type, pData);
@@ -2093,16 +2150,16 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
-    DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(.Type)o(.String))")
-    DEFINE_VIREO_FUNCTION(ToString, "p(i(.StaticTypeAndData) i(.Int16) o(.String))")
-    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(.StaticTypeAndData) i(.Boolean) o(.String))")
-    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(.String) o(.StaticTypeAndData) i(a(.String *)) i(.Boolean) i(.Boolean) i(.Boolean) )")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(.StaticTypeAndData) i(.String) o(.String))")
-    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(.StaticTypeAndData) o(.String))")
+    DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(Type)o(String))")
+    DEFINE_VIREO_FUNCTION(ToString, "p(i(StaticTypeAndData) i(Int16) o(String))")
+    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(StaticTypeAndData) i(Boolean) o(String))")
+    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(String) o(StaticTypeAndData) i(a(String *)) i(Boolean) i(Boolean) i(Boolean) )")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(StaticTypeAndData) i(String) o(String))")
+    DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(StaticTypeAndData) o(String))")
 #endif
-    DEFINE_VIREO_FUNCTION(FromString, "p(i(.String) o(.StaticTypeAndData) o(.String))")
-    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(.String) i(.Int32) i(.*) o(.Int32) o(.StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(FromString, "p(i(String) o(StaticTypeAndData) o(String))")
+    DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
 DEFINE_VIREO_END()
 
 } // namespace Vireo
