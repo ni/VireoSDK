@@ -79,6 +79,7 @@ function RunTestCore(testName, tester)
 }
 
 function RunVJSTest(testName) {
+    process.stdout.write('Executing "' + testName + '"\r\n');
     vireo.reboot();
     var newResults = '';
     try {
