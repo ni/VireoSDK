@@ -1,0 +1,9 @@
+testing array Split at position 2
+(1 2)
+(3 4 5)
+test index outof boundary
+()
+(1 2 3 4 5)
+test index outof boundary
+(1 2 3 4 5)
+()
