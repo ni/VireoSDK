@@ -37,11 +37,11 @@ VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 void TypeManager::Delete()
 {
     TypeManagerRef tm = this;
-    
+
     // Delete all types owned bye the tm.
     tm->DeleteTypes(true);
     tm->PrintMemoryStat("ES Delete end", true);
-    
+
     // Give C++ an chance to clean up any memeber data.
     tm->~TypeManager();
     gPlatform.Mem.Free(tm);
@@ -2779,7 +2779,7 @@ namespace Vireo {
 TypeManagerRef TypeManager::New(TypeManagerRef parentTADM)
 {
 
-    // Bootstrap the TADM, get memeory, construct it, make it responsible for its memeory
+    // Bootstrap the TADM, get memory, construct it, make it responsible for its memory
     TypeManagerRef newTADM = (TypeManagerRef) gPlatform.Mem.Malloc(sizeof(TypeManager));
     new (newTADM) TypeManager(parentTADM);
     newTADM->TrackAllocation(newTADM, sizeof(TypeManager), true);
