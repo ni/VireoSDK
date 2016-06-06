@@ -110,6 +110,138 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		443536321CFF4979002BA5DB /* 2HelloWorlds.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 2HelloWorlds.via; path = "../test-it/2HelloWorlds.via"; sourceTree = "<group>"; };
+		443536331CFF4979002BA5DB /* AllocatedDataValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AllocatedDataValues.via; path = "../test-it/AllocatedDataValues.via"; sourceTree = "<group>"; };
+		443536341CFF4979002BA5DB /* ArrayComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayComparison.via; path = "../test-it/ArrayComparison.via"; sourceTree = "<group>"; };
+		443536351CFF4979002BA5DB /* ArrayConcatBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayConcatBug.via; path = "../test-it/ArrayConcatBug.via"; sourceTree = "<group>"; };
+		443536361CFF4979002BA5DB /* ArrayDelete.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayDelete.via; path = "../test-it/ArrayDelete.via"; sourceTree = "<group>"; };
+		443536371CFF4979002BA5DB /* ArrayFillNDV.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayFillNDV.via; path = "../test-it/ArrayFillNDV.via"; sourceTree = "<group>"; };
+		443536381CFF4979002BA5DB /* ArrayIndexElt2DV.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayIndexElt2DV.via; path = "../test-it/ArrayIndexElt2DV.via"; sourceTree = "<group>"; };
+		443536391CFF4979002BA5DB /* ArrayIndexEltNDV.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayIndexEltNDV.via; path = "../test-it/ArrayIndexEltNDV.via"; sourceTree = "<group>"; };
+		4435363A1CFF4979002BA5DB /* ArrayOfStrings.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayOfStrings.via; path = "../test-it/ArrayOfStrings.via"; sourceTree = "<group>"; };
+		4435363B1CFF4979002BA5DB /* ArrayReplaceEltNDV.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayReplaceEltNDV.via; path = "../test-it/ArrayReplaceEltNDV.via"; sourceTree = "<group>"; };
+		4435363C1CFF4979002BA5DB /* ArrayReplaceSubset2DV.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayReplaceSubset2DV.via; path = "../test-it/ArrayReplaceSubset2DV.via"; sourceTree = "<group>"; };
+		4435363D1CFF4979002BA5DB /* ArraySearch.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArraySearch.via; path = "../test-it/ArraySearch.via"; sourceTree = "<group>"; };
+		4435363E1CFF4979002BA5DB /* ArraySplit.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArraySplit.via; path = "../test-it/ArraySplit.via"; sourceTree = "<group>"; };
+		4435363F1CFF4979002BA5DB /* ArraySpreadsheetString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArraySpreadsheetString.via; path = "../test-it/ArraySpreadsheetString.via"; sourceTree = "<group>"; };
+		443536401CFF4979002BA5DB /* ArraySubset.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArraySubset.via; path = "../test-it/ArraySubset.via"; sourceTree = "<group>"; };
+		443536411CFF4979002BA5DB /* BadArgumentToVarArgInstruction.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BadArgumentToVarArgInstruction.via; path = "../test-it/BadArgumentToVarArgInstruction.via"; sourceTree = "<group>"; };
+		443536421CFF4979002BA5DB /* BadComment.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BadComment.via; path = "../test-it/BadComment.via"; sourceTree = "<group>"; };
+		443536431CFF4979002BA5DB /* Banner.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Banner.via; path = "../test-it/Banner.via"; sourceTree = "<group>"; };
+		443536441CFF4979002BA5DB /* BitFields.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BitFields.via; path = "../test-it/BitFields.via"; sourceTree = "<group>"; };
+		443536451CFF4979002BA5DB /* BootCamp-Clip1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "BootCamp-Clip1.via"; path = "../test-it/BootCamp-Clip1.via"; sourceTree = "<group>"; };
+		443536461CFF4979002BA5DB /* Bug_Capcity.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Bug_Capcity.via; path = "../test-it/Bug_Capcity.via"; sourceTree = "<group>"; };
+		443536471CFF4979002BA5DB /* BuildArrayComparisonBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuildArrayComparisonBug.via; path = "../test-it/BuildArrayComparisonBug.via"; sourceTree = "<group>"; };
+		443536481CFF4979002BA5DB /* BuildArraySubVI.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuildArraySubVI.via; path = "../test-it/BuildArraySubVI.via"; sourceTree = "<group>"; };
+		443536491CFF4979002BA5DB /* bundleStomp.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bundleStomp.via; path = "../test-it/bundleStomp.via"; sourceTree = "<group>"; };
+		4435364A1CFF4979002BA5DB /* Canvas2DBezierCurveTo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Canvas2DBezierCurveTo.via; path = "../test-it/Canvas2DBezierCurveTo.via"; sourceTree = "<group>"; };
+		4435364B1CFF4979002BA5DB /* CaseComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CaseComparison.via; path = "../test-it/CaseComparison.via"; sourceTree = "<group>"; };
+		4435364C1CFF4979002BA5DB /* ClumpTriggerBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClumpTriggerBug.via; path = "../test-it/ClumpTriggerBug.via"; sourceTree = "<group>"; };
+		4435364D1CFF4979002BA5DB /* ClusterCompareBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterCompareBug.via; path = "../test-it/ClusterCompareBug.via"; sourceTree = "<group>"; };
+		4435364E1CFF4979002BA5DB /* ClusterCompareBug2.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterCompareBug2.via; path = "../test-it/ClusterCompareBug2.via"; sourceTree = "<group>"; };
+		4435364F1CFF4979002BA5DB /* ClusterVectorOp.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterVectorOp.via; path = "../test-it/ClusterVectorOp.via"; sourceTree = "<group>"; };
+		443536501CFF4979002BA5DB /* Coercion.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Coercion.via; path = "../test-it/Coercion.via"; sourceTree = "<group>"; };
+		443536511CFF4979002BA5DB /* ComplexMathFucntions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFucntions.via; path = "../test-it/ComplexMathFucntions.via"; sourceTree = "<group>"; };
+		443536521CFF4979002BA5DB /* ConvertStringNumber.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ConvertStringNumber.via; path = "../test-it/ConvertStringNumber.via"; sourceTree = "<group>"; };
+		443536531CFF4979002BA5DB /* DateFormatString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DateFormatString.via; path = "../test-it/DateFormatString.via"; sourceTree = "<group>"; };
+		443536541CFF4979002BA5DB /* DebugGPIO.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebugGPIO.via; path = "../test-it/DebugGPIO.via"; sourceTree = "<group>"; };
+		443536551CFF4979002BA5DB /* DecodeViaString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DecodeViaString.via; path = "../test-it/DecodeViaString.via"; sourceTree = "<group>"; };
+		443536561CFF4979002BA5DB /* DefaultOutputs.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DefaultOutputs.via; path = "../test-it/DefaultOutputs.via"; sourceTree = "<group>"; };
+		443536571CFF4979002BA5DB /* DefaultTM.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DefaultTM.via; path = "../test-it/DefaultTM.via"; sourceTree = "<group>"; };
+		443536581CFF4979002BA5DB /* DuplicateSymbol.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DuplicateSymbol.via; path = "../test-it/DuplicateSymbol.via"; sourceTree = "<group>"; };
+		443536591CFF4979002BA5DB /* EggShellError1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EggShellError1.via; path = "../test-it/EggShellError1.via"; sourceTree = "<group>"; };
+		4435365A1CFF4979002BA5DB /* EggShellError2.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EggShellError2.via; path = "../test-it/EggShellError2.via"; sourceTree = "<group>"; };
+		4435365B1CFF4979002BA5DB /* EggShellError3.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EggShellError3.via; path = "../test-it/EggShellError3.via"; sourceTree = "<group>"; };
+		4435365C1CFF4979002BA5DB /* EggShellError4.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EggShellError4.via; path = "../test-it/EggShellError4.via"; sourceTree = "<group>"; };
+		4435365D1CFF4979002BA5DB /* EggShellError5.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EggShellError5.via; path = "../test-it/EggShellError5.via"; sourceTree = "<group>"; };
+		4435365E1CFF4979002BA5DB /* EthanOpts2.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = EthanOpts2.via; path = "../test-it/EthanOpts2.via"; sourceTree = "<group>"; };
+		4435365F1CFF4979002BA5DB /* ExtraArrayInializers.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ExtraArrayInializers.via; path = "../test-it/ExtraArrayInializers.via"; sourceTree = "<group>"; };
+		443536601CFF4979002BA5DB /* FlattenJSON.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FlattenJSON.via; path = "../test-it/FlattenJSON.via"; sourceTree = "<group>"; };
+		443536611CFF4979002BA5DB /* FloatConvertInteger.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = FloatConvertInteger.via; path = "../test-it/FloatConvertInteger.via"; sourceTree = "<group>"; };
+		443536621CFF4979002BA5DB /* Functional.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Functional.via; path = "../test-it/Functional.via"; sourceTree = "<group>"; };
+		443536631CFF4979002BA5DB /* GlobalCrossTalk.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GlobalCrossTalk.via; path = "../test-it/GlobalCrossTalk.via"; sourceTree = "<group>"; };
+		443536641CFF4979002BA5DB /* GlobalVarValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GlobalVarValues.via; path = "../test-it/GlobalVarValues.via"; sourceTree = "<group>"; };
+		443536651CFF4979002BA5DB /* GlobalZDAFieldReferences.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GlobalZDAFieldReferences.via; path = "../test-it/GlobalZDAFieldReferences.via"; sourceTree = "<group>"; };
+		443536661CFF4979002BA5DB /* HelloNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = HelloNode.js; path = "../test-it/HelloNode.js"; sourceTree = "<group>"; };
+		443536671CFF4979002BA5DB /* HelloRequire.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloRequire.via; path = "../test-it/HelloRequire.via"; sourceTree = "<group>"; };
+		443536681CFF4979002BA5DB /* HelloRequireBad.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloRequireBad.via; path = "../test-it/HelloRequireBad.via"; sourceTree = "<group>"; };
+		443536691CFF4979002BA5DB /* HexConstants.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HexConstants.via; path = "../test-it/HexConstants.via"; sourceTree = "<group>"; };
+		4435366A1CFF4979002BA5DB /* HiLo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HiLo.via; path = "../test-it/HiLo.via"; sourceTree = "<group>"; };
+		4435366B1CFF4979002BA5DB /* InlineArrayConstants.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InlineArrayConstants.via; path = "../test-it/InlineArrayConstants.via"; sourceTree = "<group>"; };
+		4435366C1CFF4979002BA5DB /* InlineArrayConstantsErrors.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InlineArrayConstantsErrors.via; path = "../test-it/InlineArrayConstantsErrors.via"; sourceTree = "<group>"; };
+		4435366D1CFF4979002BA5DB /* InlineConstants.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InlineConstants.via; path = "../test-it/InlineConstants.via"; sourceTree = "<group>"; };
+		4435366E1CFF4979002BA5DB /* InplaceArrayConcatenate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceArrayConcatenate.via; path = "../test-it/InplaceArrayConcatenate.via"; sourceTree = "<group>"; };
+		4435366F1CFF4979002BA5DB /* InplaceArrayInsertSubset.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceArrayInsertSubset.via; path = "../test-it/InplaceArrayInsertSubset.via"; sourceTree = "<group>"; };
+		443536701CFF4979002BA5DB /* InplaceArrayReplaceSubset.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceArrayReplaceSubset.via; path = "../test-it/InplaceArrayReplaceSubset.via"; sourceTree = "<group>"; };
+		443536711CFF4979002BA5DB /* InplaceArrayReverse.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceArrayReverse.via; path = "../test-it/InplaceArrayReverse.via"; sourceTree = "<group>"; };
+		443536721CFF4979002BA5DB /* InplaceArrayRotate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceArrayRotate.via; path = "../test-it/InplaceArrayRotate.via"; sourceTree = "<group>"; };
+		443536731CFF4979002BA5DB /* InplaceStringConcatenate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceStringConcatenate.via; path = "../test-it/InplaceStringConcatenate.via"; sourceTree = "<group>"; };
+		443536741CFF4979002BA5DB /* JSONArray.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JSONArray.via; path = "../test-it/JSONArray.via"; sourceTree = "<group>"; };
+		443536751CFF4979002BA5DB /* KeyValuePairDefinitions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = KeyValuePairDefinitions.via; path = "../test-it/KeyValuePairDefinitions.via"; sourceTree = "<group>"; };
+		443536761CFF4979002BA5DB /* Linx.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Linx.via; path = "../test-it/Linx.via"; sourceTree = "<group>"; };
+		443536771CFF4979002BA5DB /* ListDirectory.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ListDirectory.via; path = "../test-it/ListDirectory.via"; sourceTree = "<group>"; };
+		443536781CFF4979002BA5DB /* Literals.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Literals.via; path = "../test-it/Literals.via"; sourceTree = "<group>"; };
+		443536791CFF4979002BA5DB /* MandelbrotStringConcat.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MandelbrotStringConcat.via; path = "../test-it/MandelbrotStringConcat.via"; sourceTree = "<group>"; };
+		4435367A1CFF4979002BA5DB /* MetaValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MetaValues.via; path = "../test-it/MetaValues.via"; sourceTree = "<group>"; };
+		4435367B1CFF4979002BA5DB /* MissingType.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MissingType.via; path = "../test-it/MissingType.via"; sourceTree = "<group>"; };
+		4435367C1CFF4979002BA5DB /* MultiDimensionArrayDefaults.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiDimensionArrayDefaults.via; path = "../test-it/MultiDimensionArrayDefaults.via"; sourceTree = "<group>"; };
+		4435367D1CFF4979002BA5DB /* MultiDimensionArrays.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiDimensionArrays.via; path = "../test-it/MultiDimensionArrays.via"; sourceTree = "<group>"; };
+		4435367E1CFF4979002BA5DB /* NestedContexts.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NestedContexts.via; path = "../test-it/NestedContexts.via"; sourceTree = "<group>"; };
+		4435367F1CFF4979002BA5DB /* njs-run-tests.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "njs-run-tests.js"; path = "../test-it/njs-run-tests.js"; sourceTree = "<group>"; };
+		443536801CFF4979002BA5DB /* NumericArrayConcat.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NumericArrayConcat.via; path = "../test-it/NumericArrayConcat.via"; sourceTree = "<group>"; };
+		443536811CFF4979002BA5DB /* Occurrence.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Occurrence.via; path = "../test-it/Occurrence.via"; sourceTree = "<group>"; };
+		443536821CFF4979002BA5DB /* OverloadedAdd.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OverloadedAdd.via; path = "../test-it/OverloadedAdd.via"; sourceTree = "<group>"; };
+		443536831CFF4979002BA5DB /* Padding.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Padding.via; path = "../test-it/Padding.via"; sourceTree = "<group>"; };
+		443536841CFF4979002BA5DB /* ParseExponential.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ParseExponential.via; path = "../test-it/ParseExponential.via"; sourceTree = "<group>"; };
+		443536851CFF4979002BA5DB /* Pi_EthanOpts.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Pi_EthanOpts.via; path = "../test-it/Pi_EthanOpts.via"; sourceTree = "<group>"; };
+		443536861CFF4979002BA5DB /* PID.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PID.via; path = "../test-it/PID.via"; sourceTree = "<group>"; };
+		443536871CFF4979002BA5DB /* PrintFormatting_Numeric.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintFormatting_Numeric.via; path = "../test-it/PrintFormatting_Numeric.via"; sourceTree = "<group>"; };
+		443536881CFF4979002BA5DB /* PrintFormatting_VariableOrder.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintFormatting_VariableOrder.via; path = "../test-it/PrintFormatting_VariableOrder.via"; sourceTree = "<group>"; };
+		443536891CFF4979002BA5DB /* PrintFormattingNums.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintFormattingNums.via; path = "../test-it/PrintFormattingNums.via"; sourceTree = "<group>"; };
+		4435368A1CFF4979002BA5DB /* PrintTemplateTypes.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PrintTemplateTypes.via; path = "../test-it/PrintTemplateTypes.via"; sourceTree = "<group>"; };
+		4435368B1CFF4979002BA5DB /* QueueOfNothingReaderWriter.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = QueueOfNothingReaderWriter.via; path = "../test-it/QueueOfNothingReaderWriter.via"; sourceTree = "<group>"; };
+		4435368C1CFF4979002BA5DB /* QueueReaderWriter.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = QueueReaderWriter.via; path = "../test-it/QueueReaderWriter.via"; sourceTree = "<group>"; };
+		4435368D1CFF4979002BA5DB /* QueueType.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = QueueType.via; path = "../test-it/QueueType.via"; sourceTree = "<group>"; };
+		4435368E1CFF4979002BA5DB /* QueueTypeTemplate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = QueueTypeTemplate.via; path = "../test-it/QueueTypeTemplate.via"; sourceTree = "<group>"; };
+		4435368F1CFF4979002BA5DB /* QueueTypeWithSize.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = QueueTypeWithSize.via; path = "../test-it/QueueTypeWithSize.via"; sourceTree = "<group>"; };
+		443536901CFF4979002BA5DB /* Random.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Random.via; path = "../test-it/Random.via"; sourceTree = "<group>"; };
+		443536911CFF4979002BA5DB /* ReadWriteUsingPaths.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReadWriteUsingPaths.via; path = "../test-it/ReadWriteUsingPaths.via"; sourceTree = "<group>"; };
+		443536921CFF4979002BA5DB /* ReentrantMemLeak.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReentrantMemLeak.via; path = "../test-it/ReentrantMemLeak.via"; sourceTree = "<group>"; };
+		443536931CFF4979002BA5DB /* ReentrantMemLeak2.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReentrantMemLeak2.via; path = "../test-it/ReentrantMemLeak2.via"; sourceTree = "<group>"; };
+		443536941CFF4979002BA5DB /* ReentrantSubVIWtihShiftRegister.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ReentrantSubVIWtihShiftRegister.via; path = "../test-it/ReentrantSubVIWtihShiftRegister.via"; sourceTree = "<group>"; };
+		443536951CFF4979002BA5DB /* ScanFormat.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ScanFormat.via; path = "../test-it/ScanFormat.via"; sourceTree = "<group>"; };
+		443536961CFF4979002BA5DB /* SearchSplitString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SearchSplitString.via; path = "../test-it/SearchSplitString.via"; sourceTree = "<group>"; };
+		443536971CFF4979002BA5DB /* SharedArray.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SharedArray.via; path = "../test-it/SharedArray.via"; sourceTree = "<group>"; };
+		443536981CFF4979002BA5DB /* SnippetMemoryLoss.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SnippetMemoryLoss.via; path = "../test-it/SnippetMemoryLoss.via"; sourceTree = "<group>"; };
+		443536991CFF4979002BA5DB /* SplitJoin.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SplitJoin.via; path = "../test-it/SplitJoin.via"; sourceTree = "<group>"; };
+		4435369A1CFF4979002BA5DB /* StrCatCrash.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StrCatCrash.via; path = "../test-it/StrCatCrash.via"; sourceTree = "<group>"; };
+		4435369B1CFF4979002BA5DB /* StringConvertString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringConvertString.via; path = "../test-it/StringConvertString.via"; sourceTree = "<group>"; };
+		4435369C1CFF4979002BA5DB /* StringEscapes.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringEscapes.via; path = "../test-it/StringEscapes.via"; sourceTree = "<group>"; };
+		4435369D1CFF4979002BA5DB /* StringFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringFunctions.via; path = "../test-it/StringFunctions.via"; sourceTree = "<group>"; };
+		4435369E1CFF4979002BA5DB /* StringReverse.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringReverse.via; path = "../test-it/StringReverse.via"; sourceTree = "<group>"; };
+		4435369F1CFF4979002BA5DB /* StringRotate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringRotate.via; path = "../test-it/StringRotate.via"; sourceTree = "<group>"; };
+		443536A01CFF4979002BA5DB /* StringTrim.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = StringTrim.via; path = "../test-it/StringTrim.via"; sourceTree = "<group>"; };
+		443536A11CFF4979002BA5DB /* SubVINonFlatDefaultParameters.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = SubVINonFlatDefaultParameters.via; path = "../test-it/SubVINonFlatDefaultParameters.via"; sourceTree = "<group>"; };
+		443536A21CFF4979002BA5DB /* TemplateBasics.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TemplateBasics.via; path = "../test-it/TemplateBasics.via"; sourceTree = "<group>"; };
+		443536A31CFF4979002BA5DB /* TimingTest1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TimingTest1.via; path = "../test-it/TimingTest1.via"; sourceTree = "<group>"; };
+		443536A41CFF4979002BA5DB /* TooManyArguments.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TooManyArguments.via; path = "../test-it/TooManyArguments.via"; sourceTree = "<group>"; };
+		443536A51CFF4979002BA5DB /* TooManyDimensions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TooManyDimensions.via; path = "../test-it/TooManyDimensions.via"; sourceTree = "<group>"; };
+		443536A61CFF4979002BA5DB /* TopVIWithArrayParameterData.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TopVIWithArrayParameterData.via; path = "../test-it/TopVIWithArrayParameterData.via"; sourceTree = "<group>"; };
+		443536A71CFF4979002BA5DB /* ToStringOnTypes.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ToStringOnTypes.via; path = "../test-it/ToStringOnTypes.via"; sourceTree = "<group>"; };
+		443536A81CFF4979002BA5DB /* ToStringWithFormats.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ToStringWithFormats.via; path = "../test-it/ToStringWithFormats.via"; sourceTree = "<group>"; };
+		443536A91CFF4979002BA5DB /* TwoTypesOfClusterDefaults.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TwoTypesOfClusterDefaults.via; path = "../test-it/TwoTypesOfClusterDefaults.via"; sourceTree = "<group>"; };
+		443536AA1CFF4979002BA5DB /* TypedLiterals.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TypedLiterals.via; path = "../test-it/TypedLiterals.via"; sourceTree = "<group>"; };
+		443536AB1CFF4979002BA5DB /* TypedTemplatedLiterals.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TypedTemplatedLiterals.via; path = "../test-it/TypedTemplatedLiterals.via"; sourceTree = "<group>"; };
+		443536AC1CFF4979002BA5DB /* TypeValuesError.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = TypeValuesError.via; path = "../test-it/TypeValuesError.via"; sourceTree = "<group>"; };
+		443536AD1CFF4979002BA5DB /* UTF-8CodePoints.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "UTF-8CodePoints.via"; path = "../test-it/UTF-8CodePoints.via"; sourceTree = "<group>"; };
+		443536AE1CFF4979002BA5DB /* UTF-8HelloWorld.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "UTF-8HelloWorld.via"; path = "../test-it/UTF-8HelloWorld.via"; sourceTree = "<group>"; };
+		443536AF1CFF4979002BA5DB /* UTF-8Symbols.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "UTF-8Symbols.via"; path = "../test-it/UTF-8Symbols.via"; sourceTree = "<group>"; };
+		443536B01CFF4979002BA5DB /* V3.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = V3.via; path = "../test-it/V3.via"; sourceTree = "<group>"; };
+		443536B11CFF4979002BA5DB /* VectorReduce.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = VectorReduce.via; path = "../test-it/VectorReduce.via"; sourceTree = "<group>"; };
+		443536B21CFF4979002BA5DB /* Viaduino.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Viaduino.via; path = "../test-it/Viaduino.via"; sourceTree = "<group>"; };
+		443536B31CFF4979002BA5DB /* VIOverloads.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = VIOverloads.via; path = "../test-it/VIOverloads.via"; sourceTree = "<group>"; };
+		443536B41CFF4979002BA5DB /* Waveform.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Waveform.via; path = "../test-it/Waveform.via"; sourceTree = "<group>"; };
+		443536B51CFF4979002BA5DB /* ZDACrash1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ZDACrash1.via; path = "../test-it/ZDACrash1.via"; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
@@ -205,7 +337,6 @@
 		47CAD27D17FDFD0000DDDB46 /* MuiltiHello.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = MuiltiHello.sh; path = "../test-it/MuiltiHello.sh"; sourceTree = "<group>"; };
 		47CAD27E17FDFD0000DDDB46 /* MathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MathFunctions.via; path = "../test-it/MathFunctions.via"; sourceTree = "<group>"; };
 		47CAD27F17FDFD0000DDDB46 /* ImmediateArgs.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ImmediateArgs.via; path = "../test-it/ImmediateArgs.via"; sourceTree = "<group>"; };
-		47CAD28117FDFD0000DDDB46 /* hw10000.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hw10000.via; path = "../test-it/hw10000.via"; sourceTree = "<group>"; };
 		47CAD28217FDFD0100DDDB46 /* hw1000.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hw1000.via; path = "../test-it/hw1000.via"; sourceTree = "<group>"; };
 		47CAD28317FDFD0100DDDB46 /* hw100.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hw100.via; path = "../test-it/hw100.via"; sourceTree = "<group>"; };
 		47CAD28417FDFD0100DDDB46 /* HelloWorld.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloWorld.via; path = "../test-it/HelloWorld.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
@@ -364,86 +495,217 @@
 		4754290717C67A750096898B /* Test-It */ = {
 			isa = PBXGroup;
 			children = (
-				475317971AC9EA4F0030094A /* results */,
-				47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */,
-				47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */,
-				47F1285518BFACFB000DA4E1 /* Pi.via */,
-				47F1285418BE5C06000DA4E1 /* ArrayShiftRegister.via */,
-				47F1285118B51309000DA4E1 /* CheckCopyDataMemoryLeak.via */,
-				47F1285018B3F67C000DA4E1 /* LotsOStrings.via */,
-				47D1884118A93EC9008AB15D /* CopyingVIs.via */,
-				47B55D32189DA7D600207C01 /* PrintHelloWorld.via */,
-				47B55D311894479500207C01 /* ByValueFunctions.via */,
-				470F626918847291003146BF /* Time128.via */,
-				470F62681880669B003146BF /* VIScripting.via */,
-				47171269186376FE00D9A9A8 /* ReentrantSubVISimple.via */,
-				47D88C2A18566D940051CD35 /* CheckCoreTypes.via */,
-				47D88C29185117270051CD35 /* UsageType.via */,
-				47D88C2818504F430051CD35 /* DeeplyNestedInitializer.via */,
-				47D88C2718504F0A0051CD35 /* NestedConstant.via */,
-				47D88C2618504EE60051CD35 /* clusterInitializer.via */,
-				47D88C2518504EA00051CD35 /* StringArrayConcat.via */,
-				47D88C2418504E730051CD35 /* ClusterComparison.via */,
-				47D88C1D185045440051CD35 /* SubVIDefaultParameter.via */,
-				47C554E21845285D001DDC46 /* PrintFormatting.via */,
-				47271719183BC64B00238283 /* TypeValues.via */,
-				47271718183AC7AC00238283 /* SubVIParallelCalls.via */,
-				47271715182A0F4900238283 /* x */,
+				443536321CFF4979002BA5DB /* 2HelloWorlds.via */,
+				443536331CFF4979002BA5DB /* AllocatedDataValues.via */,
+				443536341CFF4979002BA5DB /* ArrayComparison.via */,
+				443536351CFF4979002BA5DB /* ArrayConcatBug.via */,
+				443536361CFF4979002BA5DB /* ArrayDelete.via */,
+				443536371CFF4979002BA5DB /* ArrayFillNDV.via */,
+				443536381CFF4979002BA5DB /* ArrayIndexElt2DV.via */,
+				443536391CFF4979002BA5DB /* ArrayIndexEltNDV.via */,
+				4435363A1CFF4979002BA5DB /* ArrayOfStrings.via */,
+				4435363B1CFF4979002BA5DB /* ArrayReplaceEltNDV.via */,
+				4435363C1CFF4979002BA5DB /* ArrayReplaceSubset2DV.via */,
+				4435363D1CFF4979002BA5DB /* ArraySearch.via */,
+				4435363E1CFF4979002BA5DB /* ArraySplit.via */,
+				4435363F1CFF4979002BA5DB /* ArraySpreadsheetString.via */,
+				443536401CFF4979002BA5DB /* ArraySubset.via */,
+				443536411CFF4979002BA5DB /* BadArgumentToVarArgInstruction.via */,
+				443536421CFF4979002BA5DB /* BadComment.via */,
+				443536431CFF4979002BA5DB /* Banner.via */,
+				443536441CFF4979002BA5DB /* BitFields.via */,
+				443536451CFF4979002BA5DB /* BootCamp-Clip1.via */,
+				443536461CFF4979002BA5DB /* Bug_Capcity.via */,
+				443536471CFF4979002BA5DB /* BuildArrayComparisonBug.via */,
+				443536481CFF4979002BA5DB /* BuildArraySubVI.via */,
+				443536491CFF4979002BA5DB /* bundleStomp.via */,
+				4435364A1CFF4979002BA5DB /* Canvas2DBezierCurveTo.via */,
+				4435364B1CFF4979002BA5DB /* CaseComparison.via */,
+				4435364C1CFF4979002BA5DB /* ClumpTriggerBug.via */,
+				4435364D1CFF4979002BA5DB /* ClusterCompareBug.via */,
+				4435364E1CFF4979002BA5DB /* ClusterCompareBug2.via */,
+				4435364F1CFF4979002BA5DB /* ClusterVectorOp.via */,
+				443536501CFF4979002BA5DB /* Coercion.via */,
+				443536511CFF4979002BA5DB /* ComplexMathFucntions.via */,
+				443536521CFF4979002BA5DB /* ConvertStringNumber.via */,
+				443536531CFF4979002BA5DB /* DateFormatString.via */,
+				443536541CFF4979002BA5DB /* DebugGPIO.via */,
+				443536551CFF4979002BA5DB /* DecodeViaString.via */,
+				443536561CFF4979002BA5DB /* DefaultOutputs.via */,
+				443536571CFF4979002BA5DB /* DefaultTM.via */,
+				443536581CFF4979002BA5DB /* DuplicateSymbol.via */,
+				443536591CFF4979002BA5DB /* EggShellError1.via */,
+				4435365A1CFF4979002BA5DB /* EggShellError2.via */,
+				4435365B1CFF4979002BA5DB /* EggShellError3.via */,
+				4435365C1CFF4979002BA5DB /* EggShellError4.via */,
+				4435365D1CFF4979002BA5DB /* EggShellError5.via */,
+				4435365E1CFF4979002BA5DB /* EthanOpts2.via */,
+				4435365F1CFF4979002BA5DB /* ExtraArrayInializers.via */,
+				443536601CFF4979002BA5DB /* FlattenJSON.via */,
+				443536611CFF4979002BA5DB /* FloatConvertInteger.via */,
+				443536621CFF4979002BA5DB /* Functional.via */,
+				443536631CFF4979002BA5DB /* GlobalCrossTalk.via */,
+				443536641CFF4979002BA5DB /* GlobalVarValues.via */,
+				443536651CFF4979002BA5DB /* GlobalZDAFieldReferences.via */,
+				443536661CFF4979002BA5DB /* HelloNode.js */,
+				443536671CFF4979002BA5DB /* HelloRequire.via */,
+				443536681CFF4979002BA5DB /* HelloRequireBad.via */,
+				443536691CFF4979002BA5DB /* HexConstants.via */,
+				4435366A1CFF4979002BA5DB /* HiLo.via */,
+				4435366B1CFF4979002BA5DB /* InlineArrayConstants.via */,
+				4435366C1CFF4979002BA5DB /* InlineArrayConstantsErrors.via */,
+				4435366D1CFF4979002BA5DB /* InlineConstants.via */,
+				4435366E1CFF4979002BA5DB /* InplaceArrayConcatenate.via */,
+				4435366F1CFF4979002BA5DB /* InplaceArrayInsertSubset.via */,
+				443536701CFF4979002BA5DB /* InplaceArrayReplaceSubset.via */,
+				443536711CFF4979002BA5DB /* InplaceArrayReverse.via */,
+				443536721CFF4979002BA5DB /* InplaceArrayRotate.via */,
+				443536731CFF4979002BA5DB /* InplaceStringConcatenate.via */,
+				443536741CFF4979002BA5DB /* JSONArray.via */,
+				443536751CFF4979002BA5DB /* KeyValuePairDefinitions.via */,
+				443536761CFF4979002BA5DB /* Linx.via */,
+				443536771CFF4979002BA5DB /* ListDirectory.via */,
+				443536781CFF4979002BA5DB /* Literals.via */,
+				443536791CFF4979002BA5DB /* MandelbrotStringConcat.via */,
+				4435367A1CFF4979002BA5DB /* MetaValues.via */,
+				4435367B1CFF4979002BA5DB /* MissingType.via */,
+				4435367C1CFF4979002BA5DB /* MultiDimensionArrayDefaults.via */,
+				4435367D1CFF4979002BA5DB /* MultiDimensionArrays.via */,
+				4435367E1CFF4979002BA5DB /* NestedContexts.via */,
+				4435367F1CFF4979002BA5DB /* njs-run-tests.js */,
+				443536801CFF4979002BA5DB /* NumericArrayConcat.via */,
+				443536811CFF4979002BA5DB /* Occurrence.via */,
+				443536821CFF4979002BA5DB /* OverloadedAdd.via */,
+				443536831CFF4979002BA5DB /* Padding.via */,
+				443536841CFF4979002BA5DB /* ParseExponential.via */,
+				443536851CFF4979002BA5DB /* Pi_EthanOpts.via */,
+				443536861CFF4979002BA5DB /* PID.via */,
+				443536871CFF4979002BA5DB /* PrintFormatting_Numeric.via */,
+				443536881CFF4979002BA5DB /* PrintFormatting_VariableOrder.via */,
+				443536891CFF4979002BA5DB /* PrintFormattingNums.via */,
+				4435368A1CFF4979002BA5DB /* PrintTemplateTypes.via */,
+				4435368B1CFF4979002BA5DB /* QueueOfNothingReaderWriter.via */,
+				4435368C1CFF4979002BA5DB /* QueueReaderWriter.via */,
+				4435368D1CFF4979002BA5DB /* QueueType.via */,
+				4435368E1CFF4979002BA5DB /* QueueTypeTemplate.via */,
+				4435368F1CFF4979002BA5DB /* QueueTypeWithSize.via */,
+				443536901CFF4979002BA5DB /* Random.via */,
+				443536911CFF4979002BA5DB /* ReadWriteUsingPaths.via */,
+				443536921CFF4979002BA5DB /* ReentrantMemLeak.via */,
+				443536931CFF4979002BA5DB /* ReentrantMemLeak2.via */,
+				443536941CFF4979002BA5DB /* ReentrantSubVIWtihShiftRegister.via */,
+				443536951CFF4979002BA5DB /* ScanFormat.via */,
+				443536961CFF4979002BA5DB /* SearchSplitString.via */,
+				443536971CFF4979002BA5DB /* SharedArray.via */,
+				443536981CFF4979002BA5DB /* SnippetMemoryLoss.via */,
+				443536991CFF4979002BA5DB /* SplitJoin.via */,
+				4435369A1CFF4979002BA5DB /* StrCatCrash.via */,
+				4435369B1CFF4979002BA5DB /* StringConvertString.via */,
+				4435369C1CFF4979002BA5DB /* StringEscapes.via */,
+				4435369D1CFF4979002BA5DB /* StringFunctions.via */,
+				4435369E1CFF4979002BA5DB /* StringReverse.via */,
+				4435369F1CFF4979002BA5DB /* StringRotate.via */,
+				443536A01CFF4979002BA5DB /* StringTrim.via */,
+				443536A11CFF4979002BA5DB /* SubVINonFlatDefaultParameters.via */,
+				443536A21CFF4979002BA5DB /* TemplateBasics.via */,
+				443536A31CFF4979002BA5DB /* TimingTest1.via */,
+				443536A41CFF4979002BA5DB /* TooManyArguments.via */,
+				443536A51CFF4979002BA5DB /* TooManyDimensions.via */,
+				443536A61CFF4979002BA5DB /* TopVIWithArrayParameterData.via */,
+				443536A71CFF4979002BA5DB /* ToStringOnTypes.via */,
+				443536A81CFF4979002BA5DB /* ToStringWithFormats.via */,
+				443536A91CFF4979002BA5DB /* TwoTypesOfClusterDefaults.via */,
+				443536AA1CFF4979002BA5DB /* TypedLiterals.via */,
+				443536AB1CFF4979002BA5DB /* TypedTemplatedLiterals.via */,
+				443536AC1CFF4979002BA5DB /* TypeValuesError.via */,
+				443536AD1CFF4979002BA5DB /* UTF-8CodePoints.via */,
+				443536AE1CFF4979002BA5DB /* UTF-8HelloWorld.via */,
+				443536AF1CFF4979002BA5DB /* UTF-8Symbols.via */,
+				443536B01CFF4979002BA5DB /* V3.via */,
+				443536B11CFF4979002BA5DB /* VectorReduce.via */,
+				443536B21CFF4979002BA5DB /* Viaduino.via */,
+				443536B31CFF4979002BA5DB /* VIOverloads.via */,
+				443536B41CFF4979002BA5DB /* Waveform.via */,
+				443536B51CFF4979002BA5DB /* ZDACrash1.via */,
 				47271717183A8CA800238283 /* ArrayDemo.via */,
-				4714F2E61843E23600C7B43E /* ArrayVFB1d_Resize.via */,
+				47F1285418BE5C06000DA4E1 /* ArrayShiftRegister.via */,
 				4714F2E71844013400C7B43E /* ArrayVFB1d_PassToSubVI.via */,
-				4744A9E3182049D500E1F7D9 /* PID.via */,
-				4744A9E2181A2EB700E1F7D9 /* ForwardVIDefinitions.via */,
-				47D1AE5518122F5F003B850F /* Generics.via */,
-				47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */,
-				47FDAF5618039C48002C7851 /* Mandelbrot.via */,
-				47AF92321804739F00310F36 /* MandelbrotInline.via */,
-				47CAD27717FDFD0000DDDB46 /* PrintTypeVectors.via */,
+				4714F2E61843E23600C7B43E /* ArrayVFB1d_Resize.via */,
+				47CAD29017FDFD0100DDDB46 /* BooleanFunctions.via */,
+				47CAD28F17FDFD0100DDDB46 /* BranchErrors.via */,
+				47CAD28E17FDFD0100DDDB46 /* BranchInstructions.via */,
+				47CAD28D17FDFD0100DDDB46 /* BuildHWn.sh */,
+				47B55D311894479500207C01 /* ByValueFunctions.via */,
+				47CAD28C17FDFD0100DDDB46 /* Calculate.via */,
+				47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */,
+				47F1285118B51309000DA4E1 /* CheckCopyDataMemoryLeak.via */,
+				47D88C2A18566D940051CD35 /* CheckCoreTypes.via */,
+				47CAD28B17FDFD0100DDDB46 /* ClumpTriggerWait.via */,
+				47D88C2418504E730051CD35 /* ClusterComparison.via */,
+				47D88C2618504EE60051CD35 /* clusterInitializer.via */,
+				47CAD28A17FDFD0100DDDB46 /* Clusters.via */,
+				47D1884118A93EC9008AB15D /* CopyingVIs.via */,
+				47CAD28917FDFD0100DDDB46 /* CopyOp.via */,
+				47CAD28817FDFD0100DDDB46 /* CoreArray.via */,
+				47CAD28717FDFD0100DDDB46 /* CoreTypes.via */,
+				47D88C2818504F430051CD35 /* DeeplyNestedInitializer.via */,
+				47CAD28617FDFD0100DDDB46 /* Ethan1.via */,
+				47CAD28517FDFD0100DDDB46 /* FixedArrays.via */,
 				47D88C1E18504D020051CD35 /* FlattenAoC.via */,
 				47D88C1F18504D020051CD35 /* FlattenAoS.via */,
 				47D88C2018504D020051CD35 /* FlattenArray.via */,
 				47D88C2118504D030051CD35 /* FlattenCluster.via */,
 				47D88C2218504D030051CD35 /* FlattenCoA.via */,
 				47D88C2318504D030051CD35 /* FlattenScalar.via */,
-				47CAD27817FDFD0000DDDB46 /* PrintTypes.via */,
-				47CAD27917FDFD0000DDDB46 /* Parallel2.via */,
-				47CAD27A17FDFD0000DDDB46 /* Parallel.via */,
-				47CAD27B17FDFD0000DDDB46 /* NegativeNumbers.via */,
-				47CAD27C17FDFD0000DDDB46 /* MultiClump.via */,
-				47D1AE531811CB7C003B850F /* CalVIMultipleTimesObserveOldValues.via */,
-				47CAD27D17FDFD0000DDDB46 /* MuiltiHello.sh */,
-				47CAD27E17FDFD0000DDDB46 /* MathFunctions.via */,
-				47CAD27F17FDFD0000DDDB46 /* ImmediateArgs.via */,
-				47CAD28117FDFD0000DDDB46 /* hw10000.via */,
-				47CAD28217FDFD0100DDDB46 /* hw1000.via */,
-				47CAD28317FDFD0100DDDB46 /* hw100.via */,
+				4744A9E2181A2EB700E1F7D9 /* ForwardVIDefinitions.via */,
+				47D1AE5518122F5F003B850F /* Generics.via */,
 				47CAD28417FDFD0100DDDB46 /* HelloWorld.via */,
-				47CAD28517FDFD0100DDDB46 /* FixedArrays.via */,
-				47CAD28617FDFD0100DDDB46 /* Ethan1.via */,
-				47CAD28717FDFD0100DDDB46 /* CoreTypes.via */,
-				47CAD28817FDFD0100DDDB46 /* CoreArray.via */,
-				47CAD28917FDFD0100DDDB46 /* CopyOp.via */,
-				47CAD28A17FDFD0100DDDB46 /* Clusters.via */,
-				47CAD28B17FDFD0100DDDB46 /* ClumpTriggerWait.via */,
-				47CAD28C17FDFD0100DDDB46 /* Calculate.via */,
-				47CAD28D17FDFD0100DDDB46 /* BuildHWn.sh */,
-				47CAD28E17FDFD0100DDDB46 /* BranchInstructions.via */,
-				47CAD28F17FDFD0100DDDB46 /* BranchErrors.via */,
-				47CAD29017FDFD0100DDDB46 /* BooleanFunctions.via */,
-				47CAD26917FDFCEB00DDDB46 /* VectorOps.via */,
-				47CAD26A17FDFCEB00DDDB46 /* UserTypes.via */,
-				47CAD26B17FDFCEB00DDDB46 /* TypeChecking.via */,
-				47CAD26C17FDFCEB00DDDB46 /* TicTock.via */,
-				47CAD26D17FDFCEB00DDDB46 /* SubVISimple.via */,
-				47CAD26E17FDFCEB00DDDB46 /* SubVIParameters.via */,
-				47CAD26F17FDFCEB00DDDB46 /* SubVIMultiMultiCall.via */,
-				47CAD27017FDFCEB00DDDB46 /* SubVIMultiForwardDeclaration.via */,
-				47CAD27117FDFCEB00DDDB46 /* SubVIMulti.via */,
-				47CAD27217FDFCEB00DDDB46 /* Strings.via */,
-				47CAD27317FDFCEB00DDDB46 /* SlashComments.via */,
-				47CAD27417FDFCEB00DDDB46 /* SlashAsterComments.via */,
-				47CAD27517FDFCEB00DDDB46 /* run-tests.sh */,
+				47CAD28317FDFD0100DDDB46 /* hw100.via */,
+				47CAD28217FDFD0100DDDB46 /* hw1000.via */,
+				47CAD27F17FDFD0000DDDB46 /* ImmediateArgs.via */,
+				47F1285018B3F67C000DA4E1 /* LotsOStrings.via */,
+				47FDAF5618039C48002C7851 /* Mandelbrot.via */,
+				47AF92321804739F00310F36 /* MandelbrotInline.via */,
+				47CAD27E17FDFD0000DDDB46 /* MathFunctions.via */,
+				47CAD27D17FDFD0000DDDB46 /* MuiltiHello.sh */,
+				47CAD27C17FDFD0000DDDB46 /* MultiClump.via */,
+				47CAD27B17FDFD0000DDDB46 /* NegativeNumbers.via */,
+				47D88C2718504F0A0051CD35 /* NestedConstant.via */,
+				47CAD27A17FDFD0000DDDB46 /* Parallel.via */,
+				47CAD27917FDFD0000DDDB46 /* Parallel2.via */,
+				47F1285618C02B65000DA4E1 /* Pi_NonReentrant.via */,
+				47F1285518BFACFB000DA4E1 /* Pi.via */,
+				4744A9E3182049D500E1F7D9 /* PID.via */,
+				47C554E21845285D001DDC46 /* PrintFormatting.via */,
+				47B55D32189DA7D600207C01 /* PrintHelloWorld.via */,
+				47CAD27817FDFD0000DDDB46 /* PrintTypes.via */,
+				47CAD27717FDFD0000DDDB46 /* PrintTypeVectors.via */,
+				47171269186376FE00D9A9A8 /* ReentrantSubVISimple.via */,
+				475317971AC9EA4F0030094A /* results */,
 				47CAD27617FDFCEB00DDDB46 /* run-tests.bat */,
+				47CAD27517FDFCEB00DDDB46 /* run-tests.sh */,
+				47FDAF5517FFB981002C7851 /* ShabangHelloWorld.via */,
+				47CAD27417FDFCEB00DDDB46 /* SlashAsterComments.via */,
+				47CAD27317FDFCEB00DDDB46 /* SlashComments.via */,
+				47D88C2518504EA00051CD35 /* StringArrayConcat.via */,
+				47F1285718C14D19000DA4E1 /* StringByteArrayConversion.via */,
+				47CAD27217FDFCEB00DDDB46 /* Strings.via */,
+				47D88C1D185045440051CD35 /* SubVIDefaultParameter.via */,
+				47CAD27117FDFCEB00DDDB46 /* SubVIMulti.via */,
+				47CAD27017FDFCEB00DDDB46 /* SubVIMultiForwardDeclaration.via */,
+				47CAD26F17FDFCEB00DDDB46 /* SubVIMultiMultiCall.via */,
+				47271718183AC7AC00238283 /* SubVIParallelCalls.via */,
+				47CAD26E17FDFCEB00DDDB46 /* SubVIParameters.via */,
+				47CAD26D17FDFCEB00DDDB46 /* SubVISimple.via */,
+				47CAD26C17FDFCEB00DDDB46 /* TicTock.via */,
+				470F626918847291003146BF /* Time128.via */,
+				47CAD26B17FDFCEB00DDDB46 /* TypeChecking.via */,
+				47271719183BC64B00238283 /* TypeValues.via */,
+				47D88C29185117270051CD35 /* UsageType.via */,
+				47CAD26A17FDFCEB00DDDB46 /* UserTypes.via */,
+				47CAD26917FDFCEB00DDDB46 /* VectorOps.via */,
+				470F62681880669B003146BF /* VIScripting.via */,
+				47271715182A0F4900238283 /* x */,
 			);
 			name = "Test-It";
 			sourceTree = "<group>";
