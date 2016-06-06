@@ -20,7 +20,8 @@ function IsViaFile(name) {
 
 function CompareResults(testName, oldResults, newResults, msec) {
     var diffs = [];
-    var cleanNewResults = newResults.replace(/^\/\/.*$/gm, '');
+    var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
+    oldResults = oldResults.replace(/\r\n/gm, "\n");
     var i = 0;
     var lineCount = 0;
     var len = cleanNewResults.length;
@@ -64,7 +65,7 @@ function RunTestCore(testName, tester)
             noCurrentResults = true;
         }
     }
-
+    //console.log("Running " + testName);
     var hrstart = process.hrtime();
     var newResults = tester(testName);
     var hrend = process.hrtime(hrstart);
@@ -90,9 +91,9 @@ function RunVJSTest(testName) {
     }
 
     vireo.stdout = '';
-    vireo.loadVia(viaCode);
-
-    while (vireo.executeSlices(1000000)) {}
+    if (vireo.loadVia(viaCode)==0) {
+    	while (vireo.executeSlices(1000000)) {}
+    }
 
     return vireo.stdout;
 }
@@ -152,7 +153,7 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
     if (testFiles.length > 0) {
         testFiles.map(tester);
-        testFiles.map(tester);
+        //testFiles.map(tester);
         console.log("Total test vectors :" + app.totalResultLines);
         if (app.testFailures.length > 0) {
             console.log(app.testFailures);
