@@ -1,0 +1,18 @@
+testing array delete
+(1 4 5)
+(2 3)
+test deleting more elements
+(1 2)
+(3 4 5)
+test deleting more elements
+()
+(1 2 3 4 5)
+test delete single element
+(1 2 4 5)
+3
+test negative index
+()
+0
+test negative index
+(3 4 5)
+(1 2)
