@@ -24,7 +24,7 @@ Most of the documentation for Vireo is in the source or in the dox folder in the
     > Build strategies: BuildConfig.h and VireoMerged.cpp" and makefiles
     > Performance 
     > Ideas on JIT
-    > Generic funcitons
+    > Generic functions
     > Fucntion call validation for generic functions
     > Array views
     > Iterators

@@ -128,8 +128,8 @@ private:
     static InstructionCore _culDeSac;
     
 public:
-    static inline Boolean IsNotCulDeSac(InstructionCore* pInstruciton) {return pInstruciton->_function != (InstructionFunction)CulDeSac;};
-    static inline Boolean IsDone(InstructionCore* pInstruciton) {return pInstruciton->_function == (InstructionFunction)Done;};
+    static inline Boolean IsNotCulDeSac(InstructionCore* pInstruction) {return pInstruction->_function != (InstructionFunction)CulDeSac;};
+    static inline Boolean IsDone(InstructionCore* pInstruction) {return pInstruction->_function == (InstructionFunction)Done;};
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT

@@ -431,17 +431,17 @@ TypeRef ClumpParseState::StartNextOverload()
     }
     _bIsVI = false;
     
-    NamedTypeRef t = _nextFuncitonDefinition;
+    NamedTypeRef t = _nextFunctionDefinition;
     if (t) {
-        if (t == _genericFuncitonDefinition) {
+        if (t == _genericFunctionDefinition) {
             t = t->NextOverload();
         }
-        _nextFuncitonDefinition = t ? t->NextOverload() : null;
+        _nextFunctionDefinition = t ? t->NextOverload() : null;
     }
     if (!t) {
         // Got to the end of the list. If there is generic loader use it last
-        t = _genericFuncitonDefinition;
-        _genericFuncitonDefinition = null;
+        t = _genericFunctionDefinition;
+        _genericFunctionDefinition = null;
     }
     
     if (t && t->BitEncoding() == kEncoding_Pointer) {
@@ -460,17 +460,17 @@ TypeRef ClumpParseState::StartNextOverload()
 //------------------------------------------------------------
 TypeRef ClumpParseState::StartInstruction(SubString* opName)
 {
-    _nextFuncitonDefinition = _clump->TheTypeManager()->FindTypeCore(opName);
-    _genericFuncitonDefinition = null;
+    _nextFunctionDefinition = _clump->TheTypeManager()->FindTypeCore(opName);
+    _genericFunctionDefinition = null;
 
     // Look for a generic loader.
-    for (NamedTypeRef overload = _nextFuncitonDefinition; overload; overload = overload->NextOverload()) {
+    for (NamedTypeRef overload = _nextFunctionDefinition; overload; overload = overload->NextOverload()) {
         if (overload->PointerType() == kPTGenericFunctionCodeGen) {
-            _genericFuncitonDefinition = overload;
+            _genericFunctionDefinition = overload;
             break;
         }
     }
-    _hasMultipleDefinitions = _nextFuncitonDefinition ? _nextFuncitonDefinition->NextOverload() != null : false;
+    _hasMultipleDefinitions = _nextFunctionDefinition ? _nextFunctionDefinition->NextOverload() != null : false;
     return StartNextOverload();
 }
 //------------------------------------------------------------
@@ -790,7 +790,7 @@ void ClumpParseState::BeginEmitSubSnippet(ClumpParseState* subSnippet, Instructi
     if  (argIndex >= 0) {
         ppNext = (InstructionCore**)&pInstruction->_args[argIndex];
     } else {
-        // No place to patched (should be implicit next instruciton)
+        // No place to patched (should be implicit next instruction)
         ppNext = null;
     }
     subSnippet->StartSnippet(ppNext);
@@ -877,7 +877,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     }
     
     // The initial argument is the pointer to the clump. Keep that one
-    // and ad the real ones that will be used for the low level instruciton.
+    // and ad the real ones that will be used for the low level instruction.
     _argCount = 1;
     
     // No explicit field, the first copy-in instruction follows this instructions.
@@ -981,7 +981,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     _instructionType = null;
     
     // Now that sub snippets have been made, configure the clump parser so that
-    // The CallVI instruciton knows where to go after it is done.
+    // The CallVI instruction knows where to go after it is done.
     RecordNextHere(&callInstruction->_piNext);
 
     return callInstruction;
@@ -990,7 +990,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
 //! Emit a specific instruction. Used by generic instruction emitters.
 InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCount, ...)
 {
-    // Look for funciton that matches parameter list.
+    // Look for function that matches parameter list.
     va_list args;
     Boolean keepTrying = true;
     StartInstruction(opName);
@@ -1110,7 +1110,7 @@ void ClumpParseState::CommitSubSnippet()
 {
     // Emit a stub instruction with the CulDeSac function to avoid
     // a null at the end. Used in conjunction with
-    // the funciton ExecutionContext::IsCulDeSac()
+    // the function ExecutionContext::IsCulDeSac()
     EmitSimpleInstruction("CulDeSac");
 }
 //------------------------------------------------------------

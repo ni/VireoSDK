@@ -53,7 +53,7 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
         TypeDefiner *pCurrent = *ppNext;
         ConstCStr missingModule = (pCurrent)->_pCallback(pCurrent, tm);
         
-        // The funciton returns a pointer to what it was missing, null if nothing.
+        // The function returns a pointer to what it was missing, null if nothing.
         if (missingModule != null) {
             // 1. Pull the current item out of the list.
             *ppNext = pCurrent->_pNext;

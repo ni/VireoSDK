@@ -7,7 +7,7 @@ start( VI<(
         // prevented the var arg flag from being reset.
         Printf("foo\n" x.a)
 
-        // That meant if another var arg instruciton followed then
+        // That meant if another var arg instruction followed then
         // an assert was hit.
         Printf("foo\n" x)
 
