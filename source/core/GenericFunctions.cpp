@@ -477,12 +477,15 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, searchOp, snippetArgId);
+#if 1 // Fix Search1DArray, which was always only comparing the lower byte of each element by using IsEQBoolean by mistake
+	snippetBuilder.EmitInstruction(&EQName,3, elementType,(void*)null,elementType, pInstructionBuilder->_argPointers[1], booleanType, (void*)null);
+#else // This code was always using the first instance of IsEQ (Boolean) instead of matching args:
     snippetBuilder.StartInstruction(&EQName);
     snippetBuilder.InternalAddArg(elementType, null);
     snippetBuilder.InternalAddArg(elementType, pInstructionBuilder->_argPointers[1]);
     snippetBuilder.InternalAddArg(booleanType, null);
-
     snippetBuilder.EmitInstruction();
+#endif
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&searchOp->_piNext);
 
