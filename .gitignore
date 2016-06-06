@@ -14,6 +14,9 @@
 *.vntr
 
 .DS_Store
+Vireo_Xcode/VireoEggShell.xcodeproj/xcshareddata/xcschemes/EggShell.xcscheme
+make-it/esh
+target-support/
 
 Vireo_SimpleMake/asm/
 Vireo_VS2012/VireoCommandLine/Debug/Queue.obj
