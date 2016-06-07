@@ -1,0 +1,255 @@
+# Vireo make file for AAL build
+
+# Allow this Makefile to be in the main VireoSDK folder or a parallel folder
+ifeq (,$(AAL_ONLY))
+ifneq (,$(wildcard ../make-it/*))
+  VIREO_SDK_DIR=..
+else
+ifneq (,$(wildcard ../VireoSDK/*))
+  VIREO_SDK_DIR=../VireoSDK
+endif
+endif
+endif # AAL_ONLY
+
+# Use the Perforce synced AAL folder if its synced, or else a default
+ifneq (,$(wildcard $(nibuild_penguin_root)/math/AAL/dev/2015/core/*))
+  ANALYSIS_ROOT_DIRECTORY=$(nibuild_penguin_root)/math/AAL/dev/2015/core
+else
+  ANALYSIS_ROOT_DIRECTORY=../vi.lib/Analysis/dev/2015/core
+endif
+
+ifneq (,$(wildcard $(VIREO_SDK_DIR)/private/*))
+  ANALYSIS_WRAPPERS_SOURCE_DIRECTORY=$(VIREO_SDK_DIR)/private
+else
+  ANALYSIS_WRAPPERS_SOURCE_DIRECTORY=../vi.lib/Analysis
+endif
+
+ifeq (,$(wildcard $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrapper*.cpp))
+ANALYSIS_LIBRARY = | no-analysis
+no-analysis::
+	$(info Note: Analysis library not found in $(VIREO_SDK_DIR)/private or ../vi.lib/Analysis; omitting from build.)
+else
+
+ifeq (,$(AAL_ONLY))
+OBJS=$(VIREO_SDK_DIR)/make-it/objs
+INCDIR=$(VIREO_SDK_DIR)/source/include
+BIN=$(VIREO_SDK_DIR)/bin
+SITESOURCEDIR=$(VIREO_SDK_DIR)/source/dox/playground
+SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
+TARGETDIR=$(VIREO_SDK_DIR)/target-support/js
+#TARGETDIR=../../../../Imports/jsResources
+CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
+IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
+endif # AAL_ONLY
+
+ANALYSIS_INCLUDE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/include
+ANALYSIS_SIGNAL_GENERATION_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/signalGen
+ANALYSIS_WINDOW_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/windows
+ANALYSIS_UTILITY_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/utility
+ANALYSIS_NIFFT_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/nifft
+ 
+ifeq (,$(AAL_ONLY))
+.PHONY: clean install help vjs dox
+.DEFAULT_GOAL=help
+ 
+clean:
+	rm -f $(OBJS)/*
+ 
+install:
+	mkdir -p $(SITEDIR)
+	cp $(TARGETDIR)/vireo.js $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.html $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.via $(SITEDIR)/
+	cp $(SITESOURCEDIR)/*.json $(SITEDIR)/
+	@echo '==> website files copied to  $(SITEDIR)'
+ 
+help:
+	@echo 'Execute "make vjs"     to build vireo.js'
+	@echo '        "make clean"   to remove intermediate files'
+	@echo '        "make install" to copy files to web directory'
+	@echo '        "make"         to print this help dialogue'
+	@echo ''
+ 
+# Instead of trying fake out make for emscripten just build it explicitly
+# To install the Emscripten SDK
+#   https://github.com/kripken/emscripten/wiki
+ 
+# Note on debugging:
+#   https://github.com/kripken/emscripten/wiki/Optimizing-Code
+ 
+# On optimization, resulting Vireo.js # yielded the following sizes:
+#
+#  In early builds of emscripten high level optimizations (-O3 -Os) tended to fail though
+#  Vireo had an alignment bug that may have caused the failures.
+#
+#  5/2014 using emcc 1.16
+#  -O3 833k / -Os 760k / -Oz 719k
+#
+#  10/2014 using emcc 1.22.0
+#  Data segment is now broken out to the vireo.js.asm file
+#  -03 611k+35k  / -Os 571k+35k / -Oz 527k+35k  (all work)
+#  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
+ 
+EMCC= emcc
+EM_OPTFLAG = -Os
+EM_OPT= $(EM_OPT_FLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
+EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
+EMLIBRARY= --js-library $(IOSOURCEDIR)/library_canvas2d.js --js-library $(IOSOURCEDIR)/library_httpClient.js
+EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js
+ 
+EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
+	"_Vireo_Version", \
+	"_EggShell_Create", \
+	"_EggShell_REPL",\
+	"_EggShell_ExecuteSlices",\
+	"_EggShell_Delete",\
+	"_EggShell_ReadDouble",\
+	"_EggShell_WriteDouble",\
+	"_EggShell_ReadValueString",\
+	"_EggShell_WriteValueString",\
+	"_Occurrence_Set",\
+	"_Data_WriteString",\
+	"_Data_WriteInt32",\
+	"_Data_WriteUInt32"\
+	]' -s RESERVED_FUNCTION_POINTERS=10
+ 
+EM_BC_FILES = $(OBJS)/VireoMerged.bc\
+	$(OBJS)/TypeAndDataManager.Embind.bc\
+	$(OBJS)/Thread.bc\
+	$(OBJS)/Timestamp.bc\
+	$(OBJS)/Canvas2d.bc\
+	$(OBJS)/HttpClient.bc\
+	$(OBJS)/FileIO.bc\
+	$(OBJS)/Linx.bc\
+	$(OBJS)/Emscripten.bc\
+	$(OBJS)/CEntryPoints.bc\
+	$(OBJS)/AnalysisLibrary.bc
+else
+ANALYSIS_LIBRARY = $(OBJS)/AnalysisLibrary.bc
+endif # AAL_ONLY
+ 
+EM_ANALYSIS_OPT_FLAG ?= -Os
+EM_ANALYSIS_FLAGS = $(subst $(EM_OPT_FLAG), $(EM_ANALYSIS_OPT_FLAG),-I$(ANALYSIS_INCLUDE_DIRECTORY) -D__APPLE_CC__=true -DUSE_C99_TYPES=true $(EM_OPT))
+
+# -------------------------------------------------------------------------
+# Analysis Library Wave bc generation
+# -------------------------------------------------------------------------
+
+$(OBJS)/%.bc: $(ANALYSIS_SIGNAL_GENERATION_SOURCE_DIRECTORY)/%.cpp
+	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $<
+$(OBJS)/%.bc: $(ANALYSIS_WINDOW_SOURCE_DIRECTORY)/%.cpp
+	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $<
+$(OBJS)/%.bc: $(ANALYSIS_UTILITY_SOURCE_DIRECTORY)/%.cpp
+	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $<
+
+AllWaves_toCompile = $(OBJS)/SineWave.bc $(OBJS)/SqrWave.bc $(OBJS)/TriWave.bc $(OBJS)/SawtWave.bc
+$(OBJS)/AllWaves.bc: $(AllWaves_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(AllWaves_toCompile) -o $(OBJS)/AllWaves.bc
+ 
+# -------------------------------------------------------------------------
+# Analysis Library Windows bc generation
+# -------------------------------------------------------------------------
+$(OBJS)/AllCosWin.bc: $(OBJS)/GenCosWin.bc $(OBJS)/CosWinCoef.bc
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(ANALYSIS_WINDOW_SOURCE_DIRECTORY)/AllCosWin.cpp -o $(OBJS)/AllCosWin.bc
+
+AllWindows_toCompile = $(OBJS)/GenCosWin.bc $(OBJS)/CosWinCoef.bc $(OBJS)/AllCosWin.bc $(OBJS)/AALMemoryAllocate.bc
+$(OBJS)/AllWindows.bc: $(AllWindows_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(AllWindows_toCompile) -o $(OBJS)/AllWindows.bc
+ 
+# -------------------------------------------------------------------------
+# Analysis Library FFT bc generation
+# -------------------------------------------------------------------------
+ 
+$(OBJS)/%.bc: $(ANALYSIS_NIFFT_SOURCE_DIRECTORY)/%.cpp
+	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $<
+ 
+Allc2c_toCompile = $(OBJS)/c2c_2.bc $(OBJS)/c2c_3.bc $(OBJS)/c2c_4.bc $(OBJS)/c2c_5.bc $(OBJS)/c2c_7.bc $(OBJS)/c2c_8.bc \
+	$(OBJS)/c2c_9.bc $(OBJS)/c2c_10.bc $(OBJS)/c2c_11.bc $(OBJS)/c2c_13.bc $(OBJS)/c2c_14.bc $(OBJS)/c2c_16.bc $(OBJS)/c2c_17.bc \
+	$(OBJS)/c2c_18.bc $(OBJS)/c2c_19.bc $(OBJS)/c2c_29.bc $(OBJS)/c2c_31.bc $(OBJS)/c2c_32.bc $(OBJS)/c2c_37.bc $(OBJS)/c2c_41.bc $(OBJS)/c2c_43.bc \
+	$(OBJS)/c2c_prime_general.bc $(OBJS)/c2c_prime_rader.bc
+$(OBJS)/Allc2c.bc: $(Allc2c_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(Allc2c_toCompile) -o $(OBJS)/Allc2c.bc
+ 
+Allc2c_tw_toCompile = $(OBJS)/c2c_tw_2.bc $(OBJS)/c2c_tw_3.bc $(OBJS)/c2c_tw_4.bc $(OBJS)/c2c_tw_5.bc $(OBJS)/c2c_tw_7.bc \
+	$(OBJS)/c2c_tw_8.bc $(OBJS)/c2c_tw_9.bc $(OBJS)/c2c_tw_10.bc $(OBJS)/c2c_tw_11.bc $(OBJS)/c2c_tw_13.bc $(OBJS)/c2c_tw_14.bc \
+	$(OBJS)/c2c_tw_16.bc $(OBJS)/c2c_tw_17.bc $(OBJS)/c2c_tw_18.bc $(OBJS)/c2c_tw_19.bc $(OBJS)/c2c_tw_29.bc $(OBJS)/c2c_tw_31.bc \
+	$(OBJS)/c2c_tw_32.bc $(OBJS)/c2c_tw_37.bc $(OBJS)/c2c_tw_41.bc $(OBJS)/c2c_tw_43.bc $(OBJS)/c2c_tw_prime_general.bc $(OBJS)/c2c_tw_prime_rader.bc
+
+$(OBJS)/Allc2c_tw.bc: $(Allc2c_tw_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(Allc2c_tw_toCompile) -o $(OBJS)/Allc2c_tw.bc
+ 
+Allc2hc_tw_toCompile = $(OBJS)/c2hc_tw_2.bc $(OBJS)/c2hc_tw_3.bc $(OBJS)/c2hc_tw_4.bc $(OBJS)/c2hc_tw_5.bc $(OBJS)/c2hc_tw_7.bc \
+	$(OBJS)/c2hc_tw_8.bc $(OBJS)/c2hc_tw_9.bc $(OBJS)/c2hc_tw_10.bc $(OBJS)/c2hc_tw_11.bc $(OBJS)/c2hc_tw_13.bc $(OBJS)/c2hc_tw_14.bc \
+	$(OBJS)/c2hc_tw_16.bc $(OBJS)/c2hc_tw_17.bc $(OBJS)/c2hc_tw_18.bc $(OBJS)/c2hc_tw_19.bc $(OBJS)/c2hc_tw_29.bc $(OBJS)/c2hc_tw_31.bc \
+	$(OBJS)/c2hc_tw_32.bc $(OBJS)/c2hc_tw_37.bc $(OBJS)/c2hc_tw_41.bc $(OBJS)/c2hc_tw_43.bc $(OBJS)/c2hc_prime_general.bc $(OBJS)/c2hc_prime_rader.bc
+$(OBJS)/Allc2hc_tw.bc: $(Allc2hc_tw_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(Allc2hc_tw_toCompile) -o $(OBJS)/Allc2hc_tw.bc
+ 
+Allr2hc_toCompile = $(OBJS)/r2hc_2.bc $(OBJS)/r2hc_3.bc $(OBJS)/r2hc_4.bc $(OBJS)/r2hc_5.bc $(OBJS)/r2hc_7.bc \
+	$(OBJS)/r2hc_8.bc $(OBJS)/r2hc_9.bc $(OBJS)/r2hc_10.bc $(OBJS)/r2hc_11.bc $(OBJS)/r2hc_13.bc $(OBJS)/r2hc_14.bc \
+	$(OBJS)/r2hc_16.bc $(OBJS)/r2hc_17.bc $(OBJS)/r2hc_18.bc $(OBJS)/r2hc_19.bc $(OBJS)/r2hc_29.bc $(OBJS)/r2hc_31.bc \
+	$(OBJS)/r2hc_32.bc $(OBJS)/r2hc_37.bc $(OBJS)/r2hc_41.bc $(OBJS)/r2hc_43.bc $(OBJS)/r2hc_prime_general.bc $(OBJS)/r2hc_prime_rader.bc
+$(OBJS)/Allr2hc.bc: $(Allr2hc_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(Allr2hc_toCompile) -o $(OBJS)/Allr2hc.bc
+	
+Allr2hc_tw_toCompile = $(OBJS)/r2hc_tw_2.bc $(OBJS)/r2hc_tw_3.bc $(OBJS)/r2hc_tw_4.bc $(OBJS)/r2hc_tw_5.bc $(OBJS)/r2hc_tw_7.bc \
+	$(OBJS)/r2hc_tw_8.bc $(OBJS)/r2hc_tw_9.bc $(OBJS)/r2hc_tw_10.bc $(OBJS)/r2hc_tw_11.bc $(OBJS)/r2hc_tw_13.bc $(OBJS)/r2hc_tw_14.bc \
+	$(OBJS)/r2hc_tw_16.bc $(OBJS)/r2hc_tw_17.bc $(OBJS)/r2hc_tw_18.bc $(OBJS)/r2hc_tw_19.bc $(OBJS)/r2hc_tw_29.bc $(OBJS)/r2hc_tw_31.bc \
+	$(OBJS)/r2hc_tw_32.bc $(OBJS)/r2hc_tw_37.bc $(OBJS)/r2hc_tw_41.bc $(OBJS)/r2hc_tw_43.bc
+$(OBJS)/Allr2hc_tw.bc: $(Allr2hc_tw_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(Allr2hc_tw_toCompile) -o $(OBJS)/Allr2hc_tw.bc
+ 
+AllfftBase_toCompile = $(OBJS)/fft_3.bc $(OBJS)/fft_4.bc $(OBJS)/fft_5.bc $(OBJS)/fft_7.bc $(OBJS)/fft_8.bc $(OBJS)/fft_9.bc \
+	$(OBJS)/fft_10.bc $(OBJS)/fft_11.bc $(OBJS)/fft_13.bc $(OBJS)/fft_14.bc $(OBJS)/fft_16.bc $(OBJS)/fft_17.bc $(OBJS)/fft_18.bc \
+	$(OBJS)/fft_19.bc $(OBJS)/fft_29.bc $(OBJS)/fft_31.bc $(OBJS)/fft_32.bc $(OBJS)/fft_37.bc $(OBJS)/fft_41.bc $(OBJS)/fft_43.bc \
+	$(OBJS)/fft_prime_general.bc $(OBJS)/fft_prime_rader.bc
+$(OBJS)/AllfftBase.bc: $(AllfftBase_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(AllfftBase_toCompile) -o $(OBJS)/AllfftBase.bc
+ 
+AllFFT_toCompile = $(OBJS)/ThMutex.bc $(OBJS)/nifft_table.bc $(OBJS)/nifft_subs.bc $(OBJS)/NIReFFT.bc $(OBJS)/rader_table.bc $(OBJS)/NICxFFT.bc
+$(OBJS)/AllFFT.bc: $(AllFFT_toCompile)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(AllFFT_toCompile) -o $(OBJS)/AllFFT.bc
+ 
+# -------------------------------------------------------------------------
+# Analysis Library Wrapper bc generation
+# -------------------------------------------------------------------------
+$(OBJS)/AnalysisWrappers.bc: $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrappers.cpp
+	$(EMCC) $(EMFLAGS) $(EM_ANALYSIS_FLAGS) $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrappers.cpp -o $(OBJS)/AnalysisWrappers.bc
+ 
+# -------------------------------------------------------------------------
+# Analysis Library generation
+# -------------------------------------------------------------------------
+AnalysisComponents = $(OBJS)/AllWaves.bc $(OBJS)/AllWindows.bc $(OBJS)/Allc2c.bc $(OBJS)/Allc2c_tw.bc $(OBJS)/Allc2hc_tw.bc $(OBJS)/Allr2hc.bc $(OBJS)/Allr2hc_tw.bc $(OBJS)/AllfftBase.bc $(OBJS)/AllFFT.bc $(OBJS)/AnalysisWrappers.bc
+$(OBJS)/AnalysisLibrary.bc: $(AnalysisComponents)
+	$(EMCC) $(EM_ANALYSIS_FLAGS) $(AnalysisComponents) -o $(OBJS)/AnalysisLibrary.bc
+
+ifeq (,$(AAL_ONLY))
+$(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
+	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+$(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+$(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+
+$(EM_BC_FILES): | check_sdk_dir $(OBJS)
+
+check_sdk_dir:
+ifeq (,$(VIREO_SDK_DIR))
+	$(error Error: Can't find VireoSDK folder. Please set VIREO_SDK_DIR at top of Makefile.)
+endif
+
+$(OBJS):
+	@mkdir -p $(OBJS)
+
+vjs:	$(TARGETDIR)/vireo.js
+ 
+$(TARGETDIR)/vireo.js: $(EM_BC_FILES)
+	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js
+ 
+DEPS := $(EM_BC_FILES:.bc=.d)
+
+-include $(DEPS)
+
+endif # AAL_ONLY
+
+endif # AnalysisWrapper.cpp exists

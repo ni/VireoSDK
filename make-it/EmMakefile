@@ -1,20 +1,21 @@
 # Vireo make file for linux/unix
 
-OBJDIR=./objs
-INCDIR=../source/include
-BIN=../bin
-SITESOURCEDIR=../source/dox/playground
-SITEDIR=../Documents/gh-pages/playground
-TARGETDIR=../target-support/js
-CORESOURCEDIR=../source/core
-IOSOURCEDIR=../source/io
+VIREO_SDK_DIR=..
+
+OBJS=$(VIREO_SDK_DIR)/make-it/objs
+INCDIR=$(VIREO_SDK_DIR)/source/include
+BIN=$(VIREO_SDK_DIR)/bin
+SITESOURCEDIR=$(VIREO_SDK_DIR)/source/dox/playground
+SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
+TARGETDIR=$(VIREO_SDK_DIR)/target-support/js
+CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
+IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
 
 .PHONY: clean install help vjs dox
 .DEFAULT_GOAL=help
 
 clean:
-	rm -f objs/*
-
+	rm -f $(OBJS)/*
 
 install:
 	mkdir -p $(SITEDIR)
@@ -52,11 +53,14 @@ help:
 #  -03 611k+35k  / -Os 571k+35k / -Oz 527k+35k  (all work)
 #  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
 
-#EM_OPT= -g4 -s NO_EXIT_RUNTIME=1 -fno-exceptions
-EM_OPT= -Os -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
+EMCC= emcc
+
+EM_OPTFLAG = -g4 # -Os -O3 -g4
+EM_ANALYSIS_OPT_FLAG = -Os
+EM_OPT= $(EM_OPTFLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
 EMLIBRARY= --js-library ../source/io/library_canvas2d.js --js-library ../source/io/library_httpClient.js
-EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js
+EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js 
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -74,37 +78,44 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
-EM_BC_FILES = objs/VireoMerged.bc\
-    objs/EggShell.bc\
-    objs/Thread.bc\
-    objs/Timestamp.bc\
-    objs/Canvas2d.bc\
-    objs/FileIO.bc\
-    objs/Linx.bc\
-    objs/HttpClient.bc\
-    objs/Emscripten.bc\
-    objs/CEntryPoints.bc
+EM_BC_FILES = $(OBJS)/VireoMerged.bc\
+    $(OBJS)/Thread.bc\
+    $(OBJS)/Timestamp.bc\
+    $(OBJS)/Canvas2d.bc\
+    $(OBJS)/FileIO.bc\
+    $(OBJS)/Linx.bc\
+    $(OBJS)/HttpClient.bc\
+    $(OBJS)/Emscripten.bc\
+    $(OBJS)/CEntryPoints.bc
 
-vjs:
-	make clean
-	mkdir -p objs
-	mkdir -p $(TARGETDIR)
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/VireoMerged.cpp -o objs/VireoMerged.bc
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/EggShell.cpp -o objs/EggShell.bc
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/Thread.cpp -o objs/Thread.bc
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/Timestamp.cpp -o objs/Timestamp.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/Canvas2d.cpp -o objs/Canvas2d.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/FileIO.cpp -o objs/FileIO.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/Linx.cpp -o objs/Linx.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/HttpClient.cpp -o objs/HttpClient.bc
-	emcc $(EMFLAGS) $(IOSOURCEDIR)/Emscripten.cpp -o objs/Emscripten.bc
-	emcc $(EMFLAGS) $(CORESOURCEDIR)/CEntryPoints.cpp -o objs/CEntryPoints.bc
-	emcc $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js
+ifneq (,$(wildcard ./EmMakefile-AAL))
+AAL_ONLY = 1
+-include EmMakefile-AAL
+endif
+
+$(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
+	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+$(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+$(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+
+$(EM_BC_FILES): | $(OBJS)
+$(OBJS):
+	@mkdir -p $(OBJS)
+
+vjs:    $(TARGETDIR)/vireo.js
+
+$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo.preamble.js $(CORESOURCEDIR)/vireo.postamble.js 
+	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically
 
-#emcc $(EM_OPT) $(EM_BC_FILES) -o vireo.html --compression $(EM_DIR)third_party/lzma.js/lzma-native,$(EM_DIR)third_party/lzma.js/lzma-decoder.js,LZMA.decompress
-#emcc $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
+#$(EMCC) $(EM_OPT) $(EM_BC_FILES) -o vireo.html --compression $(EM_DIR)third_party/lzma.js/lzma-native,$(EM_DIR)third_party/lzma.js/lzma-decoder.js,LZMA.decompress
+#$(EMCC) $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
+
+DEPS := $(EM_BC_FILES:.bc=.d)
+
 
 -include $(DEPS)

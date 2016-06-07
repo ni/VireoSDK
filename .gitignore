@@ -12,6 +12,12 @@
 *.la
 *.a
 *.vntr
+
+.DS_Store
+Vireo_Xcode/VireoEggShell.xcodeproj/xcshareddata/xcschemes/EggShell.xcscheme
+make-it/esh
+target-support/
+
 Vireo_SimpleMake/asm/
 Vireo_VS2012/VireoCommandLine/Debug/Queue.obj
 Vireo_VS2012/VireoCommandLine/Debug/
@@ -29,6 +35,7 @@ Vireo_XCode/Instruments_hw100000.trace/instrument_data
 Vireo_XCode/Instruments_hw100000.trace/Trace*.run
 bin/
 Private
+private
 Vireo_XCode/VireoCanvas/DerivedData
 Vireo_XCode/VireoCanvas/VireoCanvas.xcodeproj/xcuserdata
 Vireo_XCode/VireoCanvas/VireoCanvas.xcodeproj/project.xcworkspace/xcuserdata

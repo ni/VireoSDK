@@ -17,7 +17,7 @@ using namespace Vireo;
 //! TypeManager functions
 VIREO_EXPORT Int32 Vireo_Version();
 VIREO_EXPORT void* EggShell_Create(TypeManagerRef tm);
-VIREO_EXPORT void EggShell_REPL(TypeManagerRef tm, const char* commands);
+VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length);
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices);
 VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm);
 VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);

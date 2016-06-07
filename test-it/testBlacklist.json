@@ -1,96 +1,16 @@
 {
   "blacklist": [
     {
-      "filename": "BadComment.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
       "filename": "Canvas2DBezierCurveTo.via",
       "reason": "It throws an exception and stops test execution."
     },
     {
       "filename": "Pi.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "PID.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "Pi_EthanOpts.via",
-      "reason": "It throws an exception and stops test execution."
+      "reason": "It fails, expected output is not the same."
     },
     {
       "filename": "Pi_NonReentrant.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "ReentrantSubVIWtihShiftRegister.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SlashAsterComments.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SlashComments.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SnippetMemoryLoss.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SubVIDefaultParameter.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SubVIParallelCalls.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "SubVISimple.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "Time128.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "TimingTest1.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "TooManyArguments.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "TypeChecking.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "UsageType.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "VectorOps.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "VectorReduce.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "Viaduino.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "VIOverloads.via",
-      "reason": "It throws an exception and stops test execution."
-    },
-    {
-      "filename": "VIScripting.via",
-      "reason": "It throws an exception and stops test execution."
+      "reason": "It fails, expected output is not the same."
     },
     {
       "filename": "BadArgumentToVarArgInstruction.via",

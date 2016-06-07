@@ -29,41 +29,43 @@ void RunExec();
 int VIREO_MAIN(int argc, const char * argv[])
 {
     gPlatform.Setup();
-    SubString fileName;
-
-    if (argc == 2) {
-        fileName.AliasAssignCStr(argv[1]);
-    }
-
-    gShells._pRootShell = TypeManager::New(null);
-    gShells._pUserShell = TypeManager::New(gShells._pRootShell);
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
 
-    if (fileName.Length()) {
-        {
-            TypeManagerScope scope(gShells._pUserShell);
-            STACK_VAR(String, buffer);
+	SubString fileName;
 
-            gPlatform.IO.ReadFile(&fileName, buffer.Value);
-            if (buffer.Value->Length() == 0) {
-                gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
-            }
+	if (argc >= 2) {
+		for (Int32 arg = 1; arg < argc; ++arg) {
+			gShells._pRootShell = TypeManager::New(null);
+			gShells._pUserShell = TypeManager::New(gShells._pRootShell);
+			fileName.AliasAssignCStr(argv[arg]);
+			if (fileName.Length()) {
+				{
+					TypeManagerScope scope(gShells._pUserShell);
+					STACK_VAR(String, buffer);
 
-            SubString input = buffer.Value->MakeSubStringAlias();
-            if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
-                gShells._keepRunning = false;
-            }
+					gPlatform.IO.ReadFile(&fileName, buffer.Value);
+					if (buffer.Value->Length() == 0) {
+						gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
+					}
 
-            LOG_PLATFORM_MEM("Mem after load")
-        }
+					SubString input = buffer.Value->MakeSubStringAlias();
+					gShells._keepRunning = true;
+					if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
+						gShells._keepRunning = false;
+					}
+
+					LOG_PLATFORM_MEM("Mem after load")
+				}
 #if defined(kVireoOS_emscripten)
-        emscripten_set_main_loop(RunExec, 40, null);
+				emscripten_set_main_loop(RunExec, 40, null);
 #else
-        while (gShells._keepRunning) {
-            RunExec();
-        }
+				while (gShells._keepRunning) {
+					RunExec();
+				}
 #endif
+			}
+		}
     } else {
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program

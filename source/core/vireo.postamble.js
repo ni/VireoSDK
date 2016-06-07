@@ -9,7 +9,7 @@ Module.v_writeValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['
 Module.v_dataWriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
 Module.v_dataWriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
 Module.v_dataWriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
-Module.v_repl = Module.cwrap('EggShell_REPL', 'void', ['number', 'string', 'number']);
+Module.v_repl = Module.cwrap('EggShell_REPL', 'number', ['number', 'string', 'number']);
 Module.v_executeSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
 Module.v_delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
 Module.v_setOccurrence = Module.cwrap('Occurrence_Set', 'void', ['number']);
@@ -300,13 +300,15 @@ return {
         { Module.v_setOccurrence(occurrence); },
     loadVia:
         function(viaText)
-        { Module.v_repl(Module.v_userShell, viaText, -1); },
+        { return Module.v_repl(Module.v_userShell, viaText, -1); },
     executeSlices:
         function(slices)
         { return Module.v_executeSlices(Module.v_userShell, slices); },
     reboot:
         function() {
             Module.v_delete(Module.v_userShell);
+            Module.v_delete(Module.v_root);
+            Module.v_root =  Module.v_create(0);
             Module.v_userShell = Module.v_create(Module.v_root);
         },
     core: Module,

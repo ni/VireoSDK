@@ -1248,7 +1248,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
         InstructionAllocator cia;
         
         {
-            // (1) Parse, but don't create any instrucitons, determine how much memory is needed.
+            // (1) Parse, but don't create any instructions, determine how much memory is needed.
             // Errors are ignored in this pass.
 #ifdef VIREO_USING_ASSERTS
             //  Int32 startingAllocations = vi->TheTypeManager()->_totalAllocations;
@@ -1271,7 +1271,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
         cia.Allocate(pClump->TheTypeManager());
         
         {
-            // (3) Parse a second time, instrucitons will be allocated out of the chunk.
+            // (3) Parse a second time, instructions will be allocated out of the chunk.
             TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);

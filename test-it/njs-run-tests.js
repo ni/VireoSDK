@@ -106,7 +106,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
     var diffs = [];
     oldResults = oldResults.replace(/\r\n/gm, "\n");
     newResults = newResults.replace(/\r\n/gm, "\n");
-    var cleanNewResults = newResults.replace(/^\/\/.*$/gm, '');
+    var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
     var i = 0;
     var lineCount = 0;
     var len = cleanNewResults.length;
@@ -150,7 +150,7 @@ function RunTestCore(testName, tester)
             noCurrentResults = true;
         }
     }
-
+    //console.log("Running " + testName);
     var hrstart = process.hrtime();
     var newResults = tester(testName);
     var hrend = process.hrtime(hrstart);
@@ -177,9 +177,9 @@ function RunVJSTest(testName) {
     }
 
     vireo.stdout = '';
-    vireo.loadVia(viaCode);
-
-    while (vireo.executeSlices(1000000)) {}
+    if (vireo.loadVia(viaCode)==0) {
+    	while (vireo.executeSlices(1000000)) {}
+    }
 
     return vireo.stdout;
 }
@@ -215,6 +215,8 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
     argv.shift(); // node path
     argv.shift(); // script path
     var tester = false;
+    var all = false;
+    var once = false;
 
     while(argv.length > 0) {
         var arg = argv[0];
@@ -223,10 +225,13 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
             tester = JSTester;
         } else if (arg === '-n') {
             tester = NativeTester;
+        } else if (arg === '-once') {
+            once = true;
         } else if (arg === '-all') {
             testFiles = fs.readdirSync('.');
             testFiles = testFiles.filter(IsViaFile);
             testFiles = testFiles.filter(IsNotBlackList);
+            all = true;
         } else {
             testFiles.push(arg);
         }
@@ -240,6 +245,9 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
     if (testFiles.length > 0) {
         testFiles.map(tester);
+        if (!once) {
+            testFiles.map(tester);
+        }
         // ----------------------------------------------------------------------
         // Run twice to look for global state issues.
         // Some tests are failing on a second iteration during the test execution.
@@ -258,7 +266,9 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
             console.log("SUCCESS: All tests passed for this execution!");
             console.log("=============================================\n");
         }
-        PrintBlackList();
+        if (all) {
+            PrintBlackList();
+        }
 
     } else {
         console.log("Nothing to test.");

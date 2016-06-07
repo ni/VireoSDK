@@ -145,7 +145,7 @@ public:
     ExecutionContextRef TheExecutionContext()   { return TheTypeManager()->TheExecutionContext(); }
 };
 //------------------------------------------------------------
-//! An instruciton that suspends a clump and starts a SubVI's root clump.
+//! An instruction that suspends a clump and starts a SubVI's root clump.
 struct CallVIInstruction : public InstructionCore
 {
     /// The SubVI Call instruction contains a pointer to the SubVIs root clump
@@ -259,8 +259,8 @@ private:    // State related to two pass parseing
 
 private:    // state related to overloads
     Boolean         _hasMultipleDefinitions;
-    NamedTypeRef    _nextFuncitonDefinition;
-    NamedTypeRef    _genericFuncitonDefinition;  // Only one allowed
+    NamedTypeRef    _nextFunctionDefinition;
+    NamedTypeRef    _genericFunctionDefinition;  // Only one allowed
     
 private:    // state related to the the current argument
     Int32           _formalParameterIndex;

@@ -6,8 +6,13 @@
 #  Created by Paul Austin on 8/28/13.
 #  Copyright (c) 2013 Paul Austin. All rights reserved.
 
+if test -n "$1"; then
+    TESTS="$1"
+else
+    TESTS=*.via
+fi
 mkdir -p results
-for testFile in *.via
+for testFile in $TESTS
 do
     resultFile="results/${testFile%.*}.vtr"
     echo "--- Running test $testFile" 
@@ -40,7 +45,7 @@ if ls results/*.vntr &> /dev/null; then
   echo "The following results are different from the expected."
   ls results/*.vntr
 else
-  echo "All results matched epxected."
+  echo "All results matched expected."
 fi
 echo "Number of outputs validated"
 date >> runlog.txt

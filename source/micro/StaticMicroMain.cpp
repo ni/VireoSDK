@@ -69,9 +69,9 @@ Vi1_DSType  ds1 = {
 #undef L
 #define P(_a_) (&ds1.Params._a_)
 #define L(_a_) (&ds1.Locals._a_)
-#define PERCH(_a_)  (&InstrucitonBlock[_a_])
+#define PERCH(_a_)  (&InstructionBlock[_a_])
 
-void* InstrucitonBlock[] =
+void* InstructionBlock[] =
 {
  /* Clump 0 ----------------------*/
  /* 0000 */    I(AddInt32, P(in1), L(b), P(out1)),
@@ -87,7 +87,7 @@ Boolean gKeepRunning = true;
 
 extern "C" int main(int argc, const char * argv[])
 {
-    InstructionCore *ip = (InstructionCore*) InstrucitonBlock;
+    InstructionCore *ip = (InstructionCore*) InstructionBlock;
 
     while (gKeepRunning) {
         // Unrolled execution loop;
