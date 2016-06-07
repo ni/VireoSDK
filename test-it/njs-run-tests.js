@@ -240,16 +240,13 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
     if (testFiles.length > 0) {
         testFiles.map(tester);
-<<<<<<< HEAD
-        //testFiles.map(tester);
-=======
+        testFiles.map(tester);
         // ----------------------------------------------------------------------
         // Run twice to look for global state issues.
         // Some tests are failing on a second iteration during the test execution.
         // This is being tracked by defect: DE9032
         // testFiles.map(tester); 
         // ----------------------------------------------------------------------
->>>>>>> 048b62d9d3be2a6f30b28fce4331ee5d35a4b72c
         console.log("Total test vectors :" + app.totalResultLines);
         if (app.testFailures.length > 0) {
             console.log("\n===========================");
