@@ -10,18 +10,103 @@ vireo = {};
 require('colors');
 
 var app = {};
-
 app.testFailures = [];
 app.totalResultLines = 0;
+
+var blacklist = null;
 
 function IsViaFile(name) {
     return path.extname(name) === '.via';
 }
 
+function GenerateBlacklist ()
+{
+    if (blacklist === null) {
+        try {
+            var fileContent = fs.readFileSync('testBlacklist.json').toString();
+            var jsonObject = JSON.parse(fileContent);
+            blacklist = jsonObject.blacklist;
+        }
+        catch (err)
+        {
+            console.log ("WARNING: testBlacklist.json not present");
+            blacklist = [];
+        }
+    }
+}
+
+function IsNotBlackList(name) {
+    GenerateBlacklist();
+    for (var i = 0; i < blacklist.length; i++)
+    {
+        var item = blacklist[i];
+        if (item.filename === name) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function PrintBlackList ()
+{
+    GenerateBlacklist();
+    if (blacklist.length > 0) {
+        console.log('=====================================================================================')
+        console.log('The following tests(' + blacklist.length + ') were not executed. They are blacklisted.')
+        for (var i = 0; i < blacklist.length; i++) {
+            var item = blacklist[i];
+            console.log('  "' + item.filename + '"\t' + item.reason);
+        }
+        console.log('=====================================================================================')
+    }
+    else {
+        console.log('=================================================================')
+        console.log('There aren\'t tests that are blacklisted.')
+        console.log('=================================================================')
+    }
+}
+
+// -----------------------------------------------------------------------------------
+// Helpful function when debugging why oldResults != cleanNewResults on ComparaResults
+// It outputs a comparison of the two strings char by char
+function PrintCharactersToConsole (testName, oldResults, cleanNewResults)
+{
+    var firstDifferenceFound = false;
+    var maxLength = oldResults.length;
+    if (cleanNewResults.length > maxLength)
+    {
+        maxLength = cleanNewResults.length;
+    }
+    console.log('=======================================================');
+    console.log('"' + testName + '"');
+    console.log('Comparing oldResults(' + oldResults.length + ') vs cleanNewResults(' + cleanNewResults.length + ')');
+    console.log('=======================================================');
+    for (i = 0; i < maxLength; i++)
+    {
+        var oldResultsText = '';
+        if (i < oldResults.length)
+        {
+            oldResultsText = oldResults.charCodeAt(i)
+        }
+        var cleanNewResultsText = '';
+        if (i < cleanNewResults.length) {
+            cleanNewResultsText = cleanNewResults.charCodeAt(i)
+        }
+        var differenceText = '';
+        if (!firstDifferenceFound && (i < oldResults.length) && (i < cleanNewResults.length) && oldResults[i] != cleanNewResults[i])
+        {
+            differenceText = ' <---------- Found first difference';
+            firstDifferenceFound = true;
+        }
+        console.log(oldResultsText + '\t' + cleanNewResultsText + '\t' + differenceText);
+    }
+}
+
 function CompareResults(testName, oldResults, newResults, msec) {
     var diffs = [];
-    var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
     oldResults = oldResults.replace(/\r\n/gm, "\n");
+    newResults = newResults.replace(/\r\n/gm, "\n");
+    var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
     var i = 0;
     var lineCount = 0;
     var len = cleanNewResults.length;
@@ -80,6 +165,7 @@ function RunTestCore(testName, tester)
 }
 
 function RunVJSTest(testName) {
+    console.log('Executing "' + testName + '"');
     vireo.reboot();
     var newResults = '';
     try {
@@ -140,6 +226,7 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
         } else if (arg === '-all') {
             testFiles = fs.readdirSync('.');
             testFiles = testFiles.filter(IsViaFile);
+            testFiles = testFiles.filter(IsNotBlackList);
         } else {
             testFiles.push(arg);
         }
@@ -153,11 +240,30 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
     if (testFiles.length > 0) {
         testFiles.map(tester);
+<<<<<<< HEAD
         //testFiles.map(tester);
+=======
+        // ----------------------------------------------------------------------
+        // Run twice to look for global state issues.
+        // Some tests are failing on a second iteration during the test execution.
+        // This is being tracked by defect: DE9032
+        // testFiles.map(tester); 
+        // ----------------------------------------------------------------------
+>>>>>>> 048b62d9d3be2a6f30b28fce4331ee5d35a4b72c
         console.log("Total test vectors :" + app.totalResultLines);
         if (app.testFailures.length > 0) {
+            console.log("\n===========================");
+            console.log("The following tests failed:");
+            console.log("===========================");
             console.log(app.testFailures);
         }
+        else {
+            console.log("\n=============================================");
+            console.log("SUCCESS: All tests passed for this execution!");
+            console.log("=============================================\n");
+        }
+        PrintBlackList();
+
     } else {
         console.log("Nothing to test.");
     }

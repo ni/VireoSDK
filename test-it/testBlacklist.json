@@ -1,0 +1,168 @@
+{
+  "blacklist": [
+    {
+      "filename": "BadComment.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Canvas2DBezierCurveTo.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Pi.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "PID.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Pi_EthanOpts.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Pi_NonReentrant.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "ReentrantSubVIWtihShiftRegister.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SlashAsterComments.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SlashComments.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SnippetMemoryLoss.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SubVIDefaultParameter.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SubVIParallelCalls.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "SubVISimple.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Time128.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "TimingTest1.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "TooManyArguments.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "TypeChecking.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "UsageType.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "VectorOps.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "VectorReduce.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "Viaduino.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "VIOverloads.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "VIScripting.via",
+      "reason": "It throws an exception and stops test execution."
+    },
+    {
+      "filename": "BadArgumentToVarArgInstruction.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "BootCamp-Clip1.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "DebugGPIO.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "EthanOpts2.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "FlattenAoS.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "FlattenArray.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "FlattenCoA.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "GlobalCrossTalk.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "HelloRequire.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "InlineArrayConstantsErrors.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "Linx.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "ListDirectory.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "MandelbrotInline.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "PrintFormattingNums.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "SearchSplitString.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "StringEscapes.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "TypedTemplatedLiterals.via",
+      "reason": "It fails, expected output is not the same."
+    },
+    {
+      "filename": "TypeValues.via",
+      "reason": "It fails, expected output is not the same."
+    }
+  ]
+}
