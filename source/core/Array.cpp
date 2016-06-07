@@ -14,6 +14,7 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include "VirtualInstrument.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>

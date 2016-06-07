@@ -65,10 +65,6 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "PrintFormattingNums.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "SearchSplitString.via",
       "reason": "It fails, expected output is not the same."
     },

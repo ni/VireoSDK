@@ -2173,7 +2173,11 @@ inline IntMax RoundToEven(Double value)
 //! Banker's rounding for Singles.
 inline IntMax RoundToEven(Single value)
 {
+#if kVireoOS_emscripten
+	return (IntMax)lrint((Double)value);
+#else
     return (IntMax)lrintf(value);
+#endif
 }
 //---------------------------------------------------------------
 //! Coerce value to a range. Incoming value is signed.
