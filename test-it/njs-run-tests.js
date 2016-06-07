@@ -215,6 +215,8 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
     argv.shift(); // node path
     argv.shift(); // script path
     var tester = false;
+    var all = false;
+    var once = false;
 
     while(argv.length > 0) {
         var arg = argv[0];
@@ -223,10 +225,13 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
             tester = JSTester;
         } else if (arg === '-n') {
             tester = NativeTester;
+        } else if (arg === '-once') {
+            once = true;
         } else if (arg === '-all') {
             testFiles = fs.readdirSync('.');
             testFiles = testFiles.filter(IsViaFile);
             testFiles = testFiles.filter(IsNotBlackList);
+            all = true;
         } else {
             testFiles.push(arg);
         }
@@ -240,7 +245,9 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
 
     if (testFiles.length > 0) {
         testFiles.map(tester);
-        testFiles.map(tester);
+        if (!once) {
+            testFiles.map(tester);
+        }
         // ----------------------------------------------------------------------
         // Run twice to look for global state issues.
         // Some tests are failing on a second iteration during the test execution.
@@ -259,7 +266,9 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
             console.log("SUCCESS: All tests passed for this execution!");
             console.log("=============================================\n");
         }
-        PrintBlackList();
+        if (all) {
+            PrintBlackList();
+        }
 
     } else {
         console.log("Nothing to test.");
