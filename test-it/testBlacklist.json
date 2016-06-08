@@ -5,18 +5,6 @@
       "reason": "It throws an exception and stops test execution."
     },
     {
-      "filename": "Pi.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "Pi_NonReentrant.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "BadArgumentToVarArgInstruction.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "BootCamp-Clip1.via",
       "reason": "It fails, expected output is not the same."
     },
