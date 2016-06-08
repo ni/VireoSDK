@@ -1296,6 +1296,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(Phase, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Conjugate, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Floor, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(RoundToNearest, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
 

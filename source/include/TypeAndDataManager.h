@@ -328,6 +328,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
 Double ReadDoubleFromMemory(TypeRef type, void* pData);
 NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
+Double RoundToEven(Double value);
+Single RoundToEven(Single value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 
 //------------------------------------------------------------

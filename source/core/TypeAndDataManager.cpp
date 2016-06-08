@@ -2165,15 +2165,19 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
 }
 //------------------------------------------------------------
 //! Banker's rounding for Doubles.
-inline IntMax RoundToEven(Double value)
+inline Double RoundToEven(Double value)
 {
-    return (IntMax)lrint(value);
+    return rint(value);
 }
 //------------------------------------------------------------
 //! Banker's rounding for Singles.
-inline IntMax RoundToEven(Single value)
+inline Single RoundToEven(Single value)
 {
-    return (IntMax)lrintf(value);
+#if kVireoOS_emscripten
+	return rint((Double)value);
+#else
+    return rintf(value);
+#endif
 }
 //---------------------------------------------------------------
 //! Coerce value to a range. Incoming value is signed.
@@ -2217,8 +2221,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
                 case 0: value = 0;                              break;
-                case 4: value = RoundToEven(*(Single*)pData);   break;
-                case 8: value = RoundToEven(*(Double*)pData);   break;
+                case 4: value = (IntMax)RoundToEven(*(Single*)pData);   break;
+                case 8: value = (IntMax)RoundToEven(*(Double*)pData);   break;
                 default: isErr = true;                          break;
             }
             break;
