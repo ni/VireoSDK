@@ -137,7 +137,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
 }
 
 //------------------------------------------------------------
-function RunTestCore(testName, tester)
+function RunTestCore(testName, tester, execOnly)
 {
     var resultsFileName = 'results/' + path.basename(testName, '.via') + '.vtr';
     var oldResults = '';
@@ -150,13 +150,14 @@ function RunTestCore(testName, tester)
             noCurrentResults = true;
         }
     }
-    //console.log("Running " + testName);
     var hrstart = process.hrtime();
     var newResults = tester(testName);
     var hrend = process.hrtime(hrstart);
     var msec = hrend[1]/1000000;
 
-    if (noOldResults) {
+    if (execOnly) {
+      console.log(newResults);
+    } else if (noOldResults) {
         // Save the generated resutls as the new reference
         // Add the file name to a list that can be printed at the end.
     } else {
@@ -205,8 +206,8 @@ function SetupVJS()
 }
 
 //------------------------------------------------------------
-function JSTester(testName) { RunTestCore(testName, RunVJSTest); }
-function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
+function JSTester(testName, execOnly) { RunTestCore(testName, RunVJSTest, execOnly); }
+function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest, execOnly); }
 
 //------------------------------------------------------------
 (function Main() {
@@ -217,12 +218,16 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
     var tester = false;
     var all = false;
     var once = false;
+    var execOnly = false;
 
     while(argv.length > 0) {
         var arg = argv[0];
         if  (arg === '-j') {
             SetupVJS();
             tester = JSTester;
+        } else if (arg === '-e') {
+            execOnly = true;
+            once = true;
         } else if (arg === '-n') {
             tester = NativeTester;
         } else if (arg === '-once') {
@@ -244,9 +249,16 @@ function NativeTester(testName) { RunTestCore(testName, RunNativeTest); }
     }
 
     if (testFiles.length > 0) {
-        testFiles.map(tester);
+        testFiles.map(
+            function(testName) { return tester(testName, execOnly); }
+        );
         if (!once) {
-            testFiles.map(tester);
+            testFiles.map(
+              function(testName) { return tester(testName, execOnly); }
+            );
+        }
+        if (execOnly) {
+            return;
         }
         // ----------------------------------------------------------------------
         // Run twice to look for global state issues.
