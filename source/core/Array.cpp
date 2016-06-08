@@ -850,7 +850,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
     }
     arrayOut->ResizeDimensions(rank, dimensions, false);
     //IntIndex* inputDimensions = arrayOut->DimensionLengths();
-    IntIndex inputRank = arrayIn->Rank();
+    //IntIndex inputRank = arrayIn->Rank();
     ArrayIterator iteratorIn(arrayIn);
     ArrayIterator iteratorOut(arrayOut);
     void* input = iteratorIn.Begin();
