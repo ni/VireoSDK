@@ -924,7 +924,7 @@ NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef 
 //------------------------------------------------------------
 // AggregateType
 //------------------------------------------------------------
-UInt8 AggregateType::_sharedNullsBuffer[kSharedNullsBufferLength];
+UInt32 AggregateType::_sharedNullsBuffer[kSharedNullsBufferLength];
 //------------------------------------------------------------
 Int32 AggregateType::SubElementCount()
 {

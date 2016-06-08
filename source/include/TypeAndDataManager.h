@@ -652,8 +652,8 @@ protected:
     // The default value for the type, may be used
     // At this point only used by the ClusterType class but it needs to come
     // before the inlined array, so it is in this class.
-    enum   { kSharedNullsBufferLength = 128 };
-    static UInt8 _sharedNullsBuffer[kSharedNullsBufferLength];
+    enum   { kSharedNullsBufferLength = 32 };
+    static UInt32 _sharedNullsBuffer[kSharedNullsBufferLength]; // this is a UInt32 instead of UInt8 to avoid aliasing compiler bugs in emcc
     void*   _pDefault;
 
 protected:
