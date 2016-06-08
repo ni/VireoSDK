@@ -29,7 +29,11 @@ function GenerateBlacklist ()
         }
         catch (err)
         {
-            console.log ("WARNING: testBlacklist.json not present");
+            if (err.code === 'ENOENT') {
+               console.log ("WARNING: testBlacklist.json not present");
+            } else {
+               console.log ("WARNING: testBlacklist.json contains parse error");
+            }
             blacklist = [];
         }
     }
@@ -174,11 +178,12 @@ function RunVJSTest(testName) {
     } catch (e) {
         if (e.code === 'ENOENT') {
             viaCode = '';
+            throw "No such test " + testName;
         }
     }
 
     vireo.stdout = '';
-    if (vireo.loadVia(viaCode)==0) {
+    if (viaCode != '' && vireo.loadVia(viaCode)==0) {
     	while (vireo.executeSlices(1000000)) {}
     }
 
@@ -190,8 +195,8 @@ function RunNativeTest(testName) {
     try {
         newResults = cp.execFileSync('esh', [ testName ]).toString();
     } catch (e) {
-        // If Vireo detects an erroro ti will return non zero
-        // and exec will throw an execption, so catch the results.
+        // If Vireo detects an error it will return non zero
+        // and exec will throw an exception, so catch the results.
         newResults = e.stdout.toString();
     }
     return newResults;
