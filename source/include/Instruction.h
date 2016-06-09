@@ -227,7 +227,7 @@ struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, ty
 VIREO_FUNCTION_SIGNATURE0(_name_)				\
 {										\
 VIVM_TRACE_FUNCTION(#_name_)            \
-(_body_);								\
+body_;									\
 return _NextInstruction();				\
 }
 
@@ -235,7 +235,7 @@ return _NextInstruction();				\
 VIREO_FUNCTION_SIGNATURE1(_name_, _t0_)				\
 {										\
 VIVM_TRACE_FUNCTION(#_name_)            \
-(_body_);								\
+_body_;									\
 return _NextInstruction();				\
 }
 
@@ -243,7 +243,7 @@ return _NextInstruction();				\
 VIREO_FUNCTION_SIGNATURE2(_name_, _t0_, _t1_)				\
 {										\
 VIVM_TRACE_FUNCTION(#_name_)            \
-(_body_);								\
+_body_;									\
 return _NextInstruction();				\
 }
 
@@ -251,7 +251,7 @@ return _NextInstruction();				\
 VIREO_FUNCTION_SIGNATURE3(_name_, _t0_, _t1_, _t2_)				\
 {										\
 VIVM_TRACE_FUNCTION(#_name_)            \
-(_body_);								\
+_body_;									\
 return _NextInstruction();              \
 }
 
@@ -259,7 +259,7 @@ return _NextInstruction();              \
 VIREO_FUNCTION_SIGNATURE4(_name_, _t0_, _t1_, _t2_, _t3_)				\
 {										\
 VIVM_TRACE_FUNCTION(#_name_)            \
-(_body_);								\
+_body_;									\
 return _NextInstruction();				\
 }
 

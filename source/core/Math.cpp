@@ -152,6 +152,20 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( Exp##TYPE, TYPE, TYPE, (_Param(1) = exp(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)) ) ) \
+	DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE, TYPE, TYPE, TYPE, { \
+		if (isnan(_Param(0) || isnan(_Param(1)))) \
+			_Param(2) = std::numeric_limits<TYPE>::quiet_NaN(); \
+		else if (_Param(0) == 0.0) \
+			_Param(2) = (_Param(1) > 0 && isinf(_Param(1))) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
+		else if (_Param(1) < 0 && isinf(_Param(1))) \
+			_Param(2) = isinf(_Param(0)) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
+		else if (_Param(1) > 0 && isinf(_Param(1))) \
+			_Param(2) = _Param(0) > 0 ? std::numeric_limits<double>::infinity() : -std::numeric_limits<double>::infinity(); \
+		else if (_Param(1) < 0 && isinf(_Param(0))) \
+			_Param(2) = _Param(0) > 0 ? std::numeric_limits<double>::infinity() : -std::numeric_limits<double>::infinity(); \
+		else \
+			_Param(2) = _Param(0) * pow(2.0, int(rint(double(_Param(1)))));  \
+	} ) \
     DECLARE_VIREO_PRIMITIVE2( ArcSine##TYPE,TYPE, TYPE, (_Param(1) = asin(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( ArcTan##TYPE, TYPE, TYPE, (_Param(1) = atan(_Param(0)) ) ) \
@@ -176,6 +190,7 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Exp, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Pow, TYPE, "BinOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Scale2X, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(ArcSine, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(ArcCosine, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(ArcTan, TYPE, "p(i("#TYPE") o("#TYPE"))") \
