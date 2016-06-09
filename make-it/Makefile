@@ -32,7 +32,7 @@ else
     CFLAGS += -I$(INCDIR) -Wall -MMD
 
     ifdef DEBUG
-        CCOPT = -O0
+        CCOPT = -O0 -g
         STRIP =
         CFLAGS += -DVIREO_DEBUG
     else
