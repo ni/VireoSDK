@@ -82,7 +82,7 @@ define(MandelbrotMain dv(.VirtualInstrument (
 
         Sub(tDone tStart tDone)
         // Comment out so unit tests will not reject outputs with different times
-        Printf("//Time to calculate Mandelbrot: %s microseconds" tDone)
+        Printf("//Time to calculate Mandelbrot: %s microseconds\n" tDone)
     )
 ) ) )
 
