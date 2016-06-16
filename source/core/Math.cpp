@@ -228,7 +228,14 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) )
+    DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
+    VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
+		VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
+		_Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
+		_Param(6) = (_Param(0) > _Param(1) || _Param(3) && _Param(0)==_Param(1))	\
+			     && (_Param(0) < _Param(2) || _Param(4) && _Param(0)==_Param(1));	\
+		return _NextInstruction();													\
+		}
 
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
@@ -236,7 +243,8 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(IsEQ, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
-    DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))")
+    DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")
 
 //------------------------------------------------------------
 // Conversion

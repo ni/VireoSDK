@@ -206,7 +206,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     TypeRef goalType = destType;
     Boolean isAccumulator = false;
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-    
+
     // Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
     if (sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
         goalType = sourceXType;
@@ -444,6 +444,285 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
     }
     return pInstruction;
+}
+
+//------------------------------------------------------------
+struct InRangeAndCoerceInstruction : public InstructionCore
+{
+	enum IRCFlags { kXIsScalar=1, kLoIsScalar=2, kHiIsScalar=4 };
+	union {
+		_ParamDef(TypedArrayCoreRef, VX);
+		_ParamDef(AQBlock1, SX);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VLo);
+		_ParamDef(AQBlock1, SLo);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VHi);
+		_ParamDef(AQBlock1, SHi);
+	};
+	_ParamDef(Boolean, includeLo);
+	_ParamDef(Boolean, includeHi);
+	union {
+		_ParamDef(TypedArrayCoreRef, VCoerced);
+		_ParamDef(AQBlock1*, SCoerced);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VDest);
+		_ParamDef(AQBlock1*, SDest);
+	};
+	_ParamImmediateDef(enum IRCFlags, flags);
+	_ParamImmediateDef(InstructionCore*, Snippet);
+	inline InstructionCore* Snippet()       { return this->_piSnippet; }
+	_ParamImmediateDef(InstructionCore*, Next);
+	inline InstructionCore* Next()          { return this->_piNext; }
+};
+
+struct InRangeAndCoerceInstructionAggregate : public InstructionCore
+{
+	_ParamDef(AQBlock1, SX);
+	_ParamDef(AQBlock1, SLo);
+	_ParamDef(AQBlock1, SHi);
+	_ParamDef(Boolean, includeLo);
+	_ParamDef(Boolean, includeHi);
+	_ParamDef(AQBlock1*, SCoerced);
+	_ParamDef(Boolean, BooleanDest);
+	_ParamImmediateDef(TypeRef,paramType);
+	_ParamImmediateDef(InstructionCore*, Next);
+	inline InstructionCore* Snippet()   { return this + 1; }
+	inline InstructionCore* Next()      { return this->_piNext; }
+};
+
+//------------------------------------------------------------
+InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstructionBuilder)
+{
+	InstructionCore* pInstruction = null;
+	SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+	TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
+	TypeRef sourceLoType = pInstructionBuilder->_argTypes[1];
+	TypeRef sourceHiType = pInstructionBuilder->_argTypes[2];
+	TypeRef booleanType = pInstructionBuilder->_argTypes[3];
+	TypeRef coercedType = pInstructionBuilder->_argTypes[5];
+	TypeRef destType = pInstructionBuilder->_argTypes[6];
+	TypeRef goalType = coercedType;
+	Boolean isAccumulator = false;
+	TypeRef Int32Type = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsInt32Type);
+
+	// Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
+	if (sourceXType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
+		goalType = sourceXType;
+		isAccumulator = true;
+	} else if (sourceXType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
+		goalType = sourceXType;
+		isAccumulator = true;
+	} else if (destType->BitEncoding() == kEncoding_Boolean) { //some kind of comparison
+		goalType = sourceXType;
+	}
+	if (isAccumulator) {
+		ConstCStr pInRangeOpAggregareName = "InRangeAccumulator";
+		SubString findInRangeOpAggregateToken(pInRangeOpAggregareName);
+		
+		pInstructionBuilder->ReresolveInstruction(&findInRangeOpAggregateToken, false);
+		if(!sourceXType->CompareType(sourceLoType) || !sourceLoType->CompareType(sourceHiType)) {
+			return null;
+		}
+		if(!coercedType->CompareType(sourceXType) || !destType->CompareType(booleanType)) {
+			return null;
+		}
+		SubString LTName("IsLT");
+
+		// Add param slot to hold the snippet
+		pInstructionBuilder->InternalAddArg(null, coercedType);
+		Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+
+		InRangeAndCoerceInstructionAggregate* ircOp = (InRangeAndCoerceInstructionAggregate*)pInstructionBuilder->EmitInstruction();
+
+		ClumpParseState snippetBuilder(pInstructionBuilder);
+		pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, ircOp, snippetArgId);
+		snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, (void*)null, sourceXType, (void*)null, booleanType, (void*)null);
+		
+		pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+		pInstructionBuilder->RecordNextHere(&ircOp->_piNext);
+		pInstruction = ircOp;
+	}
+	else switch (goalType->BitEncoding()) {
+		case kEncoding_Array:
+		{
+			// Find out what this name of the original opcode was.
+			// this will be the name of the _instructionPointerType.
+			savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+			ConstCStr pVectorBinOpName = null;
+			// TODO: Validating runtime will require  type checking
+			pVectorBinOpName = "VectorOrScalarInRangeOp";
+			SubString vectorBinOpToken(pVectorBinOpName);
+			pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false); //build a vector op
+			
+			TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
+			TypeRef loEltType = sourceLoType->IsArray() ? sourceLoType->GetSubElement(0) : sourceLoType;
+			TypeRef hiEltType = sourceHiType->IsArray() ? sourceHiType->GetSubElement(0) : sourceHiType;
+			TypeRef coercedEltType = coercedType->IsArray() ? coercedType->GetSubElement(0) : coercedType;
+			TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
+			if(!coercedEltType->CompareType(xEltType)) {
+				return null;
+			}
+			if(!loEltType->CompareType(xEltType)) {
+				return null;
+			}
+			if(!loEltType->CompareType(hiEltType)) {
+				return null;
+			}
+			UInt32 flags = 0;
+			if (!sourceXType->IsArray())
+				flags |= InRangeAndCoerceInstruction::kXIsScalar;
+			if (!sourceLoType->IsArray())
+				flags |= InRangeAndCoerceInstruction::kLoIsScalar;
+			if (!sourceHiType->IsArray())
+				flags |= InRangeAndCoerceInstruction::kHiIsScalar;
+			pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)flags);
+			// This would be easier if the vector bin op was at the end...
+			Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+			
+			// Add room for next field
+			pInstructionBuilder->AddSubSnippet();
+			
+			// Emit the vector op
+			InRangeAndCoerceInstruction* vectorBinOp = (InRangeAndCoerceInstruction*) pInstructionBuilder->EmitInstruction();
+			pInstruction = vectorBinOp;
+			
+			// Recurse on the subtype
+			ClumpParseState snippetBuilder(pInstructionBuilder);
+			
+			pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
+
+			snippetBuilder.EmitInstruction(&savedOperation, 7, xEltType, (void*)null, loEltType, (void*)null, hiEltType, (void*)null,
+										   booleanType, (void*)null, booleanType, (void*)null,
+										   coercedEltType, (void*)null, destEltType, (void*)null);
+			pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+			pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
+			break;
+		}
+		case kEncoding_Cluster:
+		{
+			savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+			ConstCStr pClusterBinOpName = "ClusterInRangeOp";
+			SubString clusterBinOpToken(pClusterBinOpName);
+			
+			pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
+			pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)0); // flags only used in array case
+
+			Int32 binOpArgId = pInstructionBuilder->AddSubSnippet(); // Add param slots to hold the snippets
+			
+			// Add room for next field
+			pInstructionBuilder->AddSubSnippet();
+			
+			InRangeAndCoerceInstruction* clusterOp = (InRangeAndCoerceInstruction*)pInstructionBuilder->EmitInstruction();
+			pInstruction = clusterOp;
+			
+			ClumpParseState snippetBuilder(pInstructionBuilder);
+			pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, clusterOp, binOpArgId);
+			
+			for (Int32 i = 0; i < goalType->SubElementCount(); i++) {
+				TypeRef arg1Type, arg2Type, arg3Type, arg6Type, arg7Type;
+				void    *arg1Data, *arg2Data, *arg3Data, *arg6Data, *arg7Data;
+				
+				if (sourceXType->IsCluster()) {
+					arg1Type = sourceXType->GetSubElement(i);
+					arg1Data = (void*)(size_t)arg1Type->ElementOffset();
+				} else {
+					arg1Type = sourceXType;
+					arg1Data = null;
+				}
+				if (sourceLoType->IsCluster()) {
+					arg2Type = sourceLoType->GetSubElement(i);
+					arg2Data = (void*)(size_t)arg2Type->ElementOffset();
+				} else {
+					arg2Type = sourceLoType;
+					arg2Data = null;
+				}
+				if (sourceHiType->IsCluster()) {
+					arg3Type = sourceHiType->GetSubElement(i);
+					arg3Data = (void*)(size_t)arg3Type->ElementOffset();
+				} else {
+					arg3Type = sourceHiType;
+					arg3Data = null;
+				}
+				if (coercedType->IsCluster()) {
+					arg6Type = coercedType->GetSubElement(i);
+					arg6Data = (void*)(size_t)arg6Type->ElementOffset();
+				} else {
+					arg6Type = coercedType;
+					arg6Data = null;
+				}
+				if (destType->IsCluster()) {
+					arg7Type = destType->GetSubElement(i);
+					arg7Data = (void*)(size_t)arg7Type->ElementOffset();
+				} else {
+					arg7Type = destType;
+					arg7Data = null;
+				}
+				
+				snippetBuilder.EmitInstruction(&savedOperation, 7, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type, arg3Data,
+											   booleanType, (void*)null, booleanType, (void*)null, arg6Type, arg6Data, arg7Type, arg7Data);
+			}
+			pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+			pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
+			break;
+		}
+		default:
+		{
+			pInstruction = null;
+			break;
+		}
+	}
+	return pInstruction;
+}
+
+VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggregate)
+{
+	Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+	TypeRef type = _ParamImmediate(paramType);
+	Boolean isLTLo = false, isGTHi = false;
+
+	type->CopyData(_ParamPointer(SX), _ParamPointer(SCoerced));
+
+	snippet->_p0 = _ParamPointer(SX);
+	snippet->_p1 = _ParamPointer(SLo);
+	snippet->_p2 = &isLTLo;
+	_PROGMEM_PTR(snippet, _function)(snippet);
+	if (isLTLo) {
+		_Param(BooleanDest) = false;
+		return _NextInstruction();
+	}
+	else if (!_Param(includeLo)) {
+		snippet->_p0 = _ParamPointer(SLo);
+		snippet->_p1 = _ParamPointer(SX);
+		_PROGMEM_PTR(snippet, _function)(snippet);
+		if (!isLTLo) {
+			_Param(BooleanDest) = false;
+			return _NextInstruction();
+		}
+	}
+	
+	snippet->_p0 = _ParamPointer(SHi);
+	snippet->_p1 = _ParamPointer(SX);
+	snippet->_p2 = &isGTHi;
+	_PROGMEM_PTR(snippet, _function)(snippet);
+	if (isGTHi) {
+		_Param(BooleanDest) = false;
+		return _NextInstruction();
+	}
+	else if (!_Param(includeHi)) {
+		snippet->_p0 = _ParamPointer(SX);
+		snippet->_p1 = _ParamPointer(SHi);
+		_PROGMEM_PTR(snippet, _function)(snippet);
+		if (!isGTHi) {
+			_Param(BooleanDest) = false;
+			return _NextInstruction();
+		}
+	}
+	_Param(BooleanDest) = true;
+	return _NextInstruction();
 }
 
 //----------------------------------------------------------------------------
@@ -1049,6 +1328,85 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     }
     return _NextInstruction();
 }
+
+//------------------------------------------------------------
+typedef Instruction7<AQBlock1, AQBlock1, AQBlock1, Boolean, Boolean, AQBlock1, AQBlock1> InRangeCompareInstructionArgs;
+
+VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
+{
+	InRangeAndCoerceInstruction::IRCFlags flags = _ParamImmediate(flags);
+	TypedArrayCoreRef srcArrayX = !(flags & InRangeAndCoerceInstruction::kXIsScalar ) ? _Param(VX) : NULL;
+	TypedArrayCoreRef srcArrayLo = !(flags & InRangeAndCoerceInstruction::kLoIsScalar ) ? _Param(VLo) : NULL;
+	TypedArrayCoreRef srcArrayHi = !(flags & InRangeAndCoerceInstruction::kHiIsScalar ) ? _Param(VHi) : NULL;
+	TypedArrayCoreRef coercedArray = _Param(VCoerced);
+	TypedArrayCoreRef destArray = _Param(VDest);
+	InRangeCompareInstructionArgs* snippet = (InRangeCompareInstructionArgs*)_ParamMethod(Snippet());
+
+	IntIndex elementSizeX = srcArrayX ? srcArrayX->ElementType()->TopAQSize() : 0;
+	IntIndex elementSizeLo = srcArrayLo ? srcArrayLo->ElementType()->TopAQSize() : 0;
+	IntIndex elementSizeHi = srcArrayHi ? srcArrayHi->ElementType()->TopAQSize() : 0;
+	IntIndex elementSizeCoerced = coercedArray->ElementType()->TopAQSize();
+	IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
+	IntIndex lengthAX = srcArrayX ? srcArrayX->Length() : 0;
+	IntIndex lengthALo = srcArrayLo ? srcArrayLo->Length() : 0;
+	IntIndex lengthAHi = srcArrayHi ? srcArrayHi->Length() : 0;
+	IntIndex count = (srcArrayX && (!srcArrayLo || lengthAX < lengthALo)) ? lengthAX : srcArrayLo ? lengthALo : lengthAHi;
+	if (srcArrayHi && lengthAHi < count)
+		count = lengthAHi;
+	
+	// Resize output to minimum of input arrays
+	coercedArray->Resize1D(count);
+	destArray->Resize1D(count);
+	AQBlock1 *beginX = srcArrayX ? srcArrayX->RawBegin() : _ParamPointer(SX);
+	AQBlock1 *beginLo = srcArrayLo ? srcArrayLo->RawBegin() : _ParamPointer(SLo);
+	AQBlock1 *beginHi = srcArrayHi ? srcArrayHi->RawBegin() : _ParamPointer(SHi);
+	AQBlock1 *beginCoerced= coercedArray->RawBegin(); // might be in-place to one of the input arrays.
+	AQBlock1 *beginDest = destArray->RawBegin();
+	AQBlock1 *endDest = beginDest + (count * elementSizeDest);
+	snippet->_p0 = beginX;
+	snippet->_p1 = beginLo;
+	snippet->_p2 = beginHi;
+	snippet->_p3 = _ParamPointer(includeLo);
+	snippet->_p4 = _ParamPointer(includeHi);
+	snippet->_p5 = beginCoerced;
+	snippet->_p6 = beginDest;
+	while (snippet->_p6 < endDest)
+	{
+		_PROGMEM_PTR(snippet, _function)(snippet);
+		snippet->_p0 += elementSizeX;
+		snippet->_p1 += elementSizeLo;
+		snippet->_p2 += elementSizeHi;
+		snippet->_p5 += elementSizeCoerced;
+		snippet->_p6 += elementSizeDest;
+	}
+	return _NextInstruction();
+}
+	
+VIREO_FUNCTION_SIGNATURET(ClusterInRangeOp, InRangeAndCoerceInstruction)
+{
+	InRangeCompareInstructionArgs* snippet = (InRangeCompareInstructionArgs*)_ParamMethod(Snippet());
+	while(ExecutionContext::IsNotCulDeSac(snippet)) {
+		snippet->_p0 += (size_t)_ParamPointer(SX);
+		snippet->_p1 += (size_t)_ParamPointer(SLo);
+		snippet->_p2 += (size_t)_ParamPointer(SHi);
+		snippet->_p3 = _ParamPointer(includeLo);
+		snippet->_p4 = _ParamPointer(includeHi);
+		snippet->_p5 += (size_t)_ParamPointer(SCoerced);
+		snippet->_p6 += (size_t)_ParamPointer(SDest);
+
+		InstructionCore *next = _PROGMEM_PTR(snippet, _function)(snippet);
+
+		snippet->_p0 -= (size_t)_ParamPointer(SX);
+		snippet->_p1 -= (size_t)_ParamPointer(SLo);
+		snippet->_p2 -= (size_t)_ParamPointer(SHi);
+		snippet->_p5 -= (size_t)_ParamPointer(SCoerced);
+
+		snippet->_p6 -= (size_t)_ParamPointer(SDest);
+		snippet = (InRangeCompareInstructionArgs*) next;
+	}
+	return _NextInstruction();
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruction)
 {
@@ -1265,7 +1623,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(IsGT, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsLE, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsGE, "GenericBinOp", EmitGenericBinOpInstruction);
-    
+
     DEFINE_VIREO_GENERIC(Add, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Sub, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Mul, "GenericBinOp", EmitGenericBinOpInstruction);
@@ -1304,7 +1662,12 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
     DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
 
-    DEFINE_VIREO_GENERIC(Search1DArray, "p(i(*) i(*) i(Int32) o(Int32) s(Instruction))", EmitSearchInstruction);
+	DEFINE_VIREO_GENERIC(InRangeAndCoerce, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(*) s(StaticType) s(Instruction))", EmitGenericInRangeAndCoerceInstruction);
+	DEFINE_VIREO_FUNCTION(VectorOrScalarInRangeOp, "p(i(Array) i(Array) i(Array) i(Boolean) i(Boolean) o(Array) o(Array) i(Int32) s(Instruction))" )
+	DEFINE_VIREO_FUNCTION(ClusterInRangeOp, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(*) s(Instruction) s(Instruction))");
+	DEFINE_VIREO_FUNCTION(InRangeAccumulator, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(Boolean) s(Instruction))");
+
+	DEFINE_VIREO_GENERIC(Search1DArray, "p(i(*) i(*) i(Int32) o(Int32) s(Instruction))", EmitSearchInstruction);
     DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(Array) i(*) i(Int32) o(Int32) s(Instruction))")
     DEFINE_VIREO_GENERIC(ArrayConcatenate, "p(i(VarArgCount) o(Array output) i(*))", EmitArrayConcatenateInstruction);
     DEFINE_VIREO_FUNCTION(ArrayConcatenateInternal, "p(i(VarArgCount) o(Array output) i(*))" )
@@ -1322,7 +1685,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(GenericBinOp))");
-    
+
     // Vector operations
     DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(Array) i(Array) o(Array) s(Instruction))" )
     DEFINE_VIREO_FUNCTION(VectorVectorBinaryAccumulatorOp, "p(i(Array) i(Array) o(Array) s(Instruction) s(Instruction))" )
