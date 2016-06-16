@@ -509,15 +509,9 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 	Boolean isAccumulator = false;
 	TypeRef Int32Type = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsInt32Type);
 
-	// Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
-	if (sourceXType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
+	if (destType->BitEncoding() == kEncoding_Boolean) {
 		goalType = sourceXType;
 		isAccumulator = true;
-	} else if (sourceXType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
-		goalType = sourceXType;
-		isAccumulator = true;
-	} else if (destType->BitEncoding() == kEncoding_Boolean) { //some kind of comparison
-		goalType = sourceXType;
 	}
 	if (isAccumulator) {
 		ConstCStr pInRangeOpAggregareName = "InRangeAccumulator";
@@ -609,10 +603,23 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 			SubString clusterBinOpToken(pClusterBinOpName);
 			
 			pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
+
+			if (sourceXType->IsCluster() && sourceLoType->IsCluster() && sourceXType->SubElementCount() != sourceLoType->SubElementCount())
+				return null;
+			if (sourceXType->IsCluster() && sourceHiType->IsCluster() && sourceXType->SubElementCount() != sourceHiType->SubElementCount())
+				return null;
+			if (sourceLoType->IsCluster() && sourceHiType->IsCluster() && sourceLoType->SubElementCount() != sourceHiType->SubElementCount())
+				return null;
+			if (!coercedType->IsCluster() || !destType->IsCluster() || coercedType->SubElementCount() != destType->SubElementCount()
+				|| (sourceXType->IsCluster() && coercedType->SubElementCount() != sourceXType->SubElementCount())
+				|| (sourceLoType->IsCluster() && coercedType->SubElementCount() != sourceLoType->SubElementCount())
+				|| (sourceHiType->IsCluster() && coercedType->SubElementCount() != sourceHiType->SubElementCount()))
+				return null;
+
 			pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)0); // flags only used in array case
 
 			Int32 binOpArgId = pInstructionBuilder->AddSubSnippet(); // Add param slots to hold the snippets
-			
+
 			// Add room for next field
 			pInstructionBuilder->AddSubSnippet();
 			
@@ -661,7 +668,8 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 					arg7Type = destType;
 					arg7Data = null;
 				}
-				
+				if (!arg1Type->CompareType(arg2Type) || !arg2Type->CompareType((arg3Type)) || !arg1Type->CompareType(arg6Type))
+					return null;
 				snippetBuilder.EmitInstruction(&savedOperation, 7, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type, arg3Data,
 											   booleanType, (void*)null, booleanType, (void*)null, arg6Type, arg6Data, arg7Type, arg7Data);
 			}
