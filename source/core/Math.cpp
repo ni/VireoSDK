@@ -259,7 +259,11 @@ using namespace std;
 #define TC_INT64 8
 #define TC_SINGLE 9
 #define TC_DOUBLE 10
-
+#if kVireoOS_emscripten
+#define INTERMED_CAST() (Double) // workaround rintf bug in Emscripten library
+#else
+#define INTERMED_CAST()
+#endif
 #define DECLARE_VIREO_CONVERSION_PRIMITIVE(DEST, SOURCE) DECLARE_VIREO_PRIMITIVE2(SOURCE##Convert##DEST, SOURCE, DEST, (_Param(1) = (DEST) _Param(0)))
 #define DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(DEST, SOURCE) \
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
@@ -270,7 +274,7 @@ using namespace std;
         else if (isinf(src)) \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         else \
-            _Param(1) = (DEST) rint(src); \
+            _Param(1) = (DEST) rint(INTERMED_CAST() src); \
         return _NextInstruction(); \
     }
 
