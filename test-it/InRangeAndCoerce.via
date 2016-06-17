@@ -1,0 +1,95 @@
+define(viirc dv(.VirtualInstrument (
+    c(
+        e(dv(a(.UInt32 *) (1 2 3 4)) array1234)
+        e(dv(a(.UInt32 *) (4 3 2 1)) array4321)
+        e(dv(a(.Int32 *) ()) emptyArray)
+        e(dv(.String "aa") aa)
+        e(dv(.String "abcd") abcd)
+        e(dv(.String "bcde") bcde)
+        e(.String string)
+        e(.UInt32 scalar)
+        e(dv(.UInt32 2) scalarU2)
+        e(dv(.UInt32 2) scalarU10)
+        e(.Boolean result)
+        e(dv(.String "--------") line)
+	e(dv(c(e(.Int32 i1) e(.Int32 i2)) (2 9)) c1)
+	e(dv(c(e(.Int32 i1) e(.Int32 i2)) (2 4)) c2)
+	e(dv(c(e(.Int32 i1) e(.Int32 i2)) (3 7)) c3)
+	e(dv(c(e(.Int32 i1) e(.Int32 i2)) (0 0)) cResult)
+	e(dv(c(e(.Boolean b1) e(.Boolean b2)) (false false)) boolCResult)
+        e(dv(a(c(
+            e(.UInt8 n0) e(.UInt8 n1) e(.UInt8 n2)
+        ) *) ((64 114 114 ) (97 21 32 ) (79 102 32 ) (97 32 67 ) ) ) ac3intx)   // Array Of a Cluster Of Three Bytes
+        e(dv(a(c(
+            e(.UInt8 n0) e(.UInt8 n1) e(.UInt8 n2)
+        ) *) ((1 120 90 ) (8 77 31 ) (99 32 1 ) (97 32 70 ) ) ) ac3intlo)
+        e(dv(a(c(
+            e(.UInt8 n0) e(.UInt8 n1) e(.UInt8 n2)
+        ) *) ((100 140 99 ) (100 99 33 ) (100 200 32 ) (97 32 110 ) ) ) ac3inthi)
+        e(dv(a(c(
+            e(.UInt8 n0)
+            e(.UInt8 n1)
+            e(.UInt8 n2)
+        ) *) ((65 0 0)) ) acResult)   // Array Of a Cluster Of Three Bytes
+        e(dv(a(.Int32 *) (60 0 11) ) arr_60_10_11)   // Array Of 3 Ints
+        e(dv(a(.Int32 *) (55 10 11) ) arr_55_10_11)   // Array Of 3 Ints
+        e(dv(a(.Int32 *) (65 20 22) ) arr_65_20_22)   // Array Of 3 Ints
+        e(a(.Int32 *) arrResult)   // Array Of 3 Ints
+        e(a(.UInt32 *) arrUResult)   // Array Of 3 UInts
+        e(dv(a(.UInt32 *) (1 10 20) ) arrUInt_1_10_20)   // Array Of 3 UInts
+        e(a(.Boolean *) boolArrResult)   // Array Of 3 Booleans
+        e(a(c(
+            e(.UInt8 n0)
+            e(.UInt8 n1)
+            e(.UInt8 n2)
+        ) *) localn4)   // Array Of a Cluster Of Three Bytes
+        e(a(c(
+            e(.Boolean b0)
+            e(.Boolean b1)
+            e(.Boolean b2)
+        ) *) acbool)   // Array Of a Cluster Of Booleans
+    )
+    clump(1 
+        InRangeAndCoerce(12 5 10 true true scalar result)
+        Printf("IR&C (%s %s %s) = %s %s\n" 12 5 10 scalar result)
+        InRangeAndCoerce(c1 c2 c3 false true cResult result)
+        Printf("IR&C (%s %s %s) = %s %s\n" c1 c2 c3 cResult result)
+        InRangeAndCoerce(c1 c2 c3 true true cResult boolCResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" c1 c2 c3 cResult boolCResult)
+        InRangeAndCoerce(6 c2 c3 false true cResult boolCResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" 6 c2 c3 cResult boolCResult)
+        InRangeAndCoerce(aa abcd bcde true true string boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" aa abcd bcde string boolArrResult)
+        InRangeAndCoerce(aa abcd bcde true true string result)
+        Printf("IR&C (%s %s %s) = %s %s\n" aa abcd bcde string result)
+        InRangeAndCoerce(abcd aa bcde true true string result)
+        Printf("IR&C (%s %s %s) = %s %s\n" abcd aa bcde string result)
+        InRangeAndCoerce(ac3intx ac3intx ac3intx true true acResult result)
+        Printf("IR&C (%s %s %s) = %s %s\n" ac3intx ac3intx ac3intx acResult result)
+        InRangeAndCoerce(ac3intx ac3intx ac3intx true true acResult acbool)
+        Printf("IR&C (%s %s %s) = %s %s\n" ac3intx ac3intx ac3intx acResult acbool)
+        InRangeAndCoerce(ac3intx ac3intlo ac3inthi false false acResult result)
+        Printf("IR&C (%s %s %s) = %s %s\n" ac3intx ac3intlo ac3inthi acResult result)
+        InRangeAndCoerce(ac3intx ac3intlo ac3inthi false false acResult acbool)
+        Printf("IR&C (%s %s %s) = %s %s\n" ac3intx ac3intlo ac3inthi acResult acbool)
+
+        InRangeAndCoerce(arr_60_10_11 arr_55_10_11 arr_65_20_22 false true arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" arr_60_10_11 arr_55_10_11 arr_65_20_22 arrResult boolArrResult)
+        InRangeAndCoerce(2 arr_55_10_11 57 false true arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" 2 arr_55_10_11 57 arrResult boolArrResult)
+        InRangeAndCoerce(55 arr_55_10_11 70 false true arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" 55 arr_55_10_11 57 arrResult boolArrResult)
+        InRangeAndCoerce(99 arr_55_10_11 60 false true arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" 99 arr_55_10_11 60 arrResult boolArrResult)
+        InRangeAndCoerce(arr_60_10_11 10 30 false true arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" arr_60_10_11 10 30 arrResult boolArrResult)
+        InRangeAndCoerce(array1234 scalarU10 arrUInt_1_10_20 false true arrUResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" array1234 scalarU10 arrUInt_1_10_20 arrUResult boolArrResult)
+        InRangeAndCoerce(emptyArray emptyArray arr_60_10_11 true false arrResult boolArrResult)
+        Printf("IR&C (%s %s %s) = %s %s\n" emptyArray emptyArray arr_60_10_11 arrResult boolArrResult)
+        InRangeAndCoerce(emptyArray emptyArray arr_60_10_11 false false arrResult result)
+        Printf("IR&C (%s %s %s) = %s %s\n" emptyArray emptyArray arr_60_10_11 arrResult result)
+//--- end of vi
+    )
+)))
+enqueue(viirc)

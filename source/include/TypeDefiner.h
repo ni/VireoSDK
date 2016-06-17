@@ -97,8 +97,6 @@ class TypeDefiner
 
     #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _dataProcs_)
 
-    #define DEFINE_VIREO_TYPE_FUNCTION(_name_)
-
 #else
 
 
@@ -133,9 +131,6 @@ class TypeDefiner
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen, #_name_));
 
-    #define DEFINE_VIREO_TYPE_FUNCTION(_name_, _typeTypeString_, _genericEmitProc_) \
-    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTTypeFunction, #_name_));
-
 #else
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction));
@@ -145,9 +140,6 @@ class TypeDefiner
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
       (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen));
-
-    #define DEFINE_VIREO_TYPE_FUNCTION(_name_, _typeTypeString_, _genericEmitProc_) \
-    (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTTypeFunction));
 
 #endif
 

@@ -13,10 +13,6 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "EthanOpts2.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "FlattenAoS.via",
       "reason": "It fails, expected output is not the same."
     },
@@ -37,10 +33,6 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "InlineArrayConstantsErrors.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "Linx.via",
       "reason": "It fails, expected output is not the same."
     },
@@ -49,23 +41,7 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "MandelbrotInline.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "SearchSplitString.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "StringEscapes.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "TypedTemplatedLiterals.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "TypeValues.via",
       "reason": "It fails, expected output is not the same."
     }
   ]

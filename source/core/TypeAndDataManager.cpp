@@ -669,7 +669,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             return true;
         }
     } else {
-        if (this->IsA(otherType) || otherType->IsA(this))
+        if (this->IsA(otherType, true) || otherType->IsA(this, true))
             return true;
     } 
     return false;
@@ -746,8 +746,9 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 #endif
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(otherTypeName))
+		if (t->Name().Compare(otherTypeName)) { // ??? should this really consider unnamed types equal?? -CS
             return true;
+		}
         t = t->BaseType();
     }
     
@@ -924,7 +925,7 @@ NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef 
 //------------------------------------------------------------
 // AggregateType
 //------------------------------------------------------------
-UInt8 AggregateType::_sharedNullsBuffer[kSharedNullsBufferLength];
+UInt32 AggregateType::_sharedNullsBuffer[kSharedNullsBufferLength];
 //------------------------------------------------------------
 Int32 AggregateType::SubElementCount()
 {
