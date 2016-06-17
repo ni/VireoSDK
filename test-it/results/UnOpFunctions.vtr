@@ -1,0 +1,22 @@
+Sign -4.500000 is <-1.000000>
+Sign 25.000000 is <1.000000>
+Sign 14 is <1>
+Sign -63 is <1>
+Reciprocal -4.500000 is <-0.222222>
+Reciprocal 25.000000 is <0.040000>
+Negate -4.500000 is <4.500000>
+Negate 25.000000 is <-25.000000>
+Negate 14 is <-14>
+Negate -63 is <63>
+Increment -4.500000 is <-3.500000>
+Increment 25.000000 is <26.000000>
+Increment 14 is <15>
+Increment -63 is <-62>
+Decrement -4.500000 is <-5.500000>
+Decrement 25.000000 is <24.000000>
+Decrement 14 is <13>
+Decrement -63 is <-64>
+Sign (3.5 0 -4) is <(1 0 -1)>
+Negate (3.5 0 -4) is <(-3.5 0 4)>
+Increment (3.5 0 -4) is <(4.5 1 -3)>
+Decrement (3.5 0 -4) is <(2.5 -1 -5)>

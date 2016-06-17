@@ -52,14 +52,20 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) )
+    DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) ) \
+	DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = -_Param(0)) )			\
+	DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )	\
+	DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )	\
 
 #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Sub, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Mul, TYPE, "BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, "UnOp"#TYPE)
-    
+    DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Negate, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Increment, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Decrement, TYPE, "UnOp"#TYPE)
+
 //------------------------------------------------------------
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
@@ -176,6 +182,7 @@ using namespace std;
 	DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
+	DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
 
 #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, "BinOp"#TYPE) \
@@ -200,7 +207,8 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i("#TYPE") o("#TYPE"))") \
 	DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
-    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))")
+    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
+	DEFINE_VIREO_FUNCTION_TYPED(Reciprocal, TYPE, "UnOp"#TYPE) \
 
 //------------------------------------------------------------
 // Bitwise

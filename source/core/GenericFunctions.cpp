@@ -1828,6 +1828,10 @@ DEFINE_VIREO_BEGIN(Generics)
 	DEFINE_VIREO_GENERIC(RoundToNearest, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Reciprocal, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Negate, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Increment, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Decrement, "GenericUnOp", EmitGenericUnOpInstruction);
 
     DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
     DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
