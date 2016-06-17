@@ -18,3 +18,5 @@
  min of (jklm, abcdefg) is <abcdefg>
  max of (abcdefg, abcdefg) is <abcdefg>
  min of (abcdefg, abcdefg) is <abcdefg>
+ max of ((3.5 3), (1.2 9)) is <(3.5 3)>
+ min of ((3.5 3), (1.2 9)) is <(1.2 9)>
