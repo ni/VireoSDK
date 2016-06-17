@@ -1,0 +1,27 @@
+ max of (-4.300000, 23.000000) is <23.000000>
+ min of (-4.300000, 23.000000) is <-4.300000>
+ max of (23.000000, -4.300000) is <23.000000>
+ min of (23.000000, -4.300000) is <-4.300000>
+ max of (-9.900000, 9.000000) is <9.000000>
+ min of (-9.900000, 9.000000) is <-9.900000>
+ max of (9.000000, -9.900000) is <9.000000>
+ min of (9.000000, -9.900000) is <-9.900000>
+ max of (7.800000, 7.800000) is <7.800000>
+ min of (7.800000, 7.800000) is <7.800000>
+ max of (14, 63) is <63>
+ min of (14, 63) is <14>
+ max of (32, 32) is <32>
+ min of (32, 32) is <32>
+ max of (abcdefg, jalm) is <jalm>
+ min of (abcdefg, jalm) is <abcdefg>
+ max of (jalm, abcdefg) is <jalm>
+ min of (jalm, abcdefg) is <abcdefg>
+ max of (abcdefg, abcdefg) is <abcdefg>
+ min of (abcdefg, abcdefg) is <abcdefg>
+ max of ((3.5 3), (1.2 9)) is <(3.5 9)>
+ min of ((3.5 3), (1.2 9)) is <(1.2 3)>
+ max of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('dcba' 'xyz' 5)>
+ min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'efg' 4)>
+ max of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('dcba' 'efg' 4)>
+ min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'xyz' 5)>
+ IRC of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'yyz' 5), (true false false)>

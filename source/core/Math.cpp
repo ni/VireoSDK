@@ -229,6 +229,12 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
+	DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
+	DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
 		VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
 		_Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
@@ -237,6 +243,7 @@ using namespace std;
 		return _NextInstruction();													\
 		}
 
+
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
@@ -244,6 +251,8 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
+	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
+	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")
 
 //------------------------------------------------------------
