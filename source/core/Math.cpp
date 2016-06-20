@@ -52,14 +52,20 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) )
+    DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) ) \
+	DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = -_Param(0)) )			\
+	DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )	\
+	DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )	\
 
 #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Sub, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Mul, TYPE, "BinOp"#TYPE) \
-    DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, "UnOp"#TYPE)
-    
+    DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Negate, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Increment, TYPE, "UnOp"#TYPE) \
+	DEFINE_VIREO_FUNCTION_TYPED(Decrement, TYPE, "UnOp"#TYPE)
+
 //------------------------------------------------------------
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
@@ -176,6 +182,7 @@ using namespace std;
 	DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
+	DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
 
 #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, "BinOp"#TYPE) \
@@ -200,7 +207,8 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i("#TYPE") o("#TYPE"))") \
 	DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
-    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))")
+    DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
+	DEFINE_VIREO_FUNCTION_TYPED(Reciprocal, TYPE, "UnOp"#TYPE) \
 
 //------------------------------------------------------------
 // Bitwise
@@ -229,6 +237,12 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
+	DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
+	DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
 		VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
 		_Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
@@ -237,6 +251,7 @@ using namespace std;
 		return _NextInstruction();													\
 		}
 
+
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
@@ -244,6 +259,8 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
+	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
+	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")
 
 //------------------------------------------------------------
@@ -259,7 +276,11 @@ using namespace std;
 #define TC_INT64 8
 #define TC_SINGLE 9
 #define TC_DOUBLE 10
-
+#if kVireoOS_emscripten
+#define INTERMED_CAST() (Double) // workaround rintf bug in Emscripten library
+#else
+#define INTERMED_CAST()
+#endif
 #define DECLARE_VIREO_CONVERSION_PRIMITIVE(DEST, SOURCE) DECLARE_VIREO_PRIMITIVE2(SOURCE##Convert##DEST, SOURCE, DEST, (_Param(1) = (DEST) _Param(0)))
 #define DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(DEST, SOURCE) \
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
@@ -270,7 +291,7 @@ using namespace std;
         else if (isinf(src)) \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         else \
-            _Param(1) = (DEST) rint(src); \
+            _Param(1) = (DEST) rint(INTERMED_CAST() src); \
         return _NextInstruction(); \
     }
 

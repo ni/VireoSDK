@@ -12,11 +12,16 @@
  min of (14, 63) is <14>
  max of (32, 32) is <32>
  min of (32, 32) is <32>
- max of (abcdefg, jklm) is <jklm>
- min of (abcdefg, jklm) is <abcdefg>
- max of (jklm, abcdefg) is <jklm>
- min of (jklm, abcdefg) is <abcdefg>
+ max of (abcdefg, jalm) is <jalm>
+ min of (abcdefg, jalm) is <abcdefg>
+ max of (jalm, abcdefg) is <jalm>
+ min of (jalm, abcdefg) is <abcdefg>
  max of (abcdefg, abcdefg) is <abcdefg>
  min of (abcdefg, abcdefg) is <abcdefg>
- max of ((3.5 3), (1.2 9)) is <(3.5 3)>
- min of ((3.5 3), (1.2 9)) is <(1.2 9)>
+ max of ((3.5 3), (1.2 9)) is <(3.5 9)>
+ min of ((3.5 3), (1.2 9)) is <(1.2 3)>
+ max of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('dcba' 'xyz' 5)>
+ min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'efg' 4)>
+ max of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('dcba' 'efg' 4)>
+ min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'xyz' 5)>
+ IRC of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'yyz' 5), (true false false)>

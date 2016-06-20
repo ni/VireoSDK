@@ -447,6 +447,168 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
 }
 
 //------------------------------------------------------------
+struct AggregateMaxAndMinInstruction : public InstructionCore
+{
+	union {
+		_ParamDef(TypedArrayCoreRef, VX);
+		_ParamDef(AQBlock1*, SX);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VY);
+		_ParamDef(AQBlock1*, SY);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VMax);
+		_ParamDef(AQBlock1*, SMax);
+	};
+	union {
+		_ParamDef(TypedArrayCoreRef, VMin);
+		_ParamDef(AQBlock1*, SMin);
+	};
+	_ParamImmediateDef(InstructionCore*, Next);
+	inline InstructionCore* Snippet()   { return this + 1; }
+	inline InstructionCore* Next()      { return this->_piNext; }
+};
+
+//------------------------------------------------------------
+InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
+{
+	InstructionCore* pInstruction = null;
+	TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
+	TypeRef sourceYType = pInstructionBuilder->_argTypes[1];
+	TypeRef maxType = pInstructionBuilder->_argTypes[2];
+	TypeRef minType = pInstructionBuilder->_argTypes[3];
+	SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+	if(!sourceXType->CompareType(sourceYType) || !sourceXType->CompareType(maxType) || !maxType->CompareType(minType)) {
+		return null;
+	}
+
+	switch(maxType->BitEncoding()) {
+		case kEncoding_Array:
+		{
+			ConstCStr pVectorUnOpName = "VectorMaxMinOp";
+			SubString vectorUnOpToken(pVectorUnOpName);
+			pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false); //build a vector op
+			Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+			AggregateMaxAndMinInstruction* maxMinOp = (AggregateMaxAndMinInstruction*) pInstructionBuilder->EmitInstruction(); //emit the vector op
+			pInstruction = maxMinOp;
+
+			// Recurse on the element
+			ClumpParseState snippetBuilder(pInstructionBuilder);
+			pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
+
+			snippetBuilder.EmitInstruction(&savedOperation, 4, sourceXType->GetSubElement(0), (void*)null, sourceYType->GetSubElement(0), (void*)null, maxType->GetSubElement(0), (void*)null, minType->GetSubElement(0), (void*)null);
+
+			pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+			pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
+			break;
+		}
+		case kEncoding_Cluster:
+		{
+			ConstCStr pClusterUnOpName = "ClusterMaxMinOp";
+			SubString clusterUnOpToken(pClusterUnOpName);
+
+			pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken, false);
+			Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+			AggregateMaxAndMinInstruction* maxMinOp = (AggregateMaxAndMinInstruction*)pInstructionBuilder->EmitInstruction();
+			pInstruction = maxMinOp;
+
+			// Recurse on the sub elemets
+			ClumpParseState snippetBuilder(pInstructionBuilder);
+			pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
+			for (Int32 i = 0; i < maxType->SubElementCount(); i++) {
+				TypeRef maxSub = maxType->GetSubElement(i), minSub = minType->GetSubElement(i);
+				TypeRef sourceXSub = sourceXType, sourceYSub = sourceYType;
+				void *sourceXData = null, *sourceYData = null;
+				if (sourceXType->BitEncoding() == kEncoding_Cluster) {
+					sourceXSub = sourceXType->GetSubElement(i);
+					sourceXData =  (void*)(size_t)sourceXSub->ElementOffset();
+				}
+				if (sourceYType->BitEncoding() == kEncoding_Cluster) {
+					sourceYSub = sourceYType->GetSubElement(i);
+					sourceYData =  (void*)(size_t)sourceYSub->ElementOffset();
+				}
+				snippetBuilder.EmitInstruction(&savedOperation, 4, sourceXSub, sourceXData, sourceYSub, sourceYData,
+											   maxSub, (void*)(size_t)maxSub->ElementOffset(), minSub, (void*)(size_t)minSub->ElementOffset());
+			}
+
+			pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+			pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
+			break;
+		}
+		default:
+		{
+			// Leave pInstruction null. Error reported by caller.
+			break;
+		}
+	}
+	return pInstruction;
+}
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
+{
+	TypedArrayCoreRef srcArrayX = _Param(VX);
+	TypedArrayCoreRef srcArrayY = _Param(VY);
+	TypedArrayCoreRef maxArray = _Param(VMax);
+	TypedArrayCoreRef minArray = _Param(VMin);
+	Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* snippet = ( Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
+
+	IntIndex elementSizeX = srcArrayX->ElementType()->TopAQSize();
+	IntIndex elementSizeY = srcArrayY->ElementType()->TopAQSize();
+	IntIndex elementSizeMax = maxArray->ElementType()->TopAQSize();
+	IntIndex elementSizeMin = minArray->ElementType()->TopAQSize();
+	IntIndex count = srcArrayX->Length();
+	if (srcArrayY->Length() < count)
+		count = srcArrayY->Length();
+
+	// Resize output to size of input arrays
+	maxArray->Resize1D(count);
+	minArray->Resize1D(count);
+	AQBlock1 *beginX = srcArrayX->RawBegin();
+	AQBlock1 *beginY = srcArrayY->RawBegin();
+	AQBlock1 *beginMax = maxArray->RawBegin();  // might be in-place to one of the input arrays.
+	AQBlock1 *beginMin = minArray->RawBegin();  // might be in-place to one of the input arrays.
+
+	AQBlock1 *endMax = beginMax + (count * elementSizeMax);
+
+	snippet->_p0 = beginX;
+	snippet->_p1 = beginY;
+	snippet->_p2 = beginMax;
+	snippet->_p3 = beginMin;
+	while (snippet->_p2 < endMax)
+	{
+		_PROGMEM_PTR(snippet, _function)(snippet);
+		snippet->_p0 += elementSizeX;
+		snippet->_p1 += elementSizeY;
+		snippet->_p2 += elementSizeMax;
+		snippet->_p3 += elementSizeMin;
+	}
+
+	return _NextInstruction();
+}
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURET(ClusterMaxMinOp, AggregateMaxAndMinInstruction)
+{
+	Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* pInstruction = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* )_ParamMethod(Snippet());
+
+	while(ExecutionContext::IsNotCulDeSac(pInstruction)) {
+		pInstruction->_p0 += (size_t)_ParamPointer(SX);
+		pInstruction->_p1 += (size_t)_ParamPointer(SY);
+		pInstruction->_p2 += (size_t)_ParamPointer(SMax);
+		pInstruction->_p3 += (size_t)_ParamPointer(SMin);
+		InstructionCore* next = _PROGMEM_PTR(pInstruction,_function)(pInstruction); //execute inline for now. TODO yield to the scheduler
+		pInstruction->_p0 -= (size_t)_ParamPointer(SX);
+		pInstruction->_p1 -= (size_t)_ParamPointer(SY);
+		pInstruction->_p2 -= (size_t)_ParamPointer(SMax);
+		pInstruction->_p3 -= (size_t)_ParamPointer(SMin);
+		pInstruction = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)next;
+	}
+	return _NextInstruction();
+}
+
+//------------------------------------------------------------
 struct InRangeAndCoerceInstruction : public InstructionCore
 {
 	enum IRCFlags { kXIsScalar=1, kLoIsScalar=2, kHiIsScalar=4 };
@@ -1666,9 +1828,17 @@ DEFINE_VIREO_BEGIN(Generics)
 	DEFINE_VIREO_GENERIC(RoundToNearest, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Reciprocal, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Negate, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Increment, "GenericUnOp", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(Decrement, "GenericUnOp", EmitGenericUnOpInstruction);
 
     DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
     DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
+
+	DEFINE_VIREO_GENERIC(MaxAndMinElts, "p(i(*) i(*) o(*) o(*) s(Instruction))", EmitMaxMinEltsInstruction);
+	DEFINE_VIREO_FUNCTION(VectorMaxMinOp, "p(i(Array) i(Array) o(Array) o(Array) s(Instruction))")
+	DEFINE_VIREO_FUNCTION(ClusterMaxMinOp, "p(i(*) i(*) o(*) o(*) s(Instruction))")
 
 	DEFINE_VIREO_GENERIC(InRangeAndCoerce, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(*) s(StaticType) s(Instruction))", EmitGenericInRangeAndCoerceInstruction);
 	DEFINE_VIREO_FUNCTION(VectorOrScalarInRangeOp, "p(i(Array) i(Array) i(Array) i(Boolean) i(Boolean) o(Array) o(Array) i(Int32) s(Instruction))" )
