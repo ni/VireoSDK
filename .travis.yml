@@ -14,4 +14,4 @@ before_script:
     - emcc -v
 script:
     - npm install
-    - make
+    - make && make test
