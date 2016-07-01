@@ -2,10 +2,7 @@ language: cpp
 compiler:
     - gcc
 before_script:
-    - git clone https://github.com/urho3d/emscripten-sdk.git
-    - cd emscripten-sdk
-    - ls
-    - source ./emsdk_env.sh
+    - git clone --depth 1 https://github.com/urho3d/emscripten-sdk.git && emscripten-sdk/emsdk activate --build=Release sdk-master-64bit && source emscripten-sdk/emsdk_env.sh
     - emcc -v
 script:
     - npm install
