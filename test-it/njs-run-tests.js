@@ -205,7 +205,7 @@ function RunNativeTest(testName) {
 //------------------------------------------------------------
 function SetupVJS()
 {
-    vireo = require('../target-support/js/vireo.js');
+    vireo = require('../dist/vireo.js');
     vireo.stdout = '';
     vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
 }

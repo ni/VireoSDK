@@ -4,5 +4,5 @@ all:
 	cd make-it; node make.js clean vjs
 
 test:
-	echo "==================== Test ===================="
-	cd test-it; node njs-run-test.js
+	echo "==================== Testing ===================="
+	cd test-it; node njs-run-tests.js -j -all
