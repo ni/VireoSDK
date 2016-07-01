@@ -3,7 +3,8 @@
 all:
 	git clone https://github.com/urho3d/emscripten-sdk.git ./emsdk
 	cd ./emsdk
-	./emsdk activate latest
+	ls
+	# ./emsdk activate latest
 	source ./emsdk_env.sh
 	emcc -v
 	# cd ..
