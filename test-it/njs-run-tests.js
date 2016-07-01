@@ -15,6 +15,11 @@ app.totalResultLines = 0;
 
 var blacklist = null;
 
+function TestFailure(testName, testResults) {
+    this.name = testName;
+    this.results = testResults;
+}
+
 function IsViaFile(name) {
     return path.extname(name) === '.via';
 }
@@ -55,6 +60,7 @@ function PrintBlackList ()
 {
     GenerateBlacklist();
     if (blacklist.length > 0) {
+        console.log('\n');
         console.log('=====================================================================================')
         console.log('The following tests(' + blacklist.length + ') were not executed. They are blacklisted.')
         for (var i = 0; i < blacklist.length; i++) {
@@ -107,7 +113,8 @@ function PrintCharactersToConsole (testName, oldResults, cleanNewResults)
 }
 
 function CompareResults(testName, oldResults, newResults, msec) {
-    var diffs = [];
+    var diffs = [],
+        results;
     oldResults = oldResults.replace(/\r\n/gm, "\n");
     newResults = newResults.replace(/\r\n/gm, "\n");
     var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
@@ -125,18 +132,16 @@ function CompareResults(testName, oldResults, newResults, msec) {
     if (oldResults === cleanNewResults) {
         console.log('Test for "' + testName + '" passed. (' + msec + 'ms)' );
     } else {
-        console.log('Test for "' + testName + '" failed.');
-
-        process.stdout.write('----------------\n');
+        console.log(('Test for "' + testName + '" failed.').red);
         diffs = jsdiff.diffLines(oldResults, cleanNewResults);
+        results = "";
         diffs.forEach(function(part){
             var color = part.added ? 'green' : part.removed ? 'red' : 'grey';
-            process.stdout.write(part.value[color]);
-            });
-        process.stdout.write('----------------\n');
+            results = results.concat(part.value[color]).concat('\n');
+        });
 
         // When will all the test be done?
-        app.testFailures.push(testName);
+        app.testFailures.push(new TestFailure(testName, results));
     }
 }
 
@@ -273,15 +278,21 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         // ----------------------------------------------------------------------
         console.log("Total test vectors :" + app.totalResultLines);
         if (app.testFailures.length > 0) {
-            console.log("\n===========================");
+            console.log("\n=============================================");
             console.log("The following tests failed:");
-            console.log("===========================");
-            console.log(app.testFailures);
+            console.log("\n=============================================");
+            app.testFailures.forEach(function(test) {
+                console.log("===========================");
+                console.log(test.name);
+                console.log("===========================");
+                console.log(test.results);
+                console.log('\n');
+            });
         }
         else {
-            console.log("\n=============================================");
-            console.log("SUCCESS: All tests passed for this execution!");
-            console.log("=============================================\n");
+            console.log("\n=============================================".green);
+            console.log("SUCCESS: All tests passed for this execution!".green);
+            console.log("=============================================\n".green);
         }
         if (all) {
             PrintBlackList();
