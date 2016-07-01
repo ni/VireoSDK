@@ -1,13 +1,13 @@
 # Makefile for TravisCI
 
 all:
-	pwd
-	ls
-	cd make-it; node make.js clean v64
-	mkdir /home/travis/bin
-	cp make-it/esh /home/travis/bin/esh
-	ls -l make-it/esh
-	which esh
+	git clone https://github.com/urho3d/emscripten-sdk.git ./emsdk
+	cd ./emsdk
+	emsdk activate latest
+	source ./emsdk_env.sh
+	emcc -v
+	# cd ..
+	# cd make-it; node make.js clean vjs
 
 test:
 	echo "Testing goes here"

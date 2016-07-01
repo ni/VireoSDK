@@ -3,4 +3,4 @@ compiler:
     - gcc
 script:
     - npm install
-    - make && make test
+    - make
