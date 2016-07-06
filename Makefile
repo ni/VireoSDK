@@ -4,9 +4,6 @@
 
 all: native js
 
-clean:
-	cd make-it; make clean
-
 native:
 	cd make-it; make simple
 
@@ -20,3 +17,6 @@ testjs:
 
 testnative:
 	cd test-it; node test.js -all -n
+
+clean:
+	cd make-it; make clean

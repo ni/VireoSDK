@@ -5,6 +5,7 @@ INCDIR=../source/include
 BIN=../bin
 OUTPUT_EXE=../dist/esh
 
+
 COMMANDLINE = main.cpp
 CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp Linx.cpp
@@ -86,8 +87,16 @@ endif
 # Add common desktop modules.
 CFLAGS+= -DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1
 
-.PHONY: install clean v32 v64 lARMv5 help
+.PHONY: install clean v32 v64 lARMv5 help prep
 .DEFAULT_GOAL=help
+
+prep:
+# Check for the dist folder
+ifneq "$(wildcard ../dist/.*)" ""
+	@echo "../dist exists"
+else
+	mkdir ../dist
+endif
 
 install: esh
 	@username=`whoami`; \
@@ -147,7 +156,7 @@ lARMv5:
 	arm-none-linux-gnueabi-strip libvireo.so
 
 #========= Use makefile designed for emscripten builds
-vjs:
+vjs: prep
 	# Just buid everything
 	make -f EmMakefile vjs
 
@@ -182,7 +191,7 @@ help:
 	@echo ''
 
 # Build the executable with symbols stripped
-esh: $(OBJDIR) $(OBJS)
+esh: $(OBJDIR) $(OBJS) prep
 	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
 
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)
