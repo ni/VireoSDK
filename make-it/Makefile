@@ -3,6 +3,7 @@
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
+OUTPUT_EXE=../dist/esh
 
 COMMANDLINE = main.cpp
 CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
@@ -41,7 +42,7 @@ else
         else
             CCOPT = -O3
         endif
-        STRIP = strip esh
+        STRIP = strip $(OUTPUT_EXE)
     endif
 
     ifeq ($(UNAME_S),Linux)
@@ -99,7 +100,7 @@ install: esh
 	@echo '==> esh installed to $(PROGRAM_DIR)'
 
 clean:
-	rm -f esh libvireo.so $(BIN)/esh *~ $(INCDIR)/*~
+	rm -f $(OUTPUT_EXE) libvireo.so $(BIN)/esh *~ $(INCDIR)/*~
 	rm -rf $(OBJDIR)
 
 simple:
@@ -115,7 +116,8 @@ lc:
 
 #========= 32 bit builds host platfrom
 v32:
-	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
+	# if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
+	# No need to clean before every build
 	make TARGETARCH=-m32 esh
 	$(STRIP)
 
@@ -127,7 +129,8 @@ v32mini:
 
 #========= 32 bit builds host platfrom
 v64:
-	if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
+	# if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
+	# No need to clean before every build
 	make TARGETARCH=-m64 esh
 	$(STRIP)
 
@@ -146,7 +149,7 @@ lARMv5:
 #========= Use makefile designed for emscripten builds
 vjs:
 	# Just buid everything
-	make -f EmMakefile clean vjs install
+	make -f EmMakefile vjs
 
 #========= Build documentation
 dox:
@@ -180,7 +183,7 @@ help:
 
 # Build the executable with symbols stripped
 esh: $(OBJDIR) $(OBJS)
-	$(CC) -o $@ $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
+	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
 
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)

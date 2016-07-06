@@ -10,7 +10,7 @@ vireo = {};
 require('colors');
 
 var app = {};
-app.testFailures = [];
+app.testFailures = {};
 app.totalResultLines = 0;
 
 var blacklist = null;
@@ -140,8 +140,10 @@ function CompareResults(testName, oldResults, newResults, msec) {
             results = results.concat(part.value[color]).concat('\n');
         });
 
-        // When will all the test be done?
-        app.testFailures.push(new TestFailure(testName, results));
+        var key = testName.toString();
+        if (!app.testFailures.hasOwnProperty(key)) {
+            app.testFailures[key] = new TestFailure(testName, results);
+        }
     }
 }
 
@@ -198,7 +200,7 @@ function RunVJSTest(testName) {
 function RunNativeTest(testName) {
     var newResults = '';
     try {
-        newResults = cp.execFileSync('esh', [ testName ]).toString();
+        newResults = cp.execFileSync('../dist/esh', [ testName ]).toString();
     } catch (e) {
         // If Vireo detects an error it will return non zero
         // and exec will throw an exception, so catch the results.
@@ -225,10 +227,12 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     var argv = process.argv.slice();
     argv.shift(); // node path
     argv.shift(); // script path
+    var test_native = false;
     var tester = false;
     var all = false;
     var once = false;
     var execOnly = false;
+    var errorCode = 0;
 
     while(argv.length > 0) {
         var arg = argv[0];
@@ -240,6 +244,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
             once = true;
         } else if (arg === '-n') {
             tester = NativeTester;
+            test_native = true;
         } else if (arg === '-once') {
             once = true;
         } else if (arg === '-all') {
@@ -257,6 +262,18 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         SetupVJS();
         tester = JSTester;
     }
+
+    // Output which tests are being run
+    console.log("\n=============================================".cyan);
+    console.log("=============================================".cyan);
+    if (test_native) {
+        console.log("RUNNING TESTS AGAINST ESH (NATIVE)".cyan);
+    } else {
+        console.log("RUNNING TESTS AGAINST VIREO.JS".cyan);
+    }
+    console.log("=============================================".cyan);
+    console.log("=============================================".cyan);
+
 
     if (testFiles.length > 0) {
         testFiles.map(
@@ -276,18 +293,20 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         // This is being tracked by defect: DE9032
         // testFiles.map(tester); 
         // ----------------------------------------------------------------------
-        console.log("Total test vectors :" + app.totalResultLines);
-        if (app.testFailures.length > 0) {
-            console.log("\n=============================================");
-            console.log("The following tests failed:");
-            console.log("\n=============================================");
-            app.testFailures.forEach(function(test) {
-                console.log("===========================");
-                console.log(test.name);
-                console.log("===========================");
-                console.log(test.results);
-                console.log('\n');
-            });
+        if (Object.keys(app.testFailures).length > 0) {
+            console.log("=============================================");
+            console.log("The following tests failed: " + Object.keys(app.testFailures).length);
+            console.log("=============================================");
+            for (var test in app.testFailures) {
+                if (app.testFailures.hasOwnProperty(test)) {
+                    console.log("===========================");
+                    console.log(app.testFailures[test].name);
+                    console.log("===========================");
+                    console.log(app.testFailures[test].results);
+                    console.log('\n');
+                }
+            }
+            errorCode = 1;
         }
         else {
             console.log("\n=============================================".green);
@@ -301,4 +320,6 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     } else {
         console.log("Nothing to test.");
     }
+
+    process.exit(errorCode);
 })();

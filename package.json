@@ -7,11 +7,10 @@
     "diff": "^1.4.0",
     "shelljs": "^0.5.3"
   },
-  "devDependencies": {
-    "jasmine": "^2.4.0"
-  },
+  "devDependencies": {},
   "scripts": {
-    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json"
+    "make": "make",
+    "test": "make test"
   },
   "repository": {
     "type": "git",
