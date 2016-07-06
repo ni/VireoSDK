@@ -5,15 +5,13 @@
   "dependencies": {
     "colors": "^1.1.2",
     "diff": "^1.4.0",
-    "http-server": "^0.8.0",
-    "path": "^0.12.7",
-    "shelljs": "^0.5.1"
+    "shelljs": "^0.5.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jasmine": "^2.4.0"
+  },
   "scripts": {
-    "test": "cd test-it && ./run-tests.sh",
-    "make": "cd make-it && node make",
-    "serve-dox": "cd documents/gh-pages && http-server -p 6502"
+    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json"
   },
   "repository": {
     "type": "git",
