@@ -16,4 +16,6 @@ before_script:
     - node -v
 script:
     - npm install
-    - make && make test
+    - make
+    - make testjs
+    - make testnative
