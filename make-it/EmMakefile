@@ -55,7 +55,7 @@ help:
 
 EMCC= emcc
 
-EM_OPTFLAG = -Os # -Os -h4 -O3
+EM_OPTFLAG = -Os # -Os -g4 -O3
 EM_ANALYSIS_OPT_FLAG = -Os
 EM_OPT= $(EM_OPTFLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
