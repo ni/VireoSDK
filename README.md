@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/DevinCarr/VireoSDK.svg?branch=travis-testing)](https://travis-ci.org/DevinCarr/VireoSDK)
 # Vireo
 
 A compact parallel execution runtime for VIs saved in VI assembly format (.via files).
