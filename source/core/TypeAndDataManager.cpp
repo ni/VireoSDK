@@ -2164,6 +2164,7 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
     Resize1D(currentLength - count);
     return kNIError_Success;
 }
+
 //------------------------------------------------------------
 //! Banker's rounding for Doubles.
 inline Double RoundToEven(Double value)
@@ -2172,10 +2173,10 @@ inline Double RoundToEven(Double value)
 }
 //------------------------------------------------------------
 //! Banker's rounding for Singles.
-inline Single RoundToEven(Single value)
+inline EMSCRIPTEN_NOOPT Single RoundToEven(Single value)
 {
 #if kVireoOS_emscripten
-	return rint((Double)value);
+    return rint((Double)value);
 #else
     return rintf(value);
 #endif
