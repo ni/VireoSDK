@@ -39,6 +39,7 @@ From the root directory:
 `$ make test` - Runs all tests for Native and JS
 
 ## Specific Tests
+From within the `test-it` directory:
 
 #### Run All Native Tests
 ```shell
@@ -51,7 +52,6 @@ $ node test.js -all -j
 ```
 
 #### Run Individual Tests
-From within the `test-it` directory:
 ```shell
 $ node test.js -j HelloWorld.via
 ```
