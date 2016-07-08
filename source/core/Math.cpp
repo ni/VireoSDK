@@ -142,9 +142,15 @@ using namespace std;
 
 #define DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i("#TYPE") o("#TYPE"))")
-    
 //------------------------------------------------------------
 //Floating-point Math
+#if kVireoOS_emscripten
+	inline int ScaleRoundToInt_Double(Double x) { return int(RoundToEven(x)); }
+	inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); }
+#else
+	inline int ScaleRoundToInt_Double(Double x) { return int(rint(x)); }
+	inline int ScaleRoundToInt_Single(Single x) { return int(rintf(x)); }
+#endif
 #define DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) / _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE2( Sine##TYPE, TYPE, TYPE, (_Param(1) = sin(_Param(0)) ) ) \
@@ -170,7 +176,7 @@ using namespace std;
 		else if (_Param(1) < 0 && isinf(_Param(0))) \
 			_Param(2) = _Param(0) > 0 ? std::numeric_limits<double>::infinity() : -std::numeric_limits<double>::infinity(); \
 		else \
-			_Param(2) = _Param(0) * pow(2.0, int(rint(double(_Param(1)))));  \
+			_Param(2) = _Param(0) * pow(2.0, ScaleRoundToInt_##TYPE(_Param(1)));  \
 	} ) \
     DECLARE_VIREO_PRIMITIVE2( ArcSine##TYPE,TYPE, TYPE, (_Param(1) = asin(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)) ) ) \
@@ -276,11 +282,7 @@ using namespace std;
 #define TC_INT64 8
 #define TC_SINGLE 9
 #define TC_DOUBLE 10
-#if kVireoOS_emscripten
-#define INTERMED_CAST() (Double) // workaround rintf bug in Emscripten library
-#else
-#define INTERMED_CAST()
-#endif
+
 #define DECLARE_VIREO_CONVERSION_PRIMITIVE(DEST, SOURCE) DECLARE_VIREO_PRIMITIVE2(SOURCE##Convert##DEST, SOURCE, DEST, (_Param(1) = (DEST) _Param(0)))
 #define DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(DEST, SOURCE) \
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
@@ -291,7 +293,7 @@ using namespace std;
         else if (isinf(src)) \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         else \
-            _Param(1) = (DEST) rint(INTERMED_CAST() src); \
+            _Param(1) = (DEST) RoundToEven(src); \
         return _NextInstruction(); \
     }
 

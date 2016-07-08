@@ -16,6 +16,13 @@
 
 #include "DataTypes.h"
 
+#if kVireoOS_emscripten
+#define rintf RINTF_UNDEFINED // don't use rintf implementation on emscripten; it doesn't obey rounding modes correctly
+#define EMSCRIPTEN_NOOPT __attribute__((optnone)) // allow disabling optimizations that expose bugs in emscripten libs, such as those that cause Double casts to be elided and a rint call replaced with rintf
+#else
+#define EMSCRIPTEN_NOOPT
+#endif
+
 namespace Vireo {
 
 class SubString;
