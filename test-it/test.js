@@ -81,6 +81,33 @@ function PrintBlackList ()
     }
 }
 
+function PrintCharactersToConsole (testName, oldResults, cleanNewResults) {
+    var firstDifferenceFound = false;
+    var maxLength = oldResults.length;
+    if (cleanNewResults.length > maxLength) {
+        maxLength = cleanNewResults.length;
+    }
+    console.log('=======================================================');
+    console.log('"' + testName + '"');
+    console.log('Comparing oldResults(' + oldResults.length + ') vs cleanNewResults(' + cleanNewResults.length + ')');
+    console.log('=======================================================');
+    for (i = 0; i < maxLength; i++) {
+        var oldResultsText = '';
+        if (i < oldResults.length) {
+            oldResultsText = oldResults.charCodeAt(i)
+        }
+        var cleanNewResultsText = '';
+        if (i < cleanNewResults.length) {
+            cleanNewResultsText = cleanNewResults.charCodeAt(i)
+        }
+        var differenceText = '';
+        if (!firstDifferenceFound && (i < oldResults.length) && (i < cleanNewResults.length) && oldResults[i] != cleanNewResults[i]) {
+            differenceText = ' <---------- Found first difference';
+            firstDifferenceFound = true;
+        }
+        console.log(oldResultsText + '\t' + cleanNewResultsText + '\t' + differenceText);
+    }
+}
 // Compare the two strings and check for equality.
 // This is the way that we test the inputs for vireo to the expected
 // outputs.
