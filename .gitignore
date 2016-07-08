@@ -17,6 +17,7 @@
 Vireo_Xcode/VireoEggShell.xcodeproj/xcshareddata/xcschemes/EggShell.xcscheme
 make-it/esh
 target-support/
+dist/
 
 Vireo_SimpleMake/asm/
 Vireo_VS2012/VireoCommandLine/Debug/Queue.obj

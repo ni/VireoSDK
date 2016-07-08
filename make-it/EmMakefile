@@ -7,7 +7,7 @@ INCDIR=$(VIREO_SDK_DIR)/source/include
 BIN=$(VIREO_SDK_DIR)/bin
 SITESOURCEDIR=$(VIREO_SDK_DIR)/source/dox/playground
 SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
-TARGETDIR=$(VIREO_SDK_DIR)/target-support/js
+TARGETDIR=$(VIREO_SDK_DIR)/dist
 CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
 IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
 
@@ -104,10 +104,10 @@ $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
 	@mkdir -p $(OBJS)
 
-vjs:    $(TARGETDIR)/vireo.js
+vjs: $(TARGETDIR)/vireo.js
 
 $(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo.preamble.js $(CORESOURCEDIR)/vireo.postamble.js 
-	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js
+	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically
