@@ -25,7 +25,12 @@ else
 endif
 
 ifeq (,$(wildcard $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrapper*.cpp))
-ANALYSIS_LIBRARY = | no-analysis
+ANALYSIS_LIBRARY = $(OBJS)/NoAnalysisLibrary.bc
+$(OBJS)/NoAnalysisLibrary.bc: | no-analysis
+	touch $(OBJS)/NoAnalysis.cpp
+	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $(OBJS)/NoAnalysis.cpp
+	rm $(OBJS)/NoAnalysis.cpp
+
 no-analysis::
 	$(info Note: Analysis library not found in $(VIREO_SDK_DIR)/private or ../vi.lib/Analysis; omitting from build.)
 else
@@ -36,7 +41,7 @@ INCDIR=$(VIREO_SDK_DIR)/source/include
 BIN=$(VIREO_SDK_DIR)/bin
 SITESOURCEDIR=$(VIREO_SDK_DIR)/source/dox/playground
 SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
-TARGETDIR=$(VIREO_SDK_DIR)/target-support/js
+TARGETDIR=$(VIREO_SDK_DIR)/dist
 #TARGETDIR=../../../../Imports/jsResources
 CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
 IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
