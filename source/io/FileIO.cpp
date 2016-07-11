@@ -393,7 +393,7 @@ DEFINE_VIREO_BEGIN(FileSystem)
 #endif
     //--------
 #ifdef VIREO_FILESYSTEM
-    DEFINE_VIREO_FUNCTION(FileOpen, "p(i(String)i(String)i(Int32)i(Int32)i(Boolean)i(FileHandle)i(Boolean)o(Int32))")
+    DEFINE_VIREO_FUNCTION(FileOpen, "p(i(String)i(Int32)i(Int32)o(FileHandle))")
     DEFINE_VIREO_FUNCTION(FileSize, "p(i(FileHandle)o(Int32))")
     DEFINE_VIREO_FUNCTION(FileDelete, "p(i(String)o(Int32))")
     DEFINE_VIREO_FUNCTION(StreamClose, "p(i(FileHandle)o(Int32))")
