@@ -146,7 +146,7 @@ using namespace std;
 //Floating-point Math
 #if kVireoOS_emscripten
 	inline int ScaleRoundToInt_Double(Double x) { return int(RoundToEven(x)); }
-	inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); }
+    inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); } // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined
 #else
 	inline int ScaleRoundToInt_Double(Double x) { return int(rint(x)); }
 	inline int ScaleRoundToInt_Single(Single x) { return int(rintf(x)); }
