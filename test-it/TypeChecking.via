@@ -29,9 +29,9 @@ define(TypeChecking dv(.VirtualInstrument (
     Copy(c10 cInt32)
 	Add(cInt32 cMyInt32 value)
     Println(value)
-	Add(cDouble cMyInt32 cDouble) // Error
-	Add(cDouble c10 cInt32)        // Error
-	Add(cDouble c10 cInt32)       // Error
+	Add(cDouble cMyInt32 cDouble) // No longer an Error
+	Add(cDouble c10 cInt32)        // No longer an Error
+	Add(cDouble c10 cInt32)       // No longer an Error
 	ArrayLength(cString value)   // formal type is "Array" which means type info is present is that all
     Println(value)
 	ArrayLength(arrayOfDoubleFixed2d cInt32)

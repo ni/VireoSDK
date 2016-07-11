@@ -240,7 +240,7 @@ public:
     VirtualInstrument *_vi;
     VIClump*        _clump;
 
-private:    // State to pathcing owner/next field once next instruction created
+private:    // State for patching owner/next field once next instruction created
     // When an instruction is made remember where its 'next' field is so that it can be
     // when the next instruction is generated. When packed instructions are used
     // this is most often null since there are no next pointers. However roots
