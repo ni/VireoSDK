@@ -12,24 +12,29 @@
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
+#if kVireoOS_emscripten
 #include <emscripten.h>
-
+#endif
 using namespace Vireo;
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(JSEval, StringRef)
 {
     TempStackCStringFromString cString(_Param(0));
+#if kVireoOS_emscripten
     emscripten_run_script(cString.BeginCStr());
+#endif
     return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(JSTest2, Int32, Int32)
 {
+#if kVireoOS_emscripten
     _Param(1) = EM_ASM_INT({
         alert('Hello');
         return $0 + 2;
     }, _Param(0));
+#endif
     return _NextInstruction();
 }
 //------------------------------------------------------------

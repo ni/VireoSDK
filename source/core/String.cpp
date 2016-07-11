@@ -11,11 +11,7 @@ SDG
     \brief Native Vireo string functions.
  */
 
-#if _WIN32
-  #define _CRT_SECURE_NO_WARNINGS
-  #define snprintf _snprintf
-#endif
-
+#include "BuildConfig.h"
 #include "ExecutionContext.h"
 #include "TypeDefiner.h"
 #include "StringUtilities.h"

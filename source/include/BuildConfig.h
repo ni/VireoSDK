@@ -206,7 +206,9 @@ SDG
     #define VIREO_DATE_TIME_STDLIB
 
 #elif (kVireoOS_win32U || kVireoOS_win64U)
+#if (_MSC_VER < 1900)
     #define snprintf _snprintf
+#endif
 
     #undef VIREO_MAIN
     #define VIREO_MAIN  __cdecl main

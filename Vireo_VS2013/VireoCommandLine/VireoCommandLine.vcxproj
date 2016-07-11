@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -85,7 +85,6 @@
     <ClCompile Include="..\..\source\core\Assert.cpp" />
     <ClCompile Include="..\..\source\core\CEntryPoints.cpp" />
     <ClCompile Include="..\..\source\core\DataQueue.cpp" />
-    <ClCompile Include="..\..\source\core\EggShell.cpp" />
     <ClCompile Include="..\..\source\core\EventLog.cpp" />
     <ClCompile Include="..\..\source\core\ExecutionContext.cpp" />
     <ClCompile Include="..\..\source\core\GenericFunctions.cpp" />
@@ -101,17 +100,24 @@
     <ClCompile Include="..\..\source\core\Thread.cpp" />
     <ClCompile Include="..\..\source\core\Timestamp.cpp" />
     <ClCompile Include="..\..\source\core\TypeAndDataManager.cpp" />
+    <ClCompile Include="..\..\source\core\TypeAndDataManager.Embind.cpp" />
     <ClCompile Include="..\..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\..\source\core\TypeTemplates.cpp" />
+    <ClCompile Include="..\..\source\core\VireoMerged.cpp" />
     <ClCompile Include="..\..\source\core\VirtualInstrument.cpp" />
+    <ClCompile Include="..\..\source\io\Canvas2d.cpp" />
+    <ClCompile Include="..\..\source\io\DebugGPIO.cpp" />
+    <ClCompile Include="..\..\source\io\Emscripten.cpp" />
     <ClCompile Include="..\..\source\io\FileIO.cpp" />
+    <ClCompile Include="..\..\source\io\HttpClient.cpp" />
+    <ClCompile Include="..\..\source\io\Linx.cpp" />
+    <ClCompile Include="..\..\source\io\WebSocketClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\include\BuildConfig.h" />
     <ClInclude Include="..\..\source\include\CEntryPoints.h" />
     <ClInclude Include="..\..\source\include\DataTypes.h" />
-    <ClInclude Include="..\..\source\include\EggShell.h" />
     <ClInclude Include="..\..\source\include\EventLog.h" />
     <ClInclude Include="..\..\source\include\ExecutionContext.h" />
     <ClInclude Include="..\..\source\include\Instruction.h" />
@@ -122,12 +128,18 @@
     <ClInclude Include="..\..\source\include\TDCodecVia.h" />
     <ClInclude Include="..\..\source\include\TDCodecVib.h" />
     <ClInclude Include="..\..\source\include\Thread.h" />
+    <ClInclude Include="..\..\source\include\Timestamp.h" />
     <ClInclude Include="..\..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\..\source\include\VirtualInstrument.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\source\core\vireo.postamble.js" />
+    <None Include="..\..\source\core\vireo.preamble.js" />
     <None Include="..\..\source\include\ConversionTable.def" />
+    <None Include="..\..\source\io\library_canvas2d.js" />
+    <None Include="..\..\source\io\library_httpClient.js" />
+    <None Include="..\..\source\io\library_webSocketClient.js" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

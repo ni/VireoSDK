@@ -31,9 +31,6 @@
     <ClCompile Include="..\..\source\core\DataQueue.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\core\EggShell.cpp">
-      <Filter>VireoSource\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\core\ExecutionContext.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -100,15 +97,36 @@
     <ClCompile Include="..\..\source\core\Platform.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\io\Canvas2d.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\io\DebugGPIO.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\io\Emscripten.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\io\HttpClient.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\io\Linx.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\io\WebSocketClient.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\TypeAndDataManager.Embind.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\core\VireoMerged.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\include\BuildConfig.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\include\DataTypes.h">
-      <Filter>VireoSource\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\source\include\EggShell.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\source\include\ExecutionContext.h">
@@ -153,10 +171,28 @@
     <ClInclude Include="..\..\source\include\Platform.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\include\Timestamp.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\include\ConversionTable.def">
       <Filter>VireoSource\Include</Filter>
+    </None>
+    <None Include="..\..\source\io\library_canvas2d.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\..\source\io\library_httpClient.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\..\source\io\library_webSocketClient.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\..\source\core\vireo.postamble.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\..\source\core\vireo.preamble.js">
+      <Filter>VireoSource\Core</Filter>
     </None>
   </ItemGroup>
 </Project>
