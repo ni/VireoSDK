@@ -19,6 +19,7 @@
 (Line 4 Error "Instruction not generated 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
 (Line 5 Error "Instruction not generated 'Println'.")
+(Line 7 Error "Instruction not generated 'Add'.")
 
 -------
 Somewhat of a lambda, Hello world.
@@ -26,6 +27,7 @@ Could this be a simple reentrant VI?, Hello world.
 (Line 4 Error "Instruction not generated 'PrintZZZX'.")
 (Line 5 Error "Too many arguments 'variable1'.")
 (Line 5 Error "Instruction not generated 'Println'.")
+(Line 7 Error "Instruction not generated 'Add'.")
 
 -------
 Could this be a simple reentrant VI?, Hello world.

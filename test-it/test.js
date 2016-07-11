@@ -271,14 +271,9 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     }
 
     // Output which tests are being run
+    var target = test_native ? "esh (native)" : "vireo.js";
     console.log("\n=============================================".cyan);
-    console.log("=============================================".cyan);
-    if (test_native) {
-        console.log("RUNNING TESTS AGAINST ESH (NATIVE)".cyan);
-    } else {
-        console.log("RUNNING TESTS AGAINST VIREO.JS".cyan);
-    }
-    console.log("=============================================".cyan);
+    console.log(("Running tests against " + target).cyan);
     console.log("=============================================".cyan);
 
 

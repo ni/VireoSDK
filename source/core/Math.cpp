@@ -146,7 +146,7 @@ using namespace std;
 //Floating-point Math
 #if kVireoOS_emscripten
 	inline int ScaleRoundToInt_Double(Double x) { return int(RoundToEven(x)); }
-	inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); }
+    inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); } // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined
 #else
 	inline int ScaleRoundToInt_Double(Double x) { return int(rint(x)); }
 	inline int ScaleRoundToInt_Single(Single x) { return int(rintf(x)); }
@@ -165,7 +165,7 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)) ) ) \
 	DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE, TYPE, TYPE, TYPE, { \
-		if (isnan(_Param(0) || isnan(_Param(1)))) \
+		if (isnan(_Param(0)) || isnan(_Param(1))) \
 			_Param(2) = std::numeric_limits<TYPE>::quiet_NaN(); \
 		else if (_Param(0) == 0.0) \
 			_Param(2) = (_Param(1) > 0 && isinf(_Param(1))) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
