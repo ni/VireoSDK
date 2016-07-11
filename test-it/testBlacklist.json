@@ -25,10 +25,6 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "GlobalCrossTalk.via",
-      "reason": "It fails, expected output is not the same."
-    },
-    {
       "filename": "HelloRequire.via",
       "reason": "It fails, expected output is not the same."
     },
