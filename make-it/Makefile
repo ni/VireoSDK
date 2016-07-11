@@ -91,12 +91,7 @@ CFLAGS+= -DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1
 .DEFAULT_GOAL=help
 
 prep:
-# Check for the dist folder
-ifneq "$(wildcard ../dist/.*)" ""
-	@echo "../dist exists"
-else
-	mkdir ../dist
-endif
+	@mkdir -p ../dist
 
 install: esh
 	@username=`whoami`; \
