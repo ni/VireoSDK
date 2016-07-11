@@ -1016,8 +1016,7 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
             keepTrying = StartNextOverload() != null;
         }
     }
-    EmitInstruction();
-    return null;
+    return EmitInstruction();
 }
 //------------------------------------------------------------
 //! Emit the instruction resolved to by general clump parser.
