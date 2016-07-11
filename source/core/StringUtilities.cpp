@@ -388,7 +388,30 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 }
                 dest++;
             } else if (escapeTokenLength > 1) {
-                // TODO octal, hex, Unicode stuff
+                IntMax intValue;
+                TempStackCString escapeTokenCString;
+                escapeTokenCString.Append(&escapeToken);
+                char* escapeChar = escapeTokenCString.BeginCStr();
+                char* escapeCharEnd = null;
+                int base = 0;
+                if ((*escapeChar >= '0' && *escapeChar <= '3') || *escapeChar == 'o')
+                    base = 8;
+                else {
+                    if (*escapeChar == 'x' || *escapeChar == 'u')
+                        base = 16;
+                    else if (*escapeChar == 'b')
+                        base = 2;
+                    else if (*escapeChar == 'd')
+                        base = 10;
+                    if (base)
+                        ++escapeChar;
+                }
+                if (base) {
+                    intValue = strtoull(escapeChar, &escapeCharEnd, base);
+                    *dest++ = (Utf8Char)intValue;
+                } else
+                    *dest++ = (c & 255);
+                // TODO Unicode \u codepoints > \u00ff
             } else {
                 // Incorrectly formatted escape, ignore second char
             }

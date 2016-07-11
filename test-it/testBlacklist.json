@@ -39,10 +39,6 @@
     {
       "filename": "ListDirectory.via",
       "reason": "It fails, expected output is not the same."
-    },
-    {
-      "filename": "StringEscapes.via",
-      "reason": "It fails, expected output is not the same."
     }
   ]
 }
