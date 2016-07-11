@@ -165,7 +165,7 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)) ) ) \
 	DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE, TYPE, TYPE, TYPE, { \
-		if (isnan(_Param(0) || isnan(_Param(1)))) \
+		if (isnan(_Param(0)) || isnan(_Param(1))) \
 			_Param(2) = std::numeric_limits<TYPE>::quiet_NaN(); \
 		else if (_Param(0) == 0.0) \
 			_Param(2) = (_Param(1) > 0 && isinf(_Param(1))) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
