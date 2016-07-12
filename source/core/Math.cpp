@@ -53,7 +53,7 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) ) \
-	DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = -_Param(0)) )			\
+	DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)) )			\
 	DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )	\
 	DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )	\
 

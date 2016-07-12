@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/DevinCarr/VireoSDK.svg?branch=travis-testing)](https://travis-ci.org/DevinCarr/VireoSDK)
-# Vireo
+# Vireo [![Build Status](https://travis-ci.org/ni/VireoSDK.svg?branch=incoming)](https://travis-ci.org/ni/VireoSDK)
 
 A compact parallel execution runtime for VIs saved in VI assembly format (.via files).
 
@@ -14,6 +13,9 @@ Requirements:
 
 Setup:
 - `npm install`
+
+#### Visual Studio
+Works with Visual Studio 2013 and 2015 (see the `Vireo_VS` folder).
 
 ### Easy Build
 *`esh & vireo.js`*

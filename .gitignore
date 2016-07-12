@@ -19,18 +19,23 @@ make-it/esh
 target-support/
 dist/
 
+# Visual Studio Ignores
+Vireo_VS/Debug/*
+Vireo_VS/VireoCommandLine.sdf
+Vireo_VS/VireoCommandLine.vcxproj.user
+**.VC.db
+**.opendb
+**.suo
+
+# Other
 Vireo_SimpleMake/asm/
-Vireo_VS2012/VireoCommandLine/Debug/Queue.obj
-Vireo_VS2012/VireoCommandLine/Debug/
 *.ipch
 hw10000.via
 hw100000.via
 Vireo_SimpleMake/objs/
 *.opensdf
-Vireo_VS2012/VireoCommandLine/VireoCommandLine.sdf
 make-it/asm/
 make-it/objs/
-Vireo_VS2012/VireoCommandLine/VireoCommandLine.vcxproj.user
 Vireo_XCode/Instruments_hw100000.trace/shared_data
 Vireo_XCode/Instruments_hw100000.trace/instrument_data
 Vireo_XCode/Instruments_hw100000.trace/Trace*.run

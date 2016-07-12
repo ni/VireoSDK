@@ -201,8 +201,14 @@ function RunVJSTest(testName) {
 // Setup the esh binary for via execution
 function RunNativeTest(testName) {
     var newResults = '';
+    var exec = '../dist/esh'
+    // Look for Windows exec or Linux/Unix
+    if (process.platform === 'win32') {
+        exec = '../dist/Debug/esh';
+    }
+
     try {
-        newResults = cp.execFileSync('../dist/esh', [ testName ]).toString();
+        newResults = cp.execFileSync(exec, [ testName ]).toString();
     } catch (e) {
         // If Vireo detects an error it will return non zero
         // and exec will throw an exception, so catch the results.
@@ -293,7 +299,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         // Run twice to look for global state issues.
         // Some tests are failing on a second iteration during the test execution.
         // This is being tracked by defect: DE9032
-        // testFiles.map(tester); 
+        // testFiles.map(tester);
         // ----------------------------------------------------------------------
 
         // Check the testFailures (if any)
