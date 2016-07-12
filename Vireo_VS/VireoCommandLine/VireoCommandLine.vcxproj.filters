@@ -118,9 +118,6 @@
     <ClCompile Include="..\..\source\core\TypeAndDataManager.Embind.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\core\VireoMerged.cpp">
-      <Filter>VireoSource\Core</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\source\include\BuildConfig.h">

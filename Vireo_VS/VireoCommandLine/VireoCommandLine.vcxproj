@@ -14,13 +14,14 @@
     <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>VireoCommandLine</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -104,7 +105,6 @@
     <ClCompile Include="..\..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\..\source\core\TypeTemplates.cpp" />
-    <ClCompile Include="..\..\source\core\VireoMerged.cpp" />
     <ClCompile Include="..\..\source\core\VirtualInstrument.cpp" />
     <ClCompile Include="..\..\source\io\Canvas2d.cpp" />
     <ClCompile Include="..\..\source\io\DebugGPIO.cpp" />
