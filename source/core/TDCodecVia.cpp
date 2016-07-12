@@ -121,7 +121,7 @@ NIError TDViaParser::ParseREPL()
 
     SubString command;
     _string.EatLeadingSpaces();
-    TypeRef type = nullptr;
+    TypeRef type = NULL;
     while((_string.Length() > 0) && (_pLog->TotalErrorCount() == 0)) {
         if (_string.ComparePrefix(')')) {
             break;
