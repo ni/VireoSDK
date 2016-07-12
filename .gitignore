@@ -20,9 +20,9 @@ target-support/
 dist/
 
 # Visual Studio Ignores
-Vireo_VS/VireoCommandLine/Debug/*
-Vireo_VS/VireoCommandLine/VireoCommandLine.sdf
-Vireo_VS/VireoCommandLine/VireoCommandLine.vcxproj.user
+Vireo_VS/Debug/*
+Vireo_VS/VireoCommandLine.sdf
+Vireo_VS/VireoCommandLine.vcxproj.user
 **.VC.db
 **.opendb
 **.suo
