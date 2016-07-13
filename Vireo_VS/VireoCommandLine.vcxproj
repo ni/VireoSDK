@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -10,22 +10,84 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\CommandLine\main.cpp" />
+    <ClCompile Include="..\source\core\Array.cpp" />
+    <ClCompile Include="..\source\core\Assert.cpp" />
+    <ClCompile Include="..\source\core\CEntryPoints.cpp" />
+    <ClCompile Include="..\source\core\DataQueue.cpp" />
+    <ClCompile Include="..\source\core\EventLog.cpp" />
+    <ClCompile Include="..\source\core\ExecutionContext.cpp" />
+    <ClCompile Include="..\source\core\GenericFunctions.cpp" />
+    <ClCompile Include="..\source\core\Math.cpp" />
+    <ClCompile Include="..\source\core\NumericString.cpp" />
+    <ClCompile Include="..\source\core\Platform.cpp" />
+    <ClCompile Include="..\source\core\Queue.cpp" />
+    <ClCompile Include="..\source\core\String.cpp" />
+    <ClCompile Include="..\source\core\StringUtilities.cpp" />
+    <ClCompile Include="..\source\core\Synchronization.cpp" />
+    <ClCompile Include="..\source\core\TDCodecLVFlat.cpp" />
+    <ClCompile Include="..\source\core\TDCodecVia.cpp" />
+    <ClCompile Include="..\source\core\Thread.cpp" />
+    <ClCompile Include="..\source\core\Timestamp.cpp" />
+    <ClCompile Include="..\source\core\TypeAndDataManager.cpp" />
+    <ClCompile Include="..\source\core\TypeAndDataManager.Embind.cpp" />
+    <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
+    <ClCompile Include="..\source\core\TypeDefiner.cpp" />
+    <ClCompile Include="..\source\core\TypeTemplates.cpp" />
+    <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
+    <ClCompile Include="..\source\io\Canvas2d.cpp" />
+    <ClCompile Include="..\source\io\DebugGPIO.cpp" />
+    <ClCompile Include="..\source\io\Emscripten.cpp" />
+    <ClCompile Include="..\source\io\FileIO.cpp" />
+    <ClCompile Include="..\source\io\HttpClient.cpp" />
+    <ClCompile Include="..\source\io\Linx.cpp" />
+    <ClCompile Include="..\source\io\WebSocketClient.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\core\vireo.postamble.js" />
+    <None Include="..\source\core\vireo.preamble.js" />
+    <None Include="..\source\include\ConversionTable.def" />
+    <None Include="..\source\io\library_canvas2d.js" />
+    <None Include="..\source\io\library_httpClient.js" />
+    <None Include="..\source\io\library_webSocketClient.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\include\BuildConfig.h" />
+    <ClInclude Include="..\source\include\CEntryPoints.h" />
+    <ClInclude Include="..\source\include\DataTypes.h" />
+    <ClInclude Include="..\source\include\EventLog.h" />
+    <ClInclude Include="..\source\include\ExecutionContext.h" />
+    <ClInclude Include="..\source\include\Instruction.h" />
+    <ClInclude Include="..\source\include\Platform.h" />
+    <ClInclude Include="..\source\include\StringUtilities.h" />
+    <ClInclude Include="..\source\include\Synchronization.h" />
+    <ClInclude Include="..\source\include\TDCodecLVFlat.h" />
+    <ClInclude Include="..\source\include\TDCodecVia.h" />
+    <ClInclude Include="..\source\include\TDCodecVib.h" />
+    <ClInclude Include="..\source\include\Thread.h" />
+    <ClInclude Include="..\source\include\Timestamp.h" />
+    <ClInclude Include="..\source\include\TypeAndDataManager.h" />
+    <ClInclude Include="..\source\include\TypeDefiner.h" />
+    <ClInclude Include="..\source\include\VirtualInstrument.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>VireoCommandLine</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -41,6 +103,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>esh</TargetName>
+    <OutDir>$(SolutionDir)..\dist\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -53,7 +117,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/../../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -79,56 +143,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\CommandLine\main.cpp" />
-    <ClCompile Include="..\..\source\core\Array.cpp" />
-    <ClCompile Include="..\..\source\core\Assert.cpp" />
-    <ClCompile Include="..\..\source\core\CEntryPoints.cpp" />
-    <ClCompile Include="..\..\source\core\DataQueue.cpp" />
-    <ClCompile Include="..\..\source\core\EggShell.cpp" />
-    <ClCompile Include="..\..\source\core\EventLog.cpp" />
-    <ClCompile Include="..\..\source\core\ExecutionContext.cpp" />
-    <ClCompile Include="..\..\source\core\GenericFunctions.cpp" />
-    <ClCompile Include="..\..\source\core\Math.cpp" />
-    <ClCompile Include="..\..\source\core\NumericString.cpp" />
-    <ClCompile Include="..\..\source\core\Platform.cpp" />
-    <ClCompile Include="..\..\source\core\Queue.cpp" />
-    <ClCompile Include="..\..\source\core\String.cpp" />
-    <ClCompile Include="..\..\source\core\StringUtilities.cpp" />
-    <ClCompile Include="..\..\source\core\Synchronization.cpp" />
-    <ClCompile Include="..\..\source\core\TDCodecLVFlat.cpp" />
-    <ClCompile Include="..\..\source\core\TDCodecVia.cpp" />
-    <ClCompile Include="..\..\source\core\Thread.cpp" />
-    <ClCompile Include="..\..\source\core\Timestamp.cpp" />
-    <ClCompile Include="..\..\source\core\TypeAndDataManager.cpp" />
-    <ClCompile Include="..\..\source\core\TypeAndDataReflection.cpp" />
-    <ClCompile Include="..\..\source\core\TypeDefiner.cpp" />
-    <ClCompile Include="..\..\source\core\TypeTemplates.cpp" />
-    <ClCompile Include="..\..\source\core\VirtualInstrument.cpp" />
-    <ClCompile Include="..\..\source\io\FileIO.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\source\include\BuildConfig.h" />
-    <ClInclude Include="..\..\source\include\CEntryPoints.h" />
-    <ClInclude Include="..\..\source\include\DataTypes.h" />
-    <ClInclude Include="..\..\source\include\EggShell.h" />
-    <ClInclude Include="..\..\source\include\EventLog.h" />
-    <ClInclude Include="..\..\source\include\ExecutionContext.h" />
-    <ClInclude Include="..\..\source\include\Instruction.h" />
-    <ClInclude Include="..\..\source\include\Platform.h" />
-    <ClInclude Include="..\..\source\include\StringUtilities.h" />
-    <ClInclude Include="..\..\source\include\Synchronization.h" />
-    <ClInclude Include="..\..\source\include\TDCodecLVFlat.h" />
-    <ClInclude Include="..\..\source\include\TDCodecVia.h" />
-    <ClInclude Include="..\..\source\include\TDCodecVib.h" />
-    <ClInclude Include="..\..\source\include\Thread.h" />
-    <ClInclude Include="..\..\source\include\TypeAndDataManager.h" />
-    <ClInclude Include="..\..\source\include\TypeDefiner.h" />
-    <ClInclude Include="..\..\source\include\VirtualInstrument.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\source\include\ConversionTable.def" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

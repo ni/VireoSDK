@@ -9,13 +9,16 @@
 
 /*! \file
  */
-
+#if kVireoOS_emscripten
 #include <emscripten/bind.h>
+#endif
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
 
+#if kVireoOS_emscripten
 using namespace emscripten;
+#endif
 using namespace Vireo;
 
 #if 0
