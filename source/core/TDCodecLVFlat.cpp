@@ -16,6 +16,10 @@ SDG
 // TODO: Code review
 namespace Vireo
 {
+inline UInt32 ReadLittleEndianUInt32(UInt8 *aBuf, IntIndex i) { return aBuf[i] | (aBuf[i+1]<<8) | (aBuf[i+2]<<16)  | (aBuf[i+3]<<24); }
+inline UInt32 ReadBigEndianUInt32(UInt8 *aBuf, IntIndex i) { return (aBuf[i]<<24) | (aBuf[i+1]<<16) | (aBuf[i+2]<<8)  | aBuf[i]; }
+inline void WriteLittleEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) { aBuf[i] = v & 0xff; aBuf[i+1] = (v >> 8) & 0xff; aBuf[i+2] = (v >> 16) & 0xff; aBuf[i+3] = (v >> 24) & 0xff; }
+inline void WriteBigEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) {  aBuf[i] = (v >> 24) & 0xff; aBuf[i+1] = (v >> 16) & 0xff; aBuf[i+2] = (v >> 8) & 0xff; aBuf[i+3] = v & 0xff; }
 
 NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prependArrayLength)
 {
@@ -39,9 +43,9 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
             if (prependArrayLength)
             {
                 for (Int32 i = 0; i < rank; i++) {
-                    // TODO this is endianness sensitive.
-                    // LV format is bigendian. Somthing is not right here.
-                    Int32 arrayLength = dimLengths[i];
+                    // LV format is bigendian.
+                    UInt32 arrayLength = dimLengths[i];
+                    WriteBigEndianUInt32((UInt8*)&arrayLength, 0, dimLengths[i]);
                     pString->Append(sizeof(arrayLength), (Utf8Char*)&arrayLength);
                 }
             }
@@ -122,7 +126,8 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 // If the string is long enough, read the array length
                 if (stringIndex + (IntIndex)sizeof(arrayLength) <= pBuffer->Length())
                 {
-                    arrayLength = *(Int32 *)(pBuffer->Begin() + stringIndex);
+                    UInt8 *aBuf = (UInt8*)pBuffer->Begin();
+                    arrayLength = ReadBigEndianUInt32(aBuf, stringIndex);
                     stringIndex += sizeof(arrayLength);
                 }
                 else
