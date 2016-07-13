@@ -108,6 +108,7 @@ vjs: $(TARGETDIR)/vireo.js
 
 $(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo.preamble.js $(CORESOURCEDIR)/vireo.postamble.js 
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
+	python patchVireo.py $@
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically
