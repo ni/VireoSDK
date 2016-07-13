@@ -1972,6 +1972,7 @@ DEFINE_VIREO_BEGIN(Generics)
 	DEFINE_VIREO_GENERIC(Increment, "GenericUnOp", EmitGenericUnOpInstruction);
 	DEFINE_VIREO_GENERIC(Decrement, "GenericUnOp", EmitGenericUnOpInstruction);
 	DEFINE_VIREO_GENERIC(BooleanConvertInt16, "p(i(Array) o(Array))", EmitGenericUnOpInstruction);
+	DEFINE_VIREO_GENERIC(BooleanConvertInt16, "p(i(*) o(*))", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
     DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
 
