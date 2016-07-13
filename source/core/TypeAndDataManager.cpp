@@ -425,7 +425,7 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
 //------------------------------------------------------------
 TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName)
 {
-    std::map<SubString, TypeRef, ComapreSubString>::iterator  iter;
+    std::map<SubString, TypeRef, CompareSubString>::iterator  iter;
     
     for (TypeManagerRef tm = this; tm ; tm = tm->BaseTypeManager()) {
         iter = _typeInstanceDictionary.find(*binaryName);
