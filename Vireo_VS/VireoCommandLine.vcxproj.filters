@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="VireoSource">
+      <UniqueIdentifier>{239cef4f-5de0-41c7-923c-d0775efb5818}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\Core">
+      <UniqueIdentifier>{fbf3ace1-644f-4a77-8bd1-a97bce3f1cfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\Include">
+      <UniqueIdentifier>{d2f02936-1df7-4cf4-9567-c484a6d0a61f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\CommandLine">
+      <UniqueIdentifier>{44c7798e-79d8-4a36-a9b1-0948146ccffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\IO">
+      <UniqueIdentifier>{87749a21-6183-4f92-8a31-22b58f67cee7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\source\CommandLine\main.cpp">
+      <Filter>VireoSource\CommandLine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Array.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Assert.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\CEntryPoints.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\DataQueue.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\EventLog.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\ExecutionContext.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\GenericFunctions.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Math.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\NumericString.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Platform.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Queue.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\String.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\StringUtilities.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Synchronization.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TDCodecLVFlat.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TDCodecVia.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Thread.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\Timestamp.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TypeAndDataManager.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TypeAndDataManager.Embind.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TypeAndDataReflection.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TypeDefiner.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TypeTemplates.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\VirtualInstrument.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\Canvas2d.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\DebugGPIO.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\Emscripten.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\FileIO.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\HttpClient.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\Linx.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\io\WebSocketClient.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\core\vireo.postamble.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\vireo.preamble.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\include\ConversionTable.def">
+      <Filter>VireoSource\Include</Filter>
+    </None>
+    <None Include="..\source\io\library_canvas2d.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\io\library_httpClient.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\io\library_webSocketClient.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\include\BuildConfig.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\CEntryPoints.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\DataTypes.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\EventLog.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\ExecutionContext.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Instruction.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Platform.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\StringUtilities.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Synchronization.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TDCodecLVFlat.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TDCodecVia.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TDCodecVib.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Thread.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Timestamp.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TypeAndDataManager.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TypeDefiner.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\VirtualInstrument.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
