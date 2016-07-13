@@ -136,7 +136,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
         results = "";
         diffs.forEach(function(part){
             var color = part.added ? 'green' : part.removed ? 'red' : 'grey';
-            results = results.concat(part.value[color]).concat('\n');
+            results = results.concat(part.value[color]);
         });
 
         var key = testName.toString();

@@ -307,16 +307,18 @@ Int32 SubString::ReadEscapeToken(SubString* token)
         } else if (c == 'u') {
             //  "...\uhhhh..."
             newBegin = _begin + 5;
-            expandedSize = 1; //TODO size will be UTF8 translation of UTF8 char
+            expandedSize = 1; //TODO size will be UTF8 translation of UTF codepoint
         } else if (c >= '0' && c <= '7') {
             //  "...\ooo..."
-            newBegin = _begin + 3;
+            newBegin = _begin + 1;
+            while (*newBegin >= '0' && *newBegin <= '7' && newBegin < _end && newBegin < _begin + 3)
+                ++newBegin;
             expandedSize = 1;
         } else {
             //  "...\c..."
             // The default is that character following the '\'
             // maps to a single character. If its not a special character
-            // then leave it as is. That's the c/c++ gammar
+            // then leave it as is. That's the c/c++ grammar
             newBegin = _begin + 1;
             expandedSize = 1;
         }
@@ -375,8 +377,8 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
             SubString escapeToken;
             temp.ReadEscapeToken(&escapeToken);
             Int32 escapeTokenLength = escapeToken.Length();
-            if (escapeTokenLength == 1) {
-                Utf8Char escapeChar = *escapeToken.Begin();
+            Utf8Char escapeChar = escapeTokenLength ?  *escapeToken.Begin() : '\0';
+            if (escapeTokenLength == 1 && !(escapeChar >= '0' && escapeChar <= '7')) {
                 switch (escapeChar) {
                     case 'n':   *dest = '\n';       break;
                     case 'r':   *dest = '\r';       break;
@@ -387,8 +389,31 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                     default :   *dest = escapeChar; break;
                 }
                 dest++;
-            } else if (escapeTokenLength > 1) {
-                // TODO octal, hex, Unicode stuff
+            } else if (escapeTokenLength) {
+                IntMax intValue;
+                TempStackCString escapeTokenCString;
+                escapeTokenCString.Append(&escapeToken);
+                char* escapeCharPtr = escapeTokenCString.BeginCStr();
+                char* escapeCharEnd = null;
+                int base = 0;
+                if ((*escapeCharPtr >= '0' && *escapeCharPtr <= '3') || *escapeCharPtr == 'o')
+                    base = 8;
+                else {
+                    if (*escapeCharPtr == 'x' || *escapeCharPtr == 'u')
+                        base = 16;
+                    else if (*escapeCharPtr == 'b')
+                        base = 2;
+                    else if (*escapeCharPtr == 'd')
+                        base = 10;
+                    if (base)
+                        ++escapeCharPtr;
+                }
+                if (base) {
+                    intValue = strtoull(escapeCharPtr, &escapeCharEnd, base);
+                    *dest++ = (Utf8Char)intValue;
+                } else
+                    *dest++ = (c & 255);
+                // TODO Unicode \u codepoints > \u00ff
             } else {
                 // Incorrectly formatted escape, ignore second char
             }
