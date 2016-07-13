@@ -221,9 +221,9 @@ private:
     TypeManagerRef      _baseTypeManager;   // Base is null when the instance is a root.
     ExecutionContextRef _executionContext;
 #ifdef STL_MAP
-    typedef std::map<SubString, NamedTypeRef, ComapreSubString>::iterator  TypeDictionaryIterator;
-    std::map<SubString, NamedTypeRef, ComapreSubString>  _typeNameDictionary;
-    std::map<SubString, TypeRef, ComapreSubString>  _typeInstanceDictionary;
+    typedef std::map<SubString, NamedTypeRef, CompareSubString>::iterator  TypeDictionaryIterator;
+    std::map<SubString, NamedTypeRef, CompareSubString>  _typeNameDictionary;
+    std::map<SubString, TypeRef, CompareSubString>  _typeInstanceDictionary;
 #else
     typedef DictionaryElt* TypeDictionaryIterator;
     SimpleDictionary    _typeNameDictionary;

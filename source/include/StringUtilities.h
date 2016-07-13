@@ -305,7 +305,7 @@ public:
 
 //------------------------------------------------------------
 //! A comparing class used with the std:map<> class
-class ComapreSubString
+class CompareSubString
 {
     public:
     Boolean operator()(const SubString &a, const SubString &b) const
