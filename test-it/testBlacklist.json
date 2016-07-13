@@ -13,18 +13,6 @@
       "reason": "It fails, expected output is not the same."
     },
     {
-      "filename": "FlattenAoS.via",
-      "reason": "It fails, expected output is not the same because VireoJS can't output \\0 to stdout."
-    },
-    {
-      "filename": "FlattenArray.via",
-      "reason": "It fails, expected output is not the same because VireoJS can't output \\0 to stdout."
-    },
-    {
-      "filename": "FlattenCoA.via",
-      "reason": "It fails, expected output is not the same because VireoJS can't output \\0 to stdout."
-    },
-    {
       "filename": "HelloRequire.via",
       "reason": "It fails, expected output is not the same."
     },
