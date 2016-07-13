@@ -295,7 +295,7 @@ return {
     dataWriteUInt32:
         function(destination, value)
         { Module.v_dataWriteUInt32(destination, value); },
-    setOccurence:
+    setOccurrence:
         function(occurrence)
         { Module.v_setOccurrence(occurrence); },
     loadVia:
@@ -481,10 +481,10 @@ return {
             return webSocketUsers.get(handle);
         },
     //TODO: tnelligan refactor so that http and websockets both use this
-    setOccurenceAndError:
+    setOccurrenceAndError:
         function (occurrenceRef, errorMessage, errorString, errorNum) {
             NationalInstruments.Vireo.dataWriteString(errorMessage, errorString, errorString.length);
-            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            NationalInstruments.Vireo.setOccurrence(occurrenceRef);
             return errorNum;
         }
 };
