@@ -20,9 +20,16 @@ var blacklist = null;
 
 // Check the test config for any errors and duplicate test suite names
 function CheckTestConfig(testMap, testFile) {
-    // Check for "js" and "native" testsuites
     var keys = Object.keys(testMap);
-    if (!keys.includes('js') || !keys.includes('native')) {
+
+    // Check for test suite properties
+    if (keys.length === 0) {
+        console.log('Error: ' + testFile + ' is missing test suites');
+        return false;
+    }
+
+    // Check for "js" and "native" testsuites
+    if (testMap['js'] === undefined || testMap['native'] === undefined) {
         console.log('Error: ' + testFile + ' is missing tests for "js" and "native" (These are required for defaults in the test.js)');
         return false;
     }
@@ -275,7 +282,7 @@ function RunVJSTest(testName) {
 // Setup the esh binary for via execution
 function RunNativeTest(testName) {
     var newResults = '';
-    var exec = '../dist/esh'
+    var exec = '../dist/esh';
     // Look for Windows exec or Linux/Unix
     if (process.platform === 'win32') {
         exec = '../dist/Debug/esh';
