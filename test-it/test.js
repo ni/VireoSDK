@@ -374,6 +374,16 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
     // If a test is provide in command line, just run those
     if (!singleTest) {
+        if (testCategory == undefined && printOutTests) {
+            var usageMessage = "Usage: test.js -l [";
+            for (var key in testMap) {
+                usageMessage += key + "|";
+            }
+            usageMessage = usageMessage.substring(0, usageMessage.length-1)
+            usageMessage += "]\n";
+            console.log(usageMessage);
+            process.exit(0);
+        }
         // Provide default testCategory if none provided
         if (testCategory === '') {
             if (testNative) {
