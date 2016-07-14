@@ -357,6 +357,8 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         } else if (arg === '-e') {
             execOnly = true;
             once = true;
+        } else if (arg === '-all') {
+            console.log("-all option deprecated; the default behavior is to run all tests in the default test list if one is not specified");
         } else if (arg === '-once') {
             once = true;
         } else if (IsViaFile(arg)) {
@@ -430,9 +432,9 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
     // Output which tests are being run
     var target = testNative ? "esh (native)" : "vireo.js";
-    console.log("\n=============================================".cyan);
-    console.log(("Running tests against " + target).cyan);
-    console.log("=============================================".cyan);
+    console.log("\n================================================".cyan);
+    console.log(("Running '" + testCategory + "' tests against " + target).cyan);
+    console.log("================================================".cyan);
 
 
     if (testFiles.length > 0) {
