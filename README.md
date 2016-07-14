@@ -41,28 +41,70 @@ From the root directory:
 
 `$ make test` - Runs all tests for Native and JS
 
-## Specific Tests
+## Running Tests
 From within the `test-it` directory:
 
-#### Run All Native Tests
+#### Against esh target (`-n`)
 ```shell
-$ node test.js -all -n
+$ ./test.js -n
 ```
 
-#### Run All Javascript Tests
+#### Against vireo.js target (`-j`)
 ```shell
-$ node test.js -all -j
+$ ./test.js -j
 ```
 
-#### Run Individual Tests
+#### Running Test Suites (`-t <test suite>`)
 ```shell
-$ node test.js -j HelloWorld.via
-```
-or
-```shell
-$ node test.js -n HelloWorld.via
+$ ./test.js -n -t <test suite>
 ```
 
+#### Run Individual Tests (`<Test>.via`)
+```shell
+$ ./test.js -j HelloWorld.via
+```
+```shell
+$ ./test.js -n HelloWorld.via
+```
+
+#### Listing Out Tests (`-l <test suite>`)
+Since the test suites can be created recursively from other test suites in the configuration file, the `-l` command line argument will list out all of the tests to be run with the test suite name provided. Example:
+```shell
+$ ./test.js -l native
+```
+Will list out all of the tests that would be run against the `native` test suite.
+
+## Adding Tests
+
+#### Test Configuration
+The `.via` test files are put in the `test-it` folder and the results from the stdout of the test `.via` file from vireo is put in a file of the same name inside the `test-it/results/` folder. The test name is then added to a test suite within the `testList.json` file in the `test-it` directory.
+
+The `testList.json` file has two properties that are required for each test suite name:
+
+##### include
+This is an array of strings that are names to other test suites. These test suite names are processed recursively to add the other tests together into one list of tests to run. (Duplicates are omitted if overlaps exists between tests)
+
+##### tests
+This is an array of strings that contain the list of `.via` files that the test suite should run.
+
+#### Adding a Test Suite
+This will be a simple example that will add the test suite `rpi` with the `RpiTest.via` file to the test manager.
+
+1. Put the `RpiTest.via` in the `test-it/` folder and put the `RpiTest.vtr` file in the `test-it/results/` folder.
+2. Then to add the `rpi` test suite to the testing manager, add this example code to the `testList.json` file:
+```json
+"rpi": {
+    "include": [ "common" ],
+    "tests": [
+        "RpiTest.via"
+    ]
+}
+```
+This will add a test suite `rpi` that will include the test `RpiTest.via` and all of the tests included in the `common` test suite.
+3. Try it out to verify it all works and your tests pass:
+```shell
+$ ./test.js -n -t rpi
+```
 
 # Legal
 Features beyond that core set, that can be accessed directly from VIA source written by hand, should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt

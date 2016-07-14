@@ -13,10 +13,10 @@ js:
 test: testnative testjs
 
 testjs:
-	cd test-it; node test.js -all -j
+	cd test-it; ./test.js -j
 
 testnative:
-	cd test-it; node test.js -all -n
+	cd test-it; ./test.js -n
 
 clean:
 	cd make-it; make clean

@@ -1,12 +1,15 @@
-// Node program #2 a simple test runner
-// a bit of an improvement over bash.
+#!/usr/bin/env node
+'use strict';
+
+// Node Test runner for *.via files against Vireo Targets
+// Config file: testList.json
 
 require('colors');
-fs = require('fs');
-jsdiff = require('diff');
-path = require('path');
-cp = require('child_process');
-vireo = {};
+var fs = require('fs'),
+    jsdiff = require('diff'),
+    path = require('path'),
+    cp = require('child_process'),
+    vireo = {};
 
 
 var app = {};
@@ -14,6 +17,83 @@ app.testFailures = {};
 app.totalResultLines = 0;
 
 var blacklist = null;
+
+// Check the test config for any errors and duplicate test suite names
+function CheckTestConfig(testMap, testFile) {
+    var keys = Object.keys(testMap);
+
+    // Check for test suite properties
+    if (keys.length === 0) {
+        console.log('Error: ' + testFile + ' is missing test suites');
+        return false;
+    }
+
+    // Check for "js" and "native" testsuites
+    if (testMap['js'] === undefined || testMap['native'] === undefined) {
+        console.log('Error: ' + testFile + ' is missing tests for "js" and "native" (These are required for defaults in the test.js)');
+        return false;
+    }
+
+    // Check all testsuites for correct properties ('include' and 'tests')
+    for (var prop in testMap) {
+        if (testMap.hasOwnProperty(prop)) {
+            // Make sure 'include' and 'tests' are arrays
+            if (Array.isArray(testMap[prop].include) && Array.isArray(testMap[prop].tests)) {
+                if (testMap[prop].include.length === 0 && testMap[prop].tests.length === 0) {
+                    console.log('Error: ' + testFile + ' testsuite: ' + prop + ' is missing Array "include" or "tests"');
+                    return false;
+                }
+            } else {
+                console.log('Error: ' + testFile + ' testsuite: ' + prop + ' has inproper "include" or "tests" properties');
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function GetTests(testsuite, testMap) {
+    var testlist = [];
+    if (testsuite.include.length !== 0) {
+        testsuite.include.forEach(function(include) {
+            if (testMap.hasOwnProperty(include)) {
+                testlist = testlist.concat(GetTests(testMap[include], testMap));
+            } else {
+                console.log('The test list doesn\'t have a testsuite named: ' + include);
+                process.exit(1);
+            }
+        });
+    }
+
+    if (testsuite.tests.length !== 0) {
+        testlist = testlist.concat(testsuite.tests);
+    }
+
+    return testlist;
+}
+
+
+// Load all of the tests
+function LoadTests(testFile) {
+    var testListString,
+        testMap;
+    try {
+        testListString = fs.readFileSync(testFile).toString();
+        testMap = JSON.parse(testListString).tests;
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            console.log('Missing testList.json file');
+        } else {
+            console.log('Could not parse testList.json');
+        }
+    }
+    // Check the format of the input test list
+    if (CheckTestConfig(testMap, testFile)) {
+        return testMap;
+    } else {
+        return undefined;
+    }
+}
 
 // Constructor function for TestFailure objects
 function TestFailure(testName, testResults) {
@@ -66,18 +146,18 @@ function PrintBlackList ()
     GenerateBlacklist();
     if (blacklist.length > 0) {
         console.log('\n');
-        console.log('=====================================================================================')
-        console.log('The following tests(' + blacklist.length + ') were not executed. They are blacklisted.')
+        console.log('=====================================================================================');
+        console.log('The following tests(' + blacklist.length + ') were not executed. They are blacklisted.');
         for (var i = 0; i < blacklist.length; i++) {
             var item = blacklist[i];
             console.log('  "' + item.filename + '"\t' + item.reason);
         }
-        console.log('=====================================================================================')
+        console.log('=====================================================================================');
     }
     else {
-        console.log('=================================================================')
-        console.log('There aren\'t tests that are blacklisted.')
-        console.log('=================================================================')
+        console.log('=================================================================');
+        console.log('There aren\'t tests that are blacklisted.');
+        console.log('=================================================================');
     }
 }
 
@@ -91,17 +171,17 @@ function PrintCharactersToConsole (testName, oldResults, cleanNewResults) {
     console.log('"' + testName + '"');
     console.log('Comparing oldResults(' + oldResults.length + ') vs cleanNewResults(' + cleanNewResults.length + ')');
     console.log('=======================================================');
-    for (i = 0; i < maxLength; i++) {
+    for (var i = 0; i < maxLength; i++) {
         var oldResultsText = '';
         if (i < oldResults.length) {
-            oldResultsText = oldResults.charCodeAt(i)
+            oldResultsText = oldResults.charCodeAt(i);
         }
         var cleanNewResultsText = '';
         if (i < cleanNewResults.length) {
-            cleanNewResultsText = cleanNewResults.charCodeAt(i)
+            cleanNewResultsText = cleanNewResults.charCodeAt(i);
         }
         var differenceText = '';
-        if (!firstDifferenceFound && (i < oldResults.length) && (i < cleanNewResults.length) && oldResults[i] != cleanNewResults[i]) {
+        if (!firstDifferenceFound && (i < oldResults.length) && (i < cleanNewResults.length) && oldResults[i] !== cleanNewResults[i]) {
             differenceText = ' <---------- Found first difference';
             firstDifferenceFound = true;
         }
@@ -121,7 +201,7 @@ function CompareResults(testName, oldResults, newResults, msec) {
     var lineCount = 0;
     var len = cleanNewResults.length;
 
-    for (i=count=0; i < len; i++) {
+    for (i = 0; i < len; i++) {
         if ("\n" === cleanNewResults[i++]) {
            lineCount += 1;
         }
@@ -158,7 +238,8 @@ function RunTestCore(testName, tester, execOnly)
         oldResults = fs.readFileSync(resultsFileName).toString();
     } catch (e) {
         if (e.code === 'ENOENT') {
-            noCurrentResults = true;
+            console.log('File not Found: ' + resultsFileName);
+            process.exit(1);
         }
     }
     var hrstart = process.hrtime();
@@ -178,9 +259,9 @@ function RunTestCore(testName, tester, execOnly)
 
 // Process a provided test and return the stdout from the vireo.js runtime
 function RunVJSTest(testName) {
+    var viaCode;
     console.log('Executing "' + testName + '"');
     vireo.reboot();
-    var newResults = '';
     try {
         viaCode = fs.readFileSync(testName).toString();
     } catch (e) {
@@ -191,7 +272,7 @@ function RunVJSTest(testName) {
     }
 
     vireo.stdout = '';
-    if (viaCode != '' && vireo.loadVia(viaCode)==0) {
+    if (viaCode !== '' && vireo.loadVia(viaCode) === 0) {
     	while (vireo.executeSlices(1000000)) {}
     }
 
@@ -201,7 +282,7 @@ function RunVJSTest(testName) {
 // Setup the esh binary for via execution
 function RunNativeTest(testName) {
     var newResults = '';
-    var exec = '../dist/esh'
+    var exec = '../dist/esh';
     // Look for Windows exec or Linux/Unix
     if (process.platform === 'win32') {
         exec = '../dist/Debug/esh';
@@ -231,37 +312,52 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
 //------------------------------------------------------------
 (function Main() {
-    var testFiles = [];
-    var argv = process.argv.slice();
+    var configFile = 'testList.json',
+        testMap = LoadTests(configFile),
+        testCategory = '',
+        testFiles = [],
+        testSet = new Set(),
+        arg = '',
+        argv = process.argv.slice(),
+        testNative = false,
+        printOutTests = false,
+        tester = false,
+        once = false,
+        execOnly = false,
+        singleTest = false,
+        errorCode = 0;
+
     argv.shift(); // node path
     argv.shift(); // script path
-    var test_native = false;
-    var tester = false;
-    var all = false;
-    var once = false;
-    var execOnly = false;
-    var errorCode = 0;
+
+    // check config file
+    if (testMap === undefined) {
+        process.exit(1);
+    }
 
     while(argv.length > 0) {
-        var arg = argv[0];
+        arg = argv[0];
         if  (arg === '-j') {
             SetupVJS();
             tester = JSTester;
+        } else if (arg === '-n') {
+            tester = NativeTester;
+            testNative = true;
         } else if (arg === '-e') {
             execOnly = true;
             once = true;
-        } else if (arg === '-n') {
-            tester = NativeTester;
-            test_native = true;
         } else if (arg === '-once') {
             once = true;
-        } else if (arg === '-all') {
-            testFiles = fs.readdirSync('.');
-            testFiles = testFiles.filter(IsViaFile);
-            testFiles = testFiles.filter(IsNotBlackList);
-            all = true;
         } else if (IsViaFile(arg)) {
-            testFiles.push(arg);
+            testSet.add(arg);
+            singleTest = true;
+        } else if (arg === '-t') {
+            argv.shift(); // shift to testname
+            testCategory = argv[0];
+        } else if (arg === '-l') {
+            argv.shift(); // shift to testname
+            testCategory = argv[0];
+            printOutTests = true;
         } else {
             console.log('Invalid argument parameter: ' + arg);
             errorCode = 1;
@@ -276,8 +372,38 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         tester = JSTester;
     }
 
+    // If a test is provide in command line, just run those
+    if (!singleTest) {
+        // Provide default testCategory if none provided
+        if (testCategory === '') {
+            if (testNative) {
+                testCategory = 'native';
+            } else {
+                testCategory = 'js';
+            }
+        }
+
+        // Setup test files from the given category
+        var testObj = testMap[testCategory];
+        testSet = new Set(GetTests(testObj, testMap));
+    }
+
+    // Filter the test list just in case
+    testFiles = Array.from(testSet).filter(IsViaFile);
+    testFiles.sort();
+
+    if (printOutTests) {
+        console.log("\n=============================================".cyan);
+        console.log('Tests to be run: '.cyan + testFiles.length);
+        console.log("=============================================".cyan);
+        testFiles.forEach(function(test) {
+            console.log(test);
+        });
+        process.exit(0);
+    }
+
     // Output which tests are being run
-    var target = test_native ? "esh (native)" : "vireo.js";
+    var target = testNative ? "esh (native)" : "vireo.js";
     console.log("\n=============================================".cyan);
     console.log(("Running tests against " + target).cyan);
     console.log("=============================================".cyan);
@@ -287,11 +413,15 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         testFiles.map(
             function(testName) { return tester(testName, execOnly); }
         );
+
+        // Possibly run only once (default is false, so run twice)
         if (!once) {
             testFiles.map(
               function(testName) { return tester(testName, execOnly); }
             );
         }
+
+        // Don't diff the test
         if (execOnly) {
             return;
         }
@@ -325,15 +455,11 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
             console.log("=============================================\n".green);
         }
 
-        // Print out the Blacklist to note which tests were skipped
-        if (all) {
-            PrintBlackList();
-        }
-
     } else {
         console.log("Nothing to test (try and run with -all)");
         errorCode = 1;
     }
-
+    
+    // Provide an exit code
     process.exit(errorCode);
 })();
