@@ -13,6 +13,10 @@
 *.a
 *.vntr
 
+# Single character via files assumed to be temporary test/debug hacks
+?.via
+?2.via
+
 .DS_Store
 Vireo_Xcode/VireoEggShell.xcodeproj/xcshareddata/xcschemes/EggShell.xcscheme
 make-it/esh

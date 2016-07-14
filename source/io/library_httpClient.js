@@ -50,10 +50,10 @@ var HttpClient =
             }
             NationalInstruments.Vireo.dataWriteInt32(errorCodePointer, errorCode);
             NationalInstruments.Vireo.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
-            NationalInstruments.Vireo.setOccurence(occurrenceRef);
+            NationalInstruments.Vireo.setOccurrence(occurrenceRef);
             if (!occurrenceHasBeenSet) {
                 occurrenceHasBeenSet = true;
-                NationalInstruments.Vireo.setOccurence(occurrenceRef);
+                NationalInstruments.Vireo.setOccurrence(occurrenceRef);
             }
         };
 

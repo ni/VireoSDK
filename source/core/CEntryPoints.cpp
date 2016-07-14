@@ -24,7 +24,7 @@ using namespace Vireo;
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
 {
-    // TODO(paul) need to tie into symantic version numbers
+    // TODO(paul) need to tie into semantic version numbers
     return 0x00020003;
 }
 //------------------------------------------------------------
