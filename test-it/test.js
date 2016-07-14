@@ -38,8 +38,17 @@ function CheckTestConfig(testMap, testFile) {
     for (var prop in testMap) {
         if (testMap.hasOwnProperty(prop)) {
             // Make sure 'include' and 'tests' are arrays
-            if (Array.isArray(testMap[prop].include) && Array.isArray(testMap[prop].tests)) {
-                if (testMap[prop].include.length === 0 && testMap[prop].tests.length === 0) {
+            var includeCount = 0;
+            if (testMap[prop].include !== undefined) {
+                if (Array.isArray(testMap[prop].include)) {
+                    includeCount = testMap[prop].include.length;
+                } else {
+                    console.log('Error: ' + testFile + ' testsuite: ' + prop + ' is not an array\n');
+                    return false;
+                }
+            }
+            if (Array.isArray(testMap[prop].tests)) {
+                if (includeCount == 0 && testMap[prop].tests.length === 0) {
                     console.log('Error: ' + testFile + ' testsuite: ' + prop + ' is missing Array "include" or "tests"');
                     return false;
                 }
@@ -54,7 +63,9 @@ function CheckTestConfig(testMap, testFile) {
 
 function GetTests(testsuite, testMap) {
     var testlist = [];
-    if (testsuite.include.length !== 0) {
+    if (testsuite == undefined)
+        return testlist;
+    if (testsuite.include !== undefined && testsuite.include.length !== 0) {
         testsuite.include.forEach(function(include) {
             if (testMap.hasOwnProperty(include)) {
                 testlist = testlist.concat(GetTests(testMap[include], testMap));
@@ -374,8 +385,8 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
     // If a test is provide in command line, just run those
     if (!singleTest) {
-        if (testCategory == undefined && printOutTests) {
-            var usageMessage = "Usage: test.js -l [";
+        if (testCategory == undefined) {
+            var usageMessage = "Usage: test.js [-l|-t] [";
             for (var key in testMap) {
                 usageMessage += key + "|";
             }
@@ -395,6 +406,11 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
         // Setup test files from the given category
         var testObj = testMap[testCategory];
+        if (testObj == undefined) {
+            console.log("No such test suite list " + testCategory.red);
+            console.log("Use test.js -l to list test suites");
+            process.exit(1)
+        }
         testSet = new Set(GetTests(testObj, testMap));
     }
 
