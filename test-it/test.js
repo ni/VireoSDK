@@ -52,12 +52,23 @@ function CheckTestConfig(testMap, testFile) {
     return true;
 }
 
-function GetTests(testsuite, testMap) {
+// A recursive function to parse all of the tests from the test suite includes.
+// Makes sure no circular dependencies exist by keeping track of existing includes already parsed for tests (circMap).
+function GetTests(testsuite, testsuiteName, testMap, circMap) {
     var testlist = [];
+    if (circMap === undefined) {
+        circMap = {};
+    }
+    circMap[testsuiteName] = true; // Set the depndency in the map
     if (testsuite.include.length !== 0) {
+        // Parse through the 'include' dependencies as a DFS
         testsuite.include.forEach(function(include) {
+            // Verify that the testsuite exists in the testMap
             if (testMap.hasOwnProperty(include)) {
-                testlist = testlist.concat(GetTests(testMap[include], testMap));
+                // Make sure not to recurse on a previously processed dependency
+                if (circMap[include] === undefined) {
+                    testlist = testlist.concat(GetTests(testMap[include], include, testMap, circMap));
+                }
             } else {
                 console.log('The test list doesn\'t have a testsuite named: ' + include);
                 process.exit(1);
@@ -65,6 +76,7 @@ function GetTests(testsuite, testMap) {
         });
     }
 
+    // Concat the tests that exist in the current testsuite to the list (if any exist)
     if (testsuite.tests.length !== 0) {
         testlist = testlist.concat(testsuite.tests);
     }
@@ -385,7 +397,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
         // Setup test files from the given category
         var testObj = testMap[testCategory];
-        testSet = new Set(GetTests(testObj, testMap));
+        testSet = new Set(GetTests(testObj, testCategory, testMap));
     }
 
     // Filter the test list just in case
@@ -459,7 +471,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         console.log("Nothing to test (try and run with -all)");
         errorCode = 1;
     }
-    
+
     // Provide an exit code
     process.exit(errorCode);
 })();
