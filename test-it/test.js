@@ -491,3 +491,4 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     // Provide an exit code
     process.exit(errorCode);
 })();
+
