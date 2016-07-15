@@ -1,10 +1,11 @@
 {
   "name": "vireo-sdk",
   "version": "2.0.0-alpha.9",
-  "description": "SDK for experimental vireo runtime engine.",
+  "description": "SDK for an experimental vireo runtime engine.",
   "dependencies": {
     "colors": "^1.1.2",
     "diff": "^1.4.0",
+    "meow": "^3.7.0",
     "shelljs": "^0.5.3"
   },
   "devDependencies": {},

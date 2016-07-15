@@ -59,12 +59,9 @@ $ ./test.js -j
 $ ./test.js -n -t <test suite>
 ```
 
-#### Run Individual Tests (`<Test>.via`)
+#### Run Individual Tests (`-r <Test>.via`)
 ```shell
-$ ./test.js -j HelloWorld.via
-```
-```shell
-$ ./test.js -n HelloWorld.via
+$ ./test.js -r HelloWorld.via
 ```
 
 #### Listing Out Tests (`-l <test suite>`)
@@ -73,6 +70,23 @@ Since the test suites can be created recursively from other test suites in the c
 $ ./test.js -l native
 ```
 Will list out all of the tests that would be run against the `native` test suite.
+
+## Test help
+```shell
+$ ./test.js -h
+
+Usage
+    $ ./test.js
+
+Options
+    -n              Run the tests against the native vireo target (esh)
+    -j              Run the tests against the javascript target (vireo.js)
+    -l <input>      Lists the tests that would be run in the <input> test suite
+    -t <input>      Run the tests on the <input> test suite
+    -r <input>.via  Runs the provided <input>.via test
+    --once          Will only run the tests once (default is to run twice)
+    --exec          Will only execute the tests provided
+```
 
 ## Adding Tests
 

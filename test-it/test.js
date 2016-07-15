@@ -9,6 +9,7 @@ var fs = require('fs'),
     jsdiff = require('diff'),
     path = require('path'),
     cp = require('child_process'),
+    meow = require('meow'),
     vireo = {};
 
 
@@ -313,7 +314,16 @@ function RunNativeTest(testName) {
 // Setup the vireo.js runtime for instruction execution
 function SetupVJS()
 {
-    vireo = require('../dist/vireo.js');
+    try {
+        vireo = require('../dist/vireo.js');
+    } catch (err) {
+        if (err.code === 'MODULE_NOT_FOUND') {
+            console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
+            process.exit(1);
+        } else {
+            throw err;
+        }
+    }
     vireo.stdout = '';
     vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
 }
@@ -329,65 +339,91 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         testCategory = '',
         testFiles = [],
         testSet = new Set(),
-        arg = '',
-        argv = process.argv.slice(),
         testNative = false,
         printOutTests = false,
         tester = false,
         once = false,
         execOnly = false,
-        singleTest = false,
+        individualTests = false,
         errorCode = 0;
-
-    argv.shift(); // node path
-    argv.shift(); // script path
 
     // check config file
     if (testMap === undefined) {
         process.exit(1);
     }
 
-    while(argv.length > 0) {
-        arg = argv[0];
-        if  (arg === '-j') {
-            SetupVJS();
-            tester = JSTester;
-        } else if (arg === '-n') {
-            tester = NativeTester;
-            testNative = true;
-        } else if (arg === '-e') {
-            execOnly = true;
-            once = true;
-        } else if (arg === '-once') {
-            once = true;
-        } else if (IsViaFile(arg)) {
-            testSet.add(arg);
-            singleTest = true;
-        } else if (arg === '-t') {
-            argv.shift(); // shift to testname
-            testCategory = argv[0];
-        } else if (arg === '-l') {
-            argv.shift(); // shift to testname
-            testCategory = argv[0];
-            printOutTests = true;
-        } else {
-            console.log('Invalid argument parameter: ' + arg);
-            errorCode = 1;
-            process.exit(errorCode);
-        }
-        argv.shift();
-    }
+    var cli = meow(`
+        Usage
+            $ ./test.js
 
-    // If no tester listed in the arguments, assume vireo.js
-    if (!tester) {
+        Options
+            -n              Run the tests against the native vireo target (esh)
+            -j              Run the tests against the javascript target (vireo.js)
+            -l <input>      Lists the tests that would be run in <input> test suite
+            -t <input>      Run the tests on the <input> test suite
+            -r <input>.via  Runs the provided <input>.via test
+            --once          Will only run the tests once (default is to run twice)
+            --exec          Will only execute the tests provided
+    `, {
+        alias: {
+            h: 'help'
+        }
+    });
+
+    // Parse arguments
+    // Check for the js target to run
+    if (cli.flags.j === true) {
         SetupVJS();
         tester = JSTester;
     }
+    // Check for the native target to run
+    if (cli.flags.n !== undefined) {
+        tester = NativeTester;
+        testNative = true;
+    }
+    // Check to see if a *.via file is provided to be run
+    if (cli.flags.r !== undefined) {
+        if (IsViaFile(cli.flags.r)) {
+            testSet.add(cli.flags.r);
+            individualTests = true;
+            once = true;
+        } else {
+            console.log('Error: Invalid input file provided: ' + cli.flags.e + ' (Must be *.via)');
+            process.exit(1);
+        }
+    }
+    // Check for *.via files to run
+    if (cli.input.length !== 0) {
+        individualTests = true;
+        once = true;
+        cli.input.forEach(function(input) {
+            if (IsViaFile(input)) {
+                testSet.add(input);
+            } else {
+                console.log('Error: Invalid input file provided: ' + input + ' (Must be *.via)');
+                process.exit(1);
+            }
+        });
+    }
+    // Check whether to run the tests once
+    if (cli.flags.once === true) {
+        once = true;
+    }
+    // Check whether to just run the tests and don't diff
+    if (cli.flags.exec === true) {
+        execOnly = true;
+    }
+    // Set which Test Suite to print out
+    if (cli.flags.l !== undefined) {
+        printOutTests = true;
+        testCategory = cli.flags.l;
+    }
+    testCategory = cli.flags.t; // Set Test Suite to run
 
     // If a test is provide in command line, just run those
-    if (!singleTest) {
+    if (!individualTests) {
         // Provide default testCategory if none provided
-        if (testCategory === '') {
+        if (testCategory === undefined) {
             if (testNative) {
                 testCategory = 'native';
             } else {
@@ -415,11 +451,18 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     }
 
     // Output which tests are being run
-    var target = testNative ? "esh (native)" : "vireo.js";
-    console.log("\n=============================================".cyan);
-    console.log(("Running tests against " + target).cyan);
-    console.log("=============================================".cyan);
+    if (!execOnly) {
+        var target = testNative ? "esh (native)" : "vireo.js";
+        console.log("\n=============================================".cyan);
+        console.log(("Running tests against " + target).cyan);
+        console.log("=============================================".cyan);
+    }
 
+    // If no tester listed in the arguments, assume vireo.js
+    if (!tester) {
+        SetupVJS();
+        tester = JSTester;
+    }
 
     if (testFiles.length > 0) {
         testFiles.map(
@@ -468,7 +511,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         }
 
     } else {
-        console.log("Nothing to test (try and run with -all)");
+        console.log("Nothing to test (see help -h)");
         errorCode = 1;
     }
 
