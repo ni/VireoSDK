@@ -405,15 +405,16 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         }
         if (arg === '-h' || showHelp) {
             console.log(`Usage: ./test.js [options] [via test files]
-             Options:
-             -n                  Run the tests against the native vireo target (esh)
-             -j                  Run the tests against the javascript target (vireo.js)
-             -t [test suite]     Run the tests in the given test suite
-             -l [test suite]     List the tests that would be run in given test suite, or list the test suite options if not provided
-             -e                  Execute the tests provided and show their raw output; do not compare results
-             -h                  Print this usage message
-             --once              Will only run the tests once (default is to run twice)
-             `);
+Options:
+ -n                  Run the tests against the native vireo target (esh)
+ -j                  Run the tests against the javascript target (vireo.js)
+ -t [test suite]     Run the tests in the given test suite
+ -l [test suite]     List the tests that would be run in given test suite,
+                        or list the test suite options if not provided
+ -e                  Execute the test suite or tests provided and show their
+                        raw output; do not compute pass/fail
+ -h                  Print this usage message
+ --once              Will only run the tests once (default is to run twice)\n`);
             process.exit(0);
         }
 
