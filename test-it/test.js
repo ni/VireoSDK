@@ -357,6 +357,7 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         once = false,
         execOnly = false,
         individualTests = false,
+        showHelp = false,
         errorCode = 0;
 
     argv.shift(); // node path
@@ -369,19 +370,6 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
     while(argv.length > 0) {
         arg = argv[0];
-        if (arg == '-h') {
- console.log(`Usage: ./test.js [options] [via test files]
-Options:
- -n                  Run the tests against the native vireo target (esh)
- -j                  Run the tests against the javascript target (vireo.js)
- -t [test suite]     Run the tests in the given test suite
- -l [test suite]     List the tests that would be run in given test suite, or list the test suite options if not provided
- -e                  Execute the tests provided and show their raw output; do not compare results
- -h                  Print this usage message
- --once              Will only run the tests once (default is to run twice)
-                        `);
-            process.exit(0);
-        }
         if  (arg === '-j') {
             SetupVJS();
             tester = JSTester;
@@ -403,14 +391,32 @@ Options:
             testCategory = argv[0];
             printOutTests = true;
         } else {
-             if (IsViaFile(arg)) {
+            if (IsViaFile(arg)) {
                 testSet.add(arg);
-             } else {
+            } else if (arg.substring(0,1) === '-') {
+                if (arg !== '-h')
+                    console.log('Error: Unknown option ' + arg);
+                showHelp = true;
+            } else {
                 console.log('Error: Invalid input file provided: ' + arg + ' (Must be *.via)');
                 process.exit(1);
-             }
-             individualTests = true;
+            }
+            individualTests = true;
         }
+        if (arg === '-h' || showHelp) {
+            console.log(`Usage: ./test.js [options] [via test files]
+             Options:
+             -n                  Run the tests against the native vireo target (esh)
+             -j                  Run the tests against the javascript target (vireo.js)
+             -t [test suite]     Run the tests in the given test suite
+             -l [test suite]     List the tests that would be run in given test suite, or list the test suite options if not provided
+             -e                  Execute the tests provided and show their raw output; do not compare results
+             -h                  Print this usage message
+             --once              Will only run the tests once (default is to run twice)
+             `);
+            process.exit(0);
+        }
+
         argv.shift();
     }
     if (IsViaFile(testCategory)) {
