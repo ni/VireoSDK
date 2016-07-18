@@ -129,22 +129,18 @@
 		443536421CFF4979002BA5DB /* BadComment.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BadComment.via; path = "../test-it/BadComment.via"; sourceTree = "<group>"; };
 		443536431CFF4979002BA5DB /* Banner.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Banner.via; path = "../test-it/Banner.via"; sourceTree = "<group>"; };
 		443536441CFF4979002BA5DB /* BitFields.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BitFields.via; path = "../test-it/BitFields.via"; sourceTree = "<group>"; };
-		443536451CFF4979002BA5DB /* BootCamp-Clip1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "BootCamp-Clip1.via"; path = "../test-it/BootCamp-Clip1.via"; sourceTree = "<group>"; };
 		443536461CFF4979002BA5DB /* Bug_Capcity.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Bug_Capcity.via; path = "../test-it/Bug_Capcity.via"; sourceTree = "<group>"; };
 		443536471CFF4979002BA5DB /* BuildArrayComparisonBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuildArrayComparisonBug.via; path = "../test-it/BuildArrayComparisonBug.via"; sourceTree = "<group>"; };
 		443536481CFF4979002BA5DB /* BuildArraySubVI.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = BuildArraySubVI.via; path = "../test-it/BuildArraySubVI.via"; sourceTree = "<group>"; };
 		443536491CFF4979002BA5DB /* bundleStomp.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bundleStomp.via; path = "../test-it/bundleStomp.via"; sourceTree = "<group>"; };
-		4435364A1CFF4979002BA5DB /* Canvas2DBezierCurveTo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Canvas2DBezierCurveTo.via; path = "../test-it/Canvas2DBezierCurveTo.via"; sourceTree = "<group>"; };
 		4435364B1CFF4979002BA5DB /* CaseComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CaseComparison.via; path = "../test-it/CaseComparison.via"; sourceTree = "<group>"; };
 		4435364C1CFF4979002BA5DB /* ClumpTriggerBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClumpTriggerBug.via; path = "../test-it/ClumpTriggerBug.via"; sourceTree = "<group>"; };
 		4435364D1CFF4979002BA5DB /* ClusterCompareBug.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterCompareBug.via; path = "../test-it/ClusterCompareBug.via"; sourceTree = "<group>"; };
 		4435364E1CFF4979002BA5DB /* ClusterCompareBug2.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterCompareBug2.via; path = "../test-it/ClusterCompareBug2.via"; sourceTree = "<group>"; };
 		4435364F1CFF4979002BA5DB /* ClusterVectorOp.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ClusterVectorOp.via; path = "../test-it/ClusterVectorOp.via"; sourceTree = "<group>"; };
 		443536501CFF4979002BA5DB /* Coercion.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Coercion.via; path = "../test-it/Coercion.via"; sourceTree = "<group>"; };
-		443536511CFF4979002BA5DB /* ComplexMathFucntions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFucntions.via; path = "../test-it/ComplexMathFucntions.via"; sourceTree = "<group>"; };
 		443536521CFF4979002BA5DB /* ConvertStringNumber.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ConvertStringNumber.via; path = "../test-it/ConvertStringNumber.via"; sourceTree = "<group>"; };
 		443536531CFF4979002BA5DB /* DateFormatString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DateFormatString.via; path = "../test-it/DateFormatString.via"; sourceTree = "<group>"; };
-		443536541CFF4979002BA5DB /* DebugGPIO.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebugGPIO.via; path = "../test-it/DebugGPIO.via"; sourceTree = "<group>"; };
 		443536551CFF4979002BA5DB /* DecodeViaString.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DecodeViaString.via; path = "../test-it/DecodeViaString.via"; sourceTree = "<group>"; };
 		443536561CFF4979002BA5DB /* DefaultOutputs.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DefaultOutputs.via; path = "../test-it/DefaultOutputs.via"; sourceTree = "<group>"; };
 		443536571CFF4979002BA5DB /* DefaultTM.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DefaultTM.via; path = "../test-it/DefaultTM.via"; sourceTree = "<group>"; };
@@ -163,7 +159,6 @@
 		443536641CFF4979002BA5DB /* GlobalVarValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GlobalVarValues.via; path = "../test-it/GlobalVarValues.via"; sourceTree = "<group>"; };
 		443536651CFF4979002BA5DB /* GlobalZDAFieldReferences.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = GlobalZDAFieldReferences.via; path = "../test-it/GlobalZDAFieldReferences.via"; sourceTree = "<group>"; };
 		443536661CFF4979002BA5DB /* HelloNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = HelloNode.js; path = "../test-it/HelloNode.js"; sourceTree = "<group>"; };
-		443536671CFF4979002BA5DB /* HelloRequire.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloRequire.via; path = "../test-it/HelloRequire.via"; sourceTree = "<group>"; };
 		443536681CFF4979002BA5DB /* HelloRequireBad.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HelloRequireBad.via; path = "../test-it/HelloRequireBad.via"; sourceTree = "<group>"; };
 		443536691CFF4979002BA5DB /* HexConstants.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HexConstants.via; path = "../test-it/HexConstants.via"; sourceTree = "<group>"; };
 		4435366A1CFF4979002BA5DB /* HiLo.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HiLo.via; path = "../test-it/HiLo.via"; sourceTree = "<group>"; };
@@ -178,7 +173,6 @@
 		443536731CFF4979002BA5DB /* InplaceStringConcatenate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InplaceStringConcatenate.via; path = "../test-it/InplaceStringConcatenate.via"; sourceTree = "<group>"; };
 		443536741CFF4979002BA5DB /* JSONArray.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = JSONArray.via; path = "../test-it/JSONArray.via"; sourceTree = "<group>"; };
 		443536751CFF4979002BA5DB /* KeyValuePairDefinitions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = KeyValuePairDefinitions.via; path = "../test-it/KeyValuePairDefinitions.via"; sourceTree = "<group>"; };
-		443536761CFF4979002BA5DB /* Linx.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Linx.via; path = "../test-it/Linx.via"; sourceTree = "<group>"; };
 		443536771CFF4979002BA5DB /* ListDirectory.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ListDirectory.via; path = "../test-it/ListDirectory.via"; sourceTree = "<group>"; };
 		443536781CFF4979002BA5DB /* Literals.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Literals.via; path = "../test-it/Literals.via"; sourceTree = "<group>"; };
 		443536791CFF4979002BA5DB /* MandelbrotStringConcat.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MandelbrotStringConcat.via; path = "../test-it/MandelbrotStringConcat.via"; sourceTree = "<group>"; };
@@ -187,7 +181,6 @@
 		4435367C1CFF4979002BA5DB /* MultiDimensionArrayDefaults.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiDimensionArrayDefaults.via; path = "../test-it/MultiDimensionArrayDefaults.via"; sourceTree = "<group>"; };
 		4435367D1CFF4979002BA5DB /* MultiDimensionArrays.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MultiDimensionArrays.via; path = "../test-it/MultiDimensionArrays.via"; sourceTree = "<group>"; };
 		4435367E1CFF4979002BA5DB /* NestedContexts.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NestedContexts.via; path = "../test-it/NestedContexts.via"; sourceTree = "<group>"; };
-		4435367F1CFF4979002BA5DB /* njs-run-tests.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "njs-run-tests.js"; path = "../test-it/njs-run-tests.js"; sourceTree = "<group>"; };
 		443536801CFF4979002BA5DB /* NumericArrayConcat.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NumericArrayConcat.via; path = "../test-it/NumericArrayConcat.via"; sourceTree = "<group>"; };
 		443536811CFF4979002BA5DB /* Occurrence.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Occurrence.via; path = "../test-it/Occurrence.via"; sourceTree = "<group>"; };
 		443536821CFF4979002BA5DB /* OverloadedAdd.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = OverloadedAdd.via; path = "../test-it/OverloadedAdd.via"; sourceTree = "<group>"; };
@@ -242,6 +235,15 @@
 		443536B31CFF4979002BA5DB /* VIOverloads.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = VIOverloads.via; path = "../test-it/VIOverloads.via"; sourceTree = "<group>"; };
 		443536B41CFF4979002BA5DB /* Waveform.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Waveform.via; path = "../test-it/Waveform.via"; sourceTree = "<group>"; };
 		443536B51CFF4979002BA5DB /* ZDACrash1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ZDACrash1.via; path = "../test-it/ZDACrash1.via"; sourceTree = "<group>"; };
+		44ABE7D61D3D3FEF008EB066 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = test.js; path = "../test-it/test.js"; sourceTree = "<group>"; };
+		44ABE7D71D3D6A20008EB066 /* Scale2X.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Scale2X.via; path = "../test-it/Scale2X.via"; sourceTree = "<group>"; };
+		44ABE7D81D3D6A20008EB066 /* UnOpFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = UnOpFunctions.via; path = "../test-it/UnOpFunctions.via"; sourceTree = "<group>"; };
+		44ABE7D91D3D6A20008EB066 /* MaxAndMinElts.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MaxAndMinElts.via; path = "../test-it/MaxAndMinElts.via"; sourceTree = "<group>"; };
+		44ABE7DA1D3D6A20008EB066 /* MaxAndMin.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = MaxAndMin.via; path = "../test-it/MaxAndMin.via"; sourceTree = "<group>"; };
+		44ABE7DB1D3D6A20008EB066 /* InRangeAndCoerce.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = InRangeAndCoerce.via; path = "../test-it/InRangeAndCoerce.via"; sourceTree = "<group>"; };
+		44ABE7DC1D3D6A20008EB066 /* Round.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Round.via; path = "../test-it/Round.via"; sourceTree = "<group>"; };
+		44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayInterpolate.via; path = "../test-it/ArrayInterpolate.via"; sourceTree = "<group>"; };
+		44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFunctions.via; path = "../test-it/ComplexMathFunctions.via"; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
@@ -495,6 +497,7 @@
 		4754290717C67A750096898B /* Test-It */ = {
 			isa = PBXGroup;
 			children = (
+				44ABE7D61D3D3FEF008EB066 /* test.js */,
 				443536321CFF4979002BA5DB /* 2HelloWorlds.via */,
 				443536331CFF4979002BA5DB /* AllocatedDataValues.via */,
 				443536341CFF4979002BA5DB /* ArrayComparison.via */,
@@ -514,22 +517,26 @@
 				443536421CFF4979002BA5DB /* BadComment.via */,
 				443536431CFF4979002BA5DB /* Banner.via */,
 				443536441CFF4979002BA5DB /* BitFields.via */,
-				443536451CFF4979002BA5DB /* BootCamp-Clip1.via */,
 				443536461CFF4979002BA5DB /* Bug_Capcity.via */,
 				443536471CFF4979002BA5DB /* BuildArrayComparisonBug.via */,
 				443536481CFF4979002BA5DB /* BuildArraySubVI.via */,
 				443536491CFF4979002BA5DB /* bundleStomp.via */,
-				4435364A1CFF4979002BA5DB /* Canvas2DBezierCurveTo.via */,
 				4435364B1CFF4979002BA5DB /* CaseComparison.via */,
 				4435364C1CFF4979002BA5DB /* ClumpTriggerBug.via */,
 				4435364D1CFF4979002BA5DB /* ClusterCompareBug.via */,
 				4435364E1CFF4979002BA5DB /* ClusterCompareBug2.via */,
 				4435364F1CFF4979002BA5DB /* ClusterVectorOp.via */,
 				443536501CFF4979002BA5DB /* Coercion.via */,
-				443536511CFF4979002BA5DB /* ComplexMathFucntions.via */,
+				44ABE7D71D3D6A20008EB066 /* Scale2X.via */,
+				44ABE7D81D3D6A20008EB066 /* UnOpFunctions.via */,
+				44ABE7D91D3D6A20008EB066 /* MaxAndMinElts.via */,
+				44ABE7DA1D3D6A20008EB066 /* MaxAndMin.via */,
+				44ABE7DB1D3D6A20008EB066 /* InRangeAndCoerce.via */,
+				44ABE7DC1D3D6A20008EB066 /* Round.via */,
+				44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */,
+				44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */,
 				443536521CFF4979002BA5DB /* ConvertStringNumber.via */,
 				443536531CFF4979002BA5DB /* DateFormatString.via */,
-				443536541CFF4979002BA5DB /* DebugGPIO.via */,
 				443536551CFF4979002BA5DB /* DecodeViaString.via */,
 				443536561CFF4979002BA5DB /* DefaultOutputs.via */,
 				443536571CFF4979002BA5DB /* DefaultTM.via */,
@@ -548,7 +555,6 @@
 				443536641CFF4979002BA5DB /* GlobalVarValues.via */,
 				443536651CFF4979002BA5DB /* GlobalZDAFieldReferences.via */,
 				443536661CFF4979002BA5DB /* HelloNode.js */,
-				443536671CFF4979002BA5DB /* HelloRequire.via */,
 				443536681CFF4979002BA5DB /* HelloRequireBad.via */,
 				443536691CFF4979002BA5DB /* HexConstants.via */,
 				4435366A1CFF4979002BA5DB /* HiLo.via */,
@@ -563,7 +569,6 @@
 				443536731CFF4979002BA5DB /* InplaceStringConcatenate.via */,
 				443536741CFF4979002BA5DB /* JSONArray.via */,
 				443536751CFF4979002BA5DB /* KeyValuePairDefinitions.via */,
-				443536761CFF4979002BA5DB /* Linx.via */,
 				443536771CFF4979002BA5DB /* ListDirectory.via */,
 				443536781CFF4979002BA5DB /* Literals.via */,
 				443536791CFF4979002BA5DB /* MandelbrotStringConcat.via */,
@@ -572,7 +577,6 @@
 				4435367C1CFF4979002BA5DB /* MultiDimensionArrayDefaults.via */,
 				4435367D1CFF4979002BA5DB /* MultiDimensionArrays.via */,
 				4435367E1CFF4979002BA5DB /* NestedContexts.via */,
-				4435367F1CFF4979002BA5DB /* njs-run-tests.js */,
 				443536801CFF4979002BA5DB /* NumericArrayConcat.via */,
 				443536811CFF4979002BA5DB /* Occurrence.via */,
 				443536821CFF4979002BA5DB /* OverloadedAdd.via */,

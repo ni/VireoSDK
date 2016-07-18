@@ -9,7 +9,6 @@ var fs = require('fs'),
     jsdiff = require('diff'),
     path = require('path'),
     cp = require('child_process'),
-    meow = require('meow'),
     vireo = {};
 
 
@@ -39,8 +38,17 @@ function CheckTestConfig(testMap, testFile) {
     for (var prop in testMap) {
         if (testMap.hasOwnProperty(prop)) {
             // Make sure 'include' and 'tests' are arrays
-            if (Array.isArray(testMap[prop].include) && Array.isArray(testMap[prop].tests)) {
-                if (testMap[prop].include.length === 0 && testMap[prop].tests.length === 0) {
+            var includeCount = 0;
+            if (testMap[prop].include !== undefined) {
+                if (Array.isArray(testMap[prop].include)) {
+                    includeCount = testMap[prop].include.length;
+                } else {
+                    console.log('Error: ' + testFile + ' testsuite: ' + prop + ' is not an array\n');
+                    return false;
+                }
+            }
+            if (Array.isArray(testMap[prop].tests)) {
+                if (includeCount == 0 && testMap[prop].tests.length === 0) {
                     console.log('Error: ' + testFile + ' testsuite: ' + prop + ' is missing Array "include" or "tests"');
                     return false;
                 }
@@ -57,11 +65,13 @@ function CheckTestConfig(testMap, testFile) {
 // Makes sure no circular dependencies exist by keeping track of existing includes already parsed for tests (circMap).
 function GetTests(testsuite, testsuiteName, testMap, circMap) {
     var testlist = [];
+    if (testsuite == undefined)
+        return testlist;
     if (circMap === undefined) {
         circMap = {};
     }
-    circMap[testsuiteName] = true; // Set the depndency in the map
-    if (testsuite.include.length !== 0) {
+    circMap[testsuiteName] = true; // Set the dependency in the map
+    if (testsuite.include !== undefined && testsuite.include.length !== 0) {
         // Parse through the 'include' dependencies as a DFS
         testsuite.include.forEach(function(include) {
             // Verify that the testsuite exists in the testMap
@@ -339,91 +349,106 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         testCategory = '',
         testFiles = [],
         testSet = new Set(),
+        arg = '',
+        argv = process.argv.slice(),
         testNative = false,
         printOutTests = false,
         tester = false,
         once = false,
         execOnly = false,
         individualTests = false,
+        showHelp = false,
         errorCode = 0;
+
+    argv.shift(); // node path
+    argv.shift(); // script path
 
     // check config file
     if (testMap === undefined) {
         process.exit(1);
     }
 
-    var cli = meow(`
-        Usage
-            $ ./test.js
-
-        Options
-            -n              Run the tests against the native vireo target (esh)
-            -j              Run the tests against the javascript target (vireo.js)
-            -l <input>      Lists the tests that would be run in <input> test suite
-            -t <input>      Run the tests on the <input> test suite
-            -r <input>.via  Runs the provided <input>.via test
-            --once          Will only run the tests once (default is to run twice)
-            --exec          Will only execute the tests provided
-    `, {
-        alias: {
-            h: 'help'
+    while(argv.length > 0) {
+        arg = argv[0];
+        if  (arg === '-j') {
+            SetupVJS();
+            tester = JSTester;
+        } else if (arg === '-n') {
+            tester = NativeTester;
+            testNative = true;
+        } else if (arg === '-e') {
+            execOnly = true;
+            once = true;
+        } else if (arg === '-all' || arg == "--all") {
+            console.log("--all option deprecated; the default behavior is to run all tests in the default test list if one is not specified");
+        } else if (arg === '-once' || arg === "--once") {
+            once = true;
+        } else if (arg === '-t') {
+            argv.shift(); // shift to testname
+            testCategory = argv[0];
+        } else if (arg === '-l') {
+            argv.shift(); // shift to testname
+            testCategory = argv[0];
+            printOutTests = true;
+        } else {
+            if (IsViaFile(arg)) {
+                testSet.add(arg);
+            } else if (arg.substring(0,1) === '-') {
+                if (arg !== '-h')
+                    console.log('Error: Unknown option ' + arg);
+                showHelp = true;
+            } else {
+                console.log('Error: Invalid input file provided: ' + arg + ' (Must be *.via)');
+                process.exit(1);
+            }
+            individualTests = true;
         }
-    });
+        if (arg === '-h' || showHelp) {
+            console.log(`Usage: ./test.js [options] [via test files]
+Options:
+ -n                  Run the tests against the native vireo target (esh)
+ -j                  Run the tests against the javascript target (vireo.js)
+ -t [test suite]     Run the tests in the given test suite
+ -l [test suite]     List the tests that would be run in given test suite,
+                        or list the test suite options if not provided
+ -e                  Execute the test suite or tests provided and show their
+                        raw output; do not compute pass/fail
+ -h                  Print this usage message
+ --once              Will only run the tests once (default is to run twice)\n`);
+            process.exit(0);
+        }
 
-    // Parse arguments
-    // Check for the js target to run
-    if (cli.flags.j === true) {
+        argv.shift();
+    }
+    if (IsViaFile(testCategory)) {
+        console.log("Error: Argument to -t or -l should be a test suite name, not a via file");
+        testCategory = undefined;
+        printOutTests = true;
+    }
+    if (individualTests && testCategory !== '') {
+        console.log("Error: Use either [-l|-t] <test suite> or individual .via test files, not both");
+        process.exit(1);
+    }
+    // If no tester listed in the arguments, assume vireo.js
+    if (!tester) {
         SetupVJS();
         tester = JSTester;
     }
-    // Check for the native target to run
-    if (cli.flags.n !== undefined) {
-        tester = NativeTester;
-        testNative = true;
-    }
-    // Check to see if a *.via file is provided to be run
-    if (cli.flags.r !== undefined) {
-        if (IsViaFile(cli.flags.r)) {
-            testSet.add(cli.flags.r);
-            individualTests = true;
-            once = true;
-        } else {
-            console.log('Error: Invalid input file provided: ' + cli.flags.e + ' (Must be *.via)');
-            process.exit(1);
-        }
-    }
-    // Check for *.via files to run
-    if (cli.input.length !== 0) {
-        individualTests = true;
-        once = true;
-        cli.input.forEach(function(input) {
-            if (IsViaFile(input)) {
-                testSet.add(input);
-            } else {
-                console.log('Error: Invalid input file provided: ' + input + ' (Must be *.via)');
-                process.exit(1);
-            }
-        });
-    }
-    // Check whether to run the tests once
-    if (cli.flags.once === true) {
-        once = true;
-    }
-    // Check whether to just run the tests and don't diff
-    if (cli.flags.exec === true) {
-        execOnly = true;
-    }
-    // Set which Test Suite to print out
-    if (cli.flags.l !== undefined) {
-        printOutTests = true;
-        testCategory = cli.flags.l;
-    }
-    testCategory = cli.flags.t; // Set Test Suite to run
 
     // If a test is provide in command line, just run those
     if (!individualTests) {
+        if (testCategory == undefined) {
+            var usageMessage = "Usage: test.js [-l|-t] [";
+            for (var key in testMap) {
+                usageMessage += key + "|";
+            }
+            usageMessage = usageMessage.substring(0, usageMessage.length-1)
+            usageMessage += "]\n";
+            console.log(usageMessage);
+            process.exit(0);
+        }
         // Provide default testCategory if none provided
-        if (testCategory === undefined) {
+        if (testCategory === '') {
             if (testNative) {
                 testCategory = 'native';
             } else {
@@ -433,6 +458,11 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
 
         // Setup test files from the given category
         var testObj = testMap[testCategory];
+        if (testObj == undefined) {
+            console.log("No such test suite list " + testCategory.red);
+            console.log("Use test.js -l to list test suites");
+            process.exit(1)
+        }
         testSet = new Set(GetTests(testObj, testCategory, testMap));
     }
 
@@ -453,8 +483,9 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
     // Output which tests are being run
     if (!execOnly) {
         var target = testNative ? "esh (native)" : "vireo.js";
+        var testCat = testCategory ? "'" + testCategory + "' " : "";
         console.log("\n=============================================".cyan);
-        console.log(("Running tests against " + target).cyan);
+        console.log(("Running " + testCat + "tests against " + target).cyan);
         console.log("=============================================".cyan);
     }
 
@@ -511,10 +542,11 @@ function NativeTester(testName, execOnly) { RunTestCore(testName, RunNativeTest,
         }
 
     } else {
-        console.log("Nothing to test (see help -h)");
+        console.log("Nothing to test.  Use test.js -h for help");
         errorCode = 1;
     }
 
     // Provide an exit code
     process.exit(errorCode);
 })();
+

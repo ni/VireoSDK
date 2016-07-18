@@ -495,10 +495,10 @@ TokenTraits SubString::ReadToken(SubString* token)
             // Look for special IEE754 numeric tokens.
             tokenTraits = TokenTraits_IEEE754;
         } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
-            // Look for booleanish tokens.
+            // Look for Boolean(ish) tokens.
             tokenTraits = TokenTraits_Boolean;
         } else if (idToken.ComparePrefixCStr("0x")) {
-            // Look for hexidecimal tokens.
+            // Look for hexadecimal tokens.
             idToken._begin += 2;
             if (idToken.EatCharsByTrait(kACT_Hex) && idToken.Length() == 0) {
                 tokenTraits = TokenTraits_Integer;
