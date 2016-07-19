@@ -283,7 +283,6 @@ function RunTestCore(testName, tester, execOnly)
 // Process a provided test and return the stdout from the vireo.js runtime
 function RunVJSTest(testName) {
     var viaCode;
-    console.log('Executing "' + testName + '"');
     vireo.reboot();
     try {
         viaCode = fs.readFileSync(testName).toString();
