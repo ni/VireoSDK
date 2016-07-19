@@ -8,7 +8,7 @@ OUTPUT_EXE=../dist/esh
 
 COMMANDLINE = main.cpp
 CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
-IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp Linx.cpp
+IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
 COMMANDLINEOBJS = $(COMMANDLINE:%.cpp=$(OBJDIR)/%.o)

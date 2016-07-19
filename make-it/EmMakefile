@@ -83,7 +83,6 @@ EM_BC_FILES = $(OBJS)/VireoMerged.bc\
     $(OBJS)/Timestamp.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
-    $(OBJS)/Linx.bc\
     $(OBJS)/HttpClient.bc\
     $(OBJS)/Emscripten.bc\
     $(OBJS)/CEntryPoints.bc

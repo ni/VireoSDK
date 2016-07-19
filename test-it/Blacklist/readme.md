@@ -8,4 +8,3 @@ Canvas2DBezierCurveTo.via      | It throws an exception and stops test execution
 BootCamp-Clip1.via             | It fails, expected output is not the same
 DebugGPIO.via                  | It fails, expected output is not the same
 HelloRequire.via               | It fails, expected output is not the same
-Linx.via                       | It fails, expected output is not the same
