@@ -24,4 +24,3 @@
  min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'efg' 4)>
  max of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('dcba' 'efg' 4)>
  min of (('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('abc' 'xyz' 5)>
- IRC of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'yyz' 5), (true false false)>
