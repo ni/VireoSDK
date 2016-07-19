@@ -54,10 +54,16 @@ help:
 #  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
 
 EMCC= emcc
+EM_DBGFLAG = -g4
+EM_OPTFLAG = -Os # -Os -O3
 
-EM_OPTFLAG = -Os # -Os -g4 -O3
-EM_ANALYSIS_OPT_FLAG = -Os
-EM_OPT= $(EM_OPTFLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
+ifneq ($(wildcard custom.mak),)
+   include custom.mak
+endif
+
+EM_OPTFLAGS ?= $(EM_OPTFLAG)	# Can be overrided in custom.mak
+EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
+EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
 EMLIBRARY= --js-library ../source/io/library_canvas2d.js --js-library ../source/io/library_httpClient.js
 EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js 
@@ -93,11 +99,11 @@ AAL_ONLY = 1
 endif
 
 $(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
-	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 
 $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
@@ -115,7 +121,7 @@ $(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo
 #$(EMCC) $(EM_OPT) $(EM_BC_FILES) -o vireo.html --compression $(EM_DIR)third_party/lzma.js/lzma-native,$(EM_DIR)third_party/lzma.js/lzma-decoder.js,LZMA.decompress
 #$(EMCC) $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
 
-DEPS := $(EM_BC_FILES:.bc=.d)
+DEPS := $(EM_BC_FILES:.bc=.bc.d)
 
 
 -include $(DEPS)
