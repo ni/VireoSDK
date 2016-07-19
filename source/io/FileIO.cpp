@@ -260,7 +260,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 {
     TempStackCStringFromString    cString(_Param(0));
     TypedArray1D<StringRef>* fileNames = _Param(1);
-#ifdef kVireoOS_win32U
+#if kVireoOS_win32U
 	HANDLE dir_handle = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
 	std::string directory_path = std::string(cString.BeginCStr());
@@ -310,7 +310,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 	}
 
 	FindClose(dir_handle); // close the HANDLE
-#elif kVireoOS_linuxU
+#elif kVireoOS_linuxU || kVireoOS_macosxU
     struct dirent **dirInfos;
     Int32 count = scandir(cString.BeginCStr(), &dirInfos, 0, alphasort);
 
