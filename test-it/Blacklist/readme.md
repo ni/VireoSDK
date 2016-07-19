@@ -5,4 +5,3 @@ This is a simple list of tests that currently provide false positives and need t
 filename                       | reason
 -------------------------------|-------------------------------------
 Canvas2DBezierCurveTo.via      | It throws an exception and stops test execution
-HelloRequire.via               | It fails, expected output is not the same

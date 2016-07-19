@@ -3,6 +3,7 @@
         "native": {
             "include": [ "common" ],
             "tests": [ 
+                "HelloRequire.via",
                 "ListDirectory.via"
             ]
         },
