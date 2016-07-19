@@ -898,7 +898,6 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 	TypeRef type = _ParamImmediate(paramType);
 	Boolean isLTLo = false, isGTHi = false;
 
-	type->CopyData(_ParamPointer(SX), _ParamPointer(SCoerced));
 
 	snippet->_p0 = _ParamPointer(SX);
 	snippet->_p1 = _ParamPointer(SLo);
@@ -906,6 +905,7 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 	_PROGMEM_PTR(snippet, _function)(snippet);
 	if (isLTLo) {
 		_Param(BooleanDest) = false;
+        type->CopyData(_ParamPointer(SLo), _ParamPointer(SCoerced));
 		return _NextInstruction();
 	}
 	else if (!_Param(includeLo)) {
@@ -914,6 +914,7 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 		_PROGMEM_PTR(snippet, _function)(snippet);
 		if (!isLTLo) {
 			_Param(BooleanDest) = false;
+            type->CopyData(_ParamPointer(SLo), _ParamPointer(SCoerced));
 			return _NextInstruction();
 		}
 	}
@@ -924,6 +925,7 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 	_PROGMEM_PTR(snippet, _function)(snippet);
 	if (isGTHi) {
 		_Param(BooleanDest) = false;
+        type->CopyData(_ParamPointer(SHi), _ParamPointer(SCoerced));
 		return _NextInstruction();
 	}
 	else if (!_Param(includeHi)) {
@@ -932,10 +934,12 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 		_PROGMEM_PTR(snippet, _function)(snippet);
 		if (!isGTHi) {
 			_Param(BooleanDest) = false;
+            type->CopyData(_ParamPointer(SHi), _ParamPointer(SCoerced));
 			return _NextInstruction();
 		}
 	}
 	_Param(BooleanDest) = true;
+    type->CopyData(_ParamPointer(SX), _ParamPointer(SCoerced));
 	return _NextInstruction();
 }
 

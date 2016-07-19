@@ -48,6 +48,11 @@ define(viirc dv(.VirtualInstrument (
             e(.Boolean b1)
             e(.Boolean b2)
         ) *) acbool)   // Array Of a Cluster Of Booleans
+        e(dv(c(e(.String s1) e(.String s2) e(.Int32 i1)) ("cab" "yyz" 2)) clustsx)
+        e(dv(c(e(.String s1) e(.String s2) e(.Int32 i1)) ("abc" "xyz" 5)) clusts1)
+        e(dv(c(e(.String s1) e(.String s2) e(.Int32 i1)) ("dcba" "efg" 4)) clusts2)
+        e(c(e(.String s1) e(.String s2) e(.Int32 i1)) ircs)
+        e(c(e(.Boolean) e(.Boolean) e(.Boolean)) irResult)
     )
     clump(1 
         InRangeAndCoerce(12 5 10 true true scalar result)
@@ -89,6 +94,9 @@ define(viirc dv(.VirtualInstrument (
         Printf("IR&C (%s %s %s) = %s %s\n" emptyArray emptyArray arr_60_10_11 arrResult boolArrResult)
         InRangeAndCoerce(emptyArray emptyArray arr_60_10_11 false false arrResult result)
         Printf("IR&C (%s %s %s) = %s %s\n" emptyArray emptyArray arr_60_10_11 arrResult result)
+        InRangeAndCoerce(clustsx clusts1 clusts2 true true ircs irResult)
+        Printf("IR&C of (%s, %s, %s) is <%s, %s>\n" clustsx clusts1 clusts2 ircs irResult)
+
 //--- end of vi
     )
 )))

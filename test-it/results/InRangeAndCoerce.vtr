@@ -3,7 +3,7 @@ IR&C ((2 9) (2 4) (3 7)) = (2 9) true
 IR&C ((2 9) (2 4) (3 7)) = (2 7) (true false)
 IR&C (6 (2 4) (3 7)) = (3 6) (false true)
 IR&C (aa abcd bcde) = ab (true false)
-IR&C (aa abcd bcde) = aa false
+IR&C (aa abcd bcde) = abcd false
 IR&C (abcd aa bcde) = abcd true
 IR&C (((64 114 114) (97 21 32) (79 102 32) (97 32 67)) ((64 114 114) (97 21 32) (79 102 32) (97 32 67)) ((64 114 114) (97 21 32) (79 102 32) (97 32 67))) = ((64 114 114) (97 21 32) (79 102 32) (97 32 67)) true
 IR&C (((64 114 114) (97 21 32) (79 102 32) (97 32 67)) ((64 114 114) (97 21 32) (79 102 32) (97 32 67)) ((64 114 114) (97 21 32) (79 102 32) (97 32 67))) = ((64 114 114) (97 21 32) (79 102 32) (97 32 67)) ((true true true) (true true true) (true true true) (true true true))
@@ -17,3 +17,4 @@ IR&C ((60 0 11) 10 30) = (30 10 11) (false false true)
 IR&C ((1 2 3 4) 2 (1 10 20)) = (2 2 3) (false false true)
 IR&C (() () (60 0 11)) = () ()
 IR&C (() () (60 0 11)) = () false
+IR&C of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'efg' 5), (true false false)>
