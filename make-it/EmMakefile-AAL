@@ -125,7 +125,6 @@ EM_BC_FILES = $(OBJS)/VireoMerged.bc\
 	$(OBJS)/Canvas2d.bc\
 	$(OBJS)/HttpClient.bc\
 	$(OBJS)/FileIO.bc\
-	$(OBJS)/Linx.bc\
 	$(OBJS)/Emscripten.bc\
 	$(OBJS)/CEntryPoints.bc\
 	$(OBJS)/AnalysisLibrary.bc
@@ -230,11 +229,11 @@ $(OBJS)/AnalysisLibrary.bc: $(AnalysisComponents)
 
 ifeq (,$(AAL_ONLY))
 $(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
-	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.d,$@) -c -o $@ $<
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 
 $(EM_BC_FILES): | check_sdk_dir $(OBJS)
 
@@ -251,7 +250,7 @@ vjs:	$(TARGETDIR)/vireo.js
 $(TARGETDIR)/vireo.js: $(EM_BC_FILES)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(EM_EXPORTS) -o $(TARGETDIR)/vireo.js
  
-DEPS := $(EM_BC_FILES:.bc=.d)
+DEPS := $(EM_BC_FILES:.bc=.bc.d)
 
 -include $(DEPS)
 
