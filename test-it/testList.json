@@ -111,6 +111,7 @@
                 "InplaceArrayRotate.via",
                 "InplaceStringConcatenate.via",
                 "InRangeAndCoerce.via",
+                "InRangeAndCoerceBug.via",
                 "JSONArray.via",
                 "KeyValuePairDefinitions.via",
                 "Literals.via",
