@@ -668,6 +668,10 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             }
             return true;
         }
+    } else if (thisEncoding == otherEncoding && BitLength() == otherType->BitLength()
+               && (thisEncoding == kEncoding_IEEE754Binary || thisEncoding == kEncoding_S2CInt || thisEncoding == kEncoding_UInt
+                   || thisEncoding == kEncoding_Boolean || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode)) { // should we just check IsFlat() instead?
+        return true;
     } else {
         if (this->IsA(otherType, true) || otherType->IsA(this, true))
             return true;

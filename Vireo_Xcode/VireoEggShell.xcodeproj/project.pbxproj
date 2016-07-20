@@ -21,7 +21,6 @@
 		472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE317D0E1E800201196 /* TDCodecVia.cpp */; };
 		472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
 		4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */; };
-		474A5EF4199D48A40013F8C5 /* Linx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 474A5EF2199D48A40013F8C5 /* Linx.cpp */; };
 		474A5F4E199E71810013F8C5 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474A5F08199E4FC90013F8C5 /* Cocoa.framework */; };
 		474A5F54199E71810013F8C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474A5F52199E71810013F8C5 /* InfoPlist.strings */; };
 		474A5F58199E71810013F8C5 /* Vireo.m in Sources */ = {isa = PBXBuildFile; fileRef = 474A5F57199E71810013F8C5 /* Vireo.m */; };
@@ -42,7 +41,6 @@
 		474A5F81199E72130013F8C5 /* StringUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE317C2A271009053DB /* StringUtilities.cpp */; };
 		474A5F82199E72130013F8C5 /* Timestamp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE417C2A271009053DB /* Timestamp.cpp */; };
 		474A5F83199E72130013F8C5 /* VirtualInstrument.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE617C2A271009053DB /* VirtualInstrument.cpp */; };
-		474A5F84199E721B0013F8C5 /* Linx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 474A5EF2199D48A40013F8C5 /* Linx.cpp */; };
 		474A5F85199E72260013F8C5 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 472B7BE717D0E1FC00201196 /* FileIO.cpp */; };
 		474A5F87199E72EC0013F8C5 /* Vireo.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 474A5F4D199E71810013F8C5 /* Vireo.framework */; };
 		476646EF1AA7B3F800D4F305 /* StaticMicroMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47F551F91A3A581100735FD5 /* StaticMicroMain.cpp */; };
@@ -281,7 +279,6 @@
 		4744A9DE1818599100E1F7D9 /* TypeDefiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TypeDefiner.h; path = ../source/include/TypeDefiner.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4744A9E2181A2EB700E1F7D9 /* ForwardVIDefinitions.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ForwardVIDefinitions.via; path = "../test-it/ForwardVIDefinitions.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
 		4744A9E3182049D500E1F7D9 /* PID.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PID.via; path = "../test-it/x/PID.via"; sourceTree = "<group>"; };
-		474A5EF2199D48A40013F8C5 /* Linx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Linx.cpp; path = ../source/io/Linx.cpp; sourceTree = "<group>"; };
 		474A5F08199E4FC90013F8C5 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		474A5F0B199E4FC90013F8C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		474A5F0C199E4FC90013F8C5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -730,7 +727,6 @@
 				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
 				4750F16E19C22CBB00FA80B8 /* Emscripten.cpp */,
-				474A5EF2199D48A40013F8C5 /* Linx.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				4786297D1927064300141666 /* Canvas2d.cpp */,
 			);
@@ -1027,7 +1023,6 @@
 				47EEBCC31A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */,
 				474A5F80199E72130013F8C5 /* String.cpp in Sources */,
 				474A5F73199E71F50013F8C5 /* Assert.cpp in Sources */,
-				474A5F84199E721B0013F8C5 /* Linx.cpp in Sources */,
 				474A5F7F199E72130013F8C5 /* Queue.cpp in Sources */,
 				474A5F7C199E72130013F8C5 /* Math.cpp in Sources */,
 				474A5F78199E72130013F8C5 /* CEntryPoints.cpp in Sources */,
@@ -1077,7 +1072,6 @@
 				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
-				474A5EF4199D48A40013F8C5 /* Linx.cpp in Sources */,
 				4786297E19270C9900141666 /* Canvas2d.cpp in Sources */,
 				4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */,
 				47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */,
