@@ -16,7 +16,8 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.Double 9223372036854775807.9) vDoubleMax)
         e(dv(.Single 9223372036854775807.0) vSingleMax)
 
-        e(dv(.Boolean true) vBool)
+        e(dv(.Boolean true) vBoolT)
+        e(dv(.Boolean false) vBoolF)
 
         e(dv(.String "") output)
         e(dv(.String "%d\n") format1)
@@ -144,12 +145,19 @@ define(HelloWorld dv(.VirtualInstrument (
 
         Println("Testing Bool coercion")
         
-        StringFormat(output format1 vBool)
+        StringFormat(output format1 vBoolT)
         Printf(output)
-        Printf(format1 vBool)
-        StringFormat(output format2 vBool vBool)
+        Printf(format1 vBoolT)
+        StringFormat(output format2 vBoolT vBoolT)
         Printf(output)
-        Printf(format2 vBool vBool)
+        Printf(format2 vBoolT vBoolT)
+
+        StringFormat(output format1 vBoolF)
+        Printf(output)
+        Printf(format1 vBoolF)
+        StringFormat(output format2 vBoolF vBoolF)
+        Printf(output)
+        Printf(format2 vBoolF vBoolF)
     )
 ) ) )
 enqueue(HelloWorld)

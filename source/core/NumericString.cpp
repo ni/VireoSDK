@@ -539,7 +539,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                                 intValue = ConvertNumericRange(kEncoding_S2CInt, 8, intValue);
                             }
-                        } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt) {
+                        } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt || enc == kEncoding_Boolean) {
                             intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         } else {
                             intValue = 0;
