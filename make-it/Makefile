@@ -3,8 +3,8 @@
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
-OUTPUT_EXE=../dist/esh
-
+OUTPUT_DIR=../dist
+OUTPUT_EXE=$(OUTPUT_DIR)/esh
 
 COMMANDLINE = main.cpp
 CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
@@ -87,11 +87,15 @@ endif
 # Add common desktop modules.
 CFLAGS+= -DVIREO_STDIO=1 -DVIREO_FILESYSTEM=1 -DVIREO_FILESYSTEM_DIRLIST=1
 
-.PHONY: install clean v32 v64 lARMv5 help prep
+ifneq ($(wildcard custom.mak),)
+   include custom.mak
+endif
+
+.PHONY: install clean v32 v64 lARMv5 help
 .DEFAULT_GOAL=help
 
-prep:
-	@mkdir -p ../dist
+$(OUTPUT_DIR):
+	@mkdir -p $(OUTPUT_DIR)
 
 install: esh
 	@username=`whoami`; \
@@ -120,8 +124,6 @@ lc:
 
 #========= 32 bit builds host platfrom
 v32:
-	# if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "32-bit" ] ); then make clean; fi;
-	# No need to clean before every build
 	make TARGETARCH=-m32 esh
 	$(STRIP)
 
@@ -133,8 +135,6 @@ v32mini:
 
 #========= 32 bit builds host platfrom
 v64:
-	# if ! ( [ -a esh ] && [ `file esh | cut -d ' ' -f 3` == "64-bit" ] ); then make clean; fi;
-	# No need to clean before every build
 	make TARGETARCH=-m64 esh
 	$(STRIP)
 
@@ -151,7 +151,7 @@ lARMv5:
 	arm-none-linux-gnueabi-strip libvireo.so
 
 #========= Use makefile designed for emscripten builds
-vjs: prep
+vjs: $(OUTPUT_DIR)
 	# Just buid everything
 	make -f EmMakefile vjs
 
@@ -185,8 +185,10 @@ help:
 	@echo '        "make clean simple install DEBUG=1"'
 	@echo ''
 
+esh:	$(OUTPUT_EXE)
+
 # Build the executable with symbols stripped
-esh: $(OBJDIR) $(OBJS) prep
+$(OUTPUT_EXE): $(OBJDIR) $(OBJS) $(OUTPUT_DIR)
 	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
 
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)

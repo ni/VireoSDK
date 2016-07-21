@@ -22,6 +22,7 @@ Vireo_Xcode/VireoEggShell.xcodeproj/xcshareddata/xcschemes/EggShell.xcscheme
 make-it/esh
 target-support/
 dist/
+custom.mak
 
 # Visual Studio Ignores
 Vireo_VS/Debug/*
