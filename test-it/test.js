@@ -257,12 +257,14 @@ function RunTestCore(testName, tester, execOnly)
     var oldResults = '';
     var noOldResults = false;
 
-    try {
-        oldResults = fs.readFileSync(resultsFileName).toString();
-    } catch (e) {
-        if (e.code === 'ENOENT') {
-            console.log('File not Found: ' + resultsFileName);
-            process.exit(1);
+    if (!execOnly) {
+        try {
+            oldResults = fs.readFileSync(resultsFileName).toString();
+        } catch (e) {
+            if (e.code === 'ENOENT') {
+                console.log('File not Found: ' + resultsFileName);
+                process.exit(1);
+            }
         }
     }
     var hrstart = process.hrtime();
@@ -271,7 +273,7 @@ function RunTestCore(testName, tester, execOnly)
     var msec = hrend[1]/1000000;
 
     if (execOnly) {
-      console.log(newResults);
+        console.log(newResults);
     } else if (noOldResults) {
         // Save the generated resutls as the new reference
         // Add the file name to a list that can be printed at the end.
