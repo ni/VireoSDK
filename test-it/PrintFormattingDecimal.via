@@ -1,0 +1,155 @@
+define(HelloWorld dv(.VirtualInstrument (
+    c(
+
+        e(dv(.Int8  8)   vInt8)
+        e(dv(.Int16 16)  vInt16)
+        e(dv(.Int32 32)  vInt32)
+        e(dv(.Int64 64)  vInt64)
+
+        e(dv(.UInt8  8)  vUInt8)
+        e(dv(.UInt16 16) vUInt16)
+        e(dv(.UInt32 32) vUInt32)
+        e(dv(.UInt64 64) vUInt64)
+
+        e(dv(.Double 12.67) vDouble)
+        e(dv(.Single 12.67) vSingle)
+        e(dv(.Double 9223372036854775807.9) vDoubleMax)
+        e(dv(.Single 9223372036854775807.0) vSingleMax)
+
+        e(dv(.Boolean true) vBool)
+
+        e(dv(.String "") output)
+        e(dv(.String "%d\n") format1)
+        e(dv(.String "%d %d\n") format2)
+    )
+    clump (1
+        Println("Testing .IntX")
+
+        StringFormat(output format1 vInt8)
+        Printf(output)
+        Printf(format1 vInt8)
+        StringFormat(output format2 vInt8 vInt8)
+        Printf(output)
+        Printf(format2 vInt8 vInt8)
+
+        StringFormat(output format1 vInt16)
+        Printf(output)
+        Printf(format1 vInt16)
+        StringFormat(output format2 vInt16 vInt16)
+        Printf(output)
+        Printf(format2 vInt16 vInt16)
+
+        StringFormat(output format1 vInt32)
+        Printf(output)
+        Printf(format1 vInt32)
+        StringFormat(output format2 vInt32 vInt32)
+        Printf(output)
+        Printf(format2 vInt32 vInt32)
+
+        StringFormat(output format1 vInt64)
+        Printf(output)
+        Printf(format1 vInt64)
+        StringFormat(output format2 vInt64 vInt64)
+        Printf(output)
+        Printf(format2 vInt64 vInt64)
+
+        Println("Testing .UIntX")
+
+        StringFormat(output format1 vUInt8)
+        Printf(output)
+        Printf(format1 vUInt8)
+        StringFormat(output format2 vUInt8 vUInt8)
+        Printf(output)
+        Printf(format2 vUInt8 vUInt8)
+
+        StringFormat(output format1 vUInt16)
+        Printf(output)
+        Printf(format1 vUInt16)
+        StringFormat(output format2 vUInt16 vUInt16)
+        Printf(output)
+        Printf(format2 vUInt16 vUInt16)
+
+        StringFormat(output format1 vUInt32)
+        Printf(output)
+        Printf(format1 vUInt32)
+        StringFormat(output format2 vUInt32 vUInt32)
+        Printf(output)
+        Printf(format2 vUInt32 vUInt32)
+
+        StringFormat(output format1 vUInt64)
+        Printf(output)
+        Printf(format1 vUInt64)
+        StringFormat(output format2 vUInt64 vUInt64)
+        Printf(output)
+        Printf(format2 vUInt64 vUInt64)
+
+        Println("Testing Floating Point Types")
+
+        StringFormat(output format1 vDouble)
+        Printf(output)
+        Printf(format1 vDouble)
+        StringFormat(output format2 vDouble vDouble)
+        Printf(output)
+        Printf(format2 vDouble vDouble)
+
+        StringFormat(output format1 vSingle)
+        Printf(output)
+        Printf(format1 vSingle)
+        StringFormat(output format2 vSingle vSingle)
+        Printf(output)
+        Printf(format2 vSingle vSingle)
+
+        Println("Testing Floating Point Conversion to Integer(64) Maximum : 9223372036854775807")
+
+        StringFormat(output format1 9223372036854775806.5)
+        Printf(output)
+        Printf(format1 9223372036854775806.5)
+        StringFormat(output format2 9223372036854775806.5 9223372036854775806.5)
+        Printf(output)
+        Printf(format2 9223372036854775806.5 9223372036854775806.5)
+
+        StringFormat(output format1 9223372036854775807.9)
+        Printf(output)
+        Printf(format1 9223372036854775807.9)
+        StringFormat(output format2 9223372036854775807.9 9223372036854775807.9)
+        Printf(output)
+        Printf(format2 9223372036854775807.9 9223372036854775807.9)
+
+        StringFormat(output format1 9223372036854775808.0)
+        Printf(output)
+        Printf(format1 9223372036854775808.0)
+        StringFormat(output format2 9223372036854775808.0 9223372036854775808.0)
+        Printf(output)
+        Printf(format2 9223372036854775808.0 9223372036854775808.0)
+
+        StringFormat(output format1 vDoubleMax)
+        Printf(output)
+        Printf(format1 vDoubleMax)
+        StringFormat(output format2 vDoubleMax vDoubleMax)
+        Printf(output)
+        Printf(format2 vDoubleMax vDoubleMax)
+
+        StringFormat(output format1 vSingleMax)
+        Printf(output)
+        Printf(format1 vSingleMax)
+        StringFormat(output format2 vSingleMax vSingleMax)
+        Printf(output)
+        Printf(format2 vSingleMax vSingleMax)
+
+        Println("Testing base-X coercion")
+
+        StringFormat(output format1 0x33)
+        Printf(output)
+        Printf(format1 0x33)
+
+        Println("Testing Bool coercion")
+        
+        StringFormat(output format1 vBool)
+        Printf(output)
+        Printf(format1 vBool)
+        StringFormat(output format2 vBool vBool)
+        Printf(output)
+        Printf(format2 vBool vBool)
+    )
+) ) )
+enqueue(HelloWorld)

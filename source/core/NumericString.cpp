@@ -534,10 +534,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             // When reading value from the double and format the value as integer, the max size is 4
                             if(fOptions.FormatChar == 'u') {
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
-                                intValue = ConvertNumericRange(kEncoding_UInt, 4, intValue);
+                                intValue = ConvertNumericRange(kEncoding_UInt, 8, intValue);
                             } else {
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
-                                intValue = ConvertNumericRange(kEncoding_S2CInt, 4, intValue);
+                                intValue = ConvertNumericRange(kEncoding_S2CInt, 8, intValue);
                             }
                         } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt) {
                             intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
