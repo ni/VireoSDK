@@ -1,10 +1,10 @@
 define(HelloWorld dv(.VirtualInstrument (
     c(
 
-        e(dv(.Int8  64)   vInt8)
-        e(dv(.Int16 64)  vInt16)
-        e(dv(.Int32 64)  vInt32)
-        e(dv(.Int64 64)  vInt64)
+        e(dv(.Int8  64)  vInt8)
+        e(dv(.Int16 64) vInt16)
+        e(dv(.Int32 64) vInt32)
+        e(dv(.Int64 64) vInt64)
 
         e(dv(.UInt8  64)  vUInt8)
         e(dv(.UInt16 64) vUInt16)
@@ -16,6 +16,13 @@ define(HelloWorld dv(.VirtualInstrument (
 
         e(dv(.Boolean true) vBoolT)
         e(dv(.Boolean false) vBoolF)
+
+        e(dv(.Int8  -64)  vInt8N)
+        e(dv(.Int16 -64) vInt16N)
+        e(dv(.Int32 -64) vInt32N)
+        e(dv(.Int64 -64) vInt64N)
+        e(dv(.Double -12.67) vDoubleN)
+        e(dv(.Single -12.67) vSingleN)
 
         e(dv(.String "") output)
         e(dv(.String "%x\n") formatX)
@@ -84,6 +91,19 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output format08X vBoolF)
         Printf(output)
 
+        StringFormat(output formatX vInt8N)
+        Printf(output)
+        StringFormat(output formatX vInt16N)
+        Printf(output)
+        StringFormat(output formatX vInt32N)
+        Printf(output)
+        StringFormat(output formatX vInt64N)
+        Printf(output)
+        StringFormat(output formatX vSingleN)
+        Printf(output)
+        StringFormat(output formatX vDoubleN)
+        Printf(output)
+
         Println("Testing Octal")
 
         StringFormat(output formatO vInt8)
@@ -142,6 +162,19 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output format016O vBoolF)
         Printf(output)
 
+        StringFormat(output formatO vInt8N)
+        Printf(output)
+        StringFormat(output formatO vInt16N)
+        Printf(output)
+        StringFormat(output formatO vInt32N)
+        Printf(output)
+        StringFormat(output formatO vInt64N)
+        Printf(output)
+        StringFormat(output formatO vSingleN)
+        Printf(output)
+        StringFormat(output formatO vDoubleN)
+        Printf(output)
+
         Println("Testing Binary")
 
         StringFormat(output formatB vInt8)
@@ -198,6 +231,19 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output formatB vBoolF)
         Printf(output)
         StringFormat(output format032B vBoolF)
+        Printf(output)
+
+        StringFormat(output formatB vInt8N)
+        Printf(output)
+        StringFormat(output formatB vInt16N)
+        Printf(output)
+        StringFormat(output formatB vInt32N)
+        Printf(output)
+        StringFormat(output formatB vInt64N)
+        Printf(output)
+        StringFormat(output formatB vSingleN)
+        Printf(output)
+        StringFormat(output formatB vDoubleN)
         Printf(output)
     )
 ) ) )
