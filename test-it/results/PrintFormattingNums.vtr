@@ -7,11 +7,11 @@ Int larger   field width    -   0-
 Int xlarge   field width    -                                                 0-
 Bool
 Int with default justify    -----------
-Int no field width          -0-
-Int to samll field width    -0-
-Int matching field width    -  0-
-Int larger   field width    -   0-
-Int xlarge   field width    -                                                 0-
+Int no field width          -1-
+Int to samll field width    -1-
+Int matching field width    -  1-
+Int larger   field width    -   1-
+Int xlarge   field width    -                                                 1-
 Int8
 Int with default justify    -----------
 Int no field width          -120-

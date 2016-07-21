@@ -2,7 +2,7 @@
 define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "Hello") vString)
-        e(dv(.Boolean t) vBool)
+        e(dv(.Boolean true) vBool)
         e(dv(.Int8  120) vInt8)
         e(dv(.Int16 121) vInt16)
         e(dv(.Int32 122) vInt32)

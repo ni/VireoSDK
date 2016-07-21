@@ -12,6 +12,7 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include <limits>
 #include <math.h>
 
 namespace Vireo
@@ -2227,8 +2228,26 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
                 case 0: value = 0;                              break;
-                case 4: value = (IntMax)RoundToEven(*(Single*)pData);   break;
-                case 8: value = (IntMax)RoundToEven(*(Double*)pData);   break;
+                case 4: {
+                    Single singleVal = RoundToEven(*(Single*)pData);
+                    if (singleVal >= std::numeric_limits<IntMax>::max()) // >= is actually correct here because Int64 max isn't representable as a single and rounds up.
+                        value = std::numeric_limits<IntMax>::max();
+                    else if (singleVal <= std::numeric_limits<IntMax>::min())
+                        value =  std::numeric_limits<IntMax>::min();
+                    else
+                        value = (IntMax)singleVal;
+                    break;
+                }
+                case 8: {
+                    Double doubleVal = RoundToEven(*(Double*)pData);
+                    if (doubleVal >= std::numeric_limits<IntMax>::max()) // >= is actually correct here because Int64 max isn't representable as a double and rounds up.
+                        value = std::numeric_limits<IntMax>::max();
+                    else if (doubleVal <= std::numeric_limits<IntMax>::min())
+                        value =  std::numeric_limits<IntMax>::min();
+                    else
+                        value = (IntMax)doubleVal;
+                    break;
+                }
                 default: isErr = true;                          break;
             }
             break;
