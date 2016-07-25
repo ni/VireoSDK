@@ -541,6 +541,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             }
                         } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt || enc == kEncoding_Boolean) {
                             intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
+                            if (argType->BitLength() < 64 && fOptions.FormatChar != 'd')
+                                intValue &= (1LL<<(argType->BitLength()))-1;
                         } else {
                             intValue = 0;
                         }
