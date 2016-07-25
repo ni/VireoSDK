@@ -177,6 +177,7 @@
                 "StringEscapes.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
+                "StringFormatFloat.via",
                 "StringFunctions.via",
                 "StringReverse.via",
                 "StringRotate.via",
