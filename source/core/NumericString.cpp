@@ -597,7 +597,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'T':
                     {
                         Int32 tz = Date::getLocaletimeZone();
-                        if (!fOptions.EngineerNotation) {
+                        if (fOptions.EngineerNotation) {
                              tz = 0;
                         }
                         SubString strDateType("Timestamp");
@@ -1886,13 +1886,14 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 seconddiff = totalSeconds%60;
                         char difference[64];
                         Int32 size = 0;
-                        size = sprintf(difference, "%02d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        size = sprintf(difference, "%03d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
                         output->Append(size, (Utf8Char*)difference);
                     }
                         break;
                     case 'Z':
-                        // TODO
-                        output->AppendCStr("TODO-TMZ");
+                    {
+                        output->AppendCStr(date.TimeZoneString());
+                    }
                         break;
                     default:
                         break;
