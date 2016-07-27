@@ -1,0 +1,35 @@
+define(HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.Double 0.0) vTime1)
+        e(dv(.Double 3550.0) vTime2)
+        e(dv(.Double 999999.9999) vTime3)
+        e(dv(.Timestamp (9999 0)) vTime4)
+        e(dv(.Timestamp (1 0)) vTime5)
+
+        e(dv(.String "") output)
+        e(dv(.String "%<Hour: %H\nMinute: %M\nSecond: %S\nfracSeconds: %3u\n>t") format_t1)
+        e(dv(.String "%t\n") format_t2)
+    )
+    clump (1
+        Println("Testing Time Format")
+
+        StringFormat(output format_t1 vTime1)
+        Printf(output)
+
+        StringFormat(output format_t1 vTime2)
+        Printf(output)
+
+        StringFormat(output format_t1 vTime3)
+        Printf(output)
+
+        StringFormat(output format_t2 vTime1)
+        Printf(output)
+
+        StringFormat(output format_t2 vTime4)
+        Printf(output)
+
+        StringFormat(output format_t2 vTime5)
+        Printf(output)
+    )
+) ) )
+enqueue(HelloWorld)

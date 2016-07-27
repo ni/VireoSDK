@@ -588,16 +588,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                     break;
                     case 't':
-                    {
-                        TempStackCString timeFormat;
-
-                        argumentIndex++;
-                    }
-                        break;
                     case 'T':
                     {
                         Int32 tz = Date::getLocaletimeZone();
-                        if (fOptions.EngineerNotation) {
+                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
                              tz = 0;
                         }
                         SubString strDateType("Timestamp");
@@ -631,11 +625,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (fractionLen < 0) {
                                 fractionLen = 3;
                             }
-                            if (fractionLen>0) {
-                            	//  The %<digit>u is deep in this string.
-                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                            if (fOptions.FormatChar == 't') {
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#H:%%M:%%S.%%%du", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%H:%M:%S");
+                                }
                             } else {
-                                strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                }
                             }
                             defaultTimeFormat.AppendCStr(defaultFormatString);
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());

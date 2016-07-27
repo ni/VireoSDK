@@ -183,6 +183,7 @@
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",
+                "StringFormatTimeRelative.via",
                 "StringFunctions.via",
                 "StringReverse.via",
                 "StringRotate.via",
