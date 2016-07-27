@@ -588,16 +588,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                     break;
                     case 't':
-                    {
-                        TempStackCString timeFormat;
-
-                        argumentIndex++;
-                    }
-                        break;
                     case 'T':
                     {
                         Int32 tz = Date::getLocaletimeZone();
-                        if (!fOptions.EngineerNotation) {
+                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
                              tz = 0;
                         }
                         SubString strDateType("Timestamp");
@@ -631,11 +625,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (fractionLen < 0) {
                                 fractionLen = 3;
                             }
-                            if (fractionLen>0) {
-                            	//  The %<digit>u is deep in this string.
-                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                            if (fOptions.FormatChar == 't') {
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#H:%%M:%%S.%%%du", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%H:%M:%S");
+                                }
                             } else {
-                                strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                }
                             }
                             defaultTimeFormat.AppendCStr(defaultFormatString);
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
@@ -1886,13 +1889,14 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 seconddiff = totalSeconds%60;
                         char difference[64];
                         Int32 size = 0;
-                        size = sprintf(difference, "%02d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        size = sprintf(difference, "%03d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
                         output->Append(size, (Utf8Char*)difference);
                     }
                         break;
                     case 'Z':
-                        // TODO
-                        output->AppendCStr("TODO-TMZ");
+                    {
+                        output->AppendCStr(date.TimeZoneString());
+                    }
                         break;
                     default:
                         break;

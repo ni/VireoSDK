@@ -1,0 +1,81 @@
+Testing Time Format
+Abbrv-Weekday: Thu
+Weekday: Thursday
+Abbrv-Month: Dec
+Month: December
+Default: 12/31/1903 7:00:00 PM
+DayNum: 31
+24Hour: 19
+12Hour: 07
+DayOfYear: 365
+MonthNum: 12
+Minute: 00
+AM/PM: PM
+Second: 00
+fracSeconds: .000
+WeekNum: 52
+WeekdayNum: 4
+WeekNum: 52
+locale: 12/31/1903
+LongDate: Thursday, December 31, 1903
+AbbvDate: Thu, Dec 31, 1903
+LocaleTime: 7:00:00 PM
+YearInCentury: 03
+Year: 1903
+Diff(locale/universal): -05:00:00
+TimeZone: CDT
+
+Abbrv-Weekday: Fri
+Weekday: Friday
+Abbrv-Month: July
+Month: July
+Default: 07/15/2016 9:59:20 PM
+DayNum: 15
+24Hour: 21
+12Hour: 09
+DayOfYear: 197
+MonthNum: 07
+Minute: 59
+AM/PM: PM
+Second: 20
+fracSeconds: .000
+WeekNum: 28
+WeekdayNum: 5
+WeekNum: 28
+locale: 07/15/2016
+LongDate: Friday, July 15, 2016
+AbbvDate: Fri, July 15, 2016
+LocaleTime: 9:59:20 PM
+YearInCentury: 16
+Year: 2016
+Diff(locale/universal): -05:00:00
+TimeZone: CDT
+
+Abbrv-Weekday: Sun
+Weekday: Sunday
+Abbrv-Month: Nov
+Month: November
+Default: 11/19/2220 12:46:39 PM
+DayNum: 19
+24Hour: 12
+12Hour: 12
+DayOfYear: 324
+MonthNum: 11
+Minute: 46
+AM/PM: PM
+Second: 39
+fracSeconds: .900
+WeekNum: 47
+WeekdayNum: 0
+WeekNum: 46
+locale: 11/19/2220
+LongDate: Sunday, November 19, 2220
+AbbvDate: Sun, Nov 19, 2220
+LocaleTime: 12:46:39 PM
+YearInCentury: 20
+Year: 2220
+Diff(locale/universal): -05:00:00
+TimeZone: CDT
+
+4:46:39 AM 03/03/1907
+

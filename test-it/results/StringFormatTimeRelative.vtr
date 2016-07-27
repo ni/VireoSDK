@@ -1,0 +1,16 @@
+Testing Time Format
+Hour: 00
+Minute: 00
+Second: 00
+fracSeconds: .000
+Hour: 00
+Minute: 59
+Second: 10
+fracSeconds: .000
+Hour: 13
+Minute: 46
+Second: 39
+fracSeconds: .000
+00:00:00
+02:46:39
+00:00:01
