@@ -1,0 +1,57 @@
+define(HelloWorld dv(.VirtualInstrument (
+    c(
+        e(dv(.String "HelloWorldThisIsAString") input)
+        e(dv(.Double 20.0) inputNum)
+
+        e(dv(.String "") output)
+        e(dv(.String "%s\n") format1)
+        e(dv(.String "%s %s\n") format2)
+        e(dv(.String "%10.6s\n") format3)
+        e(dv(.String "%2.10s\n") format4)
+        e(dv(.String "%10s\n") format5)
+        e(dv(.String "%30s\n") format6)
+        e(dv(.String "%.6s\n") format7)
+        e(dv(.String "%.999s\n") format8)
+        e(dv(.String "%%%%%%%s\n") format9)
+        e(dv(.String "%%%%%%\n") format10)
+    )
+    clump (1
+        Println("StringFormat (%s) Testing")
+
+        StringFormat(output format1 input)
+        Printf(output)
+
+        StringFormat(output format2 input inputNum)
+        Printf(output)
+
+        StringFormat(output format2 input input)
+        Printf(output)
+
+        StringFormat(output format3 input)
+        Printf(output)
+
+        StringFormat(output format4 input)
+        Printf(output)
+
+        StringFormat(output format5 input)
+        Printf(output)
+
+        StringFormat(output format6 input)
+        Printf(output)
+
+        StringFormat(output format7 input)
+        Printf(output)
+
+        StringFormat(output format8 input)
+        Printf(output)
+
+        Println("String Format (%%) Testing")
+
+        StringFormat(output format9 input)
+        Printf(output)
+
+        StringFormat(output format10 input)
+        Printf(output)
+    )
+) ) )
+enqueue(HelloWorld)

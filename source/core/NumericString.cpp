@@ -264,6 +264,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     Boolean validFormatString = true;
     Utf8Char c = 0;
 
+
     while (validFormatString && f.ReadRawChar(&c))
     {
         if (c == '\\' && f.ReadRawChar(&c)) {
@@ -564,25 +565,57 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                     break;
                     case '%':      //%%
-                    buffer->Append('%');
+                    {
+                        buffer->AppendCStr("%");
+                    }
                     break;
                     case 's':      //%s
                     {
                         STACK_VAR(String, tempString);
                         TDViaFormatter formatter(tempString.Value, false);
                         formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
+                        
+                        Int32 lengthTotal = -1;
+                        Int32 lengthString = -1;
+                        if (fOptions.MinimumFieldWidth >= 0) {
+                            lengthTotal = fOptions.MinimumFieldWidth;
+                        }
+                        if (fOptions.Precision >= 0) {
+                            lengthString = fOptions.Precision;
+                        }
+                        Int32 subIndex = tempString.Value->Length();
+                        // Make sure the length is provided
+                        if (lengthString > 0) {
+                            if (lengthString > tempString.Value->Length()) {
+                                // If the string total to display is longer than length, provide just the string
+                                lengthString = tempString.Value->Length();
+                            } else {
+                                subIndex = lengthString;
+                            }
+                        } else {
+                            // provide the length of the string as default
+                            lengthString = tempString.Value->Length();
+                        }
 
-                        Int32 extraPadding = fOptions.MinimumFieldWidth - tempString.Value->Length();
+                        // partition the string depending on the provided lengthString (subIndex)
+                        SubString partial(tempString.Value->Begin(), tempString.Value->Begin()+subIndex);
+                        
+                        // Calculate how much to pad
+                        Int32 extraPadding = 0;
+                        if (lengthTotal > lengthString) {
+                            extraPadding = lengthTotal - lengthString;
+                        }
 
+                        // Append the string with padding and partial substring
                         if (fOptions.LeftJustify)
-                        buffer->Append(tempString.Value);
+                            buffer->AppendSubString(&partial);
                         if (extraPadding > 0) {
-                            for (Int32 i = extraPadding; i >0; i--) {
+                            for (Int32 i = extraPadding; i > 0; i--) {
                                 buffer->Append(' ');
                             }
                         }
                         if (!fOptions.LeftJustify)
-                        buffer->Append(tempString.Value);
+                            buffer->AppendSubString(&partial);
 
                         argumentIndex++;
                     }

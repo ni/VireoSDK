@@ -359,8 +359,13 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     Int32       count = (_ParamVarArgCount() - 1) / 2;
     SubString   format = _Param(format)->MakeSubStringAlias();
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-
-    Format(&format, count, arguments, tempString.Value);
+    
+    // If there are no arguments provided, just print the format string
+    if (count > 0) {
+        Format(&format, count, arguments, tempString.Value);
+    } else {
+        tempString.Value->AppendSubString(&format);
+    }
     gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     return _NextInstruction();
 }

@@ -1,0 +1,13 @@
+StringFormat (%s) Testing
+HelloWorldThisIsAString
+HelloWorldThisIsAString 20
+HelloWorldThisIsAString HelloWorldThisIsAString
+    HelloW
+HelloWorld
+HelloWorldThisIsAString
+       HelloWorldThisIsAString
+HelloW
+HelloWorldThisIsAString
+String Format (%%) Testing
+%%%HelloWorldThisIsAString
+%%%
