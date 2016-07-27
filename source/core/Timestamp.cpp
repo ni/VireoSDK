@@ -421,7 +421,6 @@ Int32 Date::_SystemLocaletimeZone = 0;
 Date::Date(Timestamp timestamp, Int32 timeZone)
 {
     _timeZoneOffset = timeZone;
-    // get date will get the accurate date from the time stamp, so we need minus the timeZone
     Timestamp local = timestamp + _timeZoneOffset;
     getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
             &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
