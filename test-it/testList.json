@@ -11,6 +11,11 @@
             "include": [ "common" ],
             "tests": []
         },
+        "manual": {
+            "tests": [
+                "StringFormatTime.via"
+            ]
+        },
         "common": {
             "tests": [
                 "2HelloWorlds.via",
@@ -178,7 +183,6 @@
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",
-                "StringFormatTime.via",
                 "StringFunctions.via",
                 "StringReverse.via",
                 "StringRotate.via",

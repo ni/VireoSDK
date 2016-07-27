@@ -7,7 +7,7 @@ define(HelloWorld dv(.VirtualInstrument (
 
         e(dv(.String "") output)
         e(dv(.String "%t\n") format_t1)
-        e(dv(.String "%<Abbrv-Weekday: %a\nWeekday: %A\nAbbrv-Month: %b\nMonth: %B\nDefault: %c\n24Hour: %H\n12Hour: %I\nDayOfYear: %j\nMonthNum: %m\nMinute: %M\nAM/PM: %p\nSecond: %S\nfracSeconds: %3u\nWeekNum: %U\nWeekdayNum: %w\nWeekNum: %W\nlocale: %x\nLongDate: %.1x\nAbbvDate: %.2x\nLocaleTime: %X\nYearInCentury: %y\nYear: %Y\nDiff(locale/universal): %z\nTimeZone: %Z\n>T") format_T1)
+        e(dv(.String "%<Abbrv-Weekday: %a\nWeekday: %A\nAbbrv-Month: %b\nMonth: %B\nDefault: %c\nDayNum: %d\n24Hour: %H\n12Hour: %I\nDayOfYear: %j\nMonthNum: %m\nMinute: %M\nAM/PM: %p\nSecond: %S\nfracSeconds: %3u\nWeekNum: %U\nWeekdayNum: %w\nWeekNum: %W\nlocale: %x\nLongDate: %.1x\nAbbvDate: %.2x\nLocaleTime: %X\nYearInCentury: %y\nYear: %Y\nDiff(locale/universal): %z\nTimeZone: %Z\n>T") format_T1)
         e(dv(.String "%T\n") format_T2)
     )
     clump (1

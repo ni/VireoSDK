@@ -4,6 +4,7 @@ Weekday: Thursday
 Abbrv-Month: Dec
 Month: December
 Default: 12/31/1903 7:00:00 PM
+DayNum: 31
 24Hour: 19
 12Hour: 07
 DayOfYear: 365
@@ -29,6 +30,7 @@ Weekday: Friday
 Abbrv-Month: July
 Month: July
 Default: 07/15/2016 9:59:20 PM
+DayNum: 15
 24Hour: 21
 12Hour: 09
 DayOfYear: 197
@@ -54,6 +56,7 @@ Weekday: Sunday
 Abbrv-Month: Nov
 Month: November
 Default: 11/19/2220 12:46:39 PM
+DayNum: 19
 24Hour: 12
 12Hour: 12
 DayOfYear: 324
