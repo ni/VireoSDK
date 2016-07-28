@@ -112,9 +112,6 @@
     <ClCompile Include="..\source\io\HttpClient.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\io\Linx.cpp">
-      <Filter>VireoSource\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\io\WebSocketClient.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
