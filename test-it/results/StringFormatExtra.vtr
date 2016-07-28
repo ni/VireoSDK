@@ -9,5 +9,24 @@ HelloWorldThisIsAString
 HelloW
 HelloWorldThisIsAString
 String Format (%%) Testing
+> Valid %% escaping
 %%%HelloWorldThisIsAString
+
+> Valid %% escaping
 %%%
+
+> Invalid format specifier
+Error: Invalid format string provided: '% ' in '% '
+
+> Invalid format specifier
+Error: Invalid format string provided: '%(' in '%(\n'
+
+> Not enough args
+Error: Missing args provided for format string: '%s' in '%s\n'
+
+> Too many args
+Error: Extra number of args provided: 1 in '%s\n'
+
+> %% Escaping twice
+HelloWorldThisIsAString HelloWorldThisIsAString
+

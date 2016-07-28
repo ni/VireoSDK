@@ -4,6 +4,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.Double 20.0) inputNum)
 
         e(dv(.String "") output)
+        e(dv(.String "") output2)
         e(dv(.String "%s\n") format1)
         e(dv(.String "%s %s\n") format2)
         e(dv(.String "%10.6s\n") format3)
@@ -14,6 +15,9 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%.999s\n") format8)
         e(dv(.String "%%%%%%%s\n") format9)
         e(dv(.String "%%%%%%\n") format10)
+        e(dv(.String "% ") format11)
+        e(dv(.String "%(\n") format12)
+        e(dv(.String "%%s %s") format13)
     )
     clump (1
         Println("StringFormat (%s) Testing")
@@ -34,8 +38,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf(output)
 
         StringFormat(output format5 input)
-        Printf(output)
-
+        Printf(output) 
         StringFormat(output format6 input)
         Printf(output)
 
@@ -47,11 +50,34 @@ define(HelloWorld dv(.VirtualInstrument (
 
         Println("String Format (%%) Testing")
 
+        Println("> Valid %% escaping")
         StringFormat(output format9 input)
-        Printf(output)
+        Println(output)
 
-        StringFormat(output format10 input)
-        Printf(output)
+        Println("> Valid %% escaping")
+        StringFormat(output format10)
+        Println(output)
+
+        Println("> Invalid format specifier")
+        StringFormat(output format11)
+        Println(output)
+
+        Println("> Invalid format specifier")
+        StringFormat(output format12)
+        Println(output)
+
+        Println("> Not enough args")
+        StringFormat(output format1)
+        Println(output)
+
+        Println("> Too many args")
+        StringFormat(output format1 input input)
+        Println(output)
+
+        Println("> %% Escaping twice")
+        StringFormat(output2 format13 format1)
+        StringFormat(output output2 input input)
+        Println(output)
     )
 ) ) )
 enqueue(HelloWorld)
