@@ -47,6 +47,7 @@ struct FormatOptions {
     Int32   Significant; //_4
     SubString  FmtSubString;
     Boolean ConsumeArgument;
+	Boolean OutOfOrder;
 };
 //------------------------------------------------------------
 void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
@@ -73,6 +74,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->NumericLength[2] = '\0';
     pOptions->EngineerNotation = false;
     pOptions->ConsumeArgument = true;
+	pOptions->OutOfOrder = false;
     Boolean bPrecision = false;
     Boolean bValid = true;
     Utf8Char c;
@@ -164,12 +166,14 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                 }
             }
         } else {
+			// Checking for the order number for %1$
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             if ((c >= '0' && c <= '9') && orderIndex>=0) {
                 format->AliasAssign(format->Begin()-1, format->End());
                 IntMax value = 0;
                 if (format->ReadInt(&value)) {
                     pOptions->ArgumentOrder = (Int32)value;
+					pOptions->OutOfOrder = true;
                 }
             } else if (c == '0') {
                 pOptions->ZeroPad = true;
@@ -314,7 +318,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     Boolean lastArgumentSpecified = false;
     IntIndex lastArgumentIndex = -1;
     IntIndex explicitPositionArgument = 0;
-    Int32 totalArgument = 0;;
+    Int32 totalArgument = 0;
+	Int32 usedArgs = 0;
     char activeDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
@@ -344,6 +349,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
             totalArgument++;
+			usedArgs++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
                 totalArgument --;
@@ -352,8 +358,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 }
             }
             lastArgumentSpecified = false;
-            argumentIndex = totalArgument-explicitPositionArgument-1;
-            if (fOptions.ArgumentOrder>=0) {
+            if (fOptions.ArgumentOrder >= 0 && fOptions.OutOfOrder) {
                 if (fOptions.ArgumentOrder > 0 ) {
                     argumentIndex = fOptions.ArgumentOrder-1;
                     explicitPositionArgument ++;
@@ -775,7 +780,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     }
     // Check if there are unused arguments provided
     if (argumentIndex < count) {
-        ErrFormatExtraNumArgs(format, count-argumentIndex, arguments, buffer);
+		// make sure at least all of the args are used (even if out of order)
+		if (usedArgs != count) {
+			ErrFormatExtraNumArgs(format, count - argumentIndex, arguments, buffer);
+		}
     }
 
 }
