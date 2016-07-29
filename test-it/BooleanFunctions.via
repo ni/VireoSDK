@@ -46,6 +46,9 @@ define(Test dv(.VirtualInstrument (
     Xor(x y value)
     Printf(" Xor (%s %s) => %s\n" x y value)
 
+    Nxor(x y value)
+    Printf(" Nxor (%s %s) => %s\n" x y value)
+
     Not(x value)
     Printf(" Not (%s) => %s\n" x value)
 
