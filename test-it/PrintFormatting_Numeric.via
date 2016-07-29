@@ -85,7 +85,7 @@ Locals: c(
 	  Printf("%%#010_5e  => *%#010_5e*\n" db7  )
 	  Printf("%%^10.6e   => *%^10.6e*\n" db7 )
 	  Printf("%%+^010_3e => *%+^010_3e*\n" db7  )
- 	  Printf("\nTest Zero-------------------------\n" db0)
+ 	  Printf("\nTest Zero-------------------------\n")
 	  Printf("%%+10.5e   => *%+10.5e*\n" db0  )
 	  Printf("%%#0_5e  => *%#0_5e*\n" db0  )
 	  Printf("%%^10.6e   => *%^10.6e*\n" db0)

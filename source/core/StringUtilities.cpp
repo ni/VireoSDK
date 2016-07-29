@@ -439,9 +439,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 //! in the source code.
 void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
     SubString temp(this);
-    Utf8Char* b = dest + length;
+	Utf8Char* b = dest + length;
     while(temp._begin < temp._end && b != dest) {
-        Utf8Char c = *temp._begin++;
+		Utf8Char c = *temp._begin++;
         // Check for the char and add the '\\'
         switch (c) {
             case '\a': 
@@ -459,7 +459,7 @@ void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
         }
         // Check the bounds of the buffer provided
         if (dest == b) {
-            return;
+			break;
         }
         // Then add the letter/character
         switch (c) {
@@ -476,6 +476,7 @@ void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
         }
         dest++;
     }
+	*dest = '\0';
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.

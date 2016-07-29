@@ -2,7 +2,7 @@
     "tests": {
         "native": {
             "include": [ "common" ],
-            "tests": [ 
+            "tests": [
                 "HelloRequire.via",
                 "ListDirectory.via"
             ]
@@ -180,6 +180,7 @@
                 "StringByteArrayConversion.via",
                 "StringConvertString.via",
                 "StringEscapes.via",
+                "StringExtras.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",

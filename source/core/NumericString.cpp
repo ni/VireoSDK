@@ -76,8 +76,9 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     Boolean bPrecision = false;
     Boolean bValid = true;
     Utf8Char c;
+	const Utf8Char* pBegin = format->Begin();
     Boolean validChar = format->ReadRawChar(&c);
-    const Utf8Char* pBegin = format->Begin();
+    
 
     while (bValid && validChar) {
 
@@ -189,7 +190,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->Valid = bValid;
     if (!pOptions->Valid) {
         if (!validChar) {
-            pOptions->FormatChar = '\0';
+            pOptions->FormatChar = '0';
         } else {
             pOptions->FormatChar = c;
         }
@@ -262,10 +263,11 @@ void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arg
     buffer->AppendCStr(str);
     buffer->AppendCStr(" in '");
     IntIndex length = format->Length()*2;
-    Utf8Char formatUnEscaped[length];
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
     format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, length);
+	buffer->AppendCStr((const char*)formatUnEscaped);
     buffer->AppendCStr("'\n");
+	delete[] formatUnEscaped;
 }
 
 /**
@@ -275,13 +277,14 @@ void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arg
 void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
     buffer->Resize1D(0);
     buffer->AppendCStr("Error: Missing args provided for format string: '");
-    buffer->AppendUtf8Str(formatSpecifier, 2);
+	buffer->AppendCStr((const char*)formatSpecifier);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
-    Utf8Char formatUnEscaped[length];
+	Utf8Char* formatUnEscaped = new Utf8Char[length];
     format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, length);
+	buffer->AppendCStr((const char*)formatUnEscaped);
     buffer->AppendCStr("'\n");
+	delete[] formatUnEscaped;
 }
 
 /**
@@ -292,13 +295,14 @@ void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData a
 void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
     buffer->Resize1D(0);
     buffer->AppendCStr("Error: Invalid format string provided: '");
-    buffer->AppendUtf8Str(formatSpecifier, 2);
+    buffer->AppendCStr((const char*)formatSpecifier);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
-    Utf8Char formatUnEscaped[length];
+	Utf8Char* formatUnEscaped = new Utf8Char[length];
     format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, length);
+    buffer->AppendCStr((const char*)formatUnEscaped);
     buffer->AppendCStr("'\n");
+	delete[] formatUnEscaped;
 }
 
 /**
@@ -367,17 +371,19 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
-                Utf8Char tempString[2];
+                Utf8Char tempString[3];
                 tempString[0] = '%';
                 tempString[1] = fOptions.FormatChar;
+				tempString[2] = '\0';
                 ErrFormatInvalidFormatString(format, count, arguments, buffer, tempString);
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 // Incorrect number of arguments provided for format string
                 parseFinished = true;
                 validFormatString = false;
-                Utf8Char tempString[2];
+                Utf8Char tempString[3];
                 tempString[0] = '%';
                 tempString[1] = fOptions.FormatChar;
+				tempString[2] = '\0';
                 ErrFormatMissingNumArgs(format, count, arguments, buffer, tempString);
             }
 
@@ -552,13 +558,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (intValue == 0) {
                                 BinaryString[0] = bits[intValue];
                                 length = 1;
-                            }
-                            while (intValue >= 1) {
-                                    BinaryString[intSize-1-length] =  bits[intValue%2];
-                                    intValue = intValue/2;
-                                    length++;
-                            }
-                            binaryindex = BinaryString + (intSize -length);
+							}
+							else {
+								while (intValue >= 1) {
+									BinaryString[intSize - 1 - length] = bits[intValue % 2];
+									intValue = intValue / 2;
+									length++;
+								}
+								binaryindex = BinaryString + (intSize - length);
+							}
                         }
 
                         Int32 binaryStringLength = length;
