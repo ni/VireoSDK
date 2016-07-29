@@ -180,7 +180,7 @@
                 "StringByteArrayConversion.via",
                 "StringConvertString.via",
                 "StringEscapes.via",
-                "StringExtras.via",
+                "StringFormatExtra.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",
