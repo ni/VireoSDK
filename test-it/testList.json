@@ -43,6 +43,7 @@
                 "Banner.via",
                 "BitFields.via",
                 "BooleanFunctions.via",
+                "BooleanBitwiseFunctions.via",
                 "BranchErrors.via",
                 "BranchInstructions.via",
                 "Bug_Capcity.via",
