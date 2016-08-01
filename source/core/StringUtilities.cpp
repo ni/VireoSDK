@@ -163,6 +163,16 @@ Boolean SubString::ReadRawChar(Utf8Char* token)
     }
 }
 //------------------------------------------------------------
+Boolean SubString::PeekRawChar(Utf8Char* token)
+{
+    if (_begin < _end) {
+        *token = *_begin;
+        return true;
+    } else {
+        return false;
+    }
+}
+//------------------------------------------------------------
 Boolean SubString::ReadGraphemeCluster(SubString* token)
 {
     const Utf8Char* next = _begin;
@@ -422,6 +432,55 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
             *dest++ = c;
         }
     }
+}
+//------------------------------------------------------------
+//! Process all of the Escaped characters ('\t', '\n', etc.) to unescape
+//! the '\' to '\\'. This will allow the string to be printed as viewed
+//! in the source code.
+IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
+    SubString temp(this);
+	Utf8Char* b = dest + length;
+    IntIndex total = 0;
+    while(temp._begin < temp._end && b != dest) {
+		Utf8Char c = *temp._begin++;
+        // Check for the char and add the '\\'
+        switch (c) {
+            case '\a': 
+            case '\b': 
+            case '\f': 
+            case '\n': 
+            case '\r': 
+            case '\t': 
+            case '\'': 
+            case '\"': 
+            case '\\': *dest = '\\';
+                       dest++;
+                       total++;
+                       break;
+            default: break;
+        }
+        // Check the bounds of the buffer provided
+        if (dest == b) {
+			break;
+        }
+        // Then add the letter/character
+        switch (c) {
+            case '\a': *dest = 'a';  break;
+            case '\b': *dest = 'b';  break;
+            case '\f': *dest = 'f';  break;
+            case '\n': *dest = 'n';  break;
+            case '\r': *dest = 'r';  break;
+            case '\t': *dest = 't';  break;
+            case '\'': *dest = '\''; break;
+            case '\"': *dest = '\"'; break;
+            case '\\': *dest = '\\'; break;
+            default: *dest = c; break;
+        }
+        dest++;
+        total++;
+    }
+	*dest = '\0';
+    return total;
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.
