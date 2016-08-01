@@ -15,7 +15,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%.999s\n") format8)
         e(dv(.String "%%%%%%%s\n") format9)
         e(dv(.String "%%%%%%\n") format10)
-        e(dv(.String "% ") format11)
+        e(dv(.String "% miss") format11)
         e(dv(.String "%(\n") format12)
         e(dv(.String "%%s %s") format13)
     )

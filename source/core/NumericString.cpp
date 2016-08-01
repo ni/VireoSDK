@@ -47,7 +47,7 @@ struct FormatOptions {
     Int32   Significant; //_4
     SubString  FmtSubString;
     Boolean ConsumeArgument;
-	Boolean OutOfOrder;
+    Boolean OutOfOrder;
 };
 //------------------------------------------------------------
 void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
@@ -74,11 +74,11 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->NumericLength[2] = '\0';
     pOptions->EngineerNotation = false;
     pOptions->ConsumeArgument = true;
-	pOptions->OutOfOrder = false;
+    pOptions->OutOfOrder = false;
     Boolean bPrecision = false;
     Boolean bValid = true;
     Utf8Char c;
-	const Utf8Char* pBegin = format->Begin();
+    const Utf8Char* pBegin = format->Begin();
     Boolean validChar = format->ReadRawChar(&c);
     
 
@@ -166,14 +166,14 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                 }
             }
         } else {
-			// Checking for the order number for %1$
+            // Checking for the order number for %1$
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             if ((c >= '0' && c <= '9') && orderIndex>=0) {
                 format->AliasAssign(format->Begin()-1, format->End());
                 IntMax value = 0;
                 if (format->ReadInt(&value)) {
                     pOptions->ArgumentOrder = (Int32)value;
-					pOptions->OutOfOrder = true;
+                    pOptions->OutOfOrder = true;
                 }
             } else if (c == '0') {
                 pOptions->ZeroPad = true;
@@ -193,9 +193,12 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     }
     pOptions->Valid = bValid;
     if (!pOptions->Valid) {
+        // if the format is invald: provide the format character for error handling
         if (!validChar) {
+            // the char could not be read
             pOptions->FormatChar = '0';
         } else {
+            // the char previously read
             pOptions->FormatChar = c;
         }
     } 
@@ -268,10 +271,10 @@ void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arg
     buffer->AppendCStr(" in '");
     IntIndex length = format->Length()*2;
     Utf8Char* formatUnEscaped = new Utf8Char[length];
-    format->UnEscape(formatUnEscaped, length);
-	buffer->AppendCStr((const char*)formatUnEscaped);
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
     buffer->AppendCStr("'\n");
-	delete[] formatUnEscaped;
+    delete[] formatUnEscaped;
 }
 
 /**
@@ -281,14 +284,14 @@ void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arg
 void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
     buffer->Resize1D(0);
     buffer->AppendCStr("Error: Missing args provided for format string: '");
-	buffer->AppendCStr((const char*)formatSpecifier);
+    buffer->AppendUtf8Str(formatSpecifier, 3);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
-	Utf8Char* formatUnEscaped = new Utf8Char[length];
-    format->UnEscape(formatUnEscaped, length);
-	buffer->AppendCStr((const char*)formatUnEscaped);
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
     buffer->AppendCStr("'\n");
-	delete[] formatUnEscaped;
+    delete[] formatUnEscaped;
 }
 
 /**
@@ -299,14 +302,14 @@ void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData a
 void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
     buffer->Resize1D(0);
     buffer->AppendCStr("Error: Invalid format string provided: '");
-    buffer->AppendCStr((const char*)formatSpecifier);
+    buffer->AppendUtf8Str(formatSpecifier, 3);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
-	Utf8Char* formatUnEscaped = new Utf8Char[length];
-    format->UnEscape(formatUnEscaped, length);
-    buffer->AppendCStr((const char*)formatUnEscaped);
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
     buffer->AppendCStr("'\n");
-	delete[] formatUnEscaped;
+    delete[] formatUnEscaped;
 }
 
 /**
@@ -319,14 +322,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex lastArgumentIndex = -1;
     IntIndex explicitPositionArgument = 0;
     Int32 totalArgument = 0;
-	Int32 usedArgs = 0;
+    Int32 usedArguments = 0;
     char activeDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
     Boolean validFormatString = true;
     Utf8Char c = 0;
-
 
     while (validFormatString && f.ReadRawChar(&c))
     {
@@ -349,7 +351,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
             totalArgument++;
-			usedArgs++;
+			usedArguments++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
                 totalArgument --;
@@ -379,7 +381,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 Utf8Char tempString[3];
                 tempString[0] = '%';
                 tempString[1] = fOptions.FormatChar;
-				tempString[2] = '\0';
+                tempString[2] = '\0';
                 ErrFormatInvalidFormatString(format, count, arguments, buffer, tempString);
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 // Incorrect number of arguments provided for format string
@@ -388,7 +390,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 Utf8Char tempString[3];
                 tempString[0] = '%';
                 tempString[1] = fOptions.FormatChar;
-				tempString[2] = '\0';
+                tempString[2] = '\0';
                 ErrFormatMissingNumArgs(format, count, arguments, buffer, tempString);
             }
 
@@ -563,15 +565,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (intValue == 0) {
                                 BinaryString[0] = bits[intValue];
                                 length = 1;
-							}
-							else {
-								while (intValue >= 1) {
-									BinaryString[intSize - 1 - length] = bits[intValue % 2];
-									intValue = intValue / 2;
-									length++;
-								}
-								binaryindex = BinaryString + (intSize - length);
-							}
+							} else {
+                                while (intValue >= 1) {
+                                    BinaryString[intSize - 1 - length] = bits[intValue % 2];
+                                    intValue = intValue / 2;
+                                    length++;
+                                }
+                                binaryindex = BinaryString + (intSize - length);
+                            }
                         }
 
                         Int32 binaryStringLength = length;
@@ -780,12 +781,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     }
     // Check if there are unused arguments provided
     if (argumentIndex < count) {
-		// make sure at least all of the args are used (even if out of order)
-		if (usedArgs != count) {
-			ErrFormatExtraNumArgs(format, count - argumentIndex, arguments, buffer);
-		}
+        // make sure at least all of the args are used (even if out of order)
+        if (usedArguments != count) {
+            ErrFormatExtraNumArgs(format, count - argumentIndex, arguments, buffer);
+        }
     }
-
 }
 
 /* Adjust the numeric string.

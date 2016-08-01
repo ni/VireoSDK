@@ -255,7 +255,7 @@ public:
     void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
 
     //! Process the escape charaters in the substring ('\t','\n', etc.) to ('\\t', '\\n', etc.)
-    void UnEscape(Utf8Char* begin, UInt32 length);
+    IntIndex UnEscape(Utf8Char* begin, IntIndex length);
     
     //! Read the next UTF-8 sequnce and decode it into a regular UTF-32 code point.
     Boolean ReadUtf32(Utf32Char* value);

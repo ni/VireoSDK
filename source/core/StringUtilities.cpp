@@ -437,9 +437,10 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 //! Process all of the Escaped characters ('\t', '\n', etc.) to unescape
 //! the '\' to '\\'. This will allow the string to be printed as viewed
 //! in the source code.
-void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
+IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
     SubString temp(this);
 	Utf8Char* b = dest + length;
+    IntIndex total = 0;
     while(temp._begin < temp._end && b != dest) {
 		Utf8Char c = *temp._begin++;
         // Check for the char and add the '\\'
@@ -454,6 +455,7 @@ void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
             case '\"': 
             case '\\': *dest = '\\';
                        dest++;
+                       total++;
                        break;
             default: break;
         }
@@ -472,11 +474,13 @@ void SubString::UnEscape(Utf8Char* dest, UInt32 length) {
             case '\'': *dest = '\''; break;
             case '\"': *dest = '\"'; break;
             case '\\': *dest = '\\'; break;
-            default: *dest = c;      break;
+            default: *dest = c; break;
         }
         dest++;
+        total++;
     }
 	*dest = '\0';
+    return total;
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.

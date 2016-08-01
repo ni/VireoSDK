@@ -10,7 +10,7 @@ Locals: c(
     e(dv(.Double 89.54630) num6)
     e(dv(.String "abcde") s1)
     e(dv(.String "") s2)
-    e(dv(.String "Hello") s4)
+    e(dv(.String "你好") s4)
     )
     clump (
         Printf("Test width sepcifer-------------------------\n")
