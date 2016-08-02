@@ -49,6 +49,9 @@ define(Test dv(.VirtualInstrument (
     Nxor(x y value)
     Printf(" Nxor (%s %s) => %s\n" x y value)
 
+    Implies(x y value)
+    Printf(" Implies (%s %s) => %s\n" x y value)
+
     Not(x value)
     Printf(" Not (%s) => %s\n" x value)
 
