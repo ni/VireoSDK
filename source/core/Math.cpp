@@ -222,6 +222,7 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( And##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) & _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Or##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) | _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Xor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) ^ _Param(1)) ) \
+    DECLARE_VIREO_PRIMITIVE3( Implies##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~_Param(0) | _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Nand##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) & _Param(1))) ) \
     DECLARE_VIREO_PRIMITIVE3( Nor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) | _Param(1))) ) \
 	DECLARE_VIREO_PRIMITIVE3( Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1))) ) \
@@ -231,6 +232,7 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(And, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Or, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Xor, TYPE, "BinOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Implies, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Nand, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Nor, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Nxor, TYPE, "BinOp"#TYPE) \
@@ -332,6 +334,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNotNull, void*, (null!=_Param(1)) )
 DECLARE_VIREO_PRIMITIVE3( AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) & _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE3( OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE3( XorBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) ^ _Param(1)) ) \
+DECLARE_VIREO_PRIMITIVE3( ImpliesBoolean, Boolean, Boolean, Boolean, (_Param(2) = !_Param(0) | _Param(1)) ) \
 DECLARE_VIREO_PRIMITIVE3( NandBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) & _Param(1))) ) \
 DECLARE_VIREO_PRIMITIVE3( NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) | _Param(1))) ) \
 DECLARE_VIREO_PRIMITIVE3( NxorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) ^ _Param(1)))) \
