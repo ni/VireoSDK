@@ -1,0 +1,444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/TypeTemplates.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - TypeTemplates.cpp<span style="font-size: 80%;"> (source / <a href="TypeTemplates.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">82</td>
+            <td class="headerCovTableEntry">152</td>
+            <td class="headerCovTableEntryLo">53.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :  */
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &quot;TypeAndDataManager.h&quot;
+<span class="lineNum">      14 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : namespace Vireo
+<span class="lineNum">      17 </span>            : {
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : //------------------------------------------------------------
+<span class="lineNum">      20 </span>            : //! Visits a type replacing template elements with the template parameters.
+<span class="lineNum">      21 </span>            : class TypeTemplateVisitor : public TypeVisitor
+<span class="lineNum">      22 </span>            : {
+<span class="lineNum">      23 </span>            :  public:
+<span class="lineNum">      24 </span>            :     TypeTemplateVisitor(TypeManagerRef tm, SubVector&lt;TypeRef&gt;* parameters);
+<span class="lineNum">      25 </span>            :     TypeRef Accept(TypeRef type);
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            :  private:
+<span class="lineNum">      28 </span>            :     TypeManagerRef _typeManager;
+<span class="lineNum">      29 </span>            :     SubVector&lt;TypeRef&gt;* _parameters;
+<span class="lineNum">      30 </span>            :     TypeRef _newType;
+<span class="lineNum">      31 </span>            :     AggregateAlignmentCalculator *_alignmentCalculator;
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            :  private:
+<span class="lineNum">      34 </span>            :     TypeRef  LookupParameter(IntIndex i);
+<span class="lineNum">      35 </span>            :     IntIndex AcceptIntDim(IntIndex value);
+<span class="lineNum">      36 </span>            :     
+<span class="lineNum">      37 </span>            :  private:
+<span class="lineNum">      38 </span>            :     virtual void VisitBad(TypeRef type);
+<span class="lineNum">      39 </span>            :     virtual void VisitBitBlock(BitBlockType* type);
+<span class="lineNum">      40 </span>            :     virtual void VisitBitCluster(BitClusterType* type);
+<span class="lineNum">      41 </span>            :     virtual void VisitCluster(ClusterType* type);
+<span class="lineNum">      42 </span>            :     virtual void VisitParamBlock(ParamBlockType* type);
+<span class="lineNum">      43 </span>            :     virtual void VisitEquivalence(EquivalenceType* type);
+<span class="lineNum">      44 </span>            :     virtual void VisitArray(ArrayType* type);
+<span class="lineNum">      45 </span>            :     virtual void VisitElement(ElementType* type);
+<span class="lineNum">      46 </span>            :     virtual void VisitNamed(NamedType* type);
+<span class="lineNum">      47 </span>            :     virtual void VisitPointer(PointerType* type);
+<span class="lineNum">      48 </span>            :     virtual void VisitDefaultValue(DefaultValueType* type);
+<span class="lineNum">      49 </span>            :     virtual void VisitDefaultPointer(DefaultPointerType* type);
+<span class="lineNum">      50 </span>            :     virtual void VisitCustomDataProc(CustomDataProcType* type);
+<a name="51"><span class="lineNum">      51 </span>            : };</a>
+<span class="lineNum">      52 </span>            : //------------------------------------------------------------
+<span class="lineNum">      53 </span>            : TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, SubVector&lt;TypeRef&gt;* parameters)
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span><span class="lineCov">        175 :     TypeTemplateVisitor itv(tm, parameters);</span>
+<span class="lineNum">      56 </span><span class="lineCov">        175 :     return itv.Accept(type);</span>
+<a name="57"><span class="lineNum">      57 </span><span class="lineCov">        175 : }</span></a>
+<span class="lineNum">      58 </span>            : //------------------------------------------------------------
+<span class="lineNum">      59 </span>            : TypeRef TypeTemplateVisitor::Accept(TypeRef type)
+<span class="lineNum">      60 </span>            : {
+<span class="lineNum">      61 </span><span class="lineCov">       1360 :     type-&gt;Accept(this);</span>
+<span class="lineNum">      62 </span><span class="lineCov">       1360 :     TypeRef newType = _newType;</span>
+<span class="lineNum">      63 </span><span class="lineCov">       1360 :     _newType = null;</span>
+<span class="lineNum">      64 </span><span class="lineCov">       1360 :     return newType;</span>
+<a name="65"><span class="lineNum">      65 </span>            : }</a>
+<span class="lineNum">      66 </span>            : //------------------------------------------------------------
+<span class="lineNum">      67 </span>            : TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector&lt;TypeRef&gt;* parameters)
+<span class="lineNum">      68 </span><span class="lineCov">        175 : {</span>
+<span class="lineNum">      69 </span><span class="lineCov">        175 :     _typeManager = tm;</span>
+<span class="lineNum">      70 </span><span class="lineCov">        175 :     _parameters = parameters;</span>
+<span class="lineNum">      71 </span><span class="lineCov">        175 :     _newType = null;</span>
+<span class="lineNum">      72 </span><span class="lineCov">        175 :     _alignmentCalculator = null;</span>
+<a name="73"><span class="lineNum">      73 </span><span class="lineCov">        175 : }</span></a>
+<span class="lineNum">      74 </span>            : //------------------------------------------------------------
+<span class="lineNum">      75 </span>            : TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
+<span class="lineNum">      76 </span>            : {
+<span class="lineNum">      77 </span><span class="lineCov">        120 :     if (i &gt;= 0 &amp;&amp; i &lt; _parameters-&gt;Length()) {</span>
+<span class="lineNum">      78 </span><span class="lineCov">         30 :         return _parameters-&gt;Begin()[i];</span>
+<span class="lineNum">      79 </span>            :     } else {
+<span class="lineNum">      80 </span>            :         // unsupplied parameters become new named types?
+<span class="lineNum">      81 </span>            :         // or permanetly left open.
+<span class="lineNum">      82 </span><span class="lineCov">         30 :         return null;</span>
+<span class="lineNum">      83 </span>            :     }
+<a name="84"><span class="lineNum">      84 </span><span class="lineCov">         60 : }</span></a>
+<span class="lineNum">      85 </span>            : //------------------------------------------------------------
+<span class="lineNum">      86 </span>            : IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
+<span class="lineNum">      87 </span>            : {
+<span class="lineNum">      88 </span><span class="lineCov">         60 :     if (IsTemplateDim(value)) {</span>
+<span class="lineNum">      89 </span>            :         // Find the template parameter.
+<span class="lineNum">      90 </span><span class="lineCov">         60 :         IntIndex i = TemplateDimIndex(value);</span>
+<span class="lineNum">      91 </span><span class="lineCov">         60 :         TypeRef type = LookupParameter(i);</span>
+<span class="lineNum">      92 </span><span class="lineCov">         60 :         if (type) {</span>
+<span class="lineNum">      93 </span>            :             // Use its value.
+<span class="lineNum">      94 </span><span class="lineCov">         30 :             return (IntIndex) ReadIntFromMemory(type, type-&gt;Begin(kPARead));</span>
+<span class="lineNum">      95 </span>            :         } else {
+<span class="lineNum">      96 </span>            :             // If no parameter is supplied then change it to simply being variable size
+<span class="lineNum">      97 </span>            :             // TODO(templates) or shift its position?, thats not hard either.
+<span class="lineNum">      98 </span><span class="lineCov">         30 :             return kArrayVariableLengthSentinel;</span>
+<span class="lineNum">      99 </span>            :         }
+<span class="lineNum">     100 </span>            :     } else {
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :         return value;</span>
+<span class="lineNum">     102 </span>            :     }
+<a name="103"><span class="lineNum">     103 </span><span class="lineCov">         60 : }</span></a>
+<span class="lineNum">     104 </span>            : //------------------------------------------------------------
+<span class="lineNum">     105 </span>            : void TypeTemplateVisitor::VisitBad(TypeRef type)
+<span class="lineNum">     106 </span>            : {
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     113 </span>            :     VIREO_ASSERT(false);
+<a name="114"><span class="lineNum">     114 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     115 </span>            : //------------------------------------------------------------
+<span class="lineNum">     116 </span>            : void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
+<span class="lineNum">     117 </span>            : {
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     121 </span>            :     }
+<span class="lineNum">     122 </span>            :     
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     124 </span>            :     VIREO_ASSERT(false);
+<a name="125"><span class="lineNum">     125 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     126 </span>            : //------------------------------------------------------------
+<span class="lineNum">     127 </span>            : void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
+<span class="lineNum">     128 </span>            : {
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span>            :     
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     135 </span>            :     VIREO_ASSERT(false);
+<a name="136"><span class="lineNum">     136 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     137 </span>            : //------------------------------------------------------------
+<span class="lineNum">     138 </span>            : void TypeTemplateVisitor::VisitCluster(ClusterType* type)
+<span class="lineNum">     139 </span>            : {
+<span class="lineNum">     140 </span><span class="lineCov">        165 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     143 </span>            :     }
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span><span class="lineCov">        165 :     ClusterAlignmentCalculator calc(_typeManager);</span>
+<span class="lineNum">     146 </span><span class="lineCov">        165 :     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;</span>
+<span class="lineNum">     147 </span><span class="lineCov">        165 :     _alignmentCalculator = &amp;calc;</span>
+<span class="lineNum">     148 </span>            :     
+<span class="lineNum">     149 </span><span class="lineCov">        165 :     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic</span>
+<span class="lineNum">     150 </span><span class="lineCov">        165 :     IntIndex subElementCount = type-&gt;SubElementCount();</span>
+<span class="lineNum">     151 </span>            :     
+<span class="lineNum">     152 </span><span class="lineCov">       1350 :     for (Int32 i = 0; i &lt; subElementCount; i++) {</span>
+<span class="lineNum">     153 </span><span class="lineCov">        510 :         elementTypes[i] = Accept(type-&gt;GetSubElement(i));</span>
+<span class="lineNum">     154 </span>            :     }
+<span class="lineNum">     155 </span><span class="lineCov">        165 :     _newType  = ClusterType::New(_typeManager, elementTypes, type-&gt;SubElementCount());</span>
+<span class="lineNum">     156 </span>            :     
+<span class="lineNum">     157 </span><span class="lineCov">        165 :     _alignmentCalculator = saveCalc;</span>
+<a name="158"><span class="lineNum">     158 </span><span class="lineCov">        330 : }</span></a>
+<span class="lineNum">     159 </span>            : //------------------------------------------------------------
+<span class="lineNum">     160 </span>            : void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
+<span class="lineNum">     161 </span>            : {
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     165 </span>            :     }
+<span class="lineNum">     166 </span>            :     
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     168 </span>            :     VIREO_ASSERT(false);
+<a name="169"><span class="lineNum">     169 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     170 </span>            : //------------------------------------------------------------
+<span class="lineNum">     171 </span>            : void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
+<span class="lineNum">     172 </span>            : {
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     176 </span>            :     }
+<span class="lineNum">     177 </span>            :     
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :     EquivalenceAlignmentCalculator calc(_typeManager);</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     _alignmentCalculator = &amp;calc;</span>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :     IntIndex subElementCount = type-&gt;SubElementCount();</span>
+<span class="lineNum">     184 </span>            :     
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :     for (Int32 i = 0; i &lt; subElementCount; i++) {</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :         elementTypes[i] = Accept(type-&gt;GetSubElement(i));</span>
+<span class="lineNum">     187 </span>            :     }
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :     _newType  = EquivalenceType::New(_typeManager, elementTypes, type-&gt;SubElementCount());</span>
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :     _alignmentCalculator = saveCalc;</span>
+<span class="lineNum">     191 </span>            :     VIREO_ASSERT(false);
+<a name="192"><span class="lineNum">     192 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     193 </span>            : //------------------------------------------------------------
+<span class="lineNum">     194 </span>            : void TypeTemplateVisitor::VisitArray(ArrayType* type)
+<span class="lineNum">     195 </span>            : {
+<span class="lineNum">     196 </span><span class="lineCov">        120 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     199 </span>            :     }
+<span class="lineNum">     200 </span>            :     
+<span class="lineNum">     201 </span>            :     // Array  may be visited if the element type or a dimension is
+<span class="lineNum">     202 </span>            :     // templated. Simple having a dimension that is variable should
+<span class="lineNum">     203 </span>            :     // not tirgger template type substitution.
+<span class="lineNum">     204 </span>            :     
+<span class="lineNum">     205 </span><span class="lineCov">        120 :     IntIndexItr iDim(type-&gt;DimensionLengths(), type-&gt;Rank());</span>
+<span class="lineNum">     206 </span><span class="lineCov">        120 :     ArrayDimensionVector newDimensions;</span>
+<span class="lineNum">     207 </span><span class="lineCov">        120 :     IntIndex* pNew  = newDimensions;</span>
+<span class="lineNum">     208 </span><span class="lineCov">        360 :     while (iDim.HasNext()) {</span>
+<span class="lineNum">     209 </span><span class="lineCov">         60 :         *pNew++ = AcceptIntDim(iDim.Read());</span>
+<span class="lineNum">     210 </span>            :     }
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span><span class="lineCov">        120 :     TypeRef subType = Accept(type-&gt;GetSubElement(0));</span>
+<span class="lineNum">     213 </span>            :     // not strictly true any longer.
+<span class="lineNum">     214 </span>            :     VIREO_ASSERT(subType != type-&gt;GetSubElement(0));
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span><span class="lineCov">        120 :     _newType = ArrayType::New(_typeManager, subType, type-&gt;Rank(), newDimensions);</span>
+<span class="lineNum">     217 </span>            :     VIREO_ASSERT(_newType != type);
+<a name="218"><span class="lineNum">     218 </span><span class="lineCov">        240 : }</span></a>
+<span class="lineNum">     219 </span>            : //------------------------------------------------------------
+<span class="lineNum">     220 </span>            : void TypeTemplateVisitor::VisitElement(ElementType* type)
+<span class="lineNum">     221 </span>            : {
+<span class="lineNum">     222 </span>            :     IntIndex offset;
+<span class="lineNum">     223 </span><span class="lineCov">        510 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     224 </span><span class="lineCov">        180 :         _newType = type;</span>
+<span class="lineNum">     225 </span><span class="lineCov">        180 :         offset = _alignmentCalculator-&gt;AlignNextElement(type-&gt;BaseType());</span>
+<span class="lineNum">     226 </span>            :         VIREO_ASSERT(type-&gt;ElementOffset() == offset);
+<span class="lineNum">     227 </span><span class="lineCov">        180 :         return;</span>
+<span class="lineNum">     228 </span>            :     }
+<span class="lineNum">     229 </span>            :     
+<span class="lineNum">     230 </span><span class="lineCov">        330 :     TypeRef   baseType = Accept(type-&gt;BaseType());</span>
+<span class="lineNum">     231 </span><span class="lineCov">        330 :     SubString fieldName = type-&gt;ElementName();</span>
+<span class="lineNum">     232 </span><span class="lineCov">        330 :     UsageTypeEnum usageType = type-&gt;ElementUsageType();</span>
+<span class="lineNum">     233 </span><span class="lineCov">        330 :     offset = _alignmentCalculator-&gt;AlignNextElement(baseType);</span>
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineCov">        330 :     _newType = ElementType::New(_typeManager, &amp;fieldName, baseType, usageType, offset);</span>
+<span class="lineNum">     236 </span>            :     VIREO_ASSERT(_newType != type);
+<a name="237"><span class="lineNum">     237 </span><span class="lineCov">        840 : }</span></a>
+<span class="lineNum">     238 </span>            : //------------------------------------------------------------
+<span class="lineNum">     239 </span>            : void TypeTemplateVisitor::VisitNamed(NamedType* type)
+<span class="lineNum">     240 </span>            : {
+<span class="lineNum">     241 </span><span class="lineCov">        565 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     244 </span>            :     }
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span><span class="lineCov">        565 :     SubString name = type-&gt;Name();</span>
+<span class="lineNum">     247 </span><span class="lineCov">        565 :     IntMax nTParams =  _parameters-&gt;Length();</span>
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     // When visiting a NamedType it means there is some portion it contains that is open.
+<span class="lineNum">     250 </span>            :     // other wise the existing type would have been used as is.
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :     // Case 1: The name is a template parameter name like '$0', '$1', ...
+<span class="lineNum">     253 </span>            :     // In this case the type get substituted with the parameter value.
+<span class="lineNum">     254 </span><span class="lineCov">        565 :     if (name.EatChar(*tsMetaIdPrefix)) {</span>
+<span class="lineNum">     255 </span>            :         IntMax i;
+<span class="lineNum">     256 </span><span class="lineCov">        330 :         name.ReadInt(&amp;i);</span>
+<span class="lineNum">     257 </span><span class="lineCov">        660 :         if (i &gt;= 0 &amp;&amp; i &lt; nTParams) {</span>
+<span class="lineNum">     258 </span><span class="lineCov">        330 :             _newType = _parameters-&gt;Begin()[i];</span>
+<span class="lineNum">     259 </span><span class="lineCov">        330 :         } else {</span>
+<span class="lineNum">     260 </span>            :              // BaseType of a generic parameter is the simple generic type
+<span class="lineNum">     261 </span>            :              // so use it if the parameter was not passed in.
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :             _newType = type-&gt;BaseType();</span>
+<span class="lineNum">     263 </span>            :         }
+<span class="lineNum">     264 </span>            :         return;
+<span class="lineNum">     265 </span>            :     }
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :     // Case 2: There were no type passed in the template expression
+<span class="lineNum">     268 </span><span class="lineCov">        235 :     if (0 == nTParams) {</span>
+<span class="lineNum">     269 </span><span class="lineCov">         10 :         _newType = type;</span>
+<span class="lineNum">     270 </span><span class="lineCov">         10 :         return;</span>
+<span class="lineNum">     271 </span>            :     }
+<span class="lineNum">     272 </span>            :     
+<span class="lineNum">     273 </span>            :     // Case 3: It's a named type that contains some open types.
+<span class="lineNum">     274 </span>            :     // IF ther are parameters they are the set of parameters for this type
+<span class="lineNum">     275 </span>            :     // but not for nested named types. So build a Name based on the set of parameters
+<span class="lineNum">     276 </span>            :     // supplied then hide the parameters before recursing. If a named typed
+<span class="lineNum">     277 </span>            :     // is tempalted in the top typ it (may/will) have its own set of arguemnts
+<span class="lineNum">     278 </span>            :     // based on the outer scope.
+<span class="lineNum">     279 </span>            :     
+<span class="lineNum">     280 </span>            :     //
+<span class="lineNum">     281 </span>            :     // base type is also generic. First ceaate the hyotheitcal new name
+<span class="lineNum">     282 </span>            :     // and see if the instance already exists. If not, make one.
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :     // Create a new name, TODO should  really use TDCodecVIA to parse the type
+<span class="lineNum">     285 </span><span class="lineCov">        225 :     STACK_VAR(String, tempString);</span>
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span><span class="lineCov">        225 :     tempString.Value-&gt;Append(name.Length(), (Utf8Char*)name.Begin());</span>
+<span class="lineNum">     288 </span><span class="lineCov">        225 :     tempString.Value-&gt;Append('&lt;');</span>
+<span class="lineNum">     289 </span><span class="lineCov">        510 :     for ( Int32 i = 0; true; i++) {</span>
+<span class="lineNum">     290 </span><span class="lineCov">        510 :         tempString.Value-&gt;Append('.');</span>
+<span class="lineNum">     291 </span><span class="lineCov">       1020 :         name =  (*_parameters-&gt;Begin())-&gt;Name();</span>
+<span class="lineNum">     292 </span><span class="lineCov">        510 :         tempString.Value-&gt;Append(name.Length(), (Utf8Char*)name.Begin());</span>
+<span class="lineNum">     293 </span><span class="lineCov">       1020 :         if (i &gt;= nTParams)</span>
+<span class="lineNum">     294 </span>            :             break;
+<span class="lineNum">     295 </span><span class="lineCov">        285 :         tempString.Value-&gt;Append(' ');</span>
+<span class="lineNum">     296 </span>            :     }
+<span class="lineNum">     297 </span><span class="lineCov">        735 :     tempString.Value-&gt;Append('&gt;');</span>
+<span class="lineNum">     298 </span><span class="lineCov">        450 :     name = tempString.Value-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :     // Find an existing instantion, or make one.
+<span class="lineNum">     301 </span><span class="lineCov">        450 :     _newType = _typeManager-&gt;FindType(&amp;name);</span>
+<span class="lineNum">     302 </span><span class="lineCov">        225 :     if (!_newType) {</span>
+<span class="lineNum">     303 </span><span class="lineCov">        390 :         TypeRef newBaseType = Accept(type-&gt;BaseType());</span>
+<span class="lineNum">     304 </span>            :         VIREO_ASSERT(newBaseType != type-&gt;BaseType());
+<span class="lineNum">     305 </span><span class="lineCov">        450 :         _newType = _typeManager-&gt;Define(&amp;name, newBaseType);</span>
+<span class="lineNum">     306 </span>            :         // The new type needs to have an IsA relationship to the template it is derived from
+<span class="lineNum">     307 </span>            :         // how to do that?
+<span class="lineNum">     308 </span><span class="lineCov">        225 :     } else {</span>
+<span class="lineNum">     309 </span>            :         // This instantiation already exists.
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     311 </span>            :     }
+<a name="312"><span class="lineNum">     312 </span><span class="lineCov">        790 : }</span></a>
+<span class="lineNum">     313 </span>            : //------------------------------------------------------------
+<span class="lineNum">     314 </span>            : void TypeTemplateVisitor::VisitPointer(PointerType* type)
+<span class="lineNum">     315 </span>            : {
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     319 </span>            :     }
+<span class="lineNum">     320 </span>            :     
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :     TypeRef newBaseType = Accept(type-&gt;BaseType());</span>
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :     if (newBaseType != type-&gt;BaseType()) {</span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :         _newType = PointerType::New(_typeManager, newBaseType);</span>
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :     } else {</span>
+<span class="lineNum">     325 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     326 </span>            :     }
+<a name="327"><span class="lineNum">     327 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     328 </span>            : //------------------------------------------------------------
+<span class="lineNum">     329 </span>            : void TypeTemplateVisitor::VisitDefaultValue(DefaultValueType* type)
+<span class="lineNum">     330 </span>            : {
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     334 </span>            :     }
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 :     TypeRef newBaseType = Accept(type-&gt;BaseType());</span>
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :     if (newBaseType != type-&gt;BaseType()) {</span>
+<span class="lineNum">     338 </span>            :         // Templated defaults are a bit extreme. If the type is generic then
+<span class="lineNum">     339 </span>            :         // how could the data have been parsed.
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :         _newType = DefaultValueType::New(_typeManager, type-&gt;BaseType(), type-&gt;IsMutableValue());</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :     } else {</span>
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     343 </span>            :     }
+<a name="344"><span class="lineNum">     344 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     345 </span>            : //------------------------------------------------------------
+<span class="lineNum">     346 </span>            : void TypeTemplateVisitor::VisitDefaultPointer(DefaultPointerType* type)
+<span class="lineNum">     347 </span>            : {
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     351 </span>            :     }
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     354 </span>            :     VIREO_ASSERT(false);
+<a name="355"><span class="lineNum">     355 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     356 </span>            : //------------------------------------------------------------
+<span class="lineNum">     357 </span>            : void TypeTemplateVisitor::VisitCustomDataProc(CustomDataProcType* type)
+<span class="lineNum">     358 </span>            : {
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :     if (!type-&gt;IsTemplate()) {</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :         _newType = type;</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :         return;</span>
+<span class="lineNum">     362 </span>            :     }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :     _newType = _typeManager-&gt;BadType();</span>
+<span class="lineNum">     365 </span>            :     VIREO_ASSERT(false);
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            : }  // namespace Vireo
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - include/DataTypes.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">include</a> - DataTypes.h<span style="font-size: 80%;"> (source / <a href="DataTypes.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntryMed">84.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryHi">96.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Core types (Int32,...) and ifdefs to work around a few platform collisions.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #ifndef DataTypes_h
+<span class="lineNum">      15 </span>            : #define DataTypes_h
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &lt;stddef.h&gt;
+<span class="lineNum">      18 </span>            : #include &lt;string.h&gt;     // memcpy()
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #include &quot;BuildConfig.h&quot;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #if defined (kVireoOS_macosxU)
+<span class="lineNum">      23 </span>            :     typedef unsigned char Boolean;
+<span class="lineNum">      24 </span>            : #else
+<span class="lineNum">      25 </span>            :     typedef bool Boolean;
+<span class="lineNum">      26 </span>            : #endif
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #define __STDC_LIMIT_MACROS
+<span class="lineNum">      29 </span>            : #include &lt;stdint.h&gt;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : //! Basic integer types.
+<span class="lineNum">      32 </span>            : typedef int8_t          Int8;
+<span class="lineNum">      33 </span>            : typedef uint8_t         UInt8, Utf8Char;
+<span class="lineNum">      34 </span>            : typedef int16_t         Int16;
+<span class="lineNum">      35 </span>            : typedef uint16_t        UInt16, Utf16Char;
+<span class="lineNum">      36 </span>            : typedef int32_t         Int32;
+<span class="lineNum">      37 </span>            : typedef uint32_t        UInt32;
+<span class="lineNum">      38 </span>            : typedef int64_t         Int64;
+<span class="lineNum">      39 </span>            : typedef uint64_t        UInt64;
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : //! Largest int type supported by the compiler (C++11).
+<span class="lineNum">      42 </span>            : typedef intmax_t        IntMax;
+<span class="lineNum">      43 </span>            : typedef uintmax_t       UIntMax;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : //! Floating point types.
+<span class="lineNum">      46 </span>            : typedef float           Single;
+<span class="lineNum">      47 </span>            : typedef double          Double;
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : //! Unicode code point encoded in Uft32.
+<span class="lineNum">      50 </span>            : typedef Int32          Utf32Char;
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : //! Pointer to generic data.
+<span class="lineNum">      53 </span>            : typedef void*          DataPointer;
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : //! Pointer to native executable code.
+<span class="lineNum">      56 </span>            : typedef void*          CodePointer;
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : //! Pointer to read only null terminated strings
+<span class="lineNum">      59 </span>            : typedef const char*    ConstCStr;
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : //! Structure that should have the largest required alignment.
+<span class="lineNum">      62 </span>            : typedef union {
+<span class="lineNum">      63 </span>            :     // Looks like some of the recent C++ specs supply a type
+<span class="lineNum">      64 </span>            :     // like this (aligned_storage) but its too early to rely
+<span class="lineNum">      65 </span>            :     // on that being available. Oddest case seen so far was
+<span class="lineNum">      66 </span>            :     // javascript via emscripten; pointer were 4 bytes, but alignement
+<span class="lineNum">      67 </span>            :     // was 8 due to doubles.
+<span class="lineNum">      68 </span>            :     IntMax  _align_IntMax;
+<span class="lineNum">      69 </span>            :     Double  _align_Double;
+<span class="lineNum">      70 </span>            :     void*   _align_Pointer;
+<span class="lineNum">      71 </span>            : } MaxAlignedType;
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : //------------------------------------------------------------
+<span class="lineNum">      74 </span>            : //! Using the classic C++ definition of null. Avoiding nullptr
+<span class="lineNum">      75 </span>            : //  Since it may not be treated as POD and constructor initialization
+<span class="lineNum">      76 </span>            : //  is much less predictable.
+<span class="lineNum">      77 </span>            : #define null  0
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : #include &quot;Platform.h&quot;
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : namespace Vireo
+<span class="lineNum">      82 </span>            : {
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : //------------------------------------------------------------
+<span class="lineNum">      85 </span>            : //! Types used for array indexes and dimensions
+<span class="lineNum">      86 </span>            : typedef Int32        IntIndex;
+<span class="lineNum">      87 </span>            : typedef Int32        IntDim;
+<span class="lineNum">      88 </span>            : enum {
+<span class="lineNum">      89 </span>            :     // IntDim encoded as &quot;*&quot;
+<span class="lineNum">      90 </span>            :     kArrayVariableLengthSentinel = INT32_MIN,
+<span class="lineNum">      91 </span>            :     
+<span class="lineNum">      92 </span>            :     // IntDim encoded as template parameters $0 .. $255
+<span class="lineNum">      93 </span>            :     kArrayMaxTemplatedDimLengths = 256,
+<span class="lineNum">      94 </span>            :     
+<span class="lineNum">      95 </span>            :     kArrayFirstTemplatedDimLength = kArrayVariableLengthSentinel + kArrayMaxTemplatedDimLengths,
+<span class="lineNum">      96 </span>            :     kArrayIndexMax = INT32_MAX,
+<span class="lineNum">      97 </span>            :     kArrayMaxRank = 15,
+<span class="lineNum">      98 </span>            :     };
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : typedef IntIndex  ArrayDimensionVector[kArrayMaxRank];
+<a name="102"><span class="lineNum">     102 </span>            : </a>
+<span class="lineNum">     103 </span>            : //! Template dimensions are the encodings for $0.. $n
+<span class="lineNum">     104 </span>            : inline Boolean IsTemplateDim(IntIndex dim)
+<span class="lineNum">     105 </span>            : {
+<span class="lineNum">     106 </span><span class="lineCov">      53315 :     return (dim &gt; kArrayVariableLengthSentinel) &amp;&amp; (dim &lt;= kArrayFirstTemplatedDimLength);</span>
+<span class="lineNum">     107 </span>            : }
+<a name="108"><span class="lineNum">     108 </span>            : </a>
+<span class="lineNum">     109 </span>            : //! Variable dimension is the encodings for *. Templates params also count as variable.
+<span class="lineNum">     110 </span>            : inline Boolean IsVariableLengthDim(IntIndex dim)
+<span class="lineNum">     111 </span>            : {
+<span class="lineNum">     112 </span><span class="lineCov">   12938610 :     return dim &lt;= kArrayFirstTemplatedDimLength;</span>
+<a name="113"><span class="lineNum">     113 </span>            : }</a>
+<span class="lineNum">     114 </span>            : //! Decode a template parameter index.
+<span class="lineNum">     115 </span>            : inline IntIndex TemplateDimIndex(IntIndex dim)
+<span class="lineNum">     116 </span>            : {
+<span class="lineNum">     117 </span><span class="lineCov">         60 :     if (IsTemplateDim(dim)) {</span>
+<span class="lineNum">     118 </span><span class="lineCov">         60 :         return dim - kArrayVariableLengthSentinel - 1;</span>
+<span class="lineNum">     119 </span>            :     } else {
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :         return 0;</span>
+<span class="lineNum">     121 </span>            :     }
+<span class="lineNum">     122 </span><span class="lineCov">         60 : }</span>
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            : //------------------------------------------------------------
+<span class="lineNum">     126 </span>            : typedef enum {
+<span class="lineNum">     127 </span>            :     kNIError_Success = 0,
+<span class="lineNum">     128 </span>            :     kNIError_kInsufficientResources = 1,// Typically memory
+<span class="lineNum">     129 </span>            :     kNIError_kResourceNotFound = 2,
+<span class="lineNum">     130 </span>            :     kNIError_kArrayRankMismatch = 3,    // Array's rank do not fit function requirements (typically they must be the same)
+<span class="lineNum">     131 </span>            :     kNIError_kCantDecode = 4,           // Data in stream does not fit grammar
+<span class="lineNum">     132 </span>            :     kNIError_kCantEncode = 5,           // Data type not supported by encoder
+<span class="lineNum">     133 </span>            :     kNIError_kLogicFailure = 6,
+<span class="lineNum">     134 </span>            :     kNIError_ValueTruncated = 7,
+<span class="lineNum">     135 </span>            : } NIError ;
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            : // Types used for structs and pointers when the semantics of the underlying bits may vary
+<span class="lineNum">     138 </span>            : typedef UInt8   AQBlock1;
+<span class="lineNum">     139 </span>            : typedef Int16   AQBlock2;
+<span class="lineNum">     140 </span>            : typedef Int32   AQBlock4;
+<span class="lineNum">     141 </span>            : typedef Int64   AQBlock8;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : //------------------------------------------------------------
+<span class="lineNum">     144 </span>            : #ifdef VIREO_USING_ASSERTS
+<span class="lineNum">     145 </span>            :     #ifdef VIREO_MICRO
+<span class="lineNum">     146 </span>            :         #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, __FILE__, __LINE__ );
+<span class="lineNum">     147 </span>            :         void VireoAssert_Hidden(Boolean test, ConstCStr file, int line);
+<span class="lineNum">     148 </span>            :     #else
+<span class="lineNum">     149 </span>            :         #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ );
+<span class="lineNum">     150 </span>            :         void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int line);
+<span class="lineNum">     151 </span>            :     #endif
+<span class="lineNum">     152 </span>            : #else
+<span class="lineNum">     153 </span>            :     #define VIREO_ASSERT( _TEST_ )
+<span class="lineNum">     154 </span>            : #endif
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : //------------------------------------------------------------
+<span class="lineNum">     157 </span>            : //! A wrapper that gives a raw block of elements a Begin(), End(), and Length() method. It does not own the data.
+<span class="lineNum">     158 </span>            : template &lt;class T&gt;
+<span class="lineNum">     159 </span>            : class SubVector
+<span class="lineNum">     160 </span>            : {
+<span class="lineNum">     161 </span>            : protected:
+<span class="lineNum">     162 </span>            :     const T*  _begin;
+<span class="lineNum">     163 </span>            :     const T*  _end;
+<a name="164"><span class="lineNum">     164 </span>            : public:</a>
+<span class="lineNum">     165 </span>            :     //! Construct a wrapper from an existing wrapper.
+<span class="lineNum">     166 </span>            :     SubVector()
+<span class="lineNum">     167 </span>            :     {
+<span class="lineNum">     168 </span><span class="lineCov">   73398115 :         _begin = _end = null;</span>
+<span class="lineNum">     169 </span><span class="lineCov">   73398115 :     }</span>
+<span class="lineNum">     170 </span>            :     //! Construct a wrapper for a raw block of elements.
+<span class="lineNum">     171 </span>            :     SubVector(const T* begin, const T* end)
+<span class="lineNum">     172 </span>            :     {
+<span class="lineNum">     173 </span>            :         _begin = begin;
+<span class="lineNum">     174 </span>            :         _end = end;
+<a name="175"><span class="lineNum">     175 </span>            :     }</a>
+<span class="lineNum">     176 </span>            :     //! Reassign the wrapper.
+<span class="lineNum">     177 </span>            :     void AliasAssign(SubVector *subVector)
+<span class="lineNum">     178 </span>            :     {
+<span class="lineNum">     179 </span><span class="lineCov">    1272080 :         _begin = subVector-&gt;Begin();</span>
+<span class="lineNum">     180 </span><span class="lineCov">    1272080 :         _end = subVector-&gt;End();</span>
+<span class="lineNum">     181 </span><span class="lineCov">    1272080 :     }</span>
+<a name="182"><span class="lineNum">     182 </span>            : </a>
+<span class="lineNum">     183 </span>            :     //! Reassign the wrapper to a new raw block of elements.
+<span class="lineNum">     184 </span>            :     void AliasAssign(const T* begin, const T* end)
+<span class="lineNum">     185 </span>            :     {
+<span class="lineNum">     186 </span><span class="lineCov">   79050955 :         _begin = begin;</span>
+<span class="lineNum">     187 </span><span class="lineCov">   79050955 :         _end = end;</span>
+<span class="lineNum">     188 </span><span class="lineCov">   79050955 :     }</span>
+<a name="189"><span class="lineNum">     189 </span>            :     </a>
+<span class="lineNum">     190 </span>            :     //! Construct a wrapper for a raw block of elements.
+<span class="lineNum">     191 </span>            :     IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer)
+<span class="lineNum">     192 </span>            :     {
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :         bufferLength--;  // Make room for null</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :         IntIndex length = Length();</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :         if (bufferLength &lt; length) {</span>
+<span class="lineNum">     196 </span>            :             length = bufferLength;
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :         memcpy(destinationBuffer, Begin(), length * sizeof(T));</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :         destinationBuffer[length] = (T)0;</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :         return length;</span>
+<span class="lineNum">     201 </span>            :     }
+<a name="202"><span class="lineNum">     202 </span>            : </a>
+<span class="lineNum">     203 </span>            :     //! Return a pointer to the first element in the vector
+<span class="lineNum">     204 </span><span class="lineCov">  145198617 :     const T*  Begin() const  { return _begin; }</span>
+<a name="205"><span class="lineNum">     205 </span>            : </a>
+<span class="lineNum">     206 </span>            :     //! Returns a pointer just past the last element in the vector.
+<span class="lineNum">     207 </span><span class="lineCov">   60975771 :     const T*  End()   const  { return _end; }</span>
+<a name="208"><span class="lineNum">     208 </span>            :     </a>
+<span class="lineNum">     209 </span>            :     //! Returns the lenght of the vector.
+<span class="lineNum">     210 </span><span class="lineCov">  291493283 :     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }</span>
+<span class="lineNum">     211 </span>            :     
+<span class="lineNum">     212 </span>            :     //! Return true if the blocks are equivalent.
+<span class="lineNum">     213 </span>            :     Boolean Compare(const T* begin2, IntIndex length2)
+<span class="lineNum">     214 </span>            :     {
+<span class="lineNum">     215 </span>            :         return (length2 == Length() &amp;&amp; (memcmp(_begin, begin2, Length()) == 0));
+<span class="lineNum">     216 </span>            :     }
+<span class="lineNum">     217 </span>            :     
+<span class="lineNum">     218 </span>            :     //! Return true if the blocks are equivalent.
+<span class="lineNum">     219 </span>            :     Boolean Compare(const SubVector *subVector)
+<span class="lineNum">     220 </span>            :     {
+<span class="lineNum">     221 </span>            :         return Compare(subVector-&gt;Begin(), subVector-&gt;Length());
+<span class="lineNum">     222 </span>            :     }
+<span class="lineNum">     223 </span>            : };
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            : //------------------------------------------------------------
+<span class="lineNum">     226 </span>            : //! A wrapper for an array of UInt8s (.e.g bytes). It does not own the data.
+<span class="lineNum">     227 </span>            : class SubBinaryBuffer :  public SubVector&lt;UInt8&gt;  // Binary or byte buffer
+<span class="lineNum">     228 </span>            : {
+<a name="229"><span class="lineNum">     229 </span>            : public:</a>
+<span class="lineNum">     230 </span>            :     SubBinaryBuffer()   { }
+<span class="lineNum">     231 </span><span class="lineCov">         30 :     SubBinaryBuffer(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }</span>
+<span class="lineNum">     232 </span>            : };
+<span class="lineNum">     233 </span>            : //------------------------------------------------------------
+<span class="lineNum">     234 </span>            : //! A light weight iterator for sequential reads of staticly type values
+<span class="lineNum">     235 </span>            : template &lt;class T&gt;
+<span class="lineNum">     236 </span>            : class Itr {
+<span class="lineNum">     237 </span>            : protected:
+<span class="lineNum">     238 </span>            :     T*   _current;
+<a name="239"><span class="lineNum">     239 </span>            :     T*   _end;</a>
+<a name="240"><span class="lineNum">     240 </span>            : public:</a>
+<span class="lineNum">     241 </span><span class="lineCov">     111040 :     Itr(T* begin, T* end) {_current = begin; _end = end;}</span>
+<span class="lineNum">     242 </span><span class="lineCov">   13090435 :     Itr(T* begin, IntIndex length) {_current = begin; _end = begin + length;}</span>
+<span class="lineNum">     243 </span>            :     //! Read the iterator's next pointer
+<a name="244"><span class="lineNum">     244 </span>            :     T* ReadP()          { return _current++; }</a>
+<a name="245"><span class="lineNum">     245 </span>            :     //! Read the iterator's next value</a>
+<span class="lineNum">     246 </span><span class="lineCov">   12870370 :     T Read()            { return *_current++;  }</span>
+<span class="lineNum">     247 </span><span class="lineCov">   26242225 :     Boolean HasNext()   { return _current &lt; _end; }</span>
+<span class="lineNum">     248 </span>            :     Boolean PointerInRange(void* p) { return p &gt;= _current &amp;&amp; p &lt; _end; }
+<span class="lineNum">     249 </span>            : };
+<span class="lineNum">     250 </span>            : //------------------------------------------------------------
+<span class="lineNum">     251 </span>            : //! A light weight iterator for sequential reads of runtime typed values
+<span class="lineNum">     252 </span>            : class BlockItr : public Itr&lt;AQBlock1&gt;
+<span class="lineNum">     253 </span>            : {
+<span class="lineNum">     254 </span>            :     IntIndex _blockLength;
+<a name="255"><span class="lineNum">     255 </span>            : public:</a>
+<span class="lineNum">     256 </span>            :     //! Construct an iterator for an array of blocks 
+<span class="lineNum">     257 </span>            :     BlockItr(void* begin, IntIndex blockLength, IntIndex count)
+<span class="lineNum">     258 </span><span class="lineCov">     111040 :     : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count))</span>
+<span class="lineNum">     259 </span><span class="lineCov">     222080 :     {</span>
+<span class="lineNum">     260 </span><span class="lineCov">     111040 :         _blockLength = blockLength;</span>
+<a name="261"><span class="lineNum">     261 </span><span class="lineCov">     111040 :     }</span></a>
+<span class="lineNum">     262 </span>            :     //! Read the iterators next pointer
+<span class="lineNum">     263 </span>            :     AQBlock1* ReadP()
+<span class="lineNum">     264 </span>            :     {
+<span class="lineNum">     265 </span><span class="lineCov">     171465 :         AQBlock1* p = _current;</span>
+<span class="lineNum">     266 </span><span class="lineCov">     171465 :         _current += _blockLength;</span>
+<span class="lineNum">     267 </span><span class="lineCov">     171465 :         return p;</span>
+<span class="lineNum">     268 </span>            :     }
+<span class="lineNum">     269 </span>            : };
+<span class="lineNum">     270 </span>            : //------------------------------------------------------------
+<span class="lineNum">     271 </span>            : typedef Itr&lt;IntIndex&gt;   IntIndexItr;
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            : //------------------------------------------------------------
+<span class="lineNum">     274 </span>            : //! A Fixed C array that has and API that looks a bit like Vireo arrays
+<span class="lineNum">     275 </span>            : template &lt;class T, size_t COUNT&gt;
+<span class="lineNum">     276 </span>            :     class FixedCArray : public SubVector&lt;T&gt;
+<span class="lineNum">     277 </span>            : {
+<span class="lineNum">     278 </span>            : protected:
+<span class="lineNum">     279 </span>            :     // The buffer has a an extra element for cases where the C array
+<span class="lineNum">     280 </span>            :     // contains a null element at the end.
+<span class="lineNum">     281 </span>            :     T    _buffer[COUNT+1];
+<a name="282"><span class="lineNum">     282 </span>            :     // Since this class owns the buffer and it knows what is going on,</a>
+<span class="lineNum">     283 </span>            :     // in certain cases it is OK to write and the end pointer.
+<span class="lineNum">     284 </span><span class="lineCov">      51680 :     T*   NonConstEnd() { return const_cast&lt;T*&gt;(this-&gt;_end); }</span>
+<span class="lineNum">     285 </span>            : public:
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<span class="lineNum">     287 </span>            :     //! Construct the array and initialize it as empty.
+<span class="lineNum">     288 </span>            :     FixedCArray()
+<span class="lineNum">     289 </span><span class="lineCov">       8320 :     {</span>
+<span class="lineNum">     290 </span><span class="lineCov">       8320 :         this-&gt;_begin = _buffer;</span>
+<span class="lineNum">     291 </span><span class="lineCov">       8320 :         this-&gt;_end = _buffer;</span>
+<span class="lineNum">     292 </span><span class="lineCov">       8320 :         *NonConstEnd() = (T) 0;</span>
+<span class="lineNum">     293 </span><span class="lineCov">       8320 :     }</span>
+<a name="294"><span class="lineNum">     294 </span>            :     </a>
+<span class="lineNum">     295 </span>            :     //! Construct the array and initialize it from a SubVector.
+<span class="lineNum">     296 </span>            :     FixedCArray(SubVector&lt;T&gt;* buffer)
+<span class="lineNum">     297 </span><span class="lineCov">       9280 :     {</span>
+<span class="lineNum">     298 </span><span class="lineCov">       9280 :         this-&gt;_begin = _buffer;</span>
+<span class="lineNum">     299 </span><span class="lineCov">      27840 :         size_t length = (buffer-&gt;Length() &lt; COUNT) ? buffer-&gt;Length() : COUNT;</span>
+<span class="lineNum">     300 </span><span class="lineCov">       9280 :         this-&gt;_end = _buffer + length;</span>
+<span class="lineNum">     301 </span><span class="lineCov">       9280 :         memcpy(_buffer, buffer-&gt;Begin(), length);</span>
+<span class="lineNum">     302 </span><span class="lineCov">       9280 :         *NonConstEnd() = (T) 0;</span>
+<span class="lineNum">     303 </span><span class="lineCov">       9280 :     }</span>
+<a name="304"><span class="lineNum">     304 </span>            :     </a>
+<span class="lineNum">     305 </span>            :     //! Construct the array and initialize it from a block of data.
+<span class="lineNum">     306 </span>            :     FixedCArray(T* begin, IntIndex length)
+<span class="lineNum">     307 </span><span class="lineCov">       6650 :     {</span>
+<span class="lineNum">     308 </span><span class="lineCov">       6650 :         this-&gt;_begin = _buffer;</span>
+<span class="lineNum">     309 </span><span class="lineCov">       6650 :         if (length &gt;= COUNT)</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :             length = COUNT;</span>
+<span class="lineNum">     311 </span><span class="lineCov">       6650 :         this-&gt;_end = _buffer + length;</span>
+<span class="lineNum">     312 </span><span class="lineCov">       6650 :         memcpy(_buffer, begin, length);</span>
+<span class="lineNum">     313 </span><span class="lineCov">       6650 :         *NonConstEnd() = (T) 0;</span>
+<span class="lineNum">     314 </span><span class="lineCov">       6650 :     }</span>
+<a name="315"><span class="lineNum">     315 </span>            :     </a>
+<span class="lineNum">     316 </span>            :     //! Return the maximum capacity of the array.
+<span class="lineNum">     317 </span><span class="lineCov">      13715 :     IntIndex Capacity() { return COUNT - 1; }</span>
+<span class="lineNum">     318 </span>            :     
+<span class="lineNum">     319 </span>            :     //! Return a reference to the indexed element in the vector (no range checking).
+<span class="lineNum">     320 </span>            :     const T&amp;  operator[] (const int i)  { return _buffer[i]; }
+<a name="321"><span class="lineNum">     321 </span>            :     </a>
+<span class="lineNum">     322 </span>            :     //! Append an element to the array if there is room.
+<span class="lineNum">     323 </span>            :     Boolean Append(T element)
+<span class="lineNum">     324 </span>            :     {
+<span class="lineNum">     325 </span><span class="lineCov">        195 :         IntIndex i = this-&gt;Length();</span>
+<span class="lineNum">     326 </span><span class="lineCov">        195 :         if (i &lt; COUNT) {</span>
+<span class="lineNum">     327 </span><span class="lineCov">        195 :             _buffer[i] = element;</span>
+<span class="lineNum">     328 </span><span class="lineCov">        195 :             this-&gt;_end++;</span>
+<span class="lineNum">     329 </span><span class="lineCov">        195 :             _buffer[this-&gt;Length()] = (T) 0;</span>
+<span class="lineNum">     330 </span><span class="lineCov">        195 :             return true;</span>
+<span class="lineNum">     331 </span>            :         } else {
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :             return false;</span>
+<span class="lineNum">     333 </span>            :         }
+<span class="lineNum">     334 </span><span class="lineCov">        195 :     }</span>
+<a name="335"><span class="lineNum">     335 </span>            :     </a>
+<span class="lineNum">     336 </span>            :     //! Append a block of elements to the array if there is room.
+<span class="lineNum">     337 </span>            :     Boolean Append(const T* begin, size_t length)
+<span class="lineNum">     338 </span>            :     {
+<span class="lineNum">     339 </span><span class="lineCov">      13715 :         if (length + this-&gt;Length() &gt; Capacity()) {</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :             return false;</span>
+<span class="lineNum">     341 </span>            :         }
+<span class="lineNum">     342 </span><span class="lineCov">      13715 :         memcpy(NonConstEnd(), begin, length);</span>
+<span class="lineNum">     343 </span><span class="lineCov">      13715 :         this-&gt;_end += length;</span>
+<span class="lineNum">     344 </span><span class="lineCov">      13715 :         *NonConstEnd() = (T) 0;</span>
+<span class="lineNum">     345 </span><span class="lineCov">      13715 :         return true;</span>
+<span class="lineNum">     346 </span><span class="lineCov">      13715 :     }</span>
+<span class="lineNum">     347 </span>            : };
+<span class="lineNum">     348 </span>            :     
+<span class="lineNum">     349 </span>            : }
+<span class="lineNum">     350 </span>            : #endif // DataTypes_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

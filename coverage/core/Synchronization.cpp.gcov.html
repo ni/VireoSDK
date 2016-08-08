@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/Synchronization.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - Synchronization.cpp<span style="font-size: 80%;"> (source / <a href="Synchronization.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">141</td>
+            <td class="headerCovTableEntry">163</td>
+            <td class="headerCovTableEntryMed">86.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            :  Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :  This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :  SDG
+<span class="lineNum">       8 </span>            :  */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :  \brief Native Vireo clump synchronizations and communication functions
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;VirtualInstrument.h&quot;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : using namespace Vireo;
+<span class="lineNum">      19 </span>            : 
+<a name="20"><span class="lineNum">      20 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      21 </span>            : //! Insert an observer into the ObservableObject's list
+<span class="lineNum">      22 </span>            : void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
+<span class="lineNum">      23 </span>            : {
+<span class="lineNum">      24 </span>            :     // clump should be set up by now.
+<span class="lineNum">      25 </span>            :     VIREO_ASSERT(pObserver-&gt;_clump != null)
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            :     // in MT, lock object
+<span class="lineNum">      28 </span><span class="lineCov">         75 :     pObserver-&gt;_object = this;</span>
+<span class="lineNum">      29 </span><span class="lineCov">         75 :     pObserver-&gt;_info = info;</span>
+<span class="lineNum">      30 </span><span class="lineCov">         75 :     pObserver-&gt;_next = _observerList;</span>
+<span class="lineNum">      31 </span><span class="lineCov">         75 :     _observerList = pObserver;</span>
+<span class="lineNum">      32 </span><span class="lineCov">         75 : }</span>
+<a name="33"><span class="lineNum">      33 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      34 </span>            : //! Remove an observer from the ObservableObject's list
+<span class="lineNum">      35 </span>            : void ObservableCore::RemoveObserver(Observer* pObserver)
+<span class="lineNum">      36 </span>            : {
+<span class="lineNum">      37 </span>            :     VIREO_ASSERT(pObserver != null);
+<span class="lineNum">      38 </span>            :     VIREO_ASSERT(pObserver-&gt;_object == this);
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :     Observer* pTemp;
+<span class="lineNum">      41 </span><span class="lineCov">        150 :     Observer** pFix = &amp;(_observerList); // previous next pointer to patch when removing element.</span>
+<span class="lineNum">      42 </span><span class="lineCov">        150 :     Observer* pVisitor = *pFix;</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineCov">        510 :     while(pVisitor) {</span>
+<span class="lineNum">      45 </span>            :         VIREO_ASSERT(pVisitor-&gt;_clump != null)
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :         pTemp = pVisitor;
+<span class="lineNum">      48 </span><span class="lineCov">        105 :         if (pTemp == pObserver) {</span>
+<span class="lineNum">      49 </span><span class="lineCov">         75 :             *pFix = pTemp-&gt;_next;</span>
+<span class="lineNum">      50 </span><span class="lineCov">         75 :         } else {</span>
+<span class="lineNum">      51 </span><span class="lineCov">         30 :             pFix = &amp;pVisitor-&gt;_next;</span>
+<span class="lineNum">      52 </span>            :         }
+<span class="lineNum">      53 </span><span class="lineCov">        105 :         pVisitor = *pFix;</span>
+<span class="lineNum">      54 </span>            :     }
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span><span class="lineCov">        150 :     pObserver-&gt;_info = 0;</span>
+<span class="lineNum">      57 </span><span class="lineCov">        150 :     pObserver-&gt;_object = null;</span>
+<span class="lineNum">      58 </span><span class="lineCov">        150 :     pObserver-&gt;_next = null;</span>
+<span class="lineNum">      59 </span><span class="lineCov">        150 : }</span>
+<a name="60"><span class="lineNum">      60 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      61 </span>            : //! Look in the waiting list for waiters that have a matching info.
+<span class="lineNum">      62 </span>            : void ObservableCore::ObserveStateChange(IntMax info)
+<span class="lineNum">      63 </span>            : {
+<span class="lineNum">      64 </span>            :     Observer *pNext = null;
+<span class="lineNum">      65 </span><span class="lineCov">        140 :     Observer ** ppPrevious = &amp;_observerList;</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span><span class="lineCov">        360 :     for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {</span>
+<span class="lineNum">      68 </span><span class="lineCov">         40 :         pNext = pObserver-&gt;_next;</span>
+<span class="lineNum">      69 </span><span class="lineCov">         40 :         if (info == pObserver-&gt;_info) {</span>
+<span class="lineNum">      70 </span>            :             // Remove the waiter from the list and enqueue it.
+<span class="lineNum">      71 </span><span class="lineCov">         40 :             *ppPrevious = pNext;</span>
+<span class="lineNum">      72 </span><span class="lineCov">         40 :             pObserver-&gt;_next = null;</span>
+<span class="lineNum">      73 </span><span class="lineCov">         40 :             pObserver-&gt;_clump-&gt;EnqueueRunQueue();</span>
+<span class="lineNum">      74 </span><span class="lineCov">         40 :         } else {</span>
+<span class="lineNum">      75 </span>            :             ppPrevious = &amp;pObserver-&gt;_next;
+<span class="lineNum">      76 </span>            :         }
+<span class="lineNum">      77 </span>            :     }
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">        140 : }</span></a>
+<span class="lineNum">      79 </span>            : //------------------------------------------------------------
+<span class="lineNum">      80 </span>            : void Timer::CheckTimers(PlatformTickType t)
+<span class="lineNum">      81 </span>            : {
+<span class="lineNum">      82 </span>            :     Observer* pTemp;
+<span class="lineNum">      83 </span><span class="lineCov">  267032894 :     Observer* elt = _observerList;</span>
+<span class="lineNum">      84 </span>            :     // pFix is previous next pointer to patch when removing element.
+<span class="lineNum">      85 </span>            :     Observer** pFix = &amp;(_observerList);
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :     // Enqueue all elements that are ready to run
+<span class="lineNum">      88 </span><span class="lineCov">  534066348 :     while (elt) {</span>
+<span class="lineNum">      89 </span>            :         pTemp = elt;
+<span class="lineNum">      90 </span><span class="lineCov">  267033103 :         if (pTemp-&gt;_info &lt;= t) {</span>
+<span class="lineNum">      91 </span>            :             // Remove
+<span class="lineNum">      92 </span><span class="lineCov">        280 :             *pFix = pTemp-&gt;_next;</span>
+<span class="lineNum">      93 </span><span class="lineCov">        280 :             pTemp-&gt;_next = null;</span>
+<span class="lineNum">      94 </span><span class="lineCov">        280 :             pTemp-&gt;_info = 0;</span>
+<span class="lineNum">      95 </span><span class="lineCov">        280 :             pTemp-&gt;_clump-&gt;EnqueueRunQueue();</span>
+<span class="lineNum">      96 </span>            :         } else {
+<span class="lineNum">      97 </span>            :             // Items are sorted at insertion, so once a time in the future
+<span class="lineNum">      98 </span>            :             // is found quit the loop.
+<span class="lineNum">      99 </span>            :             break;
+<span class="lineNum">     100 </span>            :         }
+<span class="lineNum">     101 </span><span class="lineCov">        280 :         elt = *pFix;</span>
+<span class="lineNum">     102 </span>            :     }
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : #ifdef VIREO_SUPPORTS_ISR
+<span class="lineNum">     105 </span>            :     if (_triggeredIsrList) {
+<span class="lineNum">     106 </span>            :         VIREO_ISR_DISABLE
+<span class="lineNum">     107 </span>            :         elt = _triggeredIsrList;
+<span class="lineNum">     108 </span>            :         while (elt) {
+<span class="lineNum">     109 </span>            :             pClump = elt;
+<span class="lineNum">     110 </span>            :             elt = elt-&gt;_next;
+<span class="lineNum">     111 </span>            :             pClump-&gt;_next = null;
+<span class="lineNum">     112 </span>            :             pClump-&gt;_wakeUpInfo = 0;    // Put in known state.
+<span class="lineNum">     113 </span>            :             _runQueue.Enqueue(pClump);
+<span class="lineNum">     114 </span>            :         }
+<span class="lineNum">     115 </span>            :         _triggeredIsrList = null;
+<span class="lineNum">     116 </span>            :         VIREO_ISR_ENABLE
+<span class="lineNum">     117 </span>            :     }
+<span class="lineNum">     118 </span>            : #endif
+<a name="119"><span class="lineNum">     119 </span><span class="lineCov">  267032894 : }</span></a>
+<span class="lineNum">     120 </span>            : //------------------------------------------------------------
+<span class="lineNum">     121 </span>            : void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount)
+<span class="lineNum">     122 </span>            : {
+<span class="lineNum">     123 </span><span class="lineCov">        320 :     pObserver-&gt;_object = this;</span>
+<span class="lineNum">     124 </span><span class="lineCov">        320 :     pObserver-&gt;_info =  tickCount;</span>
+<span class="lineNum">     125 </span><span class="lineCov">        320 :     if (_observerList == null) {</span>
+<span class="lineNum">     126 </span>            :         VIREO_ASSERT(pObserver-&gt;_next == null)
+<span class="lineNum">     127 </span>            :         // No list, now there is one.
+<span class="lineNum">     128 </span><span class="lineCov">         86 :         _observerList = pObserver;</span>
+<span class="lineNum">     129 </span><span class="lineCov">         86 :     } else {</span>
+<span class="lineNum">     130 </span>            :         // Insert into the list based on wake-up time.
+<span class="lineNum">     131 </span>            :         Observer** pFix = &amp;_observerList;
+<span class="lineNum">     132 </span>            :         Observer* pVisitor = *pFix;
+<span class="lineNum">     133 </span><span class="lineCov">       1648 :         while (pVisitor &amp;&amp; (tickCount &gt; pVisitor-&gt;_info)) {</span>
+<span class="lineNum">     134 </span><span class="lineCov">        234 :             pFix = &amp;(pVisitor-&gt;_next);</span>
+<span class="lineNum">     135 </span><span class="lineCov">        234 :             pVisitor = *pFix;</span>
+<span class="lineNum">     136 </span>            :         }
+<span class="lineNum">     137 </span><span class="lineCov">        234 :         pObserver-&gt;_next = pVisitor;</span>
+<span class="lineNum">     138 </span><span class="lineCov">        234 :         *pFix = pObserver;</span>
+<span class="lineNum">     139 </span>            :     }
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">        320 : }</span></a>
+<span class="lineNum">     141 </span>            : //------------------------------------------------------------
+<span class="lineNum">     142 </span>            : VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
+<span class="lineNum">     143 </span>            : {
+<span class="lineNum">     144 </span><span class="lineCov">          5 :     PlatformTickType future = gPlatform.Timer.MicrosecondsFromNowToTickCount(_Param(0));</span>
+<span class="lineNum">     145 </span><span class="lineCov">          5 :     return THREAD_CLUMP()-&gt;WaitUntilTickCount(future, _NextInstruction());</span>
+<a name="146"><span class="lineNum">     146 </span>            : }</a>
+<span class="lineNum">     147 </span>            : //------------------------------------------------------------
+<span class="lineNum">     148 </span>            : VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
+<span class="lineNum">     149 </span>            : {
+<span class="lineNum">     150 </span><span class="lineCov">        240 :     PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(_Param(0));</span>
+<span class="lineNum">     151 </span><span class="lineCov">        240 :     return THREAD_CLUMP()-&gt;WaitUntilTickCount(future, _NextInstruction());</span>
+<a name="152"><span class="lineNum">     152 </span>            : }</a>
+<span class="lineNum">     153 </span>            : //------------------------------------------------------------
+<span class="lineNum">     154 </span>            : VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
+<span class="lineNum">     155 </span>            : {
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     return THREAD_CLUMP()-&gt;WaitUntilTickCount(gPlatform.Timer.MicrosecondsToTickCount(_Param(0)), _NextInstruction());</span>
+<a name="157"><span class="lineNum">     157 </span>            : }</a>
+<span class="lineNum">     158 </span>            : //------------------------------------------------------------
+<span class="lineNum">     159 </span>            : void OccurrenceCore::SetOccurrence()
+<span class="lineNum">     160 </span>            : {
+<span class="lineNum">     161 </span><span class="lineCov">         10 :     _setCount++;</span>
+<span class="lineNum">     162 </span><span class="lineCov">         10 :     ObserveStateChange(_setCount);</span>
+<a name="163"><span class="lineNum">     163 </span><span class="lineCov">         10 : }</span></a>
+<span class="lineNum">     164 </span>            : //------------------------------------------------------------
+<span class="lineNum">     165 </span>            : Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
+<span class="lineNum">     166 </span>            : {
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :     if ((count - _setCount) &gt; 0) {</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     } else if (ignorePrevious &amp;&amp; count != _setCount) {</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     171 </span>            :     } else {
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     173 </span>            :     }
+<a name="174"><span class="lineNum">     174 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     175 </span>            : //------------------------------------------------------------
+<span class="lineNum">     176 </span>            : VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32)
+<span class="lineNum">     177 </span>            : {
+<span class="lineNum">     178 </span><span class="lineCov">         30 :     OccurrenceCore *pOcc = _Param(0)-&gt;ObjBegin();</span>
+<span class="lineNum">     179 </span><span class="lineCov">         30 :     Boolean bIgnorePrevious = _Param(1);</span>
+<span class="lineNum">     180 </span><span class="lineCov">         30 :     UInt32 msTimeout = _Param(2);</span>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineCov">         30 :     if (!bIgnorePrevious &amp;&amp; pOcc-&gt;HasOccurred(_Param(3), bIgnorePrevious)) {</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :         _Param(3) = pOcc-&gt;Count();</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :         return _NextInstruction();</span>
+<span class="lineNum">     185 </span>            :     }
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span><span class="lineCov">         30 :     VIClump* clump = THREAD_CLUMP();</span>
+<span class="lineNum">     188 </span><span class="lineCov">         30 :     Observer* pObserver = clump-&gt;GetObservationStates(2);</span>
+<span class="lineNum">     189 </span><span class="lineCov">         30 :     if (!pObserver) {</span>
+<span class="lineNum">     190 </span><span class="lineCov">         15 :         PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout);</span>
+<span class="lineNum">     191 </span><span class="lineCov">         15 :         pObserver = clump-&gt;ReserveObservationStatesWithTimeout(2, future);</span>
+<span class="lineNum">     192 </span><span class="lineCov">         15 :         pOcc-&gt;InsertObserver(pObserver+1, pOcc-&gt;Count()+1);</span>
+<span class="lineNum">     193 </span><span class="lineCov">         15 :         return clump-&gt;WaitOnObservableObject(_this);</span>
+<span class="lineNum">     194 </span>            :     } else {
+<span class="lineNum">     195 </span>            :         // If it woke up because of timeout or occerrence..
+<span class="lineNum">     196 </span><span class="lineCov">         15 :         clump-&gt;ClearObservationStates();</span>
+<span class="lineNum">     197 </span><span class="lineCov">         15 :         return _NextInstruction();</span>
+<span class="lineNum">     198 </span>            :     }
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">         30 : }</span></a>
+<span class="lineNum">     200 </span>            : //------------------------------------------------------------
+<span class="lineNum">     201 </span>            : VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
+<span class="lineNum">     202 </span>            : {
+<span class="lineNum">     203 </span><span class="lineCov">         10 :     OccurrenceCore *pOcc = _Param(0)-&gt;ObjBegin();</span>
+<span class="lineNum">     204 </span><span class="lineCov">         10 :     pOcc-&gt;SetOccurrence();</span>
+<span class="lineNum">     205 </span><span class="lineCov">         10 :     return _NextInstruction();</span>
+<a name="206"><span class="lineNum">     206 </span>            : }</a>
+<span class="lineNum">     207 </span>            : //------------------------------------------------------------
+<span class="lineNum">     208 </span>            : IntIndex QueueCore::RemoveIndex()
+<span class="lineNum">     209 </span>            : {
+<span class="lineNum">     210 </span><span class="lineCov">         65 :     if (_count &lt;= _insert) {</span>
+<span class="lineNum">     211 </span><span class="lineCov">         65 :         return _insert - _count;</span>
+<span class="lineNum">     212 </span>            :     } else {
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :         return _elements-&gt;Length() - (_count - _insert);</span>
+<span class="lineNum">     214 </span>            :     }
+<a name="215"><span class="lineNum">     215 </span><span class="lineCov">         65 : }</span></a>
+<span class="lineNum">     216 </span>            : //------------------------------------------------------------
+<span class="lineNum">     217 </span>            : Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
+<span class="lineNum">     218 </span>            : {
+<span class="lineNum">     219 </span><span class="lineCov">         65 :     IntIndex length = _elements-&gt;Length();</span>
+<span class="lineNum">     220 </span><span class="lineCov">         65 :     IntIndex space = length - _count;</span>
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span><span class="lineCov">         65 :     if (space &gt;= additionalCount) {</span>
+<span class="lineNum">     223 </span>            :         // There is enough room, wrap the insert location as needed.
+<span class="lineNum">     224 </span><span class="lineCov">         30 :         if (_insert &gt;= length) {</span>
+<span class="lineNum">     225 </span><span class="lineCov">         25 :             _insert = 0;</span>
+<span class="lineNum">     226 </span><span class="lineCov">         25 :         }</span>
+<span class="lineNum">     227 </span><span class="lineCov">         30 :         return true;</span>
+<span class="lineNum">     228 </span>            :     } else {
+<span class="lineNum">     229 </span>            :         // Not enough room, grow (if possible)
+<span class="lineNum">     230 </span><span class="lineCov">         35 :         NIError err = _elements-&gt;Insert1D(_insert, additionalCount);</span>
+<span class="lineNum">     231 </span><span class="lineCov">         35 :         return (err == kNIError_Success);</span>
+<span class="lineNum">     232 </span>            :     }
+<a name="233"><span class="lineNum">     233 </span><span class="lineCov">         65 : }</span></a>
+<span class="lineNum">     234 </span>            : //------------------------------------------------------------
+<span class="lineNum">     235 </span>            : Boolean QueueCore::Enqueue(void* pData)
+<span class="lineNum">     236 </span>            : {
+<span class="lineNum">     237 </span><span class="lineCov">         65 :     if (!TryMakeRoom(1))</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span><span class="lineCov">         65 :     TypeRef eltType = _elements-&gt;ElementType();</span>
+<span class="lineNum">     241 </span><span class="lineCov">         65 :     void* pTarget = _elements-&gt;BeginAt(_insert);</span>
+<span class="lineNum">     242 </span><span class="lineCov">         65 :     eltType-&gt;CopyData(pData, pTarget);</span>
+<span class="lineNum">     243 </span><span class="lineCov">         65 :     _count++;</span>
+<span class="lineNum">     244 </span><span class="lineCov">         65 :     _insert++;</span>
+<span class="lineNum">     245 </span><span class="lineCov">         65 :     ObserveStateChange(1);</span>
+<span class="lineNum">     246 </span><span class="lineCov">         65 :     return true;</span>
+<a name="247"><span class="lineNum">     247 </span><span class="lineCov">         65 : }</span></a>
+<span class="lineNum">     248 </span>            : //------------------------------------------------------------
+<span class="lineNum">     249 </span>            : Boolean QueueCore::Dequeue(void* pData)
+<span class="lineNum">     250 </span>            : {
+<span class="lineNum">     251 </span><span class="lineCov">        155 :     TypeRef eltType = _elements-&gt;ElementType();</span>
+<span class="lineNum">     252 </span><span class="lineCov">        155 :     if (_count &lt; 1) {</span>
+<span class="lineNum">     253 </span><span class="lineCov">         90 :         eltType-&gt;InitData(pData);</span>
+<span class="lineNum">     254 </span><span class="lineCov">         90 :         return false;</span>
+<span class="lineNum">     255 </span>            :     } else {
+<span class="lineNum">     256 </span><span class="lineCov">         65 :         void* pSource = _elements-&gt;BeginAt(RemoveIndex());</span>
+<span class="lineNum">     257 </span><span class="lineCov">         65 :         eltType-&gt;CopyData(pSource, pData);</span>
+<span class="lineNum">     258 </span><span class="lineCov">         65 :         _count--;</span>
+<span class="lineNum">     259 </span><span class="lineCov">         65 :         ObserveStateChange(-1);</span>
+<span class="lineNum">     260 </span><span class="lineCov">         65 :         return true;</span>
+<span class="lineNum">     261 </span>            :     }
+<a name="262"><span class="lineNum">     262 </span><span class="lineCov">        155 : }</span></a>
+<span class="lineNum">     263 </span>            : //------------------------------------------------------------
+<span class="lineNum">     264 </span>            : VIREO_FUNCTION_SIGNATURE2(Queue_Obtain, void, StringRef)
+<span class="lineNum">     265 </span>            : {
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     267 </span>            : }
+<a name="268"><span class="lineNum">     268 </span>            : </a>
+<span class="lineNum">     269 </span>            : //------------------------------------------------------------
+<span class="lineNum">     270 </span>            : VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
+<span class="lineNum">     271 </span>            : {
+<span class="lineNum">     272 </span><span class="lineCov">         65 :     QueueCore *pQV = _Param(0)-&gt;ObjBegin();</span>
+<span class="lineNum">     273 </span><span class="lineCov">         65 :     VIClump* clump = THREAD_CLUMP();</span>
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     // If the instruction needs to retry it will use two Observer records
+<span class="lineNum">     276 </span>            :     // [0] is for the timer and
+<span class="lineNum">     277 </span>            :     // [1] is for the queue
+<span class="lineNum">     278 </span>            :     // These records are reserved if necessary in below. If none are reserved
+<span class="lineNum">     279 </span>            :     // then this is the primary execution of the instruction
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :     // First time or retry either way, attempt to enqueue value
+<span class="lineNum">     282 </span><span class="lineCov">         65 :     Boolean done = pQV-&gt;Enqueue(_ParamPointer(1));</span>
+<span class="lineNum">     283 </span><span class="lineCov">         65 :     _Param(3) = !done;</span>
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :     // If it succeeded or timed out then its time to move to the next instruction.
+<span class="lineNum">     286 </span><span class="lineCov">         65 :     Observer* pObserver = clump-&gt;GetObservationStates(2);</span>
+<span class="lineNum">     287 </span><span class="lineCov">         65 :     if (done || (pObserver &amp;&amp; pObserver[0]._info == 0)) {</span>
+<span class="lineNum">     288 </span><span class="lineCov">         65 :         clump-&gt;ClearObservationStates();</span>
+<span class="lineNum">     289 </span><span class="lineCov">         65 :         return _NextInstruction();</span>
+<span class="lineNum">     290 </span>            :     }
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :     Int32 timeOut = _Param(2);</span>
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :     if (pObserver) {</span>
+<span class="lineNum">     294 </span>            :         // This is a retry and another clump got the element but
+<span class="lineNum">     295 </span>            :         // there is still time to wait, continue waiting.
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :         return clump-&gt;WaitOnObservableObject(_this);</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :     } else if (timeOut != 0) {</span>
+<span class="lineNum">     298 </span>            :         // This is the initial call and a timeout has been supplied.
+<span class="lineNum">     299 </span>            :         // Wait on the queue and the timeout. -1 will wait forever.
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :         pObserver = clump-&gt;ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));</span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :         pQV-&gt;InsertObserver(pObserver+1, -1);</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :         return clump-&gt;WaitOnObservableObject(_this);</span>
+<span class="lineNum">     303 </span>            :     } else {
+<span class="lineNum">     304 </span>            :         // With timeout == 0 just continue immediately.
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :         return _NextInstruction();</span>
+<span class="lineNum">     306 </span>            :     }
+<a name="307"><span class="lineNum">     307 </span><span class="lineCov">         65 : }</span></a>
+<span class="lineNum">     308 </span>            : //------------------------------------------------------------
+<span class="lineNum">     309 </span>            : VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
+<span class="lineNum">     310 </span>            : {
+<span class="lineNum">     311 </span><span class="lineCov">        155 :     QueueCore *pQV = _Param(0)-&gt;ObjBegin();</span>
+<span class="lineNum">     312 </span><span class="lineCov">        155 :     VIClump* clump = THREAD_CLUMP();</span>
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            :     // If the instruction needs to retry it will use two Observer records
+<span class="lineNum">     315 </span>            :     // [0] is for the timer and
+<span class="lineNum">     316 </span>            :     // [1] is for the queue
+<span class="lineNum">     317 </span>            :     // These records are reserved if necessary in below. If none are reserved
+<span class="lineNum">     318 </span>            :     // then this is the primary execution of the instruction
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            :     // First time or retry either way, attempt to dequeue value
+<span class="lineNum">     321 </span><span class="lineCov">        155 :     Boolean done = pQV-&gt;Dequeue(_ParamPointer(1));</span>
+<span class="lineNum">     322 </span><span class="lineCov">        155 :     _Param(3) = !done;</span>
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span>            :     // If it succeeded or timed out then its time to move to the next instruction.
+<span class="lineNum">     325 </span><span class="lineCov">        155 :     Observer* pObserver = clump-&gt;GetObservationStates(2);</span>
+<span class="lineNum">     326 </span><span class="lineCov">        275 :     if (done || (pObserver &amp;&amp; pObserver[0]._info == 0)) {</span>
+<span class="lineNum">     327 </span><span class="lineCov">         95 :         clump-&gt;ClearObservationStates();</span>
+<span class="lineNum">     328 </span><span class="lineCov">         95 :         return _NextInstruction();</span>
+<span class="lineNum">     329 </span>            :     }
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span><span class="lineCov">         60 :     Int32 timeOut = _Param(2);</span>
+<span class="lineNum">     332 </span><span class="lineCov">         60 :     if (pObserver) {</span>
+<span class="lineNum">     333 </span>            :         // This is a retry and another clump got the element but
+<span class="lineNum">     334 </span>            :         // there is still time to wait, continue waiting.
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :         return clump-&gt;WaitOnObservableObject(_this);</span>
+<span class="lineNum">     336 </span><span class="lineCov">         60 :     } else if (timeOut != 0) {</span>
+<span class="lineNum">     337 </span>            :         // This is the initial call and a timeout has been supplied.
+<span class="lineNum">     338 </span>            :         // Wait on the queue and the timeout. -1 will wait forever.
+<span class="lineNum">     339 </span><span class="lineCov">         60 :         pObserver = clump-&gt;ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));</span>
+<span class="lineNum">     340 </span><span class="lineCov">         60 :         pQV-&gt;InsertObserver(pObserver+1, 1);</span>
+<span class="lineNum">     341 </span><span class="lineCov">         60 :         return clump-&gt;WaitOnObservableObject(_this);</span>
+<span class="lineNum">     342 </span>            :     } else {
+<span class="lineNum">     343 </span>            :         // With timeout == 0 just continue immediately.
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :         return _NextInstruction();</span>
+<span class="lineNum">     345 </span>            :     }
+<a name="346"><span class="lineNum">     346 </span><span class="lineCov">        155 : }</span></a>
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(Synchronization)</span>
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            :     // Timers
+<span class="lineNum">     351 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(WaitMilliseconds, &quot;p(i(UInt32))&quot;)</span>
+<span class="lineNum">     352 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, &quot;p(i(Int64))&quot;)</span>
+<span class="lineNum">     353 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(WaitMicroseconds, &quot;p(i(UInt32))&quot;)</span>
+<span class="lineNum">     354 </span>            : 
+<span class="lineNum">     355 </span>            :     // Base ObservableObject
+<span class="lineNum">     356 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Observer, &quot;c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))&quot;);</span>
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :     // Occurrences
+<span class="lineNum">     359 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(OccurrenceValue, &quot;c(e(DataPointer firstState)e(Int32 setCount)&quot;)</span>
+<span class="lineNum">     360 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Occurrence, &quot;a(OccurrenceValue)&quot;)</span>
+<span class="lineNum">     361 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(WaitOnOccurrence, &quot;p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)s(Int32 staticCount))&quot;)</span>
+<span class="lineNum">     362 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(SetOccurrence, &quot;p(i(Occurrence))&quot;)</span>
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :     // Queues
+<span class="lineNum">     365 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(QueueValue, &quot;c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count))&quot;)</span>
+<span class="lineNum">     366 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Queue, &quot;a(QueueValue)&quot;)</span>
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, &quot;p(o(Queue queue)i(String name))&quot;)</span>
+<span class="lineNum">     369 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, &quot;p(io(Queue queue)i(* element)i(Int32 timeOut)o(Boolean timedOut))&quot;)</span>
+<span class="lineNum">     370 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, &quot;p(io(Queue queue)o(* element)i(Int32 timeOut)o(Boolean timedOut))&quot;)</span>
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            :     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, &quot;p(io(Queue&lt;.$1&gt; queue)i($1 element)i(Int32 timeOut)o(Boolean timedOut))&quot;)
+<span class="lineNum">     373 </span>            :     // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, &quot;p(io(Queue&lt;.$1&gt; queue)o($1 element)i(Int32 timeOut)o(Boolean timedOut))&quot;)
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            :     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  &quot;p(io(Queue queue)i(Double element))&quot;)
+<span class="lineNum">     376 </span>            :     // DEFINE_VIREO_FUNCTION(LossyEnqueueElement, &quot;&quot;)
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            :     #if 0
+<span class="lineNum">     379 </span>            :     DEFINE_VIREO_FUNCTION(PreviewElement, &quot;&quot;)
+<span class="lineNum">     380 </span>            :     DEFINE_VIREO_FUNCTION(Status, &quot;&quot;)
+<span class="lineNum">     381 </span>            :     DEFINE_VIREO_FUNCTION(Release, &quot;&quot;)
+<span class="lineNum">     382 </span>            :     DEFINE_VIREO_FUNCTION(Flush, &quot;&quot;)
+<span class="lineNum">     383 </span>            :     #endif
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

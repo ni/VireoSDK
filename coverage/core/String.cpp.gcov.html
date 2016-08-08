@@ -1,0 +1,715 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/String.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - String.cpp<span style="font-size: 80%;"> (source / <a href="String.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">254</td>
+            <td class="headerCovTableEntry">319</td>
+            <td class="headerCovTableEntryMed">79.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryHi">91.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Native Vireo string functions.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;BuildConfig.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      17 </span>            : #include &quot;StringUtilities.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;TDCodecVia.h&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : using namespace Vireo;
+<span class="lineNum">      21 </span>            : 
+<a name="22"><span class="lineNum">      22 </span>            : //---------------------------------------------</a>
+<span class="lineNum">      23 </span>            : //! Append a ViaEncoded string, decode it in the process.
+<span class="lineNum">      24 </span>            : void String::AppendViaDecoded(SubString* string)
+<span class="lineNum">      25 </span>            : {
+<span class="lineNum">      26 </span><span class="lineCov">        100 :     Int32 value = 0;</span>
+<span class="lineNum">      27 </span>            :     Utf8Char c;
+<span class="lineNum">      28 </span><span class="lineCov">        100 :     SubString ss = string;</span>
+<span class="lineNum">      29 </span>            :     
+<span class="lineNum">      30 </span><span class="lineCov">        100 :     IntIndex originalLength = Length();</span>
+<span class="lineNum">      31 </span><span class="lineCov">        100 :     Int32 decodedLength = originalLength + ss.Length();</span>
+<span class="lineNum">      32 </span>            :     
+<span class="lineNum">      33 </span>            :     // Pass one, see how many %XX sequences exist.
+<span class="lineNum">      34 </span>            :     // Utf8 multibyte sequences are copied over byte by byte.
+<span class="lineNum">      35 </span><span class="lineCov">        865 :     while(ss.ReadRawChar(&amp;c)) {</span>
+<span class="lineNum">      36 </span><span class="lineCov">        695 :         if (c == '%' &amp;&amp; ss.ReadHex(&amp;value)) {</span>
+<span class="lineNum">      37 </span><span class="lineCov">         30 :             decodedLength  -= 2;</span>
+<span class="lineNum">      38 </span><span class="lineCov">         30 :         }</span>
+<span class="lineNum">      39 </span>            :     }
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span><span class="lineCov">        100 :     if (Resize1D(decodedLength)) {</span>
+<span class="lineNum">      42 </span>            :         // Pass two, copy over the characters and decode
+<span class="lineNum">      43 </span>            :         // valid %XX sequences. Warning, %XX values above
+<span class="lineNum">      44 </span>            :         // 127 could easly result in invalid Utf8 sequences.
+<span class="lineNum">      45 </span><span class="lineCov">        100 :         ss = string;</span>
+<span class="lineNum">      46 </span><span class="lineCov">        100 :         Utf8Char* pDest = BeginAt(originalLength);</span>
+<span class="lineNum">      47 </span><span class="lineCov">        865 :         while(ss.ReadRawChar(&amp;c)) {</span>
+<span class="lineNum">      48 </span><span class="lineCov">        695 :             if (c == '%' &amp;&amp; ss.ReadHex(&amp;value)) {</span>
+<span class="lineNum">      49 </span><span class="lineCov">         30 :                 *pDest++ = (Utf8Char)value;</span>
+<span class="lineNum">      50 </span><span class="lineCov">         30 :             } else {</span>
+<span class="lineNum">      51 </span><span class="lineCov">        635 :                 *pDest++ = c;</span>
+<span class="lineNum">      52 </span>            :             }
+<span class="lineNum">      53 </span>            :         }
+<span class="lineNum">      54 </span>            :     }
+<span class="lineNum">      55 </span><span class="lineCov">        100 : }</span>
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : /**
+<span class="lineNum">      58 </span>            :  * This one will escape the input substring and then append it to current string
+<span class="lineNum">      59 </span>            :  * e.g. It is used for JSON formating.
+<span class="lineNum">      60 </span>            :  * dest is the location in the string to append.
+<span class="lineNum">      61 </span>            :  * This function is well implemented so that it support in place operation
+<span class="lineNum">      62 </span>            :  * which means the input substring could point to the String object.
+<a name="63"><span class="lineNum">      63 </span>            :  * This is possible because the escaped string is always longer than original one.</a>
+<span class="lineNum">      64 </span>            :  * */
+<span class="lineNum">      65 </span>            : void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
+<span class="lineNum">      66 </span>            : {
+<span class="lineNum">      67 </span>            :     // if inplaceiNDEX is positive, it means it's an in place operation
+<span class="lineNum">      68 </span>            :     IntIndex inplaceIndex = -1;
+<span class="lineNum">      69 </span><span class="lineCov">        230 :     if (source &gt;= this-&gt;Begin() &amp;&amp; source &lt; this-&gt;End()) {</span>
+<span class="lineNum">      70 </span><span class="lineCov">         90 :         inplaceIndex = (IntIndex) (source - this-&gt;Begin());</span>
+<span class="lineNum">      71 </span><span class="lineCov">         90 :     }</span>
+<span class="lineNum">      72 </span>            :     Int32 needLength = 0;
+<span class="lineNum">      73 </span>            :     const Utf8Char* begin = source;
+<span class="lineNum">      74 </span><span class="lineCov">       1900 :     for (IntIndex i=0; i&lt; len; i++) {</span>
+<span class="lineNum">      75 </span><span class="lineCov">        835 :         Utf8Char c = *(begin+i);</span>
+<span class="lineNum">      76 </span>            :         // see the document on http://json.org. need handle more control character and \uhexadecimal
+<span class="lineNum">      77 </span><span class="lineCov">        835 :         switch (c) {</span>
+<span class="lineNum">      78 </span>            :         case '\n': case '\r': case '\t':
+<span class="lineNum">      79 </span>            :         case '\f': case '\b': case '\\':
+<span class="lineNum">      80 </span>            :         case '&quot;':
+<span class="lineNum">      81 </span><span class="lineCov">         15 :             needLength += 2;</span>
+<span class="lineNum">      82 </span><span class="lineCov">         15 :             break;</span>
+<span class="lineNum">      83 </span>            :         default:
+<span class="lineNum">      84 </span><span class="lineCov">        820 :             needLength++;</span>
+<span class="lineNum">      85 </span><span class="lineCov">        820 :             break;</span>
+<span class="lineNum">      86 </span>            :         }
+<span class="lineNum">      87 </span>            :     }
+<span class="lineNum">      88 </span><span class="lineCov">        345 :     IntIndex originLength = inplaceIndex &gt; -1 ? inplaceIndex : Length();</span>
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span><span class="lineCov">        115 :     this-&gt;Resize1D(originLength+needLength);</span>
+<span class="lineNum">      91 </span><span class="lineCov">        115 :     if (inplaceIndex &gt; -1) {</span>
+<span class="lineNum">      92 </span><span class="lineCov">         90 :         begin = this-&gt;BeginAt(inplaceIndex);</span>
+<span class="lineNum">      93 </span><span class="lineCov">         90 :     }</span>
+<span class="lineNum">      94 </span><span class="lineCov">        115 :     Utf8Char* ptr = this-&gt;End()-1;</span>
+<span class="lineNum">      95 </span><span class="lineCov">       1900 :     for (IntIndex i= len -1; i &gt;=0; i--) {</span>
+<span class="lineNum">      96 </span><span class="lineCov">        835 :         Utf8Char c = *(begin + i);</span>
+<span class="lineNum">      97 </span><span class="lineCov">        835 :         switch (c) {</span>
+<span class="lineNum">      98 </span>            :         case '\n':
+<span class="lineNum">      99 </span><span class="lineCov">         15 :             *ptr-- = 'n';</span>
+<span class="lineNum">     100 </span><span class="lineCov">         15 :             *ptr-- = '\\';</span>
+<span class="lineNum">     101 </span><span class="lineCov">         15 :             break;</span>
+<span class="lineNum">     102 </span>            :         case '\r':
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :             *ptr-- ='r';</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     106 </span>            :         case '\t':
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :             *ptr-- = 't';</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :            break;</span>
+<span class="lineNum">     110 </span>            :         case '\f' :
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :             *ptr-- = 'f';</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :            break;</span>
+<span class="lineNum">     114 </span>            :         case '\b':
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :            *ptr-- = 'b';</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :            *ptr-- = '\\';</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :            break;</span>
+<span class="lineNum">     118 </span>            :         case '\\':
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :            break;</span>
+<span class="lineNum">     122 </span>            :         case '&quot;':
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :             *ptr--  = '\&quot;';</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :             *ptr-- = '\\';</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     126 </span>            :         default:
+<span class="lineNum">     127 </span><span class="lineCov">        820 :             *ptr-- = c;</span>
+<span class="lineNum">     128 </span><span class="lineCov">        820 :             break;</span>
+<span class="lineNum">     129 </span>            :        }
+<span class="lineNum">     130 </span>            :     }
+<span class="lineNum">     131 </span><span class="lineCov">        115 : }</span>
+<span class="lineNum">     132 </span>            : //------------------------------------------------------------
+<span class="lineNum">     133 </span>            : struct ReplaceSubstringStruct : public InstructionCore
+<span class="lineNum">     134 </span>            : {
+<span class="lineNum">     135 </span>            :     _ParamDef(StringRef, StringIn);
+<span class="lineNum">     136 </span>            :     _ParamDef(StringRef, ReplacementString);
+<span class="lineNum">     137 </span>            :     _ParamDef(Int32, Offset);
+<span class="lineNum">     138 </span>            :     _ParamDef(Int32, Length);
+<a name="139"><span class="lineNum">     139 </span>            :     _ParamDef(StringRef, ResultString); // TODO cannot be in-place , might need to allow for this</a>
+<span class="lineNum">     140 </span>            :     _ParamDef(StringRef, ReplacedSubString);
+<span class="lineNum">     141 </span><span class="lineCov">         50 :     NEXT_INSTRUCTION_METHOD()</span>
+<a name="142"><span class="lineNum">     142 </span>            : };</a>
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
+<span class="lineNum">     145 </span>            : {
+<span class="lineNum">     146 </span><span class="lineCov">         50 :     StringRef stringIn = _Param(StringIn);</span>
+<span class="lineNum">     147 </span><span class="lineCov">        150 :     StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : 0;</span>
+<span class="lineNum">     148 </span><span class="lineCov">        150 :     IntIndex replacementStringLength = replacementString ? replacementString-&gt;Length() : 0;</span>
+<span class="lineNum">     149 </span><span class="lineCov">        150 :     StringRef resultString = _ParamPointer(ResultString) ? _Param(ResultString) : null;</span>
+<span class="lineNum">     150 </span><span class="lineCov">        150 :     StringRef replacedSubString = _ParamPointer(ReplacedSubString) ? _Param(ReplacedSubString) : null;</span>
+<span class="lineNum">     151 </span><span class="lineCov">        150 :     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;</span>
+<span class="lineNum">     152 </span><span class="lineCov">        150 :     IntIndex length =  _ParamPointer(Length) ? _Param(Length) : replacementStringLength;</span>
+<span class="lineNum">     153 </span><span class="lineCov">         50 :     IntIndex stringInLength =  stringIn-&gt;Length();</span>
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span><span class="lineCov">         50 :     TypeRef eltType = stringIn-&gt;ElementType();</span>
+<span class="lineNum">     156 </span><span class="lineCov">         50 :     length = Max(0, Min(length, stringInLength - offset));</span>
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :     // Replace substring only if the offset is not past the end of the string
+<span class="lineNum">     159 </span><span class="lineCov">         95 :     if ((offset &gt;= 0) &amp;&amp; (offset &lt;= stringInLength)) {</span>
+<span class="lineNum">     160 </span>            :         VIREO_ASSERT(stringIn != resultString &amp;&amp; stringIn != replacedSubString);
+<span class="lineNum">     161 </span>            :         VIREO_ASSERT(replacementString == null || (replacementString != resultString &amp;&amp; replacementString != replacedSubString));
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span><span class="lineCov">         35 :         Int32 resultLength = stringInLength + (replacementStringLength - length);</span>
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span><span class="lineCov">         35 :         if (replacedSubString) {</span>
+<span class="lineNum">     166 </span><span class="lineCov">         35 :             replacedSubString-&gt;Resize1D(length);</span>
+<span class="lineNum">     167 </span>            :             // Copy out the substring to be replaced
+<span class="lineNum">     168 </span><span class="lineCov">         35 :             eltType-&gt;CopyData(stringIn-&gt;BeginAt(offset), replacedSubString-&gt;Begin(), length);</span>
+<span class="lineNum">     169 </span><span class="lineCov">         35 :         }</span>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineCov">         35 :         if (resultString) {</span>
+<span class="lineNum">     172 </span><span class="lineCov">         35 :             resultString-&gt;Resize1D(resultLength);</span>
+<span class="lineNum">     173 </span>            :             // Copy the original string up to the offset point
+<span class="lineNum">     174 </span><span class="lineCov">         35 :             eltType-&gt;CopyData(stringIn-&gt;Begin(), resultString-&gt;Begin(), offset);</span>
+<span class="lineNum">     175 </span>            :             // Copy in the replacement
+<span class="lineNum">     176 </span><span class="lineCov">         35 :             if (replacementString)</span>
+<span class="lineNum">     177 </span><span class="lineCov">         35 :                 eltType-&gt;CopyData(replacementString-&gt;Begin(), resultString-&gt;BeginAt(offset), replacementStringLength);</span>
+<span class="lineNum">     178 </span>            :             // Copy the original tail
+<span class="lineNum">     179 </span><span class="lineCov">         35 :             Int32 tailLength = (stringInLength - (offset + length));</span>
+<span class="lineNum">     180 </span><span class="lineCov">         35 :             eltType-&gt;CopyData(stringIn-&gt;BeginAt(offset + length), resultString-&gt;BeginAt(offset + replacementStringLength), tailLength);</span>
+<span class="lineNum">     181 </span><span class="lineCov">         35 :         }</span>
+<span class="lineNum">     182 </span>            :     } else {
+<span class="lineNum">     183 </span><span class="lineCov">         30 :         if (resultString &amp;&amp; (stringIn != resultString))</span>
+<span class="lineNum">     184 </span><span class="lineCov">         15 :             stringIn-&gt;Type()-&gt;CopyData(&amp;stringIn, &amp;resultString);</span>
+<span class="lineNum">     185 </span><span class="lineCov">         15 :         if (replacedSubString)</span>
+<span class="lineNum">     186 </span><span class="lineCov">         15 :             replacedSubString-&gt;Resize1D(0);</span>
+<span class="lineNum">     187 </span>            :     }
+<span class="lineNum">     188 </span><span class="lineCov">         50 :     return _NextInstruction();</span>
+<span class="lineNum">     189 </span>            : }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            : struct SearchAndReplaceStringStruct : public InstructionCore
+<span class="lineNum">     192 </span>            : {
+<span class="lineNum">     193 </span>            :     _ParamDef(StringRef, StringOut);
+<span class="lineNum">     194 </span>            :     _ParamDef(StringRef, StringIn);
+<span class="lineNum">     195 </span>            :     _ParamDef(StringRef, SearchString);
+<span class="lineNum">     196 </span>            :     _ParamDef(StringRef, ReplacementString);
+<span class="lineNum">     197 </span>            :     _ParamDef(Int32, Offset);
+<span class="lineNum">     198 </span>            :     _ParamDef(Int32, NumOfReplacements);
+<span class="lineNum">     199 </span>            :     _ParamDef(Int32, OffsetPastReplacement);
+<a name="200"><span class="lineNum">     200 </span>            :     _ParamDef(Boolean, ReplaceAll);</a>
+<span class="lineNum">     201 </span>            :     _ParamDef(Boolean, IgnoreCase);
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHOD()</span>
+<a name="203"><span class="lineNum">     203 </span>            : };</a>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
+<span class="lineNum">     206 </span>            : {
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :     StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : null;</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :     StringRef stringIn = _Param(StringIn);</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     StringRef searchString = _Param(SearchString);</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :     StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : null;</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;</span>
+<span class="lineNum">     212 </span>            :     IntIndex numOfReplacements = 0;
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :     Boolean replaceAll = _ParamPointer(ReplaceAll) ? _Param(ReplaceAll) : false;</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :     Boolean ignoreCase = _ParamPointer(IgnoreCase) ? _Param(IgnoreCase) : false;</span>
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :     VIREO_ASSERT(stringIn != stringOut);
+<span class="lineNum">     217 </span>            :     VIREO_ASSERT(searchString != stringOut);
+<span class="lineNum">     218 </span>            :     VIREO_ASSERT(replacementString == null || replacementString != stringOut);
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :     SubString stringInSubString = stringIn-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :     SubString searchStringSubString = searchString-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :     IntIndex stringInLength = stringIn-&gt;Length();</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :     IntIndex searchStringLength = searchString-&gt;Length();</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :     IntIndex replacementStringLength = replacementString ? replacementString-&gt;Length() : 0;</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :     TypeRef eltType = stringIn-&gt;ElementType();</span>
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :     offset = Max(0, Min(offset, stringInLength));</span>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :     IntIndex matchOffset;
+<span class="lineNum">     230 </span>            :     IntIndex stringOutOffset = offset;
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            :     // Copy up to the offset
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :     if (stringOut) {</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :         stringOut-&gt;Resize1D(stringInLength);</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :         eltType-&gt;CopyData(stringIn-&gt;Begin(), stringOut-&gt;Begin(), offset);</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     // Search for matches and copy up to the end of the replacement
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :     while ((matchOffset = stringInSubString.FindFirstMatch(&amp;searchStringSubString, offset, ignoreCase)) != -1) {</span>
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :         if (stringOut) {</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :             stringOut-&gt;Resize1D(stringOut-&gt;Length() + replacementStringLength - searchStringLength);</span>
+<span class="lineNum">     242 </span>            :             // Copy up to the match
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :             eltType-&gt;CopyData(stringIn-&gt;BeginAt(offset), stringOut-&gt;BeginAt(stringOutOffset), matchOffset - offset);</span>
+<span class="lineNum">     244 </span>            :             // Copy in the replacement
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :             if (replacementString)</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :                 eltType-&gt;CopyData(replacementString-&gt;Begin(), stringOut-&gt;BeginAt(stringOutOffset + matchOffset - offset), replacementStringLength);</span>
+<span class="lineNum">     247 </span>            :         }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :         stringOutOffset += matchOffset - offset + replacementStringLength;</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :         offset = matchOffset + searchStringLength;</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :         numOfReplacements++;</span>
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :         // If the search string is empty, copy a character and increment the offsets so that we don't insert indefinitely
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :         if (searchStringLength == 0) {</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :             if (stringOut)</span>
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :                 *stringOut-&gt;BeginAt(stringOutOffset) = *stringIn-&gt;BeginAt(offset);</span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :             stringOutOffset++;</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :             offset++;</span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :         if (!replaceAll)</span>
+<span class="lineNum">     262 </span>            :             break;
+<span class="lineNum">     263 </span>            :     }
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            :     // Copy the rest of the string following the last match
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :     if (stringOut &amp;&amp; (offset &lt; stringInLength))</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :         eltType-&gt;CopyData(stringIn-&gt;BeginAt(offset), stringOut-&gt;BeginAt(stringOutOffset), stringInLength - offset);</span>
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :     if _ParamPointer(NumOfReplacements)</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :         _Param(NumOfReplacements) = numOfReplacements;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :     if _ParamPointer(OffsetPastReplacement)</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :         _Param(OffsetPastReplacement) = numOfReplacements ? stringOutOffset : -1;</span>
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     275 </span>            : }
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            : struct SearchSplitStringStruct : public InstructionCore
+<span class="lineNum">     278 </span>            : {
+<span class="lineNum">     279 </span>            :     _ParamDef(StringRef, StringIn);
+<span class="lineNum">     280 </span>            :     _ParamDef(StringRef, SearchString);
+<span class="lineNum">     281 </span>            :     _ParamDef(Int32, Offset);
+<span class="lineNum">     282 </span>            :     _ParamDef(StringRef, BeforeMatchString);
+<a name="283"><span class="lineNum">     283 </span>            :     _ParamDef(StringRef, MatchPlusRestString);</a>
+<span class="lineNum">     284 </span>            :     _ParamDef(Int32, MatchOffset);
+<span class="lineNum">     285 </span><span class="lineCov">         30 :     NEXT_INSTRUCTION_METHOD()</span>
+<a name="286"><span class="lineNum">     286 </span>            : };</a>
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
+<span class="lineNum">     289 </span>            : {
+<span class="lineNum">     290 </span><span class="lineCov">         30 :     StringRef stringIn = _Param(StringIn);</span>
+<span class="lineNum">     291 </span><span class="lineCov">         30 :     StringRef searchString = _Param(SearchString);</span>
+<span class="lineNum">     292 </span><span class="lineCov">         90 :     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;</span>
+<span class="lineNum">     293 </span><span class="lineCov">         90 :     StringRef beforeMatchString = _ParamPointer(BeforeMatchString) ? _Param(BeforeMatchString) : null;</span>
+<span class="lineNum">     294 </span><span class="lineCov">         90 :     StringRef matchPlusRestString = _ParamPointer(MatchPlusRestString) ? _Param(MatchPlusRestString) : null;</span>
+<span class="lineNum">     295 </span>            :     IntIndex matchOffset;
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :     VIREO_ASSERT(stringIn != matchPlusRestString);
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineCov">         30 :     SubString stringInSubString = stringIn-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     300 </span><span class="lineCov">         30 :     SubString searchStringSubString = searchString-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     301 </span><span class="lineCov">         30 :     IntIndex stringInLength = stringIn-&gt;Length();</span>
+<span class="lineNum">     302 </span><span class="lineCov">         30 :     TypeRef eltType = stringIn-&gt;ElementType();</span>
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span><span class="lineCov">         30 :     offset = Max(0, Min(offset, stringInLength));</span>
+<span class="lineNum">     305 </span><span class="lineCov">         30 :     matchOffset = stringInSubString.FindFirstMatch(&amp;searchStringSubString, offset, false);</span>
+<span class="lineNum">     306 </span>            : 
+<span class="lineNum">     307 </span><span class="lineCov">         60 :     if (matchOffset != -1) { // A match is found</span>
+<span class="lineNum">     308 </span><span class="lineCov">         45 :         if (matchPlusRestString) {</span>
+<span class="lineNum">     309 </span>            :             // Copy stringIn starting at the match to matchPlusRestString
+<span class="lineNum">     310 </span>            :             // This copy is done first since the other copy may modify stringIn (when stringIn == beforeMatchString)
+<span class="lineNum">     311 </span><span class="lineCov">         15 :             matchPlusRestString-&gt;Resize1D(stringInLength - matchOffset);</span>
+<span class="lineNum">     312 </span><span class="lineCov">         15 :             eltType-&gt;CopyData(stringIn-&gt;BeginAt(matchOffset), matchPlusRestString-&gt;Begin(), stringInLength - matchOffset);</span>
+<span class="lineNum">     313 </span><span class="lineCov">         15 :         }</span>
+<span class="lineNum">     314 </span><span class="lineCov">         15 :         if (beforeMatchString) {</span>
+<span class="lineNum">     315 </span>            :             // Copy inString up to the match to beforeMatchString
+<span class="lineNum">     316 </span><span class="lineCov">         15 :             beforeMatchString-&gt;Resize1D(matchOffset);</span>
+<span class="lineNum">     317 </span><span class="lineCov">         15 :             if (stringIn != beforeMatchString)</span>
+<span class="lineNum">     318 </span><span class="lineCov">         15 :                 eltType-&gt;CopyData(stringIn-&gt;Begin(), beforeMatchString-&gt;Begin(), matchOffset);</span>
+<span class="lineNum">     319 </span>            :         }
+<span class="lineNum">     320 </span>            :     } else {
+<span class="lineNum">     321 </span>            :         // No match is found
+<span class="lineNum">     322 </span><span class="lineCov">         15 :         if (matchPlusRestString)</span>
+<span class="lineNum">     323 </span>            :             // Copy inString to beforeMatchString
+<span class="lineNum">     324 </span><span class="lineCov">         15 :             matchPlusRestString-&gt;Resize1D(0);</span>
+<span class="lineNum">     325 </span><span class="lineCov">         30 :         if (beforeMatchString &amp;&amp; (stringIn != beforeMatchString)) {</span>
+<span class="lineNum">     326 </span>            :             // Clear out matchPlusRestString
+<span class="lineNum">     327 </span><span class="lineCov">         15 :             beforeMatchString-&gt;Resize1D(stringInLength);</span>
+<span class="lineNum">     328 </span><span class="lineCov">         15 :             eltType-&gt;CopyData(stringIn-&gt;Begin(), beforeMatchString-&gt;Begin(), stringInLength);</span>
+<span class="lineNum">     329 </span><span class="lineCov">         15 :         }</span>
+<span class="lineNum">     330 </span>            :     }
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span><span class="lineCov">         30 :     if _ParamPointer(MatchOffset)</span>
+<span class="lineNum">     333 </span><span class="lineCov">         30 :         _Param(MatchOffset) = matchOffset;</span>
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span><span class="lineCov">         30 :     return _NextInstruction();</span>
+<a name="336"><span class="lineNum">     336 </span>            : }</a>
+<span class="lineNum">     337 </span>            : //------------------------------------------------------------
+<span class="lineNum">     338 </span>            : VIREO_FUNCTION_SIGNATURE2(StringLength, StringRef, Int32)
+<span class="lineNum">     339 </span>            : {
+<span class="lineNum">     340 </span><span class="lineCov">        170 :     _Param(1) = _Param(0)-&gt;MakeSubStringAlias().StringLength();</span>
+<span class="lineNum">     341 </span><span class="lineCov">        170 :     return _NextInstruction();</span>
+<a name="342"><span class="lineNum">     342 </span>            : }</a>
+<span class="lineNum">     343 </span>            : //------------------------------------------------------------
+<span class="lineNum">     344 </span>            : VIREO_FUNCTION_SIGNATURE3(StringIndexChar, StringRef, Int32, Utf32Char)
+<span class="lineNum">     345 </span>            : {
+<span class="lineNum">     346 </span><span class="lineCov">        105 :     SubString ss = _Param(0)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     347 </span><span class="lineCov">        105 :     ss.EatRawChars(_Param(1));</span>
+<span class="lineNum">     348 </span><span class="lineCov">        105 :     ss.ReadUtf32(_ParamPointer(2));</span>
+<span class="lineNum">     349 </span><span class="lineCov">        105 :     return _NextInstruction();</span>
+<a name="350"><span class="lineNum">     350 </span>            : }</a>
+<span class="lineNum">     351 </span>            : //------------------------------------------------------------
+<span class="lineNum">     352 </span>            : VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
+<span class="lineNum">     353 </span>            : {
+<span class="lineNum">     354 </span><span class="lineCov">         30 :     IntIndex targetLength = _Param(0)-&gt;Length();</span>
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span><span class="lineCov">         30 :     _Param(1)-&gt;Resize1D(targetLength);</span>
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :     // TODO only works for U+0000 .. U+007F
+<span class="lineNum">     359 </span><span class="lineCov">         30 :     Utf8Char *pSourceChar      = _Param(0)-&gt;Begin();</span>
+<span class="lineNum">     360 </span><span class="lineCov">         30 :     Utf8Char *pSourceCharEnd   = _Param(0)-&gt;End();</span>
+<span class="lineNum">     361 </span><span class="lineCov">         30 :     Utf8Char *pDestChar        = _Param(1)-&gt;Begin();</span>
+<span class="lineNum">     362 </span><span class="lineCov">        590 :     while (pSourceChar &lt; pSourceCharEnd) {</span>
+<span class="lineNum">     363 </span><span class="lineCov">        265 :         char c = *pSourceChar++;</span>
+<span class="lineNum">     364 </span><span class="lineCov">        445 :         if ('a' &lt;= c &amp;&amp; c &lt;= 'z') {</span>
+<span class="lineNum">     365 </span><span class="lineCov">        180 :             c =  (c - 0x20);</span>
+<span class="lineNum">     366 </span><span class="lineCov">        180 :         }</span>
+<span class="lineNum">     367 </span><span class="lineCov">        265 :         *pDestChar++ = c;</span>
+<span class="lineNum">     368 </span>            :     }
+<span class="lineNum">     369 </span><span class="lineCov">         30 :     return _NextInstruction();</span>
+<a name="370"><span class="lineNum">     370 </span>            : }</a>
+<span class="lineNum">     371 </span>            : //------------------------------------------------------------
+<span class="lineNum">     372 </span>            : VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
+<span class="lineNum">     373 </span>            : {
+<span class="lineNum">     374 </span><span class="lineCov">         10 :     IntIndex targetLength = _Param(0)-&gt;Length();  // TODO only works for Ascii</span>
+<span class="lineNum">     375 </span>            : 
+<span class="lineNum">     376 </span><span class="lineCov">         10 :     _Param(1)-&gt;Resize1D(targetLength);</span>
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            :     // TODO only works for U+0000 .. U+007F
+<span class="lineNum">     379 </span>            :     // Adding Latin/Russian/Greek/Armenian not &quot;too&quot; hard
+<span class="lineNum">     380 </span>            :     // http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+<span class="lineNum">     381 </span>            :     // ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span><span class="lineCov">         10 :     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)-&gt;Begin();</span>
+<span class="lineNum">     384 </span><span class="lineCov">         10 :     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)-&gt;End();</span>
+<span class="lineNum">     385 </span><span class="lineCov">         10 :     Utf8Char *pDestChar        = (Utf8Char*) _Param(1)-&gt;Begin();</span>
+<span class="lineNum">     386 </span><span class="lineCov">        190 :     while (pSourceChar &lt; pSourceCharEnd) {</span>
+<span class="lineNum">     387 </span><span class="lineCov">         85 :         char c = *pSourceChar++;</span>
+<span class="lineNum">     388 </span><span class="lineCov">        160 :         if ('A' &lt;= c &amp;&amp; c &lt;= 'Z') {</span>
+<span class="lineNum">     389 </span><span class="lineCov">         15 :             c =  (c + 0x20);</span>
+<span class="lineNum">     390 </span><span class="lineCov">         15 :         }</span>
+<span class="lineNum">     391 </span><span class="lineCov">         85 :         *pDestChar++ = c;</span>
+<span class="lineNum">     392 </span>            :     }
+<span class="lineNum">     393 </span><span class="lineCov">         10 :     return _NextInstruction();</span>
+<span class="lineNum">     394 </span>            : }
+<a name="395"><span class="lineNum">     395 </span>            : </a>
+<span class="lineNum">     396 </span>            : //-----------------------------------------------------------------
+<span class="lineNum">     397 </span>            : VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
+<span class="lineNum">     398 </span>            : {
+<span class="lineNum">     399 </span><span class="lineCov">         10 :     SubString viaString = _Param(0)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     400 </span><span class="lineCov">         10 :     _Param(1)-&gt;Resize1D(0);</span>
+<span class="lineNum">     401 </span><span class="lineCov">         10 :     _Param(1)-&gt;AppendViaDecoded(&amp;viaString);</span>
+<span class="lineNum">     402 </span><span class="lineCov">         10 :     return _NextInstruction();</span>
+<a name="403"><span class="lineNum">     403 </span>            : }</a>
+<span class="lineNum">     404 </span>            : //---------------------------------------------------------------
+<span class="lineNum">     405 </span>            : VIREO_FUNCTION_SIGNATURE2(StringReverse, StringRef, StringRef)
+<span class="lineNum">     406 </span>            : {
+<span class="lineNum">     407 </span><span class="lineCov">         45 :     SubString ss = _Param(0)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     408 </span><span class="lineCov">         45 :     _Param(1)-&gt;Resize1D(ss.Length());</span>
+<span class="lineNum">     409 </span><span class="lineCov">         45 :     Utf8Char* pDestChar = _Param(1)-&gt;End();</span>
+<span class="lineNum">     410 </span><span class="lineCov">         45 :     TypeRef elementType = _Param(0)-&gt;ElementType();</span>
+<span class="lineNum">     411 </span><span class="lineCov">         45 :     SubString character;</span>
+<span class="lineNum">     412 </span><span class="lineCov">        960 :     while (ss.ReadGraphemeCluster(&amp;character)) {</span>
+<span class="lineNum">     413 </span><span class="lineCov">        435 :         pDestChar = pDestChar - character.Length();</span>
+<span class="lineNum">     414 </span><span class="lineCov">        435 :         elementType-&gt;CopyData(character.Begin(), pDestChar, character.Length());</span>
+<span class="lineNum">     415 </span>            :     }
+<span class="lineNum">     416 </span><span class="lineCov">         45 :     return _NextInstruction();</span>
+<a name="417"><span class="lineNum">     417 </span>            : }</a>
+<span class="lineNum">     418 </span>            : //---------------------------------------------------------------
+<span class="lineNum">     419 </span>            : VIREO_FUNCTION_SIGNATURE2(StringRotate, StringRef, StringRef)
+<span class="lineNum">     420 </span>            : {
+<span class="lineNum">     421 </span><span class="lineCov">         45 :     SubString ss = _Param(0)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     422 </span><span class="lineCov">         45 :     _Param(1)-&gt;Resize1D(ss.Length());</span>
+<span class="lineNum">     423 </span><span class="lineCov">         45 :     Utf8Char* pDestChar = _Param(1)-&gt;End();</span>
+<span class="lineNum">     424 </span><span class="lineCov">         45 :     TypeRef elementType = _Param(0)-&gt;ElementType();</span>
+<span class="lineNum">     425 </span><span class="lineCov">         45 :     SubString character;</span>
+<span class="lineNum">     426 </span><span class="lineCov">         45 :     ss.ReadGraphemeCluster(&amp;character);</span>
+<span class="lineNum">     427 </span><span class="lineCov">         45 :     pDestChar = pDestChar - character.Length();</span>
+<span class="lineNum">     428 </span><span class="lineCov">         45 :     elementType-&gt;CopyData(character.Begin(), pDestChar, character.Length());</span>
+<span class="lineNum">     429 </span><span class="lineCov">         45 :     elementType-&gt;CopyData(ss.Begin(), _Param(1)-&gt;Begin(), ss.Length());</span>
+<span class="lineNum">     430 </span><span class="lineCov">         45 :     return _NextInstruction();</span>
+<a name="431"><span class="lineNum">     431 </span>            : }</a>
+<span class="lineNum">     432 </span>            : //-----------------------------------------------------------------
+<span class="lineNum">     433 </span>            : VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
+<span class="lineNum">     434 </span>            : {
+<span class="lineNum">     435 </span><span class="lineCov">        175 :     SubString ss = _Param(0)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     436 </span><span class="lineCov">        175 :     const Utf8Char* pSourceChar = ss.Begin();</span>
+<span class="lineNum">     437 </span><span class="lineCov">        175 :     IntIndex targetLength = ss.Length();</span>
+<span class="lineNum">     438 </span>            :     Boolean found = false;
+<span class="lineNum">     439 </span>            :     IntIndex leading = 0;
+<span class="lineNum">     440 </span>            :     IntIndex trailing = 0;
+<span class="lineNum">     441 </span>            :     const Utf8Char* spacePos = null;
+<span class="lineNum">     442 </span>            :     Boolean last = false;
+<span class="lineNum">     443 </span><span class="lineCov">       6060 :     while (pSourceChar &lt; ss.End()) {</span>
+<span class="lineNum">     444 </span><span class="lineCov">       2855 :         IntIndex bytes = ss.CharLength(pSourceChar);</span>
+<span class="lineNum">     445 </span><span class="lineCov">       2855 :         if (bytes == 1) {</span>
+<span class="lineNum">     446 </span><span class="lineCov">       2450 :             char c = *pSourceChar;</span>
+<span class="lineNum">     447 </span><span class="lineCov">       3085 :             if (!found &amp;&amp; ss.IsSpaceChar(c)) {</span>
+<span class="lineNum">     448 </span><span class="lineCov">        520 :                 leading ++;</span>
+<span class="lineNum">     449 </span><span class="lineCov">        520 :             } else {</span>
+<span class="lineNum">     450 </span>            :                 found = true;
+<span class="lineNum">     451 </span><span class="lineCov">       1930 :                 if (ss.IsSpaceChar(c)) {</span>
+<span class="lineNum">     452 </span><span class="lineCov">       1675 :                     if (spacePos == null || !last) {</span>
+<span class="lineNum">     453 </span>            :                         spacePos = pSourceChar;
+<span class="lineNum">     454 </span><span class="lineCov">        305 :                     }</span>
+<span class="lineNum">     455 </span>            :                     last = true;
+<span class="lineNum">     456 </span><span class="lineCov">        845 :                     trailing++;</span>
+<span class="lineNum">     457 </span><span class="lineCov">        845 :                 } else {</span>
+<span class="lineNum">     458 </span>            :                     spacePos = pSourceChar;
+<span class="lineNum">     459 </span>            :                     last = false;
+<span class="lineNum">     460 </span>            :                     trailing = 0;
+<span class="lineNum">     461 </span>            :                 }
+<span class="lineNum">     462 </span>            :             }
+<span class="lineNum">     463 </span>            :         } else {
+<span class="lineNum">     464 </span>            :             last = false;
+<span class="lineNum">     465 </span>            :             trailing = 0;
+<span class="lineNum">     466 </span>            :             found = true;
+<span class="lineNum">     467 </span>            :         }
+<span class="lineNum">     468 </span><span class="lineCov">       2855 :         pSourceChar += bytes;</span>
+<span class="lineNum">     469 </span>            :     }
+<span class="lineNum">     470 </span>            :     // return empty string
+<span class="lineNum">     471 </span><span class="lineCov">        175 :     if (!found) {</span>
+<span class="lineNum">     472 </span><span class="lineCov">         30 :         _Param(2)-&gt;Resize1D(0);</span>
+<span class="lineNum">     473 </span><span class="lineCov">         30 :         return _NextInstruction();</span>
+<span class="lineNum">     474 </span>            :     }
+<span class="lineNum">     475 </span><span class="lineCov">        145 :     Int32 location = _Param(1);</span>
+<span class="lineNum">     476 </span><span class="lineCov">        145 :     if (location == 0) {</span>
+<span class="lineNum">     477 </span><span class="lineCov">         45 :         targetLength = targetLength-leading-trailing;</span>
+<span class="lineNum">     478 </span><span class="lineCov">        145 :     } else if (location == 1) {</span>
+<span class="lineNum">     479 </span>            :         // remove start of string
+<span class="lineNum">     480 </span><span class="lineCov">         45 :         targetLength = targetLength-leading;</span>
+<span class="lineNum">     481 </span><span class="lineCov">        100 :     } else if (location == 2) {</span>
+<span class="lineNum">     482 </span><span class="lineCov">         45 :         targetLength = targetLength-trailing;</span>
+<span class="lineNum">     483 </span>            :         leading = 0;
+<span class="lineNum">     484 </span><span class="lineCov">         45 :     } else {</span>
+<span class="lineNum">     485 </span>            :         // return original string
+<span class="lineNum">     486 </span>            :         leading = 0;
+<span class="lineNum">     487 </span>            :     }
+<span class="lineNum">     488 </span><span class="lineCov">        145 :     _Param(2)-&gt;Resize1D(targetLength);</span>
+<span class="lineNum">     489 </span><span class="lineCov">        145 :     TypeRef elementType = _Param(0)-&gt;ElementType();</span>
+<span class="lineNum">     490 </span><span class="lineCov">        145 :     elementType-&gt;CopyData(_Param(0)-&gt;BeginAt(leading), _Param(2)-&gt;Begin(), targetLength);</span>
+<span class="lineNum">     491 </span><span class="lineCov">        145 :     return _NextInstruction();</span>
+<span class="lineNum">     492 </span><span class="lineCov">        175 : }</span>
+<span class="lineNum">     493 </span>            : 
+<span class="lineNum">     494 </span>            : #if 0
+<span class="lineNum">     495 </span>            : //------------------------------------------------------------
+<span class="lineNum">     496 </span>            : VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
+<span class="lineNum">     497 </span>            : {
+<span class="lineNum">     498 </span>            :     StringRef buffer = _Param(0);
+<span class="lineNum">     499 </span>            :     StringRef format = _Param(1);
+<span class="lineNum">     500 </span>            :     SubString formatString(format-&gt;Begin(), format-&gt;End());
+<span class="lineNum">     501 </span>            : 
+<span class="lineNum">     502 </span>            :     Int32 count = _ParamVarArgCount();
+<span class="lineNum">     503 </span>            :     StaticTypeAndData* pArguments = (StaticTypeAndData*) &amp;_ParamPointer(3);
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span>            :     Format(&amp;formatString, count, pArguments, buffer);
+<span class="lineNum">     506 </span>            :     return _NextInstruction();
+<span class="lineNum">     507 </span>            : }
+<span class="lineNum">     508 </span>            : #endif
+<span class="lineNum">     509 </span>            : //------------------------------------------------------------
+<span class="lineNum">     510 </span>            : struct StringConcatenateParamBlock : public VarArgInstruction
+<span class="lineNum">     511 </span>            : {
+<a name="512"><span class="lineNum">     512 </span>            :     _ParamDef(StringRef, StringOut);</a>
+<span class="lineNum">     513 </span>            :     _ParamImmediateDef(TypedArrayCoreRef*, Element[1]);
+<span class="lineNum">     514 </span><span class="lineCov">         30 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="515"><span class="lineNum">     515 </span>            : };</a>
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            : VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
+<span class="lineNum">     518 </span>            : {
+<span class="lineNum">     519 </span>            :     // Ignore begin
+<span class="lineNum">     520 </span><span class="lineCov">         35 :     Int32 numInputs = ((_ParamVarArgCount() - 1));</span>
+<span class="lineNum">     521 </span>            : 
+<span class="lineNum">     522 </span><span class="lineCov">         35 :     StringRef pDest = _Param(StringOut);</span>
+<span class="lineNum">     523 </span><span class="lineCov">         35 :     Int32 originalLength = pDest-&gt;Length();</span>
+<span class="lineNum">     524 </span>            :     Int32 totalLength = 0;
+<span class="lineNum">     525 </span><span class="lineCov">         35 :     TypedArrayCoreRef** inputs =  (_ParamImmediate(Element));</span>
+<span class="lineNum">     526 </span><span class="lineCov">        210 :     for (Int32 i = 0; i &lt; numInputs; i++) {</span>
+<span class="lineNum">     527 </span><span class="lineCov">         70 :         TypedArrayCoreRef arrayInput = *(inputs[i]);</span>
+<span class="lineNum">     528 </span><span class="lineCov">         70 :         if (arrayInput-&gt;ElementType()-&gt;IsArray()) {</span>
+<span class="lineNum">     529 </span>            :             // TODO this needs to support N-Dim string arrays
+<span class="lineNum">     530 </span><span class="lineCov">        300 :             for (Int32 j = 0; j &lt; arrayInput-&gt;Length(); j++) {</span>
+<span class="lineNum">     531 </span><span class="lineCov">        130 :                 StringRef stringInput = *(StringRef*) arrayInput-&gt;BeginAt(j);</span>
+<span class="lineNum">     532 </span><span class="lineCov">        130 :                 totalLength += stringInput-&gt;Length();</span>
+<span class="lineNum">     533 </span>            :             }
+<span class="lineNum">     534 </span>            :         } else {
+<span class="lineNum">     535 </span><span class="lineCov">         50 :             totalLength += arrayInput-&gt;Length();</span>
+<span class="lineNum">     536 </span>            :         }
+<span class="lineNum">     537 </span>            :     }
+<span class="lineNum">     538 </span><span class="lineCov">         35 :     pDest-&gt;Resize1D(totalLength);</span>
+<span class="lineNum">     539 </span>            :     // TODO error check
+<span class="lineNum">     540 </span><span class="lineCov">         35 :     AQBlock1* pInsert = pDest-&gt;BeginAt(0);</span>
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span><span class="lineCov">         35 :     TypeRef elementType = pDest-&gt;ElementType();  // Flat char type</span>
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span><span class="lineCov">        200 :     for (Int32 i = 0; i &lt; numInputs; i++) {</span>
+<span class="lineNum">     545 </span><span class="lineCov">         70 :         TypedArrayCoreRef arrayInput = *(inputs[i]);</span>
+<span class="lineNum">     546 </span><span class="lineCov">         70 :         if (arrayInput-&gt;ElementType()-&gt;IsArray())  {</span>
+<span class="lineNum">     547 </span>            :             // TODO this needs to support N-Dim string arrays
+<span class="lineNum">     548 </span><span class="lineCov">        300 :             for (Int32 j = 0; j &lt; arrayInput-&gt;Length(); j++) {</span>
+<span class="lineNum">     549 </span><span class="lineCov">        130 :                 StringRef stringInput = *(StringRef*) arrayInput-&gt;BeginAt(j);</span>
+<span class="lineNum">     550 </span>            :                 VIREO_ASSERT(stringInput != pDest);
+<span class="lineNum">     551 </span><span class="lineCov">        130 :                 IntIndex length = stringInput-&gt;Length();</span>
+<span class="lineNum">     552 </span><span class="lineCov">        130 :                 elementType-&gt;CopyData(stringInput-&gt;BeginAt(0), pInsert, length);</span>
+<span class="lineNum">     553 </span><span class="lineCov">        130 :                 pInsert += length;</span>
+<span class="lineNum">     554 </span>            :             }
+<span class="lineNum">     555 </span><span class="lineCov">         50 :         } else if (arrayInput != pDest) {</span>
+<span class="lineNum">     556 </span>            :             // String input that is not the same as dest
+<span class="lineNum">     557 </span><span class="lineCov">         40 :             IntIndex length = arrayInput-&gt;Length();</span>
+<span class="lineNum">     558 </span><span class="lineCov">         40 :             elementType-&gt;CopyData(arrayInput-&gt;BeginAt(0), pInsert, length);</span>
+<span class="lineNum">     559 </span><span class="lineCov">         40 :             pInsert += length;</span>
+<span class="lineNum">     560 </span><span class="lineCov">         40 :         } else {</span>
+<span class="lineNum">     561 </span>            :             // String input that is the same as dest
+<span class="lineNum">     562 </span><span class="lineCov">         10 :             if (i != 0) {</span>
+<span class="lineNum">     563 </span><span class="lineCov">          5 :                 THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Illegal StringConcatenate inplaceness&quot;);</span>
+<span class="lineNum">     564 </span><span class="lineCov">          5 :                 return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     565 </span>            :             }
+<span class="lineNum">     566 </span>            : 
+<span class="lineNum">     567 </span><span class="lineCov">          5 :             pInsert += originalLength;</span>
+<span class="lineNum">     568 </span>            :         }
+<span class="lineNum">     569 </span>            :     }
+<span class="lineNum">     570 </span><span class="lineCov">         30 :     return _NextInstruction();</span>
+<a name="571"><span class="lineNum">     571 </span><span class="lineCov">         35 : }</span></a>
+<span class="lineNum">     572 </span>            : //------------------------------------------------------------
+<span class="lineNum">     573 </span><span class="lineCov">        155 : DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef,</span>
+<span class="lineNum">     574 </span>            :     (_Param(1)-&gt;Length() == _Param(2)-&gt;Length() &amp;&amp; (memcmp(_Param(1)-&gt;Begin(), _Param(2)-&gt;Begin(), _Param(1)-&gt;Length()) == 0)))
+<a name="575"><span class="lineNum">     575 </span>            : </a>
+<span class="lineNum">     576 </span>            : //------------------------------------------------------------
+<span class="lineNum">     577 </span>            : VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRef)
+<span class="lineNum">     578 </span>            : {
+<span class="lineNum">     579 </span><span class="lineCov">         10 :     Int32 cmp = memcmp(_Param(1)-&gt;Begin(), _Param(2)-&gt;Begin(), Min(_Param(1)-&gt;Length(), _Param(2)-&gt;Length()));</span>
+<span class="lineNum">     580 </span><span class="lineCov">         10 :     if (cmp &lt; 0) {</span>
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :         return _this-&gt;_p0;</span>
+<span class="lineNum">     582 </span><span class="lineCov">         10 :     } else if (cmp &gt; 0) {</span>
+<span class="lineNum">     583 </span><span class="lineNoCov">          0 :         return  VIVM_TAIL(_NextInstruction());</span>
+<span class="lineNum">     584 </span><span class="lineCov">         10 :     } else if (_Param(1)-&gt;Length() &lt; _Param(2)-&gt;Length()) {</span>
+<span class="lineNum">     585 </span><span class="lineCov">          5 :         return _this-&gt;_p0;</span>
+<span class="lineNum">     586 </span>            :     } else {
+<span class="lineNum">     587 </span><span class="lineCov">          5 :         return VIVM_TAIL(_NextInstruction());</span>
+<span class="lineNum">     588 </span>            :     }
+<a name="589"><span class="lineNum">     589 </span><span class="lineCov">         10 : }</span></a>
+<span class="lineNum">     590 </span>            : //------------------------------------------------------------
+<span class="lineNum">     591 </span>            : VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRef)
+<span class="lineNum">     592 </span>            : {
+<span class="lineNum">     593 </span><span class="lineCov">         15 :     Int32 cmp = memcmp(_Param(1)-&gt;Begin(), _Param(2)-&gt;Begin(), Min(_Param(1)-&gt;Length(), _Param(2)-&gt;Length()));</span>
+<span class="lineNum">     594 </span><span class="lineCov">         15 :     if (cmp &gt; 0) {</span>
+<span class="lineNum">     595 </span><span class="lineCov">         10 :         return _this-&gt;_p0;</span>
+<span class="lineNum">     596 </span><span class="lineCov">          5 :     } else if (cmp &lt; 0) {</span>
+<span class="lineNum">     597 </span><span class="lineCov">          5 :         return  VIVM_TAIL(_NextInstruction());</span>
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :     } else if (_Param(1)-&gt;Length() &gt; _Param(2)-&gt;Length()) {</span>
+<span class="lineNum">     599 </span><span class="lineNoCov">          0 :         return _this-&gt;_p0;</span>
+<span class="lineNum">     600 </span>            :     } else {
+<span class="lineNum">     601 </span><span class="lineNoCov">          0 :         return VIVM_TAIL(_NextInstruction());</span>
+<span class="lineNum">     602 </span>            :     }
+<a name="603"><span class="lineNum">     603 </span><span class="lineCov">         15 : }</span></a>
+<span class="lineNum">     604 </span>            : 
+<span class="lineNum">     605 </span><span class="lineCov">         60 : DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,                              \</span>
+<span class="lineNum">     606 </span>            :                                                  Int32 cmp = memcmp(_Param(0)-&gt;Begin(), _Param(1)-&gt;Begin(), Min(_Param(0)-&gt;Length(), _Param(1)-&gt;Length())); \
+<span class="lineNum">     607 </span>            :                                                  StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
+<span class="lineNum">     608 </span>            :                                                  if (cmp &lt; 0) { \
+<span class="lineNum">     609 </span>            :                                                          max = _ParamPointer(1); min = _ParamPointer(0); \
+<span class="lineNum">     610 </span>            :                                                  } \
+<span class="lineNum">     611 </span>            :                                                  _Param(2)-&gt;Resize1D((*max)-&gt;Length()); \
+<span class="lineNum">     612 </span>            :                                                  TypeRef elementType = (*max)-&gt;ElementType(); \
+<span class="lineNum">     613 </span>            :                                                  elementType-&gt;CopyData((*max)-&gt;Begin(), _Param(2)-&gt;Begin(), (*max)-&gt;Length()); \
+<span class="lineNum">     614 </span>            :                                                  _Param(3)-&gt;Resize1D((*min)-&gt;Length()); \
+<span class="lineNum">     615 </span>            :                                                  elementType = (*min)-&gt;ElementType(); \
+<a name="616"><span class="lineNum">     616 </span>            :                                                  elementType-&gt;CopyData((*min)-&gt;Begin(), _Param(3)-&gt;Begin(), (*min)-&gt;Length()); )</a>
+<span class="lineNum">     617 </span>            : 
+<span class="lineNum">     618 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(String)</span>
+<span class="lineNum">     619 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ReplaceSubstring, &quot;p(i(String) i(String) i(Int32) i(Int32) i(String) o(String))&quot;)</span>
+<span class="lineNum">     620 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(SearchAndReplaceString, &quot;p(o(String) i(String) i(String) i(String) i(Int32) i(Int32) i(Int32) i(Boolean) i(Boolean))&quot;)</span>
+<span class="lineNum">     621 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(SearchSplitString, &quot;p(i(String) i(String) i(Int32) o(String) o(String) o(Int32))&quot;)</span>
+<span class="lineNum">     622 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringLength, &quot;p(i(String) o(Int32))&quot;)</span>
+<span class="lineNum">     623 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringTrim, &quot;p(i(String) i(Int32) o(String))&quot;)</span>
+<span class="lineNum">     624 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringReverse, &quot;p(i(String) o(String))&quot;)</span>
+<span class="lineNum">     625 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringRotate, &quot;p(i(String) o(String))&quot;)</span>
+<span class="lineNum">     626 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringIndexChar, &quot;p(i(String) i(Int32) o(Utf32Char))&quot;)</span>
+<span class="lineNum">     627 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringToUpper, &quot;p(i(String) o(String))&quot;)</span>
+<span class="lineNum">     628 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringToLower, &quot;p(i(String) o(String))&quot;)</span>
+<span class="lineNum">     629 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringViaDecode, &quot;p(i(String) o(String))&quot;)</span>
+<span class="lineNum">     630 </span>            :     // StringConcatenate input can be string, or array of string.
+<span class="lineNum">     631 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StringConcatenate, &quot;p(i(VarArgCount) o(String) i(*))&quot; )</span>
+<span class="lineNum">     632 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfEQString, &quot;p(i(BranchTarget) i(String) i(String))&quot;);</span>
+<span class="lineNum">     633 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfLTString, &quot;p(i(BranchTarget) i(String) i(String))&quot;)</span>
+<span class="lineNum">     634 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfGTString, &quot;p(i(BranchTarget) i(String) i(String))&quot;)</span>
+<span class="lineNum">     635 </span>            : 
+<span class="lineNum">     636 </span><span class="lineCov">       1060 :         DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, &quot;p(i(String) i(String) o(String) o(String)&quot;)</span>
+<span class="lineNum">     637 </span>            : 
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

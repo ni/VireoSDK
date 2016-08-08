@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/TypeDefiner.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - TypeDefiner.cpp<span style="font-size: 80%;"> (source / <a href="TypeDefiner.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">104</td>
+            <td class="headerCovTableEntry">104</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :  */
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &quot;DataTypes.h&quot;
+<span class="lineNum">      14 </span>            : #include &quot;TypeAndDataManager.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;TDCodecVia.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : namespace Vireo {
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : //------------------------------------------------------------
+<span class="lineNum">      21 </span>            : // TypeDefiner - class for modules to register types
+<span class="lineNum">      22 </span>            : //------------------------------------------------------------
+<span class="lineNum">      23 </span>            : // The constructor for each TypeDefiner global will link itself
+<span class="lineNum">      24 </span>            : // into the gpTypeDefinerList. The order can not be guaranteed.
+<span class="lineNum">      25 </span>            : // but all global constructors will be called before the apps
+<span class="lineNum">      26 </span>            : // main entry point is called.
+<span class="lineNum">      27 </span>            : TypeDefiner* TypeDefiner::_gpTypeDefinerList = null;
+<span class="lineNum">      28 </span>            : 
+<a name="29"><span class="lineNum">      29 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      30 </span>            : //! Constructor used by DEFINE_VIREO_BEGIN blocks
+<span class="lineNum">      31 </span>            : TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version)
+<span class="lineNum">      32 </span>            : {
+<span class="lineNum">      33 </span>            :     VIREO_ASSERT(version == kVireoABIVersion)
+<span class="lineNum">      34 </span>            :     
+<span class="lineNum">      35 </span><span class="lineCov">      19080 :     _pNext = null;</span>
+<span class="lineNum">      36 </span><span class="lineCov">      19080 :     _pCallback = callback;</span>
+<span class="lineNum">      37 </span><span class="lineCov">      19080 :     _pModuleName = pModuleName;</span>
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            :     // Append to end since constructors are called in the order
+<span class="lineNum">      40 </span>            :     // they occurr in  a file.
+<span class="lineNum">      41 </span>            :     TypeDefiner** ppNext = &amp;_gpTypeDefinerList;
+<span class="lineNum">      42 </span><span class="lineCov">     362520 :     while (*ppNext) {</span>
+<span class="lineNum">      43 </span><span class="lineCov">     162180 :         ppNext = &amp;(*ppNext)-&gt;_pNext;</span>
+<span class="lineNum">      44 </span>            :     }
+<span class="lineNum">      45 </span><span class="lineCov">      19080 :     *ppNext = this;</span>
+<span class="lineNum">      46 </span><span class="lineCov">      19080 : }</span>
+<a name="47"><span class="lineNum">      47 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      48 </span>            : //! Call all registered module functions. Move items down the list as needed.
+<span class="lineNum">      49 </span>            : void TypeDefiner::DefineTypes(TypeManagerRef tm)
+<span class="lineNum">      50 </span>            : {
+<span class="lineNum">      51 </span>            :     TypeDefiner** ppNext = &amp;_gpTypeDefinerList;
+<span class="lineNum">      52 </span><span class="lineCov">      26500 :     while (*ppNext) {</span>
+<span class="lineNum">      53 </span>            :         TypeDefiner *pCurrent = *ppNext;
+<span class="lineNum">      54 </span><span class="lineCov">      24380 :         ConstCStr missingModule = (pCurrent)-&gt;_pCallback(pCurrent, tm);</span>
+<span class="lineNum">      55 </span>            :         
+<span class="lineNum">      56 </span>            :         // The function returns a pointer to what it was missing, null if nothing.
+<span class="lineNum">      57 </span><span class="lineCov">      24380 :         if (missingModule != null) {</span>
+<span class="lineNum">      58 </span>            :             // 1. Pull the current item out of the list.
+<span class="lineNum">      59 </span><span class="lineCov">       5300 :             *ppNext = pCurrent-&gt;_pNext;</span>
+<span class="lineNum">      60 </span><span class="lineCov">       5300 :             pCurrent-&gt;_pNext = null;</span>
+<span class="lineNum">      61 </span>            :             
+<span class="lineNum">      62 </span>            :             // 2. Find the right place to insert it.
+<span class="lineNum">      63 </span><span class="lineCov">       5300 :             InsertPastRequirement(ppNext, pCurrent, missingModule);</span>
+<span class="lineNum">      64 </span><span class="lineCov">       5300 :         } else {</span>
+<span class="lineNum">      65 </span><span class="lineCov">      19080 :             ppNext = &amp;(*ppNext)-&gt;_pNext;</span>
+<span class="lineNum">      66 </span>            :         }
+<span class="lineNum">      67 </span>            :     }
+<span class="lineNum">      68 </span><span class="lineCov">       1060 : }</span>
+<a name="69"><span class="lineNum">      69 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      70 </span>            : //! Insert a module registration past the element it requires.
+<span class="lineNum">      71 </span>            : void TypeDefiner::InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName)
+<span class="lineNum">      72 </span>            : {
+<span class="lineNum">      73 </span><span class="lineCov">      74200 :     while (*ppNext) {</span>
+<span class="lineNum">      74 </span><span class="lineCov">      74200 :         if (strcmp(requirementName, (*ppNext)-&gt;_pModuleName) == 0) {</span>
+<span class="lineNum">      75 </span><span class="lineCov">      42400 :             module-&gt;_pNext = (*ppNext)-&gt;_pNext;</span>
+<span class="lineNum">      76 </span><span class="lineCov">       5300 :             (*ppNext)-&gt;_pNext = module;</span>
+<span class="lineNum">      77 </span><span class="lineCov">       5300 :             return;</span>
+<span class="lineNum">      78 </span>            :         } else {
+<span class="lineNum">      79 </span>            :             ppNext = &amp;(*ppNext)-&gt;_pNext;
+<span class="lineNum">      80 </span>            :         }
+<span class="lineNum">      81 </span>            :     }
+<span class="lineNum">      82 </span><span class="lineCov">       5300 : }</span>
+<a name="83"><span class="lineNum">      83 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      84 </span>            : //! Verify a required module has been loaded. Called by registration visitor callbacks.
+<span class="lineNum">      85 </span>            : Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
+<span class="lineNum">      86 </span>            : {
+<span class="lineNum">      87 </span><span class="lineCov">      16960 :     TypeDefiner* pDefiner = _gpTypeDefinerList;</span>
+<span class="lineNum">      88 </span>            :     // Walk down the list until found, or the
+<span class="lineNum">      89 </span>            :     // the one making the query is encountered.
+<span class="lineNum">      90 </span><span class="lineCov">     248040 :     while (pDefiner &amp;&amp; pDefiner != _this) {</span>
+<span class="lineNum">      91 </span><span class="lineCov">      77380 :         if (strcmp(name, pDefiner-&gt;_pModuleName) == 0) {</span>
+<span class="lineNum">      92 </span><span class="lineCov">      11660 :             return true;</span>
+<span class="lineNum">      93 </span>            :         }
+<span class="lineNum">      94 </span><span class="lineCov">      65720 :         pDefiner = pDefiner-&gt;_pNext;</span>
+<span class="lineNum">      95 </span>            :     }
+<span class="lineNum">      96 </span><span class="lineCov">       5300 :     return false;</span>
+<span class="lineNum">      97 </span><span class="lineCov">      16960 : }</span>
+<a name="98"><span class="lineNum">      98 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      99 </span>            : //! Define an anonymous type.
+<span class="lineNum">     100 </span>            : TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
+<span class="lineNum">     101 </span>            : {
+<span class="lineNum">     102 </span><span class="lineCov">     997460 :     TypeManagerScope scope(tm);</span>
+<span class="lineNum">     103 </span>            :     
+<span class="lineNum">     104 </span><span class="lineCov">     997460 :     EventLog log(EventLog::StdOut);</span>
+<span class="lineNum">     105 </span><span class="lineCov">     997460 :     TDViaParser parser(tm, typeString, &amp;log, 1);</span>
+<span class="lineNum">     106 </span><span class="lineCov">     997460 :     return parser.ParseType();</span>
+<span class="lineNum">     107 </span><span class="lineCov">     997460 : }</span>
+<a name="108"><span class="lineNum">     108 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     109 </span>            : //! Define a named type from C strings.
+<span class="lineNum">     110 </span>            : TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeString)
+<span class="lineNum">     111 </span>            : {
+<span class="lineNum">     112 </span><span class="lineCov">      94340 :     SubString typeName(name);</span>
+<span class="lineNum">     113 </span><span class="lineCov">      94340 :     SubString wrappedTypeString(typeString);</span>
+<span class="lineNum">     114 </span><span class="lineCov">      94340 :     return Define(tm, &amp;typeName, &amp;wrappedTypeString);</span>
+<span class="lineNum">     115 </span>            : }
+<a name="116"><span class="lineNum">     116 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     117 </span>            : //! Define a named type from SubStrings.
+<span class="lineNum">     118 </span>            : TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
+<span class="lineNum">     119 </span>            : {
+<span class="lineNum">     120 </span><span class="lineCov">      94340 :     TypeManagerScope scope(tm);</span>
+<span class="lineNum">     121 </span><span class="lineCov">      94340 :     TypeRef type = ParseAndBuidType(tm, typeString);</span>
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span><span class="lineCov">      94340 :     if (typeName-&gt;Length()) {</span>
+<span class="lineNum">     124 </span>            :         // Use the name if provided, else it an anonymous type.
+<span class="lineNum">     125 </span><span class="lineCov">      94340 :         type = tm-&gt;Define(typeName, type);</span>
+<span class="lineNum">     126 </span><span class="lineCov">      94340 :     }</span>
+<span class="lineNum">     127 </span>            :     return type;
+<span class="lineNum">     128 </span><span class="lineCov">      94340 : }</span>
+<a name="129"><span class="lineNum">     129 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     130 </span>            : #if defined (VIREO_INSTRUCTION_REFLECTION)
+<span class="lineNum">     131 </span>            : void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
+<span class="lineNum">     132 </span>            : {
+<span class="lineNum">     133 </span><span class="lineCov">     901000 :     SubString typeString(typeCStr);</span>
+<span class="lineNum">     134 </span><span class="lineCov">     901000 :     TypeRef type = ParseAndBuidType(tm, &amp;typeString);</span>
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span><span class="lineCov">     901000 :     tm-&gt;DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType, cname);</span>
+<span class="lineNum">     137 </span><span class="lineCov">     901000 : }</span>
+<span class="lineNum">     138 </span>            : #else
+<span class="lineNum">     139 </span>            : void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType)
+<span class="lineNum">     140 </span>            : {
+<span class="lineNum">     141 </span>            :     SubString typeString(typeCStr);
+<span class="lineNum">     142 </span>            :     TypeRef type = ParseAndBuidType(tm, &amp;typeString);
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :     tm-&gt;DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType);
+<span class="lineNum">     145 </span>            : }
+<a name="146"><span class="lineNum">     146 </span>            : #endif</a>
+<span class="lineNum">     147 </span>            : //------------------------------------------------------------
+<span class="lineNum">     148 </span>            : void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeCStr)
+<span class="lineNum">     149 </span>            : {
+<span class="lineNum">     150 </span><span class="lineCov">       2120 :     SubString typeString(typeCStr);</span>
+<span class="lineNum">     151 </span><span class="lineCov">       2120 :     TypeRef type = ParseAndBuidType(tm, &amp;typeString);</span>
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineCov">       2120 :     tm-&gt;DefineCustomDataProcs(name, pDataProcs, type);</span>
+<a name="154"><span class="lineNum">     154 </span><span class="lineCov">       2120 : }</span></a>
+<span class="lineNum">     155 </span>            : //------------------------------------------------------------
+<span class="lineNum">     156 </span>            : void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString)
+<span class="lineNum">     157 </span>            : {
+<span class="lineNum">     158 </span><span class="lineCov">       3180 :     SubString string(typeString);</span>
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span><span class="lineCov">       3180 :     TDViaParser parser(tm, &amp;string, null, 1);</span>
+<span class="lineNum">     161 </span><span class="lineCov">       3180 :     TypeRef t = parser.ParseType();</span>
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span><span class="lineCov">       3180 :     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);</span>
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span><span class="lineCov">       6360 :     if (cdt-&gt;BitEncoding() == kEncoding_S2CInt &amp;&amp; cdt-&gt;TopAQSize() == 4) {</span>
+<span class="lineNum">     166 </span><span class="lineCov">       3180 :         *(Int32*)cdt-&gt;Begin(kPAInit) = value;</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span><span class="lineCov">       3180 :         string.AliasAssignCStr(name);</span>
+<span class="lineNum">     169 </span><span class="lineCov">       3180 :         tm-&gt;Define(&amp;string, cdt);</span>
+<span class="lineNum">     170 </span><span class="lineCov">       3180 :     }</span>
+<span class="lineNum">     171 </span><span class="lineCov">       3180 : }</span>
+<a name="172"><span class="lineNum">     172 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     173 </span>            : //! Parse a value from a stream to set the value of a DefaulValueType.
+<span class="lineNum">     174 </span>            : void TypeDefiner::ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString)
+<span class="lineNum">     175 </span>            : {
+<span class="lineNum">     176 </span><span class="lineCov">      21420 :     TDViaParser parser(tm, valueString, log, lineNumber);</span>
+<span class="lineNum">     177 </span><span class="lineCov">      21420 :     parser.ParseData(defaultValueType, defaultValueType-&gt;Begin(kPAInit));</span>
+<span class="lineNum">     178 </span><span class="lineCov">      21420 : }</span>
+<a name="179"><span class="lineNum">     179 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     180 </span>            : //! Parse a value to creaate a literal constant.
+<span class="lineNum">     181 </span>            : TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString)
+<span class="lineNum">     182 </span>            : {
+<span class="lineNum">     183 </span><span class="lineCov">      21180 :     TDViaParser parser(tm, valueString, log, lineNumber);</span>
+<span class="lineNum">     184 </span>            :     // ParseType supports value literals and type literals (that also have a value)  
+<span class="lineNum">     185 </span><span class="lineCov">      21180 :     return parser.ParseType(patternType);</span>
+<span class="lineNum">     186 </span><span class="lineCov">      21180 : }</span>
+<a name="187"><span class="lineNum">     187 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     188 </span>            : //! Map package name to contents
+<span class="lineNum">     189 </span>            : void TypeDefiner::ResolvePackage(SubString* packageName, StringRef packageContents)
+<span class="lineNum">     190 </span>            : {
+<span class="lineNum">     191 </span>            :     // This is just a start, need to manage duplicate requests
+<span class="lineNum">     192 </span>            :     // internal packages, and dynamically loaded native packages (e.g. *.so)
+<span class="lineNum">     193 </span><span class="lineCov">         10 :     STACK_VAR(String, fileName);</span>
+<span class="lineNum">     194 </span><span class="lineCov">         10 :     fileName.Value-&gt;AppendSubString(packageName);</span>
+<span class="lineNum">     195 </span><span class="lineCov">         10 :     fileName.Value-&gt;AppendCStr(&quot;.via&quot;);</span>
+<span class="lineNum">     196 </span><span class="lineCov">         20 :     SubString ssFileName = fileName.Value-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     197 </span>            :     
+<span class="lineNum">     198 </span><span class="lineCov">         10 :     gPlatform.IO.ReadFile(&amp;ssFileName, packageContents);</span>
+<span class="lineNum">     199 </span><span class="lineCov">         10 : }</span>
+<a name="200"><span class="lineNum">     200 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     201 </span>            : //! Define standard core types.
+<span class="lineNum">     202 </span>            : void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
+<span class="lineNum">     203 </span>            : {
+<span class="lineNum">     204 </span>            :     // The basics
+<span class="lineNum">     205 </span><span class="lineCov">       1060 :     Define(tm, tsBooleanType,   &quot;c(e(bb(1 Boolean)))&quot;);</span>
+<span class="lineNum">     206 </span><span class="lineCov">       1060 :     Define(tm, tsWildCard,      &quot;c(e(bb(* Generic)))&quot;);</span>
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :     // Signed (2's compliment) integers
+<span class="lineNum">     209 </span><span class="lineCov">       1060 :     Define(tm, &quot;Int8&quot;,          &quot;c(e(bb(8 S2cInt)))&quot;);</span>
+<span class="lineNum">     210 </span><span class="lineCov">       1060 :     Define(tm, &quot;Int16&quot;,         &quot;c(e(bb(16 S2cInt)))&quot;);</span>
+<span class="lineNum">     211 </span><span class="lineCov">       1060 :     Define(tm, tsInt32Type,     &quot;c(e(bb(32 S2cInt)))&quot;);</span>
+<span class="lineNum">     212 </span><span class="lineCov">       1060 :     Define(tm, &quot;Int64&quot;,         &quot;c(e(bb(64 S2cInt)))&quot;);</span>
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :     // Unsigned integers
+<span class="lineNum">     215 </span><span class="lineCov">       1060 :     Define(tm, &quot;UInt8&quot;,         &quot;c(e(bb(8 UInt)))&quot;);</span>
+<span class="lineNum">     216 </span>            : #if defined(VIREO_LITLE_ENDIAN)
+<span class="lineNum">     217 </span><span class="lineCov">       1060 :     Define(tm, &quot;UInt16&quot;,        &quot;eq(e(c(e(bb(16 UInt)))) e(c(e(UInt8 lo) e(UInt8 hi)) UInt8s))&quot;);</span>
+<span class="lineNum">     218 </span><span class="lineCov">       1060 :     Define(tm, &quot;UInt32&quot;,        &quot;eq(e(c(e(bb(32 UInt)))) e(c(e(UInt16 lo) e(UInt16 hi)) UInt16s))&quot;);</span>
+<span class="lineNum">     219 </span><span class="lineCov">       1060 :     Define(tm, &quot;UInt64&quot;,        &quot;eq(e(c(e(bb(64 UInt)))) e(c(e(UInt32 lo) e(UInt32 hi)) UInt32s))&quot;);</span>
+<span class="lineNum">     220 </span>            : #else
+<span class="lineNum">     221 </span>            :     Define(tm, &quot;UInt16&quot;,        &quot;eq(e(c(e(bb(16 UInt)))) e(c(e(UInt8 hi) e(UInt8 lo)) UInt8s))&quot;);
+<span class="lineNum">     222 </span>            :     Define(tm, &quot;UInt32&quot;,        &quot;eq(e(c(e(bb(32 UInt)))) e(c(e(UInt16 hi) e(UInt16 lo)) UInt16s))&quot;);
+<span class="lineNum">     223 </span>            :     Define(tm, &quot;UInt64&quot;,        &quot;eq(e(c(e(bb(64 UInt)))) e(c(e(UInt32 hi) e(UInt32 lo)) UInt32s))&quot;);
+<span class="lineNum">     224 </span>            : #endif
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :     // Large blocks of bytes for copies
+<span class="lineNum">     227 </span><span class="lineCov">       1060 :     Define(tm, &quot;Block128&quot;,      &quot;c(e(bb(128 Boolean)))&quot;);</span>
+<span class="lineNum">     228 </span><span class="lineCov">       1060 :     Define(tm, &quot;Block256&quot;,      &quot;c(e(bb(256 Boolean)))&quot;);</span>
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            :     // String and character types
+<span class="lineNum">     231 </span><span class="lineCov">       1060 :     Define(tm, &quot;Utf8Char&quot;, &quot;c(e(bb(8 Unicode)))&quot;);  // A single octet of UTF-8, may be lead or continutation octet</span>
+<span class="lineNum">     232 </span><span class="lineCov">       1060 :     Define(tm, &quot;Utf32Char&quot;, &quot;Int32&quot;);              // A single Unicode codepoint (no special encoding or escapes)</span>
+<span class="lineNum">     233 </span><span class="lineCov">       1060 :     Define(tm, &quot;Utf8Array1D&quot;, &quot;a(Utf8Char *)&quot;);    // Should be valid UTF-8 encoding. No partial or overlong elements</span>
+<span class="lineNum">     234 </span><span class="lineCov">       1060 :     Define(tm, tsStringType, &quot;Utf8Array1D&quot;);</span>
+<span class="lineNum">     235 </span><span class="lineCov">       1060 :     Define(tm, &quot;StringArray1D&quot;, &quot;a(String *)&quot;);</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :     // Special types for the execution system.
+<span class="lineNum">     238 </span><span class="lineCov">       1060 :     Define(tm, &quot;CodePointer&quot;, &quot;c(e(bb(HostPointerSize Pointer)))&quot;);</span>
+<span class="lineNum">     239 </span><span class="lineCov">       1060 :     Define(tm, &quot;DataPointer&quot;, &quot;c(e(bb(HostPointerSize Pointer)))&quot;);</span>
+<span class="lineNum">     240 </span><span class="lineCov">       1060 :     Define(tm, &quot;BranchTarget&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     241 </span><span class="lineCov">       1060 :     Define(tm, &quot;Instruction&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :     // Type Type describes a variable that is a pointer to a TypeRef
+<span class="lineNum">     244 </span><span class="lineCov">       1060 :     Define(tm, tsTypeType, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span><span class="lineCov">       1060 :     Define(tm, &quot;Object&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     247 </span><span class="lineCov">       1060 :     Define(tm, &quot;Array&quot;, &quot;DataPointer&quot;);    // Object with Rank &gt; 0</span>
+<span class="lineNum">     248 </span><span class="lineCov">       1060 :     Define(tm, &quot;Array1D&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     249 </span><span class="lineCov">       1060 :     Define(tm, &quot;Variant&quot;, &quot;DataPointer&quot;);  // TODO is this any different from the Type type if the type has a default value?</span>
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            :     // VarArgCount - Used in prototypes for vararg functions.
+<span class="lineNum">     252 </span>            :     // This parameter will be constant number, not a pointer to a number
+<span class="lineNum">     253 </span><span class="lineCov">       1060 :     Define(tm, &quot;VarArgCount&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
+<span class="lineNum">     256 </span><span class="lineCov">       1060 :     Define(tm, &quot;StaticType&quot;, &quot;DataPointer&quot;);</span>
+<span class="lineNum">     257 </span>            :     
+<span class="lineNum">     258 </span>            :     // StaticTypeAndData - Used in prototypes for polymorphic functions.
+<span class="lineNum">     259 </span>            :     // Static type paired with a pointer to runtime data.
+<span class="lineNum">     260 </span>            :     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
+<span class="lineNum">     261 </span>            :     // for each parameter of this type.
+<span class="lineNum">     262 </span><span class="lineCov">       1060 :     Define(tm, &quot;StaticTypeAndData&quot;, &quot;c(e(StaticType) e(DataPointer))&quot;);</span>
+<span class="lineNum">     263 </span>            :  
+<span class="lineNum">     264 </span><span class="lineCov">       1060 :     Define(tm, &quot;SubString&quot;, &quot;c(e(DataPointer begin)e(DataPointer end))&quot;);</span>
+<span class="lineNum">     265 </span><span class="lineCov">       1060 : }</span>
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            : }  // namespace Vireo
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

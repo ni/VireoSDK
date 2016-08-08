@@ -1,0 +1,1902 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - /usr/include/c++/5.2.1/limits</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/c++/5.2.1</a> - limits<span style="font-size: 80%;"> (source / <a href="limits.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // The template and inlines for the numeric_limits classes. -*- C++ -*-</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : // Copyright (C) 1999-2015 Free Software Foundation, Inc.
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // This file is part of the GNU ISO C++ Library.  This library is free
+<span class="lineNum">       6 </span>            : // software; you can redistribute it and/or modify it under the
+<span class="lineNum">       7 </span>            : // terms of the GNU General Public License as published by the
+<span class="lineNum">       8 </span>            : // Free Software Foundation; either version 3, or (at your option)
+<span class="lineNum">       9 </span>            : // any later version.
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : // This library is distributed in the hope that it will be useful,
+<span class="lineNum">      12 </span>            : // but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      13 </span>            : // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      14 </span>            : // GNU General Public License for more details.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // Under Section 7 of GPL version 3, you are granted additional
+<span class="lineNum">      17 </span>            : // permissions described in the GCC Runtime Library Exception, version
+<span class="lineNum">      18 </span>            : // 3.1, as published by the Free Software Foundation.
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : // You should have received a copy of the GNU General Public License and
+<span class="lineNum">      21 </span>            : // a copy of the GCC Runtime Library Exception along with this program;
+<span class="lineNum">      22 </span>            : // see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+<span class="lineNum">      23 </span>            : // &lt;http://www.gnu.org/licenses/&gt;.
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : /** @file include/limits
+<span class="lineNum">      26 </span>            :  *  This is a Standard C++ Library header.
+<span class="lineNum">      27 </span>            :  */
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : // Note: this is not a conforming implementation.
+<span class="lineNum">      30 </span>            : // Written by Gabriel Dos Reis &lt;gdr@codesourcery.com&gt;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : //
+<span class="lineNum">      33 </span>            : // ISO 14882:1998
+<span class="lineNum">      34 </span>            : // 18.2.1
+<span class="lineNum">      35 </span>            : //
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : #ifndef _GLIBCXX_NUMERIC_LIMITS
+<span class="lineNum">      38 </span>            : #define _GLIBCXX_NUMERIC_LIMITS 1
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : #pragma GCC system_header
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #include &lt;bits/c++config.h&gt;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : //
+<span class="lineNum">      45 </span>            : // The numeric_limits&lt;&gt; traits document implementation-defined aspects
+<span class="lineNum">      46 </span>            : // of fundamental arithmetic data types (integers and floating points).
+<span class="lineNum">      47 </span>            : // From Standard C++ point of view, there are 14 such types:
+<span class="lineNum">      48 </span>            : //   * integers
+<span class="lineNum">      49 </span>            : //         bool                                                 (1)
+<span class="lineNum">      50 </span>            : //         char, signed char, unsigned char, wchar_t            (4)
+<span class="lineNum">      51 </span>            : //         short, unsigned short                                (2)
+<span class="lineNum">      52 </span>            : //         int, unsigned                                        (2)
+<span class="lineNum">      53 </span>            : //         long, unsigned long                                  (2)
+<span class="lineNum">      54 </span>            : //
+<span class="lineNum">      55 </span>            : //   * floating points
+<span class="lineNum">      56 </span>            : //         float                                                (1)
+<span class="lineNum">      57 </span>            : //         double                                               (1)
+<span class="lineNum">      58 </span>            : //         long double                                          (1)
+<span class="lineNum">      59 </span>            : //
+<span class="lineNum">      60 </span>            : // GNU C++ understands (where supported by the host C-library)
+<span class="lineNum">      61 </span>            : //   * integer
+<span class="lineNum">      62 </span>            : //         long long, unsigned long long                        (2)
+<span class="lineNum">      63 </span>            : //
+<span class="lineNum">      64 </span>            : // which brings us to 16 fundamental arithmetic data types in GNU C++.
+<span class="lineNum">      65 </span>            : //
+<span class="lineNum">      66 </span>            : //
+<span class="lineNum">      67 </span>            : // Since a numeric_limits&lt;&gt; is a bit tricky to get right, we rely on
+<span class="lineNum">      68 </span>            : // an interface composed of macros which should be defined in config/os
+<span class="lineNum">      69 </span>            : // or config/cpu when they differ from the generic (read arbitrary)
+<span class="lineNum">      70 </span>            : // definitions given here.
+<span class="lineNum">      71 </span>            : //
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : // These values can be overridden in the target configuration file.
+<span class="lineNum">      74 </span>            : // The default values are appropriate for many 32-bit targets.
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            : // GCC only intrinsically supports modulo integral types.  The only remaining
+<span class="lineNum">      77 </span>            : // integral exceptional values is division by zero.  Only targets that do not
+<span class="lineNum">      78 </span>            : // signal division by zero in some &quot;hard to ignore&quot; way should use false.
+<span class="lineNum">      79 </span>            : #ifndef __glibcxx_integral_traps
+<span class="lineNum">      80 </span>            : # define __glibcxx_integral_traps true
+<span class="lineNum">      81 </span>            : #endif
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : // float
+<span class="lineNum">      84 </span>            : //
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : // Default values.  Should be overridden in configuration files if necessary.
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            : #ifndef __glibcxx_float_has_denorm_loss
+<span class="lineNum">      89 </span>            : #  define __glibcxx_float_has_denorm_loss false
+<span class="lineNum">      90 </span>            : #endif
+<span class="lineNum">      91 </span>            : #ifndef __glibcxx_float_traps
+<span class="lineNum">      92 </span>            : #  define __glibcxx_float_traps false
+<span class="lineNum">      93 </span>            : #endif
+<span class="lineNum">      94 </span>            : #ifndef __glibcxx_float_tinyness_before
+<span class="lineNum">      95 </span>            : #  define __glibcxx_float_tinyness_before false
+<span class="lineNum">      96 </span>            : #endif
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : // double
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : // Default values.  Should be overridden in configuration files if necessary.
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : #ifndef __glibcxx_double_has_denorm_loss
+<span class="lineNum">     103 </span>            : #  define __glibcxx_double_has_denorm_loss false
+<span class="lineNum">     104 </span>            : #endif
+<span class="lineNum">     105 </span>            : #ifndef __glibcxx_double_traps
+<span class="lineNum">     106 </span>            : #  define __glibcxx_double_traps false
+<span class="lineNum">     107 </span>            : #endif
+<span class="lineNum">     108 </span>            : #ifndef __glibcxx_double_tinyness_before
+<span class="lineNum">     109 </span>            : #  define __glibcxx_double_tinyness_before false
+<span class="lineNum">     110 </span>            : #endif
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : // long double
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : // Default values.  Should be overridden in configuration files if necessary.
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : #ifndef __glibcxx_long_double_has_denorm_loss
+<span class="lineNum">     117 </span>            : #  define __glibcxx_long_double_has_denorm_loss false
+<span class="lineNum">     118 </span>            : #endif
+<span class="lineNum">     119 </span>            : #ifndef __glibcxx_long_double_traps
+<span class="lineNum">     120 </span>            : #  define __glibcxx_long_double_traps false
+<span class="lineNum">     121 </span>            : #endif
+<span class="lineNum">     122 </span>            : #ifndef __glibcxx_long_double_tinyness_before
+<span class="lineNum">     123 </span>            : #  define __glibcxx_long_double_tinyness_before false
+<span class="lineNum">     124 </span>            : #endif
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : // You should not need to define any macros below this point.
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : #define __glibcxx_signed_b(T,B) ((T)(-1) &lt; 0)
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : #define __glibcxx_min_b(T,B)                                    \
+<span class="lineNum">     131 </span>            :   (__glibcxx_signed_b (T,B) ? -__glibcxx_max_b (T,B) - 1 : (T)0)
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : #define __glibcxx_max_b(T,B)                                            \
+<span class="lineNum">     134 </span>            :   (__glibcxx_signed_b (T,B) ?                                           \
+<span class="lineNum">     135 </span>            :    (((((T)1 &lt;&lt; (__glibcxx_digits_b (T,B) - 1)) - 1) &lt;&lt; 1) + 1) : ~(T)0)
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            : #define __glibcxx_digits_b(T,B)                         \
+<span class="lineNum">     138 </span>            :   (B - __glibcxx_signed_b (T,B))
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            : // The fraction 643/2136 approximates log10(2) to 7 significant digits.
+<span class="lineNum">     141 </span>            : #define __glibcxx_digits10_b(T,B)               \
+<span class="lineNum">     142 </span>            :   (__glibcxx_digits_b (T,B) * 643L / 2136)
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : #define __glibcxx_signed(T) \
+<span class="lineNum">     145 </span>            :   __glibcxx_signed_b (T, sizeof(T) * __CHAR_BIT__)
+<span class="lineNum">     146 </span>            : #define __glibcxx_min(T) \
+<span class="lineNum">     147 </span>            :   __glibcxx_min_b (T, sizeof(T) * __CHAR_BIT__)
+<span class="lineNum">     148 </span>            : #define __glibcxx_max(T) \
+<span class="lineNum">     149 </span>            :   __glibcxx_max_b (T, sizeof(T) * __CHAR_BIT__)
+<span class="lineNum">     150 </span>            : #define __glibcxx_digits(T) \
+<span class="lineNum">     151 </span>            :   __glibcxx_digits_b (T, sizeof(T) * __CHAR_BIT__)
+<span class="lineNum">     152 </span>            : #define __glibcxx_digits10(T) \
+<span class="lineNum">     153 </span>            :   __glibcxx_digits10_b (T, sizeof(T) * __CHAR_BIT__)
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            : #define __glibcxx_max_digits10(T) \
+<span class="lineNum">     156 </span>            :   (2 + (T) * 643L / 2136)
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            : namespace std _GLIBCXX_VISIBILITY(default)
+<span class="lineNum">     159 </span>            : {
+<span class="lineNum">     160 </span>            : _GLIBCXX_BEGIN_NAMESPACE_VERSION
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            :   /**
+<span class="lineNum">     163 </span>            :    *  @brief Describes the rounding style for floating-point types.
+<span class="lineNum">     164 </span>            :    *
+<span class="lineNum">     165 </span>            :    *  This is used in the std::numeric_limits class.
+<span class="lineNum">     166 </span>            :   */
+<span class="lineNum">     167 </span>            :   enum float_round_style
+<span class="lineNum">     168 </span>            :   {
+<span class="lineNum">     169 </span>            :     round_indeterminate       = -1,    /// Intermediate.
+<span class="lineNum">     170 </span>            :     round_toward_zero         = 0,     /// To zero.
+<span class="lineNum">     171 </span>            :     round_to_nearest          = 1,     /// To the nearest representable value.
+<span class="lineNum">     172 </span>            :     round_toward_infinity     = 2,     /// To infinity.
+<span class="lineNum">     173 </span>            :     round_toward_neg_infinity = 3      /// To negative infinity.
+<span class="lineNum">     174 </span>            :   };
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            :   /**
+<span class="lineNum">     177 </span>            :    *  @brief Describes the denormalization for floating-point types.
+<span class="lineNum">     178 </span>            :    *
+<span class="lineNum">     179 </span>            :    *  These values represent the presence or absence of a variable number
+<span class="lineNum">     180 </span>            :    *  of exponent bits.  This type is used in the std::numeric_limits class.
+<span class="lineNum">     181 </span>            :   */
+<span class="lineNum">     182 </span>            :   enum float_denorm_style
+<span class="lineNum">     183 </span>            :   {
+<span class="lineNum">     184 </span>            :     /// Indeterminate at compile time whether denormalized values are allowed.
+<span class="lineNum">     185 </span>            :     denorm_indeterminate = -1,
+<span class="lineNum">     186 </span>            :     /// The type does not allow denormalized values.
+<span class="lineNum">     187 </span>            :     denorm_absent        = 0,
+<span class="lineNum">     188 </span>            :     /// The type allows denormalized values.
+<span class="lineNum">     189 </span>            :     denorm_present       = 1
+<span class="lineNum">     190 </span>            :   };
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :   /**
+<span class="lineNum">     193 </span>            :    *  @brief Part of std::numeric_limits.
+<span class="lineNum">     194 </span>            :    *
+<span class="lineNum">     195 </span>            :    *  The @c static @c const members are usable as integral constant
+<span class="lineNum">     196 </span>            :    *  expressions.
+<span class="lineNum">     197 </span>            :    *
+<span class="lineNum">     198 </span>            :    *  @note This is a separate class for purposes of efficiency; you
+<span class="lineNum">     199 </span>            :    *        should only access these members as part of an instantiation
+<span class="lineNum">     200 </span>            :    *        of the std::numeric_limits class.
+<span class="lineNum">     201 </span>            :   */
+<span class="lineNum">     202 </span>            :   struct __numeric_limits_base
+<span class="lineNum">     203 </span>            :   {
+<span class="lineNum">     204 </span>            :     /** This will be true for all fundamental types (which have
+<span class="lineNum">     205 </span>            :         specializations), and false for everything else.  */
+<span class="lineNum">     206 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_specialized = false;
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :     /** The number of @c radix digits that be represented without change:  for
+<span class="lineNum">     209 </span>            :         integer types, the number of non-sign bits in the mantissa; for
+<span class="lineNum">     210 </span>            :         floating types, the number of @c radix digits in the mantissa.  */
+<span class="lineNum">     211 </span>            :     static _GLIBCXX_USE_CONSTEXPR int digits = 0;
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :     /** The number of base 10 digits that can be represented without change. */
+<span class="lineNum">     214 </span>            :     static _GLIBCXX_USE_CONSTEXPR int digits10 = 0;
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     217 </span>            :     /** The number of base 10 digits required to ensure that values which
+<span class="lineNum">     218 </span>            :         differ are always differentiated.  */
+<span class="lineNum">     219 </span>            :     static constexpr int max_digits10 = 0;
+<span class="lineNum">     220 </span>            : #endif
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            :     /** True if the type is signed.  */
+<span class="lineNum">     223 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            :     /** True if the type is integer.  */
+<span class="lineNum">     226 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_integer = false;
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :     /** True if the type uses an exact representation. All integer types are
+<span class="lineNum">     229 </span>            :         exact, but not all exact types are integer.  For example, rational and
+<span class="lineNum">     230 </span>            :         fixed-exponent representations are exact but not integer. */
+<span class="lineNum">     231 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_exact = false;
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            :     /** For integer types, specifies the base of the representation.  For
+<span class="lineNum">     234 </span>            :         floating types, specifies the base of the exponent representation.  */
+<span class="lineNum">     235 </span>            :     static _GLIBCXX_USE_CONSTEXPR int radix = 0;
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :     /** The minimum negative integer such that @c radix raised to the power of
+<span class="lineNum">     238 </span>            :         (one less than that integer) is a normalized floating point number.  */
+<span class="lineNum">     239 </span>            :     static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            :     /** The minimum negative integer such that 10 raised to that power is in
+<span class="lineNum">     242 </span>            :         the range of normalized floating point numbers.  */
+<span class="lineNum">     243 </span>            :     static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :     /** The maximum positive integer such that @c radix raised to the power of
+<span class="lineNum">     246 </span>            :         (one less than that integer) is a representable finite floating point
+<span class="lineNum">     247 </span>            :         number.  */
+<span class="lineNum">     248 </span>            :     static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     /** The maximum positive integer such that 10 raised to that power is in
+<span class="lineNum">     251 </span>            :         the range of representable finite floating point numbers.  */
+<span class="lineNum">     252 </span>            :     static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :     /** True if the type has a representation for positive infinity.  */
+<span class="lineNum">     255 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            :     /** True if the type has a representation for a quiet (non-signaling)
+<span class="lineNum">     258 </span>            :         Not a Number.  */
+<span class="lineNum">     259 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            :     /** True if the type has a representation for a signaling
+<span class="lineNum">     262 </span>            :         Not a Number.  */
+<span class="lineNum">     263 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            :     /** See std::float_denorm_style for more information.  */
+<span class="lineNum">     266 </span>            :     static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm = denorm_absent;
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            :     /** True if loss of accuracy is detected as a denormalization loss,
+<span class="lineNum">     269 </span>            :         rather than as an inexact result. */
+<span class="lineNum">     270 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            :     /** True if-and-only-if the type adheres to the IEC 559 standard, also
+<span class="lineNum">     273 </span>            :         known as IEEE 754.  (Only makes sense for floating point types.)  */
+<span class="lineNum">     274 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            :     /** True if the set of values representable by the type is
+<span class="lineNum">     277 </span>            :         finite.  All built-in types are bounded, this member would be
+<span class="lineNum">     278 </span>            :         false for arbitrary precision types. */
+<span class="lineNum">     279 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_bounded = false;
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :     /** True if the type is @e modulo. A type is modulo if, for any
+<span class="lineNum">     282 </span>            :         operation involving +, -, or * on values of that type whose
+<span class="lineNum">     283 </span>            :         result would fall outside the range [min(),max()], the value
+<span class="lineNum">     284 </span>            :         returned differs from the true value by an integer multiple of
+<span class="lineNum">     285 </span>            :         max() - min() + 1. On most machines, this is false for floating
+<span class="lineNum">     286 </span>            :         types, true for unsigned integers, and true for signed integers.
+<span class="lineNum">     287 </span>            :         See PR22200 about signed integers.  */
+<span class="lineNum">     288 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            :     /** True if trapping is implemented for this type.  */
+<span class="lineNum">     291 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool traps = false;
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     /** True if tininess is detected before rounding.  (see IEC 559)  */
+<span class="lineNum">     294 </span>            :     static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span>            :     /** See std::float_round_style for more information.  This is only
+<span class="lineNum">     297 </span>            :         meaningful for floating types; integer types will all be
+<span class="lineNum">     298 </span>            :         round_toward_zero.  */
+<span class="lineNum">     299 </span>            :     static _GLIBCXX_USE_CONSTEXPR float_round_style round_style = 
+<span class="lineNum">     300 </span>            :                                                     round_toward_zero;
+<span class="lineNum">     301 </span>            :   };
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :   /**
+<span class="lineNum">     304 </span>            :    *  @brief Properties of fundamental types.
+<span class="lineNum">     305 </span>            :    *
+<span class="lineNum">     306 </span>            :    *  This class allows a program to obtain information about the
+<span class="lineNum">     307 </span>            :    *  representation of a fundamental type on a given platform.  For
+<span class="lineNum">     308 </span>            :    *  non-fundamental types, the functions will return 0 and the data
+<span class="lineNum">     309 </span>            :    *  members will all be @c false.
+<span class="lineNum">     310 </span>            :    *
+<span class="lineNum">     311 </span>            :    *  _GLIBCXX_RESOLVE_LIB_DEFECTS:  DRs 201 and 184 (hi Gaby!) are
+<span class="lineNum">     312 </span>            :    *  noted, but not incorporated in this documented (yet).
+<span class="lineNum">     313 </span>            :   */
+<span class="lineNum">     314 </span>            :   template&lt;typename _Tp&gt;
+<span class="lineNum">     315 </span>            :     struct numeric_limits : public __numeric_limits_base
+<span class="lineNum">     316 </span>            :     {
+<span class="lineNum">     317 </span>            :       /** The minimum finite value, or for floating types with
+<span class="lineNum">     318 </span>            :           denormalization, the minimum positive normalized value.  */
+<span class="lineNum">     319 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     320 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :       /** The maximum finite value.  */
+<span class="lineNum">     323 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     324 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     327 </span>            :       /** A finite value x such that there is no other finite value y
+<span class="lineNum">     328 </span>            :        *  where y &lt; x.  */
+<span class="lineNum">     329 </span>            :       static constexpr _Tp
+<span class="lineNum">     330 </span>            :       lowest() noexcept { return _Tp(); }
+<span class="lineNum">     331 </span>            : #endif
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            :       /** The @e machine @e epsilon:  the difference between 1 and the least
+<span class="lineNum">     334 </span>            :           value greater than 1 that is representable.  */
+<span class="lineNum">     335 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     336 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :       /** The maximum rounding error measurement (see LIA-1).  */
+<span class="lineNum">     339 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     340 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     341 </span>            : 
+<span class="lineNum">     342 </span>            :       /** The representation of positive infinity, if @c has_infinity.  */
+<span class="lineNum">     343 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     344 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            :       /** The representation of a quiet Not a Number,
+<span class="lineNum">     347 </span>            :           if @c has_quiet_NaN. */
+<span class="lineNum">     348 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     349 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            :       /** The representation of a signaling Not a Number, if
+<span class="lineNum">     352 </span>            :           @c has_signaling_NaN. */
+<span class="lineNum">     353 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     354 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            :       /** The minimum positive denormalized value.  For types where
+<span class="lineNum">     357 </span>            :           @c has_denorm is false, this is the minimum positive normalized
+<span class="lineNum">     358 </span>            :           value.  */
+<span class="lineNum">     359 </span>            :       static _GLIBCXX_CONSTEXPR _Tp
+<span class="lineNum">     360 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return _Tp(); }
+<span class="lineNum">     361 </span>            :     };
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     364 </span>            :   template&lt;typename _Tp&gt;
+<span class="lineNum">     365 </span>            :     struct numeric_limits&lt;const _Tp&gt;
+<span class="lineNum">     366 </span>            :     : public numeric_limits&lt;_Tp&gt; { };
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            :   template&lt;typename _Tp&gt;
+<span class="lineNum">     369 </span>            :     struct numeric_limits&lt;volatile _Tp&gt;
+<span class="lineNum">     370 </span>            :     : public numeric_limits&lt;_Tp&gt; { };
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            :   template&lt;typename _Tp&gt;
+<span class="lineNum">     373 </span>            :     struct numeric_limits&lt;const volatile _Tp&gt;
+<span class="lineNum">     374 </span>            :     : public numeric_limits&lt;_Tp&gt; { };
+<span class="lineNum">     375 </span>            : #endif
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            :   // Now there follow 16 explicit specializations.  Yes, 16.  Make sure
+<span class="lineNum">     378 </span>            :   // you get the count right. (18 in c++0x mode)
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            :   /// numeric_limits&lt;bool&gt; specialization.
+<span class="lineNum">     381 </span>            :   template&lt;&gt;
+<span class="lineNum">     382 </span>            :     struct numeric_limits&lt;bool&gt;
+<span class="lineNum">     383 </span>            :     {
+<span class="lineNum">     384 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     387 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     390 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return true; }
+<span class="lineNum">     391 </span>            : 
+<span class="lineNum">     392 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     393 </span>            :       static constexpr bool
+<span class="lineNum">     394 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     395 </span>            : #endif
+<span class="lineNum">     396 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = 1;
+<span class="lineNum">     397 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = 0;
+<span class="lineNum">     398 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     399 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     400 </span>            : #endif
+<span class="lineNum">     401 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">     402 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     403 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     404 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     405 </span>            : 
+<span class="lineNum">     406 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     407 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     410 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     411 </span>            : 
+<span class="lineNum">     412 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     413 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     414 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     415 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     418 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     419 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     420 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     421 </span>            :        = denorm_absent;
+<span class="lineNum">     422 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     423 </span>            : 
+<span class="lineNum">     424 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     425 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     428 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     431 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     432 </span>            : 
+<span class="lineNum">     433 </span>            :       static _GLIBCXX_CONSTEXPR bool 
+<span class="lineNum">     434 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return false; }
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     437 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     438 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            :       // It is not clear what it means for a boolean type to trap.
+<span class="lineNum">     441 </span>            :       // This is a DR on the LWG issue list.  Here, I use integer
+<span class="lineNum">     442 </span>            :       // promotion semantics.
+<span class="lineNum">     443 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     444 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     445 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     446 </span>            :        = round_toward_zero;
+<span class="lineNum">     447 </span>            :     };
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span>            :   /// numeric_limits&lt;char&gt; specialization.
+<span class="lineNum">     450 </span>            :   template&lt;&gt;
+<span class="lineNum">     451 </span>            :     struct numeric_limits&lt;char&gt;
+<span class="lineNum">     452 </span>            :     {
+<span class="lineNum">     453 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     456 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min(char); }
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     459 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max(char); }
+<span class="lineNum">     460 </span>            : 
+<span class="lineNum">     461 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     462 </span>            :       static constexpr char 
+<span class="lineNum">     463 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     464 </span>            : #endif
+<span class="lineNum">     465 </span>            : 
+<span class="lineNum">     466 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (char);
+<span class="lineNum">     467 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __glibcxx_digits10 (char);
+<span class="lineNum">     468 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     469 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     470 </span>            : #endif
+<span class="lineNum">     471 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = __glibcxx_signed (char);
+<span class="lineNum">     472 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     473 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     474 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     475 </span>            : 
+<span class="lineNum">     476 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     477 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     478 </span>            : 
+<span class="lineNum">     479 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     480 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     483 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     484 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     485 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     486 </span>            : 
+<span class="lineNum">     487 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     488 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     489 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     490 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     491 </span>            :        = denorm_absent;
+<span class="lineNum">     492 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     493 </span>            : 
+<span class="lineNum">     494 </span>            :       static _GLIBCXX_CONSTEXPR 
+<span class="lineNum">     495 </span>            :       char infinity() _GLIBCXX_USE_NOEXCEPT { return char(); }
+<span class="lineNum">     496 </span>            : 
+<span class="lineNum">     497 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     498 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return char(); }
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     501 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return char(); }
+<span class="lineNum">     502 </span>            : 
+<span class="lineNum">     503 </span>            :       static _GLIBCXX_CONSTEXPR char 
+<span class="lineNum">     504 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;char&gt;(0); }
+<span class="lineNum">     505 </span>            : 
+<span class="lineNum">     506 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     507 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     508 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = !is_signed;
+<span class="lineNum">     509 </span>            : 
+<span class="lineNum">     510 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     511 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     512 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     513 </span>            :        = round_toward_zero;
+<span class="lineNum">     514 </span>            :     };
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span>            :   /// numeric_limits&lt;signed char&gt; specialization.
+<span class="lineNum">     517 </span>            :   template&lt;&gt;
+<span class="lineNum">     518 </span>            :     struct numeric_limits&lt;signed char&gt;
+<span class="lineNum">     519 </span>            :     {
+<span class="lineNum">     520 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="521"><span class="lineNum">     521 </span>            : </a>
+<span class="lineNum">     522 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     523 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return -__SCHAR_MAX__ - 1; }</span>
+<a name="524"><span class="lineNum">     524 </span>            : </a>
+<span class="lineNum">     525 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     526 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__; }</span>
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     529 </span>            :       static constexpr signed char 
+<span class="lineNum">     530 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     531 </span>            : #endif
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (signed char);
+<span class="lineNum">     534 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">     535 </span>            :        = __glibcxx_digits10 (signed char);
+<span class="lineNum">     536 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     537 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     538 </span>            : #endif
+<span class="lineNum">     539 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">     540 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     541 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     542 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     545 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     546 </span>            : 
+<span class="lineNum">     547 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     548 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     549 </span>            : 
+<span class="lineNum">     550 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     551 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     552 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     553 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     554 </span>            : 
+<span class="lineNum">     555 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     556 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     557 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     558 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     559 </span>            :        = denorm_absent;
+<span class="lineNum">     560 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     563 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;signed char&gt;(0); }
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     566 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;signed char&gt;(0); }
+<span class="lineNum">     567 </span>            : 
+<span class="lineNum">     568 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     569 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     570 </span>            :       { return static_cast&lt;signed char&gt;(0); }
+<span class="lineNum">     571 </span>            : 
+<span class="lineNum">     572 </span>            :       static _GLIBCXX_CONSTEXPR signed char 
+<span class="lineNum">     573 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     574 </span>            :       { return static_cast&lt;signed char&gt;(0); }
+<span class="lineNum">     575 </span>            : 
+<span class="lineNum">     576 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     577 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     578 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     581 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     582 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     583 </span>            :        = round_toward_zero;
+<span class="lineNum">     584 </span>            :     };
+<span class="lineNum">     585 </span>            : 
+<span class="lineNum">     586 </span>            :   /// numeric_limits&lt;unsigned char&gt; specialization.
+<span class="lineNum">     587 </span>            :   template&lt;&gt;
+<span class="lineNum">     588 </span>            :     struct numeric_limits&lt;unsigned char&gt;
+<span class="lineNum">     589 </span>            :     {
+<span class="lineNum">     590 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="591"><span class="lineNum">     591 </span>            : </a>
+<span class="lineNum">     592 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     593 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }</span>
+<a name="594"><span class="lineNum">     594 </span>            : </a>
+<span class="lineNum">     595 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     596 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __SCHAR_MAX__ * 2U + 1; }</span>
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     599 </span>            :       static constexpr unsigned char 
+<span class="lineNum">     600 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     601 </span>            : #endif
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">     604 </span>            :        = __glibcxx_digits (unsigned char);
+<span class="lineNum">     605 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">     606 </span>            :        = __glibcxx_digits10 (unsigned char);
+<span class="lineNum">     607 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     608 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     609 </span>            : #endif
+<span class="lineNum">     610 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">     611 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     612 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     613 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     614 </span>            : 
+<span class="lineNum">     615 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     616 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     617 </span>            : 
+<span class="lineNum">     618 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     619 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     620 </span>            : 
+<span class="lineNum">     621 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     622 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     623 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     624 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     625 </span>            : 
+<span class="lineNum">     626 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     627 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     628 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     629 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     630 </span>            :        = denorm_absent;
+<span class="lineNum">     631 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     632 </span>            : 
+<span class="lineNum">     633 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     634 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     635 </span>            :       { return static_cast&lt;unsigned char&gt;(0); }
+<span class="lineNum">     636 </span>            : 
+<span class="lineNum">     637 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     638 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     639 </span>            :       { return static_cast&lt;unsigned char&gt;(0); }
+<span class="lineNum">     640 </span>            : 
+<span class="lineNum">     641 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     642 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     643 </span>            :       { return static_cast&lt;unsigned char&gt;(0); }
+<span class="lineNum">     644 </span>            : 
+<span class="lineNum">     645 </span>            :       static _GLIBCXX_CONSTEXPR unsigned char 
+<span class="lineNum">     646 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     647 </span>            :       { return static_cast&lt;unsigned char&gt;(0); }
+<span class="lineNum">     648 </span>            : 
+<span class="lineNum">     649 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     650 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     651 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;
+<span class="lineNum">     652 </span>            : 
+<span class="lineNum">     653 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     654 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     655 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     656 </span>            :        = round_toward_zero;
+<span class="lineNum">     657 </span>            :     };
+<span class="lineNum">     658 </span>            : 
+<span class="lineNum">     659 </span>            :   /// numeric_limits&lt;wchar_t&gt; specialization.
+<span class="lineNum">     660 </span>            :   template&lt;&gt;
+<span class="lineNum">     661 </span>            :     struct numeric_limits&lt;wchar_t&gt;
+<span class="lineNum">     662 </span>            :     {
+<span class="lineNum">     663 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">     664 </span>            : 
+<span class="lineNum">     665 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     666 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min (wchar_t); }
+<span class="lineNum">     667 </span>            : 
+<span class="lineNum">     668 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     669 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max (wchar_t); }
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     672 </span>            :       static constexpr wchar_t
+<span class="lineNum">     673 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     674 </span>            : #endif
+<span class="lineNum">     675 </span>            : 
+<span class="lineNum">     676 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (wchar_t);
+<span class="lineNum">     677 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">     678 </span>            :        = __glibcxx_digits10 (wchar_t);
+<span class="lineNum">     679 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     680 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     681 </span>            : #endif
+<span class="lineNum">     682 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = __glibcxx_signed (wchar_t);
+<span class="lineNum">     683 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     684 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     685 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     686 </span>            : 
+<span class="lineNum">     687 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     688 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     689 </span>            : 
+<span class="lineNum">     690 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     691 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     692 </span>            : 
+<span class="lineNum">     693 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     694 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     695 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     696 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     697 </span>            : 
+<span class="lineNum">     698 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     699 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     700 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     701 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     702 </span>            :        = denorm_absent;
+<span class="lineNum">     703 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     704 </span>            : 
+<span class="lineNum">     705 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     706 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return wchar_t(); }
+<span class="lineNum">     707 </span>            : 
+<span class="lineNum">     708 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     709 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return wchar_t(); }
+<span class="lineNum">     710 </span>            : 
+<span class="lineNum">     711 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     712 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return wchar_t(); }
+<span class="lineNum">     713 </span>            : 
+<span class="lineNum">     714 </span>            :       static _GLIBCXX_CONSTEXPR wchar_t 
+<span class="lineNum">     715 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return wchar_t(); }
+<span class="lineNum">     716 </span>            : 
+<span class="lineNum">     717 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     718 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     719 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = !is_signed;
+<span class="lineNum">     720 </span>            : 
+<span class="lineNum">     721 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     722 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     723 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     724 </span>            :        = round_toward_zero;
+<span class="lineNum">     725 </span>            :     };
+<span class="lineNum">     726 </span>            : 
+<span class="lineNum">     727 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     728 </span>            :   /// numeric_limits&lt;char16_t&gt; specialization.
+<span class="lineNum">     729 </span>            :   template&lt;&gt;
+<span class="lineNum">     730 </span>            :     struct numeric_limits&lt;char16_t&gt;
+<span class="lineNum">     731 </span>            :     {
+<span class="lineNum">     732 </span>            :       static constexpr bool is_specialized = true;
+<span class="lineNum">     733 </span>            : 
+<span class="lineNum">     734 </span>            :       static constexpr char16_t 
+<span class="lineNum">     735 </span>            :       min() noexcept { return __glibcxx_min (char16_t); }
+<span class="lineNum">     736 </span>            : 
+<span class="lineNum">     737 </span>            :       static constexpr char16_t 
+<span class="lineNum">     738 </span>            :       max() noexcept { return __glibcxx_max (char16_t); }
+<span class="lineNum">     739 </span>            : 
+<span class="lineNum">     740 </span>            :       static constexpr char16_t 
+<span class="lineNum">     741 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     742 </span>            : 
+<span class="lineNum">     743 </span>            :       static constexpr int digits = __glibcxx_digits (char16_t);
+<span class="lineNum">     744 </span>            :       static constexpr int digits10 = __glibcxx_digits10 (char16_t);
+<span class="lineNum">     745 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     746 </span>            :       static constexpr bool is_signed = __glibcxx_signed (char16_t);
+<span class="lineNum">     747 </span>            :       static constexpr bool is_integer = true;
+<span class="lineNum">     748 </span>            :       static constexpr bool is_exact = true;
+<span class="lineNum">     749 </span>            :       static constexpr int radix = 2;
+<span class="lineNum">     750 </span>            : 
+<span class="lineNum">     751 </span>            :       static constexpr char16_t 
+<span class="lineNum">     752 </span>            :       epsilon() noexcept { return 0; }
+<span class="lineNum">     753 </span>            : 
+<span class="lineNum">     754 </span>            :       static constexpr char16_t 
+<span class="lineNum">     755 </span>            :       round_error() noexcept { return 0; }
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span>            :       static constexpr int min_exponent = 0;
+<span class="lineNum">     758 </span>            :       static constexpr int min_exponent10 = 0;
+<span class="lineNum">     759 </span>            :       static constexpr int max_exponent = 0;
+<span class="lineNum">     760 </span>            :       static constexpr int max_exponent10 = 0;
+<span class="lineNum">     761 </span>            : 
+<span class="lineNum">     762 </span>            :       static constexpr bool has_infinity = false;
+<span class="lineNum">     763 </span>            :       static constexpr bool has_quiet_NaN = false;
+<span class="lineNum">     764 </span>            :       static constexpr bool has_signaling_NaN = false;
+<span class="lineNum">     765 </span>            :       static constexpr float_denorm_style has_denorm = denorm_absent;
+<span class="lineNum">     766 </span>            :       static constexpr bool has_denorm_loss = false;
+<span class="lineNum">     767 </span>            : 
+<span class="lineNum">     768 </span>            :       static constexpr char16_t 
+<span class="lineNum">     769 </span>            :       infinity() noexcept { return char16_t(); }
+<span class="lineNum">     770 </span>            : 
+<span class="lineNum">     771 </span>            :       static constexpr char16_t 
+<span class="lineNum">     772 </span>            :       quiet_NaN() noexcept { return char16_t(); }
+<span class="lineNum">     773 </span>            : 
+<span class="lineNum">     774 </span>            :       static constexpr char16_t 
+<span class="lineNum">     775 </span>            :       signaling_NaN() noexcept { return char16_t(); }
+<span class="lineNum">     776 </span>            : 
+<span class="lineNum">     777 </span>            :       static constexpr char16_t 
+<span class="lineNum">     778 </span>            :       denorm_min() noexcept { return char16_t(); }
+<span class="lineNum">     779 </span>            : 
+<span class="lineNum">     780 </span>            :       static constexpr bool is_iec559 = false;
+<span class="lineNum">     781 </span>            :       static constexpr bool is_bounded = true;
+<span class="lineNum">     782 </span>            :       static constexpr bool is_modulo = !is_signed;
+<span class="lineNum">     783 </span>            : 
+<span class="lineNum">     784 </span>            :       static constexpr bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     785 </span>            :       static constexpr bool tinyness_before = false;
+<span class="lineNum">     786 </span>            :       static constexpr float_round_style round_style = round_toward_zero;
+<span class="lineNum">     787 </span>            :     };
+<span class="lineNum">     788 </span>            : 
+<span class="lineNum">     789 </span>            :   /// numeric_limits&lt;char32_t&gt; specialization.
+<span class="lineNum">     790 </span>            :   template&lt;&gt;
+<span class="lineNum">     791 </span>            :     struct numeric_limits&lt;char32_t&gt;
+<span class="lineNum">     792 </span>            :     {
+<span class="lineNum">     793 </span>            :       static constexpr bool is_specialized = true;
+<span class="lineNum">     794 </span>            : 
+<span class="lineNum">     795 </span>            :       static constexpr char32_t 
+<span class="lineNum">     796 </span>            :       min() noexcept { return __glibcxx_min (char32_t); }
+<span class="lineNum">     797 </span>            : 
+<span class="lineNum">     798 </span>            :       static constexpr char32_t 
+<span class="lineNum">     799 </span>            :       max() noexcept { return __glibcxx_max (char32_t); }
+<span class="lineNum">     800 </span>            : 
+<span class="lineNum">     801 </span>            :       static constexpr char32_t 
+<span class="lineNum">     802 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     803 </span>            : 
+<span class="lineNum">     804 </span>            :       static constexpr int digits = __glibcxx_digits (char32_t);
+<span class="lineNum">     805 </span>            :       static constexpr int digits10 = __glibcxx_digits10 (char32_t);
+<span class="lineNum">     806 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     807 </span>            :       static constexpr bool is_signed = __glibcxx_signed (char32_t);
+<span class="lineNum">     808 </span>            :       static constexpr bool is_integer = true;
+<span class="lineNum">     809 </span>            :       static constexpr bool is_exact = true;
+<span class="lineNum">     810 </span>            :       static constexpr int radix = 2;
+<span class="lineNum">     811 </span>            : 
+<span class="lineNum">     812 </span>            :       static constexpr char32_t 
+<span class="lineNum">     813 </span>            :       epsilon() noexcept { return 0; }
+<span class="lineNum">     814 </span>            : 
+<span class="lineNum">     815 </span>            :       static constexpr char32_t 
+<span class="lineNum">     816 </span>            :       round_error() noexcept { return 0; }
+<span class="lineNum">     817 </span>            : 
+<span class="lineNum">     818 </span>            :       static constexpr int min_exponent = 0;
+<span class="lineNum">     819 </span>            :       static constexpr int min_exponent10 = 0;
+<span class="lineNum">     820 </span>            :       static constexpr int max_exponent = 0;
+<span class="lineNum">     821 </span>            :       static constexpr int max_exponent10 = 0;
+<span class="lineNum">     822 </span>            : 
+<span class="lineNum">     823 </span>            :       static constexpr bool has_infinity = false;
+<span class="lineNum">     824 </span>            :       static constexpr bool has_quiet_NaN = false;
+<span class="lineNum">     825 </span>            :       static constexpr bool has_signaling_NaN = false;
+<span class="lineNum">     826 </span>            :       static constexpr float_denorm_style has_denorm = denorm_absent;
+<span class="lineNum">     827 </span>            :       static constexpr bool has_denorm_loss = false;
+<span class="lineNum">     828 </span>            : 
+<span class="lineNum">     829 </span>            :       static constexpr char32_t 
+<span class="lineNum">     830 </span>            :       infinity() noexcept { return char32_t(); }
+<span class="lineNum">     831 </span>            : 
+<span class="lineNum">     832 </span>            :       static constexpr char32_t 
+<span class="lineNum">     833 </span>            :       quiet_NaN() noexcept { return char32_t(); }
+<span class="lineNum">     834 </span>            : 
+<span class="lineNum">     835 </span>            :       static constexpr char32_t 
+<span class="lineNum">     836 </span>            :       signaling_NaN() noexcept { return char32_t(); }
+<span class="lineNum">     837 </span>            : 
+<span class="lineNum">     838 </span>            :       static constexpr char32_t 
+<span class="lineNum">     839 </span>            :       denorm_min() noexcept { return char32_t(); }
+<span class="lineNum">     840 </span>            : 
+<span class="lineNum">     841 </span>            :       static constexpr bool is_iec559 = false;
+<span class="lineNum">     842 </span>            :       static constexpr bool is_bounded = true;
+<span class="lineNum">     843 </span>            :       static constexpr bool is_modulo = !is_signed;
+<span class="lineNum">     844 </span>            : 
+<span class="lineNum">     845 </span>            :       static constexpr bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     846 </span>            :       static constexpr bool tinyness_before = false;
+<span class="lineNum">     847 </span>            :       static constexpr float_round_style round_style = round_toward_zero;
+<span class="lineNum">     848 </span>            :     };
+<span class="lineNum">     849 </span>            : #endif
+<span class="lineNum">     850 </span>            : 
+<span class="lineNum">     851 </span>            :   /// numeric_limits&lt;short&gt; specialization.
+<span class="lineNum">     852 </span>            :   template&lt;&gt;
+<span class="lineNum">     853 </span>            :     struct numeric_limits&lt;short&gt;
+<span class="lineNum">     854 </span>            :     {
+<span class="lineNum">     855 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="856"><span class="lineNum">     856 </span>            : </a>
+<span class="lineNum">     857 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     858 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return -__SHRT_MAX__ - 1; }</span>
+<a name="859"><span class="lineNum">     859 </span>            : </a>
+<span class="lineNum">     860 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     861 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__; }</span>
+<span class="lineNum">     862 </span>            : 
+<span class="lineNum">     863 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     864 </span>            :       static constexpr short 
+<span class="lineNum">     865 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     866 </span>            : #endif
+<span class="lineNum">     867 </span>            : 
+<span class="lineNum">     868 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (short);
+<span class="lineNum">     869 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __glibcxx_digits10 (short);
+<span class="lineNum">     870 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     871 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     872 </span>            : #endif
+<span class="lineNum">     873 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">     874 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     875 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     876 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     877 </span>            : 
+<span class="lineNum">     878 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     879 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     880 </span>            : 
+<span class="lineNum">     881 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     882 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     883 </span>            : 
+<span class="lineNum">     884 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     885 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     886 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     887 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     888 </span>            : 
+<span class="lineNum">     889 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     890 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     891 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     892 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     893 </span>            :        = denorm_absent;
+<span class="lineNum">     894 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     895 </span>            : 
+<span class="lineNum">     896 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     897 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return short(); }
+<span class="lineNum">     898 </span>            : 
+<span class="lineNum">     899 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     900 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return short(); }
+<span class="lineNum">     901 </span>            : 
+<span class="lineNum">     902 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     903 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return short(); }
+<span class="lineNum">     904 </span>            : 
+<span class="lineNum">     905 </span>            :       static _GLIBCXX_CONSTEXPR short 
+<span class="lineNum">     906 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return short(); }
+<span class="lineNum">     907 </span>            : 
+<span class="lineNum">     908 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     909 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     910 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">     911 </span>            : 
+<span class="lineNum">     912 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     913 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     914 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     915 </span>            :        = round_toward_zero;
+<span class="lineNum">     916 </span>            :     };
+<span class="lineNum">     917 </span>            : 
+<span class="lineNum">     918 </span>            :   /// numeric_limits&lt;unsigned short&gt; specialization.
+<span class="lineNum">     919 </span>            :   template&lt;&gt;
+<span class="lineNum">     920 </span>            :     struct numeric_limits&lt;unsigned short&gt;
+<span class="lineNum">     921 </span>            :     {
+<span class="lineNum">     922 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="923"><span class="lineNum">     923 </span>            : </a>
+<span class="lineNum">     924 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     925 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }</span>
+<a name="926"><span class="lineNum">     926 </span>            : </a>
+<span class="lineNum">     927 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     928 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __SHRT_MAX__ * 2U + 1; }</span>
+<span class="lineNum">     929 </span>            : 
+<span class="lineNum">     930 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     931 </span>            :       static constexpr unsigned short 
+<span class="lineNum">     932 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">     933 </span>            : #endif
+<span class="lineNum">     934 </span>            : 
+<span class="lineNum">     935 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">     936 </span>            :        = __glibcxx_digits (unsigned short);
+<span class="lineNum">     937 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">     938 </span>            :        = __glibcxx_digits10 (unsigned short);
+<span class="lineNum">     939 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">     940 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">     941 </span>            : #endif
+<span class="lineNum">     942 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">     943 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">     944 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">     945 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">     946 </span>            : 
+<span class="lineNum">     947 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     948 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     949 </span>            : 
+<span class="lineNum">     950 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     951 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">     952 </span>            : 
+<span class="lineNum">     953 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">     954 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">     955 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">     956 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">     957 </span>            : 
+<span class="lineNum">     958 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">     959 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">     960 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">     961 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">     962 </span>            :        = denorm_absent;
+<span class="lineNum">     963 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">     964 </span>            : 
+<span class="lineNum">     965 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     966 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     967 </span>            :       { return static_cast&lt;unsigned short&gt;(0); }
+<span class="lineNum">     968 </span>            : 
+<span class="lineNum">     969 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     970 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     971 </span>            :       { return static_cast&lt;unsigned short&gt;(0); }
+<span class="lineNum">     972 </span>            : 
+<span class="lineNum">     973 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     974 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     975 </span>            :       { return static_cast&lt;unsigned short&gt;(0); }
+<span class="lineNum">     976 </span>            : 
+<span class="lineNum">     977 </span>            :       static _GLIBCXX_CONSTEXPR unsigned short 
+<span class="lineNum">     978 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">     979 </span>            :       { return static_cast&lt;unsigned short&gt;(0); }
+<span class="lineNum">     980 </span>            : 
+<span class="lineNum">     981 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">     982 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">     983 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;
+<span class="lineNum">     984 </span>            : 
+<span class="lineNum">     985 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">     986 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">     987 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">     988 </span>            :        = round_toward_zero;
+<span class="lineNum">     989 </span>            :     };
+<span class="lineNum">     990 </span>            : 
+<span class="lineNum">     991 </span>            :   /// numeric_limits&lt;int&gt; specialization.
+<span class="lineNum">     992 </span>            :   template&lt;&gt;
+<span class="lineNum">     993 </span>            :     struct numeric_limits&lt;int&gt;
+<span class="lineNum">     994 </span>            :     {
+<span class="lineNum">     995 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="996"><span class="lineNum">     996 </span>            : </a>
+<span class="lineNum">     997 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">     998 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return -__INT_MAX__ - 1; }</span>
+<a name="999"><span class="lineNum">     999 </span>            : </a>
+<span class="lineNum">    1000 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1001 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__; }</span>
+<span class="lineNum">    1002 </span>            : 
+<span class="lineNum">    1003 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1004 </span>            :       static constexpr int 
+<span class="lineNum">    1005 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1006 </span>            : #endif
+<span class="lineNum">    1007 </span>            : 
+<span class="lineNum">    1008 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (int);
+<span class="lineNum">    1009 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __glibcxx_digits10 (int);
+<span class="lineNum">    1010 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1011 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1012 </span>            : #endif
+<span class="lineNum">    1013 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1014 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1015 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1016 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1017 </span>            : 
+<span class="lineNum">    1018 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1019 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1020 </span>            : 
+<span class="lineNum">    1021 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1022 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1023 </span>            : 
+<span class="lineNum">    1024 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1025 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1026 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1027 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1028 </span>            : 
+<span class="lineNum">    1029 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1030 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1031 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1032 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1033 </span>            :        = denorm_absent;
+<span class="lineNum">    1034 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1035 </span>            : 
+<span class="lineNum">    1036 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1037 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;int&gt;(0); }
+<span class="lineNum">    1038 </span>            : 
+<span class="lineNum">    1039 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1040 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;int&gt;(0); }
+<span class="lineNum">    1041 </span>            : 
+<span class="lineNum">    1042 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1043 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;int&gt;(0); }
+<span class="lineNum">    1044 </span>            : 
+<span class="lineNum">    1045 </span>            :       static _GLIBCXX_CONSTEXPR int 
+<span class="lineNum">    1046 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;int&gt;(0); }
+<span class="lineNum">    1047 </span>            : 
+<span class="lineNum">    1048 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1049 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1050 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1051 </span>            : 
+<span class="lineNum">    1052 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1053 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1054 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1055 </span>            :        = round_toward_zero;
+<span class="lineNum">    1056 </span>            :     };
+<span class="lineNum">    1057 </span>            : 
+<span class="lineNum">    1058 </span>            :   /// numeric_limits&lt;unsigned int&gt; specialization.
+<span class="lineNum">    1059 </span>            :   template&lt;&gt;
+<span class="lineNum">    1060 </span>            :     struct numeric_limits&lt;unsigned int&gt;
+<span class="lineNum">    1061 </span>            :     {
+<span class="lineNum">    1062 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="1063"><span class="lineNum">    1063 </span>            : </a>
+<span class="lineNum">    1064 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1065 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }</span>
+<a name="1066"><span class="lineNum">    1066 </span>            : </a>
+<span class="lineNum">    1067 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1068 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __INT_MAX__ * 2U + 1; }</span>
+<span class="lineNum">    1069 </span>            : 
+<span class="lineNum">    1070 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1071 </span>            :       static constexpr unsigned int 
+<span class="lineNum">    1072 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1073 </span>            : #endif
+<span class="lineNum">    1074 </span>            : 
+<span class="lineNum">    1075 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">    1076 </span>            :        = __glibcxx_digits (unsigned int);
+<span class="lineNum">    1077 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">    1078 </span>            :        = __glibcxx_digits10 (unsigned int);
+<span class="lineNum">    1079 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1080 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1081 </span>            : #endif
+<span class="lineNum">    1082 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">    1083 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1084 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1085 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1086 </span>            : 
+<span class="lineNum">    1087 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1088 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1089 </span>            : 
+<span class="lineNum">    1090 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1091 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1092 </span>            : 
+<span class="lineNum">    1093 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1094 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1095 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1096 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1097 </span>            : 
+<span class="lineNum">    1098 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1099 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1100 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1101 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1102 </span>            :        = denorm_absent;
+<span class="lineNum">    1103 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1104 </span>            : 
+<span class="lineNum">    1105 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1106 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;unsigned int&gt;(0); }
+<span class="lineNum">    1107 </span>            : 
+<span class="lineNum">    1108 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1109 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1110 </span>            :       { return static_cast&lt;unsigned int&gt;(0); }
+<span class="lineNum">    1111 </span>            : 
+<span class="lineNum">    1112 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1113 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1114 </span>            :       { return static_cast&lt;unsigned int&gt;(0); }
+<span class="lineNum">    1115 </span>            : 
+<span class="lineNum">    1116 </span>            :       static _GLIBCXX_CONSTEXPR unsigned int 
+<span class="lineNum">    1117 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1118 </span>            :       { return static_cast&lt;unsigned int&gt;(0); }
+<span class="lineNum">    1119 </span>            : 
+<span class="lineNum">    1120 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1121 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1122 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;
+<span class="lineNum">    1123 </span>            : 
+<span class="lineNum">    1124 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1125 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1126 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1127 </span>            :        = round_toward_zero;
+<span class="lineNum">    1128 </span>            :     };
+<span class="lineNum">    1129 </span>            : 
+<span class="lineNum">    1130 </span>            :   /// numeric_limits&lt;long&gt; specialization.
+<span class="lineNum">    1131 </span>            :   template&lt;&gt;
+<span class="lineNum">    1132 </span>            :     struct numeric_limits&lt;long&gt;
+<span class="lineNum">    1133 </span>            :     {
+<span class="lineNum">    1134 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="1135"><span class="lineNum">    1135 </span>            : </a>
+<span class="lineNum">    1136 </span>            :       static _GLIBCXX_CONSTEXPR long
+<span class="lineNum">    1137 </span><span class="lineCov">        890 :       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_MAX__ - 1; }</span>
+<a name="1138"><span class="lineNum">    1138 </span>            : </a>
+<span class="lineNum">    1139 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1140 </span><span class="lineCov">       1195 :       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__; }</span>
+<span class="lineNum">    1141 </span>            : 
+<span class="lineNum">    1142 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1143 </span>            :       static constexpr long 
+<span class="lineNum">    1144 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1145 </span>            : #endif
+<span class="lineNum">    1146 </span>            : 
+<span class="lineNum">    1147 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __glibcxx_digits (long);
+<span class="lineNum">    1148 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __glibcxx_digits10 (long);
+<span class="lineNum">    1149 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1150 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1151 </span>            : #endif
+<span class="lineNum">    1152 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1153 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1154 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1155 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1156 </span>            : 
+<span class="lineNum">    1157 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1158 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1159 </span>            : 
+<span class="lineNum">    1160 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1161 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1162 </span>            : 
+<span class="lineNum">    1163 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1164 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1165 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1166 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1167 </span>            : 
+<span class="lineNum">    1168 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1169 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1170 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1171 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1172 </span>            :        = denorm_absent;
+<span class="lineNum">    1173 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1174 </span>            : 
+<span class="lineNum">    1175 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1176 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long&gt;(0); }
+<span class="lineNum">    1177 </span>            : 
+<span class="lineNum">    1178 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1179 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long&gt;(0); }
+<span class="lineNum">    1180 </span>            : 
+<span class="lineNum">    1181 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1182 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long&gt;(0); }
+<span class="lineNum">    1183 </span>            : 
+<span class="lineNum">    1184 </span>            :       static _GLIBCXX_CONSTEXPR long 
+<span class="lineNum">    1185 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long&gt;(0); }
+<span class="lineNum">    1186 </span>            : 
+<span class="lineNum">    1187 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1188 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1189 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1190 </span>            : 
+<span class="lineNum">    1191 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1192 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1193 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1194 </span>            :        = round_toward_zero;
+<span class="lineNum">    1195 </span>            :     };
+<span class="lineNum">    1196 </span>            : 
+<span class="lineNum">    1197 </span>            :   /// numeric_limits&lt;unsigned long&gt; specialization.
+<span class="lineNum">    1198 </span>            :   template&lt;&gt;
+<span class="lineNum">    1199 </span>            :     struct numeric_limits&lt;unsigned long&gt;
+<span class="lineNum">    1200 </span>            :     {
+<span class="lineNum">    1201 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<a name="1202"><span class="lineNum">    1202 </span>            : </a>
+<span class="lineNum">    1203 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1204 </span><span class="lineCov">          5 :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }</span>
+<a name="1205"><span class="lineNum">    1205 </span>            : </a>
+<span class="lineNum">    1206 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1207 </span><span class="lineCov">         10 :       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_MAX__ * 2UL + 1; }</span>
+<span class="lineNum">    1208 </span>            : 
+<span class="lineNum">    1209 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1210 </span>            :       static constexpr unsigned long 
+<span class="lineNum">    1211 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1212 </span>            : #endif
+<span class="lineNum">    1213 </span>            : 
+<span class="lineNum">    1214 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">    1215 </span>            :        = __glibcxx_digits (unsigned long);
+<span class="lineNum">    1216 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">    1217 </span>            :        = __glibcxx_digits10 (unsigned long);
+<span class="lineNum">    1218 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1219 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1220 </span>            : #endif
+<span class="lineNum">    1221 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">    1222 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1223 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1224 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1225 </span>            : 
+<span class="lineNum">    1226 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1227 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1228 </span>            : 
+<span class="lineNum">    1229 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1230 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1231 </span>            : 
+<span class="lineNum">    1232 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1233 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1234 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1235 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1236 </span>            : 
+<span class="lineNum">    1237 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1238 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1239 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1240 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1241 </span>            :        = denorm_absent;
+<span class="lineNum">    1242 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1243 </span>            : 
+<span class="lineNum">    1244 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1245 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1246 </span>            :       { return static_cast&lt;unsigned long&gt;(0); }
+<span class="lineNum">    1247 </span>            : 
+<span class="lineNum">    1248 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1249 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1250 </span>            :       { return static_cast&lt;unsigned long&gt;(0); }
+<span class="lineNum">    1251 </span>            : 
+<span class="lineNum">    1252 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1253 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1254 </span>            :       { return static_cast&lt;unsigned long&gt;(0); }
+<span class="lineNum">    1255 </span>            : 
+<span class="lineNum">    1256 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long 
+<span class="lineNum">    1257 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1258 </span>            :       { return static_cast&lt;unsigned long&gt;(0); }
+<span class="lineNum">    1259 </span>            : 
+<span class="lineNum">    1260 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1261 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1262 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;
+<span class="lineNum">    1263 </span>            : 
+<span class="lineNum">    1264 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1265 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1266 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1267 </span>            :        = round_toward_zero;
+<span class="lineNum">    1268 </span>            :     };
+<span class="lineNum">    1269 </span>            : 
+<span class="lineNum">    1270 </span>            :   /// numeric_limits&lt;long long&gt; specialization.
+<span class="lineNum">    1271 </span>            :   template&lt;&gt;
+<span class="lineNum">    1272 </span>            :     struct numeric_limits&lt;long long&gt;
+<span class="lineNum">    1273 </span>            :     {
+<span class="lineNum">    1274 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">    1275 </span>            : 
+<span class="lineNum">    1276 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1277 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return -__LONG_LONG_MAX__ - 1; }
+<span class="lineNum">    1278 </span>            : 
+<span class="lineNum">    1279 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1280 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__; }
+<span class="lineNum">    1281 </span>            : 
+<span class="lineNum">    1282 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1283 </span>            :       static constexpr long long 
+<span class="lineNum">    1284 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1285 </span>            : #endif
+<span class="lineNum">    1286 </span>            : 
+<span class="lineNum">    1287 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">    1288 </span>            :        = __glibcxx_digits (long long);
+<span class="lineNum">    1289 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">    1290 </span>            :        = __glibcxx_digits10 (long long);
+<span class="lineNum">    1291 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1292 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1293 </span>            : #endif
+<span class="lineNum">    1294 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1295 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1296 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1297 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1298 </span>            : 
+<span class="lineNum">    1299 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1300 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1301 </span>            : 
+<span class="lineNum">    1302 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1303 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1304 </span>            : 
+<span class="lineNum">    1305 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1306 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1307 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1308 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1309 </span>            : 
+<span class="lineNum">    1310 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1311 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1312 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1313 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1314 </span>            :        = denorm_absent;
+<span class="lineNum">    1315 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1316 </span>            : 
+<span class="lineNum">    1317 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1318 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long long&gt;(0); }
+<span class="lineNum">    1319 </span>            : 
+<span class="lineNum">    1320 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1321 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long long&gt;(0); }
+<span class="lineNum">    1322 </span>            : 
+<span class="lineNum">    1323 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1324 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1325 </span>            :       { return static_cast&lt;long long&gt;(0); }
+<span class="lineNum">    1326 </span>            : 
+<span class="lineNum">    1327 </span>            :       static _GLIBCXX_CONSTEXPR long long 
+<span class="lineNum">    1328 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return static_cast&lt;long long&gt;(0); }
+<span class="lineNum">    1329 </span>            : 
+<span class="lineNum">    1330 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1331 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1332 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1333 </span>            : 
+<span class="lineNum">    1334 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1335 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1336 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1337 </span>            :        = round_toward_zero;
+<span class="lineNum">    1338 </span>            :     };
+<span class="lineNum">    1339 </span>            : 
+<span class="lineNum">    1340 </span>            :   /// numeric_limits&lt;unsigned long long&gt; specialization.
+<span class="lineNum">    1341 </span>            :   template&lt;&gt;
+<span class="lineNum">    1342 </span>            :     struct numeric_limits&lt;unsigned long long&gt;
+<span class="lineNum">    1343 </span>            :     {
+<span class="lineNum">    1344 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">    1345 </span>            : 
+<span class="lineNum">    1346 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1347 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1348 </span>            : 
+<span class="lineNum">    1349 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1350 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __LONG_LONG_MAX__ * 2ULL + 1; }
+<span class="lineNum">    1351 </span>            : 
+<span class="lineNum">    1352 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1353 </span>            :       static constexpr unsigned long long 
+<span class="lineNum">    1354 </span>            :       lowest() noexcept { return min(); }
+<span class="lineNum">    1355 </span>            : #endif
+<span class="lineNum">    1356 </span>            : 
+<span class="lineNum">    1357 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits 
+<span class="lineNum">    1358 </span>            :        = __glibcxx_digits (unsigned long long);
+<span class="lineNum">    1359 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 
+<span class="lineNum">    1360 </span>            :        = __glibcxx_digits10 (unsigned long long);
+<span class="lineNum">    1361 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1362 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1363 </span>            : #endif
+<span class="lineNum">    1364 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;
+<span class="lineNum">    1365 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;
+<span class="lineNum">    1366 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;
+<span class="lineNum">    1367 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;
+<span class="lineNum">    1368 </span>            : 
+<span class="lineNum">    1369 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1370 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1371 </span>            : 
+<span class="lineNum">    1372 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1373 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }
+<span class="lineNum">    1374 </span>            : 
+<span class="lineNum">    1375 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;
+<span class="lineNum">    1376 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;
+<span class="lineNum">    1377 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;
+<span class="lineNum">    1378 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;
+<span class="lineNum">    1379 </span>            : 
+<span class="lineNum">    1380 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;
+<span class="lineNum">    1381 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;
+<span class="lineNum">    1382 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;
+<span class="lineNum">    1383 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm 
+<span class="lineNum">    1384 </span>            :        = denorm_absent;
+<span class="lineNum">    1385 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;
+<span class="lineNum">    1386 </span>            : 
+<span class="lineNum">    1387 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1388 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1389 </span>            :       { return static_cast&lt;unsigned long long&gt;(0); }
+<span class="lineNum">    1390 </span>            : 
+<span class="lineNum">    1391 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1392 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1393 </span>            :       { return static_cast&lt;unsigned long long&gt;(0); }
+<span class="lineNum">    1394 </span>            : 
+<span class="lineNum">    1395 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1396 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1397 </span>            :       { return static_cast&lt;unsigned long long&gt;(0); }
+<span class="lineNum">    1398 </span>            : 
+<span class="lineNum">    1399 </span>            :       static _GLIBCXX_CONSTEXPR unsigned long long 
+<span class="lineNum">    1400 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT
+<span class="lineNum">    1401 </span>            :       { return static_cast&lt;unsigned long long&gt;(0); }
+<span class="lineNum">    1402 </span>            : 
+<span class="lineNum">    1403 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;
+<span class="lineNum">    1404 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1405 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;
+<span class="lineNum">    1406 </span>            : 
+<span class="lineNum">    1407 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;
+<span class="lineNum">    1408 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;
+<span class="lineNum">    1409 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1410 </span>            :        = round_toward_zero;
+<span class="lineNum">    1411 </span>            :     };
+<span class="lineNum">    1412 </span>            : 
+<span class="lineNum">    1413 </span>            : #if !defined(__STRICT_ANSI__)
+<span class="lineNum">    1414 </span>            : 
+<span class="lineNum">    1415 </span>            : #define __INT_N(TYPE, BITSIZE, EXT, UEXT)                       \
+<span class="lineNum">    1416 </span>            :   template&lt;&gt;                                                                      \
+<span class="lineNum">    1417 </span>            :     struct numeric_limits&lt;TYPE&gt;                                           \
+<span class="lineNum">    1418 </span>            :     {                                                                           \
+<span class="lineNum">    1419 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;                 \
+<span class="lineNum">    1420 </span>            :                                                                                 \
+<span class="lineNum">    1421 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1422 </span>            :         min() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_min_b (TYPE, BITSIZE); } \
+<span class="lineNum">    1423 </span>            :                                                                                 \
+<span class="lineNum">    1424 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1425 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __glibcxx_max_b (TYPE, BITSIZE); }   \
+<span class="lineNum">    1426 </span>            :                                                                                 \
+<span class="lineNum">    1427 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits                                  \
+<span class="lineNum">    1428 </span>            :        = BITSIZE - 1;                                                           \
+<span class="lineNum">    1429 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10                                \
+<span class="lineNum">    1430 </span>            :        = (BITSIZE - 1) * 643L / 2136;                                           \
+<span class="lineNum">    1431 </span>            :                                                                                 \
+<span class="lineNum">    1432 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;                      \
+<span class="lineNum">    1433 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;                     \
+<span class="lineNum">    1434 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;                       \
+<span class="lineNum">    1435 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;                              \
+<span class="lineNum">    1436 </span>            :                                                                                 \
+<span class="lineNum">    1437 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1438 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }                             \
+<span class="lineNum">    1439 </span>            :                                                                                 \
+<span class="lineNum">    1440 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1441 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }                         \
+<span class="lineNum">    1442 </span>            :                                                                                 \
+<span class="lineNum">    1443 </span>            :       EXT                                                                       \
+<span class="lineNum">    1444 </span>            :                                                                                 \
+<span class="lineNum">    1445 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;                       \
+<span class="lineNum">    1446 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;                     \
+<span class="lineNum">    1447 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;                       \
+<span class="lineNum">    1448 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;                     \
+<span class="lineNum">    1449 </span>            :                                                                                 \
+<span class="lineNum">    1450 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;                  \
+<span class="lineNum">    1451 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;                 \
+<span class="lineNum">    1452 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;             \
+<span class="lineNum">    1453 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm               \
+<span class="lineNum">    1454 </span>            :        = denorm_absent;                                                         \
+<span class="lineNum">    1455 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;               \
+<span class="lineNum">    1456 </span>            :                                                                                 \
+<span class="lineNum">    1457 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1458 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT                                          \
+<span class="lineNum">    1459 </span>            :       { return static_cast&lt;TYPE&gt;(0); }                                            \
+<span class="lineNum">    1460 </span>            :                                                                                 \
+<span class="lineNum">    1461 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1462 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT                                         \
+<span class="lineNum">    1463 </span>            :       { return static_cast&lt;TYPE&gt;(0); }                                            \
+<span class="lineNum">    1464 </span>            :                                                                                 \
+<span class="lineNum">    1465 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1466 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT                                     \
+<span class="lineNum">    1467 </span>            :       { return static_cast&lt;TYPE&gt;(0); }                                            \
+<span class="lineNum">    1468 </span>            :                                                                                 \
+<span class="lineNum">    1469 </span>            :       static _GLIBCXX_CONSTEXPR TYPE                                            \
+<span class="lineNum">    1470 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT                                        \
+<span class="lineNum">    1471 </span>            :       { return static_cast&lt;TYPE&gt;(0); }                                            \
+<span class="lineNum">    1472 </span>            :                                                                                 \
+<span class="lineNum">    1473 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;                     \
+<span class="lineNum">    1474 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;                     \
+<span class="lineNum">    1475 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;                     \
+<span class="lineNum">    1476 </span>            :                                                                                 \
+<span class="lineNum">    1477 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps                                  \
+<span class="lineNum">    1478 </span>            :        = __glibcxx_integral_traps;                                              \
+<span class="lineNum">    1479 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;               \
+<span class="lineNum">    1480 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style               \
+<span class="lineNum">    1481 </span>            :        = round_toward_zero;                                                     \
+<span class="lineNum">    1482 </span>            :     };                                                                          \
+<span class="lineNum">    1483 </span>            :                                                                                 \
+<span class="lineNum">    1484 </span>            :   template&lt;&gt;                                                                      \
+<span class="lineNum">    1485 </span>            :     struct numeric_limits&lt;unsigned TYPE&gt;                                  \
+<span class="lineNum">    1486 </span>            :     {                                                                           \
+<span class="lineNum">    1487 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;                 \
+<span class="lineNum">    1488 </span>            :                                                                                 \
+<span class="lineNum">    1489 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1490 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return 0; }                                 \
+<span class="lineNum">    1491 </span>            :                                                                                 \
+<span class="lineNum">    1492 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1493 </span>            :       max() _GLIBCXX_USE_NOEXCEPT                                               \
+<span class="lineNum">    1494 </span>            :       { return  __glibcxx_max_b (unsigned TYPE, BITSIZE); }                     \
+<span class="lineNum">    1495 </span>            :                                                                                 \
+<span class="lineNum">    1496 </span>            :       UEXT                                                                      \
+<span class="lineNum">    1497 </span>            :                                                                                 \
+<span class="lineNum">    1498 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits                                  \
+<span class="lineNum">    1499 </span>            :        = BITSIZE;                                                               \
+<span class="lineNum">    1500 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10                                \
+<span class="lineNum">    1501 </span>            :        = BITSIZE * 643L / 2136;                                                 \
+<span class="lineNum">    1502 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = false;                     \
+<span class="lineNum">    1503 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = true;                     \
+<span class="lineNum">    1504 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = true;                       \
+<span class="lineNum">    1505 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = 2;                              \
+<span class="lineNum">    1506 </span>            :                                                                                 \
+<span class="lineNum">    1507 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1508 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return 0; }                             \
+<span class="lineNum">    1509 </span>            :                                                                                 \
+<span class="lineNum">    1510 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1511 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0; }                         \
+<span class="lineNum">    1512 </span>            :                                                                                 \
+<span class="lineNum">    1513 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = 0;                       \
+<span class="lineNum">    1514 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = 0;                     \
+<span class="lineNum">    1515 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = 0;                       \
+<span class="lineNum">    1516 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = 0;                     \
+<span class="lineNum">    1517 </span>            :                                                                                 \
+<span class="lineNum">    1518 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = false;                  \
+<span class="lineNum">    1519 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = false;                 \
+<span class="lineNum">    1520 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = false;             \
+<span class="lineNum">    1521 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm               \
+<span class="lineNum">    1522 </span>            :        = denorm_absent;                                                         \
+<span class="lineNum">    1523 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss = false;               \
+<span class="lineNum">    1524 </span>            :                                                                                 \
+<span class="lineNum">    1525 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1526 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT                                          \
+<span class="lineNum">    1527 </span>            :       { return static_cast&lt;unsigned TYPE&gt;(0); }                           \
+<span class="lineNum">    1528 </span>            :                                                                                 \
+<span class="lineNum">    1529 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1530 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT                                         \
+<span class="lineNum">    1531 </span>            :       { return static_cast&lt;unsigned TYPE&gt;(0); }                           \
+<span class="lineNum">    1532 </span>            :                                                                                 \
+<span class="lineNum">    1533 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1534 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT                                     \
+<span class="lineNum">    1535 </span>            :       { return static_cast&lt;unsigned TYPE&gt;(0); }                           \
+<span class="lineNum">    1536 </span>            :                                                                                 \
+<span class="lineNum">    1537 </span>            :       static _GLIBCXX_CONSTEXPR unsigned TYPE                                   \
+<span class="lineNum">    1538 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT                                        \
+<span class="lineNum">    1539 </span>            :       { return static_cast&lt;unsigned TYPE&gt;(0); }                           \
+<span class="lineNum">    1540 </span>            :                                                                                 \
+<span class="lineNum">    1541 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559 = false;                     \
+<span class="lineNum">    1542 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;                     \
+<span class="lineNum">    1543 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = true;                      \
+<span class="lineNum">    1544 </span>            :                                                                                 \
+<span class="lineNum">    1545 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_integral_traps;      \
+<span class="lineNum">    1546 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = false;               \
+<span class="lineNum">    1547 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style               \
+<span class="lineNum">    1548 </span>            :        = round_toward_zero;                                                     \
+<span class="lineNum">    1549 </span>            :     };
+<span class="lineNum">    1550 </span>            : 
+<span class="lineNum">    1551 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1552 </span>            : 
+<span class="lineNum">    1553 </span>            : #define __INT_N_201103(TYPE)                                                    \
+<span class="lineNum">    1554 </span>            :       static constexpr TYPE                                                     \
+<span class="lineNum">    1555 </span>            :       lowest() noexcept { return min(); }                                       \
+<span class="lineNum">    1556 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1557 </span>            : 
+<span class="lineNum">    1558 </span>            : #define __INT_N_U201103(TYPE)                                                   \
+<span class="lineNum">    1559 </span>            :       static constexpr unsigned TYPE                                            \
+<span class="lineNum">    1560 </span>            :       lowest() noexcept { return min(); }                                       \
+<span class="lineNum">    1561 </span>            :       static constexpr int max_digits10 = 0;
+<span class="lineNum">    1562 </span>            : 
+<span class="lineNum">    1563 </span>            : #else
+<span class="lineNum">    1564 </span>            : #define __INT_N_201103(TYPE)
+<span class="lineNum">    1565 </span>            : #define __INT_N_U201103(TYPE)
+<span class="lineNum">    1566 </span>            : #endif
+<span class="lineNum">    1567 </span>            : 
+<span class="lineNum">    1568 </span>            : #ifdef __GLIBCXX_TYPE_INT_N_0
+<span class="lineNum">    1569 </span>            :   __INT_N(__GLIBCXX_TYPE_INT_N_0, __GLIBCXX_BITSIZE_INT_N_0,
+<span class="lineNum">    1570 </span>            :           __INT_N_201103 (__GLIBCXX_TYPE_INT_N_0), __INT_N_U201103 (__GLIBCXX_TYPE_INT_N_0))
+<span class="lineNum">    1571 </span>            : #endif
+<span class="lineNum">    1572 </span>            : #ifdef __GLIBCXX_TYPE_INT_N_1
+<span class="lineNum">    1573 </span>            :   __INT_N (__GLIBCXX_TYPE_INT_N_1, __GLIBCXX_BITSIZE_INT_N_1,
+<span class="lineNum">    1574 </span>            :           __INT_N_201103 (__GLIBCXX_TYPE_INT_N_1), __INT_N_U201103 (__GLIBCXX_TYPE_INT_N_1))
+<span class="lineNum">    1575 </span>            : #endif
+<span class="lineNum">    1576 </span>            : #ifdef __GLIBCXX_TYPE_INT_N_2
+<span class="lineNum">    1577 </span>            :   __INT_N (__GLIBCXX_TYPE_INT_N_2, __GLIBCXX_BITSIZE_INT_N_2,
+<span class="lineNum">    1578 </span>            :           __INT_N_201103 (__GLIBCXX_TYPE_INT_N_2), __INT_N_U201103 (__GLIBCXX_TYPE_INT_N_2))
+<span class="lineNum">    1579 </span>            : #endif
+<span class="lineNum">    1580 </span>            : #ifdef __GLIBCXX_TYPE_INT_N_3
+<span class="lineNum">    1581 </span>            :   __INT_N (__GLIBCXX_TYPE_INT_N_3, __GLIBCXX_BITSIZE_INT_N_3,
+<span class="lineNum">    1582 </span>            :           __INT_N_201103 (__GLIBCXX_TYPE_INT_N_3), __INT_N_U201103 (__GLIBCXX_TYPE_INT_N_3))
+<span class="lineNum">    1583 </span>            : #endif
+<span class="lineNum">    1584 </span>            : 
+<span class="lineNum">    1585 </span>            : #undef __INT_N
+<span class="lineNum">    1586 </span>            : #undef __INT_N_201103
+<span class="lineNum">    1587 </span>            : #undef __INT_N_U201103
+<span class="lineNum">    1588 </span>            : 
+<span class="lineNum">    1589 </span>            : #endif
+<span class="lineNum">    1590 </span>            : 
+<span class="lineNum">    1591 </span>            :   /// numeric_limits&lt;float&gt; specialization.
+<span class="lineNum">    1592 </span>            :   template&lt;&gt;
+<span class="lineNum">    1593 </span>            :     struct numeric_limits&lt;float&gt;
+<span class="lineNum">    1594 </span>            :     {
+<span class="lineNum">    1595 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">    1596 </span>            : 
+<span class="lineNum">    1597 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1598 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return __FLT_MIN__; }
+<span class="lineNum">    1599 </span>            : 
+<span class="lineNum">    1600 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1601 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __FLT_MAX__; }
+<span class="lineNum">    1602 </span>            : 
+<span class="lineNum">    1603 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1604 </span>            :       static constexpr float 
+<span class="lineNum">    1605 </span>            :       lowest() noexcept { return -__FLT_MAX__; }
+<span class="lineNum">    1606 </span>            : #endif
+<span class="lineNum">    1607 </span>            : 
+<span class="lineNum">    1608 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __FLT_MANT_DIG__;
+<span class="lineNum">    1609 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __FLT_DIG__;
+<span class="lineNum">    1610 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1611 </span>            :       static constexpr int max_digits10
+<span class="lineNum">    1612 </span>            :          = __glibcxx_max_digits10 (__FLT_MANT_DIG__);
+<span class="lineNum">    1613 </span>            : #endif
+<span class="lineNum">    1614 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1615 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = false;
+<span class="lineNum">    1616 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = false;
+<span class="lineNum">    1617 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = __FLT_RADIX__;
+<span class="lineNum">    1618 </span>            : 
+<span class="lineNum">    1619 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1620 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return __FLT_EPSILON__; }
+<span class="lineNum">    1621 </span>            : 
+<span class="lineNum">    1622 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1623 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0.5F; }
+<span class="lineNum">    1624 </span>            : 
+<span class="lineNum">    1625 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = __FLT_MIN_EXP__;
+<span class="lineNum">    1626 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = __FLT_MIN_10_EXP__;
+<span class="lineNum">    1627 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = __FLT_MAX_EXP__;
+<span class="lineNum">    1628 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = __FLT_MAX_10_EXP__;
+<span class="lineNum">    1629 </span>            : 
+<span class="lineNum">    1630 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = __FLT_HAS_INFINITY__;
+<span class="lineNum">    1631 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = __FLT_HAS_QUIET_NAN__;
+<span class="lineNum">    1632 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = has_quiet_NaN;
+<span class="lineNum">    1633 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm
+<span class="lineNum">    1634 </span>            :         = bool(__FLT_HAS_DENORM__) ? denorm_present : denorm_absent;
+<span class="lineNum">    1635 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss 
+<span class="lineNum">    1636 </span>            :        = __glibcxx_float_has_denorm_loss;
+<span class="lineNum">    1637 </span>            : 
+<span class="lineNum">    1638 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1639 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return __builtin_huge_valf(); }
+<a name="1640"><span class="lineNum">    1640 </span>            : </a>
+<span class="lineNum">    1641 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1642 </span><span class="lineCov">         10 :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nanf(&quot;&quot;); }</span>
+<span class="lineNum">    1643 </span>            : 
+<span class="lineNum">    1644 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1645 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nansf(&quot;&quot;); }
+<span class="lineNum">    1646 </span>            : 
+<span class="lineNum">    1647 </span>            :       static _GLIBCXX_CONSTEXPR float 
+<span class="lineNum">    1648 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return __FLT_DENORM_MIN__; }
+<span class="lineNum">    1649 </span>            : 
+<span class="lineNum">    1650 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559
+<span class="lineNum">    1651 </span>            :         = has_infinity &amp;&amp; has_quiet_NaN &amp;&amp; has_denorm == denorm_present;
+<span class="lineNum">    1652 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1653 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1654 </span>            : 
+<span class="lineNum">    1655 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_float_traps;
+<span class="lineNum">    1656 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before 
+<span class="lineNum">    1657 </span>            :        = __glibcxx_float_tinyness_before;
+<span class="lineNum">    1658 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1659 </span>            :        = round_to_nearest;
+<span class="lineNum">    1660 </span>            :     };
+<span class="lineNum">    1661 </span>            : 
+<span class="lineNum">    1662 </span>            : #undef __glibcxx_float_has_denorm_loss
+<span class="lineNum">    1663 </span>            : #undef __glibcxx_float_traps
+<span class="lineNum">    1664 </span>            : #undef __glibcxx_float_tinyness_before
+<span class="lineNum">    1665 </span>            : 
+<span class="lineNum">    1666 </span>            :   /// numeric_limits&lt;double&gt; specialization.
+<span class="lineNum">    1667 </span>            :   template&lt;&gt;
+<span class="lineNum">    1668 </span>            :     struct numeric_limits&lt;double&gt;
+<span class="lineNum">    1669 </span>            :     {
+<span class="lineNum">    1670 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">    1671 </span>            : 
+<span class="lineNum">    1672 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1673 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return __DBL_MIN__; }
+<span class="lineNum">    1674 </span>            : 
+<span class="lineNum">    1675 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1676 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __DBL_MAX__; }
+<span class="lineNum">    1677 </span>            : 
+<span class="lineNum">    1678 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1679 </span>            :       static constexpr double 
+<span class="lineNum">    1680 </span>            :       lowest() noexcept { return -__DBL_MAX__; }
+<span class="lineNum">    1681 </span>            : #endif
+<span class="lineNum">    1682 </span>            : 
+<span class="lineNum">    1683 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __DBL_MANT_DIG__;
+<span class="lineNum">    1684 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __DBL_DIG__;
+<span class="lineNum">    1685 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1686 </span>            :       static constexpr int max_digits10
+<span class="lineNum">    1687 </span>            :          = __glibcxx_max_digits10 (__DBL_MANT_DIG__);
+<span class="lineNum">    1688 </span>            : #endif
+<span class="lineNum">    1689 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1690 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = false;
+<span class="lineNum">    1691 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = false;
+<span class="lineNum">    1692 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = __FLT_RADIX__;
+<span class="lineNum">    1693 </span>            : 
+<span class="lineNum">    1694 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1695 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return __DBL_EPSILON__; }
+<span class="lineNum">    1696 </span>            : 
+<span class="lineNum">    1697 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1698 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0.5; }
+<span class="lineNum">    1699 </span>            : 
+<span class="lineNum">    1700 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = __DBL_MIN_EXP__;
+<span class="lineNum">    1701 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = __DBL_MIN_10_EXP__;
+<span class="lineNum">    1702 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = __DBL_MAX_EXP__;
+<span class="lineNum">    1703 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = __DBL_MAX_10_EXP__;
+<span class="lineNum">    1704 </span>            : 
+<span class="lineNum">    1705 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = __DBL_HAS_INFINITY__;
+<span class="lineNum">    1706 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = __DBL_HAS_QUIET_NAN__;
+<span class="lineNum">    1707 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = has_quiet_NaN;
+<span class="lineNum">    1708 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm
+<span class="lineNum">    1709 </span>            :         = bool(__DBL_HAS_DENORM__) ? denorm_present : denorm_absent;
+<span class="lineNum">    1710 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss 
+<span class="lineNum">    1711 </span>            :         = __glibcxx_double_has_denorm_loss;
+<a name="1712"><span class="lineNum">    1712 </span>            : </a>
+<span class="lineNum">    1713 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1714 </span><span class="lineCov">         10 :       infinity() _GLIBCXX_USE_NOEXCEPT { return __builtin_huge_val(); }</span>
+<a name="1715"><span class="lineNum">    1715 </span>            : </a>
+<span class="lineNum">    1716 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1717 </span><span class="lineCov">         10 :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nan(&quot;&quot;); }</span>
+<span class="lineNum">    1718 </span>            : 
+<span class="lineNum">    1719 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1720 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nans(&quot;&quot;); }
+<span class="lineNum">    1721 </span>            : 
+<span class="lineNum">    1722 </span>            :       static _GLIBCXX_CONSTEXPR double 
+<span class="lineNum">    1723 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return __DBL_DENORM_MIN__; }
+<span class="lineNum">    1724 </span>            : 
+<span class="lineNum">    1725 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559
+<span class="lineNum">    1726 </span>            :         = has_infinity &amp;&amp; has_quiet_NaN &amp;&amp; has_denorm == denorm_present;
+<span class="lineNum">    1727 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1728 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1729 </span>            : 
+<span class="lineNum">    1730 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_double_traps;
+<span class="lineNum">    1731 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before 
+<span class="lineNum">    1732 </span>            :        = __glibcxx_double_tinyness_before;
+<span class="lineNum">    1733 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style 
+<span class="lineNum">    1734 </span>            :        = round_to_nearest;
+<span class="lineNum">    1735 </span>            :     };
+<span class="lineNum">    1736 </span>            : 
+<span class="lineNum">    1737 </span>            : #undef __glibcxx_double_has_denorm_loss
+<span class="lineNum">    1738 </span>            : #undef __glibcxx_double_traps
+<span class="lineNum">    1739 </span>            : #undef __glibcxx_double_tinyness_before
+<span class="lineNum">    1740 </span>            : 
+<span class="lineNum">    1741 </span>            :   /// numeric_limits&lt;long double&gt; specialization.
+<span class="lineNum">    1742 </span>            :   template&lt;&gt;
+<span class="lineNum">    1743 </span>            :     struct numeric_limits&lt;long double&gt;
+<span class="lineNum">    1744 </span>            :     {
+<span class="lineNum">    1745 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_specialized = true;
+<span class="lineNum">    1746 </span>            : 
+<span class="lineNum">    1747 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1748 </span>            :       min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MIN__; }
+<span class="lineNum">    1749 </span>            : 
+<span class="lineNum">    1750 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1751 </span>            :       max() _GLIBCXX_USE_NOEXCEPT { return __LDBL_MAX__; }
+<span class="lineNum">    1752 </span>            : 
+<span class="lineNum">    1753 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1754 </span>            :       static constexpr long double 
+<span class="lineNum">    1755 </span>            :       lowest() noexcept { return -__LDBL_MAX__; }
+<span class="lineNum">    1756 </span>            : #endif
+<span class="lineNum">    1757 </span>            : 
+<span class="lineNum">    1758 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits = __LDBL_MANT_DIG__;
+<span class="lineNum">    1759 </span>            :       static _GLIBCXX_USE_CONSTEXPR int digits10 = __LDBL_DIG__;
+<span class="lineNum">    1760 </span>            : #if __cplusplus &gt;= 201103L
+<span class="lineNum">    1761 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_digits10
+<span class="lineNum">    1762 </span>            :          = __glibcxx_max_digits10 (__LDBL_MANT_DIG__);
+<span class="lineNum">    1763 </span>            : #endif
+<span class="lineNum">    1764 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_signed = true;
+<span class="lineNum">    1765 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_integer = false;
+<span class="lineNum">    1766 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_exact = false;
+<span class="lineNum">    1767 </span>            :       static _GLIBCXX_USE_CONSTEXPR int radix = __FLT_RADIX__;
+<span class="lineNum">    1768 </span>            : 
+<span class="lineNum">    1769 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1770 </span>            :       epsilon() _GLIBCXX_USE_NOEXCEPT { return __LDBL_EPSILON__; }
+<span class="lineNum">    1771 </span>            : 
+<span class="lineNum">    1772 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1773 </span>            :       round_error() _GLIBCXX_USE_NOEXCEPT { return 0.5L; }
+<span class="lineNum">    1774 </span>            : 
+<span class="lineNum">    1775 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent = __LDBL_MIN_EXP__;
+<span class="lineNum">    1776 </span>            :       static _GLIBCXX_USE_CONSTEXPR int min_exponent10 = __LDBL_MIN_10_EXP__;
+<span class="lineNum">    1777 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent = __LDBL_MAX_EXP__;
+<span class="lineNum">    1778 </span>            :       static _GLIBCXX_USE_CONSTEXPR int max_exponent10 = __LDBL_MAX_10_EXP__;
+<span class="lineNum">    1779 </span>            : 
+<span class="lineNum">    1780 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_infinity = __LDBL_HAS_INFINITY__;
+<span class="lineNum">    1781 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_quiet_NaN = __LDBL_HAS_QUIET_NAN__;
+<span class="lineNum">    1782 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_signaling_NaN = has_quiet_NaN;
+<span class="lineNum">    1783 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_denorm_style has_denorm
+<span class="lineNum">    1784 </span>            :         = bool(__LDBL_HAS_DENORM__) ? denorm_present : denorm_absent;
+<span class="lineNum">    1785 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool has_denorm_loss
+<span class="lineNum">    1786 </span>            :         = __glibcxx_long_double_has_denorm_loss;
+<span class="lineNum">    1787 </span>            : 
+<span class="lineNum">    1788 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1789 </span>            :       infinity() _GLIBCXX_USE_NOEXCEPT { return __builtin_huge_vall(); }
+<span class="lineNum">    1790 </span>            : 
+<span class="lineNum">    1791 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1792 </span>            :       quiet_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nanl(&quot;&quot;); }
+<span class="lineNum">    1793 </span>            : 
+<span class="lineNum">    1794 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1795 </span>            :       signaling_NaN() _GLIBCXX_USE_NOEXCEPT { return __builtin_nansl(&quot;&quot;); }
+<span class="lineNum">    1796 </span>            : 
+<span class="lineNum">    1797 </span>            :       static _GLIBCXX_CONSTEXPR long double 
+<span class="lineNum">    1798 </span>            :       denorm_min() _GLIBCXX_USE_NOEXCEPT { return __LDBL_DENORM_MIN__; }
+<span class="lineNum">    1799 </span>            : 
+<span class="lineNum">    1800 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_iec559
+<span class="lineNum">    1801 </span>            :         = has_infinity &amp;&amp; has_quiet_NaN &amp;&amp; has_denorm == denorm_present;
+<span class="lineNum">    1802 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_bounded = true;
+<span class="lineNum">    1803 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool is_modulo = false;
+<span class="lineNum">    1804 </span>            : 
+<span class="lineNum">    1805 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool traps = __glibcxx_long_double_traps;
+<span class="lineNum">    1806 </span>            :       static _GLIBCXX_USE_CONSTEXPR bool tinyness_before = 
+<span class="lineNum">    1807 </span>            :                                          __glibcxx_long_double_tinyness_before;
+<span class="lineNum">    1808 </span>            :       static _GLIBCXX_USE_CONSTEXPR float_round_style round_style = 
+<span class="lineNum">    1809 </span>            :                                                       round_to_nearest;
+<span class="lineNum">    1810 </span>            :     };
+<span class="lineNum">    1811 </span>            : 
+<span class="lineNum">    1812 </span>            : #undef __glibcxx_long_double_has_denorm_loss
+<span class="lineNum">    1813 </span>            : #undef __glibcxx_long_double_traps
+<span class="lineNum">    1814 </span>            : #undef __glibcxx_long_double_tinyness_before
+<span class="lineNum">    1815 </span>            : 
+<span class="lineNum">    1816 </span>            : _GLIBCXX_END_NAMESPACE_VERSION
+<span class="lineNum">    1817 </span>            : } // namespace
+<span class="lineNum">    1818 </span>            : 
+<span class="lineNum">    1819 </span>            : #undef __glibcxx_signed
+<span class="lineNum">    1820 </span>            : #undef __glibcxx_min
+<span class="lineNum">    1821 </span>            : #undef __glibcxx_max
+<span class="lineNum">    1822 </span>            : #undef __glibcxx_digits
+<span class="lineNum">    1823 </span>            : #undef __glibcxx_digits10
+<span class="lineNum">    1824 </span>            : #undef __glibcxx_max_digits10
+<span class="lineNum">    1825 </span>            : 
+<span class="lineNum">    1826 </span>            : #endif // _GLIBCXX_NUMERIC_LIMITS
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - include/EventLog.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">include</a> - EventLog.h<span style="font-size: 80%;"> (source / <a href="EventLog.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief A mechanism for Vireo sub systems to report errors.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #ifndef EventLog_h
+<span class="lineNum">      15 </span>            : #define EventLog_h
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &lt;stdarg.h&gt;
+<span class="lineNum">      18 </span>            : #include &quot;TypeAndDataManager.h&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace Vireo {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : //------------------------------------------------------------
+<span class="lineNum">      23 </span>            : //! A Class to collect trace, warning and error events when processing a data set.
+<span class="lineNum">      24 </span>            : class EventLog {
+<span class="lineNum">      25 </span>            : private:
+<span class="lineNum">      26 </span>            :     StringRef       _errorLog;
+<span class="lineNum">      27 </span>            :     Int32           _softErrorCount;
+<span class="lineNum">      28 </span>            :     Int32           _hardErrorCount;
+<span class="lineNum">      29 </span>            :     Int32           _warningCount;
+<span class="lineNum">      30 </span>            : public:
+<span class="lineNum">      31 </span>            :     enum EventSeverity {
+<span class="lineNum">      32 </span>            :         //! Diagnostic trace notice, these are only recorded if tracing is turned on.
+<span class="lineNum">      33 </span>            :         kTrace = 0,
+<span class="lineNum">      34 </span>            :         
+<span class="lineNum">      35 </span>            :         //! An unexpected input was detected and ignored.
+<span class="lineNum">      36 </span>            :         kWarning = 1,
+<span class="lineNum">      37 </span>            :         
+<span class="lineNum">      38 </span>            :         //! An error in the input was detected but the operation can continue in order to dermine if other errors exist.
+<span class="lineNum">      39 </span>            :         kSoftDataError = 2,
+<span class="lineNum">      40 </span>            :         
+<span class="lineNum">      41 </span>            :         //! An error in the input was detected and the operation cannot continue.
+<span class="lineNum">      42 </span>            :         kHardDataError = 3,        
+<span class="lineNum">      43 </span>            :     };
+<a name="44"><span class="lineNum">      44 </span>            :     </a>
+<a name="45"><span class="lineNum">      45 </span>            :     EventLog(StringRef stringRef);</a>
+<span class="lineNum">      46 </span><span class="lineCov">      13465 :     Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; };</span>
+<span class="lineNum">      47 </span><span class="lineCov">       8095 :     Int32 HardErrorCount()                  { return  _hardErrorCount; };</span>
+<span class="lineNum">      48 </span>            :     void LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args);
+<span class="lineNum">      49 </span>            :     void LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
+<span class="lineNum">      50 </span>            :     void LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message);
+<span class="lineNum">      51 </span>            :     
+<span class="lineNum">      52 </span>            :     // TODO: change to use streams
+<span class="lineNum">      53 </span>            :     //! Special string instance for constructor to skip all messages (counts still tallied)
+<span class="lineNum">      54 </span>            :     static StringRef DevNull;
+<span class="lineNum">      55 </span>            :     //! Special string instance for constructor to direct messages to stdout
+<span class="lineNum">      56 </span>            :     static StringRef StdOut;
+<span class="lineNum">      57 </span>            : };
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : } // namespace Vireo
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : #endif //EventLog_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
