@@ -7,7 +7,8 @@ OUTPUT_DIR=../dist
 OUTPUT_EXE=$(OUTPUT_DIR)/esh
 
 COMMANDLINE = main.cpp
-CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
+CORE = Array.cpp Assert.cpp CEntryPoints.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp VirtualInstrument.cpp
+#CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
@@ -59,9 +60,9 @@ else
                 CFLAGS+= $(CCOPT)  -DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections
                 LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
             else
-                CC=g++
-                CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
-                LDFLAGS+= -s -Wl,--gc-sections
+                CC=/usr/bin/clang++
+                CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections -fprofile-arcs -ftest-coverage
+                LDFLAGS+= -s -Wl,--gc-sections --coverage
                 # LDSTATIC+= -static
             endif
         endif
@@ -114,6 +115,14 @@ clean:
 simple:
 	make esh
 	$(STRIP)
+
+coverage:
+	make esh
+	cd ../test-it; ./test.js -once -n
+	cd objs; llvm-cov gcov -f -b *.gcda
+	cp llvm-gcov.sh ./objs
+	lcov --base-directory ./objs --directory ./objs --gcov-tool ./llvm-gcov.sh --capture -o cov.info
+	genhtml cov.info -o html_coverage_output
 
 lc:
 	@cat ../source/core/*.cpp >allcpp.txt
