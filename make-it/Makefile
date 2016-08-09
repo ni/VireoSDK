@@ -60,7 +60,7 @@ else
                 CFLAGS+= $(CCOPT)  -DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections
                 LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
             else
-                CC=/usr/bin/clang++
+                CC=clang++
                 CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
                 LDFLAGS+= -s -Wl,--gc-sections
                 # LDSTATIC+= -static

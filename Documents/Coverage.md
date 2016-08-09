@@ -9,6 +9,8 @@ Requirements: (this was done on an Ubuntu Linux machine)
 - llvm-cov
 - lcov
 
+_Note: you will have to make sure your `clang++` is not the emscripten version because it is missing the clang-tools which includes the llvm-cov_
+
 Then just run: `make coverage` in the `make-it/` directory.
 
 The output coverage report for HTML will be created in the `make-it/` directory as: `html_coverage_output/'
