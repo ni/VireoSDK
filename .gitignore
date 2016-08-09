@@ -24,6 +24,10 @@ target-support/
 dist/
 custom.mak
 
+# Coverage Files
+cov.info
+html_coverage_output/
+
 # Visual Studio Ignores
 Vireo_VS/Debug/*
 Vireo_VS/VireoCommandLine.sdf
