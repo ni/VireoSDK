@@ -2170,22 +2170,6 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
     return kNIError_Success;
 }
 
-//------------------------------------------------------------
-//! Banker's rounding for Doubles.
-inline Double RoundToEven(Double value)
-{
-    return rint(value);
-}
-//------------------------------------------------------------
-//! Banker's rounding for Singles.
-inline EMSCRIPTEN_NOOPT Single RoundToEven(Single value)
-{
-#if kVireoOS_emscripten
-    return rint((Double)value);
-#else
-    return rintf(value);
-#endif
-}
 //---------------------------------------------------------------
 //! Coerce value to a range. Incoming value is signed.
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)

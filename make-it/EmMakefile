@@ -84,9 +84,28 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32'\
     ]" -s RESERVED_FUNCTION_POINTERS=10
 
-EM_BC_FILES = $(OBJS)/VireoMerged.bc\
-    $(OBJS)/Thread.bc\
-    $(OBJS)/Timestamp.bc\
+EM_BC_FILES=$(OBJS)/Array.bc\
+	$(OBJS)/Assert.bc\
+	$(OBJS)/CEntryPoints.bc\
+	$(OBJS)/EventLog.bc\
+	$(OBJS)/ExecutionContext.bc\
+	$(OBJS)/GenericFunctions.bc\
+	$(OBJS)/Math.bc\
+	$(OBJS)/NumericString.bc\
+	$(OBJS)/Platform.bc\
+	$(OBJS)/Queue.bc\
+	$(OBJS)/String.bc\
+	$(OBJS)/StringUtilities.bc\
+	$(OBJS)/Synchronization.bc\
+	$(OBJS)/TDCodecLVFlat.bc\
+	$(OBJS)/TDCodecVia.bc\
+	$(OBJS)/Thread.bc\
+	$(OBJS)/Timestamp.bc\
+	$(OBJS)/TypeAndDataManager.bc\
+	$(OBJS)/TypeAndDataReflection.bc\
+	$(OBJS)/TypeDefiner.bc\
+	$(OBJS)/TypeTemplates.bc\
+	$(OBJS)/VirtualInstrument.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
     $(OBJS)/HttpClient.bc\
