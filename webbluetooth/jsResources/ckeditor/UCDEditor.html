@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<link type="text/css" rel="stylesheet" href="ucdEditor.css" />
+		<script type="text/javascript" src="/resources/common/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/resources/common/js/coherent.js"></script>
+        <script type="text/javascript" src="ckeditor.js"></script>
+		<script type="text/javascript">
+			// Variables
+			var editor1;
+			var ckEditor;
+			var initialHtmlSet = false;
+			
+            // Configure all CKEditor callbacks
+			CKEDITOR.on('instanceReady', function ()
+			{
+				// After everything is ready, get the current text
+				engine.trigger('initialText');
+				
+				CKEDITOR.instances.editor1.on('doubleclick', function (evt)
+				{
+					var element = evt.data.element;
+					if (getLinkElement(element) !== null)
+					{
+						// Double clicking on a link should open the hyperlink editor
+						getSelectedLink();
+					}
+					
+					//Swallow every other kind of dialog
+					evt.data.dialog = null;
+				});
+				
+                // Trigger a callback whenever the selection inside the editor changes
+				CKEDITOR.instances.editor1.on('selectionChange', handleSelectionChangeEvents);
+
+			    // Trigger a callback whenever the content changes inside the editor
+				CKEDITOR.instances.editor1.on('change', notifyContentChanged);
+			});
+			
+			// Set up the CKEditor when the page is ready
+			engine.on('Ready', function ()
+			{
+				editor1 = document.getElementById( 'editor1' );
+				ckEditor = CKEDITOR.replace(editor1,
+                {
+					height: '447px',
+					skin: 'moono',
+					contentsCss: 'ucdEditor.css',
+					allowedContent: true,
+					title: false,
+					extraPlugins: 'autocorrect,codemirror,nicustom,onchange,textselection,video',
+					removePlugins: 'contextmenu,undo',
+                    minimumChangeMilliseconds: 500, // timeout value for content change event
+					// Configuration for codemirror plug-in
+					codemirror: {
+						lineNumbers: false, // Whether or not you want to show line numbers
+						enableCodeFormatting: false, // Whether or not to enable code formatting
+						enableSearchTools: false, // Whether or not to enable search tools, CTRL+F (Find), CTRL+SHIFT+F (Replace), CTRL+SHIFT+R (Replace All), CTRL+G (Find Next), CTRL+SHIFT+G (Find Previous)
+						autoFormatOnStart: false, // Whether or not to automatically format code should be done when the editor is loaded
+						autoFormatOnModeChange: false, // Whether or not to automatically format code should be done every time the source view is opened
+						autoFormatOnUncomment: false, // Whether or not to automatically format code which has just been uncommented
+						showTrailingSpace: false, // Whether or not to show Trailing Spaces
+						showFormatButton: false, // Whether or not to show the format button on the toolbar
+						showCommentButton: false, // Whether or not to show the comment button on the toolbar
+						showUncommentButton: false, // Whether or not to show the uncomment button on the toolbar
+						showAutoCompleteButton: false // Whether or not to show the showAutoCompleteButton button on the toolbar
+					}
+				});
+			});
+			
+			// Callback to send the HTML to C#
+			engine.on('retrieveHtml', function (helpIdentifier)
+			{ 
+				engine.trigger('currentHtml', CKEDITOR.instances.editor1.getData(), helpIdentifier.toString());
+			});
+			
+			// Callback to set the current HTML
+			engine.on('setHtml', function (html)
+			{
+				CKEDITOR.instances.editor1.setData(html.toString());
+				initialHtmlSet = true;
+			});
+			
+			// Callback to execute a standard command
+			engine.on('ExecuteCommand', function (command)
+			{
+				CKEDITOR.instances.editor1.execCommand(command);
+				CKEDITOR.instances.editor1.focus();
+				notifyContentChanged();
+			});
+			
+			// Callback to switch between Source and wysiwyg mode
+			engine.on('ChangeMode', function (mode)
+			{
+			    if (CKEDITOR.instances.editor1.mode !== mode[0])
+			    {
+					CKEDITOR.instances.editor1.execCommand('source');
+				}
+			});			
+			
+            // Callback to change the current font family
+			engine.on('ChangeFontFamily', function (fontFamily)
+			{
+				var editor = CKEDITOR.instances.editor1;
+				var variablesValues = { family: fontFamily };
+				var style = new CKEDITOR.style(CKEDITOR.config.font_style, variablesValues);
+				style.apply(editor.document);
+				notifyContentChanged();
+			});
+			
+            // Callback to change the current font size
+			engine.on('ChangeFontSize', function (fontSize)
+			{
+				var editor = CKEDITOR.instances.editor1;
+				var variablesValues = { size: fontSize + 'px' };
+				var style = new CKEDITOR.style(CKEDITOR.config.fontSize_style, variablesValues);
+				style.apply(editor.document);
+				notifyContentChanged();
+			});
+			
+            // Callback to return the selected hyperlink
+			engine.on('GetSelectedLink', function ()
+			{
+			    var editor = CKEDITOR.instances.editor1;
+			    editor.focus();
+			    var selection = editor.getSelection();
+			    var selectionText = selection === null ? "" : selection.getSelectedText();
+			    var element = CKEDITOR.plugins.link.getSelectedLink(editor);
+			    var currentLink;
+			    if (element === null)
+			    {
+			        currentLink = "";
+			    }
+			    else
+			    {
+			        currentLink = element.getAttribute('href');
+			    }
+			    engine.trigger('selectedLink', selectionText, currentLink);
+			});
+
+            // Callback to add or update a hyperlink
+			engine.on('AddorEditHyperlink', function (hyperLinkParameters)
+			{
+			    var editor = CKEDITOR.instances.editor1;
+			    var selection = editor.getSelection();
+			    var ranges = selection === null ? null : selection.getRanges(true);
+			    var element = CKEDITOR.plugins.link.getSelectedLink(editor);
+			    if (ranges !== null && ranges.length > 0)
+			    {
+			        var anchor = editor.document.createElement('a');
+			        anchor.setText(hyperLinkParameters[0].toString());
+			        anchor.setAttribute('href', hyperLinkParameters[1].toString());
+
+			        ranges[0].deleteContents(true);
+			        if (element !== null)
+			        {
+			            if (anchor !== null)
+			            {
+			                // Replace the current element
+			                anchor.insertBefore(element);
+			                element.remove();
+			            }
+			        }
+			        else
+			        {
+			            // Insert the element
+			            CKEDITOR.instances.editor1.insertElement(anchor);
+			        }
+
+			        ranges[0].moveToElementEditEnd(anchor);
+			        selection.selectRanges(ranges);
+					notifyContentChanged();
+			    }
+			});
+
+            // Callback to add a table to the page
+			engine.on('AddTable', function (tableParameters)
+			{
+			    try
+			    {
+			        var rows = tableParameters[0];
+			        var cols = tableParameters[1];
+			        var editor = CKEDITOR.instances.editor1;
+			        editor.focus();
+			        var table = new CKEDITOR.dom.element('table', editor.document);
+			        var tbody = table.append(new CKEDITOR.dom.element('tbody', editor.document));
+			        for (var i = 0; i < rows; i++)
+			        {
+			            var row = tbody.append(new CKEDITOR.dom.element('tr', editor.document));
+			            for (var j = 0; j < cols; j++)
+			            {
+			                var cell = row.append(new CKEDITOR.dom.element('td', editor.document));
+			                if (!CKEDITOR.env.ie)
+			                {
+			                    cell.append(new CKEDITOR.dom.element('br', editor.document));
+			                }
+			            }
+			        }
+
+			        CKEDITOR.instances.editor1.insertElement(table);
+					notifyContentChanged();
+			    }
+			    catch (err)
+			    {
+			    }
+			});
+
+            // Helper Functions
+			function notifyContentChanged()
+			{
+				if (initialHtmlSet === true)
+				{
+					engine.trigger('contentChanged', CKEDITOR.instances.editor1.getData());
+				}
+			}
+			
+			function getLinkElement(selectedElement)
+			{
+		        var currentElement = selectedElement;
+		        while (currentElement !== null) {
+		            if (currentElement.is('a') && !!currentElement.getAttribute('href') && currentElement.getChildCount() > 0 && !currentElement.isReadOnly())
+		            {
+		                break;
+		            }
+		            currentElement = currentElement.getParent();
+		        }
+		        return currentElement;
+		    }
+
+		    function handleSelectionChangeEvents(e) {
+		        try
+		        {
+		            var selectionType, selectionProperties;
+		            if (e.data.selection.getType() === CKEDITOR.SELECTION_TEXT)
+		            {
+		                selectionProperties = getSelectedTextProperties(e.editor);
+		                selectionType = 'text';
+		                engine.trigger('OnSelectionChanged', selectionType, JSON.stringify(selectionProperties));
+		            }
+		        } catch (err)
+		        {
+		        }
+		    }
+
+		    function getSelectedTextProperties(editor)
+		    {
+		        try
+		        {
+		            var textFormattingCommands = [
+		                    ['IsBold', 'bold'],
+		                    ['IsItalic', 'italic'],
+		                    ['IsUnderline', 'underline'],
+		                    ['IsStrikethrough', 'strike'],
+		                    ['CanOutdent', 'outdent'],
+		                    ['CanIndent', 'indent'],
+		                    ['IsJustifyLeft', 'justifyleft'],
+		                    ['IsJustifyCenter', 'justifycenter'],
+		                    ['IsJustifyRight', 'justifyright'],
+		                    ['IsJustifyBlock', 'justifyblock'],
+		                    ['IsNumberedList', 'numberedlist'],
+		                    ['IsBulletedList', 'bulletedlist']
+		                ],
+		                selectedTextProperties = {},
+		                startElement = editor.getSelection().getStartElement(),
+		                fontSize = startElement.getComputedStyle('font-size'),
+		                fontSizeValue = CKEDITOR.tools.convertToPx(fontSize),
+		                fontFamily = startElement.getComputedStyle('font-family'),
+		                // Get font family value and trim starting and ending quotes, if any.
+		                fontFamilyValue = fontFamily.split(',')[0].trim().replace(new RegExp("^[']+"), "").replace(new RegExp("[']+$"), "");
+
+		            // Update command states
+		            for (var i = 0; i < textFormattingCommands.length; i++)
+		            {
+		                selectedTextProperties[textFormattingCommands[i][0]] = editor.getCommand(textFormattingCommands[i][1]).state;
+		            }
+
+		            selectedTextProperties.FontSize = fontSizeValue;
+		            selectedTextProperties.FontFamily = fontFamilyValue;
+
+		            return selectedTextProperties;
+		        }
+		        catch (err)
+		        {
+		        }
+		    }
+		</script>
+    </head>
+    <body style="padding: 0; margin: 0">
+		<textarea id="editor1" name="editor1" cols="80" rows="10" style="padding: 0; margin: 0;"></textarea>
+    </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "rpptester",
+  "version": "0.0.1",
+  "description": "Remote panel web socket simulator.",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "diff": "^1.4.0",
+    "digitalsignals": "^1.0.0",
+    "express": "^4.13.3",
+    "express-ws": "^0.2.6",
+    "http-server": "^0.8.0",
+    "serve-index": "^1.7.2",
+    "shelljs": "^0.5.1",
+    "socket.io": "^1.3.7",
+    "websocket": "^1.0.22"
+  },
+  "author": "Paul Austin",
+  "scripts": {
+      "rpptest": "node ./files/remotePanelProtocolTester.js"
+  }
+}

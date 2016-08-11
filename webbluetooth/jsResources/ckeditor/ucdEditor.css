@@ -1,0 +1,11 @@
+@import url("/resources/contexthelp/css/cmsch.css");
+@import url("/resources/gh/css/niscrollbar.css");
+
+body::-webkit-scrollbar {
+	display: block;
+}
+
+#cke_editable 
+{ 
+	border-width: 0px; /* adjust border around ckeditor */
+}

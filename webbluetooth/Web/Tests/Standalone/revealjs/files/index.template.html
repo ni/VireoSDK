@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>National Instruments Custom Elements Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<template id="resources"></template>
+
+<script src="../../../../../../../LabVIEW/Html.Controls.Design/Web/Framework/niLocalization.js"></script>
+<script src="../../../../../../../LabVIEW/Html.Controls.Design/Web/Framework/niSupport.js"></script>
+<script src="../../../../../../../LabVIEW/Html.Controls.Design/Web/Framework/niUIActivityService.js"></script>
+
+<template id="elementsnoreg"></template>
+
+<script src="../files/elementextensions.js"></script>
+<script src="../../../../../../../LabVIEW/Html.Controls.Design/Web/Elements/ni-element-registration.js"></script>
+<script src="../files/presentation.js"></script>
+<style>
+[data-ni-base-style] {
+    position: relative;
+    font-size: 12pt;
+}
+</style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <section>
+                    <h1>National Instruments</h1>
+                    <h3>Custom Elements</h3>
+                </section>
+                <section>
+                    <h1>Viewing Options:</h1>
+                    <h3><a href="?">Normal</a></h3>
+                    <h3><a href="?static">Static</a></h3>
+                    <h3><a href="?plain">No Theme</a></h3>
+                    <h3><a href="?static&plain">Static and No Theme</a></h3>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Numerics</h1>
+                </section>
+                <section>
+                    <h1>Numeric Control</h1>
+                    <ni-numeric-text-box
+                        visible
+                        value='{"numberValue": 0}'
+                        minimum='{"numberValue": -10}'
+                        maximum='{"numberValue": 10}'
+                        interval='{"numberValue": 1}'
+                        decimal-digits="2"
+                        precision-digits="2"
+                        style="width: 100px; height: 30px;"
+                        data-cycle='{"type":"num","max":10,"min":-10,"dx":2}'>
+                    </ni-numeric-text-box>
+                </section>
+                <section>
+                    <h1>Gauge</h1>
+                    <ni-gauge
+                        visible
+                        value='{"numberValue": 0}'
+                        minimum='{"numberValue": -10}'
+                        maximum='{"numberValue": 10}'
+                        interval='{"numberValue": 1}'
+                        decimal-digits="0"
+                        precision-digits="-1"
+                        start-angle="36"
+                        end-angle="288"
+                        style="width: 170px; height: 170px;"
+                        significant-digits="2"
+                        format="floating point"
+                        range-divisions-mode="auto"
+                        read-only
+                        scale-visible
+                        major-ticks-visible
+                        minor-ticks-visible
+                        labels-visible
+                        data-cycle='{"type":"num","max":10,"min":-10,"dx":2}'>
+                    </ni-gauge>
+                </section>
+                <section>
+                    <h1>Tank</h1>
+                    <ni-tank
+                        visible
+                        value='{"numberValue": 0}'
+                        minimum='{"numberValue": -10}'
+                        maximum='{"numberValue": 10}'
+                        interval='{"numberValue": 1}'
+                        orientation="horizontal"
+                        decimal-digits="0"
+                        precision-digits="-1"
+                        start-angle="36"
+                        end-angle="288"
+                        style="width: 148px; height: 128px;"
+                        significant-digits="2"
+                        format="floating point"
+                        range-divisions-mode="auto"
+                        read-only
+                        scale-visible
+                        major-ticks-visible
+                        minor-ticks-visible
+                        labels-visible
+                        data-cycle='{"type":"num","max":10,"min":-10,"dx":2}'>
+                    </ni-tank>
+                    <ni-tank
+                        visible
+                        value='{"numberValue": 0}'
+                        minimum='{"numberValue": -10}'
+                        maximum='{"numberValue": 10}'
+                        interval='{"numberValue": 1}'
+                        orientation="vertical"
+                        decimal-digits="0"
+                        precision-digits="-1"
+                        start-angle="36"
+                        end-angle="288"
+                        style="width: 128px; height: 148px;"
+                        significant-digits="2"
+                        format="floating point"
+                        range-divisions-mode="auto"
+                        read-only
+                        scale-visible
+                        major-ticks-visible
+                        minor-ticks-visible
+                        labels-visible
+                        data-cycle='{"type":"num","max":10,"min":-10,"dx":2}'>
+                    </ni-tank>
+                </section>
+                <section>
+                    <h1>Slider</h1>
+                    <ni-slider
+                        visible
+                        value="0"
+                        minimum="0"
+                        maximum="10"
+                        interval="1"
+                        decimal-digits="0"
+                        precision-digits="1"
+                        orientation="horizontal"
+                        style="width: 148px; height: 58px;"
+                        read-only
+                        major-ticks-visible
+                        minor-ticks-visible
+                        labels-visible
+                        data-cycle='{"type":"num","max":10,"min":0,"dx":1}'>
+                    </ni-slider>
+                    <ni-slider
+                        visible
+                        value="0"
+                        minimum="0"
+                        maximum="10"
+                        interval="1"
+                        decimal-digits="0"
+                        precision-digits="1"
+                        orientation="vertical"
+                        style="width: 58px; height: 148px;"
+                        read-only
+                        major-ticks-visible
+                        minor-ticks-visible
+                        labels-visible
+                        data-cycle='{"type":"num","max":10,"min":0,"dx":1}'>
+                    </ni-slider>
+                </section>
+                <section>
+                    <h1>Timestamp</h1>
+                    <ni-time-stamp-text-box
+                        visible
+                        value="3535164206"
+                        interval="1"
+                        decimal-digits="0"
+                        precision-digits="1"
+                        style="width: 300px; height: 20px;"
+                        data-cycle='{"type":"lvtime"}'>
+                    </ni-time-stamp-text-box>
+                </section>
+                <section>
+                    <h1>Progress Bar</h1>
+                    <ni-linear-progress-bar
+                        visible
+                        style="width: 250px; height: 25px;"
+                        value="4"
+                        minimum="0"
+                        maximum="100"
+                        data-cycle='{"type":"simplenum","max":100,"min":0,"dx":10}'>
+                    </ni-linear-progress-bar>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Buttons</h1>
+                </section>
+                <section>
+                    <h1>Text</h1>
+                    <ni-boolean-button
+                        visible
+                        style="width: 150px; height: 50px;"
+                        content="When Released">
+                    </ni-boolean-button>
+                    <ni-boolean-button
+                        visible
+                        style="width: 150px; height: 50px;"
+                        content="When Pressed"
+                        click-mode="Press">
+                    </ni-boolean-button>
+                    <ni-boolean-button
+                        visible
+                        style="width: 150px; height: 50px;"
+                        content="Until Released"
+                        momentary>
+                    </ni-boolean-button>
+                </section>
+                <section>
+                    <h1>Power</h1>
+                    <ni-boolean-switch
+                        visible
+                        style="width: 50px; height: 50px;"
+                        true-content="On"
+                        false-content="Off"
+                        shape="power"
+                        content-visible=""
+                        data-cycle='{"type":"bool"}'>
+                    </ni-boolean-switch>
+                </section>
+                <section>
+                    <h1>Check Box</h1>
+                    <ni-check-box
+                        visible
+                        style="width: 50px; height: 50px;"
+                        content-visible="true"
+                        content="I Am Checkbox"
+                        data-cycle='{"type":"bool"}'>
+                    </ni-check-box>
+                </section>
+                <section>
+                    <h1>Radio</h1>
+                    <ni-radio-button
+                        visible
+                        style="width: 50px; height: 50px;"
+                        content-visible="true"
+                        content="I Am Radio"
+                        data-cycle='{"type":"bool"}'>
+                    </ni-radio-button>
+                </section>
+                <section>
+                    <h1>Switch</h1>
+                    <ni-boolean-switch
+                        visible
+                        style="width: 102px; height: 32px;"
+                        true-content="On"
+                        false-content="Off"
+                        shape="slider"
+                        orientation="horizontal"
+                        content-visible=""
+                        data-cycle='{"type":"bool"}'>
+                    </ni-boolean-switch>
+                    <ni-boolean-switch
+                        visible
+                        style="width: 32px; height: 102px;"
+                        true-content="On"
+                        false-content="Off"
+                        shape="slider"
+                        orientation="vertical"
+                        content-visible=""
+                        data-cycle='{"type":"bool"}'>
+                    </ni-boolean-switch>
+                    <ni-boolean-switch
+                        visible
+                        style="width: 100px; height: 100px;"
+                        true-content="On"
+                        false-content="Off"
+                        shape="round"
+                        content-visible="" data-cycle='{"type":"bool"}'>
+                    </ni-boolean-switch>
+                </section>
+                <section>
+                    <h1>LED</h1>
+                    <ni-boolean-led
+                        visible
+                        style="width: 50px; height: 50px;"
+                        data-cycle='{"type":"bool"}'>
+                    </ni-boolean-led>
+                    <ni-boolean-led
+                        visible
+                        style="width: 50px; height: 50px;"
+                        shape="Square"
+                        value="true"
+                        data-cycle='{"type":"bool"}'>
+                    </ni-boolean-led>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Text</h1>
+                </section>
+                <section>
+                    <h1>String</h1>
+                    <ni-string-control
+                        visible
+                        style="width: 250px; height: 1em; font-family: monospace;"
+                        data-cycle='{"type":"text","period":50}'>
+                    </ni-string-control>
+                </section>
+                <section>
+                    <h1>Dropdown</h1>
+                    <ni-drop-down
+                        visible
+                        source='["A", "long", "time", "ago", "in", "a", "galaxy", "far,", "far", "away"]'
+                        selected-index="0"
+                        style="width: 198px; height: 23px;"
+                        data-cycle='{"type":"simplenum","max":9,"min":0,"dx":1,"propname":"selectedIndex"}'>
+                    </ni-drop-down>
+                </section>
+                <section>
+                    <h1>List Box</h1>
+                    <ni-list-box
+                        visible
+                        source='["A", "long", "time", "ago", "in", "a", "galaxy", "far,", "far", "away"]'
+                        selected-index='[0]'
+                        selection-mode="One"
+                        style="width: 198px; height: 198px;"
+                        data-cycle='{"type":"simplenumarray","max":9,"min":0,"dx":1}'>
+                    </ni-list-box>
+                </section>
+                <section>
+                    <h1>Path</h1>
+                    <ni-path-selector
+                        visible
+                        path='{"path":"", "notAPath":false}'
+                        style="width: 250px; height: 25px;">
+                    </ni-path-selector>
+                </section>
+                <section>
+                    <h1>Hyperlink</h1>
+                    <ni-hyperlink
+                        visible
+                        style="width: 150px; height: 50px;"
+                        href="javascript:alert('Warning: Do not feed the hyperlink sugar')"
+                        content="I am a hyperlink">
+                    </ni-hyperlink>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Graph</h1>
+                    <ni-cartesian-graph
+                        style='width: 600px; height: 400px; background-color: white; color: black;'
+                        visible
+                        data-cycle='{"type":"graphrandom", "period": "raf"}'>
+                        <ni-cartesian-axis
+                            id='Function19'
+                            axis-label='Time'
+                            show
+                            show-label
+                            axis-position='bottom'
+                            min='0'
+                            max='100'
+                            auto-scale='true'
+                            log-scale='false'>
+                        </ni-cartesian-axis>
+                        <ni-cartesian-axis
+                            id='Function20'
+                            axis-label='Amplitude'
+                            show
+                            show-label
+                            axis-position='left'
+                            min='0'
+                            max='10'
+                            auto-scale='true'
+                            log-scale='false'></ni-cartesian-axis>
+                        <ni-cartesian-plot
+                            id='Function21'
+                            xaxis='19'
+                            yaxis='20'>
+                            <ni-plot-renderer
+                                id='Function22'
+                                line-width='1'
+                                line-stroke='#FF0000'
+                                point-color=''
+                                point-size='0'
+                                point-shape=''>
+                            </ni-plot-renderer>
+                        </ni-cartesian-plot>
+                    </ni-cartesian-graph>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h1>Drawings</h1>
+                </section>
+                <section>
+                    <h1>Image</h1>
+                    <ni-image
+                        visible
+                        style="width: 180px; height: 261px;"
+                        source="../files/drt.gif">
+                    </ni-image>
+                </section>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

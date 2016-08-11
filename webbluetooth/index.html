@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="origin-trial" content="">
+    <style>
+		/* Read only section. Source panel edits to these control styles will not be persisted */
+		[data-ni-base-style] {position: absolute;}
+
+		ni-boolean-button[ni-control-id='205'] {
+			left: 208px; top: 224px; width: 75px; height: 30px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		ni-label[ni-control-id='206'] {
+			left: 208px; top: 201px; width: 10px; height: 10px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		ni-string-control[ni-control-id='234'] {
+			left: 208px; top: 304px; width: 90px; height: 22px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal;
+		}
+		ni-label[ni-control-id='235'] {
+			left: 208px; top: 281px; width: 10px; height: 10px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		ni-enum-selector[ni-control-id='17'] {
+			left: 196px; top: 52px; width: 90px; height: 22px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal;
+		}
+		ni-label[ni-control-id='18'] {
+			left: 196px; top: 29px; width: 30px; height: 16px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		ni-boolean-button[ni-control-id='65'] {
+			left: 196px; top: 132px; width: 75px; height: 30px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		ni-label[ni-control-id='66'] {
+			left: 196px; top: 109px; width: 36px; height: 16px; font-size: 12px; font-family: Segoe UI, sans-serif; font-style: normal; font-weight: normal; color: #4D5359;
+		}
+		/* End read only section. Additional styles can be added outside this section */
+	</style>
+
+    <!---Read only section. Source panel edits to these document properties will not be persisted-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+    	'Function.gvi'
+	</title>
+    <!---End read only section. Additional scripts or document properties can be added outside this section-->
+<link href="favicon.ico" type="image/x-icon" rel="icon">
+<link href="jsResources/jqwidgets/styles/jqx.base.css" type="text/css" rel="stylesheet">
+<link href="jsResources/jqwidgets/styles/jqx.ni.css" type="text/css" rel="stylesheet">
+<link href="jsResources/jqwidgets/styles/jqx.fresh.css" type="text/css" rel="stylesheet">
+<link href="Web/Styles/niNormalize.css" type="text/css" rel="stylesheet">
+<link href="Web/Styles/niEditorStyles.css" type="text/css" rel="stylesheet">
+<link href="Web/Styles/niControlStyles.css" type="text/css" rel="stylesheet">
+<script defer="" src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
+<script defer="" src="bower_components/document-register-element/build/document-register-element.max.js" type="text/javascript"></script>
+<script defer="" src="jsResources/customevents/customevents.polyfill.js" type="text/javascript"></script>
+<script defer="" src="jsResources/objectassign.polyfill.js" type="text/javascript"></script>
+<script defer="" src="jsResources/objectis.polyfill.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jquery.i18n.properties.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/globalization/globalize.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/globalization/globalize.culture.en-US.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niBrowserDetection.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niLocalization.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niSupport.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niUIActivityService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niNumerics.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-element.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jquery.blockUI.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/bignumber.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcore.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxdata.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxmath.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxdraw.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxmenu.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcalendar.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxlistbox.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxbuttons.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxscrollbar.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxchart.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxnumberinput.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxformattedinput.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcomplexinput.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgauge.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxslider.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxinput.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxpathcontrol.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxpopover.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcheckbox.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxswitchbutton.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxradiobutton.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxribbon.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxprogressbar.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxtooltip.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcalendar.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxdatetimeinput.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxdropdownlist.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxexpander.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxcolorpicker.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxdropdownbutton.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxarray.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.aggregates.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.selection.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.columnsresize.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.edit.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.filter.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.sort.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.pager.js" type="text/javascript"></script>
+<script defer="" src="jsResources/jqwidgets/jqxgrid.grouping.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.axislabels.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.symbol.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.charting.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.cursors.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.intensitymap.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/cbuffer.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.historybuffer.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.segment-tree.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.navigate.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.selection.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.time.js" type="text/javascript"></script>
+<script defer="" src="jsResources/flot/jquery.flot.logaxis.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niGlobals.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/ValueConverters/niValueConverter.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/ValueConverters/niNumericValueConverter.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/ValueConverters/niJsonValueConverter.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/ValueConverters/niElementValueConverter.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-web-application.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-virtual-instrument.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-visual-component.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-visual.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-boolean-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-boolean-button.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-numeric-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-numeric-text-box.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-numeric-pointer.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-linear-numeric-pointer.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-radial-numeric-pointer.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-slider.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-tank.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-gauge.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-progress-bar.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-linear-progress-bar.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cartesian-graph-base.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cartesian-graph.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-chart.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cartesian-axis.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cartesian-plot.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cartesian-plot-renderer.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cursor.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-string-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-time-stamp-text-box.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-boolean-content-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-boolean-switch.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-boolean-led.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-check-box.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-hyperlink.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-text.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-label.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-path-selector.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-url-image.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-image.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-selector.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-drop-down.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-list-box.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cluster.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-array-viewer.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-data-grid.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-data-grid-column.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-io-name-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-legend-helpers.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-plot-legend.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-plot-legend-helpers.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-plot-legend-item-display.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cursor-legend.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-tab-item.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cursor-legend-item-display.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-cursor-legend-helpers.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-scale-legend.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-scale-legend-helpers.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-graph-tools.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-opaque-refnum.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-tab-control.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-layout-panel.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-color-scale.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-intensity-graph.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-numeric-value-selector.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-enum-selector.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-ring-selector.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-radio-button-group.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niModelProvider.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niTaskTracker.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niControlDataItemCache.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niControlDCOIndexCache.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niElementReparentingCache.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niEggShell.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niEditorUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niLocalUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niEditorRuntimeUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niRemoteUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niTestUpdateService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niWebApplicationModelService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niVIReferenceService.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niRenderBuffer.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niRenderEngine.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niTimeStamp.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niAnalogWaveform.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niPaintResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niTransformResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niRepaintResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niLargeResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niEditorResizeStrategy.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niWebApplicationModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niVirtualInstrumentModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niVisualComponentModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niVisualModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niNumericControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niNumericPointerModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niRadialNumericPointerModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niGaugeModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niLinearNumericPointerModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niSliderModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niTankModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niProgressBarModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niLinearProgressBarModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niNumericTextBoxModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niGraphBaseModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCursorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCartesianAxisModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCartesianPlotModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niPlotRendererModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCartesianGraphModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niChartModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niBooleanControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niBooleanContentControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niBooleanButtonModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niBooleanLEDModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niTextModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niLabelModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niHyperlinkModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niStringControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niPathSelectorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niTimeStampTextBoxModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niUrlImageModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niImageModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCheckBoxModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niBooleanSwitchModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niTabControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niTabItemModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niLayoutPanelModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niClusterModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niArrayViewerModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niDataGridModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niDataGridColumnModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niSelectorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niDropDownModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niListBoxModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niIONameControlModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niOpaqueRefnumModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niPlotLegendModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niColorScaleModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niIntensityGraphModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niCursorLegendModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niScaleLegendModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niGraphToolsModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niNumericValueSelectorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niEnumSelectorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niRingSelectorModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Modeling/niRadioButtonGroupModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niWebApplicationViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niVirtualInstrumentViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niVisualComponentViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niVisualViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niNumericControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niNumericPointerViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niLinearNumericPointerViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niRadialNumericPointerViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niGaugeViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niSliderViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niTankViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niProgressBarViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niLinearProgressBarViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niNumericTextBoxViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCursorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCartesianAxisViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCartesianPlotViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCartesianGraphViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niPlotRendererViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niChartViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niBooleanControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niBooleanContentControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niBooleanButtonViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niBooleanLEDViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niTextViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niLabelViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niHyperlinkViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niStringControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niPathSelectorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niTimeStampTextBoxViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niUrlImageViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niImageViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCheckBoxViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niBooleanSwitchViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niTabControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niTabItemViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niLayoutPanelViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niClusterViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niArrayViewerViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niDataGridViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niDataGridColumnViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niSelectorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niDropDownViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niListBoxViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niIONameControlViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niOpaqueRefnumViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niPlotLegendViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niCursorLegendViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niScaleLegendViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niGraphToolsViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niColorScaleViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niIntensityGraphViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niNumericValueSelectorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niEnumSelectorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niRingSelectorViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Designer/niRadioButtonGroupViewModel.js" type="text/javascript"></script>
+<script defer="" src="Web/Framework/niElementExtensions.js" type="text/javascript"></script>
+<script defer="" src="jsResources/vireo.js" type="text/javascript"></script>
+<script defer="" src="VIAInfo.js" type="text/javascript"></script>
+<script defer="" src="Web/Elements/ni-element-registration.js" type="text/javascript"></script>
+<script defer="" src="userAction.js" type="text/javascript"></script>
+</head>
+
+<body><ni-web-application engine="VIREO" location="BROWSER" vireo-source="VIAcode.txt"><ni-virtual-instrument vi-name="Function.gvi"></ni-virtual-instrument></ni-web-application>
+    <div id="ni-outdated-browser-message" style="display:none">This browser is reporting compatibility with older browser technologies that may perform poorly if it all.</div>
+    <!---Partially read only section. Custom attributes can be added to these elements but edits to existing attributes will not be persisted-->
+    <section id="FrontPanelCanvas">
+	<button type="button" id="userActionButton" style="font-weight: 400; font-style: normal;">Request Device</button>
+	</br>
+	<ni-enum-selector data-ni-base-style="uninitialized" ni-control-id='17' binding-info='{"prop":"value","via":"15","dco":0,"dataItem":"Enum","sync":false}' label-id='18' items='[{"displayValue":"red","value":"0"},{"displayValue":"blue","value":"1"},{"displayValue":"green","value":"2"}]' value='{"numberValue":0}' value-type='UInt32' read-only='false'></ni-enum-selector><ni-label data-ni-base-style="uninitialized" ni-control-id='18' binding-info='{}' label-id='' text='Enum'></ni-label></section>
+    <!---End partially read only section. Source panel edits to control styles will not be persisted-->
+</body>
+</html>

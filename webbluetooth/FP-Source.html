@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>
+        This title needs to be updated programmatically
+    </title>
+
+    <script src="jsResources/coherent.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="jsResources/ckeditor/ckeditor.js"></script>
+    <script>
+        $(document).ready(function () {
+            engine.call('DocumentReady');
+            CKEDITOR.replace('Source', {
+                uiColor: '#FF0000',
+                startupMode: 'source',
+                fullPage: true,
+                skin: 'moono',
+                title: false,
+                extraPlugins: 'codemirror,selectall',
+                enableTabKeyTools: false,
+                height: $('body').height() + 'px',                            
+                // Configuration for codemirror plug-in
+                codemirror: {
+                    lineNumbers: false, // Whether or not you want to show line numbers
+                    enableCodeFormatting: true, // Whether or not to enable code formatting
+                    enableSearchTools: false, // Whether or not to enable search tools, CTRL+F (Find), CTRL+SHIFT+F (Replace), CTRL+SHIFT+R (Replace All), CTRL+G (Find Next), CTRL+SHIFT+G (Find Previous)
+                    autoFormatOnStart: true, // Whether or not to automatically format code should be done when the editor is loaded
+                    autoFormatOnModeChange: true, // Whether or not to automatically format code should be done every time the source view is opened
+                    autoFormatOnUncomment: false, // Whether or not to automatically format code which has just been uncommented
+                    showTrailingSpace: false, // Whether or not to show Trailing Spaces
+                    showFormatButton: false, // Whether or not to show the format button on the toolbar
+                    showCommentButton: false, // Whether or not to show the comment button on the toolbar
+                    showUncommentButton: false, // Whether or not to show the uncomment button on the toolbar
+                    showAutoCompleteButton: false // Whether or not to show the showAutoCompleteButton button on the toolbar
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+	var SetTextArea = function(s) { 
+	    CKEDITOR.instances['Source'].setData(s);
+	},
+	ClearTextArea = function() { 
+		CKEDITOR.instances['Source'].setData('');
+	},
+	FormatTextArea = function () {
+	    var editor = CKEDITOR.instances['Source'];
+	    editor.execCommand('selectAll');
+	    if (CKEDITOR.plugins.sourcearea.commands.autoFormat !== undefined) {
+	        CKEDITOR.plugins.sourcearea.commands.autoFormat.exec(editor);
+	    }
+	    var window = CKEDITOR.document.getWindow();
+	    var codemirror = window.$["codemirror_" + editor.id];
+	    if (codemirror !== undefined) {
+	        codemirror.setSelection({
+	            line: 0,
+	            ch: 0
+	        }, {
+	            line: 0,
+	            ch: 0
+	        });
+	    }
+	},
+	AppendTextArea = function(s) { 
+		var a = CKEDITOR.instances['Source'].getData();
+		CKEDITOR.instances['Source'].setData(a + s + '\n');
+	},
+	ApplyChanges = function () {
+	    var a = CKEDITOR.instances['Source'].getData();
+	    engine.trigger('SendSourceBack', a);
+	}
+    </script>
+</head>
+
+<body>
+    <textArea id='Source' rows='300' style='width: 100%'></textArea>
+</body>
+
+</html>
