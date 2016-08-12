@@ -1,0 +1,995 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/Math.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - Math.cpp<span style="font-size: 80%;"> (source / <a href="Math.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">257</td>
+            <td class="headerCovTableEntry">331</td>
+            <td class="headerCovTableEntryMed">77.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">200</td>
+            <td class="headerCovTableEntry">462</td>
+            <td class="headerCovTableEntryLo">43.3 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Native Vireo maths functions for core types.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;cstdlib&gt;
+<span class="lineNum">      15 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      16 </span><span class="lineCov">       2120 : #include &lt;limits&gt;</span>
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span><span class="lineCov">      11660 : #include &quot;Timestamp.h&quot;      // For seeding random numbers</span>
+<span class="lineNum">      19 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : // With non-unique names(AKA overlodaed) only the C entry points are appended.
+<span class="lineNum">      22 </span>            : #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
+<span class="lineNum">      23 </span>            : #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
+<span class="lineNum">      24 </span><span class="lineCov">       2120 : </span>
+<span class="lineNum">      25 </span>            : using namespace Vireo;
+<span class="lineNum">      26 </span><span class="lineCov">      11660 : </span>
+<a name="27"><span class="lineNum">      27 </span>            : // Different compilers expose different sets of function signatures for</a>
+<a name="28"><span class="lineNum">      28 </span>            : // integer abs, so we define our own.</a>
+<a name="29"><span class="lineNum">      29 </span><span class="lineNoCov">          0 : inline Int8  IntAbs(Int8  value) { return abs(value); }</span></a>
+<a name="30"><span class="lineNum">      30 </span><span class="lineNoCov">          0 : inline Int16 IntAbs(Int16 value) { return abs(value); }</span></a>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 : inline Int32 IntAbs(Int32 value) { return abs(value); }</span>
+<span class="lineNum">      32 </span><span class="lineCov">       2120 : inline Int64 IntAbs(Int64 value) { return llabs(value); }</span>
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span><span class="lineCov">      11660 : #if defined(VIREO_TYPE_ComplexSingle) || defined(VIREO_TYPE_ComplexDouble)</span>
+<span class="lineNum">      35 </span>            :     #include &lt;complex&gt;
+<span class="lineNum">      36 </span>            :     #if defined(VIREO_TYPE_ComplexSingle)
+<span class="lineNum">      37 </span>            :         typedef std::complex&lt;float&gt; ComplexSingle;
+<span class="lineNum">      38 </span>            :     #endif
+<span class="lineNum">      39 </span>            :     #if defined(VIREO_TYPE_ComplexDouble)
+<span class="lineNum">      40 </span><span class="lineCov">       2120 :         typedef std::complex&lt;Double&gt; ComplexDouble;</span>
+<span class="lineNum">      41 </span>            :     #endif
+<span class="lineNum">      42 </span><span class="lineCov">      11660 : #endif</span>
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : extern &quot;C&quot; {
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : //For some platfroms isnan, isinf, abs are functions in std not macros
+<span class="lineNum">      47 </span>            : using namespace std;
+<span class="lineNum">      48 </span><span class="lineCov">       2120 : </span>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span><span class="lineCov">      11660 : // Basic Math</span>
+<span class="lineNum">      51 </span>            : #define DECLARE_VIREO_MATH_PRIMITIVES(TYPE) \
+<span class="lineNum">      52 </span>            :     DECLARE_VIREO_PRIMITIVE3( Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1)) ) \
+<span class="lineNum">      53 </span>            :     DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
+<span class="lineNum">      54 </span>            :     DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
+<span class="lineNum">      55 </span>            :     DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) &gt; 0) - (_Param(0) &lt; 0)) ) \
+<span class="lineNum">      56 </span><span class="lineCov">       2120 :         DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)) )                       \</span>
+<span class="lineNum">      57 </span>            :         DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )    \
+<span class="lineNum">      58 </span><span class="lineCov">      11660 :         DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )    \</span>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
+<span class="lineNum">      61 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">      62 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Sub, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">      63 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Mul, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">      64 </span><span class="lineCov">       2120 :     DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, &quot;UnOp&quot;#TYPE) \</span>
+<span class="lineNum">      65 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(Negate, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">      66 </span><span class="lineCov">      11660 :         DEFINE_VIREO_FUNCTION_TYPED(Increment, TYPE, &quot;UnOp&quot;#TYPE) \</span>
+<span class="lineNum">      67 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(Decrement, TYPE, &quot;UnOp&quot;#TYPE)
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : //------------------------------------------------------------
+<span class="lineNum">      70 </span>            : #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
+<span class="lineNum">      71 </span>            :     /* Integer division operator not needed by LabVIEW */ \
+<span class="lineNum">      72 </span><span class="lineCov">       2120 :     /* DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) / _Param(1)) : 0 ) ) */ \</span>
+<span class="lineNum">      73 </span>            :     DECLARE_VIREO_PRIMITIVE3( Mod##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) % _Param(1)) : 0 ) ) \
+<span class="lineNum">      74 </span><span class="lineCov">      11660 :     VIREO_FUNCTION_SIGNATURE3(Quotient##TYPE, TYPE, TYPE, TYPE) \</span>
+<span class="lineNum">      75 </span>            :     { \
+<span class="lineNum">      76 </span>            :         TYPE quotient, remainder; \
+<span class="lineNum">      77 </span>            :         if (_Param(1) == 0) \
+<span class="lineNum">      78 </span>            :             quotient = 0; \
+<span class="lineNum">      79 </span>            :         else { \
+<span class="lineNum">      80 </span><span class="lineCov">      13780 :             quotient  = _Param(0) / _Param(1); \</span>
+<span class="lineNum">      81 </span>            :             remainder = _Param(0) - _Param(1) * quotient; \
+<span class="lineNum">      82 </span>            :             if (remainder &amp;&amp; ((_Param(0) &gt; 0) != (_Param(1) &gt; 0))) \
+<span class="lineNum">      83 </span>            :             { \
+<span class="lineNum">      84 </span>            :                 quotient--; \
+<span class="lineNum">      85 </span>            :                 remainder += _Param(1); \
+<span class="lineNum">      86 </span><span class="lineCov">      13780 :             } \</span>
+<span class="lineNum">      87 </span>            :         } \
+<span class="lineNum">      88 </span>            :         _Param(2) = quotient; \
+<span class="lineNum">      89 </span>            :         return _NextInstruction(); \
+<span class="lineNum">      90 </span>            :     } \
+<span class="lineNum">      91 </span>            :     VIREO_FUNCTION_SIGNATURE3(Remainder##TYPE, TYPE, TYPE, TYPE ) \
+<span class="lineNum">      92 </span>            :     { \
+<span class="lineNum">      93 </span>            :         TYPE quotient, remainder; \
+<span class="lineNum">      94 </span>            :         if (_Param(1) == 0) \
+<span class="lineNum">      95 </span>            :             remainder = _Param(0); \
+<span class="lineNum">      96 </span>            :         else { \
+<span class="lineNum">      97 </span>            :             quotient  = _Param(0) / _Param(1); \
+<span class="lineNum">      98 </span>            :             remainder = _Param(0) - _Param(1) * quotient; \
+<span class="lineNum">      99 </span>            :             if (remainder &amp;&amp; ((_Param(0) &gt; 0) != (_Param(1) &gt; 0))) \
+<span class="lineNum">     100 </span>            :             { \
+<span class="lineNum">     101 </span>            :                 quotient--; \
+<span class="lineNum">     102 </span>            :                 remainder += _Param(1); \
+<span class="lineNum">     103 </span>            :             } \
+<span class="lineNum">     104 </span>            :         } \
+<span class="lineNum">     105 </span>            :         _Param(2) = remainder; \
+<span class="lineNum">     106 </span>            :         return _NextInstruction(); \
+<span class="lineNum">     107 </span>            :     }
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : #define DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(TYPE) \
+<span class="lineNum">     110 </span>            :     /* Integer division operator not needed by LabVIEW */ \
+<span class="lineNum">     111 </span>            :     /* DEFINE_VIREO_FUNCTION(Div##TYPE, &quot;.BinOp&quot;#TYPE) */ \
+<span class="lineNum">     112 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Mod, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     113 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     114 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;)
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : #define DECLARE_VIREO_INTEGER_SPLIT(DEST, SOURCE) \
+<span class="lineNum">     117 </span>            :     VIREO_FUNCTION_SIGNATURE3(Split##SOURCE, SOURCE, DEST, DEST) \
+<span class="lineNum">     118 </span>            :     { \
+<span class="lineNum">     119 </span>            :         DEST *x = (DEST *) _ParamPointer(0); \
+<span class="lineNum">     120 </span>            :         _Param(1) = sizeof(SOURCE) == 1 ? 0 : x[1]; \
+<span class="lineNum">     121 </span>            :         _Param(2) = x[0]; \
+<span class="lineNum">     122 </span>            :         return _NextInstruction(); \
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            : #define DECLARE_VIREO_INTEGER_JOIN(DEST, SOURCE) \
+<span class="lineNum">     125 </span>            :     VIREO_FUNCTION_SIGNATURE3(Join##SOURCE, SOURCE, SOURCE, DEST) \
+<span class="lineNum">     126 </span>            :     { \
+<span class="lineNum">     127 </span>            :         SOURCE *result = (SOURCE *) _ParamPointer(2); \
+<span class="lineNum">     128 </span>            :         result[0] = _Param(1); \
+<span class="lineNum">     129 </span>            :         result[1] = _Param(0); \
+<span class="lineNum">     130 </span>            :         return _NextInstruction(); \
+<span class="lineNum">     131 </span>            :     }
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : #define DEFINE_VIREO_INTEGER_SPLIT(DEST, SOURCE) \
+<span class="lineNum">     134 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Split, SOURCE, &quot;p(i(&quot;#SOURCE&quot;) i(&quot;#DEST&quot;) o(&quot;#DEST&quot;))&quot;)
+<span class="lineNum">     135 </span>            : #define DEFINE_VIREO_INTEGER_JOIN(DEST, SOURCE) \
+<span class="lineNum">     136 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Join, SOURCE, &quot;p(i(&quot;#SOURCE&quot;) i(&quot;#SOURCE&quot;) o(&quot;#DEST&quot;))&quot;)
+<span class="lineNum">     137 </span>            :     
+<span class="lineNum">     138 </span>            : //------------------------------------------------------------
+<span class="lineNum">     139 </span>            : //Signed Integer Math
+<span class="lineNum">     140 </span>            : #define DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(TYPE) \
+<span class="lineNum">     141 </span>            :     DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = IntAbs(_Param(0)) ) )
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : #define DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(TYPE) \
+<span class="lineNum">     144 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;)
+<span class="lineNum">     145 </span>            : //------------------------------------------------------------
+<span class="lineNum">     146 </span>            : //Floating-point Math
+<span class="lineNum">     147 </span>            : #if kVireoOS_emscripten
+<span class="lineNum">     148 </span>            :         inline int ScaleRoundToInt_Double(Double x) { return int(RoundToEven(x)); }
+<a name="149"><span class="lineNum">     149 </span>            :     inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(RoundToEven(x)); } // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined</a>
+<a name="150"><span class="lineNum">     150 </span>            : #else</a>
+<span class="lineNum">     151 </span><span class="lineCov">         50 :         inline int ScaleRoundToInt_Double(Double x) { return int(rint(x)); }</span>
+<span class="lineNum">     152 </span><span class="lineCov">         50 :         inline int ScaleRoundToInt_Single(Single x) { return int(rintf(x)); }</span>
+<span class="lineNum">     153 </span>            : #endif
+<span class="lineNum">     154 </span>            : #define DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(TYPE) \
+<span class="lineNum">     155 </span>            :     DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) / _Param(1)) ) \
+<span class="lineNum">     156 </span>            :     DECLARE_VIREO_PRIMITIVE2( Sine##TYPE, TYPE, TYPE, (_Param(1) = sin(_Param(0)) ) ) \
+<span class="lineNum">     157 </span>            :     DECLARE_VIREO_PRIMITIVE2( Cosine##TYPE, TYPE, TYPE, (_Param(1) = cos(_Param(0)) ) ) \
+<span class="lineNum">     158 </span>            :     DECLARE_VIREO_PRIMITIVE2( Tangent##TYPE,TYPE, TYPE, (_Param(1) = tan(_Param(0)) ) ) \
+<span class="lineNum">     159 </span>            :     DECLARE_VIREO_PRIMITIVE2( Secant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/cos(_Param(0)) ) ) \
+<span class="lineNum">     160 </span>            :     DECLARE_VIREO_PRIMITIVE2( Cosecant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/sin(_Param(0)) ) ) \
+<span class="lineNum">     161 </span>            :     DECLARE_VIREO_PRIMITIVE2( Log10##TYPE, TYPE, TYPE, (_Param(1) = log10(_Param(0)) ) ) \
+<span class="lineNum">     162 </span>            :     DECLARE_VIREO_PRIMITIVE2( Log##TYPE, TYPE, TYPE, (_Param(1) = log(_Param(0)) ) ) \
+<span class="lineNum">     163 </span>            :     DECLARE_VIREO_PRIMITIVE2( Log2##TYPE, TYPE, TYPE, (_Param(1) = log2(_Param(0)) ) ) \
+<span class="lineNum">     164 </span>            :     DECLARE_VIREO_PRIMITIVE2( Exp##TYPE, TYPE, TYPE, (_Param(1) = exp(_Param(0)) ) ) \
+<span class="lineNum">     165 </span>            :     DECLARE_VIREO_PRIMITIVE2( SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)) ) ) \
+<span class="lineNum">     166 </span>            :     DECLARE_VIREO_PRIMITIVE3( Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)) ) ) \
+<span class="lineNum">     167 </span>            :         DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE, TYPE, TYPE, TYPE, { \
+<span class="lineNum">     168 </span>            :                 if (isnan(_Param(0)) || isnan(_Param(1))) \
+<span class="lineNum">     169 </span>            :                         _Param(2) = std::numeric_limits&lt;TYPE&gt;::quiet_NaN(); \
+<span class="lineNum">     170 </span>            :                 else if (_Param(0) == 0.0) \
+<span class="lineNum">     171 </span>            :                         _Param(2) = (_Param(1) &gt; 0 &amp;&amp; isinf(_Param(1))) ? std::numeric_limits&lt;TYPE&gt;::quiet_NaN() : 0.0; \
+<span class="lineNum">     172 </span>            :                 else if (_Param(1) &lt; 0 &amp;&amp; isinf(_Param(1))) \
+<span class="lineNum">     173 </span>            :                         _Param(2) = isinf(_Param(0)) ? std::numeric_limits&lt;TYPE&gt;::quiet_NaN() : 0.0; \
+<span class="lineNum">     174 </span>            :                 else if (_Param(1) &gt; 0 &amp;&amp; isinf(_Param(1))) \
+<span class="lineNum">     175 </span>            :                         _Param(2) = _Param(0) &gt; 0 ? std::numeric_limits&lt;double&gt;::infinity() : -std::numeric_limits&lt;double&gt;::infinity(); \
+<span class="lineNum">     176 </span>            :                 else if (_Param(1) &lt; 0 &amp;&amp; isinf(_Param(0))) \
+<span class="lineNum">     177 </span>            :                         _Param(2) = _Param(0) &gt; 0 ? std::numeric_limits&lt;double&gt;::infinity() : -std::numeric_limits&lt;double&gt;::infinity(); \
+<span class="lineNum">     178 </span>            :                 else \
+<span class="lineNum">     179 </span>            :                         _Param(2) = _Param(0) * pow(2.0, ScaleRoundToInt_##TYPE(_Param(1)));  \
+<span class="lineNum">     180 </span>            :         } ) \
+<span class="lineNum">     181 </span>            :     DECLARE_VIREO_PRIMITIVE2( ArcSine##TYPE,TYPE, TYPE, (_Param(1) = asin(_Param(0)) ) ) \
+<span class="lineNum">     182 </span>            :     DECLARE_VIREO_PRIMITIVE2( ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)) ) ) \
+<span class="lineNum">     183 </span>            :     DECLARE_VIREO_PRIMITIVE2( ArcTan##TYPE, TYPE, TYPE, (_Param(1) = atan(_Param(0)) ) ) \
+<span class="lineNum">     184 </span>            :     DECLARE_VIREO_PRIMITIVE3( ArcTan2##TYPE, TYPE, TYPE, TYPE, (_Param(2) = atan2(_Param(0), _Param(1)) ) ) \
+<span class="lineNum">     185 </span>            :     DECLARE_VIREO_PRIMITIVE2( Ceil##TYPE, TYPE, TYPE, (_Param(1) = ceil(_Param(0)) ) ) \
+<span class="lineNum">     186 </span>            :     DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = abs(_Param(0)) ) ) \
+<span class="lineNum">     187 </span>            :     DECLARE_VIREO_PRIMITIVE2( Floor##TYPE, TYPE, TYPE, (_Param(1) = floor(_Param(0)) ) ) \
+<span class="lineNum">     188 </span>            :         DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
+<span class="lineNum">     189 </span>            :     DECLARE_VIREO_PRIMITIVE3( Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)) ) ) \
+<span class="lineNum">     190 </span>            :     DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
+<span class="lineNum">     191 </span>            :         DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            : #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
+<span class="lineNum">     194 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     195 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Cosine, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     196 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Sine, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     197 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Tangent, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     198 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Secant, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     199 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Cosecant, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     200 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Log10, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     201 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Log, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     202 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Log2, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     203 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Exp, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     204 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     205 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Pow, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     206 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(Scale2X, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     207 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(ArcSine, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     208 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(ArcCosine, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     209 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(ArcTan, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     210 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(ArcTan2, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     211 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     212 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     213 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     214 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, &quot;p(i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     215 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     216 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     217 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(Reciprocal, TYPE, &quot;UnOp&quot;#TYPE) \
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : //------------------------------------------------------------
+<span class="lineNum">     220 </span>            : // Bitwise
+<span class="lineNum">     221 </span>            : #define DECLARE_VIREO_BITWISE_PRIMITIVES(TYPE) \
+<span class="lineNum">     222 </span>            :     DECLARE_VIREO_PRIMITIVE3( And##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) &amp; _Param(1)) ) \
+<span class="lineNum">     223 </span>            :     DECLARE_VIREO_PRIMITIVE3( Or##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) | _Param(1)) ) \
+<span class="lineNum">     224 </span>            :     DECLARE_VIREO_PRIMITIVE3( Xor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) ^ _Param(1)) ) \
+<span class="lineNum">     225 </span>            :     DECLARE_VIREO_PRIMITIVE3( Implies##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~_Param(0) | _Param(1)) ) \
+<span class="lineNum">     226 </span>            :     DECLARE_VIREO_PRIMITIVE3( Nand##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) &amp; _Param(1))) ) \
+<span class="lineNum">     227 </span>            :     DECLARE_VIREO_PRIMITIVE3( Nor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) | _Param(1))) ) \
+<span class="lineNum">     228 </span>            :         DECLARE_VIREO_PRIMITIVE3( Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1))) ) \
+<span class="lineNum">     229 </span>            :     DECLARE_VIREO_PRIMITIVE2( Not##TYPE, TYPE, TYPE, (_Param(1) = ~_Param(0)) )
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            : #define DEFINE_VIREO_BITWISE_FUNCTIONS(TYPE) \
+<span class="lineNum">     232 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(And, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     233 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Or, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     234 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Xor, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     235 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Implies, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     236 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Nand, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     237 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Nor, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     238 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Nxor, TYPE, &quot;BinOp&quot;#TYPE) \
+<span class="lineNum">     239 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(Not, TYPE, &quot;BinOp&quot;#TYPE)
+<span class="lineNum">     240 </span>            :     
+<span class="lineNum">     241 </span>            : //------------------------------------------------------------
+<span class="lineNum">     242 </span>            : // Comparison
+<span class="lineNum">     243 </span>            : #define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
+<span class="lineNum">     244 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) &lt;  _Param(1)) ) \
+<span class="lineNum">     245 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) &lt;= _Param(1)) ) \
+<span class="lineNum">     246 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1)) ) \
+<span class="lineNum">     247 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
+<span class="lineNum">     248 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) &gt;  _Param(1)) ) \
+<span class="lineNum">     249 </span>            :     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) &gt;= _Param(1)) ) \
+<span class="lineNum">     250 </span>            :         DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,                              \
+<span class="lineNum">     251 </span>            :                 if (_Param(0) &gt;= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }        \
+<span class="lineNum">     252 </span>            :                 else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )                                                \
+<span class="lineNum">     253 </span>            :         DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,                          \
+<span class="lineNum">     254 </span>            :                 if (_Param(0) &gt;= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }        \
+<span class="lineNum">     255 </span>            :                 else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )                                                \
+<span class="lineNum">     256 </span>            :     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
+<span class="lineNum">     257 </span>            :                 VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)     \
+<span class="lineNum">     258 </span>            :                 _Param(5) = _Param(0) &lt; _Param(1) ? _Param(1) : _Param(0) &gt; _Param(2) ? _Param(2) : _Param(0); \
+<span class="lineNum">     259 </span>            :                 _Param(6) = (_Param(0) &gt; _Param(1) || _Param(3) &amp;&amp; _Param(0)==_Param(1))     \
+<span class="lineNum">     260 </span>            :                              &amp;&amp; (_Param(0) &lt; _Param(2) || _Param(4) &amp;&amp; _Param(0)==_Param(1));        \
+<span class="lineNum">     261 </span>            :                 return _NextInstruction();                                                                                                      \
+<span class="lineNum">     262 </span>            :                 }
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            : #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
+<span class="lineNum">     266 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     267 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     268 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsEQ, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     269 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     270 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     271 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(Boolean))&quot;) \
+<span class="lineNum">     272 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     273 </span>            :         DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;) o(&quot;#TYPE&quot;))&quot;) \
+<span class="lineNum">     274 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, &quot;p(i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;) i(Boolean) i(Boolean) o(&quot;#TYPE&quot;) o(Boolean))&quot;)
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            : //------------------------------------------------------------
+<span class="lineNum">     277 </span>            : // Conversion
+<span class="lineNum">     278 </span>            : //#define BOOLEAN 0 //TODO, do we need boolean conversions?
+<span class="lineNum">     279 </span>            : #define TC_UINT8 1
+<span class="lineNum">     280 </span>            : #define TC_UINT16 2
+<span class="lineNum">     281 </span>            : #define TC_UINT32 3
+<span class="lineNum">     282 </span>            : #define TC_UINT64 4
+<span class="lineNum">     283 </span>            : #define TC_INT8 5
+<span class="lineNum">     284 </span>            : #define TC_INT16 6
+<span class="lineNum">     285 </span>            : #define TC_INT32 7
+<span class="lineNum">     286 </span>            : #define TC_INT64 8
+<span class="lineNum">     287 </span>            : #define TC_SINGLE 9
+<span class="lineNum">     288 </span>            : #define TC_DOUBLE 10
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            : #define DECLARE_VIREO_CONVERSION_PRIMITIVE(DEST, SOURCE) DECLARE_VIREO_PRIMITIVE2(SOURCE##Convert##DEST, SOURCE, DEST, (_Param(1) = (DEST) _Param(0)))
+<span class="lineNum">     291 </span>            : #define DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(DEST, SOURCE) \
+<span class="lineNum">     292 </span>            :     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
+<span class="lineNum">     293 </span>            :     { \
+<span class="lineNum">     294 </span>            :         SOURCE src = _Param(0); \
+<span class="lineNum">     295 </span>            :         if (isnan(src)) \
+<span class="lineNum">     296 </span>            :             _Param(1) = numeric_limits&lt;DEST&gt;::max(); \
+<span class="lineNum">     297 </span>            :         else if (isinf(src)) \
+<span class="lineNum">     298 </span>            :             _Param(1) = src &lt; 0 ? numeric_limits&lt;DEST&gt;::min() : numeric_limits&lt;DEST&gt;::max(); \
+<span class="lineNum">     299 </span>            :         else \
+<span class="lineNum">     300 </span>            :             _Param(1) = (DEST) RoundToEven(src); \
+<span class="lineNum">     301 </span>            :         return _NextInstruction(); \
+<span class="lineNum">     302 </span>            :     }
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            : #define DEFINE_VIREO_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, &quot;p(i(&quot;#SOURCE&quot;) o(&quot;#DEST&quot;))&quot;)
+<span class="lineNum">     305 </span>            : #define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, &quot;p(i(&quot;#SOURCE&quot;) o(&quot;#DEST&quot;))&quot;)
+<span class="lineNum">     306 </span>            : 
+<span class="lineNum">     307 </span>            : //------------------------------------------------------------
+<span class="lineNum">     308 </span>            : // Branch Instructions
+<span class="lineNum">     309 </span>            : #define DECLARE_VIREO_CONDITIONAL_BRANCHES(TYPE) \
+<span class="lineNum">     310 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfGT##TYPE, TYPE, TYPE, (_Param(1) &gt; _Param(2)) ) \
+<span class="lineNum">     311 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfGE##TYPE, TYPE, TYPE, (_Param(1) &gt;= _Param(2)) ) \
+<span class="lineNum">     312 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfLT##TYPE, TYPE, TYPE, (_Param(1) &lt; _Param(2)) ) \
+<span class="lineNum">     313 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfLE##TYPE, TYPE, TYPE, (_Param(1) &lt;= _Param(2)) ) \
+<span class="lineNum">     314 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfEQ##TYPE, TYPE, TYPE, (_Param(1) == _Param(2)) ) \
+<span class="lineNum">     315 </span>            :     DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfNE##TYPE, TYPE, TYPE, (_Param(1) != _Param(2)) )
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            : #define DEFINE_VIREO_BRANCH_FUNCTIONS(TYPE) \
+<span class="lineNum">     318 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfGT, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot; ); \
+<span class="lineNum">     319 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfGE, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot;); \
+<span class="lineNum">     320 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfLT, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot;); \
+<span class="lineNum">     321 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfLE, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot;); \
+<span class="lineNum">     322 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfEQ, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot;); \
+<span class="lineNum">     323 </span>            :     DEFINE_VIREO_FUNCTION_TYPED(BranchIfNE, TYPE, &quot;p(i(BranchTarget) i(&quot;#TYPE&quot;) i(&quot;#TYPE&quot;))&quot;);
+<span class="lineNum">     324 </span>            :     
+<a name="325"><span class="lineNum">     325 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     326 </span>            : // Boolean
+<a name="327"><span class="lineNum">     327 </span><span class="lineCov">      14740 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Boolean)</span></a>
+<a name="328"><span class="lineNum">     328 </span>            : //DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)</a>
+<a name="329"><span class="lineNum">     329 </span><span class="lineCov">  108073560 : DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfTrue, Boolean, (_Param(1)) )</span></a>
+<a name="330"><span class="lineNum">     330 </span><span class="lineCov">   20292645 : DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfFalse, Boolean, (!_Param(1)) )</span></a>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNull, void*, (null==_Param(1)) )</span>
+<a name="332"><span class="lineNum">     332 </span><span class="lineCov">        315 : DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNotNull, void*, (null!=_Param(1)) )</span></a>
+<a name="333"><span class="lineNum">     333 </span>            : </a>
+<a name="334"><span class="lineNum">     334 </span><span class="lineCov">   15919830 : DECLARE_VIREO_PRIMITIVE3( AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) &amp; _Param(1)) ) \</span></a>
+<a name="335"><span class="lineNum">     335 </span><span class="lineCov">        600 : DECLARE_VIREO_PRIMITIVE3( OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1)) ) \</span></a>
+<a name="336"><span class="lineNum">     336 </span><span class="lineCov">         20 : DECLARE_VIREO_PRIMITIVE3( XorBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) ^ _Param(1)) ) \</span></a>
+<a name="337"><span class="lineNum">     337 </span><span class="lineCov">         20 : DECLARE_VIREO_PRIMITIVE3( ImpliesBoolean, Boolean, Boolean, Boolean, (_Param(2) = !_Param(0) | _Param(1)) ) \</span></a>
+<a name="338"><span class="lineNum">     338 </span><span class="lineCov">         20 : DECLARE_VIREO_PRIMITIVE3( NandBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) &amp; _Param(1))) ) \</span></a>
+<span class="lineNum">     339 </span><span class="lineCov">         20 : DECLARE_VIREO_PRIMITIVE3( NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) | _Param(1))) ) \</span>
+<span class="lineNum">     340 </span><span class="lineCov">        310 : DECLARE_VIREO_PRIMITIVE3( NxorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) ^ _Param(1)))) \</span>
+<span class="lineNum">     341 </span>            : DECLARE_VIREO_PRIMITIVE2( NotBoolean, Boolean, Boolean, (_Param(1) = !_Param(0)) )
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : //------------------------------------------------------------
+<a name="344"><span class="lineNum">     344 </span>            : // UInt8</a>
+<a name="345"><span class="lineNum">     345 </span>            : #if defined (VIREO_TYPE_UInt8)</a>
+<a name="346"><span class="lineNum">     346 </span><span class="lineCov">        120 : DECLARE_VIREO_MATH_PRIMITIVES(UInt8)</span></a>
+<a name="347"><span class="lineNum">     347 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt8)</span></a>
+<a name="348"><span class="lineNum">     348 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt8)</span></a>
+<a name="349"><span class="lineNum">     349 </span><span class="lineCov">          5 : DECLARE_VIREO_INTEGER_JOIN(UInt16,UInt8)</span></a>
+<a name="350"><span class="lineNum">     350 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(UInt8)</span></a>
+<span class="lineNum">     351 </span><span class="lineCov">       1505 : DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt8)</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt8)</span>
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt8)
+<span class="lineNum">     355 </span>            : #define TYPE_CODE TC_UINT8
+<span class="lineNum">     356 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     357 </span>            : #endif
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            : //------------------------------------------------------------
+<a name="360"><span class="lineNum">     360 </span>            : // UInt16</a>
+<a name="361"><span class="lineNum">     361 </span>            : #if defined (VIREO_TYPE_UInt16)</a>
+<a name="362"><span class="lineNum">     362 </span><span class="lineNoCov">          0 : DECLARE_VIREO_MATH_PRIMITIVES(UInt16)</span></a>
+<a name="363"><span class="lineNum">     363 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt16)</span></a>
+<a name="364"><span class="lineNum">     364 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt16)</span></a>
+<a name="365"><span class="lineNum">     365 </span><span class="lineCov">         10 : DECLARE_VIREO_INTEGER_JOIN(UInt32,UInt16)</span></a>
+<a name="366"><span class="lineNum">     366 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(UInt16)</span></a>
+<span class="lineNum">     367 </span><span class="lineCov">         25 : DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt16)</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt16)</span>
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt16)
+<span class="lineNum">     371 </span>            : #define TYPE_CODE TC_UINT16
+<span class="lineNum">     372 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     373 </span>            : #endif
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            : //------------------------------------------------------------
+<a name="376"><span class="lineNum">     376 </span>            : //UInt32</a>
+<a name="377"><span class="lineNum">     377 </span>            : #if defined (VIREO_TYPE_UInt32)</a>
+<a name="378"><span class="lineNum">     378 </span><span class="lineCov">         60 : DECLARE_VIREO_MATH_PRIMITIVES(UInt32)</span></a>
+<a name="379"><span class="lineNum">     379 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt32)</span></a>
+<a name="380"><span class="lineNum">     380 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt16,UInt32)</span></a>
+<a name="381"><span class="lineNum">     381 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_JOIN(UInt64,UInt32)</span></a>
+<a name="382"><span class="lineNum">     382 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(UInt32)</span></a>
+<span class="lineNum">     383 </span><span class="lineCov">        395 : DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt32)</span>
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt32)</span>
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt32)
+<span class="lineNum">     387 </span>            : #define TYPE_CODE TC_UINT32
+<span class="lineNum">     388 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     389 </span>            : #endif
+<span class="lineNum">     390 </span>            : //------------------------------------------------------------
+<span class="lineNum">     391 </span>            : 
+<a name="392"><span class="lineNum">     392 </span>            : //UInt64</a>
+<a name="393"><span class="lineNum">     393 </span>            : #if defined (VIREO_TYPE_UInt64)</a>
+<a name="394"><span class="lineNum">     394 </span><span class="lineNoCov">          0 : DECLARE_VIREO_MATH_PRIMITIVES(UInt64)</span></a>
+<a name="395"><span class="lineNum">     395 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt64)</span></a>
+<a name="396"><span class="lineNum">     396 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt32,UInt64)</span></a>
+<a name="397"><span class="lineNum">     397 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(UInt64)</span></a>
+<span class="lineNum">     398 </span><span class="lineCov">         15 : DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt64)</span>
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt64)</span>
+<span class="lineNum">     400 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt64)
+<span class="lineNum">     401 </span>            : #define TYPE_CODE TC_UINT64
+<span class="lineNum">     402 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     403 </span>            : #endif
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            : //------------------------------------------------------------
+<a name="406"><span class="lineNum">     406 </span>            : // Int8</a>
+<a name="407"><span class="lineNum">     407 </span>            : #if defined (VIREO_TYPE_Int8)</a>
+<a name="408"><span class="lineNum">     408 </span><span class="lineCov">    1069740 : DECLARE_VIREO_MATH_PRIMITIVES(Int8)</span></a>
+<a name="409"><span class="lineNum">     409 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int8)</span></a>
+<a name="410"><span class="lineNum">     410 </span><span class="lineCov">          5 : DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int8)</span></a>
+<a name="411"><span class="lineNum">     411 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_JOIN(UInt16,Int8)</span></a>
+<a name="412"><span class="lineNum">     412 </span><span class="lineNoCov">          0 : DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int8)</span></a>
+<a name="413"><span class="lineNum">     413 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(Int8)</span></a>
+<span class="lineNum">     414 </span><span class="lineCov">     354200 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Int8)</span>
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Int8)</span>
+<span class="lineNum">     416 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int8)
+<span class="lineNum">     417 </span>            : #define TYPE_CODE TC_INT8
+<span class="lineNum">     418 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     419 </span>            : #endif
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            : //------------------------------------------------------------
+<a name="422"><span class="lineNum">     422 </span>            : // Int16 </a>
+<a name="423"><span class="lineNum">     423 </span>            : #if defined (VIREO_TYPE_Int16)</a>
+<a name="424"><span class="lineNum">     424 </span><span class="lineNoCov">          0 : DECLARE_VIREO_MATH_PRIMITIVES(Int16)</span></a>
+<a name="425"><span class="lineNum">     425 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int16)</span></a>
+<a name="426"><span class="lineNum">     426 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int16)</span></a>
+<a name="427"><span class="lineNum">     427 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_JOIN(UInt32,Int16)</span></a>
+<a name="428"><span class="lineNum">     428 </span><span class="lineNoCov">          0 : DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int16)</span></a>
+<a name="429"><span class="lineNum">     429 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(Int16)</span></a>
+<a name="430"><span class="lineNum">     430 </span><span class="lineNoCov">          0 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Int16)</span></a>
+<span class="lineNum">     431 </span><span class="lineCov">         10 : DECLARE_VIREO_PRIMITIVE2(BooleanConvertInt16, Boolean, Int16, (_Param(1) = (Int16) _Param(0)))</span>
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Int16)</span>
+<span class="lineNum">     433 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int16)
+<span class="lineNum">     434 </span>            : #define TYPE_CODE TC_INT16
+<span class="lineNum">     435 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     436 </span>            : #endif
+<span class="lineNum">     437 </span>            : 
+<span class="lineNum">     438 </span>            : //------------------------------------------------------------
+<a name="439"><span class="lineNum">     439 </span>            : // Int32</a>
+<a name="440"><span class="lineNum">     440 </span>            : #if defined (VIREO_TYPE_Int32)</a>
+<a name="441"><span class="lineNum">     441 </span><span class="lineCov">   12640230 : DECLARE_VIREO_MATH_PRIMITIVES(Int32)</span></a>
+<a name="442"><span class="lineNum">     442 </span><span class="lineCov">    1143640 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int32)</span></a>
+<a name="443"><span class="lineNum">     443 </span><span class="lineCov">         50 : DECLARE_VIREO_INTEGER_SPLIT(UInt16,Int32)</span></a>
+<a name="444"><span class="lineNum">     444 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_JOIN(UInt64,Int32)</span></a>
+<a name="445"><span class="lineNum">     445 </span><span class="lineNoCov">          0 : DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int32)</span></a>
+<a name="446"><span class="lineNum">     446 </span><span class="lineCov">        270 : DECLARE_VIREO_BITWISE_PRIMITIVES(Int32)</span></a>
+<span class="lineNum">     447 </span><span class="lineCov">    8231660 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Int32)</span>
+<span class="lineNum">     448 </span><span class="lineCov">   22269990 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Int32)</span>
+<span class="lineNum">     449 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int32)
+<span class="lineNum">     450 </span>            : #define TYPE_CODE TC_INT32
+<span class="lineNum">     451 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     452 </span>            : #endif
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : //------------------------------------------------------------
+<a name="455"><span class="lineNum">     455 </span>            : // Int64</a>
+<a name="456"><span class="lineNum">     456 </span>            : #if defined (VIREO_TYPE_Int64)</a>
+<a name="457"><span class="lineNum">     457 </span><span class="lineCov">         10 : DECLARE_VIREO_MATH_PRIMITIVES(Int64)</span></a>
+<a name="458"><span class="lineNum">     458 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int64)</span></a>
+<a name="459"><span class="lineNum">     459 </span><span class="lineNoCov">          0 : DECLARE_VIREO_INTEGER_SPLIT(UInt32,Int64)</span></a>
+<a name="460"><span class="lineNum">     460 </span><span class="lineNoCov">          0 : DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int64)</span></a>
+<a name="461"><span class="lineNum">     461 </span><span class="lineCov">         45 : DECLARE_VIREO_BITWISE_PRIMITIVES(Int64)</span></a>
+<span class="lineNum">     462 </span><span class="lineCov">         15 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Int64)</span>
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Int64)</span>
+<span class="lineNum">     464 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int64)
+<span class="lineNum">     465 </span>            : #define TYPE_CODE TC_INT64
+<span class="lineNum">     466 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     467 </span>            : #endif
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span>            : //--------------------------
+<a name="470"><span class="lineNum">     470 </span>            : // Single</a>
+<a name="471"><span class="lineNum">     471 </span>            : #if defined(VIREO_TYPE_Single)</a>
+<a name="472"><span class="lineNum">     472 </span><span class="lineCov">        210 : DECLARE_VIREO_MATH_PRIMITIVES(Single)</span></a>
+<a name="473"><span class="lineNum">     473 </span><span class="lineCov">        720 : DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(Single)</span></a>
+<span class="lineNum">     474 </span><span class="lineCov">         85 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Single)</span>
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Single)</span>
+<span class="lineNum">     476 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Single)
+<span class="lineNum">     477 </span>            : #define Y(TYPE) DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(TYPE, Single)
+<span class="lineNum">     478 </span>            : #define TYPE_CODE TC_SINGLE
+<span class="lineNum">     479 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     480 </span>            : #endif
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            : //------------------------------------------------------------
+<a name="483"><span class="lineNum">     483 </span>            : // IEEE754 Double</a>
+<a name="484"><span class="lineNum">     484 </span>            : #if defined(VIREO_TYPE_Double)</a>
+<a name="485"><span class="lineNum">     485 </span><span class="lineCov">   70049020 : DECLARE_VIREO_MATH_PRIMITIVES(Double)</span></a>
+<a name="486"><span class="lineNum">     486 </span><span class="lineCov">   10001470 : DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(Double)</span></a>
+<span class="lineNum">     487 </span><span class="lineCov">   25000300 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Double)</span>
+<span class="lineNum">     488 </span><span class="lineCov">     289800 : DECLARE_VIREO_CONDITIONAL_BRANCHES(Double)</span>
+<span class="lineNum">     489 </span>            : #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Double)
+<span class="lineNum">     490 </span>            : #define Y(TYPE) DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(TYPE, Double)
+<a name="491"><span class="lineNum">     491 </span>            : #define TYPE_CODE TC_DOUBLE</a>
+<span class="lineNum">     492 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     493 </span>            : VIREO_FUNCTION_SIGNATURE1(Random, Double)
+<span class="lineNum">     494 </span>            : {
+<span class="lineNum">     495 </span>            :     static Boolean seeded = false;
+<span class="lineNum">     496 </span><span class="lineCov">         10 :     if (_ParamPointer(0)) {</span>
+<span class="lineNum">     497 </span><span class="lineCov">          5 :         if (!seeded) {</span>
+<span class="lineNum">     498 </span><span class="lineCov">          5 :             srand((unsigned int)gPlatform.Timer.TickCount());</span>
+<span class="lineNum">     499 </span><span class="lineCov">          5 :             seeded = true;</span>
+<span class="lineNum">     500 </span><span class="lineCov">          5 :         }</span>
+<span class="lineNum">     501 </span><span class="lineCov">          5 :         _Param(0) = rand() / ((Double) RAND_MAX + 1);</span>
+<span class="lineNum">     502 </span><span class="lineCov">          5 :     }</span>
+<span class="lineNum">     503 </span><span class="lineCov">         10 :     return _NextInstruction();</span>
+<span class="lineNum">     504 </span>            : }
+<span class="lineNum">     505 </span>            : #endif
+<span class="lineNum">     506 </span>            : //------------------------------------------------------------
+<a name="507"><span class="lineNum">     507 </span>            : </a>
+<span class="lineNum">     508 </span>            : // Utf8Char
+<span class="lineNum">     509 </span><span class="lineCov">        805 : DECLARE_VIREO_COMPARISON_PRIMITIVES(Utf8Char)</span>
+<span class="lineNum">     510 </span>            : //------------------------------------------------------------
+<a name="511"><span class="lineNum">     511 </span>            : </a>
+<span class="lineNum">     512 </span>            : //TODO: Make this into a macro and move to INTEGER_MATH
+<span class="lineNum">     513 </span>            : VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
+<span class="lineNum">     514 </span>            : {
+<span class="lineNum">     515 </span><span class="lineCov">         45 :     Int32 shift = _Param(1);</span>
+<span class="lineNum">     516 </span><span class="lineCov">         90 :     if ( shift &lt; 0) {</span>
+<span class="lineNum">     517 </span><span class="lineCov">         60 :         _Param(2) = _Param(0) &gt;&gt; -shift;</span>
+<span class="lineNum">     518 </span><span class="lineCov">         15 :     } else {</span>
+<span class="lineNum">     519 </span><span class="lineCov">         30 :         _Param(2) = _Param(0) &lt;&lt; shift;</span>
+<span class="lineNum">     520 </span>            :     }
+<span class="lineNum">     521 </span><span class="lineCov">         45 :     return _NextInstruction();</span>
+<a name="522"><span class="lineNum">     522 </span>            : }</a>
+<span class="lineNum">     523 </span>            :     
+<span class="lineNum">     524 </span>            : VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
+<span class="lineNum">     525 </span>            : {
+<span class="lineNum">     526 </span>            :     // TODO complete this function
+<span class="lineNum">     527 </span><span class="lineCov">         45 :     Int32 rotate = _Param(1);</span>
+<span class="lineNum">     528 </span><span class="lineCov">         90 :     if ( rotate &lt; 0) {</span>
+<span class="lineNum">     529 </span><span class="lineCov">         60 :         _Param(2) = _Param(0) &gt;&gt; -rotate;</span>
+<span class="lineNum">     530 </span><span class="lineCov">         15 :     } else {</span>
+<span class="lineNum">     531 </span><span class="lineCov">         30 :         _Param(2) = _Param(0) &lt;&lt; rotate;</span>
+<span class="lineNum">     532 </span>            :     }
+<span class="lineNum">     533 </span><span class="lineCov">         45 :     return _NextInstruction();</span>
+<span class="lineNum">     534 </span>            : }
+<span class="lineNum">     535 </span>            : 
+<span class="lineNum">     536 </span>            : 
+<a name="537"><span class="lineNum">     537 </span>            : } // extern &quot;C&quot;</a>
+<span class="lineNum">     538 </span>            : 
+<span class="lineNum">     539 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(IEEE754Math)</span>
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span>            :   // Floating-point Single
+<span class="lineNum">     542 </span>            :   #if defined(VIREO_TYPE_Single)
+<span class="lineNum">     543 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(SingleAtomic, &quot;c(e(bb(32 IEEE754B)))&quot;);</span>
+<span class="lineNum">     544 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(SingleCluster, &quot;c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))&quot;);</span>
+<span class="lineNum">     545 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Single, &quot;eq(e(SingleAtomic value) e(SingleCluster fields))&quot;);</span>
+<span class="lineNum">     546 </span>            :   #endif
+<span class="lineNum">     547 </span>            : 
+<span class="lineNum">     548 </span>            :   // Floating-point Double
+<span class="lineNum">     549 </span>            :   #if defined(VIREO_TYPE_Double)
+<span class="lineNum">     550 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(DoubleAtomic, &quot;c(e(bb(64 IEEE754B)))&quot;);</span>
+<span class="lineNum">     551 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(DoubleCluster, &quot;c(e(bc(e(bb(1 Boolean) sign)  e(bb(11 BiasedInt)  exponent)  e(bb(52 Q1)  fraction))))&quot;);</span>
+<span class="lineNum">     552 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Double, &quot;eq(e(DoubleAtomic value) e(DoubleCluster fields))&quot;);</span>
+<span class="lineNum">     553 </span>            :   #endif
+<span class="lineNum">     554 </span>            : 
+<span class="lineNum">     555 </span>            :     // Function signatures
+<span class="lineNum">     556 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpBoolean, &quot;p(i(Boolean x) i(Boolean y) o(Boolean result))&quot;)</span>
+<span class="lineNum">     557 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpBoolean, &quot;p(i(Boolean x) o(Boolean result))&quot;)</span>
+<span class="lineNum">     558 </span>            : 
+<span class="lineNum">     559 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpUInt8, &quot;p(i(UInt8 x) o(UInt8 result))&quot;)</span>
+<span class="lineNum">     560 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpUInt8, &quot;p(i(UInt8 x) i(UInt8 y) o(UInt8 result))&quot;)</span>
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpUInt16, &quot;p(i(UInt16 x) o(UInt16 result))&quot;)</span>
+<span class="lineNum">     563 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpUInt16, &quot;p(i(UInt16 x) i(UInt16 y) o(UInt16 result))&quot;)</span>
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpUInt32, &quot;p(i(UInt32 x) o(UInt32 result))&quot;)</span>
+<span class="lineNum">     566 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpUInt32, &quot;p(i(UInt32 x) i(UInt32 y) o(UInt32 result))&quot;)</span>
+<span class="lineNum">     567 </span>            : 
+<span class="lineNum">     568 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpUInt64, &quot;p(i(UInt64 x) o(UInt64 result))&quot;)</span>
+<span class="lineNum">     569 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpUInt64, &quot;p(i(UInt64 x) i(UInt64 y) o(UInt64 result))&quot;)</span>
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpInt8, &quot;p(i(Int8 x)o(Int8 result))&quot;)</span>
+<span class="lineNum">     572 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpInt8, &quot;p(i(Int8 x)i(Int8 y)o(Int8 result))&quot;)</span>
+<span class="lineNum">     573 </span>            : 
+<span class="lineNum">     574 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpInt16, &quot;p(i(Int16 x) o(Int16 result))&quot;)</span>
+<span class="lineNum">     575 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpInt16, &quot;p(i(Int16 x) i(Int16 y)o(Int16 result))&quot;)</span>
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpInt32, &quot;p(i(Int32 x) o(Int32 result))&quot;)</span>
+<span class="lineNum">     578 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpInt32, &quot;p(i(Int32 x) i(Int32 y) o(Int32 result))&quot;)</span>
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpInt64, &quot;p(i(Int64 x) o(Int64 result))&quot;)</span>
+<span class="lineNum">     581 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpInt64, &quot;p(i(Int64 x) i(Int64 y) o(Int64 result))&quot;)</span>
+<span class="lineNum">     582 </span>            :     //--------------------------
+<span class="lineNum">     583 </span>            : 
+<span class="lineNum">     584 </span>            :     // Int1 (Boolean)
+<span class="lineNum">     585 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(Boolean)</span>
+<span class="lineNum">     586 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfTrue, &quot;p(i(BranchTarget) i(Boolean))&quot; );</span>
+<span class="lineNum">     587 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfFalse, &quot;p(i(BranchTarget) i(Boolean))&quot;);</span>
+<span class="lineNum">     588 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfNull, &quot;p(i(BranchTarget) i(DataPointer))&quot; );</span>
+<span class="lineNum">     589 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfNotNull, &quot;p(i(BranchTarget) i(DataPointer))&quot;);</span>
+<span class="lineNum">     590 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Boolean)</span>
+<span class="lineNum">     591 </span>            :     //TODO do we need conversion functions for booleans?? just to int16?
+<span class="lineNum">     592 </span>            : 
+<span class="lineNum">     593 </span>            :     //--------------------------
+<span class="lineNum">     594 </span>            :     // UInt8
+<span class="lineNum">     595 </span>            : #if defined (VIREO_TYPE_UInt8)
+<span class="lineNum">     596 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(UInt8)</span>
+<span class="lineNum">     597 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt8)</span>
+<span class="lineNum">     598 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt8)</span>
+<span class="lineNum">     599 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt16,UInt8)</span>
+<span class="lineNum">     600 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt8)</span>
+<span class="lineNum">     601 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt8)</span>
+<span class="lineNum">     602 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt8)</span>
+<span class="lineNum">     603 </span>            : 
+<span class="lineNum">     604 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt8)
+<span class="lineNum">     605 </span>            :     #define TYPE_CODE TC_UINT8
+<span class="lineNum">     606 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     607 </span>            : #endif
+<span class="lineNum">     608 </span>            : 
+<span class="lineNum">     609 </span>            :     //--------------------------
+<span class="lineNum">     610 </span>            :     // UInt16
+<span class="lineNum">     611 </span>            : #if defined (VIREO_TYPE_UInt8)
+<span class="lineNum">     612 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(UInt16)</span>
+<span class="lineNum">     613 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt16)</span>
+<span class="lineNum">     614 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt16)</span>
+<span class="lineNum">     615 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt32,UInt16)</span>
+<span class="lineNum">     616 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt16)</span>
+<span class="lineNum">     617 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt16)</span>
+<span class="lineNum">     618 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt16)</span>
+<span class="lineNum">     619 </span>            : 
+<span class="lineNum">     620 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt16)
+<span class="lineNum">     621 </span>            :     #define TYPE_CODE TC_UINT16
+<span class="lineNum">     622 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     623 </span>            : #endif
+<span class="lineNum">     624 </span>            : 
+<span class="lineNum">     625 </span>            :     //--------------------------
+<span class="lineNum">     626 </span>            :     // UInt32
+<span class="lineNum">     627 </span>            : #if defined (VIREO_TYPE_UInt32)
+<span class="lineNum">     628 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(UInt32)</span>
+<span class="lineNum">     629 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt32)</span>
+<span class="lineNum">     630 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt16,UInt32)</span>
+<span class="lineNum">     631 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt64,UInt32)</span>
+<span class="lineNum">     632 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt32)</span>
+<span class="lineNum">     633 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt32)</span>
+<span class="lineNum">     634 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt32)</span>
+<span class="lineNum">     635 </span>            : 
+<span class="lineNum">     636 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt32)
+<span class="lineNum">     637 </span>            :     #define TYPE_CODE TC_UINT32
+<span class="lineNum">     638 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     639 </span>            : #endif
+<span class="lineNum">     640 </span>            : 
+<span class="lineNum">     641 </span>            :     //--------------------------
+<span class="lineNum">     642 </span>            :     // UInt64
+<span class="lineNum">     643 </span>            : #if defined (VIREO_TYPE_UInt64)
+<span class="lineNum">     644 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(UInt64)</span>
+<span class="lineNum">     645 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt64)</span>
+<span class="lineNum">     646 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt32,UInt64)</span>
+<span class="lineNum">     647 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt64)</span>
+<span class="lineNum">     648 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt64)</span>
+<span class="lineNum">     649 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt64)</span>
+<span class="lineNum">     650 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt64)
+<span class="lineNum">     651 </span>            :     #define TYPE_CODE TC_UINT64
+<span class="lineNum">     652 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     653 </span>            : #endif
+<span class="lineNum">     654 </span>            : 
+<span class="lineNum">     655 </span>            :     //--------------------------
+<span class="lineNum">     656 </span>            :     // Int8
+<span class="lineNum">     657 </span>            : #if defined (VIREO_TYPE_Int8)
+<span class="lineNum">     658 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Int8)</span>
+<span class="lineNum">     659 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int8)</span>
+<span class="lineNum">     660 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int8)</span>
+<span class="lineNum">     661 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt16,Int8)</span>
+<span class="lineNum">     662 </span><span class="lineCov">       1060 :     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int8)</span>
+<span class="lineNum">     663 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(Int8)</span>
+<span class="lineNum">     664 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int8)</span>
+<span class="lineNum">     665 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Int8)</span>
+<span class="lineNum">     666 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int8)
+<span class="lineNum">     667 </span>            :     #define TYPE_CODE TC_INT8
+<span class="lineNum">     668 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     669 </span>            : #endif
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span>            :     //--------------------------
+<span class="lineNum">     672 </span>            :     // Int16
+<span class="lineNum">     673 </span>            : #if defined (VIREO_TYPE_Int16)
+<span class="lineNum">     674 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Int16)</span>
+<span class="lineNum">     675 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int16)</span>
+<span class="lineNum">     676 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int16)</span>
+<span class="lineNum">     677 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt32,Int16)</span>
+<span class="lineNum">     678 </span><span class="lineCov">       1060 :     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int16)</span>
+<span class="lineNum">     679 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(Int16)</span>
+<span class="lineNum">     680 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int16)</span>
+<span class="lineNum">     681 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION( BooleanConvertInt16, &quot;p(i(Boolean) o(Int16))&quot;)</span>
+<span class="lineNum">     682 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Int16)</span>
+<span class="lineNum">     683 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int16)
+<span class="lineNum">     684 </span>            :     #define TYPE_CODE TC_INT16
+<span class="lineNum">     685 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     686 </span>            : #endif
+<span class="lineNum">     687 </span>            : 
+<span class="lineNum">     688 </span>            :     //--------------------------
+<span class="lineNum">     689 </span>            :     // Int32
+<span class="lineNum">     690 </span>            : #if defined (VIREO_TYPE_Int32)
+<span class="lineNum">     691 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Int32)</span>
+<span class="lineNum">     692 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int32)</span>
+<span class="lineNum">     693 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt16,Int32)</span>
+<span class="lineNum">     694 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_JOIN(UInt64,Int32)</span>
+<span class="lineNum">     695 </span><span class="lineCov">       1060 :     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int32)</span>
+<span class="lineNum">     696 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(Int32)</span>
+<span class="lineNum">     697 </span>            : 
+<span class="lineNum">     698 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(LogicalShift, Int32, &quot;BinOpInt32&quot;)</span>
+<span class="lineNum">     699 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Rotate, Int32, &quot;BinOpInt32&quot;)</span>
+<span class="lineNum">     700 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int32)</span>
+<span class="lineNum">     701 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Int32)</span>
+<span class="lineNum">     702 </span>            : 
+<span class="lineNum">     703 </span>            : #if 1
+<span class="lineNum">     704 </span>            :     // TODO remove these once no tergets are no longer relying on current gen LV via emitter
+<span class="lineNum">     705 </span>            :     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
+<span class="lineNum">     706 </span>            :     // branch instructions. These support the ones needed.
+<span class="lineNum">     707 </span>            : #if defined (VIREO_TYPE_Int32)
+<span class="lineNum">     708 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfGEInt32, &quot;p(i(BranchTarget) i(Int32) i(Int32))&quot; )</span>
+<span class="lineNum">     709 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfEQInt32, &quot;p(i(BranchTarget) i(Int32) i(Int32))&quot; )</span>
+<span class="lineNum">     710 </span>            : #endif
+<span class="lineNum">     711 </span>            : #if defined (VIREO_TYPE_Double)
+<span class="lineNum">     712 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfLTDouble, &quot;p(i(BranchTarget) i(Double) i(Double))&quot; )</span>
+<span class="lineNum">     713 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BranchIfLEDouble, &quot;p(i(BranchTarget) i(Double) i(Double))&quot; )</span>
+<span class="lineNum">     714 </span>            : #endif
+<span class="lineNum">     715 </span>            : #endif
+<span class="lineNum">     716 </span>            : 
+<span class="lineNum">     717 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)
+<span class="lineNum">     718 </span>            :     #define TYPE_CODE TC_INT32
+<span class="lineNum">     719 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     720 </span>            : #endif
+<span class="lineNum">     721 </span>            : 
+<span class="lineNum">     722 </span>            :     //--------------------------
+<span class="lineNum">     723 </span>            :     // Int64
+<span class="lineNum">     724 </span>            : #if defined (VIREO_TYPE_Int64)
+<span class="lineNum">     725 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Int64)</span>
+<span class="lineNum">     726 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int64)</span>
+<span class="lineNum">     727 </span><span class="lineCov">       1060 :     DEFINE_VIREO_INTEGER_SPLIT(UInt32,Int64)</span>
+<span class="lineNum">     728 </span><span class="lineCov">       1060 :     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int64)</span>
+<span class="lineNum">     729 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BITWISE_FUNCTIONS(Int64)</span>
+<span class="lineNum">     730 </span>            : //    DEFINE_VIREO_FUNCTION(LogicalShiftInt64, &quot;.BinOpInt64&quot;)
+<span class="lineNum">     731 </span>            : //    DEFINE_VIREO_FUNCTION(RotateInt64, &quot;.BinOpInt64&quot;)
+<span class="lineNum">     732 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int64)</span>
+<span class="lineNum">     733 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Int64)</span>
+<span class="lineNum">     734 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int64)
+<span class="lineNum">     735 </span>            :     #define TYPE_CODE TC_INT64
+<span class="lineNum">     736 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     737 </span>            : #endif
+<span class="lineNum">     738 </span>            : 
+<span class="lineNum">     739 </span>            :     //--------------------------
+<span class="lineNum">     740 </span>            :     //Single
+<span class="lineNum">     741 </span>            : #if defined(VIREO_TYPE_Single)
+<span class="lineNum">     742 </span>            : #if 0
+<span class="lineNum">     743 </span>            :     // TODO, once type dpendecy sequencing works these definitions can be moved here.
+<span class="lineNum">     744 </span>            :     DEFINE_VIREO_TYPE(SingleAtomic, &quot;c(e(bc(e(bb(32 IEEE754B)))))&quot;)
+<span class="lineNum">     745 </span>            :     DEFINE_VIREO_TYPE(SingleCluster, &quot;c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))&quot;)
+<span class="lineNum">     746 </span>            :     DEFINE_VIREO_TYPE(Single, &quot;eq(e(.SingleAtomic), e(.SingleCluster))&quot;)
+<span class="lineNum">     747 </span>            : #endif
+<span class="lineNum">     748 </span>            : 
+<span class="lineNum">     749 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpSingle, &quot;p(i(Single x) o(Single result))&quot;)</span>
+<span class="lineNum">     750 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpSingle, &quot;p(i(Single x) i(Single y) o(Single result))&quot;)</span>
+<span class="lineNum">     751 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Single)</span>
+<span class="lineNum">     752 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(Single)</span>
+<span class="lineNum">     753 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Single)</span>
+<span class="lineNum">     754 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Single)</span>
+<span class="lineNum">     755 </span>            : 
+<span class="lineNum">     756 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Single)
+<span class="lineNum">     757 </span>            :     #define Y(TYPE) DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(TYPE, Single)
+<span class="lineNum">     758 </span>            :     #define TYPE_CODE TC_SINGLE
+<span class="lineNum">     759 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     760 </span>            : #endif
+<span class="lineNum">     761 </span>            : 
+<span class="lineNum">     762 </span>            :     //--------------------------
+<span class="lineNum">     763 </span>            :     // Double
+<span class="lineNum">     764 </span>            : #if defined(VIREO_TYPE_Double)
+<span class="lineNum">     765 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpDouble, &quot;p(i(Double x) o(Double result))&quot;)</span>
+<span class="lineNum">     766 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpDouble, &quot;p(i(Double x) i(Double y) o(Double result))&quot;)</span>
+<span class="lineNum">     767 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(E, &quot;dv(Double  2.7182818284590451)&quot;)</span>
+<span class="lineNum">     768 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Pi, &quot;dv(Double  3.1415926535897931)&quot;)</span>
+<span class="lineNum">     769 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(Tau, &quot;dv(Double  6.283185307179586)&quot;)</span>
+<span class="lineNum">     770 </span><span class="lineCov">       1060 :     DEFINE_VIREO_MATH_FUNCTIONS(Double)</span>
+<span class="lineNum">     771 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(Double)</span>
+<span class="lineNum">     772 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Double)</span>
+<span class="lineNum">     773 </span><span class="lineCov">       1060 :     DEFINE_VIREO_BRANCH_FUNCTIONS(Double)</span>
+<span class="lineNum">     774 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Double)
+<span class="lineNum">     775 </span>            :     #define Y(TYPE) DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(TYPE, Double)
+<span class="lineNum">     776 </span>            :     #define TYPE_CODE TC_DOUBLE
+<span class="lineNum">     777 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     778 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Random, &quot;p(o(Double))&quot; );</span>
+<span class="lineNum">     779 </span>            : #endif
+<span class="lineNum">     780 </span>            : 
+<span class="lineNum">     781 </span>            :     //--------------------------
+<span class="lineNum">     782 </span>            :     // Utf8Char
+<span class="lineNum">     783 </span><span class="lineCov">       1060 :     DEFINE_VIREO_COMPARISON_FUNCTIONS(Utf8Char)</span>
+<span class="lineNum">     784 </span>            :     //--------------------------
+<span class="lineNum">     785 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+<span class="lineNum">     786 </span>            : 
+<span class="lineNum">     787 </span>            : //------------------------------------------------------------
+<span class="lineNum">     788 </span>            : #if defined(VIREO_TYPE_ComplexSingle)
+<span class="lineNum">     789 </span>            : 
+<span class="lineNum">     790 </span>            : #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexSingleConvert##TYPE, ComplexSingle, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
+<span class="lineNum">     791 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     792 </span>            : 
+<span class="lineNum">     793 </span>            : #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexSingle, TYPE, ComplexSingle, (_Param(1) = (ComplexSingle) _Param(0)))
+<span class="lineNum">     794 </span>            : #include &quot;ConversionTable.def&quot;
+<a name="795"><span class="lineNum">     795 </span>            : </a>
+<a name="796"><span class="lineNum">     796 </span>            : // TODO: ArcSine, ArcCosine, ArcTan, ArcTan2</a>
+<a name="797"><span class="lineNum">     797 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( AddComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) + _Param(1)) )</span></a>
+<a name="798"><span class="lineNum">     798 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( SubComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) - _Param(1)) )</span></a>
+<a name="799"><span class="lineNum">     799 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( MulComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) * _Param(1)) )</span></a>
+<a name="800"><span class="lineNum">     800 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( DivComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) / _Param(1)) )</span></a>
+<a name="801"><span class="lineNum">     801 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SignComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) / abs(_Param(0)) ) )</span></a>
+<a name="802"><span class="lineNum">     802 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexSingle, ComplexSingle, Single, (_Param(1) = abs(_Param(0)) ) )</span></a>
+<a name="803"><span class="lineNum">     803 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( NormComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = norm(_Param(0)) ) )</span></a>
+<a name="804"><span class="lineNum">     804 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( PhaseComplexSingle, ComplexSingle, Single, (_Param(1) = arg(_Param(0)) ) )</span></a>
+<a name="805"><span class="lineNum">     805 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( ConjugateComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = conj(_Param(0)) ) )</span></a>
+<a name="806"><span class="lineNum">     806 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SquareRootComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sqrt(_Param(0)) ) )</span></a>
+<a name="807"><span class="lineNum">     807 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sin(_Param(0)) ) )</span></a>
+<a name="808"><span class="lineNum">     808 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( CosineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = cos(_Param(0)) ) )</span></a>
+<a name="809"><span class="lineNum">     809 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( TanComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = tan(_Param(0)) ) )</span></a>
+<a name="810"><span class="lineNum">     810 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/cos(_Param(0)) ) )</span></a>
+<a name="811"><span class="lineNum">     811 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( CosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/sin(_Param(0)) ) )</span></a>
+<a name="812"><span class="lineNum">     812 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( Log10ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log10(_Param(0)) ) )</span></a>
+<a name="813"><span class="lineNum">     813 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( LogComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0)) ) )</span></a>
+<a name="814"><span class="lineNum">     814 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )</span></a>
+<a name="815"><span class="lineNum">     815 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )</span></a>
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )</span>
+<a name="817"><span class="lineNum">     817 </span><span class="lineCov">          5 : DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = polar(_Param(0), _Param(1)) ) )</span></a>
+<span class="lineNum">     818 </span>            : 
+<span class="lineNum">     819 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)</span>
+<span class="lineNum">     820 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(ComplexSingle, &quot;c(e(Single real) e(Single imaginary))&quot;);</span>
+<span class="lineNum">     821 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpComplexSingle, &quot;p(i(ComplexSingle x) o(ComplexSingle result))&quot;)</span>
+<span class="lineNum">     822 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpComplexSingle, &quot;p(i(ComplexSingle x) i(ComplexSingle y) o(ComplexSingle result))&quot;)</span>
+<span class="lineNum">     823 </span>            : 
+<span class="lineNum">     824 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexSingle)
+<span class="lineNum">     825 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     826 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexSingle, TYPE)
+<span class="lineNum">     827 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     828 </span>            : 
+<span class="lineNum">     829 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexSingle, &quot;BinOpComplexSingle&quot;)</span>
+<span class="lineNum">     830 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexSingle, &quot;BinOpComplexSingle&quot;)</span>
+<span class="lineNum">     831 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Mul, ComplexSingle, &quot;BinOpComplexSingle&quot;)</span>
+<span class="lineNum">     832 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Div, ComplexSingle, &quot;BinOpComplexSingle&quot;)</span>
+<span class="lineNum">     833 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sign, ComplexSingle, &quot;p(i(ComplexSingle) o(Single))&quot;)</span>
+<span class="lineNum">     834 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Absolute, ComplexSingle, &quot;p(i(ComplexSingle) o(Single))&quot;)</span>
+<span class="lineNum">     835 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Norm, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     836 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Phase, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     837 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Conjugate, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     838 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     839 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sine, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     840 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Cosine, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     841 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Tan, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     842 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Secant, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     843 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Cosecant, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     844 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log10, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     845 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     846 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     847 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexSingle, &quot;UnOpComplexSingle&quot;)</span>
+<span class="lineNum">     848 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexSingle, &quot;BinOpComplexSingle&quot;)</span>
+<span class="lineNum">     849 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Polar, ComplexSingle, &quot;p(i(Single) i(Single) o(ComplexSingle))&quot;)</span>
+<span class="lineNum">     850 </span>            : 
+<span class="lineNum">     851 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+<span class="lineNum">     852 </span>            : #endif
+<span class="lineNum">     853 </span>            : 
+<span class="lineNum">     854 </span>            : //------------------------------------------------------------
+<span class="lineNum">     855 </span>            : #if defined(VIREO_TYPE_ComplexDouble)
+<span class="lineNum">     856 </span>            : 
+<span class="lineNum">     857 </span>            : #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexDoubleConvert##TYPE, ComplexDouble, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
+<span class="lineNum">     858 </span>            : #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     859 </span>            : 
+<span class="lineNum">     860 </span>            : #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexDouble, TYPE, ComplexDouble, (_Param(1) = (ComplexDouble) _Param(0)))
+<a name="861"><span class="lineNum">     861 </span>            : #include &quot;ConversionTable.def&quot;</a>
+<a name="862"><span class="lineNum">     862 </span>            : </a>
+<a name="863"><span class="lineNum">     863 </span><span class="lineCov">    2400000 : DECLARE_VIREO_PRIMITIVE3( AddComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) + _Param(1)) )</span></a>
+<a name="864"><span class="lineNum">     864 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( SubComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) - _Param(1)) )</span></a>
+<a name="865"><span class="lineNum">     865 </span><span class="lineCov">    2400010 : DECLARE_VIREO_PRIMITIVE3( MulComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) * _Param(1)) )</span></a>
+<a name="866"><span class="lineNum">     866 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( DivComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) / _Param(1)) )</span></a>
+<a name="867"><span class="lineNum">     867 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ) )</span></a>
+<a name="868"><span class="lineNum">     868 </span><span class="lineCov">      48000 : DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexDouble, ComplexDouble, Double, (_Param(1) = abs(_Param(0)) ) )</span></a>
+<a name="869"><span class="lineNum">     869 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0)) ) )</span></a>
+<a name="870"><span class="lineNum">     870 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( PhaseComplexDouble, ComplexDouble, Double, (_Param(1) = arg(_Param(0)) ) )</span></a>
+<a name="871"><span class="lineNum">     871 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( ConjugateComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = conj(_Param(0)) ) )</span></a>
+<a name="872"><span class="lineNum">     872 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SquareRootComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sqrt(_Param(0)) ) )</span></a>
+<a name="873"><span class="lineNum">     873 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sin(_Param(0)) ) )</span></a>
+<a name="874"><span class="lineNum">     874 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( CosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = cos(_Param(0)) ) )</span></a>
+<a name="875"><span class="lineNum">     875 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( TanComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = tan(_Param(0)) ) )</span></a>
+<a name="876"><span class="lineNum">     876 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( SecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/cos(_Param(0)) ) )</span></a>
+<a name="877"><span class="lineNum">     877 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( CosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/sin(_Param(0)) ) )</span></a>
+<a name="878"><span class="lineNum">     878 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0)) ) )</span></a>
+<a name="879"><span class="lineNum">     879 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0)) ) )</span></a>
+<a name="880"><span class="lineNum">     880 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0) ) )</span></a>
+<a name="881"><span class="lineNum">     881 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0)) ) )</span></a>
+<span class="lineNum">     882 </span><span class="lineNoCov">          0 : DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )</span>
+<a name="883"><span class="lineNum">     883 </span><span class="lineCov">          5 : DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )</span></a>
+<span class="lineNum">     884 </span>            : 
+<span class="lineNum">     885 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)</span>
+<span class="lineNum">     886 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(ComplexDouble, &quot;c(e(Double real) e(Double imaginary))&quot;);</span>
+<span class="lineNum">     887 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(UnOpComplexDouble, &quot;p(i(ComplexDouble x) o(ComplexDouble result))&quot;)</span>
+<span class="lineNum">     888 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(BinOpComplexDouble, &quot;p(i(ComplexDouble x) i(ComplexDouble y) o(ComplexDouble result))&quot;)</span>
+<span class="lineNum">     889 </span>            : 
+<span class="lineNum">     890 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexDouble)
+<span class="lineNum">     891 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     892 </span>            :     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexDouble, TYPE)
+<span class="lineNum">     893 </span>            :     #include &quot;ConversionTable.def&quot;
+<span class="lineNum">     894 </span>            : 
+<span class="lineNum">     895 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     896 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     897 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Mul, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     898 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Div, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     899 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sign, ComplexDouble, &quot;p(i(ComplexDouble) o(Double))&quot;)</span>
+<span class="lineNum">     900 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Absolute, ComplexDouble, &quot;p(i(ComplexDouble) o(Double))&quot;)</span>
+<span class="lineNum">     901 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Norm, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     902 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Phase, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     903 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Conjugate, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     904 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(SquareRoot, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     905 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Sine, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     906 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Cosine, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     907 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Tan, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     908 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Secant, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     909 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Cosecant, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     910 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log10, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     911 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     912 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Log2, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     913 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Exp, ComplexDouble, &quot;BinOpComplexDouble&quot;)</span>
+<span class="lineNum">     914 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Pow, ComplexDouble, &quot;p(i(ComplexDouble) i(ComplexDouble) o(ComplexDouble))&quot;)</span>
+<span class="lineNum">     915 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION_TYPED(Polar, ComplexDouble, &quot;p(i(Double) i(Double) o(ComplexDouble))&quot;)</span>
+<span class="lineNum">     916 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+<span class="lineNum">     917 </span>            : 
+<span class="lineNum">     918 </span>            : #endif
+<span class="lineNum">     919 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

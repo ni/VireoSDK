@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - include/VirtualInstrument.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">include</a> - VirtualInstrument.h<span style="font-size: 80%;"> (source / <a href="VirtualInstrument.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Special methods for the VirtualInstrument data type
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #ifndef VirtualInstrument_h
+<span class="lineNum">      15 </span>            : #define VirtualInstrument_h
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;DataTypes.h&quot;
+<span class="lineNum">      18 </span>            : #include &quot;EventLog.h&quot;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace Vireo
+<span class="lineNum">      21 </span>            : {
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : class VIClump;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #define VI_TypeName             &quot;VirtualInstrument&quot;
+<span class="lineNum">      26 </span>            : #define ReentrantVI_TypeName    &quot;ReentrantVirtualInstrument&quot;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : //------------------------------------------------------------
+<span class="lineNum">      29 </span>            : //! The VIA definition for a VirtualInstrument. Must match the C++ definition.
+<span class="lineNum">      30 </span>            : #define VI_TypeString               \
+<span class="lineNum">      31 </span>            : &quot;a(c(                               \
+<span class="lineNum">      32 </span>            :     e(TypeManager TypeManager)     \
+<span class="lineNum">      33 </span>            :     e(a(*) Params)                 \
+<span class="lineNum">      34 </span>            :     e(a(*) Locals)                 \
+<span class="lineNum">      35 </span>            :     e(a(Clump *) Clumps)           \
+<span class="lineNum">      36 </span>            :     e(Int32 LineNumberBase)        \
+<span class="lineNum">      37 </span>            :     e(SubString ClumpSource)       \
+<span class="lineNum">      38 </span>            : ))&quot;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : //------------------------------------------------------------
+<span class="lineNum">      41 </span>            : //!
+<span class="lineNum">      42 </span>            : class VirtualInstrument
+<span class="lineNum">      43 </span>            : {
+<span class="lineNum">      44 </span>            :     friend class VIDataProcsClass;
+<span class="lineNum">      45 </span>            : private:
+<span class="lineNum">      46 </span>            :     TypeManagerRef          _typeManager;
+<span class="lineNum">      47 </span>            :     TypedObjectRef          _params;        // All clumps in subVI share the same param block
+<span class="lineNum">      48 </span>            :     TypedObjectRef          _locals;        // All clumps in subVI share the same locals
+<span class="lineNum">      49 </span>            :     TypedArray1D&lt;VIClump&gt;*  _clumps;
+<span class="lineNum">      50 </span>            :     void InitParamBlock();
+<span class="lineNum">      51 </span>            :     void ClearTopVIParamBlock();
+<span class="lineNum">      52 </span>            : public:
+<span class="lineNum">      53 </span>            :     Int32                   _lineNumberBase;
+<span class="lineNum">      54 </span>            :     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
+<span class="lineNum">      55 </span>            : public :
+<span class="lineNum">      56 </span>            :     NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
+<span class="lineNum">      57 </span>            :     void PressGo();
+<span class="lineNum">      58 </span>            :     void GoIsDone();
+<span class="lineNum">      59 </span>            :     TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
+<span class="lineNum">      60 </span>            : 
+<a name="61"><span class="lineNum">      61 </span>            : public:</a>
+<a name="62"><span class="lineNum">      62 </span>            :     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);</a>
+<a name="63"><span class="lineNum">      63 </span><span class="lineCov">   13415170 :     TypeManagerRef TheTypeManager()     { return _typeManager; }</span></a>
+<a name="64"><span class="lineNum">      64 </span><span class="lineCov">    2760625 :     TypedObjectRef Params()             { return _params; }</span></a>
+<span class="lineNum">      65 </span><span class="lineCov">    2718335 :     TypedObjectRef Locals()             { return _locals; }</span>
+<span class="lineNum">      66 </span><span class="lineCov">     104665 :     TypedArray1D&lt;VIClump&gt;* Clumps()     { return _clumps; }</span>
+<span class="lineNum">      67 </span>            : };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : //------------------------------------------------------------
+<span class="lineNum">      70 </span>            : //! A ZDA that contains a VirtualInstrument
+<span class="lineNum">      71 </span>            : typedef TypedObject&lt;VirtualInstrument&gt;  *VirtualInstrumentObjectRef;
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : class FunctionClump
+<span class="lineNum">      74 </span>            : {
+<span class="lineNum">      75 </span>            : public:
+<span class="lineNum">      76 </span>            :         InstructionCore* _codeStart;        // first instruction object in clump. may be shared  between multiple QEs
+<span class="lineNum">      77 </span>            : };
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : //------------------------------------------------------------
+<span class="lineNum">      80 </span>            : //! The VIA definition for a Clump. Must match the C++ definition.
+<span class="lineNum">      81 </span>            : #define Clump_TypeString              \
+<span class="lineNum">      82 </span>            : &quot;c(\
+<span class="lineNum">      83 </span>            :     e(InstructionBlock CodeStart)\
+<span class="lineNum">      84 </span>            :     e(DataPointer Next)\
+<span class="lineNum">      85 </span>            :     e(Int64 WakeUpInfo)\
+<span class="lineNum">      86 </span>            :     e(DataPointer Owner)\
+<span class="lineNum">      87 </span>            :     e(DataPointer NextWaitingCaller)\
+<span class="lineNum">      88 </span>            :     e(DataPointer Caller)\
+<span class="lineNum">      89 </span>            :     e(Instruction SavePC)\
+<span class="lineNum">      90 </span>            :     e(Int32 FireCount)\
+<span class="lineNum">      91 </span>            :     e(Int32 ShortCount)\
+<span class="lineNum">      92 </span>            :     e(Int32 WaitCount)\
+<span class="lineNum">      93 </span>            :     e(Observer Observer)\
+<span class="lineNum">      94 </span>            :     e(Observer Observer)\
+<span class="lineNum">      95 </span>            : )&quot;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : // Initially all clump had the ability to wait on timers, now that has grown to
+<span class="lineNum">      98 </span>            : // timers and objects such as the queue. Yet in many cases clumps never to need to
+<span class="lineNum">      99 </span>            : // on anything. In the simple case of no waiting several pointes can be saved.
+<span class="lineNum">     100 </span>            : // So The clump is gogin to migrate from one fixed, to a collection of ObserverState objects
+<span class="lineNum">     101 </span>            : // These are the step
+<span class="lineNum">     102 </span>            : //
+<span class="lineNum">     103 </span>            : // 1. move from one hardcoded time list to a fixed set of of WaitableSates that can be used for
+<span class="lineNum">     104 </span>            : // timers AND synchronization objects.
+<span class="lineNum">     105 </span>            : //
+<span class="lineNum">     106 </span>            : // 2. Move the fixed set of buffers to a set that can be dynamically allocated (and arrays)
+<span class="lineNum">     107 </span>            : //
+<span class="lineNum">     108 </span>            : // 3. Get Arrays to support null-measn empty, or shared empty instances
+<span class="lineNum">     109 </span>            : //
+<span class="lineNum">     110 </span>            : // 4. Can other users of the _next field use the same mechanism?
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : //------------------------------------------------------------
+<span class="lineNum">     114 </span>            : //! A Clump owns an instruction list its execution state.
+<span class="lineNum">     115 </span>            : class VIClump : public FunctionClump
+<span class="lineNum">     116 </span>            : {
+<span class="lineNum">     117 </span>            : public:
+<span class="lineNum">     118 </span>            :     VIClump*            _next;              //! Next clump if this one is in a list or queue, null other wise.
+<span class="lineNum">     119 </span>            :     PlatformTickType    _wakeUpInfo;            //! If clump is suspended, used to determine if wake up condition exists (e.g. time)
+<span class="lineNum">     120 </span>            :     VirtualInstrument*  _owningVI;          //! VI that this clump is part of.
+<span class="lineNum">     121 </span>            :         VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
+<span class="lineNum">     122 </span>            :         VIClump*            _caller;                    //! Used for sub vi calls, clump to restart once done.
+<span class="lineNum">     123 </span>            :         InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
+<span class="lineNum">     124 </span>            :         Int32               _fireCount;         //! What to reset _shortCount to when the clump is done.
+<span class="lineNum">     125 </span>            :         Int32               _shortCount;                //! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
+<span class="lineNum">     126 </span>            :     Int32               _observationCount;  //! How many waitSates are active?
+<span class="lineNum">     127 </span>            :     Observer            _observationStates[2]; //! Fixed set of waits states, maximum is 2.
+<span class="lineNum">     128 </span>            :     
+<span class="lineNum">     129 </span>            : public:
+<a name="130"><span class="lineNum">     130 </span>            :     void Trigger();</a>
+<span class="lineNum">     131 </span>            :     Int32               FireCount()     { return _fireCount; }
+<span class="lineNum">     132 </span><span class="lineCov">       1095 :     Int32               ShortCount()    { return _shortCount; }</span>
+<span class="lineNum">     133 </span>            :     
+<a name="134"><span class="lineNum">     134 </span>            :     void InsertIntoWaitList(VIClump* elt);</a>
+<span class="lineNum">     135 </span>            :     void AppendToWaitList(VIClump* elt);
+<a name="136"><span class="lineNum">     136 </span><span class="lineCov">   11907150 :     void EnqueueRunQueue()  { TheExecutionContext()-&gt;EnqueueRunQueue(this); }</span></a>
+<a name="137"><span class="lineNum">     137 </span>            : </a>
+<span class="lineNum">     138 </span><span class="lineCov">   13455100 :     VirtualInstrument*  OwningVI()      { return _owningVI; }</span>
+<span class="lineNum">     139 </span><span class="lineCov">        575 :     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };</span>
+<span class="lineNum">     140 </span>            :     Observer*           ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
+<span class="lineNum">     141 </span>            :     InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
+<a name="142"><span class="lineNum">     142 </span>            :     void                ClearObservationStates();</a>
+<a name="143"><span class="lineNum">     143 </span>            :     InstructionCore*    WaitOnObservableObject(InstructionCore*);</a>
+<span class="lineNum">     144 </span><span class="lineCov">   13369515 :     TypeManagerRef      TheTypeManager()        { return OwningVI()-&gt;TheTypeManager(); }</span>
+<span class="lineNum">     145 </span><span class="lineCov">   11907790 :     ExecutionContextRef TheExecutionContext()   { return TheTypeManager()-&gt;TheExecutionContext(); }</span>
+<span class="lineNum">     146 </span>            : };
+<span class="lineNum">     147 </span>            : //------------------------------------------------------------
+<span class="lineNum">     148 </span>            : //! An instruction that suspends a clump and starts a SubVI's root clump.
+<span class="lineNum">     149 </span>            : struct CallVIInstruction : public InstructionCore
+<span class="lineNum">     150 </span>            : {
+<span class="lineNum">     151 </span>            :     /// The SubVI Call instruction contains a pointer to the SubVIs root clump
+<span class="lineNum">     152 </span>            :     /// and sub snippets for code to copy parameters in and out.
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :     _ParamImmediateDef(VIClump*, viRootClump);
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :     // In packed mode, the adjacent instruction is the first copy-in
+<span class="lineNum">     157 </span>            :     // instruction. The instruction following the subVI call has its own
+<a name="158"><span class="lineNum">     158 </span>            :     // explicit field.</a>
+<a name="159"><span class="lineNum">     159 </span>            :     _ParamImmediateDef(InstructionCore*, Next);</a>
+<span class="lineNum">     160 </span><span class="lineCov">    5784580 :     inline InstructionCore* CopyInSnippet()    { return this + 1; }</span>
+<span class="lineNum">     161 </span><span class="lineCov">    5784580 :     inline InstructionCore* Next()             { return this-&gt;_piNext; }</span>
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :     _ParamImmediateDef(InstructionCore*, CopyOutSnippet);
+<span class="lineNum">     164 </span>            : };
+<span class="lineNum">     165 </span>            : //------------------------------------------------------------
+<span class="lineNum">     166 </span>            : //! Class used by the ClumpParseState to track memory needed for instructions.
+<span class="lineNum">     167 </span>            : class InstructionAllocator {
+<span class="lineNum">     168 </span>            : public:
+<span class="lineNum">     169 </span>            :     size_t      _size;
+<a name="170"><span class="lineNum">     170 </span>            :     AQBlock1*   _next;</a>
+<a name="171"><span class="lineNum">     171 </span>            :     </a>
+<span class="lineNum">     172 </span><span class="lineCov">      13385 :     InstructionAllocator() { _size = 0; _next = null; }</span>
+<span class="lineNum">     173 </span><span class="lineCov">    1839920 :     Boolean IsCalculatePass() { return _next == null; }</span>
+<span class="lineNum">     174 </span>            :     void AddRequest(size_t count);
+<span class="lineNum">     175 </span>            :     void Allocate (TypeManagerRef tm);
+<span class="lineNum">     176 </span>            :     void* AllocateSlice(size_t count);
+<span class="lineNum">     177 </span>            : };
+<span class="lineNum">     178 </span>            : //------------------------------------------------------------
+<span class="lineNum">     179 </span>            : struct PatchInfo
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span>            :     enum PatchType {
+<span class="lineNum">     182 </span>            :         Perch = 0,
+<span class="lineNum">     183 </span>            :     };
+<span class="lineNum">     184 </span>            :     
+<span class="lineNum">     185 </span>            :     PatchType   _patchType;
+<span class="lineNum">     186 </span>            :     void**      _whereToPeek;
+<span class="lineNum">     187 </span>            :     void**      _whereToPatch;
+<span class="lineNum">     188 </span>            : };
+<span class="lineNum">     189 </span>            : //------------------------------------------------------------
+<span class="lineNum">     190 </span>            : //! Utility class used by decoders that can decode VIs and Clumps
+<span class="lineNum">     191 </span>            : class ClumpParseState
+<span class="lineNum">     192 </span>            : {
+<span class="lineNum">     193 </span>            :     // The compiler (clang) really did not want to allow static const pointers so they are #defines
+<span class="lineNum">     194 </span>            : #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
+<span class="lineNum">     195 </span>            : #define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
+<span class="lineNum">     196 </span>            : public:
+<span class="lineNum">     197 </span>            :     static const Int32 kMaxPerches = 200;       // TODO dynamic
+<span class="lineNum">     198 </span>            :     static const Int32 kMaxArguments = 100;     // TODO dynamic
+<span class="lineNum">     199 </span>            :     static const Int32 kMaxPatchInfos = 100;    // TODO allow more
+<span class="lineNum">     200 </span>            : public:
+<span class="lineNum">     201 </span>            :     enum ArgumentState {
+<span class="lineNum">     202 </span>            :         // Initial state, not where it should end in either.
+<span class="lineNum">     203 </span>            :         kArgumentNotResolved,
+<span class="lineNum">     204 </span>            :         // Bad states to end in
+<span class="lineNum">     205 </span>            :         kArgumentTooMany,
+<span class="lineNum">     206 </span>            :         kArgumentTooFew,
+<span class="lineNum">     207 </span>            :         kArgumentTypeMismatch,
+<span class="lineNum">     208 </span>            :         kArgumentNotOptional,
+<span class="lineNum">     209 </span>            :         kArgumentNotMutable,
+<span class="lineNum">     210 </span>            :         // Good states to end in
+<span class="lineNum">     211 </span>            :         kArgumentResolved_FirstGood,
+<span class="lineNum">     212 </span>            :         kArgumentResolvedToVIElement = kArgumentResolved_FirstGood,
+<span class="lineNum">     213 </span>            :         kArgumentResolvedToGlobal,
+<span class="lineNum">     214 </span>            :         kArgumentResolvedToLiteral,
+<span class="lineNum">     215 </span>            :         kArgumentResolvedToDefault,
+<span class="lineNum">     216 </span>            :         kArgumentResolvedToParameter,
+<span class="lineNum">     217 </span>            :         kArgumentResolvedToClump,
+<span class="lineNum">     218 </span>            :         kArgumentResolvedToPerch,
+<span class="lineNum">     219 </span>            :         kArgumentResolved_LastGood = kArgumentResolvedToPerch,
+<span class="lineNum">     220 </span>            :     };
+<span class="lineNum">     221 </span>            :     ArgumentState   _argumentState;
+<span class="lineNum">     222 </span>            :     EventLog*       _pLog;
+<span class="lineNum">     223 </span>            :     Int32           _approximateLineNumber;
+<span class="lineNum">     224 </span>            :     
+<span class="lineNum">     225 </span>            :     InstructionAllocator* _cia;
+<span class="lineNum">     226 </span>            :     
+<span class="lineNum">     227 </span>            :     Int32           _argCount;
+<span class="lineNum">     228 </span>            :     void*           _argPointers[kMaxArguments];
+<span class="lineNum">     229 </span>            :     TypeRef         _argTypes[kMaxArguments];
+<span class="lineNum">     230 </span>            :     
+<span class="lineNum">     231 </span>            :     Int32           _argPatches[kMaxArguments];     // Arguments that need patching
+<span class="lineNum">     232 </span>            :     Int32           _argPatchCount;
+<span class="lineNum">     233 </span>            :     
+<span class="lineNum">     234 </span>            :     PatchInfo       _patchInfos[kMaxPatchInfos];
+<span class="lineNum">     235 </span>            :     Int32           _patchInfoCount;
+<span class="lineNum">     236 </span>            :     
+<span class="lineNum">     237 </span>            :     Int32           _perchCount;
+<span class="lineNum">     238 </span>            :     InstructionCore* _perches[kMaxPerches];
+<span class="lineNum">     239 </span>            :     
+<span class="lineNum">     240 </span>            :     VirtualInstrument *_vi;
+<span class="lineNum">     241 </span>            :     VIClump*        _clump;
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : private:    // State for patching owner/next field once next instruction created
+<span class="lineNum">     244 </span>            :     // When an instruction is made remember where its 'next' field is so that it can be
+<span class="lineNum">     245 </span>            :     // when the next instruction is generated. When packed instructions are used
+<span class="lineNum">     246 </span>            :     // this is most often null since there are no next pointers. However roots
+<span class="lineNum">     247 </span>            :     // still exist like the pointer in the clump that points to the first instruction,
+<span class="lineNum">     248 </span>            :     // or a sub snippet pointer in the CallVI instruction.
+<span class="lineNum">     249 </span>            :     InstructionCore**   _pWhereToPatch;
+<span class="lineNum">     250 </span>            :     void                StartBuilding(VIClump* clump, InstructionCore** startLocation, InstructionAllocator *);
+<span class="lineNum">     251 </span>            :     InstructionCore*    AllocInstructionCore(Int32 argumentCount);
+<span class="lineNum">     252 </span>            :     InstructionCore*    CreateInstruction(TypeRef instructionType, Int32 argCount, void* args[]);
+<span class="lineNum">     253 </span>            : public:
+<span class="lineNum">     254 </span>            :     void                RecordNextHere(InstructionCore** startLocation);
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : private:    // State related to two pass parseing
+<span class="lineNum">     257 </span>            :     Int32           _totalInstructionCount;
+<span class="lineNum">     258 </span>            :     Int32           _totalInstructionPointerCount;
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            : private:    // state related to overloads
+<span class="lineNum">     261 </span>            :     Boolean         _hasMultipleDefinitions;
+<span class="lineNum">     262 </span>            :     NamedTypeRef    _nextFunctionDefinition;
+<span class="lineNum">     263 </span>            :     NamedTypeRef    _genericFunctionDefinition;  // Only one allowed
+<span class="lineNum">     264 </span>            :     
+<span class="lineNum">     265 </span>            : private:    // state related to the the current argument
+<span class="lineNum">     266 </span>            :     Int32           _formalParameterIndex;
+<span class="lineNum">     267 </span>            :     TypeRef         _formalParameterType;
+<span class="lineNum">     268 </span>            :     TypeRef         _actualArgumentType;
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : private:
+<span class="lineNum">     271 </span>            :     TypeRef         _baseViType;
+<span class="lineNum">     272 </span>            :     TypeRef         _baseReentrantViType;
+<span class="lineNum">     273 </span>            : public:
+<span class="lineNum">     274 </span>            :     SubString       _parserFocus;
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            : public:
+<span class="lineNum">     277 </span>            :     // ---
+<span class="lineNum">     278 </span>            :     // The type that has the pointer to the specific target of the function.
+<span class="lineNum">     279 </span>            :     TypeRef         _instructionPointerType;
+<span class="lineNum">     280 </span>            :     
+<span class="lineNum">     281 </span>            :     // The calling signature descriptor for the instruction's function. Its the BaseType Of the PointerType.
+<span class="lineNum">     282 </span>            :     TypeRef         _instructionType;
+<span class="lineNum">     283 </span>            :     
+<span class="lineNum">     284 </span>            :     // When a Perch instruction is found the target address will be the next instruction
+<span class="lineNum">     285 </span>            :     // _recordNextInstructionAddress  lets the state know when that patch-up is needed.
+<span class="lineNum">     286 </span>            :     Int32           _recordNextInstructionAddress;
+<span class="lineNum">     287 </span>            :     
+<span class="lineNum">     288 </span>            :     size_t*         _pVarArgCount;
+<span class="lineNum">     289 </span>            :     Boolean         _bIsVI;
+<span class="lineNum">     290 </span>            :     
+<span class="lineNum">     291 </span>            :     //------------------------------------------------------------
+<span class="lineNum">     292 </span>            :     ClumpParseState(ClumpParseState* cps);
+<span class="lineNum">     293 </span>            :     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
+<a name="294"><span class="lineNum">     294 </span>            :     void            Construct(VIClump* clump, InstructionAllocator* cia, Int32 lineNumber, EventLog* pLog);</a>
+<a name="295"><span class="lineNum">     295 </span>            :     void            StartSnippet(InstructionCore** startLocation);</a>
+<a name="296"><span class="lineNum">     296 </span><span class="lineCov">    2745100 :     TypeRef         FormalParameterType()       { return _formalParameterType; }</span></a>
+<span class="lineNum">     297 </span><span class="lineCov">   10977820 :     TypeRef         ActualArgumentType()        { return _actualArgumentType; }</span>
+<span class="lineNum">     298 </span><span class="lineCov">    2817540 :     Boolean         LastArgumentError()         { return _argumentState &lt; kArgumentResolved_FirstGood; }</span>
+<span class="lineNum">     299 </span>            :     TypeRef         ReadFormalParameterType();
+<span class="lineNum">     300 </span>            :     void            SetClumpFireCount(Int32 fireCount);
+<a name="301"><span class="lineNum">     301 </span>            :     TypeRef         StartInstruction(SubString* opName);</a>
+<span class="lineNum">     302 </span>            :     TypeRef         StartNextOverload();
+<span class="lineNum">     303 </span><span class="lineCov">    1778320 :     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }</span>
+<span class="lineNum">     304 </span>            :     TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
+<span class="lineNum">     305 </span>            :     void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
+<span class="lineNum">     306 </span>            :     void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
+<span class="lineNum">     307 </span>            :     void            InternalAddArg(TypeRef actualType, void* address);
+<span class="lineNum">     308 </span>            :     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);
+<span class="lineNum">     309 </span>            :     Boolean         VarArgParameterDetected()   { return _pVarArgCount != null; }
+<span class="lineNum">     310 </span>            :     void            AddVarArgCount();
+<span class="lineNum">     311 </span>            :     void            MarkPerch(SubString* perchToken);
+<span class="lineNum">     312 </span>            :     void            AddBranchTargetArgument(SubString* branchTargetToken);
+<span class="lineNum">     313 </span>            :     void            AddClumpTargetArgument(SubString* clumpIndexToken);
+<span class="lineNum">     314 </span>            :     VirtualInstrument*  AddSubVITargetArgument(TypeRef viType);
+<span class="lineNum">     315 </span>            :     Int32           AddSubSnippet();
+<span class="lineNum">     316 </span>            :     void            LogEvent(EventLog::EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
+<span class="lineNum">     317 </span>            :     void            LogArgumentProcessing(Int32 lineNumber);
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            :     InstructionCore*    EmitCallVIInstruction();
+<span class="lineNum">     320 </span>            :     InstructionCore*    EmitInstruction();
+<span class="lineNum">     321 </span>            :     InstructionCore*    EmitInstruction(SubString* opName, Int32 argCount, ...);
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            :     void            EmitSimpleInstruction(ConstCStr opName);
+<span class="lineNum">     324 </span>            :     void            CommitSubSnippet();
+<span class="lineNum">     325 </span>            :     void            CommitClump();
+<span class="lineNum">     326 </span>            :     void            BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction, Int32 argIndex);
+<span class="lineNum">     327 </span>            :     void            EndEmitSubSnippet(ClumpParseState* subSnippet);
+<span class="lineNum">     328 </span>            : };
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            : typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *GenericEmitFunction) (ClumpParseState*);
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            : }
+<span class="lineNum">     333 </span>            : #endif //VirtualInstrument_h
+<span class="lineNum">     334 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

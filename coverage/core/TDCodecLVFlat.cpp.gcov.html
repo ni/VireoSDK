@@ -1,0 +1,351 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/TDCodecLVFlat.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - TDCodecLVFlat.cpp<span style="font-size: 80%;"> (source / <a href="TDCodecLVFlat.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">103</td>
+            <td class="headerCovTableEntry">118</td>
+            <td class="headerCovTableEntryMed">87.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file 
+<span class="lineNum">      11 </span>            :     \brief Native Verio functions for LV flat data format.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : // TODO: Code review
+<span class="lineNum">      17 </span>            : namespace Vireo
+<a name="18"><span class="lineNum">      18 </span>            : {</a>
+<span class="lineNum">      19 </span>            : inline UInt32 ReadLittleEndianUInt32(UInt8 *aBuf, IntIndex i) { return aBuf[i] | (aBuf[i+1]&lt;&lt;8) | (aBuf[i+2]&lt;&lt;16)  | (aBuf[i+3]&lt;&lt;24); }
+<a name="20"><span class="lineNum">      20 </span><span class="lineCov">         20 : inline UInt32 ReadBigEndianUInt32(UInt8 *aBuf, IntIndex i) { return (aBuf[i]&lt;&lt;24) | (aBuf[i+1]&lt;&lt;16) | (aBuf[i+2]&lt;&lt;8)  | aBuf[i]; }</span></a>
+<span class="lineNum">      21 </span>            : inline void WriteLittleEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) { aBuf[i] = v &amp; 0xff; aBuf[i+1] = (v &gt;&gt; 8) &amp; 0xff; aBuf[i+2] = (v &gt;&gt; 16) &amp; 0xff; aBuf[i+3] = (v &gt;&gt; 24) &amp; 0xff; }
+<a name="22"><span class="lineNum">      22 </span><span class="lineCov">         50 : inline void WriteBigEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) {  aBuf[i] = (v &gt;&gt; 24) &amp; 0xff; aBuf[i+1] = (v &gt;&gt; 16) &amp; 0xff; aBuf[i+2] = (v &gt;&gt; 8) &amp; 0xff; aBuf[i+3] = v &amp; 0xff; }</span></a>
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prependArrayLength)
+<span class="lineNum">      25 </span>            : {
+<span class="lineNum">      26 </span><span class="lineCov">        100 :     EncodingEnum encoding = type-&gt;BitEncoding();</span>
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span><span class="lineCov">        100 :     switch (encoding) {</span>
+<span class="lineNum">      29 </span>            :         case kEncoding_Array:
+<span class="lineNum">      30 </span>            :         {
+<span class="lineNum">      31 </span><span class="lineCov">         55 :             TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;</span>
+<span class="lineNum">      32 </span><span class="lineCov">         55 :             IntIndex* dimLengths = pArray-&gt;DimensionLengths();</span>
+<span class="lineNum">      33 </span><span class="lineCov">         55 :             Int32 rank = pArray-&gt;Rank();</span>
+<span class="lineNum">      34 </span>            :             
+<span class="lineNum">      35 </span><span class="lineCov">         55 :             if (pArray == null)</span>
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :                 return kNIError_kResourceNotFound;</span>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span><span class="lineCov">         55 :             TypeRef elementType = type-&gt;GetSubElement(0);</span>
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :             // Conditionally prepend an array with its length.
+<span class="lineNum">      41 </span>            :             // This is only optional for top-level data.  Arrays contained in
+<span class="lineNum">      42 </span>            :             // other data structures always include length information.
+<span class="lineNum">      43 </span><span class="lineCov">         55 :             if (prependArrayLength)</span>
+<span class="lineNum">      44 </span>            :             {
+<span class="lineNum">      45 </span><span class="lineCov">        200 :                 for (Int32 i = 0; i &lt; rank; i++) {</span>
+<span class="lineNum">      46 </span>            :                     // LV format is bigendian.
+<span class="lineNum">      47 </span><span class="lineCov">         50 :                     UInt32 arrayLength = dimLengths[i];</span>
+<span class="lineNum">      48 </span><span class="lineCov">         50 :                     WriteBigEndianUInt32((UInt8*)&amp;arrayLength, 0, dimLengths[i]);</span>
+<span class="lineNum">      49 </span><span class="lineCov">         50 :                     pString-&gt;Append(sizeof(arrayLength), (Utf8Char*)&amp;arrayLength);</span>
+<span class="lineNum">      50 </span>            :                 }
+<span class="lineNum">      51 </span>            :             }
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span><span class="lineCov">         55 :             if (elementType-&gt;IsFlat())</span>
+<span class="lineNum">      54 </span>            :             {
+<span class="lineNum">      55 </span><span class="lineCov">         50 :                 pString-&gt;Append(pArray-&gt;Length() * elementType-&gt;TopAQSize(), (Utf8Char*)pArray-&gt;BeginAt(0));</span>
+<span class="lineNum">      56 </span><span class="lineCov">         50 :             }</span>
+<span class="lineNum">      57 </span>            :             else
+<span class="lineNum">      58 </span>            :             {
+<span class="lineNum">      59 </span>            :                 // Recursively call FlattenData on each element.
+<span class="lineNum">      60 </span>            :                 // Arrays contained in other data structures always include
+<span class="lineNum">      61 </span>            :                 // length information.
+<span class="lineNum">      62 </span><span class="lineCov">          5 :                 size_t   elementLength = pArray-&gt;SlabLengths()[0];</span>
+<span class="lineNum">      63 </span><span class="lineCov">          5 :                 AQBlock1 *pElement = pArray-&gt;BeginAt(0);</span>
+<span class="lineNum">      64 </span><span class="lineCov">          5 :                 AQBlock1 *pEnd = pElement + (pArray-&gt;Length() * elementLength);</span>
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span><span class="lineCov">         70 :                 for (; pElement &lt; pEnd; pElement += elementLength)</span>
+<span class="lineNum">      67 </span><span class="lineCov">         30 :                     FlattenData(elementType, pElement, pString, true);</span>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :             }
+<span class="lineNum">      70 </span>            :             break;
+<span class="lineNum">      71 </span>            :         }
+<span class="lineNum">      72 </span>            :         case kEncoding_Cluster:
+<span class="lineNum">      73 </span>            :         {
+<span class="lineNum">      74 </span><span class="lineCov">         10 :             IntIndex count = type-&gt;SubElementCount();</span>
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span><span class="lineCov">        100 :             for (IntIndex j = 0; j &lt; count; j++)</span>
+<span class="lineNum">      77 </span>            :             {
+<span class="lineNum">      78 </span><span class="lineCov">         40 :                 TypeRef elementType = type-&gt;GetSubElement(j);</span>
+<span class="lineNum">      79 </span><span class="lineCov">         40 :                 IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">      80 </span><span class="lineCov">         40 :                 AQBlock1* pElementData = (AQBlock1*)pData + offset;</span>
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :                 // Recursively call FlattenData on each element with
+<span class="lineNum">      83 </span>            :                 // prependArrayLength set to true.
+<span class="lineNum">      84 </span><span class="lineCov">         40 :                 FlattenData(elementType, pElementData, pString, true);</span>
+<span class="lineNum">      85 </span>            :             }
+<span class="lineNum">      86 </span>            :             break;
+<span class="lineNum">      87 </span>            :         }
+<span class="lineNum">      88 </span>            :         default:
+<span class="lineNum">      89 </span>            :         {
+<span class="lineNum">      90 </span><span class="lineCov">         35 :             pString-&gt;Append(type-&gt;TopAQSize(), (Utf8Char*)pData);</span>
+<span class="lineNum">      91 </span><span class="lineCov">         35 :             break;</span>
+<span class="lineNum">      92 </span>            :         }
+<span class="lineNum">      93 </span>            :     }
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span><span class="lineCov">        100 :     return kNIError_Success;</span>
+<a name="96"><span class="lineNum">      96 </span><span class="lineCov">        100 : }</span></a>
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : VIREO_FUNCTION_SIGNATURE4(FlattenToString, StaticType, void, Boolean, StringRef)
+<span class="lineNum">      99 </span>            : {
+<span class="lineNum">     100 </span><span class="lineCov">         30 :     TypeRef type = _ParamPointer(0);</span>
+<span class="lineNum">     101 </span><span class="lineCov">         30 :     void *pData  = _ParamPointer(1);</span>
+<span class="lineNum">     102 </span><span class="lineCov">         90 :     Boolean prependArrayLength = _ParamPointer(2) ? _Param(2) : true;</span>
+<span class="lineNum">     103 </span><span class="lineCov">         30 :     String *pString = _Param(3);</span>
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineCov">         30 :     pString-&gt;Resize1D(0);</span>
+<span class="lineNum">     106 </span><span class="lineCov">         30 :     FlattenData(type, pData, pString, prependArrayLength);</span>
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span><span class="lineCov">         30 :     return _NextInstruction();</span>
+<a name="109"><span class="lineNum">     109 </span>            : }</a>
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, IntIndex stringIndex, void *pDefaultData, TypeRef type, void *pData)
+<span class="lineNum">     112 </span>            : {
+<span class="lineNum">     113 </span><span class="lineCov">         70 :     EncodingEnum encoding = type-&gt;BitEncoding();</span>
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span><span class="lineCov">         70 :     switch (encoding) {</span>
+<span class="lineNum">     116 </span>            :         case kEncoding_Array:
+<span class="lineNum">     117 </span>            :         {
+<span class="lineNum">     118 </span><span class="lineCov">         75 :             TypedArrayCoreRef pArray = pData ? *(TypedArrayCoreRef*) pData : null;</span>
+<span class="lineNum">     119 </span><span class="lineCov">         25 :             TypeRef elementType = type-&gt;GetSubElement(0);</span>
+<span class="lineNum">     120 </span>            :             Int32 arrayLength;
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :             // If length information precedes the array, read it.
+<span class="lineNum">     123 </span>            :             // Otherwise, infer it based on the size of the remaining string.
+<span class="lineNum">     124 </span><span class="lineCov">         25 :             if (prependArrayLength)</span>
+<span class="lineNum">     125 </span>            :             {
+<span class="lineNum">     126 </span>            :                 // If the string is long enough, read the array length
+<span class="lineNum">     127 </span><span class="lineCov">         20 :                 if (stringIndex + (IntIndex)sizeof(arrayLength) &lt;= pBuffer-&gt;Length())</span>
+<span class="lineNum">     128 </span>            :                 {
+<span class="lineNum">     129 </span><span class="lineCov">         20 :                     UInt8 *aBuf = (UInt8*)pBuffer-&gt;Begin();</span>
+<span class="lineNum">     130 </span><span class="lineCov">         20 :                     arrayLength = ReadBigEndianUInt32(aBuf, stringIndex);</span>
+<span class="lineNum">     131 </span><span class="lineCov">         20 :                     stringIndex += sizeof(arrayLength);</span>
+<span class="lineNum">     132 </span>            :                 }
+<span class="lineNum">     133 </span>            :                 else
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :                     return -1;</span>
+<span class="lineNum">     135 </span><span class="lineCov">         20 :             }</span>
+<span class="lineNum">     136 </span>            :             else
+<span class="lineNum">     137 </span><span class="lineCov">          5 :                 arrayLength = (pBuffer-&gt;Length() - stringIndex) / elementType-&gt;TopAQSize();</span>
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :             // If the length is a sane value, resize the array.
+<span class="lineNum">     140 </span><span class="lineCov">         25 :             if (arrayLength &lt;= pBuffer-&gt;Length() - stringIndex)</span>
+<span class="lineNum">     141 </span>            :             {
+<span class="lineNum">     142 </span><span class="lineCov">         20 :                 if (pArray)</span>
+<span class="lineNum">     143 </span><span class="lineCov">         20 :                     pArray-&gt;Resize1D(arrayLength);</span>
+<span class="lineNum">     144 </span>            :             }
+<span class="lineNum">     145 </span>            :             else
+<span class="lineNum">     146 </span><span class="lineCov">          5 :                 return -1;</span>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineCov">         20 :             if (elementType-&gt;IsFlat())</span>
+<span class="lineNum">     149 </span>            :             {
+<span class="lineNum">     150 </span><span class="lineCov">         15 :                 Int32 copyLength = arrayLength * elementType-&gt;TopAQSize();</span>
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span>            :                 // If the string is long enough, copy data.
+<span class="lineNum">     153 </span><span class="lineCov">         15 :                 if (stringIndex + copyLength &lt;= pBuffer-&gt;Length())</span>
+<span class="lineNum">     154 </span>            :                 {
+<span class="lineNum">     155 </span><span class="lineCov">         15 :                     if (pArray)</span>
+<span class="lineNum">     156 </span><span class="lineCov">         15 :                         memcpy(pArray-&gt;BeginAt(0), (pBuffer-&gt;Begin() + stringIndex), copyLength);</span>
+<span class="lineNum">     157 </span>            :                     stringIndex += copyLength;
+<span class="lineNum">     158 </span>            :                 }
+<span class="lineNum">     159 </span>            :                 else
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :                     return -1;</span>
+<span class="lineNum">     161 </span><span class="lineCov">         15 :             }</span>
+<span class="lineNum">     162 </span><span class="lineCov">          5 :             else if (pData)</span>
+<span class="lineNum">     163 </span>            :             {
+<span class="lineNum">     164 </span>            :                 // Recursively call UnflattenData for each element.
+<span class="lineNum">     165 </span>            :                 // Arrays contained in other data structures always include
+<span class="lineNum">     166 </span>            :                 // length information.
+<span class="lineNum">     167 </span><span class="lineCov">          5 :                 size_t   elementLength = pArray-&gt;SlabLengths()[0];</span>
+<span class="lineNum">     168 </span><span class="lineCov">          5 :                 AQBlock1 *pEnd = pArray-&gt;BeginAt(0) + (pArray-&gt;DimensionLengths()[0] * elementLength);</span>
+<span class="lineNum">     169 </span><span class="lineCov">          5 :                 AQBlock1 *pElementData = pArray-&gt;BeginAt(0);</span>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineCov">         10 :                 for (; pElementData &lt; pEnd; pElementData += elementLength)</span>
+<span class="lineNum">     172 </span>            :                 {
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :                     stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :                     if (stringIndex == -1)</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     176 </span>            :                 }
+<span class="lineNum">     177 </span>            :             }
+<span class="lineNum">     178 </span>            :             else
+<span class="lineNum">     179 </span>            :             {
+<span class="lineNum">     180 </span>            :                 // pData is null, so call UnflattenData recursing on elements of pDefaultData.
+<span class="lineNum">     181 </span>            :                 // Arrays contained in other data structures always include
+<span class="lineNum">     182 </span>            :                 // length information.
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :                 TypedArrayCoreRef pDefaultArray = *(TypedArrayCoreRef *) pDefaultData;</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :                 size_t   elementLength = pDefaultArray-&gt;SlabLengths()[0];</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :                 AQBlock1 *pEnd = pDefaultArray-&gt;BeginAt(0) + (pDefaultArray-&gt;DimensionLengths()[0] * elementLength);</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :                 AQBlock1 *pElementData = pDefaultArray-&gt;BeginAt(0);</span>
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :                 for (; pElementData &lt; pEnd; pElementData += elementLength)</span>
+<span class="lineNum">     189 </span>            :                 {
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :                     stringIndex = UnflattenData(pBuffer, true, stringIndex, pElementData, elementType, null);</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :                     if (stringIndex == -1)</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :                         return -1;</span>
+<span class="lineNum">     193 </span>            :                 }
+<span class="lineNum">     194 </span>            :             }
+<span class="lineNum">     195 </span>            :             break;
+<span class="lineNum">     196 </span>            :         }
+<span class="lineNum">     197 </span>            :         case kEncoding_Cluster:
+<span class="lineNum">     198 </span>            :         {
+<span class="lineNum">     199 </span><span class="lineCov">         10 :             IntIndex count = type-&gt;SubElementCount();</span>
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span><span class="lineCov">         90 :             for (IntIndex j = 0; j &lt; count; j++)</span>
+<span class="lineNum">     202 </span>            :             {
+<span class="lineNum">     203 </span>            :                 // Recursively call UnflattenData for each element with
+<span class="lineNum">     204 </span>            :                 // prependArrayLength set to true.
+<span class="lineNum">     205 </span><span class="lineCov">         40 :                 TypeRef elementType = type-&gt;GetSubElement(j);</span>
+<span class="lineNum">     206 </span><span class="lineCov">         40 :                 IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">     207 </span><span class="lineCov">        120 :                 AQBlock1* pElementData = pData ? (AQBlock1*)pData + offset : null;</span>
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span><span class="lineCov">         40 :                 stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);</span>
+<span class="lineNum">     210 </span><span class="lineCov">         40 :                 if (stringIndex == -1)</span>
+<span class="lineNum">     211 </span><span class="lineCov">          5 :                     return -1;</span>
+<span class="lineNum">     212 </span>            :             }
+<span class="lineNum">     213 </span>            :             break;
+<span class="lineNum">     214 </span>            :         }
+<span class="lineNum">     215 </span>            :         default:
+<span class="lineNum">     216 </span>            :         {
+<span class="lineNum">     217 </span><span class="lineCov">         35 :             Int32 copyLength = type-&gt;TopAQSize();</span>
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            :             // If the string is long enough, copy data.
+<span class="lineNum">     220 </span><span class="lineCov">         35 :             if (stringIndex + copyLength &lt;= pBuffer-&gt;Length())</span>
+<span class="lineNum">     221 </span>            :             {
+<span class="lineNum">     222 </span><span class="lineCov">         35 :                 if (pData)</span>
+<span class="lineNum">     223 </span><span class="lineCov">         35 :                     memcpy(pData, (pBuffer-&gt;Begin() + stringIndex), copyLength);</span>
+<span class="lineNum">     224 </span>            :                 stringIndex += copyLength;
+<span class="lineNum">     225 </span>            :             }
+<span class="lineNum">     226 </span>            :             else
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :                 return -1;</span>
+<span class="lineNum">     228 </span><span class="lineCov">         35 :             break;</span>
+<span class="lineNum">     229 </span>            :         }
+<span class="lineNum">     230 </span>            :     }
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span><span class="lineCov">         60 :     return stringIndex;</span>
+<a name="233"><span class="lineNum">     233 </span><span class="lineCov">         70 : }</span></a>
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            : VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, void, StringRef, void, Boolean)
+<span class="lineNum">     236 </span>            : {
+<span class="lineNum">     237 </span><span class="lineCov">         30 :     StringRef pString = _Param(0);</span>
+<span class="lineNum">     238 </span><span class="lineCov">         90 :     Boolean prependArrayLength = _ParamPointer(1) ? _Param(1) : true;</span>
+<span class="lineNum">     239 </span><span class="lineCov">         30 :     TypeRef type = _ParamPointer(2);</span>
+<span class="lineNum">     240 </span><span class="lineCov">         30 :     void *pDefaultData = _ParamPointer(3);</span>
+<span class="lineNum">     241 </span><span class="lineCov">         90 :     StringRef pRemainder = _ParamPointer(4) ? _Param(4) : null;</span>
+<span class="lineNum">     242 </span><span class="lineCov">         30 :     void *pData  = _ParamPointer(5);</span>
+<span class="lineNum">     243 </span>            :     Boolean error;
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span><span class="lineCov">         30 :     SubBinaryBuffer subBuffer(pString-&gt;Begin(), pString-&gt;End());</span>
+<span class="lineNum">     246 </span><span class="lineCov">         30 :     IntIndex remainderIndex = UnflattenData(&amp;subBuffer, prependArrayLength, 0, pDefaultData, type, pData);</span>
+<span class="lineNum">     247 </span><span class="lineCov">         30 :     IntIndex remainderLength = pString-&gt;Length() - remainderIndex;</span>
+<span class="lineNum">     248 </span><span class="lineCov">         30 :     error = (remainderIndex == -1);</span>
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span><span class="lineCov">         30 :     if (error)</span>
+<span class="lineNum">     251 </span><span class="lineCov">          5 :         type-&gt;CopyData(pDefaultData, pData);</span>
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :     // Set the optional output param for the remaining string.
+<span class="lineNum">     254 </span><span class="lineCov">         30 :     if (pRemainder)</span>
+<span class="lineNum">     255 </span>            :     {
+<span class="lineNum">     256 </span><span class="lineCov">         30 :         pRemainder-&gt;Resize1D(0);</span>
+<span class="lineNum">     257 </span><span class="lineCov">         30 :         if (!error)</span>
+<span class="lineNum">     258 </span><span class="lineCov">         25 :             pRemainder-&gt;Append(remainderLength, pString-&gt;BeginAt(remainderIndex));</span>
+<span class="lineNum">     259 </span>            :     }
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            :     // Set the optional output param for error.
+<span class="lineNum">     262 </span><span class="lineCov">         30 :     if (_ParamPointer(6))</span>
+<span class="lineNum">     263 </span><span class="lineCov">         30 :         _Param(6) = error;</span>
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span><span class="lineCov">         30 :     return _NextInstruction();</span>
+<span class="lineNum">     266 </span>            : }
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : }
+<span class="lineNum">     269 </span>            : 
+<a name="270"><span class="lineNum">     270 </span>            : using namespace Vireo;</a>
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(TDCodecLVFlat)</span>
+<span class="lineNum">     273 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(FlattenToString, &quot;p(i(StaticTypeAndData) i(Boolean) o(String))&quot;);</span>
+<span class="lineNum">     274 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(UnflattenFromString, &quot;p(i(String) i(Boolean) i(StaticTypeAndData) o(String) o(*) o(Boolean))&quot;);</span>
+<span class="lineNum">     275 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

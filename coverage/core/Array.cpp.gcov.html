@@ -1,0 +1,1333 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/Array.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - Array.cpp<span style="font-size: 80%;"> (source / <a href="Array.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">387</td>
+            <td class="headerCovTableEntry">682</td>
+            <td class="headerCovTableEntryLo">56.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">34</td>
+            <td class="headerCovTableEntry">60</td>
+            <td class="headerCovTableEntryLo">56.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Native Vireo array functions
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;TypeAndDataManager.h&quot;
+<span class="lineNum">      17 </span>            : #include &quot;VirtualInstrument.h&quot;
+<span class="lineNum">      18 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      19 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">      20 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : using namespace Vireo;
+<a name="23"><span class="lineNum">      23 </span>            : </a>
+<a name="24"><span class="lineNum">      24 </span>            : //------------------------------------------------------------</a>
+<a name="25"><span class="lineNum">      25 </span><span class="lineCov">        230 : DECLARE_VIREO_PRIMITIVE2(ArrayResize, TypedArrayCoreRef, IntIndex, (_Param(0)-&gt;Resize1D(_Param(1)) ))</span></a>
+<a name="26"><span class="lineNum">      26 </span><span class="lineCov">     757390 : DECLARE_VIREO_PRIMITIVE2(ArrayLength, TypedArrayCoreRef, IntIndex, (_Param(1) = _Param(0)-&gt;Length()))</span></a>
+<span class="lineNum">      27 </span><span class="lineCov">        105 : DECLARE_VIREO_PRIMITIVE2(ArrayRank, TypedArrayCoreRef, IntIndex, (_Param(1) = _Param(0)-&gt;Rank()))</span>
+<span class="lineNum">      28 </span><span class="lineCov">          5 : DECLARE_VIREO_PRIMITIVE2(ArrayElementType, TypedArrayCoreRef, TypeRef, (_Param(1) = _Param(0)-&gt;ElementType()))</span>
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : //-----------------------------------------------------------
+<span class="lineNum">      31 </span>            : /**
+<a name="32"><span class="lineNum">      32 </span>            :  * the order of output dimension size is from the high dimension to low dimension</a>
+<span class="lineNum">      33 </span>            :  * */
+<span class="lineNum">      34 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayLengthN, TypedArrayCoreRef, TypedArray1D&lt;IntIndex&gt;*)
+<span class="lineNum">      35 </span>            : {
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :     IntIndex rank = _Param(0)-&gt;Rank();</span>
+<span class="lineNum">      37 </span><span class="lineNoCov">          0 :     IntIndex* pLengths = _Param(0)-&gt;DimensionLengths();</span>
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :     TypeRef elementType = _Param(1)-&gt;ElementType();</span>
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :     _Param(1)-&gt;Resize1D(rank);</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :     for (IntIndex i =0; i&lt; rank; i++) {</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :         elementType-&gt;CopyData(pLengths+(rank-1-i), _Param(1)-&gt;BeginAt(i));</span>
+<span class="lineNum">      42 </span>            :     }
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">      44 </span>            : }
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<span class="lineNum">      46 </span>            : //------------------------------------------------------------
+<span class="lineNum">      47 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayCapacity, TypedArrayCoreRef, IntIndex)
+<span class="lineNum">      48 </span>            : {
+<span class="lineNum">      49 </span><span class="lineCov">         25 :     _Param(1) = _Param(0)-&gt;Capacity();</span>
+<span class="lineNum">      50 </span><span class="lineCov">         25 :     return _NextInstruction();</span>
+<a name="51"><span class="lineNum">      51 </span>            : }</a>
+<span class="lineNum">      52 </span>            : //------------------------------------------------------------
+<span class="lineNum">      53 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayDimensions, TypedArrayCoreRef, TypedArray1D&lt;IntIndex&gt;*)
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span><span class="lineCov">        245 :     IntIndex rank = _Param(0)-&gt;Rank();</span>
+<span class="lineNum">      56 </span><span class="lineCov">        245 :     IntIndex* pLengths = _Param(0)-&gt;DimensionLengths();</span>
+<span class="lineNum">      57 </span><span class="lineCov">        245 :     _Param(1)-&gt;Replace1D(0, rank, pLengths, true);</span>
+<span class="lineNum">      58 </span><span class="lineCov">        245 :     return _NextInstruction();</span>
+<a name="59"><span class="lineNum">      59 </span>            : }</a>
+<span class="lineNum">      60 </span>            : //------------------------------------------------------------
+<span class="lineNum">      61 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayResizeDimensions, TypedArrayCoreRef, TypedArray1D&lt;IntIndex&gt;*)
+<span class="lineNum">      62 </span>            : {
+<span class="lineNum">      63 </span>            :     // Details on how arrays are redimensioned are in ResizeDimensions().
+<span class="lineNum">      64 </span><span class="lineCov">        170 :     IntIndex rankProvided = _Param(1)-&gt;Length();</span>
+<span class="lineNum">      65 </span><span class="lineCov">        170 :     IntIndex* pLengths = _Param(1)-&gt;Begin();</span>
+<span class="lineNum">      66 </span><span class="lineCov">        170 :     _Param(0)-&gt;ResizeDimensions(rankProvided, pLengths, false);</span>
+<span class="lineNum">      67 </span><span class="lineCov">        170 :     return _NextInstruction();</span>
+<a name="68"><span class="lineNum">      68 </span>            : }</a>
+<span class="lineNum">      69 </span>            : //------------------------------------------------------------
+<span class="lineNum">      70 </span>            : VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, IntIndex, void)
+<span class="lineNum">      71 </span>            : {
+<span class="lineNum">      72 </span><span class="lineCov">        635 :     TypedArrayCoreRef array = _Param(0);</span>
+<span class="lineNum">      73 </span><span class="lineCov">        635 :     TypeRef     eltType = array-&gt;ElementType();</span>
+<span class="lineNum">      74 </span><span class="lineCov">        635 :     IntIndex    length = _Param(1);</span>
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span><span class="lineCov">        635 :     if (array-&gt;Resize1D(length)) {</span>
+<span class="lineNum">      77 </span><span class="lineCov">        635 :         eltType-&gt;MultiCopyData(_ParamPointer(2), array-&gt;RawBegin(), length);</span>
+<span class="lineNum">      78 </span><span class="lineCov">        635 :     }</span>
+<span class="lineNum">      79 </span><span class="lineCov">        635 :     return _NextInstruction();</span>
+<span class="lineNum">      80 </span>            : }
+<span class="lineNum">      81 </span>            : #ifdef VIREO_TYPE_ArrayND
+<span class="lineNum">      82 </span>            : //------------------------------------------------------------
+<span class="lineNum">      83 </span>            : struct ArrayFillNDVParamBlock : public VarArgInstruction
+<span class="lineNum">      84 </span>            : {
+<span class="lineNum">      85 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayOut);
+<a name="86"><span class="lineNum">      86 </span>            :     _ParamDef(void*, InitialValue);</a>
+<span class="lineNum">      87 </span>            :     _ParamImmediateDef(IntIndex*, Dimension1[1]);
+<span class="lineNum">      88 </span><span class="lineCov">         35 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="89"><span class="lineNum">      89 </span>            : };</a>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
+<span class="lineNum">      92 </span>            : {
+<span class="lineNum">      93 </span><span class="lineCov">         35 :     Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));</span>
+<span class="lineNum">      94 </span><span class="lineCov">         35 :     TypedArrayCoreRef array = _Param(ArrayOut);</span>
+<span class="lineNum">      95 </span><span class="lineCov">         35 :     IntIndex **dimensions = _ParamImmediate(Dimension1);</span>
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span><span class="lineCov">         35 :     ArrayDimensionVector  tempDimensionLengths;</span>
+<span class="lineNum">      98 </span><span class="lineCov">        210 :     for (IntIndex i = 0; i &lt; numDimensionInputs; i++) {</span>
+<span class="lineNum">      99 </span><span class="lineCov">         70 :         IntIndex* pDim = dimensions[i];</span>
+<span class="lineNum">     100 </span><span class="lineCov">        205 :         tempDimensionLengths[i] = pDim ? *pDim : 0;</span>
+<span class="lineNum">     101 </span>            :     }
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span><span class="lineCov">         35 :     _Param(ArrayOut)-&gt;ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);</span>
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineCov">         35 :     IntIndex totalLenght = _Param(ArrayOut)-&gt;Length();</span>
+<span class="lineNum">     106 </span><span class="lineCov">         35 :     TypeRef eltType = array-&gt;ElementType();</span>
+<span class="lineNum">     107 </span><span class="lineCov">         35 :     eltType-&gt;MultiCopyData(_ParamPointer(InitialValue), array-&gt;RawBegin(), totalLenght);</span>
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span><span class="lineCov">         35 :     return _NextInstruction();</span>
+<span class="lineNum">     110 </span><span class="lineCov">         35 : }</span>
+<span class="lineNum">     111 </span>            : //------------------------------------------------------------
+<span class="lineNum">     112 </span>            : struct ArrayIndexNDVParamBlock : public VarArgInstruction
+<span class="lineNum">     113 </span>            : {
+<span class="lineNum">     114 </span>            :     _ParamDef(TypedArrayCoreRef, Array);
+<a name="115"><span class="lineNum">     115 </span>            :     _ParamDef(void*, Element);</a>
+<span class="lineNum">     116 </span>            :     _ParamImmediateDef(IntIndex*, Dimension1[1]);
+<span class="lineNum">     117 </span><span class="lineCov">        135 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="118"><span class="lineNum">     118 </span>            : };</a>
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
+<span class="lineNum">     121 </span>            : {
+<span class="lineNum">     122 </span><span class="lineCov">        135 :     Int32 numDimensionInputs = ((_ParamVarArgCount() - 2));</span>
+<span class="lineNum">     123 </span><span class="lineCov">        135 :     TypedArrayCoreRef array = _Param(Array);</span>
+<span class="lineNum">     124 </span><span class="lineCov">        135 :     IntIndex **ppDimensions = _ParamImmediate(Dimension1);</span>
+<span class="lineNum">     125 </span><span class="lineCov">        135 :     AQBlock1* pElement = array-&gt;BeginAtNDIndirect(numDimensionInputs, ppDimensions);</span>
+<span class="lineNum">     126 </span><span class="lineCov">        135 :     TypeRef elementType = array-&gt;ElementType();</span>
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span><span class="lineCov">        135 :     if (pElement) {</span>
+<span class="lineNum">     129 </span><span class="lineCov">         90 :         elementType-&gt;CopyData(pElement, _ParamPointer(Element));</span>
+<span class="lineNum">     130 </span><span class="lineCov">         90 :     } else {</span>
+<span class="lineNum">     131 </span><span class="lineCov">         45 :         elementType-&gt;InitData(_ParamPointer(Element));</span>
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span><span class="lineCov">        135 :     return _NextInstruction();</span>
+<span class="lineNum">     134 </span>            : }
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : //indexing on 2d array, the row argument comes before column argument
+<a name="137"><span class="lineNum">     137 </span>            : //which is different from the indexing used in normal N dimension functions(e.g 0 d index, 1st d index, 3nd d index ...)</a>
+<span class="lineNum">     138 </span>            : // Arguments: inputArray, row, column, outputElement/Array
+<span class="lineNum">     139 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
+<span class="lineNum">     140 </span>            : {
+<span class="lineNum">     141 </span><span class="lineCov">         40 :     TypedArrayCoreRef arrayIn = _Param(0);</span>
+<span class="lineNum">     142 </span>            :     Boolean pickRow = false;
+<span class="lineNum">     143 </span>            :     Boolean pickCol = false;
+<span class="lineNum">     144 </span>            :     IntIndex row, col;
+<span class="lineNum">     145 </span>            :     IntIndex rank = 2;
+<span class="lineNum">     146 </span><span class="lineCov">         40 :     IntIndex* lengths = arrayIn-&gt;DimensionLengths();</span>
+<span class="lineNum">     147 </span><span class="lineCov">         40 :     if (_ParamPointer(1) != NULL) {</span>
+<span class="lineNum">     148 </span><span class="lineCov">         35 :         row = *((IntIndex*)_ParamPointer(1));</span>
+<span class="lineNum">     149 </span>            :         pickRow = true;
+<span class="lineNum">     150 </span><span class="lineCov">         35 :     } else {</span>
+<span class="lineNum">     151 </span>            :         row = -1;
+<span class="lineNum">     152 </span>            :     }
+<span class="lineNum">     153 </span><span class="lineCov">         40 :     if (_ParamPointer(2) != NULL) {</span>
+<span class="lineNum">     154 </span><span class="lineCov">         25 :         col = *((IntIndex*)_ParamPointer(2));</span>
+<span class="lineNum">     155 </span>            :         pickCol = true;
+<span class="lineNum">     156 </span><span class="lineCov">         25 :     } else {</span>
+<span class="lineNum">     157 </span>            :         col = -1;
+<span class="lineNum">     158 </span>            :     }
+<span class="lineNum">     159 </span>            :     TypedArrayCoreRef arrayOut;
+<span class="lineNum">     160 </span><span class="lineCov">         65 :     if (pickCol &amp;&amp; pickRow) {</span>
+<span class="lineNum">     161 </span><span class="lineCov">         60 :         if (row &gt;=0 &amp;&amp; row &lt; lengths[1] &amp;&amp; col&gt;=0 &amp;&amp; col &lt;lengths[0]) {</span>
+<span class="lineNum">     162 </span>            :             IntIndex index2D[2];
+<span class="lineNum">     163 </span><span class="lineCov">         20 :             index2D[0] = col;</span>
+<span class="lineNum">     164 </span><span class="lineCov">         20 :             index2D[1] = row;</span>
+<span class="lineNum">     165 </span><span class="lineCov">         20 :             arrayIn-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAtND(rank, index2D), _ParamPointer(3));</span>
+<span class="lineNum">     166 </span><span class="lineCov">         20 :         }</span>
+<span class="lineNum">     167 </span>            :     } else {
+<span class="lineNum">     168 </span>            :         IntIndex index2D[2];
+<span class="lineNum">     169 </span><span class="lineCov">         20 :         arrayOut=  *((TypedArrayCoreRef*)_ParamPointer(3));</span>
+<span class="lineNum">     170 </span><span class="lineCov">         20 :         if (pickCol) {</span>
+<span class="lineNum">     171 </span><span class="lineCov">         10 :             if (col &gt;= 0 &amp;&amp; col &lt; lengths[0]) {</span>
+<span class="lineNum">     172 </span><span class="lineCov">          5 :                 arrayOut-&gt;Resize1D(lengths[1]);</span>
+<span class="lineNum">     173 </span><span class="lineCov">          5 :                 index2D[0] = col;</span>
+<span class="lineNum">     174 </span><span class="lineCov">         60 :                 for (IntIndex i = 0; i &lt; arrayOut-&gt;Length(); i++) {</span>
+<span class="lineNum">     175 </span><span class="lineCov">         25 :                     index2D[1] = i;</span>
+<span class="lineNum">     176 </span><span class="lineCov">         25 :                     arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAtND(rank, index2D), arrayOut-&gt;BeginAt(i));</span>
+<span class="lineNum">     177 </span>            :                 }
+<span class="lineNum">     178 </span>            :             }
+<span class="lineNum">     179 </span>            :         } else {
+<span class="lineNum">     180 </span><span class="lineCov">         15 :             if (!pickRow) { row = 0;}</span>
+<span class="lineNum">     181 </span><span class="lineCov">         30 :             if (row &gt;= 0 &amp;&amp; row &lt; lengths[1]) {</span>
+<span class="lineNum">     182 </span><span class="lineCov">         15 :                 arrayOut-&gt;Resize1D(lengths[0]);</span>
+<span class="lineNum">     183 </span><span class="lineCov">         15 :                 index2D[1] = row;</span>
+<span class="lineNum">     184 </span><span class="lineCov">        130 :                 for (IntIndex i = 0; i &lt; arrayOut-&gt;Length(); i++) {</span>
+<span class="lineNum">     185 </span><span class="lineCov">         50 :                     index2D[0] = i;</span>
+<span class="lineNum">     186 </span><span class="lineCov">         50 :                     arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAtND(rank, index2D), arrayOut-&gt;BeginAt(i));</span>
+<span class="lineNum">     187 </span>            :                 }
+<span class="lineNum">     188 </span>            :             }
+<span class="lineNum">     189 </span>            :         }
+<span class="lineNum">     190 </span>            :     }
+<span class="lineNum">     191 </span><span class="lineCov">         40 :     return _NextInstruction();</span>
+<span class="lineNum">     192 </span>            : }
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            : //------------------------------------------------------------
+<span class="lineNum">     195 </span>            : struct ArrayReplaceNDVParamBlock : public VarArgInstruction
+<span class="lineNum">     196 </span>            : {
+<span class="lineNum">     197 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayOut);
+<span class="lineNum">     198 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayIn);
+<a name="199"><span class="lineNum">     199 </span>            :     _ParamDef(void*, Element);</a>
+<span class="lineNum">     200 </span>            :     _ParamImmediateDef(IntIndex*, Dimension1[1]);
+<span class="lineNum">     201 </span><span class="lineCov">        110 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="202"><span class="lineNum">     202 </span>            : };</a>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayReplaceEltNDV, ArrayReplaceNDVParamBlock)
+<span class="lineNum">     205 </span>            : {
+<span class="lineNum">     206 </span><span class="lineCov">        110 :     Int32 numDimensionInputs = ((_ParamVarArgCount() - 3));</span>
+<span class="lineNum">     207 </span><span class="lineCov">        110 :     TypedArrayCoreRef arrayOut = _Param(ArrayOut);</span>
+<span class="lineNum">     208 </span><span class="lineCov">        110 :     TypedArrayCoreRef arrayIn = _Param(ArrayIn);</span>
+<span class="lineNum">     209 </span><span class="lineCov">        110 :     IntIndex **ppDimensions = _ParamImmediate(Dimension1);</span>
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span><span class="lineCov">        110 :     if (arrayOut != arrayIn) {</span>
+<span class="lineNum">     212 </span>            :         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
+<span class="lineNum">     213 </span><span class="lineCov">          5 :         arrayIn-&gt;Type()-&gt;CopyData(_ParamPointer(ArrayIn), _ParamPointer(ArrayOut));</span>
+<span class="lineNum">     214 </span><span class="lineCov">          5 :     }</span>
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span><span class="lineCov">        110 :     AQBlock1* pElement = arrayOut-&gt;BeginAtNDIndirect(numDimensionInputs, ppDimensions);</span>
+<span class="lineNum">     217 </span><span class="lineCov">        110 :     TypeRef elementType = arrayIn-&gt;ElementType();</span>
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span><span class="lineCov">        110 :     if (pElement) {</span>
+<span class="lineNum">     220 </span><span class="lineCov">         75 :         elementType-&gt;CopyData(_ParamPointer(Element), pElement);</span>
+<span class="lineNum">     221 </span><span class="lineCov">         75 :     }</span>
+<span class="lineNum">     222 </span><span class="lineCov">        110 :     return _NextInstruction();</span>
+<span class="lineNum">     223 </span>            : }
+<a name="224"><span class="lineNum">     224 </span>            : #endif</a>
+<span class="lineNum">     225 </span>            : //------------------------------------------------------------
+<span class="lineNum">     226 </span>            : VIREO_FUNCTION_SIGNATURE3(ArrayIndexElt, TypedArrayCoreRef, IntIndex, void)
+<span class="lineNum">     227 </span>            : {
+<span class="lineNum">     228 </span><span class="lineCov">    2389855 :     TypedArrayCoreRef array = _Param(0);</span>
+<span class="lineNum">     229 </span><span class="lineCov">    2389855 :     IntIndex    length = array-&gt;Length();</span>
+<span class="lineNum">     230 </span><span class="lineCov">    2389855 :     TypeRef     elementType = array-&gt;ElementType();</span>
+<span class="lineNum">     231 </span><span class="lineCov">    2389855 :     IntIndex    index = _Param(1);</span>
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span><span class="lineCov">    2389855 :     if (_ParamPointer(2)) {</span>
+<span class="lineNum">     234 </span><span class="lineCov">    4759065 :         if (index &lt; 0 || index &gt;= length) {</span>
+<span class="lineNum">     235 </span><span class="lineCov">      45625 :             elementType-&gt;InitData(_ParamPointer(2));</span>
+<span class="lineNum">     236 </span><span class="lineCov">      45625 :         } else {</span>
+<span class="lineNum">     237 </span><span class="lineCov">    2344230 :             elementType-&gt;CopyData(array-&gt;BeginAt(index), _ParamPointer(2));</span>
+<span class="lineNum">     238 </span>            :         }
+<span class="lineNum">     239 </span>            :     }
+<span class="lineNum">     240 </span><span class="lineCov">    2389855 :     return _NextInstruction();</span>
+<a name="241"><span class="lineNum">     241 </span>            : }</a>
+<span class="lineNum">     242 </span>            : //------------------------------------------------------------
+<span class="lineNum">     243 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayAppendElt, TypedArrayCoreRef, void)
+<span class="lineNum">     244 </span>            : {
+<span class="lineNum">     245 </span><span class="lineCov">      16205 :     TypedArrayCoreRef array = _Param(0);</span>
+<span class="lineNum">     246 </span><span class="lineCov">      16205 :     array-&gt;Insert1D(array-&gt;Length(), 1, _ParamPointer(1));</span>
+<span class="lineNum">     247 </span><span class="lineCov">      16205 :     return _NextInstruction();</span>
+<a name="248"><span class="lineNum">     248 </span>            : }</a>
+<span class="lineNum">     249 </span>            : //------------------------------------------------------------
+<span class="lineNum">     250 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, void)
+<span class="lineNum">     251 </span>            : {
+<span class="lineNum">     252 </span><span class="lineCov">    5153145 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     253 </span><span class="lineCov">    5153145 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span><span class="lineCov">    5153145 :     TypeRef     elementType = arrayOut-&gt;ElementType();</span>
+<span class="lineNum">     256 </span><span class="lineCov">    5153145 :     IntIndex    index = _Param(2);</span>
+<span class="lineNum">     257 </span><span class="lineCov">    5153145 :     IntIndex    length = arrayIn-&gt;Length();</span>
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span><span class="lineCov">    5153145 :     if (arrayOut != arrayIn) {</span>
+<span class="lineNum">     260 </span><span class="lineCov">      76605 :         arrayIn-&gt;Type()-&gt;CopyData(_ParamPointer(1), _ParamPointer(0));</span>
+<span class="lineNum">     261 </span><span class="lineCov">      76605 :     }</span>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineCov">   10306285 :     if (index &gt;= 0 &amp;&amp; index &lt; length) {</span>
+<span class="lineNum">     264 </span><span class="lineCov">    5153015 :         void* pDest = arrayOut-&gt;BeginAt(index);</span>
+<span class="lineNum">     265 </span><span class="lineCov">    5153015 :         elementType-&gt;CopyData(_ParamPointer(3), pDest);</span>
+<span class="lineNum">     266 </span><span class="lineCov">    5153015 :     }</span>
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span><span class="lineCov">    5153145 :     return _NextInstruction();</span>
+<span class="lineNum">     269 </span>            : }
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            : //------------------------------------------------------------
+<span class="lineNum">     272 </span>            : // arguments: output array, input array, index1, newElement1/subarray1(, indexk, newElementk/subarrayk)
+<span class="lineNum">     273 </span>            : struct ArrayReplaceSubsetStruct : public VarArgInstruction
+<span class="lineNum">     274 </span>            : {
+<span class="lineNum">     275 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayOut);
+<a name="276"><span class="lineNum">     276 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayIn);</a>
+<span class="lineNum">     277 </span>            :     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+<span class="lineNum">     278 </span><span class="lineCov">         65 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="279"><span class="lineNum">     279 </span>            : };</a>
+<span class="lineNum">     280 </span>            : //ArrayReplaceSubset function for 1d array, support multiple inputs
+<span class="lineNum">     281 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
+<span class="lineNum">     282 </span>            : {
+<span class="lineNum">     283 </span><span class="lineCov">         25 :     TypedArrayCoreRef arrayOut = _Param(ArrayOut);</span>
+<span class="lineNum">     284 </span><span class="lineCov">         25 :     TypedArrayCoreRef arrayIn = _Param(ArrayIn);</span>
+<span class="lineNum">     285 </span><span class="lineCov">         25 :     StaticTypeAndData *arguments =  _ParamImmediate(argument1);</span>
+<span class="lineNum">     286 </span><span class="lineCov">         25 :     Int32 count = (_ParamVarArgCount() -2)/2;</span>
+<span class="lineNum">     287 </span>            :     Int32 i = 0;
+<span class="lineNum">     288 </span><span class="lineCov">         25 :     if (arrayOut != arrayIn) {</span>
+<span class="lineNum">     289 </span>            :         // To copy the full array the CopyData method gets a pointer to the ArrayRef.
+<span class="lineNum">     290 </span><span class="lineCov">         20 :         arrayIn-&gt;Type()-&gt;CopyData(&amp;arrayIn, &amp;arrayOut);</span>
+<span class="lineNum">     291 </span><span class="lineCov">         20 :     }</span>
+<span class="lineNum">     292 </span>            :     IntIndex idx = -1;
+<span class="lineNum">     293 </span><span class="lineCov">         70 :     while (i &lt; count) {</span>
+<span class="lineNum">     294 </span><span class="lineCov">         25 :         TypeRef argType = arguments[i]._paramType;</span>
+<span class="lineNum">     295 </span><span class="lineCov">         25 :         if (arguments[i]._pData != NULL) {</span>
+<span class="lineNum">     296 </span><span class="lineCov">         25 :             idx = (IntIndex) ReadIntFromMemory(argType, arguments[i]._pData);</span>
+<span class="lineNum">     297 </span><span class="lineCov">         25 :         } else {</span>
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :             idx &gt;= 0? idx++ : idx = 0;</span>
+<span class="lineNum">     299 </span>            :         }
+<span class="lineNum">     300 </span><span class="lineCov">         25 :         i++;</span>
+<span class="lineNum">     301 </span>            :         TypedArrayCoreRef subArray = null;
+<span class="lineNum">     302 </span><span class="lineCov">         25 :         void* element = arguments[i]._pData;</span>
+<span class="lineNum">     303 </span><span class="lineCov">         25 :         argType = arguments[i]._paramType;</span>
+<span class="lineNum">     304 </span>            :         //whether the input is single element or not. The argType needn't to be flat to specify single element
+<span class="lineNum">     305 </span>            :         //. e.g. string type
+<span class="lineNum">     306 </span><span class="lineCov">         25 :         if (!argType-&gt;IsA(arrayIn-&gt;ElementType())) {</span>
+<span class="lineNum">     307 </span><span class="lineCov">         25 :             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;</span>
+<span class="lineNum">     308 </span><span class="lineCov">         25 :         }</span>
+<span class="lineNum">     309 </span><span class="lineCov">         25 :         i++;</span>
+<span class="lineNum">     310 </span><span class="lineCov">         25 :         if (arrayOut == subArray) {</span>
+<span class="lineNum">     311 </span><span class="lineCov">          5 :             THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Can't ArrayReplaceSubset inplace&quot;);</span>
+<span class="lineNum">     312 </span><span class="lineCov">          5 :             return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     313 </span>            :         }
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span><span class="lineCov">         40 :         if (idx &gt;= 0 &amp;&amp; idx &lt; arrayOut-&gt;Length()) {</span>
+<span class="lineNum">     316 </span><span class="lineCov">         20 :             if (subArray != null) {</span>
+<span class="lineNum">     317 </span><span class="lineCov">         20 :                 IntIndex length = Min(subArray-&gt;Length(), arrayOut-&gt;Length() - idx);</span>
+<span class="lineNum">     318 </span><span class="lineCov">         20 :                 arrayIn-&gt;ElementType()-&gt;CopyData(subArray-&gt;BeginAt(0), arrayOut-&gt;BeginAt(idx), length);</span>
+<span class="lineNum">     319 </span><span class="lineCov">         20 :             } else {</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :                 arrayIn-&gt;ElementType()-&gt;CopyData(element, arrayOut-&gt;BeginAt(idx), 1);</span>
+<span class="lineNum">     321 </span>            :             }
+<span class="lineNum">     322 </span>            :         }
+<span class="lineNum">     323 </span>            :     }
+<span class="lineNum">     324 </span><span class="lineCov">         20 :     return _NextInstruction();</span>
+<span class="lineNum">     325 </span><span class="lineCov">         25 : }</span>
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span>            : //function called by ArrayReplaceSubset2DV for each pair of input.
+<a name="328"><span class="lineNum">     328 </span>            : //arguments: output array, input array, newElem/newArray, row, column, rankofthenewElem.</a>
+<span class="lineNum">     329 </span>            : //elemRank specify the rank of the input element. in this case (2D input), it can only be 1 or 0.
+<span class="lineNum">     330 </span>            : void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void* newElem, IntIndex row, IntIndex col, IntIndex elemRank)
+<span class="lineNum">     331 </span>            : {
+<span class="lineNum">     332 </span><span class="lineCov">         60 :     IntIndex rank = arrayOut-&gt;Rank();</span>
+<span class="lineNum">     333 </span><span class="lineCov">         60 :     IntIndex* lengths = arrayIn-&gt;DimensionLengths();</span>
+<span class="lineNum">     334 </span><span class="lineCov">         60 :     if (elemRank == 1) {</span>
+<span class="lineNum">     335 </span><span class="lineCov">         10 :         TypedArrayCoreRef subArray = (TypedArrayCoreRef)newElem;</span>
+<span class="lineNum">     336 </span>            :         IntIndex index2D[2];
+<span class="lineNum">     337 </span><span class="lineCov">         10 :         if (col &gt;= 0) {</span>
+<span class="lineNum">     338 </span><span class="lineCov">         10 :              if (col &lt; lengths[0]) {</span>
+<span class="lineNum">     339 </span><span class="lineCov">         10 :                  index2D[0] = col;</span>
+<span class="lineNum">     340 </span><span class="lineCov">         10 :                  int l = lengths[1];</span>
+<span class="lineNum">     341 </span><span class="lineCov">         10 :                  if (l &gt; subArray-&gt;Length()) { l = subArray-&gt;Length(); }</span>
+<span class="lineNum">     342 </span><span class="lineCov">        120 :                  for (IntIndex i = 0; i &lt; l; i++) {</span>
+<span class="lineNum">     343 </span><span class="lineCov">         50 :                      index2D[1] = i;</span>
+<span class="lineNum">     344 </span><span class="lineCov">         50 :                      arrayOut-&gt;ElementType()-&gt;CopyData(subArray-&gt;BeginAt(i), arrayOut-&gt;BeginAtND(rank, index2D));</span>
+<span class="lineNum">     345 </span>            :                  }
+<span class="lineNum">     346 </span>            :              }
+<span class="lineNum">     347 </span>            :          } else {
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :              if (row &lt; -1) { row = 0;}</span>
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :              if (row &lt; lengths[1]) {</span>
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :                  index2D[1] = row;</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :                  int l = lengths[0];</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :                  if (l &gt; subArray-&gt;Length()) { l = subArray-&gt;Length(); }</span>
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :                  for (IntIndex i = 0; i &lt; l; i++) {</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :                      index2D[0] = i;</span>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :                      arrayOut-&gt;ElementType()-&gt;CopyData(subArray-&gt;BeginAt(i), arrayOut-&gt;BeginAtND(rank, index2D));</span>
+<span class="lineNum">     356 </span>            :                  }
+<span class="lineNum">     357 </span>            :              }
+<span class="lineNum">     358 </span>            :          }
+<span class="lineNum">     359 </span>            :     } else {
+<span class="lineNum">     360 </span>            :         IntIndex index[2];
+<span class="lineNum">     361 </span><span class="lineCov">         50 :         index[0] = col;</span>
+<span class="lineNum">     362 </span><span class="lineCov">         50 :         index[1] = row;</span>
+<span class="lineNum">     363 </span><span class="lineCov">        200 :         if (index[0] &gt;= 0 &amp;&amp; index[0] &lt; lengths[0] \</span>
+<span class="lineNum">     364 </span><span class="lineCov">        100 :                 &amp;&amp; index[1] &gt;= 0 &amp;&amp; index[1] &lt; lengths[1]) {</span>
+<span class="lineNum">     365 </span><span class="lineCov">         40 :             arrayOut-&gt;ElementType()-&gt;CopyData(newElem, arrayOut-&gt;BeginAtND(rank, index));</span>
+<span class="lineNum">     366 </span><span class="lineCov">         40 :         }</span>
+<span class="lineNum">     367 </span>            :     }
+<span class="lineNum">     368 </span><span class="lineCov">         60 : }</span>
+<a name="369"><span class="lineNum">     369 </span>            : </a>
+<span class="lineNum">     370 </span>            : //ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+<span class="lineNum">     371 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
+<span class="lineNum">     372 </span>            : {
+<span class="lineNum">     373 </span><span class="lineCov">         45 :     TypedArrayCoreRef arrayOut = _Param(ArrayOut);</span>
+<span class="lineNum">     374 </span><span class="lineCov">         45 :     TypedArrayCoreRef arrayIn = _Param(ArrayIn);</span>
+<span class="lineNum">     375 </span><span class="lineCov">         45 :     StaticTypeAndData *arguments =  _ParamImmediate(argument1);</span>
+<span class="lineNum">     376 </span><span class="lineCov">         45 :     Int32 count = (_ParamVarArgCount() -2)/2;</span>
+<span class="lineNum">     377 </span>            :     Int32 i = 0;
+<span class="lineNum">     378 </span><span class="lineCov">         45 :     if (arrayOut != arrayIn) {</span>
+<span class="lineNum">     379 </span><span class="lineCov">         45 :        arrayIn-&gt;Type()-&gt;CopyData(&amp;arrayIn, &amp;arrayOut);</span>
+<span class="lineNum">     380 </span><span class="lineCov">         45 :     }</span>
+<span class="lineNum">     381 </span>            :     IntIndex row = -1;
+<span class="lineNum">     382 </span>            :     IntIndex col = -1;
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span><span class="lineCov">        210 :     while (i &lt; count) {</span>
+<span class="lineNum">     385 </span>            :         Boolean wireRow = false;
+<span class="lineNum">     386 </span>            :         Boolean wireCol = false;
+<span class="lineNum">     387 </span><span class="lineCov">         60 :         TypeRef argType = arguments[i]._paramType;</span>
+<span class="lineNum">     388 </span><span class="lineCov">         60 :         if (arguments[i]._pData != NULL) {</span>
+<span class="lineNum">     389 </span><span class="lineCov">         45 :             row = *((IntIndex*)arguments[i]._pData);</span>
+<span class="lineNum">     390 </span>            :             wireRow = true;
+<span class="lineNum">     391 </span><span class="lineCov">         45 :         } else {</span>
+<span class="lineNum">     392 </span><span class="lineCov">         30 :             row &gt;= 0? row++ : row = 0;</span>
+<span class="lineNum">     393 </span>            :         }
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span><span class="lineCov">         60 :         i++;</span>
+<span class="lineNum">     396 </span><span class="lineCov">         60 :         argType = arguments[i]._paramType;</span>
+<span class="lineNum">     397 </span><span class="lineCov">         60 :         if (arguments[i]._pData != NULL) {</span>
+<span class="lineNum">     398 </span><span class="lineCov">         40 :             col = *((IntIndex*)arguments[i]._pData);</span>
+<span class="lineNum">     399 </span>            :             wireCol = true;
+<span class="lineNum">     400 </span><span class="lineCov">         40 :         } else {</span>
+<span class="lineNum">     401 </span><span class="lineCov">         40 :             col &gt;= 0? col++ : col = 0;</span>
+<span class="lineNum">     402 </span>            :         }
+<span class="lineNum">     403 </span>            : 
+<span class="lineNum">     404 </span><span class="lineCov">         60 :         i++;</span>
+<span class="lineNum">     405 </span>            :         TypedArrayCoreRef subArray = null;
+<span class="lineNum">     406 </span><span class="lineCov">         60 :         void* element = arguments[i]._pData;</span>
+<span class="lineNum">     407 </span><span class="lineCov">         60 :         argType = arguments[i]._paramType;</span>
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span><span class="lineCov">         60 :         if (!argType-&gt;IsA(arrayIn-&gt;ElementType())) {</span>
+<span class="lineNum">     410 </span><span class="lineCov">         10 :             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;</span>
+<span class="lineNum">     411 </span>            :             // if no index wired, column becomes disabled
+<span class="lineNum">     412 </span><span class="lineCov">         15 :             if(!wireRow &amp;&amp; !wireCol) {col = -1;}</span>
+<span class="lineNum">     413 </span><span class="lineCov">         10 :             replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);</span>
+<span class="lineNum">     414 </span><span class="lineCov">         10 :         } else {</span>
+<span class="lineNum">     415 </span><span class="lineCov">         80 :             if(!wireRow &amp;&amp; !wireCol) {row &gt; 0? row-- : row = 0;}</span>
+<span class="lineNum">     416 </span><span class="lineCov">         50 :             replace2dArray(arrayOut, arrayIn, element, row, col, 0);</span>
+<span class="lineNum">     417 </span>            :         }
+<span class="lineNum">     418 </span><span class="lineCov">         60 :         i++;</span>
+<span class="lineNum">     419 </span>            :     }
+<span class="lineNum">     420 </span><span class="lineCov">         45 :     return _NextInstruction();</span>
+<a name="421"><span class="lineNum">     421 </span>            : }</a>
+<span class="lineNum">     422 </span>            : //------------------------------------------------------------
+<span class="lineNum">     423 </span>            : VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex)
+<span class="lineNum">     424 </span>            : {
+<span class="lineNum">     425 </span><span class="lineCov">        755 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     426 </span><span class="lineCov">        755 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span><span class="lineCov">       2190 :     IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : 0;</span>
+<span class="lineNum">     429 </span>            :     // Coerce index to non-negative integer
+<span class="lineNum">     430 </span><span class="lineCov">        755 :     idx = Max(idx, 0);</span>
+<span class="lineNum">     431 </span>            : 
+<span class="lineNum">     432 </span><span class="lineCov">        755 :     if (arrayOut == arrayIn &amp;&amp; idx != 0) {</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :         THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Can't ArraySubset inplace&quot;);</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :         return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     435 </span>            :     }
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span>            :     // Calculate count from idx to end of array
+<span class="lineNum">     438 </span><span class="lineCov">        755 :     IntIndex maxLen = arrayIn-&gt;Length() - idx;</span>
+<span class="lineNum">     439 </span><span class="lineCov">        755 :     maxLen = Max(maxLen, 0);</span>
+<span class="lineNum">     440 </span>            : 
+<span class="lineNum">     441 </span><span class="lineCov">       2265 :     IntIndex len = (_ParamPointer(3) != null) ? _Param(3) : maxLen;</span>
+<span class="lineNum">     442 </span><span class="lineCov">        755 :     len = Max(len, 0);</span>
+<span class="lineNum">     443 </span><span class="lineCov">        755 :     len = Min(len, maxLen);</span>
+<span class="lineNum">     444 </span><span class="lineCov">        755 :     arrayOut-&gt;Resize1D(len);</span>
+<span class="lineNum">     445 </span><span class="lineCov">       1490 :     if (idx &lt; arrayIn-&gt;Length() &amp;&amp; arrayOut != arrayIn) {</span>
+<span class="lineNum">     446 </span><span class="lineCov">        400 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(idx), arrayOut-&gt;BeginAt(0), len);</span>
+<span class="lineNum">     447 </span><span class="lineCov">        400 :     }</span>
+<span class="lineNum">     448 </span><span class="lineCov">        755 :     return _NextInstruction();</span>
+<a name="449"><span class="lineNum">     449 </span><span class="lineCov">        755 : }</span></a>
+<span class="lineNum">     450 </span>            : //------------------------------------------------------------
+<span class="lineNum">     451 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, void)
+<span class="lineNum">     452 </span>            : {
+<span class="lineNum">     453 </span><span class="lineCov">          5 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     454 </span><span class="lineCov">          5 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span><span class="lineCov">          5 :     IntIndex length = arrayIn-&gt;Length();</span>
+<span class="lineNum">     457 </span><span class="lineCov">         15 :     IntIndex index = (_ParamPointer(2) != null) ? _Param(2) : length;</span>
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span><span class="lineCov">          5 :     if (arrayOut != arrayIn)</span>
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :         arrayOut-&gt;Type()-&gt;CopyData(_ParamPointer(1), _ParamPointer(0));</span>
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span><span class="lineCov">         10 :     if (0 &lt;= index &amp;&amp; index &lt;= length)</span>
+<span class="lineNum">     463 </span><span class="lineCov">          5 :         arrayOut-&gt;Insert1D(index, 1, _ParamPointer(3));</span>
+<span class="lineNum">     464 </span>            : 
+<span class="lineNum">     465 </span><span class="lineCov">          5 :     return _NextInstruction();</span>
+<a name="466"><span class="lineNum">     466 </span>            : }</a>
+<span class="lineNum">     467 </span>            : //------------------------------------------------------------
+<span class="lineNum">     468 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, TypedArrayCoreRef)
+<span class="lineNum">     469 </span>            : {
+<span class="lineNum">     470 </span><span class="lineCov">         25 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     471 </span><span class="lineCov">         25 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     472 </span><span class="lineCov">         25 :     IntIndex arrayInLength = arrayIn-&gt;Length();</span>
+<span class="lineNum">     473 </span>            : 
+<span class="lineNum">     474 </span><span class="lineCov">         75 :     IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayInLength;</span>
+<span class="lineNum">     475 </span>            : 
+<span class="lineNum">     476 </span><span class="lineCov">         25 :     TypedArrayCoreRef subArray = _Param(3);</span>
+<span class="lineNum">     477 </span><span class="lineCov">         25 :     IntIndex subArrayLength = subArray-&gt;Length();</span>
+<span class="lineNum">     478 </span>            : 
+<span class="lineNum">     479 </span><span class="lineCov">         25 :     if (arrayOut == subArray) {</span>
+<span class="lineNum">     480 </span><span class="lineCov">          5 :         THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Can't ArrayInsertSubset inplace&quot;);</span>
+<span class="lineNum">     481 </span><span class="lineCov">          5 :         return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     482 </span>            :     }
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span><span class="lineCov">         40 :     if (0 &lt;= idx &amp;&amp; idx &lt;= arrayInLength) {</span>
+<span class="lineNum">     485 </span><span class="lineCov">         20 :         if (arrayOut == arrayIn) {</span>
+<span class="lineNum">     486 </span><span class="lineCov">         10 :             arrayOut-&gt;Insert1D(idx, subArrayLength, subArray-&gt;BeginAt(0));</span>
+<span class="lineNum">     487 </span><span class="lineCov">         10 :         } else {</span>
+<span class="lineNum">     488 </span><span class="lineCov">         10 :             arrayOut-&gt;Resize1D(arrayInLength + subArrayLength);</span>
+<span class="lineNum">     489 </span>            : 
+<span class="lineNum">     490 </span>            :             // Copy the original array up to the insert point
+<span class="lineNum">     491 </span><span class="lineCov">         20 :             arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(0),</span>
+<span class="lineNum">     492 </span><span class="lineCov">         10 :                                               arrayOut-&gt;BeginAt(0),</span>
+<span class="lineNum">     493 </span>            :                                               idx);
+<span class="lineNum">     494 </span>            : 
+<span class="lineNum">     495 </span>            :             // Copy the inserted subarray
+<span class="lineNum">     496 </span><span class="lineCov">         20 :             arrayOut-&gt;ElementType()-&gt;CopyData(subArray-&gt;BeginAt(0),</span>
+<span class="lineNum">     497 </span><span class="lineCov">         10 :                                               arrayOut-&gt;BeginAt(idx),</span>
+<span class="lineNum">     498 </span>            :                                               subArrayLength);
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span>            :             // Copy the rest of the original array.
+<span class="lineNum">     501 </span><span class="lineCov">         20 :             arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(idx),</span>
+<span class="lineNum">     502 </span><span class="lineCov">         10 :                                               arrayOut-&gt;BeginAt(idx + subArrayLength),</span>
+<span class="lineNum">     503 </span><span class="lineCov">         10 :                                               arrayInLength - idx);</span>
+<span class="lineNum">     504 </span>            :         }
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :     } else if (arrayOut != arrayIn) {</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :         arrayOut-&gt;Type()-&gt;CopyData(_ParamPointer(1), _ParamPointer(0));</span>
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     508 </span><span class="lineCov">         20 :     return _NextInstruction();</span>
+<a name="509"><span class="lineNum">     509 </span><span class="lineCov">         25 : }</span></a>
+<span class="lineNum">     510 </span>            : //------------------------------------------------------------
+<span class="lineNum">     511 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
+<span class="lineNum">     512 </span>            : {
+<span class="lineNum">     513 </span><span class="lineCov">         10 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     514 </span><span class="lineCov">         10 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     515 </span><span class="lineCov">         10 :     IntIndex arrayInLength = arrayIn-&gt;Length();</span>
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span><span class="lineCov">         10 :     if (arrayOut == arrayIn) {</span>
+<span class="lineNum">     518 </span><span class="lineCov">          5 :         THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Can't ArrayReverse inplace&quot;);</span>
+<span class="lineNum">     519 </span><span class="lineCov">          5 :         return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     520 </span>            :     }
+<span class="lineNum">     521 </span>            : 
+<span class="lineNum">     522 </span><span class="lineCov">          5 :     arrayOut-&gt;Resize1D(arrayInLength);</span>
+<span class="lineNum">     523 </span><span class="lineCov">         50 :     for (IntIndex i = 0; i &lt; arrayInLength; i++)</span>
+<span class="lineNum">     524 </span><span class="lineCov">         20 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(i), arrayOut-&gt;BeginAt(arrayInLength - 1 - i));</span>
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span><span class="lineCov">          5 :     return _NextInstruction();</span>
+<a name="527"><span class="lineNum">     527 </span><span class="lineCov">         10 : }</span></a>
+<span class="lineNum">     528 </span>            : //------------------------------------------------------------
+<span class="lineNum">     529 </span>            : VIREO_FUNCTION_SIGNATURE3(ArrayRotate, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex)
+<span class="lineNum">     530 </span>            : {
+<span class="lineNum">     531 </span><span class="lineCov">         10 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     532 </span><span class="lineCov">         10 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     533 </span><span class="lineCov">         10 :     IntIndex offset = _Param(2);</span>
+<span class="lineNum">     534 </span>            : 
+<span class="lineNum">     535 </span><span class="lineCov">         10 :     if (arrayOut == arrayIn) {</span>
+<span class="lineNum">     536 </span><span class="lineCov">          5 :         THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Can't ArrayRotate inplace&quot;);</span>
+<span class="lineNum">     537 </span><span class="lineCov">          5 :         return THREAD_EXEC()-&gt;Stop();</span>
+<span class="lineNum">     538 </span>            :     }
+<span class="lineNum">     539 </span>            : 
+<span class="lineNum">     540 </span><span class="lineCov">          5 :     IntIndex arrayInLength = arrayIn-&gt;Length();</span>
+<span class="lineNum">     541 </span><span class="lineCov">          5 :     arrayOut-&gt;Resize1D(arrayInLength);</span>
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span><span class="lineCov">          5 :     if (arrayInLength &gt; 0) {</span>
+<span class="lineNum">     544 </span><span class="lineCov">          5 :         offset = offset % arrayInLength;</span>
+<span class="lineNum">     545 </span><span class="lineCov">          5 :         if (offset &lt; 0)</span>
+<span class="lineNum">     546 </span><span class="lineCov">          5 :             offset += arrayInLength;</span>
+<span class="lineNum">     547 </span>            : 
+<span class="lineNum">     548 </span><span class="lineCov">          5 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(0), arrayOut-&gt;BeginAt(offset), arrayInLength - offset);</span>
+<span class="lineNum">     549 </span><span class="lineCov">          5 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(arrayInLength - offset), arrayOut-&gt;BeginAt(0), offset);</span>
+<span class="lineNum">     550 </span><span class="lineCov">          5 :     }</span>
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span><span class="lineCov">          5 :     return _NextInstruction();</span>
+<a name="553"><span class="lineNum">     553 </span><span class="lineCov">         10 : }</span></a>
+<span class="lineNum">     554 </span>            : 
+<span class="lineNum">     555 </span>            : VIREO_FUNCTION_SIGNATURE4(ArraySplit, TypedArrayCoreRef, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex)
+<span class="lineNum">     556 </span>            : {
+<span class="lineNum">     557 </span><span class="lineCov">         15 :     TypedArrayCoreRef array1st = _Param(0);</span>
+<span class="lineNum">     558 </span><span class="lineCov">         15 :     TypedArrayCoreRef array2nd = _Param(1);</span>
+<span class="lineNum">     559 </span><span class="lineCov">         15 :     TypedArrayCoreRef arrayIn = _Param(2);</span>
+<span class="lineNum">     560 </span><span class="lineCov">         15 :     IntIndex index = _Param(3);</span>
+<span class="lineNum">     561 </span>            :     IntIndex length1 = 0;
+<span class="lineNum">     562 </span><span class="lineCov">         15 :     IntIndex length2 = arrayIn-&gt;Length();</span>
+<span class="lineNum">     563 </span><span class="lineCov">         15 :     if (index &lt; 0) {</span>
+<span class="lineNum">     564 </span>            :         index = 0;
+<span class="lineNum">     565 </span>            :         length1 = 0;
+<span class="lineNum">     566 </span><span class="lineCov">         15 :     } else if (index &gt;= arrayIn-&gt;Length()) {</span>
+<span class="lineNum">     567 </span><span class="lineCov">          5 :         index = arrayIn-&gt;Length();</span>
+<span class="lineNum">     568 </span>            :         length1 = length2;
+<span class="lineNum">     569 </span>            :         length2 = 0;
+<span class="lineNum">     570 </span><span class="lineCov">          5 :     } else {</span>
+<span class="lineNum">     571 </span>            :         length1 = index;
+<span class="lineNum">     572 </span><span class="lineCov">          5 :         length2 = length2 - index;</span>
+<span class="lineNum">     573 </span>            :     }
+<span class="lineNum">     574 </span><span class="lineCov">         15 :     array1st-&gt;Resize1D(length1);</span>
+<span class="lineNum">     575 </span><span class="lineCov">         15 :     if (length1 &gt; 0) {</span>
+<span class="lineNum">     576 </span><span class="lineCov">         10 :         array1st-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(0), array1st-&gt;BeginAt(0), length1);</span>
+<span class="lineNum">     577 </span><span class="lineCov">         10 :     }</span>
+<span class="lineNum">     578 </span><span class="lineCov">         15 :     array2nd-&gt;Resize1D(length2);</span>
+<span class="lineNum">     579 </span><span class="lineCov">         15 :     if (length2 &gt; 0) {</span>
+<span class="lineNum">     580 </span><span class="lineCov">         10 :         array2nd-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(index), array2nd-&gt;BeginAt(0), length2);</span>
+<span class="lineNum">     581 </span><span class="lineCov">         10 :     }</span>
+<span class="lineNum">     582 </span><span class="lineCov">         15 :     return _NextInstruction();</span>
+<span class="lineNum">     583 </span>            : }
+<span class="lineNum">     584 </span>            : 
+<span class="lineNum">     585 </span>            : struct Sort1DArrayInstruction : public InstructionCore
+<span class="lineNum">     586 </span>            : {
+<span class="lineNum">     587 </span>            :     _ParamDef(TypedArrayCoreRef, OutArray);
+<a name="588"><span class="lineNum">     588 </span>            :     _ParamDef(TypedArrayCoreRef, InArray);</a>
+<a name="589"><span class="lineNum">     589 </span>            :     _ParamImmediateDef(InstructionCore*, Next);</a>
+<span class="lineNum">     590 </span><span class="lineNoCov">          0 :     inline InstructionCore* Snippet()   { return this + 1; }</span>
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :     inline InstructionCore* Next()      { return this-&gt;_piNext; }</span>
+<span class="lineNum">     592 </span>            : };
+<a name="593"><span class="lineNum">     593 </span>            : //Emit the sort instruction for specific type</a>
+<span class="lineNum">     594 </span>            : //------------------------------------------------------------
+<span class="lineNum">     595 </span>            : InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
+<span class="lineNum">     596 </span>            : {
+<span class="lineNum">     597 </span>            :     ConstCStr pSortOpName = &quot;Sort1DArrayInternal&quot;;
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :     SubString sortOpToken(pSortOpName);</span>
+<span class="lineNum">     599 </span>            : 
+<span class="lineNum">     600 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;ReresolveInstruction(&amp;sortOpToken, false);</span>
+<span class="lineNum">     601 </span>            :     InstructionCore* pInstruction = null;
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder-&gt;_argPointers[0];</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :     TypeRef elementType  = arrayArg-&gt;ElementType();</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :     SubString LTName(&quot;IsLT&quot;);</span>
+<span class="lineNum">     605 </span>            :     // Add param slot to hold the snippet
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :     Int32 snippetArgId = pInstructionBuilder-&gt;AddSubSnippet();</span>
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :     Sort1DArrayInstruction* sortOp = (Sort1DArrayInstruction*) pInstructionBuilder-&gt;EmitInstruction();</span>
+<span class="lineNum">     608 </span><span class="lineNoCov">          0 :     pInstruction = sortOp;</span>
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :     TypeRef booleanType = pInstructionBuilder-&gt;_clump-&gt;TheTypeManager()-&gt;FindType(tsBooleanType);</span>
+<span class="lineNum">     610 </span>            : 
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :     ClumpParseState snippetBuilder(pInstructionBuilder);</span>
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;BeginEmitSubSnippet(&amp;snippetBuilder, sortOp, snippetArgId);</span>
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :     snippetBuilder.EmitInstruction(&amp;LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);</span>
+<span class="lineNum">     614 </span>            : 
+<span class="lineNum">     615 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;EndEmitSubSnippet(&amp;snippetBuilder);</span>
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;RecordNextHere(&amp;sortOp-&gt;_piNext);</span>
+<span class="lineNum">     617 </span>            : 
+<span class="lineNum">     618 </span>            :     return pInstruction;
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     620 </span>            : 
+<span class="lineNum">     621 </span>            : struct comparetor
+<span class="lineNum">     622 </span>            : {
+<span class="lineNum">     623 </span>            : private:
+<a name="624"><span class="lineNum">     624 </span>            :     Instruction3&lt;void, void, Boolean&gt;* _snippet;</a>
+<a name="625"><span class="lineNum">     625 </span>            : public:</a>
+<span class="lineNum">     626 </span><span class="lineNoCov">          0 :     comparetor(Instruction3&lt;void, void, Boolean&gt;* snippet) {_snippet = snippet;}</span>
+<span class="lineNum">     627 </span>            :     bool operator()(AQBlock1* i, AQBlock1* j)
+<span class="lineNum">     628 </span>            :     {
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :         Boolean less = false;</span>
+<span class="lineNum">     630 </span><span class="lineNoCov">          0 :         _snippet-&gt;_p0 = i;</span>
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :         _snippet-&gt;_p1 = j;</span>
+<span class="lineNum">     632 </span><span class="lineNoCov">          0 :         _snippet-&gt;_p2 = &amp;less;</span>
+<span class="lineNum">     633 </span><span class="lineNoCov">          0 :         _PROGMEM_PTR(_snippet, _function)(_snippet);</span>
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :         return less;</span>
+<span class="lineNum">     635 </span>            :     }
+<span class="lineNum">     636 </span>            : };
+<a name="637"><span class="lineNum">     637 </span>            : </a>
+<span class="lineNum">     638 </span>            : // using the stl vector and sort algorithm to sort the array. the compare function is defined above
+<span class="lineNum">     639 </span>            : VIREO_FUNCTION_SIGNATURET(Sort1DArrayInternal, Sort1DArrayInstruction)
+<span class="lineNum">     640 </span>            : {
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayOut = _Param(OutArray);</span>
+<span class="lineNum">     642 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(InArray);</span>
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :     Instruction3&lt;void, void, Boolean&gt;* snippet = (Instruction3&lt;void, void, Boolean&gt;*)_ParamMethod(Snippet());</span>
+<span class="lineNum">     644 </span><span class="lineNoCov">          0 :     IntIndex len = arrayIn-&gt;Length();</span>
+<span class="lineNum">     645 </span><span class="lineNoCov">          0 :     arrayOut-&gt;Resize1D(len);</span>
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 :     std::vector&lt;AQBlock1*&gt; myVector;</span>
+<span class="lineNum">     647 </span><span class="lineNoCov">          0 :     AQBlock1* base = arrayIn-&gt;BeginAt(0);</span>
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :     Int32 elementSize = arrayIn-&gt;ElementType()-&gt;TopAQSize();</span>
+<span class="lineNum">     649 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; len; i++) {</span>
+<span class="lineNum">     650 </span><span class="lineNoCov">          0 :         myVector.push_back(base);</span>
+<span class="lineNum">     651 </span><span class="lineNoCov">          0 :         base += elementSize;</span>
+<span class="lineNum">     652 </span>            :     }
+<span class="lineNum">     653 </span><span class="lineNoCov">          0 :     comparetor myComparetor(snippet);</span>
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :     std::vector&lt;AQBlock1*&gt;::iterator it;</span>
+<span class="lineNum">     655 </span><span class="lineNoCov">          0 :     std::sort(myVector.begin(), myVector.end(), myComparetor);</span>
+<span class="lineNum">     656 </span>            :     IntIndex i = 0;
+<span class="lineNum">     657 </span><span class="lineNoCov">          0 :     for (it = myVector.begin(); it != myVector.end(); it++) {</span>
+<span class="lineNum">     658 </span><span class="lineNoCov">          0 :         AQBlock1* element = *it;</span>
+<span class="lineNum">     659 </span><span class="lineNoCov">          0 :         arrayOut-&gt;ElementType()-&gt;CopyData(element, arrayOut-&gt;BeginAt(i));</span>
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :         i++;</span>
+<span class="lineNum">     661 </span>            :     }
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     663 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     664 </span>            : 
+<span class="lineNum">     665 </span>            : struct FindArrayMaxMinInstruction : public InstructionCore
+<span class="lineNum">     666 </span>            : {
+<span class="lineNum">     667 </span>            :     _ParamDef(TypedArrayCoreRef, InArray);
+<span class="lineNum">     668 </span>            :     _ParamDef(void, MaxValue);
+<span class="lineNum">     669 </span>            :     _ParamDef(IntIndex, MaxIndex);
+<span class="lineNum">     670 </span>            :     _ParamDef(void, MinValue);
+<a name="671"><span class="lineNum">     671 </span>            :     _ParamDef(IntIndex, MinIndex);</a>
+<a name="672"><span class="lineNum">     672 </span>            :     _ParamImmediateDef(InstructionCore*, Next);</a>
+<span class="lineNum">     673 </span><span class="lineNoCov">          0 :     inline InstructionCore* Snippet()   { return this + 1; }</span>
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :     inline InstructionCore* Next()      { return this-&gt;_piNext; }</span>
+<a name="675"><span class="lineNum">     675 </span>            : };</a>
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            : InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
+<span class="lineNum">     678 </span>            : {
+<span class="lineNum">     679 </span>            :     ConstCStr pMaxMinOpName = &quot;ArrayMaxMinInternal&quot;;
+<span class="lineNum">     680 </span><span class="lineNoCov">          0 :     SubString findMaxMinOpToken(pMaxMinOpName);</span>
+<span class="lineNum">     681 </span>            : 
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;ReresolveInstruction(&amp;findMaxMinOpToken, false);</span>
+<span class="lineNum">     683 </span>            :     InstructionCore* pInstruction = null;
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder-&gt;_argPointers[0];</span>
+<span class="lineNum">     685 </span><span class="lineNoCov">          0 :     TypeRef elementType  = arrayArg-&gt;ElementType();</span>
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :     SubString LTName(&quot;IsLT&quot;);</span>
+<span class="lineNum">     687 </span>            :     // Add param slot to hold the snippet
+<span class="lineNum">     688 </span><span class="lineNoCov">          0 :     Int32 snippetArgId = pInstructionBuilder-&gt;AddSubSnippet();</span>
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :     FindArrayMaxMinInstruction* findOp = (FindArrayMaxMinInstruction*) pInstructionBuilder-&gt;EmitInstruction();</span>
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :     pInstruction = findOp;</span>
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :     TypeRef booleanType = pInstructionBuilder-&gt;_clump-&gt;TheTypeManager()-&gt;FindType(tsBooleanType);</span>
+<span class="lineNum">     692 </span>            : 
+<span class="lineNum">     693 </span><span class="lineNoCov">          0 :     ClumpParseState snippetBuilder(pInstructionBuilder);</span>
+<span class="lineNum">     694 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;BeginEmitSubSnippet(&amp;snippetBuilder, findOp, snippetArgId);</span>
+<span class="lineNum">     695 </span><span class="lineNoCov">          0 :     snippetBuilder.EmitInstruction(&amp;LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);</span>
+<span class="lineNum">     696 </span>            : 
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;EndEmitSubSnippet(&amp;snippetBuilder);</span>
+<span class="lineNum">     698 </span><span class="lineNoCov">          0 :     pInstructionBuilder-&gt;RecordNextHere(&amp;findOp-&gt;_piNext);</span>
+<span class="lineNum">     699 </span>            :     return pInstruction;
+<a name="700"><span class="lineNum">     700 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     701 </span>            : 
+<span class="lineNum">     702 </span>            : VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
+<span class="lineNum">     703 </span>            : {
+<span class="lineNum">     704 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(InArray);</span>
+<span class="lineNum">     705 </span><span class="lineNoCov">          0 :     Instruction3&lt;void, void, Boolean&gt;* snippet = (Instruction3&lt;void, void, Boolean&gt;*)_ParamMethod(Snippet());</span>
+<span class="lineNum">     706 </span><span class="lineNoCov">          0 :     IntIndex len = arrayIn-&gt;Length();</span>
+<span class="lineNum">     707 </span><span class="lineNoCov">          0 :     if (arrayIn-&gt;Length() == 0) {</span>
+<span class="lineNum">     708 </span><span class="lineNoCov">          0 :         _Param(MaxIndex) =  _Param(MinIndex) = -1;</span>
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     710 </span><span class="lineNoCov">          0 :     AQBlock1* minValue = arrayIn-&gt;BeginAt(0);</span>
+<span class="lineNum">     711 </span>            :     AQBlock1* maxValue = minValue;
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; len; i++) {</span>
+<span class="lineNum">     713 </span>            :         Boolean less;
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :         snippet-&gt;_p0 = arrayIn-&gt;BeginAt(i);</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :         snippet-&gt;_p1 = minValue;</span>
+<span class="lineNum">     716 </span><span class="lineNoCov">          0 :         snippet-&gt;_p2 = &amp;less;</span>
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :         _PROGMEM_PTR(snippet, _function)(snippet);</span>
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :         if(less) {</span>
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :             minValue = arrayIn-&gt;BeginAt(i);</span>
+<span class="lineNum">     720 </span><span class="lineNoCov">          0 :             _Param(MinIndex) = i;</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     722 </span><span class="lineNoCov">          0 :         snippet-&gt;_p0 = maxValue;</span>
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :         snippet-&gt;_p1 = arrayIn-&gt;BeginAt(i);</span>
+<span class="lineNum">     724 </span><span class="lineNoCov">          0 :         snippet-&gt;_p2 = &amp;less;</span>
+<span class="lineNum">     725 </span><span class="lineNoCov">          0 :         _PROGMEM_PTR(snippet, _function)(snippet);</span>
+<span class="lineNum">     726 </span><span class="lineNoCov">          0 :         if(less) {</span>
+<span class="lineNum">     727 </span><span class="lineNoCov">          0 :             maxValue = arrayIn-&gt;BeginAt(i);</span>
+<span class="lineNum">     728 </span><span class="lineNoCov">          0 :             _Param(MaxIndex) = i;</span>
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     730 </span>            :     }
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :     arrayIn-&gt;ElementType()-&gt;CopyData(minValue, _ParamPointer(MinValue));</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :     arrayIn-&gt;ElementType()-&gt;CopyData(maxValue, _ParamPointer(MaxValue));</span>
+<span class="lineNum">     733 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     734 </span>            : }
+<a name="735"><span class="lineNum">     735 </span>            : </a>
+<span class="lineNum">     736 </span>            : // ArrayDelete function, can delete single element or multiple elements in 1d Array
+<span class="lineNum">     737 </span>            : VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
+<span class="lineNum">     738 </span>            : {
+<span class="lineNum">     739 </span><span class="lineCov">         30 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     740 </span><span class="lineCov">         30 :     TypedArrayCoreRef arrayIn = _Param(3);</span>
+<span class="lineNum">     741 </span><span class="lineCov">         30 :     TypeRef deletedPartType = _ParamPointer(1);</span>
+<span class="lineNum">     742 </span><span class="lineCov">         90 :     IntIndex length = (_ParamPointer(4) == NULL)? 1 : _Param(4);</span>
+<span class="lineNum">     743 </span><span class="lineCov">         90 :     IntIndex offset = (_ParamPointer(5) == NULL)? arrayIn-&gt;Length() - 1 : _Param(5);;</span>
+<span class="lineNum">     744 </span>            : 
+<span class="lineNum">     745 </span><span class="lineCov">         30 :     IntIndex startIndex = offset &gt; 0? offset : 0;</span>
+<span class="lineNum">     746 </span><span class="lineCov">         90 :     IntIndex endIndex = offset + length &gt; arrayIn-&gt;Length()? arrayIn-&gt;Length() : offset + length;</span>
+<span class="lineNum">     747 </span>            : 
+<span class="lineNum">     748 </span><span class="lineCov">         30 :     if (endIndex &lt;= 0) {</span>
+<span class="lineNum">     749 </span><span class="lineCov">          5 :         return _NextInstruction();</span>
+<span class="lineNum">     750 </span>            :     }
+<span class="lineNum">     751 </span><span class="lineCov">         25 :     IntIndex arrayOutLength = arrayIn-&gt;Length() - (endIndex - startIndex);</span>
+<span class="lineNum">     752 </span><span class="lineCov">         25 :     arrayOut-&gt;Resize1D(arrayOutLength);</span>
+<span class="lineNum">     753 </span><span class="lineCov">         25 :     if (startIndex &gt; 0) {</span>
+<span class="lineNum">     754 </span><span class="lineCov">         15 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(0), arrayOut-&gt;BeginAt(0), startIndex);</span>
+<span class="lineNum">     755 </span><span class="lineCov">         15 :     }</span>
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span>            :     // check whether to delete single element or subArray from the input array
+<span class="lineNum">     758 </span><span class="lineCov">         25 :     if (!deletedPartType-&gt;IsA(arrayIn-&gt;ElementType())) {</span>
+<span class="lineNum">     759 </span><span class="lineCov">         20 :         TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));</span>
+<span class="lineNum">     760 </span><span class="lineCov">         20 :         deletedArray-&gt;Resize1D(endIndex - startIndex);</span>
+<span class="lineNum">     761 </span><span class="lineCov">         20 :         deletedArray-&gt;ElementType() -&gt;CopyData(arrayIn-&gt;BeginAt(startIndex), deletedArray-&gt;BeginAt(0), deletedArray-&gt;Length());</span>
+<span class="lineNum">     762 </span><span class="lineCov">         25 :     } else if (endIndex - startIndex &gt; 0 ){</span>
+<span class="lineNum">     763 </span><span class="lineCov">          5 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(startIndex), _ParamPointer(2));</span>
+<span class="lineNum">     764 </span><span class="lineCov">          5 :     }</span>
+<span class="lineNum">     765 </span>            : 
+<span class="lineNum">     766 </span><span class="lineCov">         25 :     if (endIndex &lt; arrayIn-&gt;Length()) {</span>
+<span class="lineNum">     767 </span><span class="lineCov">         15 :         arrayOut-&gt;ElementType()-&gt;CopyData(arrayIn-&gt;BeginAt(endIndex), arrayOut-&gt;BeginAt(startIndex), arrayOutLength - startIndex);</span>
+<span class="lineNum">     768 </span><span class="lineCov">         15 :     }</span>
+<span class="lineNum">     769 </span><span class="lineCov">         25 :     return _NextInstruction();</span>
+<span class="lineNum">     770 </span><span class="lineCov">         30 : }</span>
+<span class="lineNum">     771 </span>            : 
+<span class="lineNum">     772 </span>            : struct ArrayReshapeStruct : public VarArgInstruction
+<span class="lineNum">     773 </span>            : {
+<span class="lineNum">     774 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayOut);
+<a name="775"><span class="lineNum">     775 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayIn);</a>
+<span class="lineNum">     776 </span>            :     _ParamImmediateDef(IntIndex*, Dimension1[1]);
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHODV()</span>
+<span class="lineNum">     778 </span>            : };
+<span class="lineNum">     779 </span>            : 
+<span class="lineNum">     780 </span>            : //Array Iterator
+<span class="lineNum">     781 </span>            : class ArrayIterator
+<span class="lineNum">     782 </span>            : {
+<span class="lineNum">     783 </span>            : private:
+<span class="lineNum">     784 </span>            :     ArrayDimensionVector  _indexStack;
+<span class="lineNum">     785 </span>            :     IntIndex _indexDim;
+<span class="lineNum">     786 </span>            :     IntIndex*  dimensions;
+<span class="lineNum">     787 </span>            :     IntIndex  _rank;
+<a name="788"><span class="lineNum">     788 </span>            :     TypedArrayCoreRef _array;</a>
+<span class="lineNum">     789 </span>            : public:
+<span class="lineNum">     790 </span>            :     ArrayIterator(TypedArrayCoreRef array)
+<span class="lineNum">     791 </span>            :     {
+<span class="lineNum">     792 </span><span class="lineNoCov">          0 :         _array = array;</span>
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :         _rank = array-&gt;Rank();</span>
+<span class="lineNum">     794 </span><span class="lineNoCov">          0 :         _indexDim = 0;</span>
+<span class="lineNum">     795 </span><span class="lineNoCov">          0 :         dimensions = array-&gt;DimensionLengths();</span>
+<span class="lineNum">     796 </span><span class="lineNoCov">          0 :         for (IntIndex i = 0; i &lt; _rank; i++) {</span>
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 :             _indexStack[i] = 0;</span>
+<a name="798"><span class="lineNum">     798 </span>            :         }</a>
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :     };</span>
+<span class="lineNum">     800 </span>            :     void* Begin()
+<span class="lineNum">     801 </span>            :     {
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 :         for (IntIndex i = 0; i &lt; _rank; i++) {</span>
+<span class="lineNum">     803 </span><span class="lineNoCov">          0 :             _indexStack[i] = 0;</span>
+<span class="lineNum">     804 </span>            :         }
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :         _indexDim = 0;</span>
+<a name="806"><span class="lineNum">     806 </span><span class="lineNoCov">          0 :         return _array-&gt;BeginAtND(_rank, _indexStack);</span></a>
+<span class="lineNum">     807 </span>            :     }
+<span class="lineNum">     808 </span>            :     void* Next()
+<span class="lineNum">     809 </span>            :     {
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :         _indexStack[_indexDim]++;</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :         if (dimensions[_indexDim] &lt;= _indexStack[_indexDim]) {</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :             while (dimensions[_indexDim] &lt;= _indexStack[_indexDim]) {</span>
+<span class="lineNum">     813 </span><span class="lineNoCov">          0 :                 _indexDim++;</span>
+<span class="lineNum">     814 </span><span class="lineNoCov">          0 :                 _indexStack[_indexDim]++;</span>
+<span class="lineNum">     815 </span>            :             }
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :             if (_indexDim &gt;= _rank) {</span>
+<span class="lineNum">     817 </span><span class="lineNoCov">          0 :                 return NULL;</span>
+<span class="lineNum">     818 </span>            :             }
+<span class="lineNum">     819 </span><span class="lineNoCov">          0 :             for (IntIndex i = 0; i &lt; _indexDim; i++) {</span>
+<span class="lineNum">     820 </span><span class="lineNoCov">          0 :                 _indexStack[i] = 0;</span>
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :                 _indexDim = 0;</span>
+<span class="lineNum">     822 </span>            :             }
+<span class="lineNum">     823 </span>            :         }
+<span class="lineNum">     824 </span><span class="lineNoCov">          0 :         return (void*)_array-&gt;BeginAtND(_rank, _indexStack);</span>
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :     };</span>
+<span class="lineNum">     826 </span>            : };
+<a name="827"><span class="lineNum">     827 </span>            : </a>
+<span class="lineNum">     828 </span>            : //ArrayReshape function
+<span class="lineNum">     829 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
+<span class="lineNum">     830 </span>            : {
+<span class="lineNum">     831 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayOut = _Param(ArrayOut);</span>
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(ArrayIn);</span>
+<span class="lineNum">     833 </span><span class="lineNoCov">          0 :     IntIndex **newDimensions = _ParamImmediate(Dimension1);</span>
+<span class="lineNum">     834 </span>            : 
+<span class="lineNum">     835 </span><span class="lineNoCov">          0 :     Int32 count = _ParamVarArgCount() -2;</span>
+<span class="lineNum">     836 </span><span class="lineNoCov">          0 :     Int32 rank = arrayOut-&gt;Rank();</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :     ArrayDimensionVector  dimensions;</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; count; i++) {</span>
+<span class="lineNum">     839 </span><span class="lineNoCov">          0 :         IntIndex* pDim = newDimensions[count - 1 -i];</span>
+<span class="lineNum">     840 </span><span class="lineNoCov">          0 :         IntIndex size = pDim? *pDim : 0;</span>
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :         if (size &lt;= 0){</span>
+<span class="lineNum">     842 </span><span class="lineNoCov">          0 :             for (IntIndex j = 0; j &lt; rank; j++) {</span>
+<span class="lineNum">     843 </span><span class="lineNoCov">          0 :                 dimensions[j] = 0;</span>
+<span class="lineNum">     844 </span>            :             }
+<span class="lineNum">     845 </span><span class="lineNoCov">          0 :             arrayOut-&gt;ResizeDimensions(rank, dimensions, false);</span>
+<span class="lineNum">     846 </span><span class="lineNoCov">          0 :             return _NextInstruction();</span>
+<span class="lineNum">     847 </span>            :         } else {
+<span class="lineNum">     848 </span><span class="lineNoCov">          0 :             dimensions[i] = size;</span>
+<span class="lineNum">     849 </span>            :         }
+<span class="lineNum">     850 </span>            :     }
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :     arrayOut-&gt;ResizeDimensions(rank, dimensions, false);</span>
+<span class="lineNum">     852 </span>            :     //IntIndex* inputDimensions = arrayOut-&gt;DimensionLengths();
+<span class="lineNum">     853 </span>            :     //IntIndex inputRank = arrayIn-&gt;Rank();
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :     ArrayIterator iteratorIn(arrayIn);</span>
+<span class="lineNum">     855 </span><span class="lineNoCov">          0 :     ArrayIterator iteratorOut(arrayOut);</span>
+<span class="lineNum">     856 </span><span class="lineNoCov">          0 :     void* input = iteratorIn.Begin();</span>
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :     void* output = iteratorOut.Begin();</span>
+<span class="lineNum">     858 </span><span class="lineNoCov">          0 :     while (input != NULL &amp;&amp; output != NULL) {</span>
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :         arrayOut-&gt;ElementType()-&gt;CopyData(input, output);</span>
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :         input = iteratorIn.Next();</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :         output = iteratorOut.Next();</span>
+<span class="lineNum">     862 </span>            :     }
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="864"><span class="lineNum">     864 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     865 </span>            : 
+<span class="lineNum">     866 </span>            : VIREO_FUNCTION_SIGNATURE2(ArrayTranspose, TypedArrayCoreRef, TypedArrayCoreRef)
+<span class="lineNum">     867 </span>            : {
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :     if (arrayOut-&gt;Rank() != 2 || arrayIn-&gt;Rank() != 2) {</span>
+<span class="lineNum">     871 </span><span class="lineNoCov">          0 :         THREAD_EXEC()-&gt;LogEvent(EventLog::kHardDataError, &quot;Only process 2d Array&quot;);</span>
+<span class="lineNum">     872 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :     IntIndex* pLengths = arrayIn-&gt;DimensionLengths();</span>
+<span class="lineNum">     874 </span>            :     IntIndex newLengths[2];
+<span class="lineNum">     875 </span><span class="lineNoCov">          0 :     newLengths[0] = pLengths[1];</span>
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :     newLengths[1] = pLengths[0];</span>
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :     arrayOut-&gt;ResizeDimensions(2, newLengths, true);</span>
+<span class="lineNum">     878 </span>            :     IntIndex originalIndex[2];
+<span class="lineNum">     879 </span>            :     IntIndex transposeIndex[2];
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :     TypeRef elementType = arrayIn-&gt;ElementType();</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">          0 :     for(IntIndex i = 0; i &lt; pLengths[0]; i++) {</span>
+<span class="lineNum">     882 </span><span class="lineNoCov">          0 :         originalIndex[0] = i;</span>
+<span class="lineNum">     883 </span><span class="lineNoCov">          0 :         transposeIndex[1] = i;</span>
+<span class="lineNum">     884 </span><span class="lineNoCov">          0 :         for(IntIndex j = 0; j &lt; pLengths[1]; j++) {</span>
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :             originalIndex[1] = j;</span>
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :             transposeIndex[0] = j;</span>
+<span class="lineNum">     887 </span><span class="lineNoCov">          0 :             elementType-&gt;CopyData(arrayIn-&gt;BeginAtND(2, originalIndex), arrayOut-&gt;BeginAtND(2, transposeIndex));</span>
+<span class="lineNum">     888 </span>            :         }
+<span class="lineNum">     889 </span>            :     }
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="891"><span class="lineNum">     891 </span>            : }</a>
+<span class="lineNum">     892 </span>            : 
+<span class="lineNum">     893 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType, void)
+<span class="lineNum">     894 </span>            : {
+<span class="lineNum">     895 </span><span class="lineCov">         10 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     896 </span><span class="lineCov">         10 :     Double fractionalIndex = ReadDoubleFromMemory(_ParamPointer(2), _ParamPointer(3));</span>
+<span class="lineNum">     897 </span>            :     IntIndex left = 0;
+<span class="lineNum">     898 </span><span class="lineCov">         10 :     IntIndex right = arrayIn-&gt;Length()-1;</span>
+<span class="lineNum">     899 </span><span class="lineCov">         10 :     if(left == right) {</span>
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :         return _NextInstruction();</span>
+<span class="lineNum">     901 </span>            :     }
+<span class="lineNum">     902 </span><span class="lineCov">         10 :     if (arrayIn-&gt;ElementType()-&gt;IsCluster()) {</span>
+<span class="lineNum">     903 </span><span class="lineCov">         10 :         TypeRef clusterType = arrayIn-&gt;ElementType();</span>
+<span class="lineNum">     904 </span><span class="lineCov">         10 :         if (clusterType-&gt;SubElementCount() &lt; 2) {</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :             gPlatform.IO.Printf(&quot;(Error \&quot;Cluster should contain at least x field and y field:%d\&quot;)\n&quot;);</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :             return _NextInstruction();</span>
+<span class="lineNum">     907 </span>            :         }
+<span class="lineNum">     908 </span><span class="lineCov">         10 :         TypeRef elementXType = clusterType-&gt;GetSubElement(0);</span>
+<span class="lineNum">     909 </span><span class="lineCov">         10 :         TypeRef elementYType = clusterType-&gt;GetSubElement(1);</span>
+<span class="lineNum">     910 </span><span class="lineCov">         10 :         IntIndex fieldOffsetX = elementXType-&gt;ElementOffset();</span>
+<span class="lineNum">     911 </span><span class="lineCov">         10 :         IntIndex fieldOffsetY = elementYType-&gt;ElementOffset();</span>
+<span class="lineNum">     912 </span>            :         Double leftX;
+<span class="lineNum">     913 </span>            :         Double rightX;
+<span class="lineNum">     914 </span>            :         Double leftY;
+<span class="lineNum">     915 </span>            :         Double rightY;
+<span class="lineNum">     916 </span><span class="lineCov">         70 :         for (IntIndex i = 0; i &lt; arrayIn-&gt;Length(); i++) {</span>
+<span class="lineNum">     917 </span><span class="lineCov">         35 :             void* xPtr = arrayIn-&gt;BeginAt(i) + fieldOffsetX;</span>
+<span class="lineNum">     918 </span><span class="lineCov">         35 :             void* yPtr = arrayIn-&gt;BeginAt(i) + fieldOffsetY;</span>
+<span class="lineNum">     919 </span><span class="lineCov">         35 :             Double x = ReadDoubleFromMemory(elementXType, xPtr);</span>
+<span class="lineNum">     920 </span><span class="lineCov">         35 :             Double y = ReadDoubleFromMemory(elementYType, yPtr);</span>
+<span class="lineNum">     921 </span><span class="lineCov">         35 :             if (i == 0) {</span>
+<span class="lineNum">     922 </span>            :                 leftX = x;
+<span class="lineNum">     923 </span>            :                 leftY = y;
+<span class="lineNum">     924 </span><span class="lineCov">         35 :             } else if (i == 1){</span>
+<span class="lineNum">     925 </span>            :                 rightX = x;
+<span class="lineNum">     926 </span>            :                 rightY = y;
+<span class="lineNum">     927 </span><span class="lineCov">         10 :             } else {</span>
+<span class="lineNum">     928 </span><span class="lineCov">         15 :                 if(rightX &lt; fractionalIndex) {</span>
+<span class="lineNum">     929 </span>            :                     leftX = rightX;
+<span class="lineNum">     930 </span>            :                     leftY = rightY;
+<span class="lineNum">     931 </span>            :                     rightX = x;
+<span class="lineNum">     932 </span>            :                     rightY = y;
+<span class="lineNum">     933 </span>            :                 } else {
+<span class="lineNum">     934 </span>            :                     break;
+<span class="lineNum">     935 </span>            :                 }
+<span class="lineNum">     936 </span>            :             }
+<span class="lineNum">     937 </span>            :         }
+<span class="lineNum">     938 </span><span class="lineCov">         10 :         *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);</span>
+<span class="lineNum">     939 </span><span class="lineCov">         10 :     } else {</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :         while (right - left &gt; 1) {</span>
+<span class="lineNum">     941 </span><span class="lineNoCov">          0 :             if (left + 1 &lt;= fractionalIndex) { left++; }</span>
+<span class="lineNum">     942 </span><span class="lineNoCov">          0 :             if (right - 1 &gt; fractionalIndex) { right--; }</span>
+<span class="lineNum">     943 </span>            :         }
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 :         Double leftD = (Double)left;</span>
+<span class="lineNum">     945 </span><span class="lineNoCov">          0 :         Double rightD = (Double)right;</span>
+<span class="lineNum">     946 </span><span class="lineNoCov">          0 :         Double leftValue = ReadDoubleFromMemory(arrayIn-&gt;ElementType(), arrayIn-&gt;BeginAt(left));</span>
+<span class="lineNum">     947 </span><span class="lineNoCov">          0 :         Double rightValue = ReadDoubleFromMemory(arrayIn-&gt;ElementType(), arrayIn-&gt;BeginAt(right));</span>
+<span class="lineNum">     948 </span><span class="lineNoCov">          0 :         Double y = rightValue*(fractionalIndex - leftD)/(rightD - leftD) + leftValue*(rightD - fractionalIndex)/(rightD - leftD);</span>
+<span class="lineNum">     949 </span><span class="lineNoCov">          0 :         *(Double*)_ParamPointer(0) = y;</span>
+<span class="lineNum">     950 </span>            :     }
+<span class="lineNum">     951 </span><span class="lineCov">         10 :     return _NextInstruction();</span>
+<a name="952"><span class="lineNum">     952 </span><span class="lineCov">         10 : }</span></a>
+<span class="lineNum">     953 </span>            : 
+<span class="lineNum">     954 </span>            : VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, IntIndex)
+<span class="lineNum">     955 </span>            : {
+<span class="lineNum">     956 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(1);</span>
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :     Double thresholdY = _Param(2);</span>
+<span class="lineNum">     958 </span><span class="lineNoCov">          0 :     IntIndex startIndex = _ParamPointer(3) == NULL? 0 : _Param(3);</span>
+<span class="lineNum">     959 </span><span class="lineNoCov">          0 :     if(arrayIn-&gt;Length() == 0) {</span>
+<span class="lineNum">     960 </span><span class="lineNoCov">          0 :         _Param(0) = NAN;</span>
+<span class="lineNum">     961 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     962 </span><span class="lineNoCov">          0 :     TypeRef elementType = arrayIn-&gt;ElementType();</span>
+<span class="lineNum">     963 </span>            :     Double left, right;
+<span class="lineNum">     964 </span>            :     Double leftValue, rightValue;
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :     if(elementType-&gt;IsCluster()) {</span>
+<span class="lineNum">     966 </span><span class="lineNoCov">          0 :         TypeRef elementXType = elementType-&gt;GetSubElement(0);</span>
+<span class="lineNum">     967 </span><span class="lineNoCov">          0 :         TypeRef elementYType = elementType-&gt;GetSubElement(1);</span>
+<span class="lineNum">     968 </span><span class="lineNoCov">          0 :         IntIndex fieldOffsetX = elementXType-&gt;ElementOffset();</span>
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :         IntIndex fieldOffsetY = elementYType-&gt;ElementOffset();</span>
+<span class="lineNum">     970 </span><span class="lineNoCov">          0 :         for(IntIndex i = startIndex; i &lt; arrayIn-&gt;Length(); i++) {</span>
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :             void* xPtr = arrayIn-&gt;BeginAt(i) + fieldOffsetX;</span>
+<span class="lineNum">     972 </span><span class="lineNoCov">          0 :             void* yPtr = arrayIn-&gt;BeginAt(i) + fieldOffsetY;</span>
+<span class="lineNum">     973 </span><span class="lineNoCov">          0 :             Double x = ReadDoubleFromMemory(elementXType, xPtr);</span>
+<span class="lineNum">     974 </span><span class="lineNoCov">          0 :             Double y = ReadDoubleFromMemory(elementYType, yPtr);</span>
+<span class="lineNum">     975 </span><span class="lineNoCov">          0 :             if (i == startIndex) { right = left = i;}</span>
+<span class="lineNum">     976 </span><span class="lineNoCov">          0 :             if (y &lt; thresholdY) {</span>
+<span class="lineNum">     977 </span>            :                 left = x;
+<span class="lineNum">     978 </span>            :                 leftValue = y;
+<span class="lineNum">     979 </span>            :                 right = left;
+<span class="lineNum">     980 </span>            :             } else {
+<span class="lineNum">     981 </span>            :                 left = right;
+<span class="lineNum">     982 </span>            :                 right = x;
+<span class="lineNum">     983 </span>            :                 rightValue = y;
+<span class="lineNum">     984 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">     985 </span>            :             }
+<span class="lineNum">     986 </span>            :         }
+<span class="lineNum">     987 </span>            :     } else {
+<span class="lineNum">     988 </span><span class="lineNoCov">          0 :         for(IntIndex i = startIndex; i &lt; arrayIn-&gt;Length(); i++) {</span>
+<span class="lineNum">     989 </span><span class="lineNoCov">          0 :             Double y = ReadDoubleFromMemory(arrayIn-&gt;ElementType(), arrayIn-&gt;BeginAt(i));</span>
+<span class="lineNum">     990 </span><span class="lineNoCov">          0 :             if (i == startIndex) { left = right = (Double)startIndex;}</span>
+<span class="lineNum">     991 </span><span class="lineNoCov">          0 :             if (y &lt; thresholdY) {</span>
+<span class="lineNum">     992 </span><span class="lineNoCov">          0 :                 left = (Double)i;</span>
+<span class="lineNum">     993 </span>            :                 leftValue = y;
+<span class="lineNum">     994 </span>            :                 right = left;
+<span class="lineNum">     995 </span>            :             } else {
+<span class="lineNum">     996 </span>            :                 left = right;
+<span class="lineNum">     997 </span><span class="lineNoCov">          0 :                 right = (Double)i;</span>
+<span class="lineNum">     998 </span>            :                 rightValue = y;
+<span class="lineNum">     999 </span><span class="lineNoCov">          0 :                 break;</span>
+<span class="lineNum">    1000 </span>            :             }
+<span class="lineNum">    1001 </span>            :         }
+<span class="lineNum">    1002 </span>            :     }
+<span class="lineNum">    1003 </span><span class="lineNoCov">          0 :     if (left == right) {</span>
+<span class="lineNum">    1004 </span><span class="lineNoCov">          0 :         if(left == startIndex) {</span>
+<span class="lineNum">    1005 </span><span class="lineNoCov">          0 :             _Param(0) = startIndex;</span>
+<span class="lineNum">    1006 </span><span class="lineNoCov">          0 :         }else {</span>
+<span class="lineNum">    1007 </span><span class="lineNoCov">          0 :             _Param(0) = arrayIn-&gt;Length() - 1;</span>
+<span class="lineNum">    1008 </span>            :         }
+<span class="lineNum">    1009 </span>            :     } else {
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :         if (leftValue == rightValue) {</span>
+<span class="lineNum">    1011 </span><span class="lineNoCov">          0 :             _Param(0) = (left + right)/2;</span>
+<span class="lineNum">    1012 </span><span class="lineNoCov">          0 :         } else {</span>
+<span class="lineNum">    1013 </span><span class="lineNoCov">          0 :             _Param(0) = left*(rightValue - thresholdY)/(rightValue - leftValue) + right*(thresholdY - leftValue)/(rightValue - leftValue);</span>
+<span class="lineNum">    1014 </span>            :         }
+<span class="lineNum">    1015 </span>            :     }
+<span class="lineNum">    1016 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">    1017 </span>            : }
+<span class="lineNum">    1018 </span>            : 
+<span class="lineNum">    1019 </span>            : struct ArrayInterleaveParamBlock : public VarArgInstruction
+<span class="lineNum">    1020 </span>            : {
+<a name="1021"><span class="lineNum">    1021 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayOut);</a>
+<span class="lineNum">    1022 </span>            :     _ParamImmediateDef(TypedArrayCoreRef*, ArrayPrimitives[1]);
+<span class="lineNum">    1023 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="1024"><span class="lineNum">    1024 </span>            : };</a>
+<span class="lineNum">    1025 </span>            : 
+<span class="lineNum">    1026 </span>            : VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
+<span class="lineNum">    1027 </span>            : {
+<span class="lineNum">    1028 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayOut = _Param(ArrayOut);</span>
+<span class="lineNum">    1029 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);</span>
+<span class="lineNum">    1030 </span><span class="lineNoCov">          0 :     IntIndex numberOfInput = (_ParamVarArgCount() -1);</span>
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :     IntIndex length = (*arrayInputs[0])-&gt;Length();</span>
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :     for(IntIndex i = 0; i &lt; numberOfInput; i++) {</span>
+<span class="lineNum">    1033 </span><span class="lineNoCov">          0 :         if (length &gt; (*arrayInputs[i])-&gt;Length()) {</span>
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :             length = (*arrayInputs[i])-&gt;Length();</span>
+<span class="lineNum">    1035 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">    1036 </span>            :     }
+<span class="lineNum">    1037 </span><span class="lineNoCov">          0 :     arrayOut-&gt;Resize1D(length*numberOfInput);</span>
+<span class="lineNum">    1038 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; length; i++) {</span>
+<span class="lineNum">    1039 </span><span class="lineNoCov">          0 :         for(IntIndex k = 0; k &lt; numberOfInput; k++) {</span>
+<span class="lineNum">    1040 </span><span class="lineNoCov">          0 :             TypedArrayCoreRef arrayK = *arrayInputs[k];</span>
+<span class="lineNum">    1041 </span><span class="lineNoCov">          0 :             arrayOut-&gt;ElementType()-&gt;CopyData(arrayK-&gt;BeginAt(i), arrayOut-&gt;BeginAt(i*numberOfInput + k));</span>
+<span class="lineNum">    1042 </span>            :         }
+<span class="lineNum">    1043 </span>            :     }
+<span class="lineNum">    1044 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">    1045 </span>            : }
+<span class="lineNum">    1046 </span>            : 
+<span class="lineNum">    1047 </span>            : struct IndexBundleClusterArrayParamBlock : public VarArgInstruction
+<span class="lineNum">    1048 </span>            : {
+<a name="1049"><span class="lineNum">    1049 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayCluster);</a>
+<span class="lineNum">    1050 </span>            :     _ParamImmediateDef(TypedArrayCoreRef*, ArrayPrimitives[1]);
+<a name="1051"><span class="lineNum">    1051 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHODV()</span></a>
+<span class="lineNum">    1052 </span>            : };
+<span class="lineNum">    1053 </span>            : VIREO_FUNCTION_SIGNATUREV(IndexBundleClusterArray, IndexBundleClusterArrayParamBlock)
+<span class="lineNum">    1054 </span>            : {
+<span class="lineNum">    1055 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayCluster = _Param(ArrayCluster);</span>
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);</span>
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :     IntIndex numberOfFields = (_ParamVarArgCount() -1);</span>
+<span class="lineNum">    1058 </span><span class="lineNoCov">          0 :     IntIndex length = (*(arrayInputs[0]))-&gt;Length();</span>
+<span class="lineNum">    1059 </span>            : 
+<span class="lineNum">    1060 </span><span class="lineNoCov">          0 :     for (IntIndex i = 1; i &lt; numberOfFields; i++) {</span>
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :         if (length &gt; (*(arrayInputs[i]))-&gt;Length()) {</span>
+<span class="lineNum">    1062 </span><span class="lineNoCov">          0 :             length = (*(arrayInputs[i]))-&gt;Length();</span>
+<span class="lineNum">    1063 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">    1064 </span>            :     }
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 :     arrayCluster-&gt;Resize1D(length);</span>
+<span class="lineNum">    1066 </span><span class="lineNoCov">          0 :     TypeRef clusterType = arrayCluster-&gt;ElementType();</span>
+<span class="lineNum">    1067 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; length; i++) {</span>
+<span class="lineNum">    1068 </span><span class="lineNoCov">          0 :         AQBlock1 *clusterElement = arrayCluster-&gt;BeginAt(i);</span>
+<span class="lineNum">    1069 </span><span class="lineNoCov">          0 :         for (IntIndex d = 0; d &lt; numberOfFields; d++) {</span>
+<span class="lineNum">    1070 </span><span class="lineNoCov">          0 :             TypeRef elementType = clusterType-&gt;GetSubElement(d);</span>
+<span class="lineNum">    1071 </span><span class="lineNoCov">          0 :             IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">    1072 </span><span class="lineNoCov">          0 :             AQBlock1 *pElement = clusterElement + offset;</span>
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :             TypedArrayCoreRef arrayInput = *(arrayInputs[d]);</span>
+<span class="lineNum">    1074 </span><span class="lineNoCov">          0 :             elementType-&gt;CopyData(arrayInput-&gt;BeginAt(i), pElement);</span>
+<span class="lineNum">    1075 </span>            :         }
+<span class="lineNum">    1076 </span>            :     }
+<span class="lineNum">    1077 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">    1078 </span>            : }
+<span class="lineNum">    1079 </span>            : 
+<span class="lineNum">    1080 </span>            : struct BuildClusterArrayParamBlock : public VarArgInstruction
+<span class="lineNum">    1081 </span>            : {
+<a name="1082"><span class="lineNum">    1082 </span>            :     _ParamDef(TypedArrayCoreRef, ArrayCluster);</a>
+<span class="lineNum">    1083 </span>            :     _ParamImmediateDef(void*, ArrayPrimitives[1]);
+<span class="lineNum">    1084 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="1085"><span class="lineNum">    1085 </span>            : };</a>
+<span class="lineNum">    1086 </span>            : 
+<span class="lineNum">    1087 </span>            : VIREO_FUNCTION_SIGNATUREV(BuildClusterArray, BuildClusterArrayParamBlock)
+<span class="lineNum">    1088 </span>            : {
+<span class="lineNum">    1089 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayCluster = _Param(ArrayCluster);</span>
+<span class="lineNum">    1090 </span><span class="lineNoCov">          0 :     void **inputElements = _ParamImmediate(ArrayPrimitives);</span>
+<span class="lineNum">    1091 </span><span class="lineNoCov">          0 :     IntIndex arrayLength = (_ParamVarArgCount() -1);</span>
+<span class="lineNum">    1092 </span><span class="lineNoCov">          0 :     arrayCluster-&gt;Resize1D(arrayLength);</span>
+<span class="lineNum">    1093 </span><span class="lineNoCov">          0 :     TypeRef clusterType = arrayCluster-&gt;ElementType();</span>
+<span class="lineNum">    1094 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; arrayCluster-&gt;Length(); i++) {</span>
+<span class="lineNum">    1095 </span><span class="lineNoCov">          0 :        AQBlock1 *clusterElement = arrayCluster-&gt;BeginAt(i);</span>
+<span class="lineNum">    1096 </span><span class="lineNoCov">          0 :        TypeRef elementType = clusterType-&gt;GetSubElement(0);</span>
+<span class="lineNum">    1097 </span><span class="lineNoCov">          0 :        IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 :        AQBlock1 *pElement = clusterElement + offset;</span>
+<span class="lineNum">    1099 </span><span class="lineNoCov">          0 :        elementType-&gt;CopyData(inputElements[i], pElement);</span>
+<span class="lineNum">    1100 </span>            :     }
+<span class="lineNum">    1101 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="1102"><span class="lineNum">    1102 </span>            : }</a>
+<span class="lineNum">    1103 </span>            : 
+<span class="lineNum">    1104 </span>            : VIREO_FUNCTION_SIGNATURE3(ArrayToCluster, StaticType, void, TypedArrayCoreRef)
+<span class="lineNum">    1105 </span>            : {
+<span class="lineNum">    1106 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayIn = _Param(2);</span>
+<span class="lineNum">    1107 </span><span class="lineNoCov">          0 :     void* cluster = _ParamPointer(1);</span>
+<span class="lineNum">    1108 </span><span class="lineNoCov">          0 :     TypeRef clusterType = _ParamPointer(0);</span>
+<span class="lineNum">    1109 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; arrayIn-&gt;Length() &amp;&amp; i &lt; clusterType-&gt;SubElementCount(); i++) {</span>
+<span class="lineNum">    1110 </span><span class="lineNoCov">          0 :          TypeRef elementType = clusterType-&gt;GetSubElement(i);</span>
+<span class="lineNum">    1111 </span><span class="lineNoCov">          0 :          IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :          AQBlock1 *pElement = (AQBlock1*)cluster + offset;</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :          elementType-&gt;CopyData(arrayIn-&gt;BeginAt(i), pElement);</span>
+<span class="lineNum">    1114 </span>            :       }
+<span class="lineNum">    1115 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="1116"><span class="lineNum">    1116 </span>            : }</a>
+<span class="lineNum">    1117 </span>            : 
+<span class="lineNum">    1118 </span>            : VIREO_FUNCTION_SIGNATURE3(ClusterToArray, TypedArrayCoreRef, StaticType, void)
+<span class="lineNum">    1119 </span>            : {
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef arrayOut = _Param(0);</span>
+<span class="lineNum">    1121 </span><span class="lineNoCov">          0 :     void* cluster = _ParamPointer(2);</span>
+<span class="lineNum">    1122 </span><span class="lineNoCov">          0 :     TypeRef clusterType = _ParamPointer(1);</span>
+<span class="lineNum">    1123 </span><span class="lineNoCov">          0 :     arrayOut-&gt;Resize1D( clusterType-&gt;SubElementCount());</span>
+<span class="lineNum">    1124 </span><span class="lineNoCov">          0 :     for (IntIndex i = 0; i &lt; arrayOut-&gt;Length(); i++) {</span>
+<span class="lineNum">    1125 </span><span class="lineNoCov">          0 :          TypeRef elementType = clusterType-&gt;GetSubElement(i);</span>
+<span class="lineNum">    1126 </span><span class="lineNoCov">          0 :          IntIndex offset = elementType-&gt;ElementOffset();</span>
+<span class="lineNum">    1127 </span><span class="lineNoCov">          0 :          AQBlock1 *pElement = (AQBlock1*)cluster + offset;</span>
+<span class="lineNum">    1128 </span><span class="lineNoCov">          0 :          elementType-&gt;CopyData(pElement, arrayOut-&gt;BeginAt(i));</span>
+<span class="lineNum">    1129 </span>            :       }
+<span class="lineNum">    1130 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">    1131 </span>            : }
+<span class="lineNum">    1132 </span>            : //#define VIREO_VECTOR_SPECIALIZATION_TEST
+<span class="lineNum">    1133 </span>            : 
+<span class="lineNum">    1134 </span>            : #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
+<span class="lineNum">    1135 </span>            : 
+<span class="lineNum">    1136 </span>            : #if defined(kVireoOS_macosxU)
+<span class="lineNum">    1137 </span>            :     #include &lt;Accelerate/Accelerate.h&gt;
+<span class="lineNum">    1138 </span>            : #else
+<span class="lineNum">    1139 </span>            : #endif
+<span class="lineNum">    1140 </span>            : 
+<span class="lineNum">    1141 </span>            : // Some early experimental GPU accelerated functions on the Mac/iOS
+<span class="lineNum">    1142 </span>            : VIREO_FUNCTION_SIGNATURE3(Mul_VDouble, TypedArray1D&lt;Double&gt;*, TypedArray1D&lt;Double&gt;*, TypedArray1D&lt;Double&gt;*)
+<span class="lineNum">    1143 </span>            : {
+<span class="lineNum">    1144 </span>            :     IntIndex inputASize = _Param(0)-&gt;Length();
+<span class="lineNum">    1145 </span>            :     IntIndex inputBSize = _Param(1)-&gt;Length();
+<span class="lineNum">    1146 </span>            :     IntIndex outputSize = _Param(2)-&gt;Length();
+<span class="lineNum">    1147 </span>            :     IntIndex minSize = inputASize &gt; inputBSize ? inputBSize : inputASize;
+<span class="lineNum">    1148 </span>            : 
+<span class="lineNum">    1149 </span>            :     if (outputSize != minSize) {
+<span class="lineNum">    1150 </span>            :         _Param(2)-&gt;Resize1D(minSize);
+<span class="lineNum">    1151 </span>            :     }
+<span class="lineNum">    1152 </span>            :     gPlatform.IO.Printf(&quot;Accelerated Vector Multiply\n&quot;);
+<span class="lineNum">    1153 </span>            : 
+<span class="lineNum">    1154 </span>            :     Double *pSrcA = _Param(0)-&gt;Begin();
+<span class="lineNum">    1155 </span>            :     Double *pSrcB = _Param(1)-&gt;Begin();
+<span class="lineNum">    1156 </span>            :     Double *pDestC = _Param(2)-&gt;Begin();
+<span class="lineNum">    1157 </span>            : 
+<span class="lineNum">    1158 </span>            : #if defined(kVireoOS_macosxU)
+<span class="lineNum">    1159 </span>            :     vDSP_vmulD(pSrcA, 1, pSrcB, 1, pDestC, 1, minSize);
+<span class="lineNum">    1160 </span>            : #else
+<span class="lineNum">    1161 </span>            : #endif
+<span class="lineNum">    1162 </span>            :     return _NextInstruction();
+<span class="lineNum">    1163 </span>            : }
+<span class="lineNum">    1164 </span>            : 
+<span class="lineNum">    1165 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1166 </span>            : VIREO_FUNCTION_SIGNATURE3(Add_VDouble, TypedArray1D&lt;Double&gt;*, TypedArray1D&lt;Double&gt;*, TypedArray1D&lt;Double&gt;*)
+<span class="lineNum">    1167 </span>            : {
+<span class="lineNum">    1168 </span>            :     IntIndex inputASize = _Param(0)-&gt;Length();
+<span class="lineNum">    1169 </span>            :     IntIndex inputBSize = _Param(1)-&gt;Length();
+<span class="lineNum">    1170 </span>            :     IntIndex outputSize = _Param(2)-&gt;Length();
+<span class="lineNum">    1171 </span>            :     IntIndex minSize = inputASize &gt; inputBSize ? inputBSize : inputASize;
+<span class="lineNum">    1172 </span>            : 
+<span class="lineNum">    1173 </span>            :     if (outputSize != minSize) {
+<span class="lineNum">    1174 </span>            :         _Param(2)-&gt;Resize1D(minSize);
+<span class="lineNum">    1175 </span>            :     }
+<span class="lineNum">    1176 </span>            : 
+<span class="lineNum">    1177 </span>            :     gPlatform.IO.Printf(&quot;Accelerated Vector Add\n&quot;);
+<span class="lineNum">    1178 </span>            : 
+<span class="lineNum">    1179 </span>            :     Double *pSrcA = _Param(0)-&gt;Begin();
+<span class="lineNum">    1180 </span>            :     Double *pSrcB = _Param(1)-&gt;Begin();
+<span class="lineNum">    1181 </span>            :     Double *pDestC = _Param(2)-&gt;Begin();
+<span class="lineNum">    1182 </span>            : 
+<span class="lineNum">    1183 </span>            : #if defined(kVireoOS_macosxU)
+<span class="lineNum">    1184 </span>            :     vDSP_vaddD(pSrcA, 1, pSrcB, 1, pDestC, 1, minSize);
+<span class="lineNum">    1185 </span>            : #else
+<span class="lineNum">    1186 </span>            : #endif
+<span class="lineNum">    1187 </span>            :     return _NextInstruction();
+<span class="lineNum">    1188 </span>            : }
+<a name="1189"><span class="lineNum">    1189 </span>            : #endif</a>
+<span class="lineNum">    1190 </span>            : 
+<span class="lineNum">    1191 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(Array)</span>
+<span class="lineNum">    1192 </span><span class="lineCov">       3180 :     DEFINE_VIREO_REQUIRE(IEEE754Math)</span>
+<span class="lineNum">    1193 </span>            : #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
+<span class="lineNum">    1194 </span>            :     DEFINE_VIREO_REQUIRE(IEEE754Math)
+<span class="lineNum">    1195 </span>            :     DEFINE_VIREO_FUNCTION_CUSTOM(Mul, Mul_VDouble, &quot;p(i(a(Double *))i(a(Double *))o(a(Double *)))&quot;);
+<span class="lineNum">    1196 </span>            :     DEFINE_VIREO_FUNCTION_CUSTOM(Add, Add_VDouble, &quot;p(i(a(Double *))i(a(Double *))o(a(Double *)))&quot;);
+<span class="lineNum">    1197 </span>            : #endif
+<span class="lineNum">    1198 </span>            : 
+<span class="lineNum">    1199 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayFill, &quot;p(o(Array) i(Int32) i(*))&quot;)</span>
+<span class="lineNum">    1200 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayCapacity, &quot;p(i(Array) o(Int32))&quot;)</span>
+<span class="lineNum">    1201 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayLength, &quot;p(i(Array) o(Int32))&quot;)</span>
+<span class="lineNum">    1202 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayLengthN, &quot;p(i(Array) o(a(Int32 *)))&quot;)</span>
+<span class="lineNum">    1203 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayRank, &quot;p(i(Array) o(Int32))&quot;)</span>
+<span class="lineNum">    1204 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayElementType, &quot;p(i(Array) o(Type))&quot;)</span>
+<span class="lineNum">    1205 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayResize, &quot;p(io(Array) i(Int32))&quot;)</span>
+<span class="lineNum">    1206 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayDimensions, &quot;p(i(Array) o(a(Int32 *)))&quot;)</span>
+<span class="lineNum">    1207 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayResizeDimensions, &quot;p(io(Array) i(a(Int32 *)))&quot;)</span>
+<span class="lineNum">    1208 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayIndexElt, &quot;p(i(Array) i(Int32) o(*))&quot;)</span>
+<span class="lineNum">    1209 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayAppendElt, &quot;p(io(Array) i(*))&quot;)</span>
+<span class="lineNum">    1210 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, &quot;p(o(Array) i(Array) i(Int32) i(*))&quot;)</span>
+<span class="lineNum">    1211 </span>            :     //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, &quot;p(o(Array) i(Array) i(Int32) i(Array))&quot;)
+<span class="lineNum">    1212 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, &quot;p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">    1213 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArraySubset, &quot;p(o(Array) i(Array) i(Int32) i(Int32))&quot;)</span>
+<span class="lineNum">    1214 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayInsertElt, &quot;p(o(Array) i(Array) i(Int32) i(*))&quot;)</span>
+<span class="lineNum">    1215 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, &quot;p(o(Array) i(Array) i(Int32) i(Array))&quot;)</span>
+<span class="lineNum">    1216 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReverse, &quot;p(o(Array) i(Array))&quot;)</span>
+<span class="lineNum">    1217 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayRotate, &quot;p(o(Array) i(Array) i(Int32))&quot;)</span>
+<span class="lineNum">    1218 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayDelete, &quot;p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))&quot;)</span>
+<span class="lineNum">    1219 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArraySplit, &quot;p(o(Array) o(Array) i(Array) i(Int32))&quot;)</span>
+<span class="lineNum">    1220 </span><span class="lineCov">       1060 :     DEFINE_VIREO_GENERIC(Sort1DArray, &quot;p(o(Array) i(Array) s(Instruction))&quot;, EmitSortInstruction);</span>
+<span class="lineNum">    1221 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Sort1DArrayInternal, &quot;p(o(Array) i(Array) s(Instruction))&quot;)</span>
+<span class="lineNum">    1222 </span>            : 
+<span class="lineNum">    1223 </span><span class="lineCov">       1060 :     DEFINE_VIREO_GENERIC(ArrayMaxMin, &quot;p(i(Array) o(*) o(Int32) o(*) o(Int32))&quot;, EmitMaxMinInstruction);</span>
+<span class="lineNum">    1224 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, &quot;p(i(Array) o(*) o(Int32) o(*) o(Int32) s(Instruction))&quot;);</span>
+<span class="lineNum">    1225 </span>            : 
+<span class="lineNum">    1226 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReshape, &quot;p(i(VarArgCount) o(Array) i(Array) i(Int32))&quot;)</span>
+<span class="lineNum">    1227 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayTranspose, &quot;p(o(Array) i(Array))&quot;)</span>
+<span class="lineNum">    1228 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayInterpolate, &quot;p(o(*) i(Array) i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">    1229 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayThreshold, &quot;p(o(Double) i(Array) i(Double) i(Int32))&quot;)</span>
+<span class="lineNum">    1230 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayInterleave, &quot;p(i(VarArgCount) o(Array) i(Array))&quot;)</span>
+<span class="lineNum">    1231 </span>            : 
+<span class="lineNum">    1232 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(IndexBundleClusterArray, &quot;p(i(VarArgCount) o(Array) i(Array))&quot;)</span>
+<span class="lineNum">    1233 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(BuildClusterArray, &quot;p(i(VarArgCount) o(Array) i(*))&quot;)</span>
+<span class="lineNum">    1234 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayToCluster, &quot;p(o(StaticTypeAndData) i(Array))&quot;)</span>
+<span class="lineNum">    1235 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ClusterToArray, &quot;p(o(Array) i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">    1236 </span>            : #ifdef VIREO_TYPE_ArrayND
+<span class="lineNum">    1237 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayFillNDV, &quot;p(i(VarArgCount) o(Array) i(*) i(Int32) )&quot;)</span>
+<span class="lineNum">    1238 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, &quot;p(i(Array) i(*) i(*) o(*))&quot;)</span>
+<span class="lineNum">    1239 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, &quot;p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">    1240 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, &quot;p(i(VarArgCount) i(Array) o(*) i(Int32) )&quot;)</span>
+<span class="lineNum">    1241 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, &quot;p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )&quot;)</span>
+<span class="lineNum">    1242 </span>            :     // It might be helpful to have indexing functions that take the
+<span class="lineNum">    1243 </span>            :     // set of indexes as a vector, but that is not needed at this time.
+<span class="lineNum">    1244 </span>            :     // DEFINE_VIREO_FUNCTION(ArrayIndexEltND, &quot;p(i(Array) i(*) i(a(Int32 *)) )&quot;)
+<span class="lineNum">    1245 </span>            :     // DEFINE_VIREO_FUNCTION(ArrayReplaceEltND, &quot;p(io(Array) o(*) i(a(Int32 *)) )&quot;)
+<span class="lineNum">    1246 </span>            : #endif
+<span class="lineNum">    1247 </span>            : 
+<span class="lineNum">    1248 </span><span class="lineCov">       3180 : DEFINE_VIREO_END()</span>
+<a name="1249"><span class="lineNum">    1249 </span>            : </a>
+<span class="lineNum">    1250 </span>            : #ifdef VIREO_TYPE_Waveform
+<span class="lineNum">    1251 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(Waveform)</span>
+<span class="lineNum">    1252 </span><span class="lineCov">       4240 :     DEFINE_VIREO_REQUIRE(IEEE754Math)</span>
+<span class="lineNum">    1253 </span><span class="lineCov">       3180 :     DEFINE_VIREO_REQUIRE(Timestamp)</span>
+<span class="lineNum">    1254 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(AnalogWaveform, &quot;c(e(a(Double *) Y)e(Timestamp t0)e(Double dt))&quot;)</span>
+<span class="lineNum">    1255 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(DigitalWaveform, &quot;c(e(a(UInt8 * *) data)e(a(UInt32 *) transitions))&quot;)</span>
+<span class="lineNum">    1256 </span><span class="lineCov">       4240 : DEFINE_VIREO_END()</span>
+<span class="lineNum">    1257 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

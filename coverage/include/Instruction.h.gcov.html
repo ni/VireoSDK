@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - include/Instruction.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">include</a> - Instruction.h<span style="font-size: 80%;"> (source / <a href="Instruction.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">249</td>
+            <td class="headerCovTableEntry">306</td>
+            <td class="headerCovTableEntryMed">81.4 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            :  
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            :  
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Tools for defining Vireo functions in C++.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #ifndef Instruction_h
+<span class="lineNum">      15 </span>            : #define Instruction_h
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &quot;BuildConfig.h&quot;
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : namespace Vireo
+<span class="lineNum">      20 </span>            : {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : //------------------------------------------------------------
+<span class="lineNum">      23 </span>            : // For small MCUs special annotation is needed to read data from flash.
+<span class="lineNum">      24 </span>            : #ifdef VIVM_HARVARD
+<span class="lineNum">      25 </span>            :     #ifdef PROGMEM
+<span class="lineNum">      26 </span>            :         #define _PROGMEM PROGMEM
+<span class="lineNum">      27 </span>            :         // AVR uses GCC which supports 'typeof' extension Cx standard would be decltype, tough arduinos
+<span class="lineNum">      28 </span>            :         // gcc does not yet have full support for this function
+<span class="lineNum">      29 </span>            :         #define _PROGMEM_PTR(__this_ptr, _field) ((typeof(__this_ptr-&gt;_field))pgm_read_word(&amp;(__this_ptr-&gt;_field)))
+<span class="lineNum">      30 </span>            :     #else
+<span class="lineNum">      31 </span>            :         #error : Need defines to support harvard architechure
+<span class="lineNum">      32 </span>            :     #endif
+<span class="lineNum">      33 </span>            : #else
+<span class="lineNum">      34 </span>            :     #define _PROGMEM
+<span class="lineNum">      35 </span>            :     #define _PROGMEM_PTR(__this_ptr, _field)  (__this_ptr-&gt;_field)
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : //------------------------------------------------------------
+<span class="lineNum">      40 </span>            : // The minimal Instructions &quot;object&quot;
+<span class="lineNum">      41 </span>            : struct InstructionCore;
+<span class="lineNum">      42 </span>            : typedef InstructionCore* InstructionRef;
+<span class="lineNum">      43 </span>            : typedef InstructionRef (VIVM_FASTCALL _PROGMEM *InstructionFunction) (InstructionCore*);
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : struct InstructionCore
+<span class="lineNum">      46 </span>            : {
+<span class="lineNum">      47 </span>            :         InstructionFunction  _function;
+<span class="lineNum">      48 </span>            : };
+<span class="lineNum">      49 </span>            :    
+<span class="lineNum">      50 </span>            : // A non-null faked allocation for two pass packed instruction
+<span class="lineNum">      51 </span>            : // allocation. Used in pass 1.
+<span class="lineNum">      52 </span>            : #define kFakedInstruction ((InstructionCore*) 1)
+<span class="lineNum">      53 </span>            :     
+<span class="lineNum">      54 </span>            : //------------------------------------------------------------
+<span class="lineNum">      55 </span>            : // A struct used for accessing any number or arguments in a non type strict way.
+<span class="lineNum">      56 </span>            : struct GenericInstruction : public InstructionCore
+<span class="lineNum">      57 </span>            : {
+<span class="lineNum">      58 </span>            :     void* _args[1];  // may be zero or more elements
+<span class="lineNum">      59 </span>            : };
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : //------------------------------------------------------------
+<span class="lineNum">      62 </span>            : // Struct for var arg functions
+<span class="lineNum">      63 </span>            : struct VarArgInstruction : public InstructionCore
+<span class="lineNum">      64 </span>            : {
+<span class="lineNum">      65 </span>            :     size_t _count;   // may be zero or more arguments in addition to the count
+<span class="lineNum">      66 </span>            : };
+<span class="lineNum">      67 </span>            :     
+<span class="lineNum">      68 </span>            : //------------------------------------------------------------
+<span class="lineNum">      69 </span>            : // Each struct has a Next() method that can be used outside of the class to
+<span class="lineNum">      70 </span>            : // determine what the 'next' instruction is. If the instruction is derived
+<span class="lineNum">      71 </span>            : // from and extended it must be overridden, or else an incorrect result will
+<span class="lineNum">      72 </span>            : // be returned.
+<span class="lineNum">      73 </span>            : #define NEXT_INSTRUCTION_METHOD()   inline InstructionCore* Next() { return this + 1; }
+<span class="lineNum">      74 </span>            : #define NEXT_INSTRUCTION_METHODV()  inline InstructionCore* Next() { return ( (InstructionCore*) ((size_t*)((VarArgInstruction*)this + 1) + (int)this-&gt;_count) ); }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            : template &lt;class type0&gt;
+<span class="lineNum">      77 </span>            : struct Instruction1 : public InstructionCore
+<a name="78"><span class="lineNum">      78 </span>            : {</a>
+<span class="lineNum">      79 </span>            :     type0* _p0;
+<span class="lineNum">      80 </span><span class="lineCov">      51810 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">      81 </span>            : };
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : template &lt;class type0, class type1&gt;
+<span class="lineNum">      84 </span>            : struct Instruction2 : public Instruction1&lt;type0&gt;
+<a name="85"><span class="lineNum">      85 </span>            : {</a>
+<span class="lineNum">      86 </span>            :     type1* _p1;
+<span class="lineNum">      87 </span><span class="lineCov">  178582965 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">      88 </span>            : };
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : template &lt;class type0, class type1, class type2&gt;
+<span class="lineNum">      91 </span>            : struct Instruction3 : public Instruction2&lt;type0, type1&gt;
+<a name="92"><span class="lineNum">      92 </span>            : {</a>
+<span class="lineNum">      93 </span>            :     type2* _p2;
+<span class="lineNum">      94 </span><span class="lineCov">  166412750 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">      95 </span>            : };
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : template &lt;class type0, class type1, class type2, class type3&gt;
+<span class="lineNum">      98 </span>            : struct Instruction4 : public Instruction3&lt;type0, type1, type2&gt;
+<a name="99"><span class="lineNum">      99 </span>            : {</a>
+<span class="lineNum">     100 </span>            :     type3* _p3;
+<span class="lineNum">     101 </span><span class="lineCov">    5165105 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">     102 </span>            : };
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4&gt;
+<span class="lineNum">     105 </span>            : struct Instruction5 : public Instruction4&lt;type0, type1, type2, type3&gt;
+<a name="106"><span class="lineNum">     106 </span>            : {</a>
+<span class="lineNum">     107 </span>            :     type4* _p4;
+<span class="lineNum">     108 </span><span class="lineCov">         25 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">     109 </span>            : };
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4, class type5&gt;
+<span class="lineNum">     112 </span>            : struct Instruction6 : public Instruction5&lt;type0, type1, type2, type3, type4&gt;
+<a name="113"><span class="lineNum">     113 </span>            : {</a>
+<span class="lineNum">     114 </span>            :     type5* _p5;
+<span class="lineNum">     115 </span><span class="lineCov">         75 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">     116 </span>            : };
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4, class type5, class type6&gt;
+<span class="lineNum">     119 </span>            : struct Instruction7 : public Instruction6&lt;type0, type1, type2, type3, type4, type5&gt;
+<a name="120"><span class="lineNum">     120 </span>            : {</a>
+<span class="lineNum">     121 </span>            :     type6* _p6;
+<span class="lineNum">     122 </span><span class="lineCov">        325 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">     123 </span>            : };
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7&gt;
+<span class="lineNum">     126 </span>            : struct Instruction8 : public Instruction7&lt;type0, type1, type2, type3, type4, type5, type6&gt;
+<span class="lineNum">     127 </span>            : {
+<span class="lineNum">     128 </span>            :         type7* _p7;
+<span class="lineNum">     129 </span>            :         NEXT_INSTRUCTION_METHOD()
+<span class="lineNum">     130 </span>            : };
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8&gt;
+<span class="lineNum">     133 </span>            : struct Instruction9 : public Instruction8&lt;type0, type1, type2, type3, type4, type5, type6, type7&gt;
+<span class="lineNum">     134 </span>            : {
+<span class="lineNum">     135 </span>            :         type8* _p8;
+<span class="lineNum">     136 </span>            :         NEXT_INSTRUCTION_METHOD()
+<span class="lineNum">     137 </span>            : };
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : template &lt;class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8, class type9&gt;
+<span class="lineNum">     140 </span>            : struct Instruction10 : public Instruction9&lt;type0, type1, type2, type3, type4, type5, type6, type7, type8&gt;
+<span class="lineNum">     141 </span>            : {
+<span class="lineNum">     142 </span>            :         type9* _p9;
+<span class="lineNum">     143 </span>            :         NEXT_INSTRUCTION_METHOD()
+<span class="lineNum">     144 </span>            : };
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : //------------------------------------------------------------
+<span class="lineNum">     147 </span>            : // Macros to return a pointer to the primary &quot;next&quot; instruction
+<span class="lineNum">     148 </span>            : #define _NextInstruction() (_this-&gt;Next())
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : //------------------------------------------------------------
+<span class="lineNum">     151 </span>            : // Macros to define/access arguments passed by pointers in the snippet
+<span class="lineNum">     152 </span>            : #define _ParamDef(t, n)         t* _p##n
+<span class="lineNum">     153 </span>            : #define _Param(n)               (*_PROGMEM_PTR(_this, _p##n))
+<span class="lineNum">     154 </span>            : #define _ParamPointer(n)        (_PROGMEM_PTR(_this, _p##n))
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : // Macros to define/access arguments stored directly in the snippet
+<span class="lineNum">     157 </span>            : #define _ParamImmediateDef(t, n) t _pi##n
+<span class="lineNum">     158 </span>            : #define _ParamImmediate(n)      (_PROGMEM_PTR(_this, _pi##n))
+<span class="lineNum">     159 </span>            : #define _ParamMethod(n)         (_PROGMEM_PTR(_this, n))
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            : // Macro to access the arguments count variable in a variable argument functions.
+<span class="lineNum">     162 </span>            : // var-arg functions must derive from VarArgInstruction
+<span class="lineNum">     163 </span>            : // so the count will be the first argument in the snippet
+<span class="lineNum">     164 </span>            : #define _ParamVarArgCount()     ((Int32)_PROGMEM_PTR(_this, _count))
+<span class="lineNum">     165 </span>            :     
+<span class="lineNum">     166 </span>            : #ifdef _DEBUG
+<span class="lineNum">     167 </span>            : #define VIVM_TAIL_CALLS_USE_JMP 0
+<span class="lineNum">     168 </span>            : #else
+<span class="lineNum">     169 </span>            : #define VIVM_TAIL_CALLS_USE_JMP 1
+<span class="lineNum">     170 </span>            : #endif
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            : #if  VIVM_TAIL_CALLS_USE_JMP
+<span class="lineNum">     173 </span>            : // Compiler supports direct jump to last function. Save trip back to exec.
+<span class="lineNum">     174 </span>            : #define VIVM_TAIL(__instruction)  ((__instruction)-&gt;_function(__instruction))
+<span class="lineNum">     175 </span>            : #else
+<span class="lineNum">     176 </span>            : // Arbitrarily deep recursion does not help, just return
+<span class="lineNum">     177 </span>            : #define VIVM_TAIL(__instruction)  (__instruction)
+<span class="lineNum">     178 </span>            : #endif
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            : //------------------------------------------------------------
+<span class="lineNum">     181 </span>            : // Macros to make type strict single parameter function declarations for snippets
+<span class="lineNum">     182 </span>            : // that take arguments passed in a param block
+<span class="lineNum">     183 </span>            : #define VIREO_FUNCTION_SIGNATURET(_name_, t)  \
+<span class="lineNum">     184 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (t* _this _PROGMEM)
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            : #define VIREO_FUNCTION_SIGNATUREV(_name_, _type_) \
+<span class="lineNum">     187 </span>            :     extern InstructionCore* VIVM_FASTCALL _name_ (_type_* _this _PROGMEM)
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : #define VIREO_FUNCTION_SIGNATURE0(_name_) \
+<span class="lineNum">     190 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (InstructionCore* _this _PROGMEM)
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            : #define VIREO_FUNCTION_SIGNATURE1(_name_, t0) \
+<span class="lineNum">     193 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction1&lt;t0&gt;* _this _PROGMEM)
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : #define VIREO_FUNCTION_SIGNATURE2(_name_, t0, t1) \
+<span class="lineNum">     196 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction2&lt;t0, t1&gt;* _this _PROGMEM)
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            : #define VIREO_FUNCTION_SIGNATURE3(_name_, t0, t1, t2) \
+<span class="lineNum">     199 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction3&lt;t0, t1, t2&gt;* _this _PROGMEM)
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : #define VIREO_FUNCTION_SIGNATURE4(_name_, t0, t1, t2, t3) \
+<span class="lineNum">     202 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction4&lt;t0, t1, t2, t3&gt;* _this _PROGMEM)
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : #define VIREO_FUNCTION_SIGNATURE5(_name_, t0, t1, t2, t3, t4) \
+<span class="lineNum">     205 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction5&lt;t0, t1, t2, t3, t4&gt;* _this _PROGMEM)
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            : #define VIREO_FUNCTION_SIGNATURE6(_name_, t0, t1, t2, t3, t4, t5) \
+<span class="lineNum">     208 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction6&lt;t0, t1, t2, t3, t4, t5&gt;* _this _PROGMEM)
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : #define VIREO_FUNCTION_SIGNATURE7(_name_, t0, t1, t2, t3, t4, t5, t6) \
+<span class="lineNum">     211 </span>            :     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7&lt;t0, t1, t2, t3, t4, t5, t6&gt;* _this _PROGMEM)
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : #define VIREO_FUNCTION_SIGNATURE8(_name_, t0, t1, t2, t3, t4, t5, t6, t7) \
+<span class="lineNum">     214 </span>            :         VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction8&lt;t0, t1, t2, t3, t4, t5, t6, t7&gt;* _this _PROGMEM)
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : #define VIREO_FUNCTION_SIGNATURE9(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8) \
+<span class="lineNum">     217 </span>            :         VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction9&lt;t0, t1, t2, t3, t4, t5, t6, t7, t8&gt;* _this _PROGMEM)
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : #define VIREO_FUNCTION_SIGNATURE10(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) \
+<span class="lineNum">     220 </span>            :         VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction10&lt;t0, t1, t2, t3, t4, t5, t6, t7, t8, t9&gt;* _this _PROGMEM)
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            : // Macro used for static link projects where simple prototypes are needed. 
+<span class="lineNum">     223 </span>            : #define VIREO_FUNCTION_C_PROTO(_name_) VIREO_FUNCTION_SIGNATURE0(_name_)
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            : //------------------------------------------------------------
+<span class="lineNum">     226 </span>            : #define DECLARE_VIREO_PRIMITIVE0(_name_, _body_)        \
+<span class="lineNum">     227 </span>            : VIREO_FUNCTION_SIGNATURE0(_name_)                               \
+<span class="lineNum">     228 </span>            : {                                                                               \
+<span class="lineNum">     229 </span>            : VIVM_TRACE_FUNCTION(#_name_)            \
+<span class="lineNum">     230 </span>            : body_;                                                                  \
+<span class="lineNum">     231 </span>            : return _NextInstruction();                              \
+<span class="lineNum">     232 </span>            : }
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            : #define DECLARE_VIREO_PRIMITIVE1(_name_, _t0_, _body_)  \
+<span class="lineNum">     235 </span>            : VIREO_FUNCTION_SIGNATURE1(_name_, _t0_)                         \
+<span class="lineNum">     236 </span>            : {                                                                               \
+<span class="lineNum">     237 </span>            : VIVM_TRACE_FUNCTION(#_name_)            \
+<span class="lineNum">     238 </span>            : _body_;                                                                 \
+<span class="lineNum">     239 </span>            : return _NextInstruction();                              \
+<span class="lineNum">     240 </span>            : }
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : #define DECLARE_VIREO_PRIMITIVE2(_name_, _t0_, _t1_, _body_)    \
+<span class="lineNum">     243 </span>            : VIREO_FUNCTION_SIGNATURE2(_name_, _t0_, _t1_)                           \
+<span class="lineNum">     244 </span>            : {                                                                               \
+<span class="lineNum">     245 </span>            : VIVM_TRACE_FUNCTION(#_name_)            \
+<span class="lineNum">     246 </span>            : _body_;                                                                 \
+<span class="lineNum">     247 </span>            : return _NextInstruction();                              \
+<span class="lineNum">     248 </span>            : }
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            : #define DECLARE_VIREO_PRIMITIVE3(_name_, _t0_, _t1_, _t2_, _body_)      \
+<span class="lineNum">     251 </span>            : VIREO_FUNCTION_SIGNATURE3(_name_, _t0_, _t1_, _t2_)                             \
+<span class="lineNum">     252 </span>            : {                                                                               \
+<span class="lineNum">     253 </span>            : VIVM_TRACE_FUNCTION(#_name_)            \
+<span class="lineNum">     254 </span>            : _body_;                                                                 \
+<span class="lineNum">     255 </span>            : return _NextInstruction();              \
+<span class="lineNum">     256 </span>            : }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : #define DECLARE_VIREO_PRIMITIVE4(_name_, _t0_, _t1_, _t2_, _t3_, _body_)        \
+<span class="lineNum">     259 </span>            : VIREO_FUNCTION_SIGNATURE4(_name_, _t0_, _t1_, _t2_, _t3_)                               \
+<span class="lineNum">     260 </span>            : {                                                                               \
+<span class="lineNum">     261 </span>            : VIVM_TRACE_FUNCTION(#_name_)            \
+<span class="lineNum">     262 </span>            : _body_;                                                                 \
+<span class="lineNum">     263 </span>            : return _NextInstruction();                              \
+<span class="lineNum">     264 </span>            : }
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            : // This relies on tail call optimization for both directions
+<span class="lineNum">     267 </span>            : // putting code in to check for back branches dynamically would be a waste.
+<span class="lineNum">     268 </span>            : // Yields should be added by the instruction thread builder for back branches.
+<span class="lineNum">     269 </span>            : // arg 0 is reserved for use as the &quot;if true&quot; target address
+<span class="lineNum">     270 </span>            : #define DECLARE_VIREO_CONDITIONAL_BRANCH(_name_, _t1_, _t2_, _test_) \
+<span class="lineNum">     271 </span>            : VIREO_FUNCTION_SIGNATURE3(_name_, InstructionCore, _t1_, _t2_) \
+<span class="lineNum">     272 </span>            : {                                                                       \
+<span class="lineNum">     273 </span>            : if (_test_)                         \
+<span class="lineNum">     274 </span>            : {                                                                       \
+<span class="lineNum">     275 </span>            : return _this-&gt;_p0;                  \
+<span class="lineNum">     276 </span>            : }                                                                       \
+<span class="lineNum">     277 </span>            : return _NextInstruction();          \
+<span class="lineNum">     278 </span>            : }
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span>            : // This relies on tail call optimization for both directions
+<span class="lineNum">     281 </span>            : // putting code in to check for back branches dynamically would be a waste.
+<span class="lineNum">     282 </span>            : // Yields should be added by the instruction thread builder for back branches.
+<span class="lineNum">     283 </span>            : // arg 0 is reserved for use as the &quot;if true&quot; target address
+<span class="lineNum">     284 </span>            : #define DECLARE_VIREO_CONDITIONAL_BRANCH1(_name_, _t1_,  _test_) \
+<span class="lineNum">     285 </span>            : VIREO_FUNCTION_SIGNATURE2(_name_, InstructionCore, _t1_) \
+<span class="lineNum">     286 </span>            : {                                                                       \
+<span class="lineNum">     287 </span>            : if (_test_)                         \
+<span class="lineNum">     288 </span>            : {                                                                       \
+<span class="lineNum">     289 </span>            : return _this-&gt;_p0;                  \
+<span class="lineNum">     290 </span>            : }                                                                       \
+<span class="lineNum">     291 </span>            : return _NextInstruction();          \
+<span class="lineNum">     292 </span>            : }
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            : } // namespace Vireo
+<span class="lineNum">     295 </span>            : #endif //Instruction_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

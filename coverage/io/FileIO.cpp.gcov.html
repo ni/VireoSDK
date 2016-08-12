@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - io/FileIO.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">io</a> - FileIO.cpp<span style="font-size: 80%;"> (source / <a href="FileIO.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">56</td>
+            <td class="headerCovTableEntry">116</td>
+            <td class="headerCovTableEntryLo">48.3 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            :  Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :  This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :  SDG
+<span class="lineNum">       8 </span>            :  */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      11 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      12 </span>            : #include &quot;StringUtilities.h&quot;
+<span class="lineNum">      13 </span>            : #include &quot;TDCodecVia.h&quot;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #ifdef kVireoOS_win32U
+<span class="lineNum">      16 </span>            :         #include &lt;windows.h&gt;
+<span class="lineNum">      17 </span>            :         #include &lt;codecvt&gt;
+<span class="lineNum">      18 </span>            :     #include &lt;io.h&gt;
+<span class="lineNum">      19 </span>            :         #include &lt;regex&gt;
+<span class="lineNum">      20 </span>            :         #include &lt;iostream&gt; // REMOVE
+<span class="lineNum">      21 </span>            :     #include &lt;share.h&gt;
+<span class="lineNum">      22 </span>            :     typedef size_t ssize_t;
+<span class="lineNum">      23 </span>            :     #define POSIX_NAME(_name_) _##_name_
+<span class="lineNum">      24 </span>            :     #ifndef STDIN_FILENO
+<span class="lineNum">      25 </span>            :         #define STDIN_FILENO 0
+<span class="lineNum">      26 </span>            :         #define STDOUT_FILENO 1
+<span class="lineNum">      27 </span>            :         #define STDERR_FILENO 2
+<span class="lineNum">      28 </span>            :     #endif
+<span class="lineNum">      29 </span>            : #else
+<span class="lineNum">      30 </span>            :     #include &lt;unistd.h&gt;
+<span class="lineNum">      31 </span>            :     #include &lt;stdlib.h&gt;
+<span class="lineNum">      32 </span>            :     #ifdef VIREO_FILESYSTEM_DIRLIST
+<span class="lineNum">      33 </span>            :        #include &lt;dirent.h&gt;
+<span class="lineNum">      34 </span>            :     #endif
+<span class="lineNum">      35 </span>            :     #define POSIX_NAME(_name_) _name_
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : #include &lt;fcntl.h&gt;
+<span class="lineNum">      39 </span>            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      40 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : using namespace Vireo;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : typedef Int32 FileHandle;
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : #ifdef VIREO_FILESYSTEM
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : struct FileOpenInstruction : public InstructionCore
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span>            :     _ParamDef(StringRef, path);
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :     /*  operation:  0 - open
+<span class="lineNum">      53 </span>            :                     1 - replace
+<span class="lineNum">      54 </span>            :                     2 - create
+<span class="lineNum">      55 </span>            :                     3 - open or create
+<span class="lineNum">      56 </span>            :                     4 - replace or create
+<span class="lineNum">      57 </span>            :                     5 - replace or create with confirmation */
+<span class="lineNum">      58 </span>            :     _ParamDef(Int32, operation);
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     /*  access:     0 - read/write
+<span class="lineNum">      61 </span>            :                     1 - read-only
+<span class="lineNum">      62 </span>            :                     2 - write-only  */
+<span class="lineNum">      63 </span>            :     _ParamDef(Int32, access);
+<a name="64"><span class="lineNum">      64 </span>            : </a>
+<span class="lineNum">      65 </span>            :     _ParamDef(FileHandle, fileHandle);
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :     NEXT_INSTRUCTION_METHOD()</span>
+<span class="lineNum">      67 </span>            : };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :     enum OperationMode
+<span class="lineNum">      70 </span>            :     {
+<span class="lineNum">      71 </span>            :         OperationModes_openOnly = 0,
+<span class="lineNum">      72 </span>            :         OperationModes_replace = 1,
+<span class="lineNum">      73 </span>            :         OperationModes_create = 2,
+<span class="lineNum">      74 </span>            :         OperationModes_openOrCreate = 3,
+<span class="lineNum">      75 </span>            :         OperationModes_replaceOrCreate = 4,
+<span class="lineNum">      76 </span>            :     };
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     enum AccessMode
+<span class="lineNum">      79 </span>            :     {
+<span class="lineNum">      80 </span>            :         AccessModes_readWrite = 0,
+<span class="lineNum">      81 </span>            :         AccessModes_readOnly = 1,
+<span class="lineNum">      82 </span>            :         AccessModes_writeOnly = 2,
+<a name="83"><span class="lineNum">      83 </span>            :     };</a>
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
+<span class="lineNum">      86 </span>            : {
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :     AccessMode access = (AccessMode)_Param(access);</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     // Set flags for access mode.
+<span class="lineNum">      90 </span>            :     int flags = 0;
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :     switch (access) {</span>
+<span class="lineNum">      92 </span>            :         case AccessModes_readWrite:
+<span class="lineNum">      93 </span>            :             flags |= O_RDWR;
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">      95 </span>            :         case AccessModes_readOnly:
+<span class="lineNum">      96 </span>            :             flags |= O_RDONLY;
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">      98 </span>            :         case AccessModes_writeOnly:
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :             flags |= O_WRONLY;</span>
+<span class="lineNum">     100 </span>            :         default:
+<span class="lineNum">     101 </span>            :             break;
+<span class="lineNum">     102 </span>            :     }
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :     OperationMode operation = (OperationMode)_Param(operation);</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :     switch (operation) {</span>
+<span class="lineNum">     107 </span>            :         case OperationModes_openOnly:
+<span class="lineNum">     108 </span>            :             break;
+<span class="lineNum">     109 </span>            :         case OperationModes_replace:
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :             flags |= O_TRUNC;</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     112 </span>            :         case OperationModes_create:
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :             flags |= O_CREAT | O_EXCL;</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     115 </span>            :         case OperationModes_openOrCreate:
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :             flags |= O_CREAT;</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     118 </span>            :         case OperationModes_replaceOrCreate:
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :             flags |= O_TRUNC | O_CREAT;</span>
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     121 </span>            :         default:
+<span class="lineNum">     122 </span>            :             break;
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :     // Get the path in char* form
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :     TempStackCStringFromString    cString(_Param(path));</span>
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :     // TODO(fileio): What permissions should created files have?  Currently, all permissions are given.
+<span class="lineNum">     129 </span>            : #ifdef kVireoOS_win32U
+<span class="lineNum">     130 </span>            :     // TODO(fileio) error handling
+<span class="lineNum">     131 </span>            :     int refnum;
+<span class="lineNum">     132 </span>            :     _sopen_s(&amp;refnum, cString.BeginCStr(), flags, _SH_DENYWR, 0);
+<span class="lineNum">     133 </span>            :     _Param(fileHandle) = refnum;
+<span class="lineNum">     134 </span>            : #else
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     _Param(fileHandle) = open(cString.BeginCStr(), flags, 0777);</span>
+<span class="lineNum">     136 </span>            : #endif
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="138"><span class="lineNum">     138 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            : VIREO_FUNCTION_SIGNATURE2(StreamClose, FileHandle, Int32)
+<span class="lineNum">     141 </span>            : {
+<span class="lineNum">     142 </span>            : #ifdef VIREO_POSIX_FILEIO
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :     _Param(1) = POSIX_NAME(close)(_Param(0));</span>
+<span class="lineNum">     144 </span>            : #else
+<span class="lineNum">     145 </span>            :     #error paltfrom not supported
+<span class="lineNum">     146 </span>            : #endif
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     148 </span>            : }
+<a name="149"><span class="lineNum">     149 </span>            : </a>
+<span class="lineNum">     150 </span>            : //------------------------------------------------------------
+<span class="lineNum">     151 </span>            : VIREO_FUNCTION_SIGNATURE2(FileSize, FileHandle, Int32)
+<span class="lineNum">     152 </span>            : {
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :     struct stat fileInfo;</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :     fstat(_Param(0), &amp;fileInfo);</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :     _Param(1) = (Int32) fileInfo.st_size;</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 : }</span>
+<a name="158"><span class="lineNum">     158 </span>            : #endif  // VIREO_POSIX_FILESYSTEM</a>
+<span class="lineNum">     159 </span>            : //------------------------------------------------------------
+<span class="lineNum">     160 </span>            : VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedArrayCoreRef, Int32, Int32)
+<span class="lineNum">     161 </span>            : {
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     FileHandle handle   = _Param(0);</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :     TypedArrayCoreRef array   = _Param(1);</span>
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :     Int32 numElts       = _Param(2);</span>
+<span class="lineNum">     165 </span>            :     Int32 bytesToRead = 0;
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :     if (numElts == -1) {</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :         struct stat fileInfo;</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :         fstat(handle, &amp;fileInfo);</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :         bytesToRead = (Int32) fileInfo.st_size;</span>
+<span class="lineNum">     171 </span>            :         // TODO(fileio) is rounding correct here?
+<span class="lineNum">     172 </span>            :         // Only read full elements from the file
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :         numElts = bytesToRead / array-&gt;ElementType()-&gt;TopAQSize();</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :     if (array-&gt;Resize1DOrEmpty(numElts)) {</span>
+<span class="lineNum">     177 </span>            :         // Final count is determined by how big the array ended up.
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         bytesToRead = array-&gt;AQBlockLength(array-&gt;Length());</span>
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            : #ifdef VIREO_POSIX_FILEIO
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :         ssize_t bytesRead = POSIX_NAME(read)(handle, array-&gt;RawBegin(), bytesToRead);</span>
+<span class="lineNum">     182 </span>            : #else
+<span class="lineNum">     183 </span>            :         #error paltfrom not supported
+<span class="lineNum">     184 </span>            : #endif
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :         if (bytesRead &lt; 0) {</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :             _Param(3) = (Int32) bytesRead;  // TODO(fileio) error processing</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :             array-&gt;Resize1D(0);</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :         } else if (bytesToRead != bytesRead) {</span>
+<span class="lineNum">     190 </span>            :             // size the array to the number of full elements read.
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :             array-&gt;Resize1D((IntIndex) (bytesRead / array-&gt;ElementType()-&gt;TopAQSize()) );</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     193 </span>            :     }
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<a name="195"><span class="lineNum">     195 </span>            : }</a>
+<span class="lineNum">     196 </span>            : //------------------------------------------------------------
+<span class="lineNum">     197 </span>            : VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedArrayCoreRef, Int32)
+<span class="lineNum">     198 </span>            : {
+<span class="lineNum">     199 </span><span class="lineCov">      32405 :     FileHandle handle   = _Param(0);</span>
+<span class="lineNum">     200 </span><span class="lineCov">      32405 :     TypedArrayCoreRef array   = _Param(1);</span>
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span><span class="lineCov">      32405 :     Int32 eltsToWrite = array-&gt;Length();</span>
+<span class="lineNum">     203 </span><span class="lineCov">      32405 :     Int32 bytesToWrite = array-&gt;AQBlockLength(eltsToWrite);</span>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : #ifdef VIREO_POSIX_FILEIO
+<span class="lineNum">     206 </span><span class="lineCov">      32405 :     ssize_t result = POSIX_NAME(write)(handle, array-&gt;RawBegin(), bytesToWrite);</span>
+<span class="lineNum">     207 </span>            : #else
+<span class="lineNum">     208 </span>            :     #error paltfrom not supported
+<span class="lineNum">     209 </span>            : #endif
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span><span class="lineCov">      32405 :     _Param(2) = (Int32) result;  // TODO(fileio) process errors</span>
+<span class="lineNum">     212 </span><span class="lineCov">      32405 :     return _NextInstruction();</span>
+<a name="213"><span class="lineNum">     213 </span>            : }</a>
+<span class="lineNum">     214 </span>            : //------------------------------------------------------------
+<span class="lineNum">     215 </span>            : VIREO_FUNCTION_SIGNATURE4(StreamSetPosition, FileHandle, IntIndex, IntIndex, Int32)
+<span class="lineNum">     216 </span>            : {
+<span class="lineNum">     217 </span>            :     enum StartPositions
+<span class="lineNum">     218 </span>            :     {
+<span class="lineNum">     219 </span>            :         StartPositions_start,
+<span class="lineNum">     220 </span>            :         StartPositions_end,
+<span class="lineNum">     221 </span>            :         StartPositions_current
+<span class="lineNum">     222 </span>            :     } from;
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :     int fd = _Param(0);</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :     int offset = _Param(1);</span>
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :     from = (StartPositions)_Param(2);</span>
+<span class="lineNum">     227 </span>            :     int startPosition = 0;
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :     switch (from) {</span>
+<span class="lineNum">     230 </span>            :         case StartPositions_start:
+<span class="lineNum">     231 </span>            :             startPosition = SEEK_SET;
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     233 </span>            :         case StartPositions_end:
+<span class="lineNum">     234 </span>            :             startPosition = SEEK_END;
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     236 </span>            :         case StartPositions_current:
+<span class="lineNum">     237 </span>            :             startPosition = SEEK_CUR;
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     239 </span>            :         default:
+<span class="lineNum">     240 </span>            :             break;
+<span class="lineNum">     241 </span>            :     }
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :     _Param(3) = (Int32)POSIX_NAME(lseek)(fd, offset, startPosition);</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     244 </span>            : }
+<a name="245"><span class="lineNum">     245 </span>            : #ifdef VIREO_FILESYSTEM</a>
+<span class="lineNum">     246 </span>            : //------------------------------------------------------------
+<span class="lineNum">     247 </span>            : VIREO_FUNCTION_SIGNATURE2(FileDelete, StringRef, Int32)
+<span class="lineNum">     248 </span>            : {
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :     TempStackCStringFromString    cString(_Param(0));</span>
+<span class="lineNum">     250 </span>            :     // TODO(fileio) error support
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :     _Param(1) = remove(cString.BeginCStr());</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     253 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     254 </span>            : #endif
+<span class="lineNum">     255 </span>            : //------------------------------------------------------------
+<span class="lineNum">     256 </span>            : #ifdef VIREO_FILESYSTEM_DIRLIST
+<a name="257"><span class="lineNum">     257 </span>            : // A start at directory listing. This will be a good test case</a>
+<span class="lineNum">     258 </span>            : // for passing in a VI as a comparison proc
+<span class="lineNum">     259 </span>            : VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D&lt;StringRef&gt;*)
+<span class="lineNum">     260 </span>            : {
+<span class="lineNum">     261 </span><span class="lineCov">          5 :     TempStackCStringFromString    cString(_Param(0));</span>
+<span class="lineNum">     262 </span><span class="lineCov">          5 :     TypedArray1D&lt;StringRef&gt;* fileNames = _Param(1);</span>
+<span class="lineNum">     263 </span>            : #if kVireoOS_win32U
+<span class="lineNum">     264 </span>            :         HANDLE dir_handle = INVALID_HANDLE_VALUE;
+<span class="lineNum">     265 </span>            :         WIN32_FIND_DATA ffd;
+<span class="lineNum">     266 </span>            :         std::string directory_path = std::string(cString.BeginCStr());
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            :         // Replace the '/' with '\' in the folder path
+<span class="lineNum">     269 </span>            :         std::regex rx(&quot;/&quot;);
+<span class="lineNum">     270 </span>            :         directory_path = std::regex_replace(directory_path, rx, &quot;\\&quot;, std::regex_constants::match_any);
+<span class="lineNum">     271 </span>            :         directory_path = directory_path + &quot;\\*&quot;; // append a wildcard to search for all files in folder
+<span class="lineNum">     272 </span>            :         dir_handle = FindFirstFile(directory_path.c_str(), &amp;ffd);
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span>            :         if (dir_handle == INVALID_HANDLE_VALUE) {
+<span class="lineNum">     275 </span>            :                 // No place to handle possible errors, just dump the output
+<span class="lineNum">     276 </span>            :                 printf(&quot;Error: %d\n&quot;, GetLastError());
+<span class="lineNum">     277 </span>            :                 FindClose(dir_handle); // close the HANDLE
+<span class="lineNum">     278 </span>            :                 fileNames-&gt;Resize1D(0);
+<span class="lineNum">     279 </span>            :                 return _NextInstruction();
+<span class="lineNum">     280 </span>            :         }
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            :         // Get the total count of filenames to resize the array
+<span class="lineNum">     283 </span>            :         std::vector&lt;WIN32_FIND_DATA&gt; filenames;
+<span class="lineNum">     284 </span>            :         do {
+<span class="lineNum">     285 </span>            :                 filenames.push_back(std::move(ffd));
+<span class="lineNum">     286 </span>            :         } while (FindNextFile(dir_handle, &amp;ffd) != 0);
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            :         // Check for any errors
+<span class="lineNum">     289 </span>            :         DWORD err = GetLastError();
+<span class="lineNum">     290 </span>            :         if (err != ERROR_NO_MORE_FILES) {
+<span class="lineNum">     291 </span>            :                 // No place to handle possible errors, just dump the output
+<span class="lineNum">     292 </span>            :                 printf(&quot;Error: %d\n&quot;, err);
+<span class="lineNum">     293 </span>            :                 FindClose(dir_handle); // close the HANDLE
+<span class="lineNum">     294 </span>            :                 fileNames-&gt;Resize1D(0);
+<span class="lineNum">     295 </span>            :                 return _NextInstruction();
+<span class="lineNum">     296 </span>            :         }
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            :         // Sort the vector alphabetically be filename
+<span class="lineNum">     299 </span>            :         std::sort(filenames.begin(), filenames.end(), [](WIN32_FIND_DATA dataA, WIN32_FIND_DATA dataB) {
+<span class="lineNum">     300 </span>            :                 return std::string(dataA.cFileName) &lt; std::string(dataB.cFileName);
+<span class="lineNum">     301 </span>            :         });
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :         // Add filenames to array
+<span class="lineNum">     304 </span>            :         Int32 file_count = filenames.size();
+<span class="lineNum">     305 </span>            :         fileNames-&gt;Resize1DOrEmpty(file_count);
+<span class="lineNum">     306 </span>            :         for (Int32 i = 0; i &lt; file_count; i++) {
+<span class="lineNum">     307 </span>            :                 (*fileNames-&gt;BeginAt(i))-&gt;CopyFrom(
+<span class="lineNum">     308 </span>            :                         (IntIndex)strlen(filenames[i].cFileName),
+<span class="lineNum">     309 </span>            :                         reinterpret_cast&lt;Utf8Char*&gt;(filenames[i].cFileName));
+<span class="lineNum">     310 </span>            :         }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :         FindClose(dir_handle); // close the HANDLE
+<span class="lineNum">     313 </span>            : #elif kVireoOS_linuxU || kVireoOS_macosxU
+<span class="lineNum">     314 </span>            :     struct dirent **dirInfos;
+<span class="lineNum">     315 </span><span class="lineCov">          5 :     Int32 count = scandir(cString.BeginCStr(), &amp;dirInfos, 0, alphasort);</span>
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span><span class="lineCov">         10 :     if (count &gt;= 0) {</span>
+<span class="lineNum">     318 </span>            :         // For now get all the names
+<span class="lineNum">     319 </span><span class="lineCov">         10 :         fileNames-&gt;Resize1DOrEmpty(count);</span>
+<span class="lineNum">     320 </span><span class="lineCov">          5 :         Int32 eltCount = fileNames-&gt;Length();</span>
+<span class="lineNum">     321 </span><span class="lineCov">         60 :         for (Int32 i = 0; i &lt; eltCount; i++) {</span>
+<span class="lineNum">     322 </span><span class="lineCov">         50 :             (*fileNames-&gt;BeginAt(i))-&gt;CopyFrom(</span>
+<span class="lineNum">     323 </span><span class="lineCov">         25 :                 (IntIndex)strlen(dirInfos[i]-&gt;d_name),</span>
+<span class="lineNum">     324 </span>            :                 reinterpret_cast&lt;Utf8Char*&gt;(dirInfos[i]-&gt;d_name));
+<span class="lineNum">     325 </span>            :         }
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span><span class="lineCov">         60 :         for (Int32 i = 0; i &lt; count; i++) {</span>
+<span class="lineNum">     328 </span><span class="lineCov">         25 :             free(dirInfos[i]);</span>
+<span class="lineNum">     329 </span>            :         }
+<span class="lineNum">     330 </span><span class="lineCov">          5 :         free(dirInfos);</span>
+<span class="lineNum">     331 </span><span class="lineCov">          5 :     } else {</span>
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :         fileNames-&gt;Resize1D(0);</span>
+<span class="lineNum">     333 </span>            :     }
+<span class="lineNum">     334 </span>            : #endif
+<span class="lineNum">     335 </span><span class="lineCov">          5 :     return _NextInstruction();</span>
+<span class="lineNum">     336 </span><span class="lineCov">          5 : }</span>
+<span class="lineNum">     337 </span>            : #endif
+<span class="lineNum">     338 </span>            : 
+<span class="lineNum">     339 </span>            : //------------------------------------------------------------
+<span class="lineNum">     340 </span>            : // TODO(fileio) in a StaticTypeAndData function the TypeRef is directly stored in the instruction
+<span class="lineNum">     341 </span>            : // not a pointer to TypeRef held in the data space.   There needs to be a way to
+<span class="lineNum">     342 </span>            : // express that in the signature. What is really important is that the
+<span class="lineNum">     343 </span>            : // correct API is used to pick up the parameter.
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : #if defined(VIREO_VIA_FORMATTER)
+<span class="lineNum">     346 </span>            : //------------------------------------------------------------
+<span class="lineNum">     347 </span>            : struct PrintfParamBlock : public VarArgInstruction
+<span class="lineNum">     348 </span>            : {
+<a name="349"><span class="lineNum">     349 </span>            :     _ParamDef(StringRef, format);</a>
+<span class="lineNum">     350 </span>            :     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+<span class="lineNum">     351 </span><span class="lineCov">       9595 :     NEXT_INSTRUCTION_METHODV()</span>
+<a name="352"><span class="lineNum">     352 </span>            : };</a>
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            : VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
+<span class="lineNum">     355 </span>            : {
+<span class="lineNum">     356 </span><span class="lineCov">       9595 :     STACK_VAR(String, tempString);</span>
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :     // Ignore begin &amp; end, then div 2 since each argument is passed via two arguments.
+<span class="lineNum">     359 </span><span class="lineCov">       9595 :     Int32       count = (_ParamVarArgCount() - 1) / 2;</span>
+<span class="lineNum">     360 </span><span class="lineCov">      19190 :     SubString   format = _Param(format)-&gt;MakeSubStringAlias();</span>
+<span class="lineNum">     361 </span><span class="lineCov">       9595 :     StaticTypeAndData *arguments =  _ParamImmediate(argument1);</span>
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span><span class="lineCov">       9595 :     Format(&amp;format, count, arguments, tempString.Value);</span>
+<span class="lineNum">     364 </span><span class="lineCov">      28785 :     gPlatform.IO.Print(tempString.Value-&gt;Length(), (const char*)tempString.Value-&gt;Begin());</span>
+<span class="lineNum">     365 </span><span class="lineCov">       9595 :     return _NextInstruction();</span>
+<a name="366"><span class="lineNum">     366 </span><span class="lineCov">       9595 : }</span></a>
+<span class="lineNum">     367 </span>            : //------------------------------------------------------------
+<span class="lineNum">     368 </span>            : VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
+<span class="lineNum">     369 </span>            : {
+<span class="lineNum">     370 </span><span class="lineCov">       6345 :     STACK_VAR(String, tempString);</span>
+<span class="lineNum">     371 </span><span class="lineCov">       6345 :     if (tempString.Value) {</span>
+<span class="lineNum">     372 </span><span class="lineCov">       6345 :         TDViaFormatter formatter(tempString.Value, false);</span>
+<span class="lineNum">     373 </span><span class="lineCov">       6345 :         formatter.FormatData(_ParamPointer(0), _ParamPointer(1));</span>
+<span class="lineNum">     374 </span><span class="lineCov">       6345 :         tempString.Value-&gt;Append('\n');</span>
+<span class="lineNum">     375 </span>            : 
+<span class="lineNum">     376 </span><span class="lineCov">      19035 :         gPlatform.IO.Print(tempString.Value-&gt;Length(), (const char*)tempString.Value-&gt;Begin());</span>
+<span class="lineNum">     377 </span><span class="lineCov">       6345 :     }</span>
+<span class="lineNum">     378 </span><span class="lineCov">       6345 :     return _NextInstruction();</span>
+<span class="lineNum">     379 </span><span class="lineCov">       6345 : }</span>
+<a name="380"><span class="lineNum">     380 </span>            : #endif</a>
+<span class="lineNum">     381 </span>            : //------------------------------------------------------------
+<span class="lineNum">     382 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(FileSystem)</span>
+<span class="lineNum">     383 </span>            :     // Types
+<span class="lineNum">     384 </span><span class="lineCov">       1060 :     DEFINE_VIREO_TYPE(FileHandle, &quot;Int32&quot;)</span>
+<span class="lineNum">     385 </span>            :     // Values
+<span class="lineNum">     386 </span><span class="lineCov">       1060 :     DEFINE_VIREO_VALUE(StdIn, STDIN_FILENO, &quot;FileHandle&quot;)</span>
+<span class="lineNum">     387 </span><span class="lineCov">       1060 :     DEFINE_VIREO_VALUE(StdOut, STDOUT_FILENO, &quot;FileHandle&quot;)</span>
+<span class="lineNum">     388 </span><span class="lineCov">       1060 :     DEFINE_VIREO_VALUE(StdErr, STDERR_FILENO, &quot;FileHandle&quot;)</span>
+<span class="lineNum">     389 </span>            :     // Primitives
+<span class="lineNum">     390 </span>            : #if defined(VIREO_VIA_FORMATTER)
+<span class="lineNum">     391 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Println, &quot;p(i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">     392 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Printf, &quot;p(i(VarArgCount)i(String)i(StaticTypeAndData))&quot;)</span>
+<span class="lineNum">     393 </span>            : #endif
+<span class="lineNum">     394 </span>            :     //--------
+<span class="lineNum">     395 </span>            : #ifdef VIREO_FILESYSTEM
+<span class="lineNum">     396 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(FileOpen, &quot;p(i(String)i(Int32)i(Int32)o(FileHandle))&quot;)</span>
+<span class="lineNum">     397 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(FileSize, &quot;p(i(FileHandle)o(Int32))&quot;)</span>
+<span class="lineNum">     398 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(FileDelete, &quot;p(i(String)o(Int32))&quot;)</span>
+<span class="lineNum">     399 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StreamClose, &quot;p(i(FileHandle)o(Int32))&quot;)</span>
+<span class="lineNum">     400 </span>            : #endif
+<span class="lineNum">     401 </span>            :     //--------
+<span class="lineNum">     402 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StreamSetPosition, &quot;p(i(FileHandle)i(Int32)i(Int32)o(Int32))&quot;)</span>
+<span class="lineNum">     403 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StreamRead, &quot;p(i(FileHandle)o(String)o(Int32)o(Int32))&quot;)</span>
+<span class="lineNum">     404 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(StreamWrite, &quot;p(i(FileHandle)i(String)i(Int32)o(Int32))&quot;)</span>
+<span class="lineNum">     405 </span>            : 
+<span class="lineNum">     406 </span>            : #ifdef VIREO_FILESYSTEM_DIRLIST
+<span class="lineNum">     407 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(ListDirectory, &quot;p(i(String)o(a(String *)))&quot;)</span>
+<span class="lineNum">     408 </span>            : #endif
+<span class="lineNum">     409 </span>            : 
+<span class="lineNum">     410 </span><span class="lineCov">       1060 : DEFINE_VIREO_END()</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

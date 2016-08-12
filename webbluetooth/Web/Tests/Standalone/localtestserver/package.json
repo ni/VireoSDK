@@ -1,0 +1,14 @@
+{
+  "name": "localtestserver",
+  "version": "0.0.0",
+  "dependencies": {
+    "websocket": "^1.0.22"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "scripts": {
+    "serve": "node ./files/niWebSocketTestServer.js"
+  }
+}

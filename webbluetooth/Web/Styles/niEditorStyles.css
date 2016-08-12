@@ -1,0 +1,27 @@
+/**************************************
+ * NI Editor Styles
+ * National Instruments Copyright 2015
+ *
+ * Styles that should only be applied when inside the editor
+ **************************************/
+/* TODO mraj this file should NOT be included in deployed pages, only inside the editor*/
+
+/*************************************
+* body
+**************************************/
+body {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+/*************************************
+* Make ni-elements position absolute
+*
+* more info for data-ni-base-style attribute in ni-visual-component.js
+**************************************/
+[data-ni-base-style] {
+    position: absolute;
+}

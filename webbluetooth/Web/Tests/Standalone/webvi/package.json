@@ -1,0 +1,18 @@
+{
+  "name": "webviserver",
+  "version": "0.0.0",
+  "dependencies": {
+    "express": "^4.13.4",
+    "minimist": "^1.2.0",
+    "opener": "^1.4.1",
+    "serve-index": "^1.7.2"
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "scripts": {
+    "serve": "node ./files/staticFilesServer.js"
+  }
+}

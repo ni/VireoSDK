@@ -1,0 +1,1220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - include/TypeAndDataManager.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">include</a> - TypeAndDataManager.h<span style="font-size: 80%;"> (source / <a href="TypeAndDataManager.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">152</td>
+            <td class="headerCovTableEntry">192</td>
+            <td class="headerCovTableEntryMed">79.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">148</td>
+            <td class="headerCovTableEntry">193</td>
+            <td class="headerCovTableEntryMed">76.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            :  
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Tools to define data types, manage their data, and a TypeManager to manage those types.
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : /*_____        ____    ____
+<span class="lineNum">      15 </span>            :  |   |       /   /   /   /  ====|\
+<span class="lineNum">      16 </span>            :  |   |      /   /   /   /       |X}==================
+<span class="lineNum">      17 </span>            :  |   |     /   /   /   /  ======|/
+<span class="lineNum">      18 </span>            :  |   |    /   /   /   /  ___ __   ________   ________
+<span class="lineNum">      19 </span>            :  |   |   /   /   /   /  /  //_ / /  __   /  /  _    /
+<span class="lineNum">      20 </span>            :  |   |  /   /   /   /  /   /    /  /_/  /  /  / /  /
+<span class="lineNum">      21 </span>            :  |   | /   /   /   /  /  /     /  ____ /  /  / /  /
+<span class="lineNum">      22 </span>            :  |   |/   /   /   /  /  /     /  /____   /  /_/  /
+<span class="lineNum">      23 </span>            :  |_______/   /___/  /__/     /_______/  /_______/SDG
+<span class="lineNum">      24 </span>            :  */
+<span class="lineNum">      25 </span>            :  
+<span class="lineNum">      26 </span>            : #ifndef TypeAndDataManager_h
+<span class="lineNum">      27 </span>            : #define TypeAndDataManager_h
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : #define STL_MAP
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      32 </span>            : #include &lt;stdlib.h&gt; // abs()
+<span class="lineNum">      33 </span>            : #include &lt;new&gt;      // for new placement
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : #ifdef STL_MAP
+<span class="lineNum">      36 </span>            :     #include &lt;map&gt;
+<span class="lineNum">      37 </span>            : #endif
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #include &quot;DataTypes.h&quot;
+<span class="lineNum">      40 </span>            : #include &quot;Thread.h&quot;
+<span class="lineNum">      41 </span>            : #include &quot;StringUtilities.h&quot;
+<span class="lineNum">      42 </span>            : #include &quot;Instruction.h&quot;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : // Anytime an observable change to the data structures or inline functions descried in the header files is made this
+<span class="lineNum">      45 </span>            : // version should be changed.
+<span class="lineNum">      46 </span>            : #define kVireoABIVersion 2
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : namespace Vireo
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : class TypeCommon;
+<span class="lineNum">      52 </span>            : class BitBlockType;
+<span class="lineNum">      53 </span>            : class BitClusterType;
+<span class="lineNum">      54 </span>            : class ClusterType;
+<span class="lineNum">      55 </span>            : class BitBlockType;
+<span class="lineNum">      56 </span>            : class ParamBlockType;
+<span class="lineNum">      57 </span>            : class EquivalenceType;
+<span class="lineNum">      58 </span>            : class NamedType;
+<span class="lineNum">      59 </span>            : class ArrayType;
+<span class="lineNum">      60 </span>            : class ElementType;
+<span class="lineNum">      61 </span>            : class PointerType;
+<span class="lineNum">      62 </span>            : class DefaultValueType;
+<span class="lineNum">      63 </span>            : class DefaultPointerType;
+<span class="lineNum">      64 </span>            : class CustomDataProcType;
+<span class="lineNum">      65 </span>            : class TypeManager;
+<span class="lineNum">      66 </span>            : class ExecutionContext;
+<span class="lineNum">      67 </span>            : class IDataProcs;
+<span class="lineNum">      68 </span>            : class String;
+<span class="lineNum">      69 </span>            :     
+<span class="lineNum">      70 </span>            : typedef NamedType *NamedTypeRef;
+<span class="lineNum">      71 </span>            : typedef ElementType *ElementTypeRef;
+<span class="lineNum">      72 </span>            : typedef ExecutionContext* ExecutionContextRef;
+<span class="lineNum">      73 </span>            : typedef String *StringRef;
+<span class="lineNum">      74 </span>            : typedef TypeCommon  *TypeRef;
+<span class="lineNum">      75 </span>            : typedef TypeManager *TypeManagerRef;
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : // StaticType is used for functions tha take types determined at load time.
+<span class="lineNum">      78 </span>            : // specifiying StaticType for the parameter will result in the instruction holding a TypeCommon*
+<span class="lineNum">      79 </span>            : // Instead of a TypeRef*
+<span class="lineNum">      80 </span>            : typedef TypeCommon StaticType;
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : //------------------------------------------------------------
+<span class="lineNum">      83 </span>            : //! Names for some cores types.
+<span class="lineNum">      84 </span>            : #define tsBooleanType       &quot;Boolean&quot;
+<span class="lineNum">      85 </span>            : #define tsInt32Type         &quot;Int32&quot;
+<span class="lineNum">      86 </span>            : #define tsInt64Type         &quot;Int64&quot;
+<span class="lineNum">      87 </span>            : #define tsDoubleType        &quot;Double&quot;
+<span class="lineNum">      88 </span>            : #define tsStringType        &quot;String&quot;
+<span class="lineNum">      89 </span>            : #define tsTypeType          &quot;Type&quot;
+<span class="lineNum">      90 </span>            : #define tsWildCard          &quot;*&quot;
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : //------------------------------------------------------------
+<span class="lineNum">      93 </span>            : class TypedArrayCore;
+<span class="lineNum">      94 </span>            : typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock; // TODO get rid of TypedBlock   -&gt;TypeBlock ObjectRef??
+<span class="lineNum">      95 </span>            : typedef TypedBlock *TypedBlockRef;  // TODO =&gt; merge into ArrayCoreRef
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : template &lt;class T&gt;
+<span class="lineNum">      98 </span>            : class TypedArray1D;
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+<span class="lineNum">     101 </span>            :     // TODO Type manager needs single instance global option like that used by execution context.
+<span class="lineNum">     102 </span>            :     #error
+<span class="lineNum">     103 </span>            :     #define THREAD_TADM() // TBD
+<span class="lineNum">     104 </span>            : #else
+<span class="lineNum">     105 </span>            :     #define THREAD_TADM() TypeManagerScope::Current()
+<span class="lineNum">     106 </span>            : #endif
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()-&gt;Malloc(sizeof(_class_))) _class_
+<span class="lineNum">     109 </span>            : #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()-&gt;Malloc(_class_::StructSize(_d_))) _class_
+<span class="lineNum">     110 </span>            :     
+<span class="lineNum">     111 </span>            : // EncodingEnum defines the base set of encodings that describe the symantics
+<span class="lineNum">     112 </span>            : // of bits in bitblock. Some good background information icludes:
+<span class="lineNum">     113 </span>            : // * Integer encodings: https://en.wikipedia.org/wiki/Signed_number_representations
+<span class="lineNum">     114 </span>            : enum EncodingEnum {
+<span class="lineNum">     115 </span>            :     kEncoding_None = 0,
+<span class="lineNum">     116 </span>            :     
+<span class="lineNum">     117 </span>            :     // Aggregates and References
+<span class="lineNum">     118 </span>            :     kEncoding_Cluster,          // Inlined aggregate of other strucures
+<span class="lineNum">     119 </span>            :     kEncoding_ParameterBlock,   // Like cluster except each element is a poionter to the sub type
+<span class="lineNum">     120 </span>            :     kEncoding_Array,            // Inline or reference to array of a sub stype
+<span class="lineNum">     121 </span>            :     kEncoding_Generic,          // Open, place-holder definition used for genetic types
+<span class="lineNum">     122 </span>            :     kEncoding_Stream,           // TBD Like array but can't assume random acess
+<span class="lineNum">     123 </span>            :     
+<span class="lineNum">     124 </span>            :     //Bitblock encodings
+<span class="lineNum">     125 </span>            :     kEncoding_Boolean,
+<span class="lineNum">     126 </span>            :     kEncoding_Enum,             // TBD
+<span class="lineNum">     127 </span>            :     kEncoding_UInt,             // Simple non negative whole numbers
+<span class="lineNum">     128 </span>            :     kEncoding_S2CInt,           // Signed 2s compliment integer (AKA signed)
+<span class="lineNum">     129 </span>            :     kEncoding_DimInt,           // Like S2CInt, also includes variable and sentinels ($n, *)
+<span class="lineNum">     130 </span>            :     kEncoding_IEEE754Binary,    // https://en.wikipedia.org/wiki/IEEE_floating_point
+<span class="lineNum">     131 </span>            :     kEncoding_Ascii,            // 7-BIT Ascii
+<span class="lineNum">     132 </span>            :     kEncoding_Unicode,          // UTF-8, UTF-16, UTF-32 based on block size
+<span class="lineNum">     133 </span>            :     kEncoding_Pointer,          // platform specific data memory address
+<span class="lineNum">     134 </span>            :     kEncoding_Q,                // 0.bbb fixed point
+<span class="lineNum">     135 </span>            :     kEncoding_Q1,               // 1.bbb fixed point
+<span class="lineNum">     136 </span>            :     kEncoding_BiasedInt,        // Used for IEEE754 exponents
+<span class="lineNum">     137 </span>            :     kEncoding_ZigZagInt,        // Protocol buffers
+<span class="lineNum">     138 </span>            :     kEncoding_S1CInt,           // In case we ever run on a CDC 170 Cyber mainframe ;)
+<span class="lineNum">     139 </span>            :     
+<span class="lineNum">     140 </span>            :     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
+<span class="lineNum">     141 </span>            : };
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : // UsageTypeEnum defines how parameters in a native instruction or VIs ParamBlock will be used.
+<span class="lineNum">     144 </span>            : // Note, kUsageTypeInput..kUsageTypeAlias are all forms of alias'
+<span class="lineNum">     145 </span>            : enum UsageTypeEnum {
+<span class="lineNum">     146 </span>            :     kUsageTypeSimple = 0,       // Default for clusters, code assumed to read and write at will, not allowed in ParamBlock
+<span class="lineNum">     147 </span>            :     kUsageTypeInput = 1,        // Caller copies in value, VI will not change it.
+<span class="lineNum">     148 </span>            :     kUsageTypeOutput = 2,       // Caller provides storage(if array) VI sets value, ingores incomming value
+<span class="lineNum">     149 </span>            :     kUsageTypeInputOutput = 3,  // Like output, but VI uses initial value.
+<span class="lineNum">     150 </span>            :     kUsageTypeAlias = 4,        // Non flat value that that is owned by by another element.
+<span class="lineNum">     151 </span>            :     kUsageTypeStatic = 5,       // Allocated value persists from call to call
+<span class="lineNum">     152 </span>            :     kUsageTypeTemp =  6,        // Storage typically carried from call to call but can be freed up.
+<span class="lineNum">     153 </span>            :     kUsageTypeImmediate =  7,   // For native function value in instruction block is imediate value not a pointer
+<span class="lineNum">     154 </span>            : };
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : //! PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.
+<span class="lineNum">     157 </span>            : enum PointerTypeEnum {
+<span class="lineNum">     158 </span>            :     kPTNotAPointer = 0,
+<span class="lineNum">     159 </span>            :     kPTInstructionFunction,
+<span class="lineNum">     160 </span>            :     kPTGenericFunctionCodeGen,
+<span class="lineNum">     161 </span>            :     kPTTypeManager,
+<span class="lineNum">     162 </span>            : };
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : //! PointerAccessEnum defines how a pointer to data will be used.
+<span class="lineNum">     165 </span>            : enum PointerAccessEnum {
+<span class="lineNum">     166 </span>            :     kPAInit = 0,                // for object construction
+<span class="lineNum">     167 </span>            :     kPARead = 1,                // for read only operations (some constants allocate on demand)
+<span class="lineNum">     168 </span>            :     kPAWrite = 2,               // for write with no care about previous value
+<span class="lineNum">     169 </span>            :     kPAReadWrite = 3,           // for read or write with
+<span class="lineNum">     170 </span>            :     kPAClear = 4,               // for object destruction
+<span class="lineNum">     171 </span>            :     kPASoftRead = 5,            // for read, but only if it exists. Will not trigger allocation.
+<span class="lineNum">     172 </span>            : };
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            : //------------------------------------------------------------
+<span class="lineNum">     175 </span>            : // When an instruction has a StaticTypeAndData parameter there will be two
+<span class="lineNum">     176 </span>            : // pointers. Instructions that take a VarArg set of StaticTypeAndData arguments
+<span class="lineNum">     177 </span>            : // can treat the block of pointer-pairs as an array of this type.
+<span class="lineNum">     178 </span>            : struct StaticTypeAndData
+<span class="lineNum">     179 </span>            : {
+<span class="lineNum">     180 </span>            :     TypeRef  _paramType;
+<span class="lineNum">     181 </span>            :     void*    _pData;
+<span class="lineNum">     182 </span>            : };
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            : #ifdef STL_MAP
+<span class="lineNum">     185 </span>            : #else
+<span class="lineNum">     186 </span>            :     class DictionaryElt
+<span class="lineNum">     187 </span>            :     {
+<span class="lineNum">     188 </span>            :     public:
+<span class="lineNum">     189 </span>            :         SubString   first;
+<span class="lineNum">     190 </span>            :         TypeRef     second;
+<span class="lineNum">     191 </span>            :     };
+<span class="lineNum">     192 </span>            :     //------------------------------------------------------------
+<span class="lineNum">     193 </span>            :     // Dictionary a bit more hardcoded than map for smaller worlds
+<span class="lineNum">     194 </span>            :     class SimpleDictionary
+<span class="lineNum">     195 </span>            :     {
+<span class="lineNum">     196 </span>            :     public:
+<span class="lineNum">     197 </span>            :         void clear() {};
+<span class="lineNum">     198 </span>            :         DictionaryElt* begin() {return null;};
+<span class="lineNum">     199 </span>            :         DictionaryElt* end() {return null;};
+<span class="lineNum">     200 </span>            :         DictionaryElt* find(SubString&amp; value) {return null;};
+<span class="lineNum">     201 </span>            :         TypeRef&amp; operator[] (const SubString&amp; k) { return _t; };
+<span class="lineNum">     202 </span>            :         Int32 size() {return null;};
+<span class="lineNum">     203 </span>            :     private:
+<span class="lineNum">     204 </span>            :         TypeRef _t;
+<span class="lineNum">     205 </span>            :     };
+<a name="206"><span class="lineNum">     206 </span>            : #endif</a>
+<a name="207"><span class="lineNum">     207 </span>            : </a>
+<span class="lineNum">     208 </span><span class="lineCov">        905 : inline IntIndex Min(IntIndex a, IntIndex b) { return a &lt; b ? a : b; }</span>
+<span class="lineNum">     209 </span><span class="lineCov">     240235 : inline IntIndex Max(IntIndex a, IntIndex b) { return a &gt; b ? a : b; }</span>
+<span class="lineNum">     210 </span>            : 
+<a name="211"><span class="lineNum">     211 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     212 </span>            : //! Keeps track of Types used within a ExecutionContext.
+<span class="lineNum">     213 </span><span class="lineCov">       5880 : class TypeManager</span>
+<span class="lineNum">     214 </span>            : {
+<span class="lineNum">     215 </span>            : public:
+<span class="lineNum">     216 </span>            :     
+<span class="lineNum">     217 </span>            :     //! Create a Execution and Typemanager pair.
+<span class="lineNum">     218 </span>            :     static TypeManagerRef New(TypeManagerRef tm);
+<span class="lineNum">     219 </span>            :     void Delete();
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            : private:
+<span class="lineNum">     222 </span>            :     TypeManagerRef      _baseTypeManager;   // Base is null when the instance is a root.
+<span class="lineNum">     223 </span>            :     ExecutionContextRef _executionContext;
+<span class="lineNum">     224 </span>            : #ifdef STL_MAP
+<span class="lineNum">     225 </span>            :     typedef std::map&lt;SubString, NamedTypeRef, CompareSubString&gt;::iterator  TypeDictionaryIterator;
+<span class="lineNum">     226 </span>            :     std::map&lt;SubString, NamedTypeRef, CompareSubString&gt;  _typeNameDictionary;
+<span class="lineNum">     227 </span>            :     std::map&lt;SubString, TypeRef, CompareSubString&gt;  _typeInstanceDictionary;
+<span class="lineNum">     228 </span>            : #else
+<span class="lineNum">     229 </span>            :     typedef DictionaryElt* TypeDictionaryIterator;
+<span class="lineNum">     230 </span>            :     SimpleDictionary    _typeNameDictionary;
+<span class="lineNum">     231 </span>            : #endif
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : #if defined(VIREO_INSTRUCTION_REFLECTION)
+<span class="lineNum">     234 </span>            :     struct CPrimtitiveInfo {
+<span class="lineNum">     235 </span>            :         TypeRef _type;
+<span class="lineNum">     236 </span>            :         ConstCStr _cName;
+<span class="lineNum">     237 </span>            :     };
+<span class="lineNum">     238 </span>            :     std::map&lt;void*, CPrimtitiveInfo&gt;  _cPrimitiveDictionary;
+<span class="lineNum">     239 </span>            : #endif
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            :     Int32   _aqBitLength;
+<span class="lineNum">     242 </span>            :     MUTEX_CLASS_MEMBER
+<span class="lineNum">     243 </span>            :     TypeRef _badType;
+<span class="lineNum">     244 </span>            :     TypeRef _typeList;                  // List of all Types allocated by this TypeManager
+<span class="lineNum">     245 </span>            :     
+<span class="lineNum">     246 </span>            : friend class TDViaParser;
+<span class="lineNum">     247 </span>            :     // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
+<span class="lineNum">     248 </span>            :     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
+<span class="lineNum">     249 </span>            :     // also defines alignment rules. Each element in a cluster is addressable
+<span class="lineNum">     250 </span>            : private:
+<span class="lineNum">     251 </span>            :     TypeManager(TypeManagerRef typeManager);
+<a name="252"><span class="lineNum">     252 </span>            :     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);</a>
+<a name="253"><span class="lineNum">     253 </span>            : public:</a>
+<span class="lineNum">     254 </span><span class="lineCov">  296945573 :     ExecutionContextRef TheExecutionContext() {return _executionContext;};</span>
+<span class="lineNum">     255 </span><span class="lineCov">       1060 :     void    SetExecutionContext(ExecutionContextRef exec) {_executionContext = exec;};</span>
+<span class="lineNum">     256 </span>            :     void    DeleteTypes(Boolean finalTime);
+<span class="lineNum">     257 </span>            :     void    TrackType(TypeCommon* type);
+<span class="lineNum">     258 </span>            :     TypeRef ResolveToUniqueInstance(TypeRef type, SubString *binaryName);
+<span class="lineNum">     259 </span>            : 
+<a name="260"><span class="lineNum">     260 </span>            :     void    UntrackLastType(TypeCommon* type);</a>
+<span class="lineNum">     261 </span>            :     void    GetTypes(TypedArray1D&lt;TypeRef&gt;*);
+<span class="lineNum">     262 </span><span class="lineCov">       3825 :     TypeRef TypeList() { return _typeList; }</span>
+<a name="263"><span class="lineNum">     263 </span>            :     void    PrintMemoryStat(ConstCStr, Boolean last);</a>
+<span class="lineNum">     264 </span>            :     
+<span class="lineNum">     265 </span><span class="lineCov">     951025 :     TypeManagerRef BaseTypeManager() { return _baseTypeManager; }</span>
+<span class="lineNum">     266 </span>            :     TypeRef Define(const SubString* name, TypeRef type);
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            :     TypeRef FindType(ConstCStr name);
+<span class="lineNum">     269 </span>            :     TypeRef FindType(const SubString* name);
+<span class="lineNum">     270 </span>            :     NamedTypeRef FindTypeCore(const SubString* name);
+<span class="lineNum">     271 </span>            :     TypeRef BadType();
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            :     Int32   AQAlignment(Int32 size);
+<a name="274"><span class="lineNum">     274 </span>            :     Int32   AlignAQOffset(Int32 offset, Int32 size);</a>
+<a name="275"><span class="lineNum">     275 </span>            :     Int32   BitLengthToAQSize(IntIndex length);</a>
+<span class="lineNum">     276 </span><span class="lineCov">      29005 :     Int32   HostPointerToAQSize() { return sizeof(void*); }</span>
+<span class="lineNum">     277 </span><span class="lineCov">       9950 :     Int32   AQBitLength() { return _aqBitLength; }</span>
+<span class="lineNum">     278 </span>            :     
+<span class="lineNum">     279 </span>            : public:
+<span class="lineNum">     280 </span>            :     //! Parse through a path, digging through Aggregate element names, references and array indexes.
+<span class="lineNum">     281 </span>            :     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic);
+<span class="lineNum">     282 </span>            : #if defined (VIREO_INSTRUCTION_REFLECTION)
+<span class="lineNum">     283 </span>            :         TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
+<span class="lineNum">     284 </span>            :     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
+<span class="lineNum">     285 </span>            :     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
+<span class="lineNum">     286 </span>            :     Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
+<span class="lineNum">     287 </span>            : #else
+<span class="lineNum">     288 </span>            :     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
+<span class="lineNum">     289 </span>            : #endif
+<span class="lineNum">     290 </span>            :         TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            : public:
+<span class="lineNum">     293 </span>            :     // Low level allocation functions
+<span class="lineNum">     294 </span>            :     // TODO pull out into its own class.
+<span class="lineNum">     295 </span>            :     void* Malloc(size_t countAQ);
+<span class="lineNum">     296 </span>            :     void* Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ);
+<span class="lineNum">     297 </span>            :     void Free(void* pBuffer);
+<span class="lineNum">     298 </span>            :     
+<span class="lineNum">     299 </span>            :     Boolean AllocationPermitted(size_t countAQ);
+<span class="lineNum">     300 </span>            :     void TrackAllocation(void* id, size_t countAQ, Boolean bAlloc);
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            :     Int32  _totalAllocations;
+<span class="lineNum">     303 </span>            :     Int32  _totalAllocationFailures;
+<span class="lineNum">     304 </span>            :     size_t _totalAQAllocated;
+<span class="lineNum">     305 </span>            :     size_t _maxAllocated;
+<a name="306"><span class="lineNum">     306 </span>            :     size_t _allocationLimit;</a>
+<a name="307"><span class="lineNum">     307 </span>            : </a>
+<a name="308"><span class="lineNum">     308 </span><span class="lineNoCov">          0 :     size_t TotalAQAllocated()       { return _totalAQAllocated; }</span></a>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :     Int32 TotalAllocations()        { return _totalAllocations; }</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :     size_t MaxAllocated()           { return _maxAllocated; }</span>
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : public:
+<span class="lineNum">     313 </span>            :     // Read or write values accessible to this TM as described by a symbolic path
+<span class="lineNum">     314 </span>            :     NIError ReadValue(SubString* objectName, SubString* path, Double *value);
+<span class="lineNum">     315 </span>            :     NIError WriteValue(SubString* objectName, SubString* path, Double value);
+<span class="lineNum">     316 </span>            :     NIError ReadValue(SubString* objectName, SubString* path, StringRef);
+<span class="lineNum">     317 </span>            :     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span>            : #ifdef VIREO_PERF_COUNTERS
+<span class="lineNum">     320 </span>            : public:
+<span class="lineNum">     321 </span>            :     Int32 _typesShared;
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            : #endif
+<span class="lineNum">     324 </span>            : };
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : //------------------------------------------------------------
+<span class="lineNum">     327 </span>            : // Utility functions to read and write numbers to non aligned memory based on size and encoding
+<span class="lineNum">     328 </span>            : IntMax ReadIntFromMemory(TypeRef type, void* pData);
+<span class="lineNum">     329 </span>            : NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
+<span class="lineNum">     330 </span>            : Double ReadDoubleFromMemory(TypeRef type, void* pData);
+<span class="lineNum">     331 </span>            : NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
+<span class="lineNum">     332 </span>            : IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
+<a name="333"><span class="lineNum">     333 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     334 </span>            : //! Banker's rounding for Doubles.
+<span class="lineNum">     335 </span>            : inline Double RoundToEven(Double value)
+<span class="lineNum">     336 </span>            : {
+<span class="lineNum">     337 </span><span class="lineCov">        975 :     return rint(value);</span>
+<span class="lineNum">     338 </span>            : }
+<a name="339"><span class="lineNum">     339 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     340 </span>            : //! Banker's rounding for Singles.
+<span class="lineNum">     341 </span>            : inline EMSCRIPTEN_NOOPT Single RoundToEven(Single value)
+<span class="lineNum">     342 </span>            : {
+<span class="lineNum">     343 </span>            : #if kVireoOS_emscripten
+<span class="lineNum">     344 </span>            :     return rint((Double)value);
+<span class="lineNum">     345 </span>            : #else
+<span class="lineNum">     346 </span><span class="lineCov">        345 :     return rintf(value);</span>
+<span class="lineNum">     347 </span>            : #endif
+<span class="lineNum">     348 </span>            : }
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            : //------------------------------------------------------------
+<span class="lineNum">     351 </span>            : //! Stack based class to manage a threads active TypeManager.
+<span class="lineNum">     352 </span>            : class TypeManagerScope
+<span class="lineNum">     353 </span>            : {
+<span class="lineNum">     354 </span>            : #ifndef VIREO_SINGLE_GLOBAL_CONTEXT
+<span class="lineNum">     355 </span>            : private:
+<span class="lineNum">     356 </span>            :     TypeManagerRef _saveTypeManager;
+<span class="lineNum">     357 </span>            :     VIVM_THREAD_LOCAL static TypeManagerRef ThreadsTypeManager;
+<a name="358"><span class="lineNum">     358 </span>            :     </a>
+<span class="lineNum">     359 </span>            : public:
+<span class="lineNum">     360 </span>            :     TypeManagerScope(TypeManagerRef typeManager)
+<span class="lineNum">     361 </span>            :     {
+<span class="lineNum">     362 </span><span class="lineCov">  271204328 :       _saveTypeManager = TypeManagerScope::ThreadsTypeManager;</span>
+<a name="363"><span class="lineNum">     363 </span><span class="lineCov">  271204328 :       TypeManagerScope::ThreadsTypeManager = typeManager;</span></a>
+<span class="lineNum">     364 </span><span class="lineCov">  271204328 :     }</span>
+<span class="lineNum">     365 </span>            :     ~TypeManagerScope()
+<span class="lineNum">     366 </span>            :     {
+<a name="367"><span class="lineNum">     367 </span><span class="lineCov">  271204328 :         TypeManagerScope::ThreadsTypeManager = _saveTypeManager;</span></a>
+<span class="lineNum">     368 </span><span class="lineCov">  271204328 :     }</span>
+<span class="lineNum">     369 </span>            :     static TypeManagerRef Current()
+<span class="lineNum">     370 </span>            :     {
+<span class="lineNum">     371 </span>            :         VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != null);
+<span class="lineNum">     372 </span><span class="lineCov">  292021413 :         return TypeManagerScope::ThreadsTypeManager;</span>
+<span class="lineNum">     373 </span>            :     }
+<span class="lineNum">     374 </span>            : #else
+<span class="lineNum">     375 </span>            :     TypeManagerScope(TypeManagerRef typeManager) {}
+<span class="lineNum">     376 </span>            :     ~TypeManagerScope() {}
+<span class="lineNum">     377 </span>            : #endif
+<span class="lineNum">     378 </span>            : };
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            : //------------------------------------------------------------
+<span class="lineNum">     381 </span>            : //! A class to help dynamic classes/structures that end with an
+<span class="lineNum">     382 </span>            : // array whose size is set at construction time.
+<span class="lineNum">     383 </span>            : template &lt;class T&gt;
+<span class="lineNum">     384 </span>            : class InlineArray
+<span class="lineNum">     385 </span>            : {
+<span class="lineNum">     386 </span>            : private:
+<span class="lineNum">     387 </span>            :     IntIndex _length;
+<a name="388"><span class="lineNum">     388 </span>            :     T _array[1];</a>
+<a name="389"><span class="lineNum">     389 </span>            : public:</a>
+<a name="390"><span class="lineNum">     390 </span><span class="lineCov">    3679900 :     static size_t ExtraStructSize(Int32 count){ return (count - 1) * sizeof(T); }</span></a>
+<a name="391"><span class="lineNum">     391 </span><span class="lineCov">    3679900 :     InlineArray(Int32 length)                   { _length = length; }</span></a>
+<a name="392"><span class="lineNum">     392 </span><span class="lineCov">   71966520 :     T* Begin()                                  { return _array; }</span></a>
+<a name="393"><span class="lineNum">     393 </span><span class="lineCov">   72879790 :     T* End()                                    { return &amp;_array[_length]; }</span></a>
+<a name="394"><span class="lineNum">     394 </span><span class="lineCov">    3679900 :     void Assign(const T* source, Int32 count)   { memcpy(Begin(), source, count * sizeof(T)); }</span></a>
+<span class="lineNum">     395 </span><span class="lineCov">    8396410 :     T&amp; operator[] (const Int32 index)           { VIREO_ASSERT(index &lt;= _length); return _array[index]; }</span>
+<span class="lineNum">     396 </span><span class="lineCov">   96101770 :     IntIndex Length()                           { return (IntIndex)_length; }</span>
+<span class="lineNum">     397 </span>            : };
+<span class="lineNum">     398 </span>            : 
+<a name="399"><span class="lineNum">     399 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     400 </span>            : //! Visitor class for types.
+<span class="lineNum">     401 </span><span class="lineCov">       1315 : class TypeVisitor</span>
+<span class="lineNum">     402 </span>            : {
+<span class="lineNum">     403 </span>            : public:
+<span class="lineNum">     404 </span>            :     virtual void VisitBad(TypeRef type) = 0;
+<span class="lineNum">     405 </span>            :     virtual void VisitBitBlock(BitBlockType* type) = 0;
+<span class="lineNum">     406 </span>            :     virtual void VisitBitCluster(BitClusterType* type) = 0;
+<span class="lineNum">     407 </span>            :     virtual void VisitCluster(ClusterType* type)  = 0;
+<span class="lineNum">     408 </span>            :     virtual void VisitParamBlock(ParamBlockType* type)  = 0;
+<span class="lineNum">     409 </span>            :     virtual void VisitEquivalence(EquivalenceType* type) = 0;
+<span class="lineNum">     410 </span>            :     virtual void VisitArray(ArrayType* type)  = 0;
+<span class="lineNum">     411 </span>            :     virtual void VisitElement(ElementType* type) = 0;
+<span class="lineNum">     412 </span>            :     virtual void VisitNamed(NamedType* type) = 0;
+<span class="lineNum">     413 </span>            :     virtual void VisitPointer(PointerType* type) = 0;
+<span class="lineNum">     414 </span>            :     virtual void VisitDefaultValue(DefaultValueType* type) = 0;
+<span class="lineNum">     415 </span>            :     virtual void VisitDefaultPointer(DefaultPointerType* type) = 0;
+<span class="lineNum">     416 </span>            :     virtual void VisitCustomDataProc(CustomDataProcType* type) = 0;
+<span class="lineNum">     417 </span>            : };
+<span class="lineNum">     418 </span>            : 
+<span class="lineNum">     419 </span>            : //------------------------------------------------------------
+<span class="lineNum">     420 </span>            : //! Base class for all type definition types.
+<span class="lineNum">     421 </span>            : class TypeCommon
+<span class="lineNum">     422 </span>            : {
+<span class="lineNum">     423 </span>            : // Core internal methods are for keeping track of Type bjects in seperate
+<span class="lineNum">     424 </span>            : // TypeManager layers
+<span class="lineNum">     425 </span>            :     friend class TypeManager;
+<span class="lineNum">     426 </span>            : private:
+<span class="lineNum">     427 </span>            :     TypeRef         _next;              // Linked list of all Types in a TypeManager
+<span class="lineNum">     428 </span>            :     TypeManagerRef  _typeManager;       // TypeManger that owns this type
+<a name="429"><span class="lineNum">     429 </span>            : public:</a>
+<a name="430"><span class="lineNum">     430 </span>            :     TypeCommon(TypeManagerRef typeManager);</a>
+<span class="lineNum">     431 </span><span class="lineCov">    1383045 :     TypeManagerRef TheTypeManager()     { return _typeManager; }</span>
+<span class="lineNum">     432 </span><span class="lineCov">    2792335 :     TypeRef Next()                      { return _next; }</span>
+<a name="433"><span class="lineNum">     433 </span>            : public:</a>
+<span class="lineNum">     434 </span>            :     // Internal to the TypeManager, but this is hard to secifiy in C++
+<span class="lineNum">     435 </span><span class="lineCov">    2685145 :     virtual ~TypeCommon() {};</span>
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span>            : protected:
+<span class="lineNum">     438 </span>            :     /// @name Storage for core property
+<span class="lineNum">     439 </span>            :     /// Members use a common type (UInt16) to maximize packing.
+<span class="lineNum">     440 </span>            :     
+<span class="lineNum">     441 </span>            :     Int32   _topAQSize;
+<span class="lineNum">     442 </span>            :     UInt16  _rank:8;            // (0-7) 0 for scalar, 0 or greater for arrays room for rank up to 16 (for now
+<span class="lineNum">     443 </span>            :     UInt16  _aqAlignment:8;     // (8-15)
+<span class="lineNum">     444 </span>            :    
+<span class="lineNum">     445 </span>            :     UInt16  _encoding:kEncodingBitFieldSize; // aggirgate or single format
+<span class="lineNum">     446 </span>            :     UInt16  _isFlat:1;          // ( 0) All data is contained in TopAQ elements ( e.g. no pointers)
+<span class="lineNum">     447 </span>            :     UInt16  _isValid:1;         // ( 1) Contains no invalid types
+<span class="lineNum">     448 </span>            :     UInt16  _isBitLevel:1;      // ( 2) Is a bitblock or bitcluster
+<span class="lineNum">     449 </span>            : 
+<span class="lineNum">     450 </span>            :     UInt16  _hasCustomDefault:1;// ( 3) A non 0 non null value
+<span class="lineNum">     451 </span>            :     UInt16  _isMutableValue:1;  // ( 4) &quot;default&quot; value can be changed after creation.
+<span class="lineNum">     452 </span>            :     UInt16  _isTemplate:1;      // ( 5) The type contians some generic types
+<span class="lineNum">     453 </span>            :     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
+<span class="lineNum">     454 </span>            :     
+<span class="lineNum">     455 </span>            :     //  properties unique to prototype elements. they are never merged up
+<span class="lineNum">     456 </span>            :     UInt16  _elementUsageType:3;// (7-9) ElementType::UsageType
+<span class="lineNum">     457 </span>            :     //  properties unique to DefaultPointerType objects
+<span class="lineNum">     458 </span>            :     UInt16  _pointerType:3;     // (10-12)
+<span class="lineNum">     459 </span>            :     UInt16  _ownsDefDefData:1;  // (13) Owns DefaultDefault data (clusters and arrays)
+<span class="lineNum">     460 </span>            :     
+<span class="lineNum">     461 </span>            : public:
+<span class="lineNum">     462 </span>            :     /// @name Core Property Methods
+<span class="lineNum">     463 </span>            :     /// Core type properties are stored in each object so they can be directly accessed.
+<a name="464"><span class="lineNum">     464 </span>            : </a>
+<span class="lineNum">     465 </span>            :     //! How the data as a whole is encoded, either a simple encoding like &quot;2s compliment binary&quot; or an Aggregate encoding.
+<a name="466"><span class="lineNum">     466 </span><span class="lineCov">    7804720 :     EncodingEnum BitEncoding()      { return (EncodingEnum) _encoding; }</span></a>
+<span class="lineNum">     467 </span>            :     //! Memory alignment required for values of this type.
+<a name="468"><span class="lineNum">     468 </span><span class="lineCov">    4174860 :     Int32   AQAlignment()           { return _aqAlignment; }</span></a>
+<span class="lineNum">     469 </span>            :     //! Amount of memory needed for the top level data structure for the type including any padding if needed.
+<a name="470"><span class="lineNum">     470 </span><span class="lineCov">   45098755 :     Int32   TopAQSize()             { return _topAQSize; }</span></a>
+<span class="lineNum">     471 </span>            :     //! True if the initial value for data of this type is not just zeroed out memory.
+<a name="472"><span class="lineNum">     472 </span><span class="lineCov">    5424600 :     Boolean HasCustomDefault()      { return _hasCustomDefault != 0; }</span></a>
+<span class="lineNum">     473 </span>            :     //! True if the initial value can be changed.
+<a name="474"><span class="lineNum">     474 </span><span class="lineCov">    5649250 :     Boolean IsMutableValue()        { return _isMutableValue != 0; }</span></a>
+<span class="lineNum">     475 </span>            :     //! Dimensionality of the type. Simple Scalars are Rank 0, arrays can be rank 0 as well.
+<a name="476"><span class="lineNum">     476 </span><span class="lineCov">  101060010 :     Int32   Rank()                  { return _rank; }</span></a>
+<span class="lineNum">     477 </span>            :     //! True if the type is an indexable container that contains another type.
+<a name="478"><span class="lineNum">     478 </span><span class="lineCov">      89070 :     Boolean IsArray()               { return BitEncoding() == kEncoding_Array; }</span></a>
+<span class="lineNum">     479 </span>            :     //! True if the type is an indexable container that contains another type.
+<a name="480"><span class="lineNum">     480 </span><span class="lineCov">      41890 :     Boolean IsZDA()                 { return (IsArray() &amp;&amp; Rank() ==0); }</span></a>
+<span class="lineNum">     481 </span>            :     //! True if the type is an aggregate of other types.
+<a name="482"><span class="lineNum">     482 </span><span class="lineCov">       5900 :     Boolean IsCluster()              { return BitEncoding() == kEncoding_Cluster; }</span></a>
+<span class="lineNum">     483 </span>            :     //! True if data can be copied by a simple block copy.
+<a name="484"><span class="lineNum">     484 </span><span class="lineCov">   31665925 :     Boolean IsFlat()                { return _isFlat != 0; }</span></a>
+<span class="lineNum">     485 </span>            :     //! True if all types the type is composed of have been resolved to valid types.
+<a name="486"><span class="lineNum">     486 </span><span class="lineCov">    7879670 :     Boolean IsValid()               { return _isValid != 0; }</span></a>
+<span class="lineNum">     487 </span>            :     //! True if the type a BitBlock or a BitClusters.
+<a name="488"><span class="lineNum">     488 </span><span class="lineCov">    4078285 :     Boolean IsBitLevel()            { return _isBitLevel != 0; }</span></a>
+<span class="lineNum">     489 </span>            :     //! True if TopAQSize includes internal or external padding necessary for proper aligmnet of multiple elements.
+<a name="490"><span class="lineNum">     490 </span><span class="lineCov">    4200465 :     Boolean HasPadding()            { return _hasPadding != 0; }</span></a>
+<span class="lineNum">     491 </span>            :     //! True if the type contains one or more template parameter types.
+<a name="492"><span class="lineNum">     492 </span><span class="lineCov">    8744705 :     Boolean IsTemplate()            { return _isTemplate != 0; }</span></a>
+<span class="lineNum">     493 </span>            :     //! True if aggregate element is used as an input parameter.
+<a name="494"><span class="lineNum">     494 </span><span class="lineCov">      74270 :     Boolean IsInputParam()          { return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput); }</span></a>
+<span class="lineNum">     495 </span>            :     //! True if aggregate element is used as an output parameter.
+<a name="496"><span class="lineNum">     496 </span><span class="lineCov">     232890 :     Boolean IsOutputParam()         { return (_elementUsageType == kUsageTypeOutput) || (_elementUsageType == kUsageTypeInputOutput); }</span></a>
+<span class="lineNum">     497 </span>            :     //! True if aggregate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
+<a name="498"><span class="lineNum">     498 </span><span class="lineCov">    1195645 :     Boolean IsAlias()               { return (_elementUsageType &gt;= kUsageTypeInput) &amp;&amp; (_elementUsageType &lt;= kUsageTypeAlias); }</span></a>
+<span class="lineNum">     499 </span>            :     //! True if the parameer is only visible to the callee, and is preserved between calls.
+<span class="lineNum">     500 </span><span class="lineCov">    2733560 :     Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }</span>
+<span class="lineNum">     501 </span>            :     //! True is the parameter is only visible to the callee, but may be cleared between calls.
+<a name="502"><span class="lineNum">     502 </span>            :     Boolean IsTempParam()           { return _elementUsageType == kUsageTypeTemp; }</a>
+<a name="503"><span class="lineNum">     503 </span>            :     //! True if the parameter is not required. For non flat values null may be passed in.</a>
+<span class="lineNum">     504 </span><span class="lineCov">        160 :     Boolean IsOptionalParam()       { return true; }//TODO {return _elementUsageType == kUsageTypeOptionalInput ;}</span>
+<span class="lineNum">     505 </span><span class="lineCov">    2399510 :     UsageTypeEnum ElementUsageType(){ return (UsageTypeEnum)_elementUsageType; }</span>
+<a name="506"><span class="lineNum">     506 </span>            : private:</a>
+<span class="lineNum">     507 </span>            :     //! True if the type owns data that needs to be freed when the TypeManager is cleared.
+<span class="lineNum">     508 </span><span class="lineCov">    2685145 :     Boolean OwnsDefDefData()        { return _ownsDefDefData != 0; }</span>
+<a name="509"><span class="lineNum">     509 </span>            : public:</a>
+<span class="lineNum">     510 </span>            :     //! What type of internal pointer is this type. Only used for CustomValuePointers.
+<a name="511"><span class="lineNum">     511 </span><span class="lineCov">    5324620 :     PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }</span></a>
+<span class="lineNum">     512 </span>            :     //! Accept a TypeVisitor algorithm.
+<a name="513"><span class="lineNum">     513 </span><span class="lineNoCov">          0 :     virtual void    Accept(TypeVisitor *tv)             { tv-&gt;VisitBad(this); }</span></a>
+<span class="lineNum">     514 </span>            :     //! For a wrapped type, return the type that was wrapped, null otherwise.
+<a name="515"><span class="lineNum">     515 </span><span class="lineCov">    5371245 :     virtual TypeRef BaseType()                          { return null; }</span></a>
+<span class="lineNum">     516 </span>            :     //! How many element in an Aggregate, 0 if the type is not an Aggregate.
+<a name="517"><span class="lineNum">     517 </span><span class="lineNoCov">          0 :     virtual Int32   SubElementCount()                   { return 0; }</span></a>
+<span class="lineNum">     518 </span>            :     //! Get an element of an Aggregate using it index.
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :     virtual TypeRef GetSubElement(Int32 index)          { return null; }</span>
+<span class="lineNum">     520 </span>            :     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
+<span class="lineNum">     521 </span>            :     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
+<a name="522"><span class="lineNum">     522 </span>            :     </a>
+<span class="lineNum">     523 </span>            :     //! Set the SubString to the name if the type is not anonymous.
+<a name="524"><span class="lineNum">     524 </span><span class="lineCov">    5587225 :     virtual SubString Name()                            { return SubString(null, null); }</span></a>
+<span class="lineNum">     525 </span>            :     //! Set the SubString to the aggregates elements field name.
+<a name="526"><span class="lineNum">     526 </span><span class="lineNoCov">          0 :     virtual SubString ElementName()                     { return SubString(null, null); }</span></a>
+<span class="lineNum">     527 </span>            :     //! Return a pointer to the raw vector of dimension lengths.
+<span class="lineNum">     528 </span><span class="lineNoCov">          0 :     virtual IntIndex* DimensionLengths()                { return null; }</span>
+<a name="529"><span class="lineNum">     529 </span>            :     </a>
+<span class="lineNum">     530 </span>            :     //! Offset in AQs in the containing aggregate
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :     virtual IntIndex ElementOffset()                    { return 0; }</span>
+<a name="532"><span class="lineNum">     532 </span>            : </a>
+<span class="lineNum">     533 </span>            :     // Methods for working with individual elements
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :     virtual void*    Begin(PointerAccessEnum mode)      { return null; }</span>
+<span class="lineNum">     535 </span>            :     
+<span class="lineNum">     536 </span>            :     //! Zero out a buffer that will hold a value of the type without consideration for the existing bits.
+<span class="lineNum">     537 </span>            :     void ZeroOutTop(void* pData);
+<span class="lineNum">     538 </span>            :     //! Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed.
+<span class="lineNum">     539 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null);
+<span class="lineNum">     540 </span>            :     //! May a deep copy fom the source to the copy.
+<span class="lineNum">     541 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy);
+<span class="lineNum">     542 </span>            :     //! Free up any storage and put value to null/zero state.
+<span class="lineNum">     543 </span>            :     virtual NIError ClearData(void* pData);
+<span class="lineNum">     544 </span>            :     
+<span class="lineNum">     545 </span>            :     //! Initialize a linear block to the deault value for the type.
+<span class="lineNum">     546 </span>            :     NIError InitData(void* pData, IntIndex count);
+<span class="lineNum">     547 </span>            :     //! Deep copy a linear block of values from one locatio to another.
+<span class="lineNum">     548 </span>            :     NIError CopyData(const void* pData, void* pDataCopy, IntIndex count);
+<span class="lineNum">     549 </span>            :     //! Dealocate and null out a linear block of value of the type.
+<span class="lineNum">     550 </span>            :     NIError ClearData(void* pData, IntIndex count);
+<span class="lineNum">     551 </span>            :     //! Make multiple copies of a single instance to a linear block.
+<span class="lineNum">     552 </span>            :     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
+<span class="lineNum">     553 </span>            :     
+<a name="554"><span class="lineNum">     554 </span>            :     Boolean CompareType(TypeRef otherType);</a>
+<span class="lineNum">     555 </span>            :     Boolean IsA(const SubString* otherTypeName);
+<span class="lineNum">     556 </span><span class="lineCov">         30 :     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&amp;typeName); }</span>
+<span class="lineNum">     557 </span>            :     Boolean IsA(TypeRef otherType);
+<span class="lineNum">     558 </span>            :     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
+<a name="559"><span class="lineNum">     559 </span>            :     </a>
+<span class="lineNum">     560 </span>            :     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
+<span class="lineNum">     561 </span><span class="lineCov">       7830 :     virtual IntIndex BitLength()  {return _topAQSize * _typeManager-&gt;AQBitLength(); }  // TODO defer to type manager for scale factor;</span>
+<span class="lineNum">     562 </span>            : };
+<span class="lineNum">     563 </span>            : 
+<a name="564"><span class="lineNum">     564 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     565 </span>            : //! Base class for all type definition types that wrap types with some attribute
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 : class WrappedType : public TypeCommon</span>
+<span class="lineNum">     567 </span>            : {
+<span class="lineNum">     568 </span>            : protected:
+<span class="lineNum">     569 </span>            :     // The WrappedType class may be followed by arbitrary POD so make sure the
+<span class="lineNum">     570 </span>            :     // the class size will maintain proper alignment.
+<span class="lineNum">     571 </span>            :     union {
+<span class="lineNum">     572 </span>            :         TypeRef _wrapped;
+<span class="lineNum">     573 </span>            :         MaxAlignedType _alignent;
+<span class="lineNum">     574 </span>            :     };
+<span class="lineNum">     575 </span>            :     WrappedType(TypeManagerRef typeManager, TypeRef type);
+<a name="576"><span class="lineNum">     576 </span>            : public:</a>
+<a name="577"><span class="lineNum">     577 </span>            :     // Type operations</a>
+<a name="578"><span class="lineNum">     578 </span><span class="lineCov">   11267310 :     virtual TypeRef BaseType()                          { return _wrapped; }</span></a>
+<span class="lineNum">     579 </span><span class="lineCov">     502150 :     virtual Int32   SubElementCount()                   { return _wrapped-&gt;SubElementCount(); }</span>
+<a name="580"><span class="lineNum">     580 </span><span class="lineCov">    4297540 :     virtual TypeRef GetSubElement(Int32 index)          { return _wrapped-&gt;GetSubElement(index); }</span></a>
+<a name="581"><span class="lineNum">     581 </span>            :     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);</a>
+<a name="582"><span class="lineNum">     582 </span><span class="lineCov">      42405 :     virtual IntIndex BitLength()                        { return _wrapped-&gt;BitLength(); }</span></a>
+<span class="lineNum">     583 </span><span class="lineCov">   13241075 :     virtual SubString Name()                            { return _wrapped-&gt;Name(); }</span>
+<a name="584"><span class="lineNum">     584 </span><span class="lineCov">   23710905 :     virtual IntIndex* DimensionLengths()                { return _wrapped-&gt;DimensionLengths(); }</span></a>
+<a name="585"><span class="lineNum">     585 </span>            :     // Data operations</a>
+<span class="lineNum">     586 </span><span class="lineCov">     586805 :     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped-&gt;Begin(mode); }</span>
+<a name="587"><span class="lineNum">     587 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null)</a>
+<a name="588"><span class="lineNum">     588 </span><span class="lineCov">    2617555 :         { return _wrapped-&gt;InitData(pData, pattern ? pattern : this); }</span></a>
+<span class="lineNum">     589 </span><span class="lineCov">   43387510 :     virtual NIError CopyData(const void* pData, void* pDataCopy)  { return _wrapped-&gt;CopyData(pData, pDataCopy); }</span>
+<span class="lineNum">     590 </span><span class="lineCov">    1088420 :     virtual NIError ClearData(void* pData)              { return _wrapped-&gt;ClearData(pData); }</span>
+<span class="lineNum">     591 </span>            : };
+<span class="lineNum">     592 </span>            : 
+<span class="lineNum">     593 </span>            : // TODO forward declarations (this covers asynchronous resolution of sub VIs as well)
+<span class="lineNum">     594 </span>            : // for the most part types are not mutable.
+<span class="lineNum">     595 </span>            : // here might be the exceptions
+<span class="lineNum">     596 </span>            : // 1. if a name is not resolved it can be kept on a short list. when the name is introduced
+<span class="lineNum">     597 </span>            : // the the type tree knows it need to be patched. The node in question replaced the pointer to the bad node to the
+<span class="lineNum">     598 </span>            : // the newly introduced type and marks itself as wasModified = true;
+<span class="lineNum">     599 </span>            : // then the list of type is sweeped and those that refer to modified types re finalize them selves ( fix name?)
+<span class="lineNum">     600 </span>            : // and mark them selves as wasModified. This repeats it self until no nodes are modified.
+<span class="lineNum">     601 </span>            : // the scan is O(n) with a small C for n Types at that level of the type manager and Type Mangers that
+<span class="lineNum">     602 </span>            : // the derive from it.
+<span class="lineNum">     603 </span>            : // 2. for the Named Type node the value may be changed. This does not change the type, only the result of what
+<span class="lineNum">     604 </span>            : // the type-&gt;InitValue method does. For a variante type this means the type of the value may change
+<span class="lineNum">     605 </span>            : // but not notiosn that the value is a variant. A bit tenious perhaps. s
+<span class="lineNum">     606 </span>            : 
+<span class="lineNum">     607 </span>            : 
+<a name="608"><span class="lineNum">     608 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     609 </span>            : //! Gives a type a name ( .e.g &quot;Int32&quot;)
+<span class="lineNum">     610 </span><span class="lineNoCov">          0 : class NamedType : public WrappedType</span>
+<span class="lineNum">     611 </span>            : {
+<span class="lineNum">     612 </span>            : private:
+<span class="lineNum">     613 </span>            :     NamedTypeRef            _nextOverload; // May point to one in curent or root type manager.
+<span class="lineNum">     614 </span>            :     InlineArray&lt;Utf8Char&gt;   _name;
+<a name="615"><span class="lineNum">     615 </span>            :     NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);</a>
+<span class="lineNum">     616 </span>            : public:
+<span class="lineNum">     617 </span>            :     static size_t   StructSize(const SubString* name)
+<span class="lineNum">     618 </span><span class="lineCov">    1013100 :         { return sizeof(NamedType) + InlineArray&lt;Utf8Char&gt;::ExtraStructSize(name-&gt;Length()); }</span>
+<a name="619"><span class="lineNum">     619 </span>            :     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);</a>
+<a name="620"><span class="lineNum">     620 </span>            :     </a>
+<a name="621"><span class="lineNum">     621 </span><span class="lineCov">    3363720 :     NamedTypeRef    NextOverload()                  { return _nextOverload; }</span></a>
+<a name="622"><span class="lineNum">     622 </span><span class="lineCov">      36480 :     virtual void    Accept(TypeVisitor *tv)         { tv-&gt;VisitNamed(this); }</span></a>
+<span class="lineNum">     623 </span><span class="lineCov">   20206785 :     virtual SubString Name()                        { return SubString(_name.Begin(), _name.End()); }</span>
+<span class="lineNum">     624 </span><span class="lineCov">        130 :     virtual SubString ElementName()                 { return SubString(null, null); }</span>
+<span class="lineNum">     625 </span>            : };
+<a name="626"><span class="lineNum">     626 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     627 </span>            : //! Give a type a field name and offset properties. Used inside an aggregateType
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 : class ElementType : public WrappedType</span>
+<span class="lineNum">     629 </span>            : {
+<span class="lineNum">     630 </span>            : private:
+<span class="lineNum">     631 </span>            :     ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
+<span class="lineNum">     632 </span>            : 
+<span class="lineNum">     633 </span>            : public:
+<span class="lineNum">     634 </span>            :     Int32                   _offset;  // Relative to the begining of the aggregate
+<span class="lineNum">     635 </span>            :     InlineArray&lt;Utf8Char&gt;   _elementName;
+<a name="636"><span class="lineNum">     636 </span>            : </a>
+<span class="lineNum">     637 </span>            : public:
+<span class="lineNum">     638 </span><span class="lineCov">    1961045 :     static size_t   StructSize(SubString* name) { return sizeof(ElementType) + InlineArray&lt;Utf8Char&gt;::ExtraStructSize(name-&gt;Length()); }</span>
+<a name="639"><span class="lineNum">     639 </span>            :     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);</a>
+<a name="640"><span class="lineNum">     640 </span>            :     </a>
+<a name="641"><span class="lineNum">     641 </span><span class="lineCov">      21800 :     virtual void    Accept(TypeVisitor *tv)         { tv-&gt;VisitElement(this); }</span></a>
+<span class="lineNum">     642 </span><span class="lineCov">       1495 :     virtual SubString ElementName()                 { return SubString(_elementName.Begin(), _elementName.End()); }</span>
+<span class="lineNum">     643 </span><span class="lineCov">    2368490 :     virtual IntIndex ElementOffset()                { return _offset; }</span>
+<span class="lineNum">     644 </span>            : };
+<a name="645"><span class="lineNum">     645 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     646 </span>            : //! A type that is a raw block of bits in a single encoding.
+<span class="lineNum">     647 </span><span class="lineNoCov">          0 : class BitBlockType : public TypeCommon</span>
+<span class="lineNum">     648 </span>            : {
+<span class="lineNum">     649 </span>            : private:
+<span class="lineNum">     650 </span>            :     IntIndex   _blockLength;
+<span class="lineNum">     651 </span>            :     BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding);
+<a name="652"><span class="lineNum">     652 </span>            : public:</a>
+<a name="653"><span class="lineNum">     653 </span>            :     static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);</a>
+<span class="lineNum">     654 </span><span class="lineCov">       8545 :     virtual void    Accept(TypeVisitor *tv)         { tv-&gt;VisitBitBlock(this); }</span>
+<span class="lineNum">     655 </span><span class="lineCov">      48915 :     virtual IntIndex BitLength()                    { return _blockLength; };</span>
+<span class="lineNum">     656 </span>            : };
+<span class="lineNum">     657 </span>            : //------------------------------------------------------------
+<span class="lineNum">     658 </span>            : //! A type that is a collection of sub types.
+<span class="lineNum">     659 </span>            : class AggregateType : public TypeCommon
+<span class="lineNum">     660 </span>            : {
+<span class="lineNum">     661 </span>            : protected:
+<span class="lineNum">     662 </span>            :     /// Since this class is variable size, classes that derive from it can not
+<span class="lineNum">     663 </span>            :     /// have member variables  as they would be stompped on.
+<span class="lineNum">     664 </span>            :     IntIndex _blockLength;  // only used by BitCluster
+<span class="lineNum">     665 </span>            :     
+<span class="lineNum">     666 </span>            : protected:
+<span class="lineNum">     667 </span>            :     // The default value for the type, may be used
+<span class="lineNum">     668 </span>            :     // At this point only used by the ClusterType class but it needs to come
+<span class="lineNum">     669 </span>            :     // before the inlined array, so it is in this class.
+<span class="lineNum">     670 </span>            :     enum   { kSharedNullsBufferLength = 32 };
+<span class="lineNum">     671 </span>            :     static UInt32 _sharedNullsBuffer[kSharedNullsBufferLength]; // this is a UInt32 instead of UInt8 to avoid aliasing compiler bugs in emcc
+<span class="lineNum">     672 </span>            :     void*   _pDefault;
+<span class="lineNum">     673 </span>            : 
+<span class="lineNum">     674 </span>            : protected:
+<a name="675"><span class="lineNum">     675 </span>            :     InlineArray&lt;ElementType*&gt;   _elements;</a>
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            :     AggregateType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
+<span class="lineNum">     678 </span><span class="lineCov">     705755 :     : TypeCommon(typeManager), _elements(count)</span>
+<span class="lineNum">     679 </span><span class="lineCov">     705755 :     {</span>
+<span class="lineNum">     680 </span><span class="lineCov">     705755 :         _pDefault = null;</span>
+<a name="681"><span class="lineNum">     681 </span><span class="lineCov">     705755 :         _elements.Assign((ElementTypeRef*)elements, count);</span></a>
+<span class="lineNum">     682 </span><span class="lineCov">     705755 :     }</span>
+<span class="lineNum">     683 </span>            :     static size_t   StructSize(Int32 count)
+<span class="lineNum">     684 </span>            :     {
+<span class="lineNum">     685 </span><span class="lineCov">     705755 :         return sizeof(AggregateType) + InlineArray&lt;ElementType*&gt;::ExtraStructSize(count);</span>
+<span class="lineNum">     686 </span>            :     }
+<a name="687"><span class="lineNum">     687 </span>            : </a>
+<span class="lineNum">     688 </span>            : public:
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :     virtual ~AggregateType() {};</span>
+<span class="lineNum">     690 </span>            :     virtual Int32   SubElementCount();
+<span class="lineNum">     691 </span>            :     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
+<span class="lineNum">     692 </span>            :     virtual TypeRef GetSubElement(Int32 index);
+<span class="lineNum">     693 </span>            : };
+<a name="694"><span class="lineNum">     694 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     695 </span>            : //! A type that is an aggregate of BitBlockTypes.
+<span class="lineNum">     696 </span><span class="lineNoCov">          0 : class BitClusterType : public AggregateType</span>
+<span class="lineNum">     697 </span>            : {
+<a name="698"><span class="lineNum">     698 </span>            : private:</a>
+<span class="lineNum">     699 </span>            :     BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
+<span class="lineNum">     700 </span><span class="lineCov">       2120 :     static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }</span>
+<a name="701"><span class="lineNum">     701 </span>            : public:</a>
+<a name="702"><span class="lineNum">     702 </span>            :     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);</a>
+<a name="703"><span class="lineNum">     703 </span><span class="lineNoCov">          0 :     virtual void    Accept(TypeVisitor *tv) { tv-&gt;VisitBitCluster(this); }</span></a>
+<span class="lineNum">     704 </span><span class="lineNoCov">          0 :     virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }</span>
+<span class="lineNum">     705 </span><span class="lineCov">       4240 :     virtual IntIndex BitLength()            { return _blockLength; }</span>
+<span class="lineNum">     706 </span>            : };
+<a name="707"><span class="lineNum">     707 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     708 </span>            : //! A type that permits its data to be looked at though more than one perspective.
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 : class EquivalenceType : public AggregateType</span>
+<span class="lineNum">     710 </span>            : {
+<a name="711"><span class="lineNum">     711 </span>            : private:</a>
+<span class="lineNum">     712 </span>            :     EquivalenceType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
+<span class="lineNum">     713 </span><span class="lineCov">       5300 :     static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }</span>
+<a name="714"><span class="lineNum">     714 </span>            : public:</a>
+<span class="lineNum">     715 </span>            :     static EquivalenceType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
+<span class="lineNum">     716 </span><span class="lineCov">       2115 :     virtual void    Accept(TypeVisitor *tv) { tv-&gt;VisitEquivalence(this); }</span>
+<span class="lineNum">     717 </span>            :     virtual void*   Begin(PointerAccessEnum mode);
+<span class="lineNum">     718 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null);
+<span class="lineNum">     719 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy);
+<span class="lineNum">     720 </span>            :     virtual NIError ClearData(void* pData);
+<span class="lineNum">     721 </span>            : };
+<span class="lineNum">     722 </span>            : //------------------------------------------------------------
+<span class="lineNum">     723 </span>            : //! A type that is an aggregate of other types.
+<span class="lineNum">     724 </span>            : class ClusterType : public AggregateType
+<span class="lineNum">     725 </span>            : {
+<span class="lineNum">     726 </span>            : private:
+<a name="727"><span class="lineNum">     727 </span>            :     ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);</a>
+<span class="lineNum">     728 </span>            :     virtual ~ClusterType();
+<span class="lineNum">     729 </span><span class="lineCov">      51735 :     static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }</span>
+<a name="730"><span class="lineNum">     730 </span>            : public:</a>
+<span class="lineNum">     731 </span>            :     static ClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
+<span class="lineNum">     732 </span><span class="lineCov">      12670 :     virtual void    Accept(TypeVisitor *tv) { tv-&gt;VisitCluster(this); }</span>
+<span class="lineNum">     733 </span>            :     virtual void*   Begin(PointerAccessEnum mode);
+<span class="lineNum">     734 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null);
+<span class="lineNum">     735 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy);
+<span class="lineNum">     736 </span>            :     virtual NIError ClearData(void* pData);
+<span class="lineNum">     737 </span>            : };
+<span class="lineNum">     738 </span>            : //------------------------------------------------------------
+<span class="lineNum">     739 </span>            : //! Base class for calculating core properties for aggregate types.
+<span class="lineNum">     740 </span>            : class AggregateAlignmentCalculator
+<span class="lineNum">     741 </span>            : {
+<span class="lineNum">     742 </span>            :     /// When aggregate types are parsed by a codec the decoder needs to calculate
+<span class="lineNum">     743 </span>            :     /// core properties as the elements are parsed and created. This class and
+<span class="lineNum">     744 </span>            :     /// its decendents keep the details internal to the TypeManager.
+<span class="lineNum">     745 </span>            : protected:
+<span class="lineNum">     746 </span>            :     TypeManagerRef  _tm;
+<span class="lineNum">     747 </span>            :     Int32           _aqOffset;
+<span class="lineNum">     748 </span>            : public:
+<span class="lineNum">     749 </span>            :     Int32   ElementCount;
+<span class="lineNum">     750 </span>            :     Int32   AggregateAlignment;
+<span class="lineNum">     751 </span>            :     Int32   AggregateSize;
+<span class="lineNum">     752 </span>            :     Boolean IncludesPadding;
+<span class="lineNum">     753 </span>            :     Boolean IsValid;
+<span class="lineNum">     754 </span>            :     Boolean IsFlat;
+<span class="lineNum">     755 </span>            : public:
+<span class="lineNum">     756 </span>            :     AggregateAlignmentCalculator(TypeManagerRef tm);
+<span class="lineNum">     757 </span>            :     virtual Int32  AlignNextElement(TypeRef element) = 0;
+<span class="lineNum">     758 </span>            :     void   Finish();
+<span class="lineNum">     759 </span>            : };
+<span class="lineNum">     760 </span>            : //------------------------------------------------------------
+<span class="lineNum">     761 </span>            : //! Calculates core properties for ClusterTypes
+<span class="lineNum">     762 </span>            : class ClusterAlignmentCalculator : public AggregateAlignmentCalculator
+<a name="763"><span class="lineNum">     763 </span>            : {</a>
+<span class="lineNum">     764 </span>            : public:
+<span class="lineNum">     765 </span><span class="lineCov">     105590 :     ClusterAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}</span>
+<span class="lineNum">     766 </span>            :     virtual Int32  AlignNextElement(TypeRef element);
+<span class="lineNum">     767 </span>            : };
+<span class="lineNum">     768 </span>            : //------------------------------------------------------------
+<span class="lineNum">     769 </span>            : //! Calculates core properties for ClusterTypes
+<span class="lineNum">     770 </span>            : class ParamBlockAlignmentCalculator :  public AggregateAlignmentCalculator
+<span class="lineNum">     771 </span>            : {
+<span class="lineNum">     772 </span>            : public:
+<span class="lineNum">     773 </span>            :     ParamBlockAlignmentCalculator(TypeManagerRef tm);
+<span class="lineNum">     774 </span>            :     virtual Int32  AlignNextElement(TypeRef element);
+<span class="lineNum">     775 </span>            : };
+<span class="lineNum">     776 </span>            : //------------------------------------------------------------
+<span class="lineNum">     777 </span>            : //! Calculates core properties for EquivalenceTypes
+<span class="lineNum">     778 </span>            : class EquivalenceAlignmentCalculator :  public AggregateAlignmentCalculator
+<a name="779"><span class="lineNum">     779 </span>            : {</a>
+<span class="lineNum">     780 </span>            : public:
+<span class="lineNum">     781 </span><span class="lineCov">       5300 :     EquivalenceAlignmentCalculator(TypeManagerRef tm) : AggregateAlignmentCalculator(tm) {}</span>
+<span class="lineNum">     782 </span>            :     virtual Int32  AlignNextElement(TypeRef element);
+<span class="lineNum">     783 </span>            : };
+<a name="784"><span class="lineNum">     784 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     785 </span>            : //! A type that describes the parameter block used by a native InstructionFunction
+<span class="lineNum">     786 </span><span class="lineNoCov">          0 : class ParamBlockType : public AggregateType</span>
+<span class="lineNum">     787 </span>            : {
+<a name="788"><span class="lineNum">     788 </span>            : private:</a>
+<span class="lineNum">     789 </span>            :     ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
+<span class="lineNum">     790 </span><span class="lineCov">     646600 :     static size_t   StructSize(Int32 count) { return AggregateType::StructSize(count); }</span>
+<a name="791"><span class="lineNum">     791 </span>            : public:</a>
+<a name="792"><span class="lineNum">     792 </span>            :     static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);</a>
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :     virtual void    Accept(TypeVisitor *tv) { tv-&gt;VisitParamBlock(this); }</span>
+<span class="lineNum">     794 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null)
+<span class="lineNum">     795 </span>            :         {
+<a name="796"><span class="lineNum">     796 </span><span class="lineNoCov">          0 :             return kNIError_Success;</span></a>
+<span class="lineNum">     797 </span>            :         }
+<span class="lineNum">     798 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy)
+<span class="lineNum">     799 </span>            :         {
+<span class="lineNum">     800 </span>            :             VIREO_ASSERT(false); //TODO
+<a name="801"><span class="lineNum">     801 </span><span class="lineNoCov">          0 :             return kNIError_kInsufficientResources;</span></a>
+<span class="lineNum">     802 </span>            :         }
+<span class="lineNum">     803 </span>            :     virtual NIError ClearData(void* pData)
+<span class="lineNum">     804 </span>            :         {
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :             return kNIError_kInsufficientResources;</span>
+<span class="lineNum">     806 </span>            :         }
+<span class="lineNum">     807 </span>            : };
+<a name="808"><span class="lineNum">     808 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     809 </span>            : //! A type that is a multi-dimension collection of another type.
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 : class ArrayType : public WrappedType</span>
+<span class="lineNum">     811 </span>            : {
+<a name="812"><span class="lineNum">     812 </span>            : private:</a>
+<span class="lineNum">     813 </span>            :     ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
+<span class="lineNum">     814 </span><span class="lineCov">      26885 :     static size_t   StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }</span>
+<span class="lineNum">     815 </span>            : 
+<span class="lineNum">     816 </span>            : public:
+<span class="lineNum">     817 </span>            :     
+<span class="lineNum">     818 </span>            :     static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
+<span class="lineNum">     819 </span>            :    
+<span class="lineNum">     820 </span>            :     // _pDefault is a singleton for each instance of an ArrayType used as the default
+<span class="lineNum">     821 </span>            :     // value, allocated one demand
+<span class="lineNum">     822 </span>            :     void*   _pDefault;
+<span class="lineNum">     823 </span>            :     
+<span class="lineNum">     824 </span>            :     // In the type dimension is described as follows:
+<span class="lineNum">     825 </span>            :     // negative=bounded, positive=fixed, zero=fix with no elements
+<span class="lineNum">     826 </span>            :     // negative VariableDimensionSentinel means varible, and will not be prealocated.
+<a name="827"><span class="lineNum">     827 </span>            :     IntDim    _dimensionLengths[1];</a>
+<a name="828"><span class="lineNum">     828 </span>            :     </a>
+<a name="829"><span class="lineNum">     829 </span><span class="lineCov">      13065 :     virtual void    Accept(TypeVisitor *tv)             { tv-&gt;VisitArray(this); }</span></a>
+<a name="830"><span class="lineNum">     830 </span><span class="lineCov">     541150 :     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.</span></a>
+<span class="lineNum">     831 </span><span class="lineNoCov">          0 :     virtual Int32   SubElementCount()                   { return 1; }</span>
+<a name="832"><span class="lineNum">     832 </span><span class="lineCov">     800415 :     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }</span></a>
+<a name="833"><span class="lineNum">     833 </span>            :     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);</a>
+<span class="lineNum">     834 </span><span class="lineCov">    1129525 :     virtual SubString Name()                            { return SubString(&quot;Array&quot;); }</span>
+<span class="lineNum">     835 </span><span class="lineCov">   12939170 :     virtual IntDim* DimensionLengths()                  { return &amp;_dimensionLengths[0]; }</span>
+<span class="lineNum">     836 </span>            : 
+<span class="lineNum">     837 </span>            :     virtual void*   Begin(PointerAccessEnum mode);
+<span class="lineNum">     838 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null);
+<span class="lineNum">     839 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy);
+<span class="lineNum">     840 </span>            :     virtual NIError ClearData(void* pData);
+<span class="lineNum">     841 </span>            : };
+<a name="842"><span class="lineNum">     842 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     843 </span>            : //! A type that has a custom ( e.g. non 0) value. Requires a base type.
+<span class="lineNum">     844 </span><span class="lineNoCov">          0 : class DefaultValueType : public WrappedType</span>
+<span class="lineNum">     845 </span>            : {
+<a name="846"><span class="lineNum">     846 </span>            : private:</a>
+<span class="lineNum">     847 </span>            :     DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
+<span class="lineNum">     848 </span><span class="lineCov">      58370 :     static size_t   StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type-&gt;TopAQSize(); }</span>
+<span class="lineNum">     849 </span>            : public:
+<span class="lineNum">     850 </span>            :     //! Create a default value for a pointer and set the value in one operation.
+<span class="lineNum">     851 </span>            :     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue, void* pointerValue);
+<span class="lineNum">     852 </span>            :     //!
+<span class="lineNum">     853 </span>            :     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
+<a name="854"><span class="lineNum">     854 </span>            :     DefaultValueType* FinalizeDVT();</a>
+<span class="lineNum">     855 </span>            : public:
+<span class="lineNum">     856 </span><span class="lineCov">      15790 :     virtual void    Accept(TypeVisitor *tv)             { tv-&gt;VisitDefaultValue(this); }</span>
+<span class="lineNum">     857 </span>            :     virtual void*   Begin(PointerAccessEnum mode);
+<span class="lineNum">     858 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null);
+<span class="lineNum">     859 </span>            : };
+<a name="860"><span class="lineNum">     860 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     861 </span>            : //! A type describes a pointer to another type. Initial value will be null.
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 : class PointerType : public WrappedType</span>
+<span class="lineNum">     863 </span>            : {
+<span class="lineNum">     864 </span>            : protected:
+<span class="lineNum">     865 </span>            :     PointerType(TypeManagerRef typeManager, TypeRef type);
+<a name="866"><span class="lineNum">     866 </span>            : public:</a>
+<a name="867"><span class="lineNum">     867 </span>            :     static PointerType* New(TypeManagerRef typeManager, TypeRef type);</a>
+<a name="868"><span class="lineNum">     868 </span><span class="lineNoCov">          0 :     virtual void    Accept(TypeVisitor *tv)             { tv-&gt;VisitPointer(this); }</span></a>
+<span class="lineNum">     869 </span><span class="lineCov">    7785885 :     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :     virtual Int32   SubElementCount()                   { return 1; }</span>
+<span class="lineNum">     871 </span>            :     // TODO Add GetSubElementAddressFromPath
+<span class="lineNum">     872 </span>            : };
+<a name="873"><span class="lineNum">     873 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     874 </span>            : //! A type describes a pointer with a predefined value. For example, the address to a C function.
+<span class="lineNum">     875 </span><span class="lineNoCov">          0 : class DefaultPointerType : public PointerType</span>
+<span class="lineNum">     876 </span>            : {
+<span class="lineNum">     877 </span>            : private:
+<span class="lineNum">     878 </span>            :     DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
+<span class="lineNum">     879 </span>            :     DefaultPointerType();
+<span class="lineNum">     880 </span>            : public:
+<span class="lineNum">     881 </span>            :     void*           _defaultPointerValue;
+<span class="lineNum">     882 </span>            : public:
+<a name="883"><span class="lineNum">     883 </span>            :     static DefaultPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);</a>
+<span class="lineNum">     884 </span>            :     
+<span class="lineNum">     885 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null)
+<span class="lineNum">     886 </span>            :     {
+<span class="lineNum">     887 </span><span class="lineCov">     485500 :         *(void**)pData = _defaultPointerValue;</span>
+<a name="888"><span class="lineNum">     888 </span><span class="lineCov">     485500 :         return kNIError_Success;</span></a>
+<span class="lineNum">     889 </span>            :     }
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :     virtual void*   Begin(PointerAccessEnum mode)       { return &amp;_defaultPointerValue; }</span>
+<span class="lineNum">     891 </span>            : };
+<a name="892"><span class="lineNum">     892 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     893 </span>            : //! An interface used a CustomDataProcType instance.
+<a name="894"><span class="lineNum">     894 </span><span class="lineCov">       2120 : class IDataProcs {</span></a>
+<a name="895"><span class="lineNum">     895 </span>            : public:</a>
+<a name="896"><span class="lineNum">     896 </span><span class="lineCov">      14370 :     virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern = null)  { return type-&gt;InitData(pData, pattern); }</span></a>
+<a name="897"><span class="lineNum">     897 </span><span class="lineCov">      12535 :     virtual NIError CopyData(TypeRef type, const void* pData, void* pDataCopy) { return type-&gt;CopyData(pData, pDataCopy); }</span></a>
+<span class="lineNum">     898 </span><span class="lineNoCov">          0 :     virtual NIError ClearData(TypeRef type, void* pData) { return type-&gt;ClearData(pData); }</span>
+<span class="lineNum">     899 </span>            :     virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* name, void *start, void **end, Boolean allowDynamic)
+<span class="lineNum">     900 </span><span class="lineNoCov">          0 :         { return type-&gt;GetSubElementAddressFromPath(name, start, end, allowDynamic); }</span>
+<span class="lineNum">     901 </span>            : };
+<a name="902"><span class="lineNum">     902 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     903 </span>            : //! A type that has custom Init/Copy/Clear/GetSubElement functions
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 : class CustomDataProcType : public WrappedType</span>
+<span class="lineNum">     905 </span>            : {
+<span class="lineNum">     906 </span>            : protected:
+<span class="lineNum">     907 </span>            :     CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs *pAlloc);
+<span class="lineNum">     908 </span>            :     IDataProcs*    _pDataProcs;
+<a name="909"><span class="lineNum">     909 </span>            : public:</a>
+<span class="lineNum">     910 </span>            :     static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
+<a name="911"><span class="lineNum">     911 </span>            :     virtual void    Accept(TypeVisitor *tv)</a>
+<span class="lineNum">     912 </span><span class="lineCov">        860 :         { tv-&gt;VisitCustomDataProc(this); }</span>
+<a name="913"><span class="lineNum">     913 </span>            :     virtual NIError InitData(void* pData, TypeRef pattern = null)</a>
+<span class="lineNum">     914 </span><span class="lineCov">      27770 :         { return _pDataProcs-&gt;InitData(_wrapped, pData, pattern); }</span>
+<a name="915"><span class="lineNum">     915 </span>            :     virtual NIError CopyData(const void* pData, void* pDataCopy)</a>
+<span class="lineNum">     916 </span><span class="lineCov">      18240 :         { return _pDataProcs-&gt;CopyData(_wrapped, pData, pDataCopy); }</span>
+<a name="917"><span class="lineNum">     917 </span>            :     virtual NIError ClearData(void* pData)</a>
+<span class="lineNum">     918 </span><span class="lineCov">      27330 :         { return _pDataProcs-&gt;ClearData(_wrapped, pData); }</span>
+<span class="lineNum">     919 </span>            :     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
+<span class="lineNum">     920 </span><span class="lineCov">        135 :         { return _pDataProcs-&gt;GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }</span>
+<span class="lineNum">     921 </span>            : };
+<span class="lineNum">     922 </span>            : //------------------------------------------------------------
+<span class="lineNum">     923 </span>            : //! The core C++ implimentation for ArrayType typed data's value.
+<span class="lineNum">     924 </span>            : class TypedArrayCore
+<span class="lineNum">     925 </span>            : {
+<span class="lineNum">     926 </span>            : protected:
+<span class="lineNum">     927 </span>            :     //! Pointer to the array's first element.
+<span class="lineNum">     928 </span>            :     AQBlock1*               _pRawBufferBegin;
+<span class="lineNum">     929 </span>            :     
+<span class="lineNum">     930 </span>            :     //! Array's type. 
+<span class="lineNum">     931 </span>            :     TypeRef                 _typeRef;
+<span class="lineNum">     932 </span>            : 
+<span class="lineNum">     933 </span>            :     //! Specific type an instance is an array of.
+<span class="lineNum">     934 </span>            :     TypeRef                 _eltTypeRef;
+<span class="lineNum">     935 </span>            : 
+<span class="lineNum">     936 </span>            :     //! Total number of elements there is capacity for in the managed block of memory.
+<span class="lineNum">     937 </span>            :     IntIndex                _capacity;
+<span class="lineNum">     938 </span>            : 
+<span class="lineNum">     939 </span>            :     // _dimensionAndSlabLengths works as follows:
+<span class="lineNum">     940 </span>            :     // In an array of Rank 2, there will be 2 DimensionLengths followed by
+<span class="lineNum">     941 </span>            :     // 2 slabLengths. slabLengths are precalculated in AQSize used for indexing.
+<span class="lineNum">     942 </span>            :     // For the inner most dimension the slab length is the length of the element.
+<span class="lineNum">     943 </span>            :     // Final offset is the dot product of the index vector and the slabLength vector.
+<span class="lineNum">     944 </span>            : private:
+<a name="945"><span class="lineNum">     945 </span>            :     IntIndex                _dimensionAndSlabLengths[2];</a>
+<a name="946"><span class="lineNum">     946 </span>            : public:</a>
+<a name="947"><span class="lineNum">     947 </span><span class="lineCov">   96729435 :     IntIndex  Rank()                { return _typeRef-&gt;Rank(); }</span></a>
+<span class="lineNum">     948 </span><span class="lineCov">   59867585 :     IntIndex* DimensionLengths()    { return _dimensionAndSlabLengths; }</span>
+<span class="lineNum">     949 </span><span class="lineCov">   12919465 :     IntIndex* SlabLengths()         { return &amp;_dimensionAndSlabLengths[0] + Rank(); }</span>
+<a name="950"><span class="lineNum">     950 </span>            :     </a>
+<span class="lineNum">     951 </span>            : protected:
+<span class="lineNum">     952 </span><span class="lineCov">     180235 :     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }</span>
+<span class="lineNum">     953 </span>            :     TypedArrayCore(TypeRef type);
+<span class="lineNum">     954 </span>            : public:
+<span class="lineNum">     955 </span>            :     static TypedArrayCoreRef New(TypeRef type);
+<span class="lineNum">     956 </span>            :     static void Delete(TypedArrayCoreRef);
+<a name="957"><span class="lineNum">     957 </span>            : </a>
+<span class="lineNum">     958 </span>            : public:
+<span class="lineNum">     959 </span>            :     AQBlock1* BeginAt(IntIndex index)
+<span class="lineNum">     960 </span>            :     {
+<span class="lineNum">     961 </span>            :         VIREO_ASSERT(index &gt;= 0)
+<span class="lineNum">     962 </span>            :         VIREO_ASSERT(ElementType() != null)
+<span class="lineNum">     963 </span><span class="lineCov">   10296440 :         AQBlock1* begin = (RawBegin() + (index * ElementType()-&gt;TopAQSize()));</span>
+<span class="lineNum">     964 </span><span class="lineCov">   10296440 :         return begin;</span>
+<span class="lineNum">     965 </span>            :     }
+<span class="lineNum">     966 </span>            :     AQBlock1* BeginAtND(Int32, IntIndex* );
+<span class="lineNum">     967 </span>            :     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes[]);
+<a name="968"><span class="lineNum">     968 </span>            : </a>
+<a name="969"><span class="lineNum">     969 </span>            : public:</a>
+<a name="970"><span class="lineNum">     970 </span><span class="lineCov">      64540 :     void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); } // some extra asserts fo  ZDAs</span></a>
+<span class="lineNum">     971 </span><span class="lineCov">   38122980 :     AQBlock1* RawBegin()            { return _pRawBufferBegin; }</span>
+<span class="lineNum">     972 </span><span class="lineNoCov">          0 :     template&lt;typename CT&gt; CT BeginAtAQ(IntIndex index) { return reinterpret_cast&lt;CT&gt;(RawBegin() + index); }</span>
+<span class="lineNum">     973 </span>            :     BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()-&gt;TopAQSize(), Length()); }
+<span class="lineNum">     974 </span>            : 
+<a name="975"><span class="lineNum">     975 </span>            : public:</a>
+<span class="lineNum">     976 </span>            :     //! Array's type.
+<span class="lineNum">     977 </span><span class="lineCov">   14464090 :     TypeRef Type()                  { return _typeRef; }</span>
+<a name="978"><span class="lineNum">     978 </span>            :     </a>
+<span class="lineNum">     979 </span>            :     //! The element type of this array instance. This type may be more specific than the element in Array's Type.
+<span class="lineNum">     980 </span><span class="lineCov">   61193550 :     TypeRef ElementType()           { return _eltTypeRef; }</span>
+<span class="lineNum">     981 </span>            :     Boolean SetElementType(TypeRef, Boolean preserveElements);
+<span class="lineNum">     982 </span>            :     
+<span class="lineNum">     983 </span>            : protected:
+<span class="lineNum">     984 </span>            :     Boolean AQAlloc(IntIndex countBytes);
+<span class="lineNum">     985 </span>            :     Boolean AQRealloc(IntIndex countBytes, IntIndex preserveBytes);
+<span class="lineNum">     986 </span>            :     void AQFree();
+<span class="lineNum">     987 </span>            :     
+<span class="lineNum">     988 </span>            : public:
+<span class="lineNum">     989 </span>            :     //! A minimal sanity check, it could do more.
+<span class="lineNum">     990 </span>            :     static Boolean ValidateHandle(TypedArrayCoreRef block)
+<span class="lineNum">     991 </span>            :     {
+<span class="lineNum">     992 </span>            :         return (block != null);
+<span class="lineNum">     993 </span>            :     }
+<span class="lineNum">     994 </span>            :     
+<span class="lineNum">     995 </span>            :     IntIndex GetLength(IntIndex i);
+<span class="lineNum">     996 </span>            :     
+<span class="lineNum">     997 </span>            :     // Total Length  (product of all dimension lengths)
+<span class="lineNum">     998 </span>            :     // For actual arrays (not types) this will always be regular whole number.
+<a name="999"><span class="lineNum">     999 </span>            :     // Types may be variable, fixed, or bounded.</a>
+<span class="lineNum">    1000 </span>            :     IntIndex InternalCalculateLength();
+<span class="lineNum">    1001 </span><span class="lineCov">  105183180 :     IntIndex Length()       { return Rank() == 1 ? *DimensionLengths() :  InternalCalculateLength(); }</span>
+<a name="1002"><span class="lineNum">    1002 </span>            : </a>
+<span class="lineNum">    1003 </span>            :     //! Returns the maximum number of elements the current underlying storage could hold.
+<span class="lineNum">    1004 </span><span class="lineCov">   14663675 :     IntIndex Capacity()     { return abs(_capacity); }</span>
+<span class="lineNum">    1005 </span>            :     
+<span class="lineNum">    1006 </span>            :     //! Attempt to grow the capacity of the array so that resizing the dimensions will not need
+<span class="lineNum">    1007 </span>            :     // to realloc the underlying storage. This is a soft request and underlying system may reclaim the memory.
+<a name="1008"><span class="lineNum">    1008 </span>            :     // This method has no effect on fixed or bounded arrays. Returns true if the array capacity</a>
+<span class="lineNum">    1009 </span>            :     // is greater than or equal to the amount requested.
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :     Boolean Reserve(IntIndex length)        { return length &lt;= Capacity(); }</span>
+<a name="1011"><span class="lineNum">    1011 </span>            :     </a>
+<span class="lineNum">    1012 </span>            :     //! Calculate the length of a contigious chunk of elements
+<span class="lineNum">    1013 </span><span class="lineCov">      33575 :     IntIndex AQBlockLength(IntIndex count)  { return ElementType()-&gt;TopAQSize() * count; }</span>
+<span class="lineNum">    1014 </span>            :     
+<span class="lineNum">    1015 </span>            :     //! Resize for multi dim arrays
+<span class="lineNum">    1016 </span>            :     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld);
+<span class="lineNum">    1017 </span>            :     
+<span class="lineNum">    1018 </span>            :     //! Make this array match the shape of the reference type.
+<span class="lineNum">    1019 </span>            :     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
+<a name="1020"><span class="lineNum">    1020 </span>            :     </a>
+<span class="lineNum">    1021 </span>            :     //! Resize for 1d arrays, if not enough memory leave as is.
+<span class="lineNum">    1022 </span><span class="lineCov">     842525 :     Boolean Resize1D(IntIndex length)       { return ResizeDimensions(1, &amp;length, true); }</span>
+<span class="lineNum">    1023 </span>            :     
+<span class="lineNum">    1024 </span>            :     //! Resize, if not enough memory, then size to zero
+<span class="lineNum">    1025 </span>            :     Boolean Resize1DOrEmpty(IntIndex length);
+<span class="lineNum">    1026 </span>            : 
+<span class="lineNum">    1027 </span>            : private:
+<span class="lineNum">    1028 </span>            :     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
+<span class="lineNum">    1029 </span>            :     Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean reserveExists);
+<span class="lineNum">    1030 </span>            :     
+<span class="lineNum">    1031 </span>            : public:
+<span class="lineNum">    1032 </span>            :     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);
+<span class="lineNum">    1033 </span>            :     NIError Insert1D(IntIndex position, IntIndex count, const void* pSource = null);
+<span class="lineNum">    1034 </span>            :     NIError Remove1D(IntIndex position, IntIndex count);    
+<span class="lineNum">    1035 </span>            : };
+<span class="lineNum">    1036 </span>            : 
+<span class="lineNum">    1037 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1038 </span>            : //! A template class to allow C++ type safe access to select ArrayType values
+<span class="lineNum">    1039 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1040 </span>            : class TypedArray1D : public TypedArrayCore
+<a name="1041"><span class="lineNum">    1041 </span>            : {</a>
+<a name="1042"><span class="lineNum">    1042 </span>            : public:</a>
+<a name="1043"><span class="lineNum">    1043 </span><span class="lineCov">     169325 :     T* Begin()                  { return (T*) TypedArrayCore::RawBegin(); }</span></a>
+<a name="1044"><span class="lineNum">    1044 </span><span class="lineCov">      41235 :     T* End()                    { return (T*) Begin() + Length(); }</span></a>
+<span class="lineNum">    1045 </span><span class="lineCov">         25 :     T  At(IntIndex index)       { return *(T*) BeginAt(index);};</span>
+<span class="lineNum">    1046 </span><span class="lineCov">       5725 :     T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }</span>
+<span class="lineNum">    1047 </span>            :     T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) { return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes); }
+<span class="lineNum">    1048 </span>            : 
+<a name="1049"><span class="lineNum">    1049 </span>            :     template &lt;class T2&gt; T2 AtAQ(IntIndex index)         { return *BeginAtAQ&lt;T2*&gt;(index); }</a>
+<a name="1050"><span class="lineNum">    1050 </span>            :     </a>
+<a name="1051"><span class="lineNum">    1051 </span><span class="lineCov">     326235 :     NIError Append(T element)                           { return Insert1D(Length(), 1, &amp;element); }</span></a>
+<a name="1052"><span class="lineNum">    1052 </span><span class="lineCov">      91225 :     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }</span></a>
+<a name="1053"><span class="lineNum">    1053 </span><span class="lineCov">       1295 :     NIError Insert(IntIndex position, IntIndex count, const T* pElements)  { return Insert1D(position, count, pElements); }</span></a>
+<span class="lineNum">    1054 </span><span class="lineCov">        630 :     NIError Append(TypedArray1D* array) { return Insert1D(Length(), array-&gt;Length(), array-&gt;Begin()); }</span>
+<span class="lineNum">    1055 </span><span class="lineCov">        685 :     NIError CopyFrom(IntIndex count, const T* pElements){ return Replace1D(0, count, pElements, true); }</span>
+<span class="lineNum">    1056 </span>            : };
+<span class="lineNum">    1057 </span>            : 
+<span class="lineNum">    1058 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1059 </span>            : //! A template class to allow C++ type safe access to a Vireo object values
+<span class="lineNum">    1060 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1061 </span>            : class TypedObject : public TypedArrayCore
+<a name="1062"><span class="lineNum">    1062 </span>            : {</a>
+<span class="lineNum">    1063 </span>            : public:
+<span class="lineNum">    1064 </span><span class="lineCov">      29160 :     T* ObjBegin() { return (T*) RawObj(); }</span>
+<span class="lineNum">    1065 </span>            : };
+<span class="lineNum">    1066 </span>            : 
+<span class="lineNum">    1067 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1068 </span>            : //! Vireo string type. Must be allocated by TypeManager not raw C++
+<span class="lineNum">    1069 </span>            : class String : public TypedArray1D&lt; Utf8Char &gt;
+<a name="1070"><span class="lineNum">    1070 </span>            : {</a>
+<a name="1071"><span class="lineNum">    1071 </span>            : public:</a>
+<a name="1072"><span class="lineNum">    1072 </span><span class="lineCov">      14025 :     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }</span></a>
+<a name="1073"><span class="lineNum">    1073 </span><span class="lineCov">        660 :     void CopyFromSubString(SubString* string)   { CopyFrom(string-&gt;Length(), string-&gt;Begin()); }</span></a>
+<a name="1074"><span class="lineNum">    1074 </span><span class="lineCov">       4190 :     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }</span></a>
+<a name="1075"><span class="lineNum">    1075 </span><span class="lineCov">         35 :     void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }</span></a>
+<span class="lineNum">    1076 </span><span class="lineCov">       9670 :     void AppendSubString(SubString* string)     { Append((IntIndex)string-&gt;Length(), (Utf8Char*)string-&gt;Begin()); }</span>
+<span class="lineNum">    1077 </span>            :     void InsertCStr(IntIndex position, ConstCStr cstr)
+<span class="lineNum">    1078 </span><span class="lineCov">        505 :                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }</span>
+<span class="lineNum">    1079 </span>            :     void AppendViaDecoded(SubString *string);
+<a name="1080"><span class="lineNum">    1080 </span>            :     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);</a>
+<span class="lineNum">    1081 </span>            : 
+<span class="lineNum">    1082 </span>            :     void InsertSubString(IntIndex position, SubString* string)
+<span class="lineNum">    1083 </span><span class="lineCov">        790 :                                                 { Insert(position, (IntIndex)string-&gt;Length(), (Utf8Char*)string-&gt;Begin()); }</span>
+<span class="lineNum">    1084 </span>            : };
+<span class="lineNum">    1085 </span>            : 
+<span class="lineNum">    1086 </span>            : typedef String *StringRef;
+<span class="lineNum">    1087 </span>            : typedef TypedArray1D&lt; UInt8 &gt; BinaryBuffer, *BinaryBufferRef;
+<span class="lineNum">    1088 </span>            : typedef TypedArray1D&lt; Int32 &gt; Int32Array1D;
+<span class="lineNum">    1089 </span>            : typedef TypedArray1D&lt; TypeRef &gt; TypeRefArray1D;
+<span class="lineNum">    1090 </span>            : 
+<span class="lineNum">    1091 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1092 </span>            : //! Stack class to create a CString from Vireo String.
+<span class="lineNum">    1093 </span>            : class TempStackCStringFromString : public TempStackCString
+<a name="1094"><span class="lineNum">    1094 </span>            : {</a>
+<span class="lineNum">    1095 </span>            : public:
+<span class="lineNum">    1096 </span>            :     TempStackCStringFromString(StringRef string)
+<span class="lineNum">    1097 </span><span class="lineCov">          5 :     : TempStackCString(string-&gt;Begin(), string-&gt;Length())</span>
+<span class="lineNum">    1098 </span><span class="lineCov">         10 :     { }</span>
+<span class="lineNum">    1099 </span>            : };
+<span class="lineNum">    1100 </span>            : 
+<span class="lineNum">    1101 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1102 </span>            : //! Create a specialization of a template type.
+<span class="lineNum">    1103 </span>            : TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef typeTemplate, SubVector&lt;TypeRef&gt;*);
+<span class="lineNum">    1104 </span>            : 
+<span class="lineNum">    1105 </span>            : //------------------------------------------------------------
+<span class="lineNum">    1106 </span>            : //! Template class to dynamically create an instance of a Vireo typed variable.
+<span class="lineNum">    1107 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1108 </span>            : class StackVar
+<span class="lineNum">    1109 </span>            : {
+<span class="lineNum">    1110 </span>            : public:
+<span class="lineNum">    1111 </span>            :     T *Value;
+<a name="1112"><span class="lineNum">    1112 </span>            :     </a>
+<span class="lineNum">    1113 </span>            :     //! Construct and instance of the type using the name passed by the macro.
+<span class="lineNum">    1114 </span>            :     StackVar(ConstCStr name)
+<span class="lineNum">    1115 </span>            :     {
+<span class="lineNum">    1116 </span><span class="lineCov">      27760 :         TypeRef type = TypeManagerScope::Current()-&gt;FindType(name);</span>
+<span class="lineNum">    1117 </span>            :         VIREO_ASSERT(type-&gt;IsArray() &amp;&amp; !type-&gt;IsFlat());
+<span class="lineNum">    1118 </span><span class="lineCov">      27760 :         Value = null;</span>
+<span class="lineNum">    1119 </span><span class="lineCov">      27760 :         if (type) {</span>
+<span class="lineNum">    1120 </span><span class="lineCov">      27760 :             type-&gt;InitData(&amp;Value);</span>
+<span class="lineNum">    1121 </span><span class="lineCov">      27760 :         }</span>
+<a name="1122"><span class="lineNum">    1122 </span><span class="lineCov">      27760 :     }</span></a>
+<span class="lineNum">    1123 </span>            :     //! Remove ownership of the managed value.
+<span class="lineNum">    1124 </span>            :     T* DetachValue()
+<span class="lineNum">    1125 </span>            :     {
+<span class="lineNum">    1126 </span><span class="lineNoCov">          0 :         T* temp = Value;</span>
+<span class="lineNum">    1127 </span><span class="lineNoCov">          0 :         Value = null;</span>
+<span class="lineNum">    1128 </span><span class="lineNoCov">          0 :         return temp;</span>
+<a name="1129"><span class="lineNum">    1129 </span>            :     }</a>
+<span class="lineNum">    1130 </span>            :     //! Free any storage used by the value if it is still managed.
+<span class="lineNum">    1131 </span>            :     ~StackVar()
+<span class="lineNum">    1132 </span>            :     {
+<span class="lineNum">    1133 </span><span class="lineCov">      27760 :         if (Value) {</span>
+<span class="lineNum">    1134 </span><span class="lineCov">      27760 :             Value-&gt;Type()-&gt;ClearData(&amp;Value);</span>
+<span class="lineNum">    1135 </span><span class="lineCov">      27760 :         }</span>
+<span class="lineNum">    1136 </span><span class="lineCov">      27760 :     }</span>
+<span class="lineNum">    1137 </span>            : };
+<span class="lineNum">    1138 </span>            :     
+<span class="lineNum">    1139 </span>            : //! Declare a variable using a Vireo type.
+<span class="lineNum">    1140 </span>            : #define STACK_VAR(_t_, _v_) StackVar&lt;_t_&gt; _v_(#_t_)
+<span class="lineNum">    1141 </span>            : 
+<span class="lineNum">    1142 </span>            : } // namespace Vireo
+<span class="lineNum">    1143 </span>            : 
+<span class="lineNum">    1144 </span>            : #endif //TypeAndDataManager_h
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

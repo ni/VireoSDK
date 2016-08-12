@@ -1,0 +1,439 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - cov.info - core/ExecutionContext.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">core</a> - ExecutionContext.cpp<span style="font-size: 80%;"> (source / <a href="ExecutionContext.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">cov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">129</td>
+            <td class="headerCovTableEntry">135</td>
+            <td class="headerCovTableEntryHi">95.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2016-08-08 16:08:48</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryMed">87.5 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /**</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : Copyright (c) 2014-2015 National Instruments Corp.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : This software is subject to the terms described in the LICENSE.TXT file
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : SDG
+<span class="lineNum">       8 </span>            : */
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : /*! \file
+<span class="lineNum">      11 </span>            :     \brief Native Vireo exection methods
+<span class="lineNum">      12 </span>            :  */
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;TypeDefiner.h&quot;
+<span class="lineNum">      15 </span>            : #include &quot;ExecutionContext.h&quot;
+<span class="lineNum">      16 </span>            : #include &quot;VirtualInstrument.h&quot;
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #if kVireoOS_emscripten
+<span class="lineNum">      19 </span>            : #include &lt;emscripten.h&gt;
+<span class="lineNum">      20 </span>            : #endif
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace Vireo {
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : //------------------------------------------------------------
+<span class="lineNum">      25 </span>            : Boolean ExecutionContext::_classInited;
+<span class="lineNum">      26 </span>            : _PROGMEM InstructionCore ExecutionContext::_culDeSac;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+<span class="lineNum">      29 </span>            : TypeManagerRef  ExecutionContext::_theTypeManager;
+<span class="lineNum">      30 </span>            : VIClumpQueue    ExecutionContext::_runQueue;            // Elts ready To run
+<span class="lineNum">      31 </span>            : VIClump*        ExecutionContext::_sleepingList;        // Elts waiting for something external to wake them up
+<span class="lineNum">      32 </span>            : VIClump*        ExecutionContext::_runningQueueElt;     // Elt actually running
+<span class="lineNum">      33 </span>            : Int32           ExecutionContext::_breakoutCount;
+<span class="lineNum">      34 </span>            : #endif
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : 
+<a name="37"><span class="lineNum">      37 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      38 </span>            : // CulDeSac returns itself allowing an unriolled execution loop to complete.
+<span class="lineNum">      39 </span>            : InstructionCore* VIVM_FASTCALL CulDeSac(InstructionCore* _this _PROGMEM)
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span><span class="lineCov">       5960 :     return _this;</span>
+<span class="lineNum">      42 </span>            : }
+<a name="43"><span class="lineNum">      43 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">      44 </span>            : // When the Done instruction is hit the clump is done.
+<span class="lineNum">      45 </span>            : InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
+<span class="lineNum">      46 </span>            : {
+<span class="lineNum">      47 </span><span class="lineCov">    5811335 :     ExecutionContextRef exec = THREAD_EXEC();</span>
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span><span class="lineCov">    5811335 :     VIClump* runningQueueElt = exec-&gt;_runningQueueElt;</span>
+<span class="lineNum">      50 </span>            :     VIREO_ASSERT(runningQueueElt != null)
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :     // If there was a caller it was a subVI call, restart the caller. If not, a topVI finished.
+<span class="lineNum">      53 </span><span class="lineCov">    5811335 :     VIClump *callerClump = runningQueueElt-&gt;_caller;</span>
+<span class="lineNum">      54 </span><span class="lineCov">    5811335 :     if (callerClump) {</span>
+<span class="lineNum">      55 </span>            :         // The return instruction will be the CallInstruction.
+<span class="lineNum">      56 </span><span class="lineCov">    5784580 :         CallVIInstruction *pCallInstruction = (CallVIInstruction*)callerClump-&gt;_savePc;</span>
+<span class="lineNum">      57 </span>            :         VIREO_ASSERT(pCallInstruction != null)
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span><span class="lineCov">    5784580 :         InstructionCore* pCopyOut = pCallInstruction-&gt;_piCopyOutSnippet;</span>
+<span class="lineNum">      60 </span><span class="lineCov">   24894750 :         while (ExecutionContext::IsNotCulDeSac(pCopyOut)) {</span>
+<span class="lineNum">      61 </span><span class="lineCov">    6662795 :             pCopyOut = _PROGMEM_PTR(pCopyOut, _function)(pCopyOut);</span>
+<span class="lineNum">      62 </span>            :         }
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :         // Now that copy out has been done, move caller to next instruction.
+<span class="lineNum">      65 </span><span class="lineCov">    5784580 :         callerClump-&gt;_savePc = pCallInstruction-&gt;Next();</span>
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :         // Now let the Caller proceed
+<span class="lineNum">      68 </span><span class="lineCov">    5784580 :         runningQueueElt-&gt;_caller = null;</span>
+<span class="lineNum">      69 </span><span class="lineCov">    5784580 :         callerClump-&gt;EnqueueRunQueue();</span>
+<span class="lineNum">      70 </span><span class="lineCov">    5784580 :     } else {</span>
+<span class="lineNum">      71 </span>            :         // Since there is no caller its a top VI
+<span class="lineNum">      72 </span>            : #ifndef VIREO_MICRO
+<span class="lineNum">      73 </span><span class="lineCov">      26755 :         VirtualInstrument* vi = runningQueueElt-&gt;OwningVI();</span>
+<span class="lineNum">      74 </span><span class="lineCov">      26755 :         vi-&gt;GoIsDone();</span>
+<span class="lineNum">      75 </span>            : #endif
+<span class="lineNum">      76 </span>            :     }
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     // Now that any caller that needs to hoist data from the clump has been
+<span class="lineNum">      79 </span>            :     // taken care of, see if there are other clumps that are waiting in line.
+<span class="lineNum">      80 </span>            :     // What they are waiting for is unimportant here, only that they have been added the
+<span class="lineNum">      81 </span>            :     // waiting list for this clump.  (TODO allow prioritization)
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :     // Disconnect the list
+<span class="lineNum">      84 </span><span class="lineCov">    5811335 :     VIClump* waitingClump = runningQueueElt-&gt;_waitingClumps;</span>
+<span class="lineNum">      85 </span><span class="lineCov">    5811335 :     runningQueueElt-&gt;_waitingClumps = null;</span>
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span><span class="lineCov">   12244370 :     while (null != waitingClump) {</span>
+<span class="lineNum">      88 </span>            :         VIClump* clumpToEnqueue = waitingClump;
+<span class="lineNum">      89 </span><span class="lineCov">     310850 :         waitingClump = waitingClump-&gt;_next;</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :         // null out next so it doesn't look like it is in a list.
+<span class="lineNum">      92 </span><span class="lineCov">     310850 :         clumpToEnqueue-&gt;_next = null;</span>
+<span class="lineNum">      93 </span><span class="lineCov">     310850 :         clumpToEnqueue-&gt;EnqueueRunQueue();</span>
+<span class="lineNum">      94 </span><span class="lineCov">     310850 :         exec-&gt;ClearBreakout();</span>
+<span class="lineNum">      95 </span>            :     }
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :     // Since the clump is done, reset the short count back to
+<span class="lineNum">      98 </span>            :     // its initial value.
+<span class="lineNum">      99 </span><span class="lineCov">    5811335 :     runningQueueElt-&gt;_shortCount = runningQueueElt-&gt;_fireCount;</span>
+<span class="lineNum">     100 </span><span class="lineCov">    5811335 :     return exec-&gt;SuspendRunningQueueElt(runningQueueElt-&gt;_codeStart);</span>
+<a name="101"><span class="lineNum">     101 </span>            : }</a>
+<span class="lineNum">     102 </span>            : //------------------------------------------------------------
+<span class="lineNum">     103 </span>            : VIREO_FUNCTION_SIGNATURE1(Stop, Boolean)
+<span class="lineNum">     104 </span>            : {
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :     if (_ParamPointer(0) &amp;&amp; !_Param(0))</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :         return _NextInstruction();</span>
+<span class="lineNum">     107 </span>            :     else
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :         return THREAD_EXEC()-&gt;Stop();</span>
+<a name="109"><span class="lineNum">     109 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     110 </span>            : //------------------------------------------------------------
+<span class="lineNum">     111 </span>            : InstructionCore* ExecutionContext::Stop()
+<span class="lineNum">     112 </span>            : {
+<span class="lineNum">     113 </span><span class="lineCov">         30 :     _runningQueueElt = null;</span>
+<span class="lineNum">     114 </span><span class="lineCov">         30 :     _breakoutCount = 0;</span>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span><span class="lineCov">         30 :     return &amp;_culDeSac;</span>
+<span class="lineNum">     117 </span>            : }
+<a name="118"><span class="lineNum">     118 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     119 </span>            : // Trigger - Decrement target fire count (may cause target to be activated)
+<span class="lineNum">     120 </span>            : VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
+<span class="lineNum">     121 </span>            : {
+<span class="lineNum">     122 </span><span class="lineCov">      25740 :     _ParamPointer(0)-&gt;Trigger();</span>
+<span class="lineNum">     123 </span><span class="lineCov">      25740 :     return _NextInstruction();</span>
+<span class="lineNum">     124 </span>            : }
+<a name="125"><span class="lineNum">     125 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     126 </span>            : // Trigger - Decrement target fire count (may cause target to be activated)
+<span class="lineNum">     127 </span>            : VIREO_FUNCTION_SIGNATURE1(FPSync, UInt32)
+<span class="lineNum">     128 </span>            : {
+<span class="lineNum">     129 </span>            : #if kVireoOS_emscripten
+<span class="lineNum">     130 </span>            :     EM_ASM_({
+<span class="lineNum">     131 </span>            :         Module.fpSync($0);
+<span class="lineNum">     132 </span>            :     }, _Param(0));
+<span class="lineNum">     133 </span>            : #endif
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :     return _NextInstruction();</span>
+<span class="lineNum">     135 </span>            : }
+<span class="lineNum">     136 </span>            : //------------------------------------------------------------
+<a name="137"><span class="lineNum">     137 </span>            : // Wait - it target clump is active then it waits for it to complete.</a>
+<span class="lineNum">     138 </span>            : // if target clump is complete then there is nothing to wait on.
+<span class="lineNum">     139 </span>            : VIREO_FUNCTION_SIGNATURE1(Wait, VIClump)
+<span class="lineNum">     140 </span>            : {
+<span class="lineNum">     141 </span>            :     // If the target is running or is waiting for additional triggers
+<span class="lineNum">     142 </span>            :     // wait until it has completed. If shortcount == firecount it is considred done.
+<span class="lineNum">     143 </span><span class="lineCov">      25695 :     if (_ParamPointer(0)-&gt;_shortCount == _ParamPointer(0)-&gt;_fireCount) {</span>
+<span class="lineNum">     144 </span>            :         // Target clump has finished and trigger count been reset.
+<span class="lineNum">     145 </span><span class="lineCov">       2520 :         return _NextInstruction();</span>
+<span class="lineNum">     146 </span>            :     } else {
+<span class="lineNum">     147 </span><span class="lineCov">      23175 :         _ParamPointer(0)-&gt;InsertIntoWaitList(THREAD_EXEC()-&gt;_runningQueueElt);</span>
+<span class="lineNum">     148 </span><span class="lineCov">      23175 :         return THREAD_EXEC()-&gt;SuspendRunningQueueElt(_NextInstruction());</span>
+<span class="lineNum">     149 </span>            :     }
+<span class="lineNum">     150 </span><span class="lineCov">      25695 : }</span>
+<a name="151"><span class="lineNum">     151 </span>            : //------------------------------------------------------------</a>
+<span class="lineNum">     152 </span>            : // CallVI - If target clump is active then it waits for it to complete.
+<span class="lineNum">     153 </span>            : VIREO_FUNCTION_SIGNATURET(CallVI, CallVIInstruction)
+<span class="lineNum">     154 </span>            : {
+<span class="lineNum">     155 </span><span class="lineCov">    6072255 :     VIClump *qe = _ParamImmediate(viRootClump);</span>
+<span class="lineNum">     156 </span>            :     // TODO move this to an Execution Context method?
+<span class="lineNum">     157 </span><span class="lineCov">    6072255 :     if (qe-&gt;_shortCount &gt; 0) {</span>
+<span class="lineNum">     158 </span>            :         // If the callee clump has a positive short count
+<span class="lineNum">     159 </span>            :         // it is not running there fore it is ok to run.
+<span class="lineNum">     160 </span>            :         // Make this current clump the caller.
+<span class="lineNum">     161 </span>            :         // Triggers left goes to 0; ( indicates we are active
+<span class="lineNum">     162 </span>            :         // Execute copy in code ( might hang from instruction, or from VI)
+<span class="lineNum">     163 </span>            :         // Instruction returned will be first in sub VI.
+<span class="lineNum">     164 </span>            :         VIREO_ASSERT(qe-&gt;_shortCount == 1)
+<span class="lineNum">     165 </span>            :         VIREO_ASSERT(qe-&gt;_caller == null)
+<span class="lineNum">     166 </span><span class="lineCov">    5784580 :         qe-&gt;_caller = THREAD_EXEC()-&gt;_runningQueueElt;</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :         // Copy in parameters
+<span class="lineNum">     169 </span><span class="lineCov">    5784580 :         InstructionCore* currentInstruction = _this-&gt;CopyInSnippet();</span>
+<span class="lineNum">     170 </span><span class="lineCov">   76360900 :         while (ExecutionContext::IsNotCulDeSac(currentInstruction)) {</span>
+<span class="lineNum">     171 </span><span class="lineCov">   32395870 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     172 </span>            :         }
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            :         // Use Trigger to decrement the target SubVI fire count to 0.
+<span class="lineNum">     175 </span><span class="lineCov">    5784580 :         qe-&gt;Trigger();</span>
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            :         // The CallVI Instruction is marked as the place to return to.
+<span class="lineNum">     178 </span>            :         // This return location will be found by the &quot;Done&quot; instruction in the callee's code.
+<span class="lineNum">     179 </span>            :         // That instruction will execute the copy-out code. After that, the execution will continue with
+<span class="lineNum">     180 </span>            :         // instruction following this one. That means this instruction is not actually rescheduled.
+<span class="lineNum">     181 </span><span class="lineCov">    5784580 :         return THREAD_EXEC()-&gt;SuspendRunningQueueElt(_this);</span>
+<span class="lineNum">     182 </span>            :     } else {
+<span class="lineNum">     183 </span>            :         // The VI is active so add this caller to the waiting list
+<span class="lineNum">     184 </span>            :         // and set it up to retry later.
+<span class="lineNum">     185 </span><span class="lineCov">     287675 :         qe-&gt;AppendToWaitList(THREAD_EXEC()-&gt;_runningQueueElt);</span>
+<span class="lineNum">     186 </span><span class="lineCov">     287675 :         return THREAD_EXEC()-&gt;SuspendRunningQueueElt(_this);</span>
+<span class="lineNum">     187 </span>            :     }
+<a name="188"><span class="lineNum">     188 </span><span class="lineCov">    6072255 : }</span></a>
+<span class="lineNum">     189 </span>            : //------------------------------------------------------------
+<span class="lineNum">     190 </span>            : VIREO_FUNCTION_SIGNATURE1(Branch, InstructionCore)
+<span class="lineNum">     191 </span>            : {
+<span class="lineNum">     192 </span><span class="lineCov">   22312465 :     return _ParamPointer(0);</span>
+<a name="193"><span class="lineNum">     193 </span>            : }</a>
+<span class="lineNum">     194 </span>            : //------------------------------------------------------------
+<span class="lineNum">     195 </span><span class="lineCov">       1060 : ExecutionContext::ExecutionContext()</span>
+<span class="lineNum">     196 </span>            : {
+<span class="lineNum">     197 </span><span class="lineCov">       1060 :     if (!_classInited) {</span>
+<span class="lineNum">     198 </span><span class="lineCov">       1060 :         _classInited = true;</span>
+<span class="lineNum">     199 </span><span class="lineCov">       1060 :         _culDeSac._function = (InstructionFunction) CulDeSac;</span>
+<span class="lineNum">     200 </span><span class="lineCov">       1060 :     }</span>
+<span class="lineNum">     201 </span><span class="lineCov">       1060 :     _breakoutCount = 0;</span>
+<span class="lineNum">     202 </span><span class="lineCov">       1060 :     _runningQueueElt = (VIClump*) null;</span>
+<span class="lineNum">     203 </span><span class="lineCov">       1060 :     _timer._observerList = null;</span>
+<span class="lineNum">     204 </span><span class="lineCov">       1060 :     _state = kExecutionState_None;</span>
+<span class="lineNum">     205 </span><span class="lineCov">       1060 : }</span>
+<span class="lineNum">     206 </span>            : //------------------------------------------------------------
+<span class="lineNum">     207 </span>            : #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+<span class="lineNum">     208 </span>            :     // For smaller targets there may only one for the entire process, or processor
+<span class="lineNum">     209 </span>            :     ExecutionContext gSingleExecutionContext;
+<a name="210"><span class="lineNum">     210 </span>            : #endif</a>
+<span class="lineNum">     211 </span>            : //------------------------------------------------------------
+<span class="lineNum">     212 </span>            : InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)
+<span class="lineNum">     213 </span>            : {
+<span class="lineNum">     214 </span>            :     VIREO_ASSERT(null != _runningQueueElt)
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span><span class="lineCov">   11907085 :     _runningQueueElt-&gt;_savePc = nextInClump;</span>
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :     // Is there something else to run?
+<span class="lineNum">     219 </span><span class="lineCov">   11907085 :     _runningQueueElt = _runQueue.Dequeue();</span>
+<span class="lineNum">     220 </span><span class="lineCov">   11907085 :     if (_runningQueueElt == null) {</span>
+<span class="lineNum">     221 </span>            :         // No, quit the exec loop as soon as possible
+<span class="lineNum">     222 </span><span class="lineCov">       1214 :         _breakoutCount = 0;</span>
+<span class="lineNum">     223 </span><span class="lineCov">       1214 :         return &amp;_culDeSac;</span>
+<span class="lineNum">     224 </span>            :     } else {
+<span class="lineNum">     225 </span>            :         // Yes, pick up where it left off.
+<span class="lineNum">     226 </span><span class="lineCov">   11905871 :         return _runningQueueElt-&gt;_savePc;</span>
+<span class="lineNum">     227 </span>            :     }
+<a name="228"><span class="lineNum">     228 </span><span class="lineCov">   11907085 : }</span></a>
+<span class="lineNum">     229 </span>            : //------------------------------------------------------------
+<span class="lineNum">     230 </span>            : ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
+<span class="lineNum">     231 </span>            : {
+<span class="lineNum">     232 </span>            :     VIREO_ASSERT((_runningQueueElt == null))
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span><span class="lineCov">  267033938 :     PlatformTickType currentTime  = gPlatform.Timer.TickCount();</span>
+<span class="lineNum">     235 </span><span class="lineCov">  267033938 :     PlatformTickType breakOutTime = currentTime + tickCount;</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span><span class="lineCov">  267033938 :     _timer.QuickCheckTimers(currentTime);</span>
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span><span class="lineCov">  267033938 :     _runningQueueElt = _runQueue.Dequeue();</span>
+<span class="lineNum">     240 </span><span class="lineCov">  534069391 :     InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt-&gt;_savePc : null;</span>
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span><span class="lineCov">  534443510 :     while (_runningQueueElt) {</span>
+<span class="lineNum">     243 </span><span class="lineCov">     375634 :         _breakoutCount = numSlices;</span>
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :         VIREO_ASSERT((currentInstruction != null))
+<span class="lineNum">     246 </span>            :         VIREO_ASSERT((null == _runningQueueElt-&gt;_next))     // Should not be on queue
+<span class="lineNum">     247 </span>            :         VIREO_ASSERT((0 == _runningQueueElt-&gt;_shortCount))  // Should not be running if triggers &gt; 0
+<span class="lineNum">     248 </span><span class="lineCov">     375634 :         do {</span>
+<span class="lineNum">     249 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     250 </span>            : #ifdef VIVM_UNROLL_EXEC
+<span class="lineNum">     251 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     252 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     253 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     254 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     255 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     256 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     257 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     258 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     259 </span><span class="lineCov">   37349605 :             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);</span>
+<span class="lineNum">     260 </span>            : #endif
+<span class="lineNum">     261 </span><span class="lineCov">   37349605 :         } while (_breakoutCount-- &gt; 0);</span>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineCov">     375634 :         currentTime = gPlatform.Timer.TickCount();</span>
+<span class="lineNum">     264 </span><span class="lineCov">     375634 :         _timer.QuickCheckTimers(currentTime);</span>
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span><span class="lineCov">     751268 :         if (currentTime &lt; breakOutTime) {</span>
+<span class="lineNum">     267 </span><span class="lineCov">     750923 :             if (_runningQueueElt) {</span>
+<span class="lineNum">     268 </span><span class="lineCov">     374052 :                 if (!_runQueue.IsEmpty()) {</span>
+<span class="lineNum">     269 </span>            :                     // Time left, still working, something else to do, rotate tasks
+<span class="lineNum">     270 </span>            :                     VIREO_ASSERT(currentInstruction != null)
+<span class="lineNum">     271 </span>            :                     VIREO_ASSERT(_runningQueueElt != null)
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineCov">     193426 :                     _runningQueueElt-&gt;_savePc = currentInstruction;</span>
+<span class="lineNum">     274 </span><span class="lineCov">     193426 :                     VIClump *eltToReQueue = _runningQueueElt;</span>
+<span class="lineNum">     275 </span><span class="lineCov">     193426 :                     _runningQueueElt = null;</span>
+<span class="lineNum">     276 </span><span class="lineCov">     193426 :                     _runQueue.Enqueue(eltToReQueue);</span>
+<span class="lineNum">     277 </span><span class="lineCov">     193426 :                     _runningQueueElt = _runQueue.Dequeue();</span>
+<span class="lineNum">     278 </span><span class="lineCov">     193426 :                     currentInstruction = _runningQueueElt-&gt;_savePc;</span>
+<span class="lineNum">     279 </span><span class="lineCov">     193426 :                 } else {</span>
+<span class="lineNum">     280 </span>            :                     // Time left, still working, nothing else to do, continue as is.
+<span class="lineNum">     281 </span>            :                     VIREO_ASSERT(currentInstruction != null)
+<span class="lineNum">     282 </span>            :                     VIREO_ASSERT(_runningQueueElt != null)
+<span class="lineNum">     283 </span>            :                 }
+<span class="lineNum">     284 </span>            :             } else {
+<span class="lineNum">     285 </span>            :                 // Time left, nothing running, see if something woke up.
+<span class="lineNum">     286 </span><span class="lineCov">       1237 :                 _runningQueueElt = _runQueue.Dequeue();</span>
+<span class="lineNum">     287 </span><span class="lineCov">       2541 :                 currentInstruction = _runningQueueElt ? _runningQueueElt-&gt;_savePc : null;</span>
+<span class="lineNum">     288 </span>            :                 VIREO_ASSERT(currentInstruction != &amp;_culDeSac)
+<span class="lineNum">     289 </span>            :             }
+<span class="lineNum">     290 </span><span class="lineCov">        345 :         } else if (_runningQueueElt) {</span>
+<span class="lineNum">     291 </span>            :             // No time left, still working, save current state.
+<span class="lineNum">     292 </span>            :             VIREO_ASSERT(currentInstruction != &amp;_culDeSac)
+<span class="lineNum">     293 </span><span class="lineCov">        338 :             _runningQueueElt-&gt;_savePc = currentInstruction;</span>
+<span class="lineNum">     294 </span><span class="lineCov">        338 :             VIClump *eltToReQueue = _runningQueueElt;</span>
+<span class="lineNum">     295 </span><span class="lineCov">        338 :             _runningQueueElt = null;</span>
+<span class="lineNum">     296 </span><span class="lineCov">        338 :             _runQueue.Enqueue(eltToReQueue);</span>
+<span class="lineNum">     297 </span><span class="lineCov">        338 :         } else {</span>
+<span class="lineNum">     298 </span>            :             // No time left, nothing running, fine, loop will exit.
+<span class="lineNum">     299 </span>            :         }
+<span class="lineNum">     300 </span>            :     }
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            :     ExecutionState reply = kExecutionState_None;
+<span class="lineNum">     303 </span><span class="lineCov">  267033938 :     if (!_runQueue.IsEmpty()) {</span>
+<span class="lineNum">     304 </span>            :         reply = (ExecutionState) (reply | kExecutionState_ClumpsInRunQueue);
+<span class="lineNum">     305 </span><span class="lineCov">        338 :     }</span>
+<span class="lineNum">     306 </span><span class="lineCov">  267033938 :     if (_timer.AnythingWaiting()) {</span>
+<span class="lineNum">     307 </span><span class="lineCov">  267032620 :         reply = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);</span>
+<span class="lineNum">     308 </span><span class="lineCov">  267032620 :     }</span>
+<span class="lineNum">     309 </span>            : #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
+<span class="lineNum">     310 </span>            :     // TODO check global memory manager for allocation errors
+<span class="lineNum">     311 </span>            : #else
+<span class="lineNum">     312 </span><span class="lineCov">  267033938 :     if (THREAD_TADM()-&gt;_totalAllocationFailures &gt; 0) {</span>
+<span class="lineNum">     313 </span>            :         reply = kExecutionState_None;
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     315 </span>            : #endif
+<span class="lineNum">     316 </span><span class="lineCov">  267033938 :     _state = reply;</span>
+<span class="lineNum">     317 </span><span class="lineCov">  267033938 :     return reply;</span>
+<a name="318"><span class="lineNum">     318 </span>            : }</a>
+<span class="lineNum">     319 </span>            : //------------------------------------------------------------
+<span class="lineNum">     320 </span>            : void ExecutionContext::EnqueueRunQueue(VIClump* elt)
+<span class="lineNum">     321 </span>            : {
+<span class="lineNum">     322 </span>            :     VIREO_ASSERT((NULL == elt-&gt;_next))
+<span class="lineNum">     323 </span>            :     VIREO_ASSERT((0 == elt-&gt;_shortCount))
+<span class="lineNum">     324 </span><span class="lineCov">   11907150 :     _runQueue.Enqueue(elt);</span>
+<span class="lineNum">     325 </span><span class="lineCov">   11907150 :     _state = (ExecutionState) (_state | kExecutionState_ClumpsInRunQueue);</span>
+<a name="326"><span class="lineNum">     326 </span><span class="lineCov">   11907150 : }</span></a>
+<span class="lineNum">     327 </span>            : //------------------------------------------------------------
+<span class="lineNum">     328 </span>            : void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
+<span class="lineNum">     329 </span>            : {
+<span class="lineNum">     330 </span><span class="lineCov">         30 :     EventLog tempLog(EventLog::StdOut);</span>
+<span class="lineNum">     331 </span>            :     va_list args;
+<span class="lineNum">     332 </span><span class="lineCov">         30 :     va_start(args, message);</span>
+<span class="lineNum">     333 </span><span class="lineCov">         30 :     tempLog.LogEventV(severity, -1, message, args);</span>
+<span class="lineNum">     334 </span><span class="lineCov">         30 :     va_end(args);</span>
+<span class="lineNum">     335 </span><span class="lineCov">         30 : }</span>
+<span class="lineNum">     336 </span>            : //------------------------------------------------------------
+<span class="lineNum">     337 </span>            : #ifdef VIVM_SUPPORTS_ISR
+<span class="lineNum">     338 </span>            : // Interrupts should already be disabled when this is called
+<span class="lineNum">     339 </span>            : // so there is no need to add guards inside.
+<span class="lineNum">     340 </span>            : void ExecutionContext::IsrEnqueue(QueueElt* elt)
+<span class="lineNum">     341 </span>            : {
+<span class="lineNum">     342 </span>            :     VIVM_ASSERT((null == elt-&gt;_next))
+<span class="lineNum">     343 </span>            :     if (elt-&gt;_wakeUpInfo == 0) {
+<span class="lineNum">     344 </span>            :         QueueElt* temp = _triggeredIsrList;
+<span class="lineNum">     345 </span>            :         elt-&gt;_next = temp;
+<span class="lineNum">     346 </span>            :         // Mark as triggered
+<span class="lineNum">     347 </span>            :         elt-&gt;_wakeUpInfo = 1;
+<span class="lineNum">     348 </span>            :         _triggeredIsrList = elt;
+<span class="lineNum">     349 </span>            :     }
+<a name="350"><span class="lineNum">     350 </span>            : }</a>
+<span class="lineNum">     351 </span>            : #endif
+<span class="lineNum">     352 </span><span class="lineCov">       1060 : DEFINE_VIREO_BEGIN(Execution)</span>
+<span class="lineNum">     353 </span><span class="lineCov">       3180 :     DEFINE_VIREO_REQUIRE(VirtualInstrument)</span>
+<span class="lineNum">     354 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(FPSync, &quot;p(i(UInt32))&quot;)</span>
+<span class="lineNum">     355 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Trigger, &quot;p(i(Clump))&quot;)</span>
+<span class="lineNum">     356 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Wait, &quot;p(i(Clump))&quot;)</span>
+<span class="lineNum">     357 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Branch, &quot;p(i(BranchTarget))&quot;)</span>
+<span class="lineNum">     358 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(CallVI, &quot;p(i(Clump) i(Instruction copyInProc) i(Instruction copyOutProc))&quot;)</span>
+<span class="lineNum">     359 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Done, &quot;p()&quot;)</span>
+<span class="lineNum">     360 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(Stop, &quot;p(i(Boolean))&quot;)</span>
+<span class="lineNum">     361 </span><span class="lineCov">       1060 :     DEFINE_VIREO_FUNCTION(CulDeSac, &quot;p(i(Boolean))&quot;)</span>
+<span class="lineNum">     362 </span><span class="lineCov">       3180 : DEFINE_VIREO_END()</span>
+<span class="lineNum">     363 </span>            : }  // namespace Vireo
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.11</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

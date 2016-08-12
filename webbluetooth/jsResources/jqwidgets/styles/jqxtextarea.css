@@ -1,0 +1,17 @@
+﻿.jqx-text-area-element
+{
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    border: none;
+    outline: none;
+    left: 0px;
+    top: 0px;
+    margin: 0px;
+    position: absolute;
+    resize: none;
+}
+.jqx-text-area-element-rtl
+{
+    direction: rtl;
+}

@@ -1,0 +1,238 @@
+<!-- saved from url=(0018)http://www.ni.com/ -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Guided Help Editor</title>
+    <link href="/resources/gh/css/niscrollbar.css" rel="stylesheet" />
+    <!-- Note: nicustom plugin for CKEditor needs jQuery which should be loaded before the plugin.-->
+    <script type="text/javascript" src="/resources/common/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/resources/common/js/coherent.js"></script>
+    <script type="text/javascript" src="ckeditor.js"></script>
+    <script type="text/javascript" src="gheditor.js"></script>
+    <script type="text/javascript">
+        'use strict';
+        // 'engine' is defined in coherent.js, 'ghEditorHelper' in gheditor.js and 'CKEDITOR' in ckeditor.js. Marking them as global for jshint.
+        /*global  CKEDITOR: true, engine: true, ghEditorHelper: true */
+        CKEDITOR.on('instanceReady',
+            function () {
+                var ckeditor = CKEDITOR.instances.editor1;
+
+                // Disable context menu.
+                document.oncontextmenu = function () {
+                    return false;
+                };
+                var ckEditorDocument = ckeditor.document;
+                ckEditorDocument.on('contextmenu', function (e) {
+                    e.data.preventDefault();
+                    return false;
+                }, ckeditor);
+
+                ckeditor.on('paste', function (evt) {
+                    evt.data.dataValue = ghEditorHelper.handlePasteEvent(evt.data.dataValue);
+                });
+
+                ckeditor.on('mode',
+                    function (e) {
+                        if (e.editor.mode === 'wysiwyg') {
+                            ghEditorHelper.initiateDelayedThumbnailUpdate();
+                        }
+                    });
+
+                ckeditor.on('selectionChange', ghEditorHelper.handleSelectionChangeEvents);
+
+                ckeditor.on('change',
+                    function () {
+                        ghEditorHelper.notifyContentChanged();
+                    });
+
+                ckeditor.on('key', ghEditorHelper.handleOnKey);
+
+                ckeditor.on('contentDom',
+                    function () {
+                        var editor = CKEDITOR.instances.editor1;
+                        var doc = editor.document;
+                        doc.on('click', function () {
+                            doc.focus();
+                        });
+
+                        var body = editor.document.getBody();
+                        body.on('keypress', ghEditorHelper.handleOnKeyPress);
+
+                        var ckEditorDocument = ckeditor.document;
+                        ckEditorDocument.on('contextmenu', function (e) {
+                            e.data.preventDefault();
+                            return false;
+                        }, ckeditor);
+                    });
+
+                ckeditor.on('doubleclick', function (evt) {
+                    var element = evt.data.element;
+                    var selectedElement = ghEditorHelper.getSelectedElementType(element);
+                    if (selectedElement.type !== 'none') {
+                        var elementToSelect = element;
+                        if (selectedElement.type === 'trigger') {
+                            // [Rajat] Fixing trigger selection for CAR 461195:[GHEditor] Editing trigger by double clicking on first line of trigger inserts new trigger.
+                            // Opening trigger dialog by double clicking on first line inserts new trigger instead of replacing existing one.
+                            // Double click on second line, or any other place apart from first line works fine. Hence if the selected element from double click
+                            // is the first <p> .. </p> inside trigger-div, then moving selection to the next line.
+                            if (element.is('p') && element.hasPrevious() === false && element.hasNext() === true) {
+                                elementToSelect = element.getNext();
+                            }
+                        }
+                        CKEDITOR.instances.editor1.getSelection().selectElement(elementToSelect);
+                        ghEditorHelper.lockSelection();
+
+                        switch (selectedElement.type) {
+                            case 'image': ghEditorHelper.showImageDialog(selectedElement.selectedElement);
+                                break;
+                            case 'hyperlink': ghEditorHelper.showLinkDialog();
+                                break;
+                            case 'video': ghEditorHelper.showVideoDialog();
+                                break;
+                            case 'trigger':
+                                var onClickValue = ghEditorHelper.getTriggerOnClickValue(selectedElement.selectedElement);
+                                engine.trigger('CKEditorDoubleClickCallback', 'trigger', new Array(onClickValue));
+                                break;
+                            case 'question':
+                                ghEditorHelper.showQuestionDialog(selectedElement.selectedElement.getOuterHtml());
+                                break;
+                            default:
+                                ghEditorHelper.unlockSelection();
+                                break;
+                        }
+                    }
+                    //Swallow every other kind of dialog
+                    evt.data.dialog = null;
+                });
+
+                ckeditor.on('afterCommandExec', function (evt) {
+
+                    var currentSelection = evt.editor.getSelection(),
+                        commandName = null,
+                        tbodyElement = null;
+
+                    // Note : evt.data.name is passed as a single element for some commands and as an Array of size 1 for the rest.
+                    if (evt.data.name instanceof Array) {
+                        commandName = evt.data.name[0];
+                    }
+                    else {
+                        commandName = evt.data.name;
+                    }
+
+                    switch (commandName) {
+                        case 'columnInsertAfter':
+                        case 'rowInsertAfter':
+                            if (currentSelection !== null && (tbodyElement = currentSelection.getStartElement().getAscendant('tbody', true)) !== null) {
+                                if (CKEDITOR.plugins.nicustom.hasColumnHeader(tbodyElement) === true) {
+                                    var tableRows = $(tbodyElement.$).children('tr'),
+                                       secondColumnHeaders = $(tableRows).children('th:nth-child(2)');
+                                    CKEDITOR.plugins.nicustom.resetColumnHeaders(tbodyElement, secondColumnHeaders);
+                                }
+
+                                if (CKEDITOR.plugins.nicustom.hasRowHeader(tbodyElement) === true) {
+                                    var secondRow = $(tbodyElement.$).children('tr:nth-child(2)'),
+                                        secondRowHeaders = secondRow.children('th');
+                                    CKEDITOR.plugins.nicustom.resetRowHeaders(tbodyElement, secondRowHeaders);
+                                }
+                            }
+                            else {
+                                if (currentSelection === null) {
+                                    ghEditorHelper.logError(ghEditorHelper.ckeErrorTag + ' Failed to get current selection in the editor.');
+                                }
+                                else {
+                                    ghEditorHelper.logError(ghEditorHelper.ckeErrorTag + ' Failed to get \'tbody\' element in the current selection.');
+                                }
+                            }
+                            break;
+
+                        case 'indent':
+                            ghEditorHelper.focusAsync();
+                            break;
+                    }
+                });
+
+                // This callback is to handle a specific scenario wherein an unclosed script tag causes CKEditor to function incorrectly.
+                ckeditor.on('toHtml', function (evt) {
+                    var data = evt.data.dataValue,
+                        headStartPos = data.indexOf('<head'),
+                        headEndPos = data.indexOf('</head>'),
+                        lastScriptStartPos = -1,
+                        lastScriptEndPos = -1;
+
+                    // Here we check if 'head' element contains any unclosed 'script' tag. If so, this causes problems with CKEditor operation
+                    // as CKE adds a "DOMContentLoaded" callback in a script tag just before closing of 'head' and an unclosed 'script' would render that useless.
+                    // If the below operations are not done then GHE has to be restarted.
+                    if (headStartPos !== -1 && headEndPos !== -1) {
+                        var headContent = data.slice(0, headEndPos);
+                        lastScriptStartPos = headContent.lastIndexOf('<script'),
+                        lastScriptEndPos = headContent.lastIndexOf('<\/script>');
+                        if (lastScriptEndPos < lastScriptStartPos) {
+                            evt.data.dataValue = data.replace('<\/head>', '<\/script><\/head>');
+                        }
+                    }
+                }, null, null, 1);
+
+                engine.trigger('instanceReady');
+                ghEditorHelper.setupCallbacks();
+
+                // For creating styles for font controls for applying/updating styles and
+                // getting the status of the controls on selection change
+                ghEditorHelper.createHeaderStyles();
+            });
+    </script>
+</head>
+<body bgcolor="#F2F5F7">
+    <p>
+        <textarea cols="80" id="editor1" name="editor1" rows="10"></textarea>
+        <script type="text/javascript">
+            // Capture error in the log instead of the browser error window.
+            window.onerror = function (errMsg, url, lineNumber) {
+                ghEditorHelper.logError(ghEditorHelper.javascriptErrorTag + errMsg + '" in the url : ' + url + ' at line number : ' + lineNumber);
+                return true;
+            };
+
+            window.onresize = ghEditorHelper.onResizeWindow;
+
+            engine.on('Ready', function () {
+                // Note: nicustom plugin for CKEditor needs jQuery which should be loaded at this point.
+                CKEDITOR.replace('editor1',
+                        {
+                            allowedContent: true,
+                            keystrokes: [
+                                [CKEDITOR.CTRL + 76 /*L*/, null]
+                            ],
+                            fullPage: true,
+                            height: '450',
+                            skin: 'moono',
+                            title: false,
+                            extraPlugins: 'autocorrect,codemirror,nicustom,onchange,textselection,video',
+                            removePlugins: 'contextmenu,undo',
+                            minimumChangeMilliseconds: 500, //timeout value for content change event
+                            enableTabKeyTools: false,
+                            tableCellNonCopyableAttributes: [ghEditorHelper.optionIdAttributeName, 'contenteditable'], // List of attributes not to be copied for table cells when creating new ones.
+                            tableCellNonCopyableClassNames: [ghEditorHelper.editableCellCssClassName], // List of classes not to be copied for table cells when creating new ones.
+                            // Configuration for codemirror plug-in
+                            codemirror: {
+                                lineNumbers: false, // Whether or not you want to show line numbers
+                                enableCodeFormatting: false, // Whether or not to enable code formatting
+                                enableSearchTools: false, // Whether or not to enable search tools, CTRL+F (Find), CTRL+SHIFT+F (Replace), CTRL+SHIFT+R (Replace All), CTRL+G (Find Next), CTRL+SHIFT+G (Find Previous)
+                                autoFormatOnStart: false, // Whether or not to automatically format code should be done when the editor is loaded
+                                autoFormatOnModeChange: false, // Whether or not to automatically format code should be done every time the source view is opened
+                                autoFormatOnUncomment: false, // Whether or not to automatically format code which has just been uncommented
+                                showTrailingSpace: false, // Whether or not to show Trailing Spaces
+                                showFormatButton: false, // Whether or not to show the format button on the toolbar
+                                showCommentButton: false, // Whether or not to show the comment button on the toolbar
+                                showUncommentButton: false, // Whether or not to show the uncomment button on the toolbar
+                                showAutoCompleteButton: false // Whether or not to show the showAutoCompleteButton button on the toolbar
+                            }
+                        });
+            });
+
+            engine.on('Error', function (type, message) {
+                ghEditorHelper.logError(ghEditorHelper.coherentTag + '[Type: ' + type + ']' + message);
+            });
+
+        </script>
+    </p>
+</body>
+</html>
