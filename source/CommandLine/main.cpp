@@ -37,9 +37,11 @@ int VIREO_MAIN(int argc, const char * argv[])
 	if (argc >= 2) {
 		for (Int32 arg = 1; arg < argc; ++arg) {
 			gShells._pRootShell = TypeManager::New(null);
+            if (strcmp(argv[arg], "-d") == 0)
+                gShells._pRootShell->DumpPrimitiveDictionary();
 			gShells._pUserShell = TypeManager::New(gShells._pRootShell);
 			fileName.AliasAssignCStr(argv[arg]);
-			if (fileName.Length()) {
+			if (fileName.Length() && argv[arg][0] != '-') {
 				{
 					TypeManagerScope scope(gShells._pUserShell);
 					STACK_VAR(String, buffer);
@@ -61,15 +63,20 @@ int VIREO_MAIN(int argc, const char * argv[])
 				emscripten_set_main_loop(RunExec, 40, null);
 #else
 				while (gShells._keepRunning) {
-					RunExec();
+					RunExec(); // deletes TypeManagers on exit
 				}
 #endif
-			}
+            } else {
+                gShells._pUserShell->Delete();
+                gShells._pRootShell->Delete();
+            }
 		}
     } else {
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program
         // once IO primitives are all there.
+        gShells._pRootShell = TypeManager::New(null);
+        gShells._pUserShell = TypeManager::New(gShells._pRootShell);
         while (gShells._keepRunning) {
             gPlatform.IO.Print(">");
             {
