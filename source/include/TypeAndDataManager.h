@@ -283,6 +283,7 @@ public:
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
     Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
+    void DumpPrimitiveDictionary();
 #else
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif

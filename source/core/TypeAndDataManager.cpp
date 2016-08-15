@@ -2747,6 +2747,42 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
         return BadType();
     }
 }
+
+class TypeRefDumpVisitor : public TypeVisitor
+{
+public:
+    TypeRefDumpVisitor() { }
+
+private:
+    virtual void VisitBad(TypeRef type) { gPlatform.IO.Printf("<bad> "); }
+    virtual void VisitBitBlock(BitBlockType* type) { gPlatform.IO.Printf("<bitblock> "); }
+    virtual void VisitBitCluster(BitClusterType* type) { gPlatform.IO.Printf("<bitcluster> "); }
+    virtual void VisitCluster(ClusterType* type) { gPlatform.IO.Printf("<cluster> "); }
+    virtual void VisitParamBlock(ParamBlockType* type) { gPlatform.IO.Printf("("); int i = 0, n = type->SubElementCount(); while (i < n) { type->GetSubElement(i)->Accept(this); ++i; }  gPlatform.IO.Printf(")"); }
+    virtual void VisitEquivalence(EquivalenceType* type) { gPlatform.IO.Printf("<eq> "); }
+    virtual void VisitArray(ArrayType* type) { gPlatform.IO.Printf("<array> "); }
+    virtual void VisitElement(ElementType* type) { gPlatform.IO.Printf("");type->BaseType()->Accept(this); }
+    virtual void VisitNamed(NamedType* type) {} // gPlatform.IO.Printf("<.%s>", &type->Name());// type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
+    virtual void VisitPointer(PointerType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
+    virtual void VisitDefaultValue(DefaultValueType* type)  { gPlatform.IO.Printf("<dv> "); }
+    virtual void VisitDefaultPointer(DefaultPointerType* type) { gPlatform.IO.Printf("<defptr> "); }
+    virtual void VisitCustomDataProc(CustomDataProcType* type) { gPlatform.IO.Printf("<customproc> "); }
+};
+
+//------------------------------------------------------------
+//! Dump the primtiive dictionary (debugging)
+void TypeManager::DumpPrimitiveDictionary()
+{
+    std::map<void*, CPrimtitiveInfo>::iterator iter = _cPrimitiveDictionary.begin();
+    TypeRefDumpVisitor tdv;
+    while (iter != _cPrimitiveDictionary.end()) {
+        CPrimtitiveInfo cpi = iter->second;
+        gPlatform.IO.Printf("VIREO PRIM: %s", cpi._cName);
+        cpi._type->BaseType()->Accept(&tdv);
+        gPlatform.IO.Printf("\n");
+        ++iter;
+    }
+}
 //------------------------------------------------------------
 //! Map a native primtitive function pointer to its TypeRef and its native name.
 VIREO_FUNCTION_SIGNATURE3(InstructionType, const InstructionRef, TypeRef, StringRef)
