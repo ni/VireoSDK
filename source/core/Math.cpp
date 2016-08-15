@@ -156,8 +156,10 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( Sine##TYPE, TYPE, TYPE, (_Param(1) = sin(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Cosine##TYPE, TYPE, TYPE, (_Param(1) = cos(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Tangent##TYPE,TYPE, TYPE, (_Param(1) = tan(_Param(0)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( Cotangent##TYPE,TYPE, TYPE, (_Param(1) = 1.0/tan(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Secant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/cos(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Cosecant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/sin(_Param(0)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( Sinc##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) == 0 ? 1.0 : sin(_Param(0))/_Param(0) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Log10##TYPE, TYPE, TYPE, (_Param(1) = log10(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Log##TYPE, TYPE, TYPE, (_Param(1) = log(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Log2##TYPE, TYPE, TYPE, (_Param(1) = log2(_Param(0)) ) ) \
@@ -182,6 +184,9 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( ArcTan##TYPE, TYPE, TYPE, (_Param(1) = atan(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( ArcTan2##TYPE, TYPE, TYPE, TYPE, (_Param(2) = atan2(_Param(0), _Param(1)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( ArcCosecant##TYPE, TYPE, TYPE, (_Param(1) = asin(1.0/_Param(0)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( ArcSecant##TYPE, TYPE, TYPE, (_Param(1) = acos(1.0/_Param(0)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( ArcCotangent##TYPE, TYPE, TYPE, (_Param(1) = atan(1.0/_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Ceil##TYPE, TYPE, TYPE, (_Param(1) = ceil(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = abs(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Floor##TYPE, TYPE, TYPE, (_Param(1) = floor(_Param(0)) ) ) \
@@ -195,8 +200,10 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Cosine, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Sine, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Tangent, TYPE, "UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Cotangent, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Secant, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Cosecant, TYPE, "UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Sinc, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Log10, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Log, TYPE, "UnOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Log2, TYPE, "UnOp"#TYPE) \
@@ -207,6 +214,9 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(ArcSine, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(ArcCosine, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(ArcTan, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcCosecant, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcSecant, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(ArcCotangent, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(ArcTan2, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i("#TYPE") o("#TYPE"))") \
