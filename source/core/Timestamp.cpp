@@ -19,13 +19,10 @@ SDG
 #include <float.h> /* DBL_EPSILON */
 
 #if defined(VIREO_DATE_TIME_STDLIB)
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if kVireoOS_win32U
     #include <windows.h>
     #include <time.h>
 #else
-#if kVireoOS_linuxU
-    #define _BSD_SOURCE 1 // necessary to enable tm_gmtoff field on Linux
-#endif
     #include <sys/time.h>
 #endif
 #elif defined(VIREO_DATE_TIME_VXWORKS)
@@ -34,10 +31,9 @@ SDG
     #include <tickLib.h>
 #endif
 
-
 #if (kVireoOS_win32U || kVireoOS_win64U)
 #define NOMINMAX
-#include <Windows.h>
+#include <windows.h>
 #elif kVireoOS_macosxU
 #define _BSD_SOURCE
 #include <pthread.h>
