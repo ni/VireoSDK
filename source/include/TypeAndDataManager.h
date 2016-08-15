@@ -28,6 +28,7 @@ SDG
 
 #define STL_MAP
 
+#include <cmath>
 #include <stdlib.h> // abs()
 #include <new>      // for new placement
 
@@ -329,9 +330,23 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
 Double ReadDoubleFromMemory(TypeRef type, void* pData);
 NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
-Double RoundToEven(Double value);
-Single RoundToEven(Single value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
+//------------------------------------------------------------
+//! Banker's rounding for Doubles.
+inline Double RoundToEven(Double value)
+{
+    return rint(value);
+}
+//------------------------------------------------------------
+//! Banker's rounding for Singles.
+inline EMSCRIPTEN_NOOPT Single RoundToEven(Single value)
+{
+#if kVireoOS_emscripten
+    return rint((Double)value);
+#else
+    return rintf(value);
+#endif
+}
 
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
@@ -1058,6 +1073,7 @@ public:
     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
     void CopyFromSubString(SubString* string)   { CopyFrom(string->Length(), string->Begin()); }
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }

@@ -81,6 +81,7 @@ class Date
     Int64 _secondsOfYear;
     Int32 _firstWeekDay;
     Int32 _timeZoneOffset;
+    ConstCStr _timeZoneString;
     Int32 _DTS;
     static Int32 _SystemLocaletimeZone;
  public:
@@ -96,6 +97,7 @@ class Date
         Int32 FirstWeekDay() const { return _firstWeekDay; };
         Int64 SecondsOfYear() const {return _secondsOfYear;};
         Int32 TimeZoneOffset() const {return _timeZoneOffset;};
+        ConstCStr TimeZoneString() const { return _timeZoneString; };
         Int32 DTS() const {return _DTS;}
         Int32 isDTS();
         Double FractionSecond() const {return  _fractionalSecond;};

@@ -41,7 +41,6 @@
     <ClCompile Include="..\source\io\Emscripten.cpp" />
     <ClCompile Include="..\source\io\FileIO.cpp" />
     <ClCompile Include="..\source\io\HttpClient.cpp" />
-    <ClCompile Include="..\source\io\Linx.cpp" />
     <ClCompile Include="..\source\io\WebSocketClient.cpp" />
   </ItemGroup>
   <ItemGroup>

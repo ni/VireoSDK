@@ -4,6 +4,8 @@
  Nor (false false) => true
  Nand (false false) => true
  Xor (false false) => false
+ Nxor (false false) => true
+ Implies (false false) => true
  Not (false) => true
  Not (false) => true
 -------------
@@ -12,6 +14,8 @@
  Nor (true false) => false
  Nand (true false) => true
  Xor (true false) => true
+ Nxor (true false) => false
+ Implies (true false) => false
  Not (true) => false
  Not (false) => true
 -------------
@@ -20,6 +24,8 @@
  Nor (false true) => false
  Nand (false true) => true
  Xor (false true) => true
+ Nxor (false true) => false
+ Implies (false true) => true
  Not (false) => true
  Not (true) => false
 -------------
@@ -28,5 +34,7 @@
  Nor (true true) => false
  Nand (true true) => false
  Xor (true true) => false
+ Nxor (true true) => true
+ Implies (true true) => true
  Not (true) => false
  Not (true) => false

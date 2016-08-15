@@ -47,6 +47,7 @@ struct FormatOptions {
     Int32   Significant; //_4
     SubString  FmtSubString;
     Boolean ConsumeArgument;
+    Boolean OutOfOrder;
 };
 //------------------------------------------------------------
 void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
@@ -73,12 +74,15 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->NumericLength[2] = '\0';
     pOptions->EngineerNotation = false;
     pOptions->ConsumeArgument = true;
+    pOptions->OutOfOrder = false;
     Boolean bPrecision = false;
     Boolean bValid = true;
     Utf8Char c;
     const Utf8Char* pBegin = format->Begin();
+    Boolean validChar = format->ReadRawChar(&c);
+    
 
-    while (bValid && format->ReadRawChar(&c)) {
+    while (bValid && validChar) {
 
         SubString order("$");
         SubString percent("%");
@@ -124,9 +128,6 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         } else if (c == '#') {
             pOptions->BasePrefix = true;
             pOptions->RemoveTrailing = true;
-        } else if (c == ' ') {
-            // space flag not used in LabView
-            pOptions->SignPad = true;
         } else if (c == '^') {
             pOptions->EngineerNotation = true;
         } else if (c == '.') {
@@ -165,12 +166,14 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                 }
             }
         } else {
+            // Checking for the order number for %1$
             IntIndex orderIndex = format->FindFirstMatch(&order, 0, false);
             if ((c >= '0' && c <= '9') && orderIndex>=0) {
                 format->AliasAssign(format->Begin()-1, format->End());
                 IntMax value = 0;
                 if (format->ReadInt(&value)) {
                     pOptions->ArgumentOrder = (Int32)value;
+                    pOptions->OutOfOrder = true;
                 }
             } else if (c == '0') {
                 pOptions->ZeroPad = true;
@@ -186,11 +189,19 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                  break;
              }
         }
+        validChar = format->ReadRawChar(&c);
     }
     pOptions->Valid = bValid;
     if (!pOptions->Valid) {
-        pOptions->FormatChar = '0';
-    }
+        // if the format is invald: provide the format character for error handling
+        if (!validChar) {
+            // the char could not be read
+            pOptions->FormatChar = '0';
+        } else {
+            // the char previously read
+            pOptions->FormatChar = c;
+        }
+    } 
     pOptions->ConsumeArgument = (pOptions->FormatChar != '%') && (pOptions->FormatChar != ';');
     pOptions->OriginalFormatChar = pOptions->FormatChar;
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
@@ -248,6 +259,60 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
 }
 
 /**
+ * Error reporting for when there is a format specifier provided but
+ * too many arguments are provided.
+ * */
+void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer) {
+    buffer->Resize1D(0);
+    buffer->AppendCStr("Error: Extra number of args provided: ");
+    char str[15];
+    sprintf(str, "%u", count);
+    buffer->AppendCStr(str);
+    buffer->AppendCStr(" in '");
+    IntIndex length = format->Length()*2;
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
+    buffer->AppendCStr("'\n");
+    delete[] formatUnEscaped;
+}
+
+/**
+ * Error reporting for when there is a format specifier provided but
+ * not enough arguments provided with the Format.
+ * */
+void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+    buffer->Resize1D(0);
+    buffer->AppendCStr("Error: Missing args provided for format string: '");
+    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("' in '");
+    IntIndex length = format->Length()*2;
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
+    buffer->AppendCStr("'\n");
+    delete[] formatUnEscaped;
+}
+
+/**
+ * Error reporing function for when the Format String is invalid
+ * This will clear the current buffer string and return on what format
+ * specifier it failed on.
+ * */
+void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+    buffer->Resize1D(0);
+    buffer->AppendCStr("Error: Invalid format string provided: '");
+    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("' in '");
+    IntIndex length = format->Length()*2;
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
+    buffer->AppendCStr("'\n");
+    delete[] formatUnEscaped;
+}
+
+/**
  * main format function, all the %format functionality is done through this one
  * */
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
@@ -256,7 +321,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     Boolean lastArgumentSpecified = false;
     IntIndex lastArgumentIndex = -1;
     IntIndex explicitPositionArgument = 0;
-    Int32 totalArgument = 0;;
+    Int32 totalArgument = 0;
+    Int32 usedArguments = 0;
     char activeDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
@@ -285,6 +351,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
             totalArgument++;
+			usedArguments++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
                 totalArgument --;
@@ -293,8 +360,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 }
             }
             lastArgumentSpecified = false;
-            argumentIndex = totalArgument-explicitPositionArgument-1;
-            if (fOptions.ArgumentOrder>=0) {
+            if (fOptions.ArgumentOrder >= 0 && fOptions.OutOfOrder) {
                 if (fOptions.ArgumentOrder > 0 ) {
                     argumentIndex = fOptions.ArgumentOrder-1;
                     explicitPositionArgument ++;
@@ -308,12 +374,24 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             }
             lastArgumentIndex = argumentIndex;
             Boolean parseFinished = false;
-            if (!fOptions.Valid) {
+            if (!fOptions.Valid) { 
+                // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
+                Utf8Char tempString[3];
+                tempString[0] = '%';
+                tempString[1] = fOptions.FormatChar;
+                tempString[2] = '\0';
+                ErrFormatInvalidFormatString(format, count, arguments, buffer, tempString);
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
-                validFormatString = false;
+                // Incorrect number of arguments provided for format string
                 parseFinished = true;
+                validFormatString = false;
+                Utf8Char tempString[3];
+                tempString[0] = '%';
+                tempString[1] = fOptions.FormatChar;
+                tempString[2] = '\0';
+                ErrFormatMissingNumArgs(format, count, arguments, buffer, tempString);
             }
 
             while (!parseFinished) {
@@ -487,13 +565,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (intValue == 0) {
                                 BinaryString[0] = bits[intValue];
                                 length = 1;
-                            }
-                            while (intValue >= 1) {
-                                    BinaryString[intSize-1-length] =  bits[intValue%2];
-                                    intValue = intValue/2;
+							} else {
+                                while (intValue >= 1) {
+                                    BinaryString[intSize - 1 - length] = bits[intValue % 2];
+                                    intValue = intValue / 2;
                                     length++;
+                                }
+                                binaryindex = BinaryString + (intSize - length);
                             }
-                            binaryindex = BinaryString + (intSize -length);
                         }
 
                         Int32 binaryStringLength = length;
@@ -541,6 +620,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             }
                         } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt || enc == kEncoding_Boolean) {
                             intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
+                            if (argType->BitLength() < 64 && fOptions.FormatChar != 'd')
+                                intValue &= (1LL<<(argType->BitLength()))-1;
                         } else {
                             intValue = 0;
                         }
@@ -562,40 +643,66 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     }
                     break;
                     case '%':      //%%
-                    buffer->Append('%');
+                    {
+                        buffer->AppendCStr("%");
+                    }
                     break;
                     case 's':      //%s
                     {
                         STACK_VAR(String, tempString);
                         TDViaFormatter formatter(tempString.Value, false);
                         formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
+                        
+                        Int32 lengthTotal = -1;
+                        Int32 lengthString = -1;
+                        if (fOptions.MinimumFieldWidth >= 0) {
+                            lengthTotal = fOptions.MinimumFieldWidth;
+                        }
+                        if (fOptions.Precision >= 0) {
+                            lengthString = fOptions.Precision;
+                        }
+                        Int32 subIndex = tempString.Value->Length();
+                        // Make sure the length is provided
+                        if (lengthString > 0) {
+                            if (lengthString > tempString.Value->Length()) {
+                                // If the string total to display is longer than length, provide just the string
+                                lengthString = tempString.Value->Length();
+                            } else {
+                                subIndex = lengthString;
+                            }
+                        } else {
+                            // provide the length of the string as default
+                            lengthString = tempString.Value->Length();
+                        }
 
-                        Int32 extraPadding = fOptions.MinimumFieldWidth - tempString.Value->Length();
+                        // partition the string depending on the provided lengthString (subIndex)
+                        SubString partial(tempString.Value->Begin(), tempString.Value->Begin()+subIndex);
+                        
+                        // Calculate how much to pad
+                        Int32 extraPadding = 0;
+                        if (lengthTotal > lengthString) {
+                            extraPadding = lengthTotal - lengthString;
+                        }
 
+                        // Append the string with padding and partial substring
                         if (fOptions.LeftJustify)
-                        buffer->Append(tempString.Value);
+                            buffer->AppendSubString(&partial);
                         if (extraPadding > 0) {
-                            for (Int32 i = extraPadding; i >0; i--) {
+                            for (Int32 i = extraPadding; i > 0; i--) {
                                 buffer->Append(' ');
                             }
                         }
                         if (!fOptions.LeftJustify)
-                        buffer->Append(tempString.Value);
+                            buffer->AppendSubString(&partial);
 
                         argumentIndex++;
                     }
                     break;
                     case 't':
-                    {
-                        TempStackCString timeFormat;
-
-                        argumentIndex++;
-                    }
-                        break;
                     case 'T':
                     {
                         Int32 tz = Date::getLocaletimeZone();
-                        if (!fOptions.EngineerNotation) {
+                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
                              tz = 0;
                         }
                         SubString strDateType("Timestamp");
@@ -629,11 +736,20 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (fractionLen < 0) {
                                 fractionLen = 3;
                             }
-                            if (fractionLen>0) {
-                            	//  The %<digit>u is deep in this string.
-                                sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                            if (fOptions.FormatChar == 't') {
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#H:%%M:%%S.%%%du", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%H:%M:%S");
+                                }
                             } else {
-                                strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                if (fractionLen > 0) {
+                                    //  The %<digit>u is deep in this string.
+                                    sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+                                } else {
+                                    strcpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y");
+                                }
                             }
                             defaultTimeFormat.AppendCStr(defaultFormatString);
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
@@ -652,7 +768,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #endif
                          argumentIndex++;
                     }
-                        break;
+                    break;
                     default:
                         gPlatform.IO.Printf("special error character %c\n",fOptions.FormatChar );
                         // This is just part of the format specifier, let it become part of the percent format
@@ -661,6 +777,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             }
         } else {
             buffer->Append(c);
+        }
+    }
+    // Check if there are unused arguments provided
+    if (argumentIndex < count) {
+        // make sure at least all of the args are used (even if out of order)
+        if (usedArguments != count) {
+            ErrFormatExtraNumArgs(format, count - argumentIndex, arguments, buffer);
         }
     }
 }
@@ -1884,13 +2007,14 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 seconddiff = totalSeconds%60;
                         char difference[64];
                         Int32 size = 0;
-                        size = sprintf(difference, "%02d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        size = sprintf(difference, "%03d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
                         output->Append(size, (Utf8Char*)difference);
                     }
                         break;
                     case 'Z':
-                        // TODO
-                        output->AppendCStr("TODO-TMZ");
+                    {
+                        output->AppendCStr(date.TimeZoneString());
+                    }
                         break;
                     default:
                         break;

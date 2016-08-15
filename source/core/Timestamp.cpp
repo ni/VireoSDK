@@ -36,10 +36,12 @@ SDG
 #define NOMINMAX
 #include <Windows.h>
 #elif kVireoOS_macosxU
+#define _BSD_SOURCE
 #include <pthread.h>
 #include <time.h>
 #include <mach/mach_time.h>
 #elif (kVireoOS_linuxU)
+#define _BSD_SOURCE
 #include <pthread.h>
 #include <time.h>
 #elif kVireoOS_ZynqARM
@@ -325,7 +327,7 @@ Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* w
 void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
              Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL,
              Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL,
-             Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL)
+             Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL, ConstCStr* timeZoneString = NULL)
 {
     Int32 secondsOfYear = 0;
     Int32 firstweekDay = 0;
@@ -369,6 +371,19 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
             }
         }
     }
+    // Get timezone abbrevation
+    ConstCStr timeZoneAbbr;
+#if (kVireoOS_linuxU || kVireoOS_macosxU)
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    timeZoneAbbr = timeinfo->tm_zone;
+#elif kVireoOS_emscripten
+    timeZoneAbbr = emscripten_run_script_string("(function() {var now = new Date().toString(); var TZ = now.indexOf('(') > -1 ?now.match(/\\([^\\)]+\\)/)[0].match(/[A-Z]/g).join(''):now.match(/[A-Z]{3,4}/)[0];if (TZ == 'GMT' && /(GMT\\W*\\d{4})/.test(now)) TZ = RegExp.$1;return TZ;}());");
+#else
+    timeZoneAbbr = "TODO-TMZ";
+#endif
     Int32 days = secondsofMonth/(24*3600);
     Int32 secondsofHour = secondsofMonth%(24*3600);
     Int32 hours = secondsofHour/3600;
@@ -396,6 +411,9 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
     if (weekPtr != NULL) {
         *weekPtr = (secondsOfYear/(24*3600)+firstweekDay)%7;
     }
+    if (timeZoneString != NULL) {
+        *timeZoneString = timeZoneAbbr;
+    }
 }
 Int32 Date::_SystemLocaletimeZone = 0;
 
@@ -403,10 +421,9 @@ Int32 Date::_SystemLocaletimeZone = 0;
 Date::Date(Timestamp timestamp, Int32 timeZone)
 {
     _timeZoneOffset = timeZone;
-    // get date will get the accurate date from the time stamp, so we need minus the timeZone
-    Timestamp local = timestamp - _timeZoneOffset;
+    Timestamp local = timestamp + _timeZoneOffset;
     getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
-            &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay);
+            &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
     _DTS = isDTS();
 }
 //------------------------------------------------------------
@@ -421,12 +438,22 @@ Int32 Date::getLocaletimeZone()
     TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
     Int32 minutes;
     parser.ParseData(parseType, &minutes);
-    _SystemLocaletimeZone = minutes * 60;
+    _SystemLocaletimeZone = (-1) * minutes * 60;
+    // flipping the sign of the time zone since JS runtime will be positive
+    // for being behind UTC and negative for being ahead. ctime assumes
+    // negative for behind and postive for ahead. We attempt to match the ctime result.
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
+#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+    time_t rawtime;
+    struct tm* timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    _SystemLocaletimeZone = timeinfo->tm_gmtoff;
 #else
-    // doesn't support yet
+    // Not implemented for Win32 yet
     _SystemLocaletimeZone = 0;
 #endif
-            return _SystemLocaletimeZone;
+    return _SystemLocaletimeZone;
 };
 //------------------------------------------------------------
 Int32 Date::isDTS()
