@@ -19,10 +19,13 @@ SDG
 #include <float.h> /* DBL_EPSILON */
 
 #if defined(VIREO_DATE_TIME_STDLIB)
-#if kVireoOS_win32U
+#if (kVireoOS_win32U || kVireoOS_win64U)
     #include <windows.h>
     #include <time.h>
 #else
+#if kVireoOS_linuxU
+    #define _BSD_SOURCE 1 // necessary to enable tm_gmtoff field on Linux
+#endif
     #include <sys/time.h>
 #endif
 #elif defined(VIREO_DATE_TIME_VXWORKS)
@@ -438,17 +441,16 @@ Int32 Date::getLocaletimeZone()
     TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
     Int32 minutes;
     parser.ParseData(parseType, &minutes);
-    _SystemLocaletimeZone = (-1) * minutes * 60;
+    _SystemLocaletimeZone = -(minutes * 60);
     // flipping the sign of the time zone since JS runtime will be positive
     // for being behind UTC and negative for being ahead. ctime assumes
     // negative for behind and postive for ahead. We attempt to match the ctime result.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
 #elif (kVireoOS_linuxU || kVireoOS_macosxU)
-    time_t rawtime;
-    struct tm* timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    _SystemLocaletimeZone = timeinfo->tm_gmtoff;
+    struct tm tm;
+    time_t now = time(NULL);
+    localtime_r(&now, &tm);
+    _SystemLocaletimeZone = int(tm.tm_gmtoff);
 #else
     // Not implemented for Win32 yet
     _SystemLocaletimeZone = 0;
