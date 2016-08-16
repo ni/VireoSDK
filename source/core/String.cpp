@@ -601,6 +601,34 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGTString, InstructionCore, StringRef, StringRe
         return VIVM_TAIL(_NextInstruction());
     }
 }
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(BranchIfLEString, InstructionCore, StringRef, StringRef)
+{
+    Int32 cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    if (cmp < 0) {
+        return _this->_p0;
+    } else if (cmp > 0) {
+        return  VIVM_TAIL(_NextInstruction());
+    } else if (_Param(1)->Length() <= _Param(2)->Length()) {
+        return _this->_p0;
+    } else {
+        return VIVM_TAIL(_NextInstruction());
+    }
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(BranchIfGEString, InstructionCore, StringRef, StringRef)
+{
+    Int32 cmp = memcmp(_Param(1)->Begin(), _Param(2)->Begin(), Min(_Param(1)->Length(), _Param(2)->Length()));
+    if (cmp > 0) {
+        return _this->_p0;
+    } else if (cmp < 0) {
+        return  VIVM_TAIL(_NextInstruction());
+    } else if (_Param(1)->Length() >= _Param(2)->Length()) {
+        return _this->_p0;
+    } else {
+        return VIVM_TAIL(_NextInstruction());
+    }
+}
 
 DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,				\
 						 Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
@@ -631,7 +659,9 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(VarArgCount) o(String) i(*))" )
     DEFINE_VIREO_FUNCTION(BranchIfEQString, "p(i(BranchTarget) i(String) i(String))");
     DEFINE_VIREO_FUNCTION(BranchIfLTString, "p(i(BranchTarget) i(String) i(String))")
+    DEFINE_VIREO_FUNCTION(BranchIfLEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
+    DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
 
 	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
 

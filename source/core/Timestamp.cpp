@@ -31,10 +31,9 @@ SDG
     #include <tickLib.h>
 #endif
 
-
 #if (kVireoOS_win32U || kVireoOS_win64U)
 #define NOMINMAX
-#include <Windows.h>
+#include <windows.h>
 #elif kVireoOS_macosxU
 #define _BSD_SOURCE
 #include <pthread.h>
@@ -438,17 +437,16 @@ Int32 Date::getLocaletimeZone()
     TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
     Int32 minutes;
     parser.ParseData(parseType, &minutes);
-    _SystemLocaletimeZone = (-1) * minutes * 60;
+    _SystemLocaletimeZone = -(minutes * 60);
     // flipping the sign of the time zone since JS runtime will be positive
     // for being behind UTC and negative for being ahead. ctime assumes
     // negative for behind and postive for ahead. We attempt to match the ctime result.
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
 #elif (kVireoOS_linuxU || kVireoOS_macosxU)
-    time_t rawtime;
-    struct tm* timeinfo;
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-    _SystemLocaletimeZone = timeinfo->tm_gmtoff;
+    struct tm tm;
+    time_t now = time(NULL);
+    localtime_r(&now, &tm);
+    _SystemLocaletimeZone = int(tm.tm_gmtoff);
 #else
     // Not implemented for Win32 yet
     _SystemLocaletimeZone = 0;
