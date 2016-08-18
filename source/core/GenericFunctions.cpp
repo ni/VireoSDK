@@ -1188,19 +1188,68 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
     Int32 argCount = pInstructionBuilder->_argCount;
     // _argPointers[0] holds the count
     TypeRef pDestType = pInstructionBuilder->_argTypes[1];
+    EncodingEnum destEncoding = pDestType->BitEncoding();
 
     // Skip the arg count and output array arguments.  Then, for each input add an argument which
     // indicates whether input's type is the same as ArrayOut's type or ArrayOut's element type.
     for (Int32 i = 2; i < argCount; i++) {
         if (pDestType->CompareType(pInstructionBuilder->_argTypes[i])) // input is an array
             pInstructionBuilder->InternalAddArg(null, pInstructionBuilder->_argPointers[i]);
-        else if (pDestType->GetSubElement(0)->CompareType(pInstructionBuilder->_argTypes[i])) // input is a single element
+        else if (destEncoding == kEncoding_Array && pDestType->Rank() == 1 && pDestType->GetSubElement(0)->CompareType(pInstructionBuilder->_argTypes[i])) // input is a single element
             pInstructionBuilder->InternalAddArg(null, null);
+        else if (destEncoding == kEncoding_Array && pInstructionBuilder->_argTypes[i]->BitEncoding() == kEncoding_Array && pDestType->Rank() == pInstructionBuilder->_argTypes[i]->Rank()+1) // input is array one rank less than output
+            pInstructionBuilder->InternalAddArg(null, pInstructionBuilder->_argPointers[i]);
         else // type mismatch
             VIREO_ASSERT(false);
     }
 
     return pInstructionBuilder->EmitInstruction();
+}
+//------------------------------------------------------------
+// Copy a sourceRank-D source array into a destRank-D dest array of type elementType which has already been resized to accommodate.
+// Inner dimension lengths of source array can be less than dest array dimension lengths.
+// Top level call must pass destRank >= 2, and sourceRank == destRank or destRank-1.
+static AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
+    if (sourceRank == 1) {
+        if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
+            return NULL;
+        Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
+        if (copiedLength < destSlabLengths[1]) {
+            memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+        }
+        pDest += destSlabLengths[1];
+    } else {
+        for (IntIndex i = 0; i < sourceDimLengths[sourceRank-1]; ++i) {
+            if (!(pDest = ArrayToArrayCopyHelper(elementType, pDest, destSlabLengths, pSource, sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1)))
+                return NULL;
+            pSource += sourceSlabLengths[sourceRank-1];
+        }
+    }
+    return pDest;
+}
+// Same as above, but iterate in reverse so if the source and dest are the same but dimension sizes have changed,
+// data is moved correctly without blapping source elements before they are copied.
+static AQBlock1* ArrayToArrayCopyHelperRev(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
+    if (sourceRank == 1) {
+        if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
+            return NULL;
+        Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
+        if (copiedLength < destSlabLengths[1]) {
+            memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+        }
+        pDest += destSlabLengths[1];
+    } else {
+        pSource += sourceSlabLengths[sourceRank-1] * sourceDimLengths[sourceRank-1];
+        pDest += destSlabLengths[destRank-1] * sourceDimLengths[sourceRank-1];
+        AQBlock1* pOrigDest = pDest;
+        for (IntIndex i = sourceDimLengths[sourceRank-1]-1; i >= 0; --i) {
+            pSource -= sourceSlabLengths[sourceRank-1];
+            pDest -= destSlabLengths[destRank-1];
+            ArrayToArrayCopyHelperRev(elementType, pDest, destSlabLengths, pSource, sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1);
+        }
+        pDest = pOrigDest;
+    }
+    return pDest;
 }
 //------------------------------------------------------------
 struct ArrayConcatenateInternalParamBlock : public VarArgInstruction
@@ -1209,59 +1258,112 @@ struct ArrayConcatenateInternalParamBlock : public VarArgInstruction
     _ParamImmediateDef(void*, Element[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalParamBlock)
 {
     Int32 numInputs = (_ParamVarArgCount() - 1) / 2;
     TypedArrayCoreRef pDest = _Param(ArrayOut);
-    Int32 originalLength = pDest->Length();
-    Int32 totalLength = 0;
     
     // Each input has a corresponding typeComparison entry which indicates whether input's type
     // is the same as ArrayOut's type or ArrayOut's element type.
     // The typeComparisons arguments are added after the inputs by EmitArrayConcatenateInstruction.
     void** inputs =  _ParamImmediate(Element);
     void** typeComparisons =  inputs + numInputs;
-    
-    for (Int32 i = 0; i < numInputs; i++) {
-        // TODO check for overflow
-        if (typeComparisons[i]) { // input is an array
+    IntIndex outputRank = pDest->Rank();
+    Boolean inplaceDimChange = false;
+
+    if (outputRank > 1) {
+        IntIndex totalOuterDimLength = 0, i, j;
+        IntIndex minInputRank = outputRank;
+        ArrayDimensionVector tempDimensionLengths, origDimensionLengths, origSlab;
+        Int32 originalOuterDimSize = pDest->DimensionLengths()[outputRank-1];
+        for (i = 0; i < numInputs; i++) {
             TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
-            totalLength += arrayInput->Length();
-        } else {
-            // Input is a single element
-            totalLength++;
+            IntIndex* pInputDimLength = arrayInput->DimensionLengths();
+            IntIndex inputRank = arrayInput->Rank(), inputOuterDimSize;
+            if (inputRank < minInputRank)
+                minInputRank = inputRank;
+            if (inputRank == outputRank) {
+                inputOuterDimSize =  arrayInput->DimensionLengths()[inputRank-1];
+            } else {
+                inputOuterDimSize = 1;
+            }
+            totalOuterDimLength += inputOuterDimSize;
+            for (j = 0; j < outputRank-1; j++)
+                if (i == 0 || tempDimensionLengths[j] < pInputDimLength[j]) {
+                    tempDimensionLengths[j] = pInputDimLength[j];
+                    if (i > 0)
+                        inplaceDimChange = true;
+                }
         }
-    }
-    
-    if (pDest->Resize1DOrEmpty(totalLength)) {
-        AQBlock1* pInsert = pDest->BeginAt(0);
-        TypeRef elementType = pDest->ElementType();
-        Int32   aqSize = elementType->TopAQSize();
-        NIError err = kNIError_Success;
-        for (Int32 i = 0; i < numInputs; i++) {
-            if (typeComparisons[i]) {
+        tempDimensionLengths[outputRank-1] = totalOuterDimLength;
+        for (j = 0; j < outputRank; j++) {
+            origDimensionLengths[j] = pDest->DimensionLengths()[j];
+            origSlab[j] = pDest->SlabLengths()[j];
+        }
+        if (pDest->ResizeDimensions(outputRank, tempDimensionLengths, true)) {
+            AQBlock1* pInsert = pDest->BeginAt(0);
+            TypeRef elementType = pDest->ElementType();
+            IntIndex* slabLengths = pDest->SlabLengths();
+            for (i = 0; i < numInputs; i++) {
                 TypedArrayCoreRef pSource = *((TypedArrayCoreRef*) inputs[i]);
                 if (pSource != pDest) {
-                    IntIndex length = pSource->Length();
-                    err = elementType->CopyData(pSource->BeginAt(0), pInsert, length);
-                    pInsert += (length * aqSize);
+                    pInsert = ArrayToArrayCopyHelper(elementType, pInsert, slabLengths, pSource->BeginAt(0), pSource->DimensionLengths(), pSource->SlabLengths(), outputRank, pSource->Rank());
+                    if (!pInsert) {
+                        tempDimensionLengths[0] = 0;
+                        pDest->ResizeDimensions(outputRank, tempDimensionLengths, false);
+                        break;
+                    }
                 } else { // Source and dest are the same array
-                
                     if (i != 0) {
                         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
                         return THREAD_EXEC()->Stop();
                     }
-
-                    pInsert += (originalLength * aqSize);
+                    if (inplaceDimChange)
+                        ArrayToArrayCopyHelperRev(elementType, pInsert, pDest->SlabLengths(), pSource->BeginAt(0), origDimensionLengths, origSlab, outputRank, pSource->Rank());
+                    pInsert += originalOuterDimSize * slabLengths[outputRank-1];
                 }
-            } else {
-                err = elementType->CopyData(inputs[i], pInsert);
-                pInsert +=  aqSize;
             }
-            if (err != kNIError_Success) {
-                pDest->Resize1D(0);
-                break;
+        }
+    } else {
+        Int32 originalLength = pDest->Length();
+        Int32 totalLength = 0;
+        for (Int32 i = 0; i < numInputs; i++) {
+            // TODO check for overflow
+            if (typeComparisons[i]) { // input is an array
+                TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
+                totalLength += arrayInput->Length();
+            } else {
+                // Input is a single element
+                totalLength++;
+            }
+        }
+        if (pDest->Resize1DOrEmpty(totalLength)) { // 1D output array
+            AQBlock1* pInsert = pDest->BeginAt(0);
+            TypeRef elementType = pDest->ElementType();
+            Int32   aqSize = elementType->TopAQSize();
+            NIError err = kNIError_Success;
+            for (Int32 i = 0; i < numInputs; i++) {
+                if (typeComparisons[i]) {
+                    TypedArrayCoreRef pSource = *((TypedArrayCoreRef*) inputs[i]);
+                    if (pSource != pDest) {
+                        IntIndex length = pSource->Length();
+                        err = elementType->CopyData(pSource->BeginAt(0), pInsert, length);
+                        pInsert += (length * aqSize);
+                    } else { // Source and dest are the same array
+                        if (i != 0) {
+                            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
+                            return THREAD_EXEC()->Stop();
+                        }
+                        pInsert += (originalLength * aqSize);
+                    }
+                } else {
+                    err = elementType->CopyData(inputs[i], pInsert);
+                    pInsert +=  aqSize;
+                }
+                if (err != kNIError_Success) {
+                    pDest->Resize1D(0);
+                    break;
+                }
             }
         }
     }

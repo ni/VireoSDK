@@ -111,6 +111,7 @@ void GetCurrentTimestamp(Timestamp *t)
     *t = Timestamp((Double)(stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
 
 #elif defined(VIREO_DATE_TIME_STDLIB)
+    static const UInt32 kStdDT1970re1904 = 2082844800;
     struct timeval tv;
     Int32 retval;
 
@@ -118,9 +119,7 @@ void GetCurrentTimestamp(Timestamp *t)
     if (retval == -1) {
         *t = Timestamp(0, 0);
     } else {
-    //    uInt32 tempTime = (uInt32) tv.tv_sec;
-    //    TToStd(&tempTime);
-        *t = Timestamp((Double)tv.tv_sec, tv.tv_usec / 1E6);
+        *t = Timestamp((Double)tv.tv_sec + kStdDT1970re1904, tv.tv_usec / 1E6);
     }
 #elif defined(VIREO_DATE_TIME_VXWORKS)
     struct timespec ts;

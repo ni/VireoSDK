@@ -4,10 +4,12 @@
 
 all: native js
 
-native:
-	cd make-it; make simple
+native:	simple
 
-js:
+simple v32 v64:
+	cd make-it; make $@
+
+vjs js:
 	cd make-it; make vjs
 
 test: testnative testjs

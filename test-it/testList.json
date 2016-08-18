@@ -22,6 +22,7 @@
                 "AllocatedDataValues.via",
                 "ArrayComparison.via",
                 "ArrayConcatBug.via",
+                "ArrayConcatenateND.via",
                 "ArrayDelete.via",
                 "ArrayDemo.via",
                 "ArrayFillNDV.via",
