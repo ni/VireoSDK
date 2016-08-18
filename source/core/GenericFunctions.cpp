@@ -1206,12 +1206,6 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
     return pInstructionBuilder->EmitInstruction();
 }
 //------------------------------------------------------------
-struct ArrayConcatenateInternalParamBlock : public VarArgInstruction
-{
-    _ParamDef(TypedArrayCoreRef, ArrayOut);
-    _ParamImmediateDef(void*, Element[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
 // Copy a sourceRank-D source array into a destRank-D dest array of type elementType which has already been resized to accommodate.
 // Inner dimension lengths of source array can be less than dest array dimension lengths.
 // Top level call must pass destRank >= 2, and sourceRank == destRank or destRank-1.
@@ -1225,17 +1219,45 @@ static AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, In
         }
         pDest += destSlabLengths[1];
     } else {
-        AQBlock1* pInsert = pDest;
         for (IntIndex i = 0; i < sourceDimLengths[sourceRank-1]; ++i) {
-            if (!(pInsert = ArrayToArrayCopyHelper(elementType, pInsert, destSlabLengths, pSource, sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1)))
+            if (!(pDest = ArrayToArrayCopyHelper(elementType, pDest, destSlabLengths, pSource, sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1)))
                 return NULL;
             pSource += sourceSlabLengths[sourceRank-1];
         }
-        pDest = pInsert; //  += destSlabLengths[destRank-1];
+    }
+    return pDest;
+}
+// Same as above, but iterate in reverse so if the source and dest are the same but dimension sizes have changed,
+// data is moved correctly without blapping source elements before they are copied.
+static AQBlock1* ArrayToArrayCopyHelperRev(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
+    if (sourceRank == 1) {
+        if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
+            return NULL;
+        Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
+        if (copiedLength < destSlabLengths[1]) {
+            memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+        }
+        pDest += destSlabLengths[1];
+    } else {
+        pSource += sourceSlabLengths[sourceRank-1] * sourceDimLengths[sourceRank-1];
+        pDest += destSlabLengths[destRank-1] * sourceDimLengths[sourceRank-1];
+        AQBlock1* pOrigDest = pDest;
+        for (IntIndex i = sourceDimLengths[sourceRank-1]-1; i >= 0; --i) {
+            pSource -= sourceSlabLengths[sourceRank-1];
+            pDest -= destSlabLengths[destRank-1];
+            ArrayToArrayCopyHelperRev(elementType, pDest, destSlabLengths, pSource, sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1);
+        }
+        pDest = pOrigDest;
     }
     return pDest;
 }
 //------------------------------------------------------------
+struct ArrayConcatenateInternalParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamImmediateDef(void*, Element[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
 VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalParamBlock)
 {
     Int32 numInputs = (_ParamVarArgCount() - 1) / 2;
@@ -1247,12 +1269,13 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
     void** inputs =  _ParamImmediate(Element);
     void** typeComparisons =  inputs + numInputs;
     IntIndex outputRank = pDest->Rank();
+    Boolean inplaceDimChange = false;
 
     if (outputRank > 1) {
         IntIndex totalOuterDimLength = 0, i, j;
         IntIndex minInputRank = outputRank;
-        ArrayDimensionVector tempDimensionLengths;
-        Int32 originalLength = pDest->Length();
+        ArrayDimensionVector tempDimensionLengths, origDimensionLengths, origSlab;
+        Int32 originalOuterDimSize = pDest->DimensionLengths()[outputRank-1];
         for (i = 0; i < numInputs; i++) {
             TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
             IntIndex* pInputDimLength = arrayInput->DimensionLengths();
@@ -1266,14 +1289,20 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
             }
             totalOuterDimLength += inputOuterDimSize;
             for (j = 0; j < outputRank-1; j++)
-                if (i == 0 || tempDimensionLengths[j] < pInputDimLength[j])
+                if (i == 0 || tempDimensionLengths[j] < pInputDimLength[j]) {
                     tempDimensionLengths[j] = pInputDimLength[j];
+                    if (i > 0)
+                        inplaceDimChange = true;
+                }
         }
         tempDimensionLengths[outputRank-1] = totalOuterDimLength;
+        for (j = 0; j < outputRank; j++) {
+            origDimensionLengths[j] = pDest->DimensionLengths()[j];
+            origSlab[j] = pDest->SlabLengths()[j];
+        }
         if (pDest->ResizeDimensions(outputRank, tempDimensionLengths, true)) {
             AQBlock1* pInsert = pDest->BeginAt(0);
             TypeRef elementType = pDest->ElementType();
-            Int32   aqSize = elementType->TopAQSize();
             IntIndex* slabLengths = pDest->SlabLengths();
             for (i = 0; i < numInputs; i++) {
                 TypedArrayCoreRef pSource = *((TypedArrayCoreRef*) inputs[i]);
@@ -1289,7 +1318,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
                         return THREAD_EXEC()->Stop();
                     }
-                    pInsert += (originalLength * aqSize);
+                    if (inplaceDimChange)
+                        ArrayToArrayCopyHelperRev(elementType, pInsert, pDest->SlabLengths(), pSource->BeginAt(0), origDimensionLengths, origSlab, outputRank, pSource->Rank());
+                    pInsert += originalOuterDimSize * slabLengths[outputRank-1];
                 }
             }
         }

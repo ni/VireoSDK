@@ -37,8 +37,10 @@ define(videf1 dv(.VirtualInstrument (
         Println(w9_ )
         ArrayConcatenate( w10 w9 w9_ )
         Println(w10 )
-        //ArrayConcatenate( w9 w9 w7 ) // this doesn't work because w9 doesn't preserve data when resized to match w7's inner dims -- FIXME
-        //Println(w9 )
+        Println(w9 )
+        Println(w7 )
+        ArrayConcatenate( w9 w9 w7 ) // this tests that we preserve data when w9 is resized to match w7's inner dims 
+        Println(w9 )
         ArrayConcatenate(w11 g2 g3 g4 )
         Println(w11)
         ArrayConcatenate(w12 g22 g23 g24 )
