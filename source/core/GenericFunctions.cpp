@@ -986,7 +986,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
     endDest = beginDest + (count * elementSizeDest);
     snippet->_p0 = beginStr;
     snippet->_p1 = _ParamPointer(Offset);
-    snippet->_p2 = _Param(DefaultVal);
+    snippet->_p2 = (AQBlock1*)_ParamPointer(DefaultVal);
     snippet->_p3 = _ParamPointer(EndOffset);
     snippet->_p4 = (AQBlock1*)type->GetSubElement(0);
     snippet->_p5 = beginDest;
@@ -1021,7 +1021,11 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
             TypeRef srcEltType = sourceStrType->GetSubElement(0);
             if (!srcEltType->CompareType(stringType))
                 return null;;
+            if (!pInstructionBuilder->_argTypes[1]->CompareType(Int32Type) || !pInstructionBuilder->_argTypes[3]->CompareType(Int32Type))
+                return null;;
             TypeRef outEltType = outputType->GetSubElement(0);
+            if (!pInstructionBuilder->_argTypes[2]->CompareType(outEltType))
+                return null;;
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
 
             // Emit the vector op

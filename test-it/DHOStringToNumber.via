@@ -35,6 +35,7 @@ define(Test dv(.VirtualInstrument (
     e(dv(.String 'xxc')  badString)
     e(dv(.String '123 456 abC')  cString)
     e(dv(a(.String *) ('123' '456'))  aString)
+    e(dv(a(.String *) ('123' 'x456'))  aBadString)
     e(a(.Int32 *) aValue)
     e(dv(.Int16 4) width)
     e(dv(c(e(.String) e(.String)) ('234' '567')) clustString)
@@ -77,11 +78,11 @@ define(Test dv(.VirtualInstrument (
     Printf("DecStringToNumber '%s' %d %d %f\n" stringa373 0 local2 local1)
 
     Copy(c0 offset)
-    DecimalStringToNumber(aString * default20 local2 aValue)
+    DecimalStringToNumber(aString * defaultVal local2 aValue)
     Printf("DecStringToNumber '%s' %d %d %s\n" aString 0 local2 aValue)
 
     Copy(c0 offset)
-    DecimalStringToNumber(clustString * default20 local2 clustValue)
+    DecimalStringToNumber(clustString * defaultVal local2 clustValue)
     Printf("DecStringToNumber '%s' %d %d %s\n" clustString 0 local2 clustValue)
 
     Copy(5 offset)
@@ -95,6 +96,14 @@ define(Test dv(.VirtualInstrument (
     Copy(0 offset)
     BinaryStringToNumber('  111fffffff'  offset defaultVal endoffset value)
     Printf("BinaryStringToNumber '   111fffffff' %d %d %d\n" offset endoffset value)
+
+    Copy(c0 offset)
+    DecimalStringToNumber(aBadString 0 defaultVal local2 aValue)
+    Printf("DecStringToNumber '%s' %d %d %s\n" aBadString 0 local2 aValue)
+
+    Copy(c0 offset)
+    //DecimalStringToNumber(aBadString 0 default20 local2 aValue) // default type mismatch, generates error, move to separate test to check for error
+    //Printf("DecStringToNumber '%s' %d %d %s\n" aBadString 0 local2 aValue)
    )
  ) ) )
 enqueue(Test)

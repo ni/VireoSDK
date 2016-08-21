@@ -10,3 +10,4 @@ DecStringToNumber '('234' '567')' 0 3 (234 567)
 HexStringToNumber 'ffffffe' 5 7 254
 OctalStringToNumber '17890' 0 2 15
 BinaryStringToNumber '   111fffffff' 0 5 7
+DecStringToNumber '('123' 'x456')' 0 0 (123 12)
