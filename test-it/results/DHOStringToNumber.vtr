@@ -1,0 +1,12 @@
+DecStringToNumber 'xxc' 0 0 12
+DecStringToNumber 'xxc' 0 0 0 (nodflt)
+DecStringToNumber '123 456 abC' 0 3 123
+DecStringToNumber '123 456 abC' 3 7 456
+DecStringToNumber '123 456 abC' 7 7 12
+DecStringToNumber '123 456 abC' 7 7 0
+DecStringToNumber 'a373' 0 0 20.000000
+DecStringToNumber '('123' '456')' 0 3 (123 456)
+DecStringToNumber '('234' '567')' 0 3 (234 567)
+HexStringToNumber 'ffffffe' 5 7 254
+OctalStringToNumber '17890' 0 2 15
+BinaryStringToNumber '   111fffffff' 0 5 7

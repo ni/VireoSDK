@@ -33,7 +33,7 @@ void String::AppendViaDecoded(SubString* string)
     // Pass one, see how many %XX sequences exist.
     // Utf8 multibyte sequences are copied over byte by byte.
     while(ss.ReadRawChar(&c)) {
-        if (c == '%' && ss.ReadHex(&value)) {
+        if (c == '%' && ss.ReadHex2(&value)) {
             decodedLength  -= 2;
         }
     }
@@ -45,7 +45,7 @@ void String::AppendViaDecoded(SubString* string)
         ss = string;
         Utf8Char* pDest = BeginAt(originalLength);
         while(ss.ReadRawChar(&c)) {
-            if (c == '%' && ss.ReadHex(&value)) {
+            if (c == '%' && ss.ReadHex2(&value)) {
                 *pDest++ = (Utf8Char)value;
             } else {
                 *pDest++ = c;

@@ -1,0 +1,103 @@
+define(default20 dv(.Single 20) )
+define(stringa373 dv(.String 'a373') )
+
+define(Test dv(.VirtualInstrument (
+ c(
+    e(.Int32 x)
+    e(.Int32 y)
+    e(dv(.Int32 0) c0)
+    e(dv(.Int32 1) c1)
+    e(dv(.Int32 2) c2)
+    e(dv(.Int32 3) c3)
+    e(dv(.Int32 4) c4)
+    e(dv(.Int32 5) c5)
+    e(dv(.Int32 6) c6)
+    e(dv(.Int32 7) c7)
+    e(dv(.Int32 8) c8)
+    e(dv(.Int32 16) c16)
+    e(dv(.Int32 1234) c1234)
+    //--
+    e(dv(.Int32 -2) cn2)
+    e(dv(.Int32 -3) cn3)
+    //--
+    e(.Int32 value)
+    e(.Int32 value2)
+    e(dv(.Int16 4) width)
+    e(dv(.Int32 12) defaultVal)
+    e(dv(.Double 1.2) dDefaultVal)
+    e(dv(.Int32 0) offset)
+    e(dv(.Int32 0) endoffset)
+    //-------------------
+    e(dv(.Double 1.5) d1_5)
+    e(dv(.Double 1.76) d1_76)
+
+    e(.String outString)
+    e(dv(.String 'xxc')  badString)
+    e(dv(.String '123 456 abC')  cString)
+    e(dv(a(.String *) ('123' '456'))  aString)
+    e(a(.Int32 *) aValue)
+    e(dv(.Int16 4) width)
+    e(dv(c(e(.String) e(.String)) ('234' '567')) clustString)
+    e(dv(c(e(.Int32) e(.Int32)) (-1 -2)) clustValue)
+
+    e(.Single local1)
+    e(.Int32 local2)
+ )
+  clump(1
+    //---------------------------------------------------------
+
+    // String to Int32
+    Copy(c0 offset)
+    DecimalStringToNumber(badString offset defaultVal endoffset value)
+    Printf("DecStringToNumber '%s' %d %d %d\n" badString offset endoffset value)
+    DecimalStringToNumber(badString offset * endoffset value)
+    Printf("DecStringToNumber '%s' %d %d %d (nodflt)\n" badString offset endoffset value)
+
+    Copy(c0 offset)
+    DecimalStringToNumber(cString offset * endoffset value)
+    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+
+    Copy(endoffset offset)
+    DecimalStringToNumber(cString offset defaultVal endoffset value)
+    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+
+    Copy(endoffset offset)
+    DecimalStringToNumber(cString offset defaultVal endoffset value)
+    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+
+    Copy(endoffset offset)
+    DecimalStringToNumber(cString offset * * value)
+    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+
+    //---------------------------------------------------------
+
+    // String to Double
+    Copy(c0 offset)
+    DecimalStringToNumber(stringa373 * default20 local2 local1)
+    Printf("DecStringToNumber '%s' %d %d %f\n" stringa373 0 local2 local1)
+
+    Copy(c0 offset)
+    DecimalStringToNumber(aString * default20 local2 aValue)
+    Printf("DecStringToNumber '%s' %d %d %s\n" aString 0 local2 aValue)
+
+    Copy(c0 offset)
+    DecimalStringToNumber(clustString * default20 local2 clustValue)
+    Printf("DecStringToNumber '%s' %d %d %s\n" clustString 0 local2 clustValue)
+
+    Copy(5 offset)
+    HexStringToNumber('ffffffe'  offset defaultVal endoffset value)
+    Printf("HexStringToNumber 'ffffffe' %d %d %d\n" offset endoffset value)
+
+    Copy(0 offset)
+    OctalStringToNumber('17890'  offset defaultVal endoffset value)
+    Printf("OctalStringToNumber '17890' %d %d %d\n" offset endoffset value)
+
+    Copy(0 offset)
+    BinaryStringToNumber('  111fffffff'  offset defaultVal endoffset value)
+    Printf("BinaryStringToNumber '   111fffffff' %d %d %d\n" offset endoffset value)
+   )
+ ) ) )
+enqueue(Test)
+
+
+

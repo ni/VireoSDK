@@ -277,9 +277,12 @@ public:
     
     //! Read a simple token name, value, punctuation, etc.
     TokenTraits ReadToken(SubString* token);
-    
+
     //! Read 2 digit hex value
-    Boolean ReadHex(Int32* value);
+    Boolean ReadHex2(Int32* value);
+
+    //! Read a 64-bit integer in given base
+    Boolean ReadIntWithBase(Int64 *value, Int32 base);
 
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);
