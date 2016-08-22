@@ -15,7 +15,7 @@ endif # AAL_ONLY
 ifneq (,$(wildcard $(nibuild_penguin_root)/math/AAL/dev/2015/core/*))
   ANALYSIS_ROOT_DIRECTORY=$(nibuild_penguin_root)/math/AAL/dev/2015/core
 else
-  ANALYSIS_ROOT_DIRECTORY=../vi.lib/Analysis/dev/2015/core
+  ANALYSIS_ROOT_DIRECTORY=../../vi.lib/Analysis/dev/2015/core
 endif
 
 ifneq (,$(wildcard $(VIREO_SDK_DIR)/private/*))
