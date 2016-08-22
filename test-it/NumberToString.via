@@ -1,0 +1,103 @@
+define(default20 dv(.Single 20) )
+define(stringa373 dv(.String 'a373') )
+
+define(Test dv(.VirtualInstrument (
+ c(
+    e(.Int32 x)
+    e(.Int32 y)
+    e(dv(.Int32 0) c0)
+    e(dv(.Int32 1) c1)
+    e(dv(.Int32 2) c2)
+    e(dv(.Int32 3) c3)
+    e(dv(.Int32 4) c4)
+    e(dv(.Int32 5) c5)
+    e(dv(.Int32 6) c6)
+    e(dv(.Int32 7) c7)
+    e(dv(.Int32 8) c8)
+    e(dv(.Int32 16) c16)
+    e(dv(.Int32 1234) c1234)
+    //--
+    e(dv(.Int32 -2) cn2)
+    e(dv(.Int32 -3) cn3)
+    //--
+    e(.Int32 value)
+    e(.Int32 value2)
+    e(dv(.Int16 4) width)
+    e(dv(.Int32 12) defaultVal)
+    e(dv(.Double 1.2) dDefaultVal)
+    e(dv(.Int32 0) offset)
+    e(dv(.Int32 0) endoffset)
+    //-------------------
+    e(dv(.Double 1.5) d1_5)
+    e(dv(.Double 12345.6) d123)
+    e(dv(.Single 12345.6) s123)
+    e(dv(.Double 1.76) d1_76)
+    e(dv(.Int64 0xdeaddeadbeef) i64DB)
+    e(dv(.Int64 -5) i64Neg)
+    e(dv(.Int32 -17) i32Neg)
+
+    e(.String outString)
+    e(dv(.String 'xxc')  badString)
+    e(dv(.String '123 456 abC')  cString)
+    e(dv(a(.Double *) (987.65 65.4321)) aDouble)
+    e(dv(a(.String *) ('123' 'x456'))  aBadString)
+    e(a(.Int32 *) aValue)
+    e(dv(.Int16 4) width)
+    e(a(.String *) aString)
+    e(dv(c(e(.String) e(.String)) ('234' '567')) clustString)
+    e(dv(c(e(.Int32) e(.Double)) (-123 999.8e9)) clustValue)
+
+    e(.Single local1)
+    e(.Int32 local2)
+ )
+  clump(1
+    //---------------------------------------------------------
+
+    NumberToExponentialString(d123 * * outString)
+    Printf("NumberToExponentialString %s %d %d '%s'\n" d123 * * outString)
+
+    NumberToExponentialString(d123 8 1 outString)
+    Printf("NumberToExponentialString %s %d %d '%s'\n" d123 8 1 outString)
+
+    NumberToExponentialString(s123 * * outString)
+    Printf("NumberToExponentialString %s %d %d '%s'\n" s123 * * outString)
+
+    NumberToExponentialString(aDouble * * aString)
+    Printf("NumberToExponentialString %s %d %d %s\n" aDouble * * aString)
+
+    NumberToExponentialString(clustValue 11 2 clustString)
+    Printf("NumberToExponentialString %s %d %d %s\n" clustValue 11 2 clustString)
+
+    NumberToFloatString(d123 7 * outString)
+    Printf("NumberToFloatString %s %d %d '%s'\n" d123 7 * outString)
+
+    NumberToEngineeringString(d123 2 * outString)
+    Printf("NumberToEngineeringString %s %d %d '%s'\n" d123 2 * outString)
+
+    NumberToHexString(d123 2 outString)
+    Printf("NumberToHexString %s %d '%s'\n" d123 * outString)
+
+    NumberToHexString(clustValue 8 clustString)
+    Printf("NumberToHexString %s %d '%s'\n" clustValue 8 clustString)
+
+    NumberToHexString(width 8 outString)
+    Printf("NumberToHexString %s %d '%s'\n" width 8 outString)
+
+    NumberToHexString(i64DB 8 outString)
+    Printf("NumberToHexString %s %d '%s'\n" i64DB 8 outString)
+
+    NumberToHexString(i64Neg 8 outString)
+    Printf("NumberToHexString %s %d '%s'\n" i64Neg 8 outString)
+
+    NumberToHexString(i32Neg 6 outString)
+    Printf("NumberToHexString %s %d '%s'\n" i32Neg 6 outString)
+
+    NumberToOctalString(d123 2 outString)
+    Printf("NumberToOctalString %s %d '%s'\n" d123 * outString)
+
+    NumberToBinaryString(d123 2 outString)
+    Printf("NumberToBinaryString %s %d '%s'\n" d123 * outString)
+   )
+ ) ) )
+enqueue(Test)
+

@@ -138,6 +138,7 @@
                 "NegativeNumbers.via",
                 "NestedConstant.via",
                 "NestedContexts.via",
+                "NumberToString.via",
                 "NumericArrayConcat.via",
                 "Occurrence.via",
                 "OverloadedAdd.via",

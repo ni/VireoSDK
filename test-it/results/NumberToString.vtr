@@ -1,0 +1,15 @@
+NumberToExponentialString 12345.6 0 0 '1.234560E+4'
+NumberToExponentialString 12345.6 8 1 '  1.2E+4'
+NumberToExponentialString 12345.6 0 0 '1.234560E+4'
+NumberToExponentialString (987.65 65.4321) 0 0 ('9.876500E+2' '6.543210E+1')
+NumberToExponentialString (-123 9.998E+11) 11 2 ('   -1.23E+2' '   1.00E+12')
+NumberToFloatString 12345.6 7 0 '12345.600000'
+NumberToEngineeringString 12345.6 2 0 '12.345600E+3'
+NumberToHexString 12345.6 0 '303A'
+NumberToHexString (-123 9.998E+11) 8 '('FFFFFF85' 'E8C8B94E00')'
+NumberToHexString 4 8 '00000004'
+NumberToHexString 244838346637039 8 'DEADDEADBEEF'
+NumberToHexString -5 8 'FFFFFFFFFFFFFFFB'
+NumberToHexString -17 6 'FFFFFFEF'
+NumberToOctalString 12345.6 0 '30072'
+NumberToBinaryString 12345.6 0 '11000000111010'

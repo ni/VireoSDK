@@ -970,14 +970,14 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
     if (isCluster) {
         count = type->SubElementCount();
         elementSizeStr = sizeof(StringRef);
-        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize(); // VOutput->ElementType()->TopAQSize();
+        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize();
         beginStr = (AQBlock1*)_ParamPointer(SStr);
         beginDest = (AQBlock1*)_ParamImmediate(VOutput)->_pData;
     } else {
         TypedArrayCoreRef VStr = _Param(VStr);
         TypedArrayCoreRef VOutput = *(TypedArrayCoreRef*)_ParamImmediate(VOutput)->_pData;
         elementSizeStr = VStr->ElementType()->TopAQSize();
-        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize(); // VOutput->ElementType()->TopAQSize();
+        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize();
         count = VStr->Length();
         VOutput->Resize1D(count);
         beginStr = VStr->RawBegin();

@@ -1666,6 +1666,8 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _string = string;
     _options._bQuoteStrings = quoteOnTopString;
     _options._fieldWidth = fieldWidth;
+    _options._precision = -1;
+    _options._exponentialNotation = false;
     
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._bEscapeStrings = false;
@@ -1735,6 +1737,9 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
     Int32 len = snprintf(buffer, sizeof(buffer), format, _options._fieldWidth, value);
     _string->Append(len, (Utf8Char*)buffer);
 }
+
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
+
 //------------------------------------------------------------
 void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
 {
@@ -1766,7 +1771,14 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             len = 3;
         }
     } else {
-        len = snprintf(buffer, sizeof(buffer), "%G", value);
+        char formatBuffer[32];
+        if (_options._precision >= 0)
+            snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%d%s", _options._fieldWidth, _options._precision,
+                     _options._exponentialNotation ? "E" : "G");
+        else
+            snprintf(formatBuffer, sizeof(formatBuffer), "%%%d%s", _options._fieldWidth,
+                     _options._exponentialNotation ? "E" : "G");
+        len = snprintf(buffer, sizeof(buffer), formatBuffer, value);
     }
     _string->Append(len, (Utf8Char*)pBuff);
 }
@@ -2206,6 +2218,183 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
     return _NextInstruction();
 }
 
+//------------------------------------------------------------
+typedef void (*NumberToStringCallback)(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string);
+
+void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string) {
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dG", minWidth, precision);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dE", minWidth, precision);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%^%d.%dE", minWidth, precision);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dX", minWidth);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%0%do", minWidth);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%0%db", minWidth);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
+
+Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, Int32 precision, TypeRef destType, AQBlock1 *pDestData, NumberToStringCallback formatCallback)
+{
+    EncodingEnum encoding = type->BitEncoding();
+    EncodingEnum destEncoding = destType->BitEncoding();
+    switch (encoding) {
+        case kEncoding_Array: {
+            if (destEncoding != kEncoding_Array) {
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal type in NumberToString");
+                return false;
+            }
+            TypeRef subType = type->GetSubElement(0);
+            TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)pData;
+            TypedArrayCoreRef pDestArray = *(TypedArrayCoreRef*)pDestData;
+            Int32 elementSize = type->GetSubElement(0)->TopAQSize();;
+            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();;
+            IntIndex count = pArray->Length();
+            pDestArray->Resize1D(count);
+            AQBlock1 *pElement = pArray->BeginAt(0);
+            AQBlock1 *pDestElement = pDestArray->BeginAt(0);
+            while (count > 0) {
+                StringRef string = *(StringRef*)pDestElement;
+                NumberToExponentialStringInternal(subType, pElement, minWidth, precision, string);
+                pElement += elementSize;
+                pDestElement += destElementSize;
+                --count;
+            }
+            break;
+        }
+        case kEncoding_Cluster: {
+            if (destEncoding != kEncoding_Cluster) {
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal type in NumberToString");
+                return false;
+            }
+            IntIndex count = type->SubElementCount();
+            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();;
+            AQBlock1 *pDestElement = (AQBlock1*)pDestData;
+            Int32 i = 0;
+            while (i < count) {
+                TypeRef subType = type->GetSubElement(i);
+                AQBlock1 *pElement = pData + subType->ElementOffset();
+                StringRef string = *(StringRef*)pDestElement;
+                (*formatCallback)(subType, pElement, minWidth, precision, string);
+                pDestElement += destElementSize;
+                ++i;
+            }
+            break;
+        }
+        case kEncoding_Boolean:
+        case kEncoding_UInt:
+        case kEncoding_S2CInt:
+        case kEncoding_IEEE754Binary:
+            if (destEncoding == kEncoding_Array && destType->Rank() == 1 && destType->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
+                StringRef string = *(StringRef*)pDestData;
+                (*formatCallback)(type, pData, minWidth, precision, string);
+                break;
+            } // else fall through...
+        default:
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal type in NumberToString");
+            return false;
+    }
+    return true;
+}
+
+VIREO_FUNCTION_SIGNATURE6(NumberToExponentialString, StaticType, void, Int32, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Int32 precision = _ParamPointer(3) ? _Param(3) : 6;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                            precision, _ParamPointer(4), (AQBlock1*)_ParamPointer(5),
+                                            NumberToExponentialStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+VIREO_FUNCTION_SIGNATURE6(NumberToFloatString, StaticType, void, Int32, Int32, StaticType, void) {
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Int32 precision = _ParamPointer(3) ? _Param(3) : 6;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             precision, _ParamPointer(4), (AQBlock1*)_ParamPointer(5),
+                                             NumberToFloatStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+VIREO_FUNCTION_SIGNATURE6(NumberToEngineeringString, StaticType, void, Int32, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Int32 precision = _ParamPointer(3) ? _Param(3) : 6;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             precision, _ParamPointer(4), (AQBlock1*)_ParamPointer(5),
+                                             NumberToEngineeringStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+VIREO_FUNCTION_SIGNATURE5(NumberToHexString, StaticType, void, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             0, _ParamPointer(3), (AQBlock1*)_ParamPointer(4),
+                                             NumberToHexStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+VIREO_FUNCTION_SIGNATURE5(NumberToOctalString, StaticType, void, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             0, _ParamPointer(3), (AQBlock1*)_ParamPointer(4),
+                                             NumberToOctalStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+VIREO_FUNCTION_SIGNATURE5(NumberToBinaryString, StaticType, void, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             0, _ParamPointer(3), (AQBlock1*)_ParamPointer(4),
+                                             NumberToBinaryStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(Type)o(String))")
@@ -2221,6 +2410,12 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
     DEFINE_VIREO_FUNCTION(OctalStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(BinaryStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(NumberToFloatString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToExponentialString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToEngineeringString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToHexString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToOctalString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToBinaryString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
 DEFINE_VIREO_END()
 
 } // namespace Vireo
