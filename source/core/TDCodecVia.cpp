@@ -2092,6 +2092,64 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
 
     return _NextInstruction();
 }
+
+static void BaseStringToNumber(Int32 base, StringRef string, Int32 beginOffset, Int32 *endOffset, void *pDefault, TypeRef type, void *pData) {
+    if (beginOffset < 0)
+        beginOffset = 0;
+    SubString substring(string->BeginAt(beginOffset), string->End());
+    Int32 length1 = substring.Length();
+    Int32 length2;
+    Boolean success;
+
+    if (pData) { // If an argument is passed for the output value, read a value into it.
+        Int64 parsedValue = 0;
+        success = substring.ReadIntWithBase(&parsedValue, base);
+        if (success) {
+            if (type->BitEncoding() == kEncoding_IEEE754Binary) {
+                WriteDoubleToMemory(type, pData, parsedValue);
+            } else {
+                WriteIntToMemory(type, pData, parsedValue);
+            }
+        } else {
+            if (pDefault) {
+                type->CopyData(pDefault, pData);
+            } else if (type->BitEncoding() == kEncoding_IEEE754Binary) {
+                WriteDoubleToMemory(type, pData, 0);
+            } else {
+                WriteIntToMemory(type, pData, 0);
+            }
+        }
+        length2 = substring.Length(); // ??? parser.TheString()->Length();
+    } else { // Otherwise, just read the string to find the end offset.
+        success = substring.ReadInt(null);
+        length2 = substring.Length();
+    }
+
+    // Output offset past the parsed value
+    if (endOffset)
+        *endOffset = beginOffset + (success ? length1 - length2 : 0);
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(HexStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
+{
+    Int32 beginOffset = _ParamPointer(1) ? _Param(1) : 0;
+    BaseStringToNumber(16, _Param(0), beginOffset, _ParamPointer(3), _ParamPointer(2), _ParamPointer(4), _ParamPointer(5));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(OctalStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
+{
+    Int32 beginOffset = _ParamPointer(1) ? _Param(1) : 0;
+    BaseStringToNumber(8, _Param(0), beginOffset, _ParamPointer(3), _ParamPointer(2), _ParamPointer(4), _ParamPointer(5));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(BinaryStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
+{
+    Int32 beginOffset = _ParamPointer(1) ? _Param(1) : 0;
+    BaseStringToNumber(2, _Param(0), beginOffset, _ParamPointer(3), _ParamPointer(2), _ParamPointer(4), _ParamPointer(5));
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
 {
@@ -2159,6 +2217,9 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #endif
     DEFINE_VIREO_FUNCTION(FromString, "p(i(String) o(StaticTypeAndData) o(String))")
     DEFINE_VIREO_FUNCTION(DecimalStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(HexStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(OctalStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(BinaryStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ExponentialStringToNumber, "p(i(String) i(Int32) i(*) o(Int32) o(StaticTypeAndData))")
 DEFINE_VIREO_END()
 

@@ -681,8 +681,8 @@ Boolean SubString::ReadNameToken(SubString* token)
     return false;
 }
 //---------------------------------------------------
-//! Read n hex characters. Balk if there are not that many
-Boolean SubString::ReadHex(Int32 *pValue)
+//! Read 2 hex characters. Balk if there are not that many
+Boolean SubString::ReadHex2(Int32 *pValue)
 {
     if (Length() >= 2) {
         Int32 d1 = DigitValue(*_begin, 16);
@@ -694,6 +694,31 @@ Boolean SubString::ReadHex(Int32 *pValue)
         }
     }
     return false;
+}
+//---------------------------------------------------
+//! Read 2 hex characters. Balk if there are not that many
+Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
+{
+    Int64 value = 0, sign = 1;
+    EatWhiteSpaces();
+    if (base == 10) { // allow negative other bases?
+        if (EatChar('-')) {
+            sign = -1;
+        } else {
+            EatChar('+');
+        }
+    }
+    const Utf8Char *origBegin = _begin;
+    while (_begin < _end) {
+        Int32 d = DigitValue(*_begin, base);
+        if (d >= 0) {
+            value = (value * base) + d;
+        } else
+            break;
+        ++_begin;
+    }
+    *pValue = value * sign;
+    return _begin > origBegin;
 }
 //---------------------------------------------------
 Boolean SubString::CompareViaEncodedString(SubString* encodedString)
@@ -709,7 +734,7 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
             decodedC = c;
         } else {
             Int32 value = 0;
-            if (ss.ReadHex(&value)) {
+            if (ss.ReadHex2(&value)) {
                 decodedC = (Utf8Char)value;
             } else {
                 decodedC = '%';

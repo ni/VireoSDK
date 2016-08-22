@@ -741,7 +741,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 		ClumpParseState snippetBuilder(pInstructionBuilder);
 		pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, ircOp, snippetArgId);
 		snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, (void*)null, sourceXType, (void*)null, booleanType, (void*)null);
-		
+
 		pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
 		pInstructionBuilder->RecordNextHere(&ircOp->_piNext);
 		pInstruction = ircOp;
@@ -941,6 +941,111 @@ VIREO_FUNCTION_SIGNATURET(InRangeAccumulator, InRangeAndCoerceInstructionAggrega
 	_Param(BooleanDest) = true;
     type->CopyData(_ParamPointer(SX), _ParamPointer(SCoerced));
 	return _NextInstruction();
+}
+
+//------------------------------------------------------------
+struct AggregateStrToNumInstruction : public InstructionCore
+{
+    union {
+        _ParamDef(TypedArrayCoreRef, VStr);
+        _ParamDef(AQBlock1*, SStr);
+    };
+    _ParamDef(Int32, Offset);
+    _ParamDef(AQBlock1*, DefaultVal);
+    _ParamDef(Int32, EndOffset);
+    _ParamImmediateDef(StaticTypeAndData, VOutput[1]);
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()      { return this->_piNext; }
+};
+typedef Instruction6<AQBlock1, Int32, AQBlock1, Int32, AQBlock1, AQBlock1> StrToNumInstructionArgs;
+
+VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstruction)
+{
+    TypeRef type = _ParamImmediate(VOutput)->_paramType;
+    Boolean isCluster = type->IsCluster();
+    StrToNumInstructionArgs* snippet = (StrToNumInstructionArgs*)_ParamMethod(Snippet());
+    AQBlock1 *beginStr, *beginDest, *endDest;
+    IntIndex elementSizeStr, elementSizeDest, count = 0;
+    if (isCluster) {
+        count = type->SubElementCount();
+        elementSizeStr = sizeof(StringRef);
+        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize(); // VOutput->ElementType()->TopAQSize();
+        beginStr = (AQBlock1*)_ParamPointer(SStr);
+        beginDest = (AQBlock1*)_ParamImmediate(VOutput)->_pData;
+    } else {
+        TypedArrayCoreRef VStr = _Param(VStr);
+        TypedArrayCoreRef VOutput = *(TypedArrayCoreRef*)_ParamImmediate(VOutput)->_pData;
+        elementSizeStr = VStr->ElementType()->TopAQSize();
+        elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize(); // VOutput->ElementType()->TopAQSize();
+        count = VStr->Length();
+        VOutput->Resize1D(count);
+        beginStr = VStr->RawBegin();
+        beginDest = VOutput->RawBegin();
+    }
+    endDest = beginDest + (count * elementSizeDest);
+    snippet->_p0 = beginStr;
+    snippet->_p1 = _ParamPointer(Offset);
+    snippet->_p2 = (AQBlock1*)_ParamPointer(DefaultVal);
+    snippet->_p3 = _ParamPointer(EndOffset);
+    snippet->_p4 = (AQBlock1*)type->GetSubElement(0);
+    snippet->_p5 = beginDest;
+    while (snippet->_p5 < endDest)
+    {
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        snippet->_p0 += elementSizeStr;
+        snippet->_p5 += elementSizeDest;
+    }
+    return _NextInstruction();
+}
+InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
+{
+    InstructionCore* pInstruction = null;
+    TypeRef sourceStrType = pInstructionBuilder->_argTypes[0];
+    TypeRef outputType = pInstructionBuilder->_argTypes[5];
+    SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+    TypeRef Int32Type = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsInt32Type);
+    TypeRef staticTypeAndDataType = pInstructionBuilder->_clump->TheTypeManager()->FindType("StaticTypeAndData");
+    TypeRef stringType = pInstructionBuilder->_clump->TheTypeManager()->FindType(tsStringType);
+    switch (sourceStrType->BitEncoding()) {
+        case kEncoding_Array:
+        case kEncoding_Cluster:
+        {
+            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+            ConstCStr pVectorBinOpName = null;
+            pVectorBinOpName = "VectorOrClusterStrToNumOp";
+            SubString vectorBinOpToken(pVectorBinOpName);
+            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false); //build a vector op
+            if (sourceStrType->BitEncoding() != outputType->BitEncoding())
+                return null;
+            TypeRef srcEltType = sourceStrType->GetSubElement(0);
+            if (!srcEltType->CompareType(stringType))
+                return null;;
+            if (!pInstructionBuilder->_argTypes[1]->CompareType(Int32Type) || !pInstructionBuilder->_argTypes[3]->CompareType(Int32Type))
+                return null;;
+            TypeRef outEltType = outputType->GetSubElement(0);
+            if (!pInstructionBuilder->_argTypes[2]->CompareType(outEltType))
+                return null;;
+            Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
+
+            // Emit the vector op
+            AggregateStrToNumInstruction* vectorBinOp = (AggregateStrToNumInstruction*) pInstructionBuilder->EmitInstruction();
+            pInstruction = vectorBinOp;
+
+            // Recurse on the subtype
+            ClumpParseState snippetBuilder(pInstructionBuilder);
+
+            pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
+            snippetBuilder.EmitInstruction(&savedOperation, 5, srcEltType, (void*)null, Int32Type, (void*)null, outEltType, (void*)null,
+                                           Int32Type, (void*)null, staticTypeAndDataType, (void*)null);
+            pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
+            pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
+            break;
+        }
+        default:
+            break;
+    }
+    return pInstruction;
 }
 
 //----------------------------------------------------------------------------
@@ -2092,6 +2197,13 @@ DEFINE_VIREO_BEGIN(Generics)
 	DEFINE_VIREO_FUNCTION(VectorOrScalarInRangeOp, "p(i(Array) i(Array) i(Array) i(Boolean) i(Boolean) o(Array) o(Array) i(Int32) s(Instruction))" )
 	DEFINE_VIREO_FUNCTION(ClusterInRangeOp, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(*) s(Instruction) s(Instruction))");
 	DEFINE_VIREO_FUNCTION(InRangeAccumulator, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(Boolean) s(Instruction))");
+
+    DEFINE_VIREO_FUNCTION(VectorOrClusterStrToNumOp, "p(i(Array) i(Int32) i(*) o(Int32) o(StaticTypeAndData) s(Instruction))" )
+    DEFINE_VIREO_GENERIC(DecimalStringToNumber, "p(i(*) i(Int32) i(*) o(Int32) o(StaticTypeAndData))", EmitGenericStringToNumber);
+    DEFINE_VIREO_GENERIC(HexStringToNumber, "p(i(*) i(Int32) i(*) o(Int32) o(StaticTypeAndData))", EmitGenericStringToNumber);
+    DEFINE_VIREO_GENERIC(OctalStringToNumber, "p(i(*) i(Int32) i(*) o(Int32) o(StaticTypeAndData))", EmitGenericStringToNumber);
+    DEFINE_VIREO_GENERIC(BinaryStringToNumber, "p(i(*) i(Int32) i(*) o(Int32) o(StaticTypeAndData))", EmitGenericStringToNumber);
+    DEFINE_VIREO_GENERIC(ExponentialStringToNumber, "p(i(*) i(Int32) i(*) o(Int32) o(StaticTypeAndData))", EmitGenericStringToNumber);
 
 	DEFINE_VIREO_GENERIC(Search1DArray, "p(i(*) i(*) i(Int32) o(Int32) s(Instruction))", EmitSearchInstruction);
     DEFINE_VIREO_FUNCTION(Search1DArrayInternal, "p(i(Array) i(*) i(Int32) o(Int32) s(Instruction))")
