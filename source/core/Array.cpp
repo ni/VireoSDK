@@ -1129,6 +1129,58 @@ VIREO_FUNCTION_SIGNATURE3(ClusterToArray, TypedArrayCoreRef, StaticType, void)
       }
     return _NextInstruction();
 }
+VIREO_FUNCTION_SIGNATURE3(NumberToBooleanArray, StaticType, void, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef arrayOut = _Param(2);
+    if (arrayOut->ElementType()->BitEncoding() != kEncoding_Boolean || arrayOut->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "NumberToBooleanArray bad output type");
+        return THREAD_EXEC()->Stop();
+    }
+    UIntMax number = ReadIntFromMemory(_ParamPointer(0), _ParamPointer(1));
+    Int32 numBits = _ParamPointer(0)->BitLength();
+    arrayOut->Resize1D(numBits);
+    AQBlock1* eltPointer = arrayOut->BeginAt(0);
+    UIntMax bitMask = 1;
+    for (Int32 i = 0; i < numBits; ++i) {
+        *eltPointer++ = ((number & bitMask) != 0);
+        bitMask <<= 1;
+    }
+    return _NextInstruction();
+}
+VIREO_FUNCTION_SIGNATURE3(BooleanArrayToNumber, TypedArrayCoreRef, StaticType, void)
+{
+    TypedArrayCoreRef arrayIn = _Param(0);
+    if (arrayIn->ElementType()->BitEncoding() != kEncoding_Boolean || arrayIn->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "BooleanArrayToNumber bad input type");
+        return THREAD_EXEC()->Stop();
+    }
+    UIntMax number = 0;
+    UIntMax bitMask = 1;
+    Int32 numBits = _ParamPointer(1)->BitLength();
+    Int32 arrayLength = arrayIn->Length();
+    AQBlock1* eltPointer = arrayIn->BeginAt(0);
+    Int32 i = 0;
+    Boolean lastBit = false;
+    if (arrayLength > numBits)
+        arrayLength = numBits;
+    while (i < arrayLength) {
+        lastBit = *eltPointer++;
+        if (lastBit)
+            number |= bitMask;
+        bitMask <<= 1;
+        ++i;
+    }
+    if (lastBit && _ParamPointer(1)->BitEncoding() == kEncoding_S2CInt) {
+        while (i < numBits) {
+            number |= bitMask;
+            bitMask <<= 1;
+            ++i;
+        }
+    }
+    WriteIntToMemory(_ParamPointer(1), _ParamPointer(2), number);
+    return _NextInstruction();
+}
+
 //#define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
@@ -1233,6 +1285,8 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(BuildClusterArray, "p(i(VarArgCount) o(Array) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayToCluster, "p(o(StaticTypeAndData) i(Array))")
     DEFINE_VIREO_FUNCTION(ClusterToArray, "p(o(Array) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(NumberToBooleanArray, "p(i(StaticTypeAndData) o(Array))")
+    DEFINE_VIREO_FUNCTION(BooleanArrayToNumber, "p(i(Array) o(StaticTypeAndData))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")

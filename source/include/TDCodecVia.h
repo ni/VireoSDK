@@ -52,7 +52,9 @@ struct ViaFormatOptions
     //Once formatter digs below top level this will be on. Constructor controls initial value
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
+    Boolean         _exponentialNotation;
     Int32           _fieldWidth;
+    Int32           _precision;
     ViaFormatChars  _fmt;
 };
 
@@ -143,6 +145,10 @@ public:
     TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null);
     // Type formatters
     void    FormatType(TypeRef type);
+    // Options
+    void    SetFieldWidth(Int32 width) { _options._fieldWidth = width; }
+    void    SetPrecision(Int32 precision) { _options._precision = precision; }
+    void    SetExponentialNotation(Boolean on) { _options._exponentialNotation = on; }
     // Data formatters
     void    FormatData(TypeRef type, void* pData);
     void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pData, Int32 rank);

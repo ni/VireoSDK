@@ -1,0 +1,76 @@
+
+define(Test dv(.VirtualInstrument (
+ c(
+
+    e(a(.Boolean *) boolArray)
+    e(dv(.Boolean true) tt)
+    e(dv(.Int16 4) four)
+    e(dv(.Int8 -3) neg3)
+    e(dv(.Int8 0) int8out)
+    e(dv(.Int16 0) int16out)
+    e(dv(.UInt16 0) uint16out)
+    e(dv(.Int64 0) int64out)
+    e(dv(.Int32 0x80000000) minint)
+    e(dv(.Int64 -4) neg4_64)
+    e(dv(.UInt64 0x2aaaaaaaa) u64)
+    e(dv(.Double 2.7) double)
+    e(dv(a(.Boolean *) (true false true true)) smallBoolArray)
+    e(dv(a(.Boolean *) (true true true false)) smallBoolArray2)
+ )
+  clump(1
+    //---------------------------------------------------------
+
+    NumberToBooleanArray(four boolArray)
+    Printf("NumberToBooleanArray %d %s\n" four boolArray)
+    Convert(0 four)
+    BooleanArrayToNumber(boolArray four)
+    Printf("BooleanArrayToNumber %d\n" four)
+
+    BooleanArrayToNumber(smallBoolArray int8out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray int8out)
+    BooleanArrayToNumber(smallBoolArray2 int8out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray2 int8out)
+
+    BooleanArrayToNumber(smallBoolArray int16out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray int16out)
+    BooleanArrayToNumber(smallBoolArray2 int16out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray2 int16out)
+
+    BooleanArrayToNumber(smallBoolArray uint16out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray uint16out)
+    BooleanArrayToNumber(smallBoolArray2 uint16out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray2 uint16out)
+
+    BooleanArrayToNumber(smallBoolArray int64out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray int64out)
+    BooleanArrayToNumber(smallBoolArray2 int64out)
+    Printf("BooleanArrayToNumber %s %x\n" smallBoolArray2 int64out)
+
+    NumberToBooleanArray(neg3 boolArray)
+    Printf("NumberToBooleanArray %d %s\n" neg3 boolArray)
+    BooleanArrayToNumber(boolArray neg3)
+    Printf("BooleanArrayToNumber %d\n" neg3)
+
+    NumberToBooleanArray(neg4_64 boolArray)
+    Printf("NumberToBooleanArray %d %s\n" neg4_64 boolArray)
+    BooleanArrayToNumber(boolArray neg4_64)
+    Printf("BooleanArrayToNumber %d\n" neg4_64)
+
+    NumberToBooleanArray(u64 boolArray)
+    Printf("NumberToBooleanArray %x %s\n" u64 boolArray)
+    Convert(0 u64)
+    BooleanArrayToNumber(boolArray u64)
+    Printf("BooleanArrayToNumber %x\n" u64)
+
+    NumberToBooleanArray(double boolArray)
+    Printf("NumberToBooleanArray %f %s\n" double boolArray)
+    BooleanArrayToNumber(boolArray double)
+    Printf("BooleanArrayToNumber %d\n" double)
+
+    NumberToBooleanArray(minint boolArray)
+    Printf("NumberToBooleanArray %d %s\n" minint boolArray)
+    BooleanArrayToNumber(boolArray minint)
+    Printf("BooleanArrayToNumber %d\n" minint)
+   )
+ ) ) )
+enqueue(Test)
