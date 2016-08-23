@@ -2282,7 +2282,7 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
     switch (encoding) {
         case kEncoding_Array: {
             if (destEncoding != kEncoding_Array) {
-                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal type in NumberToString");
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Type mismatch in NumberToString");
                 return false;
             }
             TypeRef subType = type->GetSubElement(0);
@@ -2304,11 +2304,11 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
             break;
         }
         case kEncoding_Cluster: {
-            if (destEncoding != kEncoding_Cluster) {
-                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal type in NumberToString");
+            IntIndex count = type->SubElementCount();
+            if (destEncoding != kEncoding_Cluster || count != destType->SubElementCount()) {
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Type mismatch in NumberToString");
                 return false;
             }
-            IntIndex count = type->SubElementCount();
             Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();;
             AQBlock1 *pDestElement = (AQBlock1*)pDestData;
             Int32 i = 0;
