@@ -1,0 +1,20 @@
+NumberToBooleanArray 4 (false false true false false false false false false false false false false false false false)
+BooleanArrayToNumber 4
+BooleanArrayToNumber (true false true true) FD
+BooleanArrayToNumber (true true true false) 7
+BooleanArrayToNumber (true false true true) FFFD
+BooleanArrayToNumber (true true true false) 7
+BooleanArrayToNumber (true false true true) D
+BooleanArrayToNumber (true true true false) 7
+BooleanArrayToNumber (true false true true) FFFFFFFFFFFFFFFD
+BooleanArrayToNumber (true true true false) 7
+NumberToBooleanArray -3 (true false true true true true true true)
+BooleanArrayToNumber -3
+NumberToBooleanArray -4 (false false true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true true)
+BooleanArrayToNumber -4
+NumberToBooleanArray 2AAAAAAAA (false true false true false true false true false true false true false true false true false true false true false true false true false true false true false true false true false true false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false)
+BooleanArrayToNumber 2AAAAAAAA
+NumberToBooleanArray 2.700000 (true true false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false)
+BooleanArrayToNumber 3
+NumberToBooleanArray -2147483648 (false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false false true)
+BooleanArrayToNumber -2147483648
