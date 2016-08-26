@@ -2296,7 +2296,7 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
             AQBlock1 *pDestElement = pDestArray->BeginAt(0);
             while (count > 0) {
                 StringRef string = *(StringRef*)pDestElement;
-                NumberToExponentialStringInternal(subType, pElement, minWidth, precision, string);
+                (*formatCallback)(subType, pElement, minWidth, precision, string);
                 pElement += elementSize;
                 pDestElement += destElementSize;
                 --count;
