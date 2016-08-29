@@ -447,6 +447,52 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     }
     return _NextInstruction();
 }
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(ArraySubset2D, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex, IntIndex, IntIndex)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(1);
+    ArrayDimensionVector tempDimensionLengths;
+    Int32 rank = arrayOut->Rank();
+
+    IntIndex idx0 = (_ParamPointer(2) != null) ? _Param(2) : 0;
+    // Coerce index to non-negative integer
+    idx0 = Max(idx0, 0);
+    IntIndex idx1 = (_ParamPointer(4) != null) ? _Param(4) : 0;
+    // Coerce index to non-negative integer
+    idx1 = Max(idx1, 0);
+
+    if (rank != 2 || (arrayOut == arrayIn && (idx0 != 0 || idx1 != 0))) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArraySubset inplace");
+        return THREAD_EXEC()->Stop();
+    }
+
+    // Calculate count from idx to end of array
+    IntIndex maxLen = arrayIn->DimensionLengths()[1] - idx0;
+    maxLen = Max(maxLen, 0);
+
+    IntIndex len = (_ParamPointer(3) != null) ? _Param(3) : maxLen;
+    len = Max(len, 0);
+    len = Min(len, maxLen);
+
+    maxLen = arrayIn->DimensionLengths()[0] - idx1;
+    maxLen = Max(maxLen, 0);
+
+    IntIndex len1 = (_ParamPointer(5) != null) ? _Param(5) : maxLen;
+    len1 = Max(len1, 0);
+    len1 = Min(len1, maxLen);
+
+    tempDimensionLengths[0] = len1;
+    tempDimensionLengths[1] = len;
+    tempDimensionLengths[2] = idx1;
+    tempDimensionLengths[3] = idx0;
+    arrayOut->ResizeDimensions(rank, tempDimensionLengths, false);
+    if (len > 0 && len1 > 0 && idx0 < arrayIn->DimensionLengths()[1] && idx1 < arrayIn->DimensionLengths()[0] && arrayOut != arrayIn) {
+        ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), arrayIn->BeginAtND(2, tempDimensionLengths+2), tempDimensionLengths, arrayIn->SlabLengths(), arrayOut->Rank(), arrayIn->Rank());
+    }
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, void)
 {
@@ -1263,6 +1309,7 @@ DEFINE_VIREO_BEGIN(Array)
     //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubset2D, "p(o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(Array) i(Array))")

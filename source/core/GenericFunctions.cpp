@@ -1314,7 +1314,7 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
 // Copy a sourceRank-D source array into a destRank-D dest array of type elementType which has already been resized to accommodate.
 // Inner dimension lengths of source array can be less than dest array dimension lengths.
 // Top level call must pass destRank >= 2, and sourceRank == destRank or destRank-1.
-static AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
+AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
     if (sourceRank == 1) {
         if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
             return NULL;
