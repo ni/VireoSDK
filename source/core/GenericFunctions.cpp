@@ -2145,6 +2145,12 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(IsGT, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsLE, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsGE, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(IsEQ0, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsNE0, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsLT0, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsGT0, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsLE0, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsGE0, "GenericUnOp", EmitGenericUnOpInstruction);
 
     DEFINE_VIREO_GENERIC(Add, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Sub, "GenericBinOp", EmitGenericBinOpInstruction);
@@ -2223,6 +2229,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(GenericBinOp))");
+    // EQ0. NE0, etc. do not have compare aggregartes mode; no accumulators needed
 
     // Vector operations
     DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(Array) i(Array) o(Array) s(Instruction))" )
