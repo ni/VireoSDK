@@ -257,7 +257,13 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
-	DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+    DECLARE_VIREO_PRIMITIVE2( IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsLE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <= 0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
+    DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
 		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
 	DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,				\
@@ -279,6 +285,12 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsLT0, TYPE, "p(i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsLE0, TYPE, "p(i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsEQ0, TYPE, "p(i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsNE0, TYPE, "p(i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsGT0, TYPE, "p(i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsGE0, TYPE, "p(i("#TYPE") o(Boolean))") \
 	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
 	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")

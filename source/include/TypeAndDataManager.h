@@ -1065,6 +1065,8 @@ public:
     T* ObjBegin() { return (T*) RawObj(); }
 };
 
+AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank);
+    
 //------------------------------------------------------------
 //! Vireo string type. Must be allocated by TypeManager not raw C++
 class String : public TypedArray1D< Utf8Char >

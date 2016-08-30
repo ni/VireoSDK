@@ -20,6 +20,10 @@ define(videf1 dv(.VirtualInstrument (
         e(a(.Int32 *) local6)
         e(a(.Int32 *) local7)
         e(a(.Int32 *) local8)
+	e(dv(a(.Int32 * *) ((1 2 3 4)(3 4 5 6)(7 8 9 10)( 4 3 2 1))) arrfoo)
+	e(a(.Int32 * *) arrbar)
+	e(dv(a(.String * *) (("hello" "world")("abcde" "fg")("xyzzy" ""))) arrstr)
+	e(a(.String * *) arrstrout)
     )
     clump(1 
         ArraySubset(local1 c1 * c0)
@@ -38,6 +42,10 @@ define(videf1 dv(.VirtualInstrument (
         Println(local3)
         Println(local2)
         Println(local1)
+ 	ArraySubset(arrbar arrfoo 2 3 1 2)
+	Println(arrbar)
+ 	ArraySubset(arrstrout arrstr 1 2 0 1)
+	Println(arrstrout)
 //--- end of vi
     )
 )))
