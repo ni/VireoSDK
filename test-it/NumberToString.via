@@ -74,6 +74,12 @@ define(Test dv(.VirtualInstrument (
     NumberToEngineeringString(d123 2 * outString)
     Printf("NumberToEngineeringString %s %d %d '%s'\n" d123 2 * outString)
 
+    NumberToDecimalString(d123 2 outString)
+    Printf("NumberToDecimalString %s %d '%s'\n" d123 * outString)
+
+    NumberToDecimalString(clustValue 8 clustString)
+    Printf("NumberToDecimalString %s %d '%s'\n" clustValue 8 clustString)
+
     NumberToHexString(d123 2 outString)
     Printf("NumberToHexString %s %d '%s'\n" d123 * outString)
 

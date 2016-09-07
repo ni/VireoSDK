@@ -2247,6 +2247,15 @@ void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth
     format.AliasAssignCStr(formatBuffer);
     Format(&format, 1, arguments, string);
 }
+void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+{
+    StaticTypeAndData arguments[1] = {{ type, pData }};
+    SubString format;
+    char formatBuffer[32];
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dd", minWidth);
+    format.AliasAssignCStr(formatBuffer);
+    Format(&format, 1, arguments, string);
+}
 void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
@@ -2367,6 +2376,15 @@ VIREO_FUNCTION_SIGNATURE6(NumberToEngineeringString, StaticType, void, Int32, In
     return success ? _NextInstruction() : THREAD_EXEC()->Stop();
 }
 
+VIREO_FUNCTION_SIGNATURE5(NumberToDecimalString, StaticType, void, Int32, StaticType, void)
+{
+    Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
+    Boolean success = NumberToStringInternal(_ParamPointer(0), (AQBlock1*)_ParamPointer(1), minWidth,
+                                             0, _ParamPointer(3), (AQBlock1*)_ParamPointer(4),
+                                             NumberToDecimalStringInternal);
+    return success ? _NextInstruction() : THREAD_EXEC()->Stop();
+}
+
 VIREO_FUNCTION_SIGNATURE5(NumberToHexString, StaticType, void, Int32, StaticType, void)
 {
     Int32 minWidth = _ParamPointer(2) ? _Param(2) : 0;
@@ -2413,6 +2431,7 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
     DEFINE_VIREO_FUNCTION(NumberToFloatString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
     DEFINE_VIREO_FUNCTION(NumberToExponentialString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
     DEFINE_VIREO_FUNCTION(NumberToEngineeringString, "p(i(StaticTypeAndData) i(Int32) i(Int32) o(StaticTypeAndData)")
+    DEFINE_VIREO_FUNCTION(NumberToDecimalString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
     DEFINE_VIREO_FUNCTION(NumberToHexString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
     DEFINE_VIREO_FUNCTION(NumberToOctalString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
     DEFINE_VIREO_FUNCTION(NumberToBinaryString, "p(i(StaticTypeAndData) i(Int32) o(StaticTypeAndData)")
