@@ -5,7 +5,7 @@ define(Point c(
 ) )
 
 // A typedef based on another with its own default values.
-define(10x20Point dv(.Point (10 20)))
+define(t10x20Point dv(.Point (10 20)))
 
 define(videf1 dv(.VirtualInstrument (
     c(
@@ -28,8 +28,8 @@ define(videf1 dv(.VirtualInstrument (
         // Here are some examples:        
         e(.Point  defaultPoint)
         e(dv(.Point (4 5)) typedefPoint)
-        e(.10x20Point   customPoint)
-        e(dv(.10x20Point (100 200)) overriddenCustomPoint)
+        e(.t10x20Point   customPoint)
+        e(dv(.t10x20Point (100 200)) overriddenCustomPoint)
 
     )
     clump (1
