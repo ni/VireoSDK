@@ -2081,6 +2081,15 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
                 WriteDoubleToMemory(type, pData, parsedValue);
             } else {
+                Int32 aqSize = type->TopAQSize();
+                if (aqSize < 8) {
+                    // saturate if out of range
+                    if (type->BitEncoding()==kEncoding_S2CInt && (parsedValue & (~0ULL << (aqSize*8)))!=0)
+                        parsedValue = parsedValue > 0 ? (IntMax)(1ULL<<(aqSize*8-1))-1 : (IntMax)(1ULL<<(aqSize*8-1));
+                    else if (type->BitEncoding()==kEncoding_UInt)
+                        if ((parsedValue & (~0ULL << (aqSize*8)))!=0)
+                            parsedValue = ~0ULL >> ((8-aqSize)*8);
+                }
                 WriteIntToMemory(type, pData, parsedValue);
             }
         } else {
@@ -2225,7 +2234,7 @@ void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int3
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
-    snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dG", minWidth, precision);
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dF", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
     Format(&format, 1, arguments, string);
 }
@@ -2252,7 +2261,7 @@ void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, In
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
-    snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dd", minWidth);
+    snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
     format.AliasAssignCStr(formatBuffer);
     Format(&format, 1, arguments, string);
 }
