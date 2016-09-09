@@ -701,7 +701,8 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
 {
     Int64 value = 0, sign = 1;
     EatWhiteSpaces();
-    if (base == 10) { // allow negative other bases?
+    if (base == 10)// allow negative other bases?
+    {
         if (EatChar('-')) {
             sign = -1;
         } else {

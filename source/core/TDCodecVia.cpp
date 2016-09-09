@@ -2050,6 +2050,22 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     parser.ParseData(type, _ParamPointer(2));
     return _NextInstruction();
 }
+ 
+// saturate (pin) value if out of range
+static void SaturateValue(TypeRef type, Int64 &value, Boolean sourceIsFloat) {
+    Int32 aqSize = type->TopAQSize();
+    if (aqSize < 8) {
+        // saturate if out of range
+        Boolean isSigned = type->BitEncoding()!=kEncoding_UInt;
+        Int32 maskSignBitAdjust = sourceIsFloat || !isSigned;
+        IntMax mask = ~0ULL << (aqSize*8-maskSignBitAdjust), upperBits = (value & mask);
+        if (isSigned && upperBits!=0 && upperBits != mask)
+            value = value > 0 ? (IntMax)(1ULL<<(aqSize*8-1))-1 : (IntMax)(1ULL<<(aqSize*8-1));
+        else if (!isSigned && (value & (~0ULL << (aqSize*8)))!=0)
+                value = ~0ULL >> ((8-aqSize)*8);
+    }
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
 {
@@ -2081,16 +2097,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
                 WriteDoubleToMemory(type, pData, parsedValue);
             } else {
-                Int32 aqSize = type->TopAQSize();
-                if (aqSize < 8) {
-                    // saturate if out of range
-                    IntMax mask = ~0ULL << (aqSize*8-1), upperBits = (parsedValue & mask);
-                    if (type->BitEncoding()==kEncoding_S2CInt && upperBits!=0 && upperBits != mask)
-                        parsedValue = parsedValue > 0 ? (IntMax)(1ULL<<(aqSize*8-1))-1 : (IntMax)(1ULL<<(aqSize*8-1));
-                    else if (type->BitEncoding()==kEncoding_UInt)
-                        if ((parsedValue & (~0ULL << (aqSize*8)))!=0)
-                            parsedValue = ~0ULL >> ((8-aqSize)*8);
-                }
+                SaturateValue(type, parsedValue, true);
                 WriteIntToMemory(type, pData, parsedValue);
             }
         } else {
@@ -2124,12 +2131,32 @@ static void BaseStringToNumber(Int32 base, StringRef string, Int32 beginOffset, 
     Boolean success;
 
     if (pData) { // If an argument is passed for the output value, read a value into it.
-        Int64 parsedValue = 0;
+        Int64 parsedValue = 0, sign = 1;
+        if (substring.EatChar('-'))
+            sign = -1;
         success = substring.ReadIntWithBase(&parsedValue, base);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
+                parsedValue *= sign;
                 WriteDoubleToMemory(type, pData, parsedValue);
             } else {
+                if (sign < 0) {
+                    switch (type->TopAQSize()) { // sign-extend
+                        case 1:
+                            parsedValue = (Int64)(Int8)parsedValue;
+                            break;
+                        case 2:
+                            parsedValue = (Int64)(Int16)parsedValue;
+                            break;
+                        case 4:
+                            parsedValue = (Int64)(Int32)parsedValue;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                SaturateValue(type, parsedValue, false);
+                parsedValue *= sign;
                 WriteIntToMemory(type, pData, parsedValue);
             }
         } else {
@@ -2203,7 +2230,9 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
                 WriteDoubleToMemory(type, pData, parsedValue);
             } else {
-                WriteIntToMemory(type, pData, parsedValue);
+                Int64 value = parsedValue;
+                SaturateValue(type, value, true);
+                WriteIntToMemory(type, pData, value);
             }
         } else {
             if (pDefault) {
