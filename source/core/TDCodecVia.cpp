@@ -2084,7 +2084,8 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
                 Int32 aqSize = type->TopAQSize();
                 if (aqSize < 8) {
                     // saturate if out of range
-                    if (type->BitEncoding()==kEncoding_S2CInt && (parsedValue & (~0ULL << (aqSize*8)))!=0)
+                    IntMax mask = ~0ULL << (aqSize*8-1), upperBits = (parsedValue & mask);
+                    if (type->BitEncoding()==kEncoding_S2CInt && upperBits!=0 && upperBits != mask)
                         parsedValue = parsedValue > 0 ? (IntMax)(1ULL<<(aqSize*8-1))-1 : (IntMax)(1ULL<<(aqSize*8-1));
                     else if (type->BitEncoding()==kEncoding_UInt)
                         if ((parsedValue & (~0ULL << (aqSize*8)))!=0)

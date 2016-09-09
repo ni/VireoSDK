@@ -22,6 +22,7 @@ define(Test dv(.VirtualInstrument (
     //--
     e(.Int32 value)
     e(.Int32 value2)
+    e(.Int8 i8value)
     e(dv(.Int16 4) width)
     e(dv(.Int32 12) defaultVal)
     e(dv(.Double 1.2) dDefaultVal)
@@ -70,6 +71,17 @@ define(Test dv(.VirtualInstrument (
     DecimalStringToNumber(cString offset * * value)
     Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
 
+    Copy(0 offset)
+    DecimalStringToNumber('65534' 0 92 endoffset i8value )
+    Printf("DecStringToNumber '%s' %d %d %d\n" '65534' offset endoffset i8value)
+
+    Copy(0 offset)
+    DecimalStringToNumber('-89' 0 92 endoffset i8value )
+    Printf("DecStringToNumber '%s' %d %d %d\n" '-89' offset endoffset i8value)
+
+    Copy(0 offset)
+    DecimalStringToNumber('-189' 0 92 endoffset i8value )
+    Printf("DecStringToNumber '%s' %d %d %d\n" '-189' offset endoffset i8value)
     //---------------------------------------------------------
 
     // String to Double
