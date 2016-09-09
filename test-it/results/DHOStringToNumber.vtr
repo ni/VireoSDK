@@ -4,6 +4,9 @@ DecStringToNumber '123 456 abC' 0 3 123
 DecStringToNumber '123 456 abC' 3 7 456
 DecStringToNumber '123 456 abC' 7 7 12
 DecStringToNumber '123 456 abC' 7 7 0
+DecStringToNumber '65534' 0 5 127
+DecStringToNumber '-89' 0 3 -89
+DecStringToNumber '-189' 0 4 -128
 DecStringToNumber 'a373' 0 0 20.000000
 DecStringToNumber '('123' '456')' 0 3 (123 456)
 DecStringToNumber '('234' '567')' 0 3 (234 567)

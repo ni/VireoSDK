@@ -30,8 +30,10 @@ define(Test dv(.VirtualInstrument (
     //-------------------
     e(dv(.Double 1.5) d1_5)
     e(dv(.Double 12345.6) d123)
+    e(dv(.Double -287.3) n287)
     e(dv(.Single 12345.6) s123)
     e(dv(.Double 1.76) d1_76)
+    e(dv(.Double -216.01) n216)
     e(dv(.Int64 0xdeaddeadbeef) i64DB)
     e(dv(.Int64 -5) i64Neg)
     e(dv(.Int32 -17) i32Neg)
@@ -71,11 +73,20 @@ define(Test dv(.VirtualInstrument (
     NumberToFloatString(d123 7 * outString)
     Printf("NumberToFloatString %s %d %d '%s'\n" d123 7 * outString)
 
+    NumberToFloatString(n287 5 0 outString )
+    Printf("NumberToFloatString %s %d %d '%s'\n" n287 5 0 outString)
+
     NumberToEngineeringString(d123 2 * outString)
     Printf("NumberToEngineeringString %s %d %d '%s'\n" d123 2 * outString)
 
+    NumberToEngineeringString(n216 10 0 outString)
+    Printf("NumberToEngineeringString %s %d %d '%s'\n" n216 10 0 outString)
+
     NumberToDecimalString(d123 2 outString)
     Printf("NumberToDecimalString %s %d '%s'\n" d123 * outString)
+
+    NumberToDecimalString(4.6 3 outString)
+    Printf("NumberToDecimalString %s %d '%s'\n" 4.6 3 outString)
 
     NumberToDecimalString(clustValue 8 clustString)
     Printf("NumberToDecimalString %s %d '%s'\n" clustValue 8 clustString)
