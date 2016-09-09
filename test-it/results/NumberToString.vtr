@@ -6,7 +6,7 @@ NumberToExponentialString (-123 9.998E+11) 11 2 ('   -1.23E+2' '   1.00E+12')
 NumberToFloatString 12345.6 7 0 '12345.600000'
 NumberToEngineeringString 12345.6 2 0 '12.345600E+3'
 NumberToDecimalString 12345.6 0 '12346'
-NumberToDecimalString (-123 9.998E+11) 8 '('-0000123' '999800000000')'
+NumberToDecimalString (-123 9.998E+11) 8 '('    -123' '999800000000')'
 NumberToHexString 12345.6 0 '303A'
 NumberToHexString (-123 9.998E+11) 8 '('FFFFFF85' 'E8C8B94E00')'
 NumberToHexString 4 8 '00000004'

@@ -482,7 +482,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                         Int32 precision = fOptions.Precision;
-                        if (precision>0 && fOptions.EngineerNotation) {
+                        if (precision>=0 && fOptions.EngineerNotation) {
                             Int32 exponent = 0;
                             if (tempDouble != 0) {
                                 Double absDouble = tempDouble;
