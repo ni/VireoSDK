@@ -34,10 +34,11 @@ define(Test dv(.VirtualInstrument (
     e(.Double dx)
     e(.Double dy)
     e(.Double dvalue)
+    e(.Int32 ivalue)
     e(.Double dvalue2)
     e(.String outString)
     e(dv(.String '123 456 abc')  cString)
-    e(dv(.String '1.23 4.56 6.78')  dString)
+    e(dv(.String '1.23 4.56 6.78 3.456e9')  dString)
     e(dv(.Int16 4) width)
     e(dv(.ComplexDouble (1.2 2.3)) cDouble)
 
@@ -118,11 +119,16 @@ define(Test dv(.VirtualInstrument (
     Println(dvalue)
 
     Copy(endoffset offset)
+    ExponentialStringToNumber(dString offset dDefaultVal endoffset ivalue)
+    Println(offset)
+    Println(endoffset)
+    Println(ivalue)
+
+    Copy(endoffset offset)
     ExponentialStringToNumber(dString offset dDefaultVal endoffset dvalue)
     Println(offset)
     Println(endoffset)
     Println(dvalue)
-
     //---------------------------------------------------------
 
     DecimalStringToNumber(stringa373 * default20 local2 local1)

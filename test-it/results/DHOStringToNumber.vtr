@@ -11,6 +11,10 @@ DecStringToNumber 'a373' 0 0 20.000000
 DecStringToNumber '('123' '456')' 0 3 (123 456)
 DecStringToNumber '('234' '567')' 0 3 (234 567)
 HexStringToNumber 'ffffffe' 5 7 254
+HexStringToNumber '7B2' 0 3 127
+HexStringToNumber 'FEED' 0 4 -275
+HexStringToNumber '-FFAB' 0 5 85
+HexStringToNumber 'FFAB' 0 4 65451
 OctalStringToNumber '17890' 0 2 15
 BinaryStringToNumber '   111fffffff' 0 5 7
 DecStringToNumber '('123' 'x456')' 0 0 (123 12)

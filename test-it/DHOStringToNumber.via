@@ -23,6 +23,8 @@ define(Test dv(.VirtualInstrument (
     e(.Int32 value)
     e(.Int32 value2)
     e(.Int8 i8value)
+    e(.Int16 i16value)
+    e(.UInt16 u16value)
     e(dv(.Int16 4) width)
     e(dv(.Int32 12) defaultVal)
     e(dv(.Double 1.2) dDefaultVal)
@@ -100,6 +102,22 @@ define(Test dv(.VirtualInstrument (
     Copy(5 offset)
     HexStringToNumber('ffffffe'  offset defaultVal endoffset value)
     Printf("HexStringToNumber 'ffffffe' %d %d %d\n" offset endoffset value)
+
+    Copy(0 offset)
+    HexStringToNumber('7B2' 0 92 endoffset i8value )
+    Printf("HexStringToNumber '%s' %d %d %d\n" '7B2' offset endoffset i8value)
+
+    Copy(0 offset)
+    HexStringToNumber('FEED' 0 92 endoffset i16value )
+    Printf("HexStringToNumber '%s' %d %d %d\n" 'FEED' offset endoffset i16value)
+
+    Copy(0 offset)
+    HexStringToNumber('-FFAB' 0 92 endoffset i16value )
+    Printf("HexStringToNumber '%s' %d %d %d\n" '-FFAB' offset endoffset i16value)
+
+    Copy(0 offset)
+    HexStringToNumber('FFAB' 0 92 endoffset u16value )
+    Printf("HexStringToNumber '%s' %d %d %u\n" 'FFAB' offset endoffset u16value)
 
     Copy(0 offset)
     OctalStringToNumber('17890'  offset defaultVal endoffset value)

@@ -577,15 +577,13 @@ TokenTraits SubString::ReadToken(SubString* token)
                     tokenTraits = TokenTraits_Integer;
                     break;
                 }
-                if (!idToken.EatChar('.')) {
-                    // Error if next char exists but is not '.'
-                    break;
-                }
-                Int32 fractionDigits = idToken.EatCharsByTrait(kACT_Decimal);
-                if (fractionDigits && idToken.Length() == 0) {
-                    //  Simple nn.nn format with no exponent, exit
-                    tokenTraits = TokenTraits_IEEE754;
-                    break;
+                if (idToken.EatChar('.')) {
+                    Int32 fractionDigits = idToken.EatCharsByTrait(kACT_Decimal);
+                    if (fractionDigits && idToken.Length() == 0) {
+                        //  Simple nn.nn format with no exponent, exit
+                        tokenTraits = TokenTraits_IEEE754;
+                        break;
+                    }
                 }
                 if (!idToken.EatChar('e') && !idToken.EatChar('E')) {
                     // Error if more characters remain and its not an exponent
@@ -602,11 +600,12 @@ TokenTraits SubString::ReadToken(SubString* token)
                 }
                 // If it falls throuh then the token is not a valid number.
             } while(false);
+            if (tokenTraits == TokenTraits_Unrecognized && idToken.Length() > 0)
+                _begin = idToken._begin;
         } else {
             tokenTraits = TokenTraits_SymbolName;
         }
     }
-    
     if (_begin > initialBegin) {
         token->AliasAssign(initialBegin, _begin);
     } else {
@@ -701,7 +700,8 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
 {
     Int64 value = 0, sign = 1;
     EatWhiteSpaces();
-    if (base == 10) { // allow negative other bases?
+    if (base == 10)// allow negative other bases?
+    {
         if (EatChar('-')) {
             sign = -1;
         } else {
