@@ -409,7 +409,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
         if (!argType->IsA(arrayIn->ElementType())) {
             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
             // if no index wired, column becomes disabled
-            if(!wireRow && !wireCol) {col = -1;}
+            if(!wireCol) {col = -1;}
             replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);
         } else {
             if(!wireRow && !wireCol) {row > 0? row-- : row = 0;}
