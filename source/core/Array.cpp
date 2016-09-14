@@ -943,7 +943,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
     IntIndex left = 0;
     IntIndex right = arrayIn->Length()-1;
     if(left > right) {
-        *(Double*)_ParamPointer(0) = std::numeric_limits<double>::quiet_NaN();
+        *(Double*)_ParamPointer(0) = NAN;
         return _NextInstruction();
     }
     if (arrayIn->ElementType()->IsCluster()) {
