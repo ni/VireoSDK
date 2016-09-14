@@ -1015,7 +1015,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
     TypeRef elementType = arrayIn->ElementType();
     Double left, right;
     Double leftValue, rightValue;
-    if(elementType->IsCluster()) {
+    Boolean isCluster = elementType->IsCluster();
+    if(isCluster) {
         TypeRef elementXType = elementType->GetSubElement(0);
         TypeRef elementYType = elementType->GetSubElement(1);
         IntIndex fieldOffsetX = elementXType->ElementOffset();
@@ -1025,7 +1026,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
             void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;
             Double x = ReadDoubleFromMemory(elementXType, xPtr);
             Double y = ReadDoubleFromMemory(elementYType, yPtr);
-            if (i == startIndex) { right = left = i;}
+            if (i == startIndex) { right = left = x;} //i
             if (y < thresholdY) {
                 left = x;
                 leftValue = y;
@@ -1054,11 +1055,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
         }
     }
     if (left == right) {
-        if(left == startIndex) {
-            _Param(0) = startIndex;
-        }else {
-            _Param(0) = arrayIn->Length() - 1;
-        }
+        _Param(0) = left;
     } else {
         if (leftValue == rightValue) {
             _Param(0) = (left + right)/2;

@@ -1,0 +1,6 @@
+
+For ((1 4) (2 5) (3 5) (4 6)), y = '3', x value is '1'. Correct value for x is '1'
+
+For ((1 4) (2 5) (3 5) (4 6)), y = '8', x value is '4'. Correct value for x is '4'
+
+Test pass: true
