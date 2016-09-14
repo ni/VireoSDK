@@ -120,6 +120,7 @@
                 "InplaceStringConcatenate.via",
                 "InRangeAndCoerce.via",
                 "InRangeAndCoerceBug.via",
+                "Interpolate1DArray.via",
                 "JSONArray.via",
                 "KeyValuePairDefinitions.via",
                 "Literals.via",

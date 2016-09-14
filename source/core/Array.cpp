@@ -942,7 +942,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
     Double fractionalIndex = ReadDoubleFromMemory(_ParamPointer(2), _ParamPointer(3));
     IntIndex left = 0;
     IntIndex right = arrayIn->Length()-1;
-    if(left == right) {
+    if(left > right) {
+        *(Double*)_ParamPointer(0) = std::numeric_limits<double>::quiet_NaN();
         return _NextInstruction();
     }
     if (arrayIn->ElementType()->IsCluster()) {
@@ -965,24 +966,30 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
             Double x = ReadDoubleFromMemory(elementXType, xPtr);
             Double y = ReadDoubleFromMemory(elementYType, yPtr);
             if (i == 0) {
-                leftX = x;
-                leftY = y;
-            } else if (i == 1){
+                leftX = rightX = x;
+                leftY = rightY = y;
+            } else {
+                leftX = rightX;
+                leftY = rightY;
                 rightX = x;
                 rightY = y;
-            } else {
-                if(rightX < fractionalIndex) {
-                    leftX = rightX;
-                    leftY = rightY;
-                    rightX = x;
-                    rightY = y;
-                } else {
-                    break;
-                }
             }
+            if (fractionalIndex <= x)
+                break;
         }
-        *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
+        if (fractionalIndex < leftX)
+            fractionalIndex = leftX;
+        else if (fractionalIndex > rightX)
+            fractionalIndex = rightX;
+        if (rightX == leftX)
+            *(Double*)_ParamPointer(0) = leftY;
+        else
+            *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
     } else {
+        if (fractionalIndex < 0)
+            fractionalIndex = 0;
+        else if (fractionalIndex > right)
+            fractionalIndex = right;
         while (right - left > 1) {
             if (left + 1 <= fractionalIndex) { left++; }
             if (right - 1 > fractionalIndex) { right--; }

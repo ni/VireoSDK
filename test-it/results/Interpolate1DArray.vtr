@@ -1,0 +1,15 @@
+
+Value is: '1' for index(-1), correct value is '1'
+
+Value is: '3' for index(4), correct value is '3'
+
+Value is: '1.5' for index(0.5), correct value is '1.5
+Value is: '2.5' for index(1.5), correct value is '2.5
+Value is: '1' for index(-1), correct value is '1'
+
+Value is: '3' for index(4), correct value is '3'
+
+Value is: '1.5' for index(1.5), correct value is '1.5
+Value is: '2.7' for index(2.7), correct value is '2.7'
+
+Test Pass: true
