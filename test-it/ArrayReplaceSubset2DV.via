@@ -30,6 +30,9 @@ define(vi dv(.VirtualInstrument (
         Printf("replace 3 * in %s\n" g7)
         ArrayReplaceSubset2DV(local11 g7 3 * g1)
         Println(local11)
+        Printf("replace * 1 in %s\n" g7)
+        ArrayReplaceSubset2DV(local11 g7 * 1 g1)
+        Println(local11)
 
         Printf("replace 4 0 in %s\n" g7)
         ArrayReplaceSubset2DV(local11 g7 4 0 elem)

@@ -409,7 +409,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
         if (!argType->IsA(arrayIn->ElementType())) {
             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
             // if no index wired, column becomes disabled
-            if(!wireRow && !wireCol) {col = -1;}
+            if(!wireCol) {col = -1;}
             replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);
         } else {
             if(!wireRow && !wireCol) {row > 0? row-- : row = 0;}
@@ -942,7 +942,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
     Double fractionalIndex = ReadDoubleFromMemory(_ParamPointer(2), _ParamPointer(3));
     IntIndex left = 0;
     IntIndex right = arrayIn->Length()-1;
-    if(left == right) {
+    if(left > right) {
+        *(Double*)_ParamPointer(0) = NAN;
         return _NextInstruction();
     }
     if (arrayIn->ElementType()->IsCluster()) {
@@ -965,24 +966,30 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
             Double x = ReadDoubleFromMemory(elementXType, xPtr);
             Double y = ReadDoubleFromMemory(elementYType, yPtr);
             if (i == 0) {
-                leftX = x;
-                leftY = y;
-            } else if (i == 1){
+                leftX = rightX = x;
+                leftY = rightY = y;
+            } else {
+                leftX = rightX;
+                leftY = rightY;
                 rightX = x;
                 rightY = y;
-            } else {
-                if(rightX < fractionalIndex) {
-                    leftX = rightX;
-                    leftY = rightY;
-                    rightX = x;
-                    rightY = y;
-                } else {
-                    break;
-                }
             }
+            if (fractionalIndex <= x)
+                break;
         }
-        *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
+        if (fractionalIndex < leftX)
+            fractionalIndex = leftX;
+        else if (fractionalIndex > rightX)
+            fractionalIndex = rightX;
+        if (rightX == leftX)
+            *(Double*)_ParamPointer(0) = leftY;
+        else
+            *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
     } else {
+        if (fractionalIndex < 0)
+            fractionalIndex = 0;
+        else if (fractionalIndex > right)
+            fractionalIndex = right;
         while (right - left > 1) {
             if (left + 1 <= fractionalIndex) { left++; }
             if (right - 1 > fractionalIndex) { right--; }
@@ -1008,7 +1015,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
     TypeRef elementType = arrayIn->ElementType();
     Double left, right;
     Double leftValue, rightValue;
-    if(elementType->IsCluster()) {
+    Boolean isCluster = elementType->IsCluster();
+    if(isCluster) {
         TypeRef elementXType = elementType->GetSubElement(0);
         TypeRef elementYType = elementType->GetSubElement(1);
         IntIndex fieldOffsetX = elementXType->ElementOffset();
@@ -1018,7 +1026,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
             void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;
             Double x = ReadDoubleFromMemory(elementXType, xPtr);
             Double y = ReadDoubleFromMemory(elementYType, yPtr);
-            if (i == startIndex) { right = left = i;}
+            if (i == startIndex) { right = left = x;} //i
             if (y < thresholdY) {
                 left = x;
                 leftValue = y;
@@ -1047,11 +1055,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
         }
     }
     if (left == right) {
-        if(left == startIndex) {
-            _Param(0) = startIndex;
-        }else {
-            _Param(0) = arrayIn->Length() - 1;
-        }
+        _Param(0) = left;
     } else {
         if (leftValue == rightValue) {
             _Param(0) = (left + right)/2;
