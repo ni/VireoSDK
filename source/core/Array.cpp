@@ -792,7 +792,7 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
 
     if (endIndex <= 0) {
-        return _NextInstruction();
+        endIndex = 0;
     }
     IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
     arrayOut->Resize1D(arrayOutLength);
@@ -807,7 +807,8 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
         deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
     } else if (endIndex - startIndex > 0 ){
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
-    }
+    } else
+        arrayOut->ElementType()->InitData(_ParamPointer(2));
 
     if (endIndex < arrayIn->Length()) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
