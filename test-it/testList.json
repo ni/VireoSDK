@@ -23,6 +23,7 @@
                 "ArrayComparison.via",
                 "ArrayConcatBug.via",
                 "ArrayConcatenateND.via",
+                "ArrayDecimate.via",
                 "ArrayDelete.via",
                 "ArrayDeleteFail.via",
                 "ArrayDemo.via",

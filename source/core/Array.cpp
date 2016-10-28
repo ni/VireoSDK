@@ -1080,6 +1080,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
     TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);
     IntIndex numberOfInput = (_ParamVarArgCount() -1);
     IntIndex length = (*arrayInputs[0])->Length();
+    if (arrayOut->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInterleave invalid array rank");
+        return THREAD_EXEC()->Stop();
+    }
     for(IntIndex i = 0; i < numberOfInput; i++) {
         if (length > (*arrayInputs[i])->Length()) {
             length = (*arrayInputs[i])->Length();
@@ -1090,6 +1094,34 @@ VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
         for(IntIndex k = 0; k < numberOfInput; k++) {
             TypedArrayCoreRef arrayK = *arrayInputs[k];
             arrayOut->ElementType()->CopyData(arrayK->BeginAt(i), arrayOut->BeginAt(i*numberOfInput + k));
+        }
+    }
+    return _NextInstruction();
+}
+
+struct ArrayDecimateParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(TypedArrayCoreRef*, ArrayOutputs[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayDecimate, ArrayDecimateParamBlock)
+{
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    TypedArrayCoreRef **arrayOutputs = _ParamImmediate(ArrayOutputs);
+    IntIndex numberOfOutputs = (_ParamVarArgCount() -1);
+    IntIndex length = arrayIn->Length();
+    IntIndex outLength = length / numberOfOutputs;
+    if (arrayIn->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayDecimate invalid array rank");
+        return THREAD_EXEC()->Stop();
+    }
+    for(IntIndex k = 0; k < numberOfOutputs; k++) {
+        TypedArrayCoreRef arrayK = *arrayOutputs[k];
+        arrayK->Resize1D(outLength);
+        for (IntIndex i = 0; i < outLength; i++) {
+            arrayIn->ElementType()->CopyData(arrayIn->BeginAt(i*numberOfOutputs + k), arrayK->BeginAt(i));
         }
     }
     return _NextInstruction();
@@ -1332,6 +1364,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayInterpolate, "p(o(*) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayThreshold, "p(o(Double) i(Array) i(Double) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInterleave, "p(i(VarArgCount) o(Array) i(Array))")
+    DEFINE_VIREO_FUNCTION(ArrayDecimate, "p(i(VarArgCount) i(Array) o(Array))")
 
     DEFINE_VIREO_FUNCTION(IndexBundleClusterArray, "p(i(VarArgCount) o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(BuildClusterArray, "p(i(VarArgCount) o(Array) i(*))")
