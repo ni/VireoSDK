@@ -2,15 +2,25 @@ define(c0 dv(.Int32 1) )
 define(c1 dv(a(.Int16 *) (1 2 3 4) ) )
 define(c2 dv(a(.Int32 *) (11 22 33 44) ) )
 define(c3 dv(.Int32 5) )
+define(c4 dv(a(.Int32 * *) ((111 122 133 144) (211 222 233 244) ) ))
+define(c5 dv(a(.Int32 * *) ((-11 -22 -33 -44) (-88 -77 -66 -55) ) ))
+define(c6 dv(a(.Int32 *) (-11 -22 -33 -44) ) )
+define(c7 dv(a(.Int32 * * *) (((111 112) (121 122)) ((211 212) (221 222)) ((311 312) (321 322)))))
+
 //---------------------------------------------------
 //VI Definition: Untitled 1
 define(videf1 dv(.VirtualInstrument (
   c(
     e(a(.Int32 *) local1)
     e(a(.Int32 *) local2)
+    e(a(.Int32 * *) localA2D)
+    e(a(.Int32 * * *) localA3D)
   )
   clump(1
 // Use default value for index param (append to end of array)
+    ArrayInsertSubset(localA3D c7 * 0 c5)
+    ArrayInsertSubset(localA3D c7 3 * c5)
+
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertElt(local1 local1 * c3)
@@ -36,6 +46,27 @@ define(videf1 dv(.VirtualInstrument (
     Convert(c2 local2)
     ArrayInsertSubset(local1 local2 c0 local2)
     Println(local1)
+
+    ArrayInsertSubset(localA2D c4 1 1 c6)
+    Println(localA2D)
+
+    ArrayInsertSubset(localA2D c4 1 0 c6)
+    Println(localA2D)
+
+    ArrayInsertSubset(localA2D c4 1 1 c5)
+    Println(localA2D)
+
+    ArrayInsertSubset(localA2D c4 3 1 c5)
+    Println(localA2D)
+
+    ArrayInsertSubset(localA3D c7 3 * c5)
+    Println(localA3D)
+
+    ArrayInsertSubset(localA3D c7 * 0 c5)
+    Println(localA3D)
+
+    ArrayInsertSubset(localA3D c7 1 2 c5)
+    Println(localA3D)
 
     Convert(c1 local1)
     Convert(c2 local2)
