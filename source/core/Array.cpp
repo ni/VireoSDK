@@ -937,21 +937,23 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
     TypedArrayCoreRef arrayIn = _Param(3);
     IntIndex numberOfDimensions = arrayOut->Rank();
     TypeRef deletedPartType = _ParamPointer(1);
-    IntIndex length = (_ParamPointer(4) == NULL)? 1 : _Param(4);
-    IntIndex whichDim = (_ParamPointer(6) == NULL)? 0 : _Param(6);
-    if (whichDim < 0 || whichDim >= numberOfDimensions)
-        return _NextInstruction();
+    IntIndex deletedPortionLength = (_ParamPointer(4) == NULL)? 1 : _Param(4);
+    IntIndex dimensionToDelete = (_ParamPointer(6) == NULL)? 0 : _Param(6);
+    if (dimensionToDelete < 0 || dimensionToDelete >= numberOfDimensions) {
+        dimensionToDelete = 0;
+        deletedPortionLength = 0;
+    }
 
-    IntIndex offset = (_ParamPointer(5) == NULL) ? arrayIn->GetLength(numberOfDimensions-1-whichDim) - length : _Param(5);;
+    IntIndex offset = (_ParamPointer(5) == NULL) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);;
     Int32 rank = arrayIn->Rank();
 
     IntIndex startIndex = offset > 0 ? offset : 0;
-    IntIndex endIndex = offset + length > arrayIn->GetLength(whichDim) ? arrayIn->GetLength(numberOfDimensions-1-whichDim) : offset + length;
+    IntIndex endIndex = offset + deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
 
     if (endIndex <= 0) {
         endIndex = 0;
     }
-    IntIndex arrayOutLength = arrayIn->GetLength(whichDim) - (endIndex - startIndex);
+    IntIndex arrayOutLength = arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - (endIndex - startIndex);
     if (rank == 1) {
         arrayOut->Resize1D(arrayOutLength);
         if (startIndex > 0) {
@@ -968,63 +970,48 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
         } else
             arrayOut->ElementType()->InitData(_ParamPointer(2));
 
-        if (endIndex < arrayIn->GetLength(whichDim)) {
+        if (endIndex < arrayIn->GetLength(0)) {
             arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
         }
     } else {
-   //     if (arrayOut != arrayIn)
-     //       arrayOut->Type()->CopyData(&arrayIn, &arrayOut);
         TypedArrayCoreRef deletedArray = *((TypedArrayCoreRef*)_ParamPointer(2));
         Int32 elementSize = arrayIn->ElementType()->TopAQSize();
-        IntIndex dimensionToDelete = whichDim;
-        if (dimensionToDelete < 0 || dimensionToDelete >= numberOfDimensions) {
-            return _NextInstruction();
-        }
-        IntIndex deletedPortionLength = length;
-        if (deletedPortionLength <= 0 || startIndex < 0){
-            return _NextInstruction();
-        }
         if (deletedArray->Rank() < numberOfDimensions && deletedPortionLength > 1)
             deletedPortionLength = 1;
-        ArrayDimensionVector index, dimensionSize, newLengths, sourceDimLen, sourceSlabLen;
+        ArrayDimensionVector index, dimensionSize, newLengths, deletedArrayDimLen;
         size_t totalNumberOfElements = 1;
         for (Int32 i = 0, j = 0; i < numberOfDimensions; ++i) {
             newLengths[i] = arrayIn->DimensionLengths()[i];
             dimensionSize[i] = arrayIn->DimensionLengths()[numberOfDimensions-1-i];
             if (i == numberOfDimensions-1-dimensionToDelete) {
-                sourceSlabLen[i] = arrayIn->SlabLengths()[i];
-                sourceDimLen[i] = deletedPortionLength;
+                deletedArrayDimLen[i] = deletedPortionLength;
                 if (numberOfDimensions == deletedPartType->Rank())
                     ++j;
-
             } else {
-                sourceSlabLen[i] = arrayIn->SlabLengths()[j];
-                sourceDimLen[i] = arrayIn->DimensionLengths()[j];
+                deletedArrayDimLen[i] = arrayIn->DimensionLengths()[j];
                 ++j;
             }
             totalNumberOfElements *= dimensionSize[i];
+        }
+        if (deletedPortionLength <= 0 || startIndex < 0 || startIndex > dimensionSize[dimensionToDelete]){
+            startIndex = 0;
+            deletedPortionLength = 0;
         }
         if (startIndex > dimensionSize[dimensionToDelete]) {
             return _NextInstruction();
         }
         newLengths[numberOfDimensions-1-dimensionToDelete] -= deletedPortionLength;
-        deletedArray->ResizeDimensions(numberOfDimensions, sourceDimLen, false);
+        deletedArray->ResizeDimensions(numberOfDimensions, deletedArrayDimLen, false);
 
         for (Int32 i = 0; i < numberOfDimensions; i++)
             index[i] = 0;
         if (totalNumberOfElements) {
             AQBlock1 *inputArrayPtr, *deletedArrayPtr, *outputArrayPtr;
             if (arrayIn != arrayOut)
-                arrayOut->ResizeDimensions(numberOfDimensions, newLengths, true);
+                arrayOut->ResizeDimensions(numberOfDimensions, newLengths, false);
             inputArrayPtr = arrayIn->BeginAt(0);
             deletedArrayPtr = deletedArray->RawBegin();
             outputArrayPtr = arrayOut->BeginAt(0);
-#if 0       // we could use this to populate deletedArray, but we might as well do it below as part of the move loop
-            ArrayToArrayCopyHelper(deletedArray->ElementType(), deletedArray->RawBegin(), deletedArray->SlabLengths(),
-                                   arrayIn->BeginAt(0)+startIndex*arrayIn->SlabLengths()[numberOfDimensions-1-dimensionToDelete],
-                                   sourceDimLen, sourceSlabLen,
-                                   numberOfDimensions, numberOfDimensions, true);
-#endif
             UInt32 numberOfElementsInDeletedDimension = 1;
             for (Int32 i = dimensionToDelete + 1; i < numberOfDimensions; ++i)
                 numberOfElementsInDeletedDimension *= dimensionSize[i];

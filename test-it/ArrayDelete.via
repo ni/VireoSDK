@@ -42,6 +42,12 @@ define(videf1 dv(.VirtualInstrument (
         Println(outArrayNeg)
         Println(deletedArrayNeg)
 
+        Println("testing 1d with whichDim arg")
+        //arguments: output deleted input length offset whichDim
+        ArrayDelete(outArray deletedArray c1 2 1 0)
+        Println(outArray)
+        Println(deletedArray)
+
         Println("test 2d-1")
         ArrayDelete(outArray2D deletedArray c2 * 0 0)
         Println(c2)
