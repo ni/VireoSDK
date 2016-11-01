@@ -1,16 +1,21 @@
 define(c1 dv(a(.Int32 *) (1 2 3 4 5) ) )
+define(c2 dv(a(.Int32 * *) ((1 2 3 4 5) (10 11 12 13 14) (20 21 22 23 24)) ))
+define(c3 dv(a(.Int32 * *) ((-1 -2 -3 -4 -5)(1 2 3 4 5) (10 11 12 13 14) (20 21 22 23 24)) ))
 //---------------------------------------------------
 //VI Definition: ArrayDelete.vi
 define(videf1 dv(.VirtualInstrument (
     c(
-         e(a(.Int32 *)     outArray)
+        e(a(.Int32 *)     outArray)
         e(a(.Int32 *)     deletedArray)
         e(dv(.Int32 71) elem)
         e(a(.Int32 *)     outArrayNeg)
         e(a(.Int32 *)     deletedArrayNeg)
         e(dv(.Int32 0) elemNeg)
+        e(a(.Int32 * *)     outArray2D)
+        e(a(.Int32 * *)     deletedArray2D)
     )
     clump(1 
+
         Println("testing array delete")
         //arguments: output deleted input length offset
         ArrayDelete(outArray deletedArray c1 2 1)      
@@ -36,6 +41,37 @@ define(videf1 dv(.VirtualInstrument (
         ArrayDelete(outArrayNeg deletedArrayNeg c1 5 -3)      
         Println(outArrayNeg)
         Println(deletedArrayNeg)
+
+        Println("test 2d-1")
+        ArrayDelete(outArray2D deletedArray c2 * 0 0)
+        Println(c2)
+        Println(outArray2D)
+        Println(deletedArray)
+
+        Println("test 2d-2")
+        ArrayDelete(outArray2D deletedArray2D c2 1 1 1)
+        Println(c2)
+        Println(outArray2D)
+        Println(deletedArray2D)
+
+        Println("test 2d-2 ip")
+        Copy(c3 outArray2D)
+        ArrayDelete(outArray2D deletedArray2D outArray2D 3 * 1)
+        Println(c3)
+        Println(outArray2D)
+        Println(deletedArray2D)
+
+        Println("test 2d-3")
+        ArrayDelete(outArray2D deletedArray2D c2 * * 0)
+        Println(c2)
+        Println(outArray2D)
+        Println(deletedArray2D)
+
+        Println("test 2d-4")
+        ArrayDelete(outArray2D deletedArray2D c2 2 * 1)
+        Println(c2)
+        Println(outArray2D)
+        Println(deletedArray2D)
 //--- end of vi
     )
 )))
