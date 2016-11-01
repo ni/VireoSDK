@@ -98,6 +98,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
     for (IntIndex i = 0; i < numDimensionInputs; i++) {
         IntIndex* pDim = dimensions[i];
         tempDimensionLengths[i] = pDim ? *pDim : 0;
+        if (tempDimensionLengths[i] < 0)
+            tempDimensionLengths[i] = 0;
     }
 
     _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);

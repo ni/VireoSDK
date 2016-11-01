@@ -28,6 +28,7 @@
                 "ArrayDeleteFail.via",
                 "ArrayDemo.via",
                 "ArrayFillNDV.via",
+                "ArrayFillNDVFail.via",
                 "ArrayIndexElt2DV.via",
                 "ArrayIndexEltNDV.via",
                 "ArrayInterpolate.via",
