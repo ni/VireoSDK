@@ -1,0 +1,24 @@
+define (aemp dv(a(.Double *) ()))
+define (ac1 dv(a(.Double *) (1 2 3 4)))
+define (ac2 dv(a(.Double *) (4 5 6)))
+define (ac3 dv(a(.Double *) (7 8 9 10 11)))
+//---------------------------------------------------
+//VI Definition: Function.gvi
+define (_Function%2Egvi dv(.VirtualInstrument (
+    Locals: c(   // Data Space1
+        e(a(.Double *) a)   // VariableArray
+        e(a(.Double * *) a2)   // VariableArray
+    )
+        clump(1 
+         Println("interleave array")        
+         ArrayInterleave(a ac1 ac2 ac3)
+         Println(a)        
+         ArrayInterleave(a ac3 ac2)
+         Println(a)        
+         ArrayInterleave(a ac1 aemp)
+         Println(a)        
+/* Clump Ended. */    )
+)))
+enqueue (_Function%2Egvi)
+//Finished!! :D
+

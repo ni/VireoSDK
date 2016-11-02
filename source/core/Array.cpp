@@ -98,6 +98,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
     for (IntIndex i = 0; i < numDimensionInputs; i++) {
         IntIndex* pDim = dimensions[i];
         tempDimensionLengths[i] = pDim ? *pDim : 0;
+        if (tempDimensionLengths[i] < 0)
+            tempDimensionLengths[i] = 0;
     }
 
     _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);
@@ -511,24 +513,28 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, 
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, TypedArrayCoreRef)
+VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex, TypedArrayCoreRef)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(1);
-    IntIndex arrayInLength = arrayIn->Length();
 
-    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayInLength;
+    IntIndex rankIdx = (_ParamPointer(3) != null) ? _Param(3) : 0;
+    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayIn->DimensionLengths()[arrayIn->Rank()-1-rankIdx];
 
-    TypedArrayCoreRef subArray = _Param(3);
-    IntIndex subArrayLength = subArray->Length();
+    TypedArrayCoreRef subArray = _Param(4);
 
     if (arrayOut == subArray) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayInsertSubset inplace");
         return THREAD_EXEC()->Stop();
     }
 
-    if (0 <= idx && idx <= arrayInLength) {
-        if (arrayOut == arrayIn) {
+    if (arrayIn->Rank()==1) {
+        IntIndex arrayInLength = arrayIn->Length();
+        IntIndex subArrayLength = subArray->Length();
+        if (0 > idx && idx > arrayInLength) {
+            arrayOut->Type()->CopyData(&arrayIn, &arrayOut);
+        }
+        else if (arrayOut == arrayIn) {
             arrayOut->Insert1D(idx, subArrayLength, subArray->BeginAt(0));
         } else {
             arrayOut->Resize1D(arrayInLength + subArrayLength);
@@ -548,11 +554,145 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
                                               arrayOut->BeginAt(idx + subArrayLength),
                                               arrayInLength - idx);
         }
+    } else {
+        if (arrayOut != arrayIn)
+            arrayOut->Type()->CopyData(&arrayIn, &arrayOut);
+        Int32 elementSize = arrayOut->ElementType()->TopAQSize();
+        IntIndex startIndex = idx;
+        IntIndex dimensionToInsert = rankIdx;
+        IntIndex numberOfDimensions = arrayOut->Rank();
+        if (dimensionToInsert < 0 || dimensionToInsert >= numberOfDimensions) {
+            return _NextInstruction();
+        }
+        IntIndex insertedPortionLength = subArray->Rank() == numberOfDimensions ? subArray->GetLength(numberOfDimensions-1-dimensionToInsert) : 1;
+        if (insertedPortionLength <= 0 || startIndex < 0){
+            return _NextInstruction();
+        }
+
+        ArrayDimensionVector index, dimensionSize, newLengths, sourceDimLen, sourceSlabLen;
+        size_t totalNumberOfElements = 1;
+        for (Int32 i = 0, j = 0; i < numberOfDimensions; ++i) {
+            newLengths[i] = arrayOut->DimensionLengths()[i];
+            dimensionSize[i] = arrayOut->DimensionLengths()[numberOfDimensions-1-i];
+            if (numberOfDimensions == subArray->Rank()) {
+                sourceSlabLen[i] = subArray->SlabLengths()[i];
+                sourceDimLen[i] = subArray->DimensionLengths()[i];
+            }
+            else {
+                if (i == numberOfDimensions-1-dimensionToInsert) {
+                    sourceSlabLen[i] = subArray->SlabLengths()[j];
+                    sourceDimLen[i] = 1;
+                } else {
+                    sourceSlabLen[i] = subArray->SlabLengths()[j];
+                    sourceDimLen[i] = subArray->DimensionLengths()[j];
+                    if (sourceDimLen[i] > newLengths[i])
+                        sourceDimLen[i] = newLengths[i];
+                    ++j;
+                }
+            }
+            totalNumberOfElements *= dimensionSize[i];
+        }
+        if (startIndex > dimensionSize[dimensionToInsert]) {
+            return _NextInstruction();
+        }
+        newLengths[numberOfDimensions-1-dimensionToInsert] += insertedPortionLength;
+        arrayOut->ResizeDimensions(numberOfDimensions, newLengths, true);
+
+        dimensionSize[dimensionToInsert] += insertedPortionLength;
+        size_t totalNumberOfElementsAfterInsertion = 1;
+        for (Int32 i = 0; i < numberOfDimensions; ++i) {
+            index[i] = dimensionSize[i]-1;
+            totalNumberOfElementsAfterInsertion *= dimensionSize[i];
+        }
+        if (totalNumberOfElements) {
+            AQBlock1 *arrayPtr, *sourcePtr, *destinationPtr;
+            arrayPtr = arrayOut->BeginAt(0);
+            sourcePtr = arrayPtr + totalNumberOfElements * elementSize;
+            destinationPtr = arrayPtr + totalNumberOfElementsAfterInsertion * elementSize;
+            Int32 numberOfElementsInInsertedDimension = 1;
+            for (Int32 i = dimensionToInsert + 1; i < numberOfDimensions; ++i)
+                numberOfElementsInInsertedDimension *= dimensionSize[i];
+
+            // startIndex cannot be < 0 (we would have returned an error), but can be == 0
+            size_t numberOfElementsBeforeInserted = startIndex * numberOfElementsInInsertedDimension;
+            size_t bytesBeforeInserted = numberOfElementsBeforeInserted * elementSize;
+            size_t numberOfElementsToBeInserted = insertedPortionLength * numberOfElementsInInsertedDimension;
+            size_t bytesToBeInserted = numberOfElementsToBeInserted * elementSize;
+            size_t numberOfElementsAfterInserted = 0;
+            size_t bytesAfterInserted = 0;
+            if (dimensionSize[dimensionToInsert] > (startIndex + insertedPortionLength)) {
+                numberOfElementsAfterInserted = (dimensionSize[dimensionToInsert] - (startIndex + insertedPortionLength)) * numberOfElementsInInsertedDimension;
+                bytesAfterInserted = numberOfElementsAfterInserted * elementSize;
+            }
+            Int32 currentDimension;
+            do {
+                if (bytesAfterInserted)
+                    memmove(destinationPtr -= bytesAfterInserted, sourcePtr -= bytesAfterInserted, bytesAfterInserted);
+                memset(destinationPtr -= bytesToBeInserted, 0, bytesToBeInserted);
+                if (bytesBeforeInserted) {
+                    memmove(destinationPtr -= bytesBeforeInserted, sourcePtr -= bytesBeforeInserted,  bytesBeforeInserted);
+                }
+                currentDimension = dimensionToInsert;
+                while (--currentDimension >= 0 && index[currentDimension]-- == 0)
+                    index[currentDimension] = dimensionSize[currentDimension]-1;
+            } while (currentDimension >= 0);
+            ArrayToArrayCopyHelper(arrayOut->ElementType(),
+                                                 arrayOut->RawBegin()+startIndex*arrayOut->SlabLengths()[numberOfDimensions-1-dimensionToInsert],
+                                                 arrayOut->SlabLengths(), subArray->BeginAt(0), sourceDimLen, sourceSlabLen,
+                                                 numberOfDimensions, numberOfDimensions, true);
+            if (destinationPtr != arrayPtr) {
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInsert wild ptr!");
+                return THREAD_EXEC()->Stop();
+            }
+        }
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(1);
+    IntIndex arrayInLength = arrayIn->Length();
+
+    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayInLength;
+
+    TypedArrayCoreRef subArray = _Param(3);
+    IntIndex subArrayLength = subArray->Length();
+    if (arrayOut->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInsertSubset needs dimNum arg for 2-D or higher arrays");
+        return THREAD_EXEC()->Stop();
+    }
+    if (arrayOut == subArray) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArrayInsertSubset inplace");
+        return THREAD_EXEC()->Stop();
+    }
+
+    if (0 <= idx && idx <= arrayInLength) {
+        if (arrayOut == arrayIn) {
+            arrayOut->Insert1D(idx, subArrayLength, subArray->BeginAt(0));
+        } else {
+            arrayOut->Resize1D(arrayInLength + subArrayLength);
+            
+            // Copy the original array up to the insert point
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0),
+                                              arrayOut->BeginAt(0),
+                                              idx);
+            // Copy the inserted subarray
+            arrayOut->ElementType()->CopyData(subArray->BeginAt(0),
+                                              arrayOut->BeginAt(idx),
+                                              subArrayLength);
+            // Copy the rest of the original array.
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(idx),
+                                              arrayOut->BeginAt(idx + subArrayLength),
+                                              arrayInLength - idx);
+        }
     } else if (arrayOut != arrayIn) {
         arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
     }
     return _NextInstruction();
 }
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(ArrayReverse, TypedArrayCoreRef, TypedArrayCoreRef)
 {
@@ -712,9 +852,15 @@ struct FindArrayMaxMinInstruction : public InstructionCore
 {
     _ParamDef(TypedArrayCoreRef, InArray);
     _ParamDef(void, MaxValue);
-    _ParamDef(IntIndex, MaxIndex);
+    union {
+        _ParamDef(IntIndex, MaxIndex);
+        _ParamDef(TypedArrayCoreRef, MaxIndexArr);
+    };
     _ParamDef(void, MinValue);
-    _ParamDef(IntIndex, MinIndex);
+    union {
+        _ParamDef(IntIndex, MinIndex);
+        _ParamDef(TypedArrayCoreRef, MinIndexArr);
+    };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()      { return this->_piNext; }
@@ -722,12 +868,12 @@ struct FindArrayMaxMinInstruction : public InstructionCore
 
 InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 {
-    ConstCStr pMaxMinOpName = "ArrayMaxMinInternal";
+    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
+    ConstCStr pMaxMinOpName = arrayArg->Rank() > 1 ? "ArrayMaxMinInternal" : "ArrayMaxMinInternal";
     SubString findMaxMinOpToken(pMaxMinOpName);
 
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
     InstructionCore* pInstruction = null;
-    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
     TypeRef elementType  = arrayArg->ElementType();
     SubString LTName("IsLT");
     // Add param slot to hold the snippet
@@ -749,12 +895,13 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
 {
     TypedArrayCoreRef arrayIn = _Param(InArray);
     Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    Int32 numDims = arrayIn->Rank();
     IntIndex len = arrayIn->Length();
-    if (arrayIn->Length() == 0) {
-        _Param(MaxIndex) =  _Param(MinIndex) = -1;
-    }
+    IntIndex maxIndex = 0, minIndex = 0;
     AQBlock1* minValue = arrayIn->BeginAt(0);
     AQBlock1* maxValue = minValue;
+    if (len == 0)
+        maxIndex = minIndex = -1;
     for (IntIndex i = 0; i < len; i++) {
         Boolean less;
         snippet->_p0 = arrayIn->BeginAt(i);
@@ -763,19 +910,168 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         _PROGMEM_PTR(snippet, _function)(snippet);
         if(less) {
             minValue = arrayIn->BeginAt(i);
-            _Param(MinIndex) = i;
+            minIndex = i;
         }
         snippet->_p0 = maxValue;
         snippet->_p1 = arrayIn->BeginAt(i);
         snippet->_p2 = &less;
         _PROGMEM_PTR(snippet, _function)(snippet);
         if(less) {
-            maxValue = arrayIn->BeginAt(i);
-            _Param(MaxIndex) = i;
+           maxValue = arrayIn->BeginAt(i);
+           maxIndex = i;
         }
     }
-    arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
-    arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+    if (len) {
+        arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+        arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+    } else {
+        arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
+        arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
+    }
+    if (numDims == 1) {
+        _Param(MinIndex) = minIndex;
+        _Param(MaxIndex) = maxIndex;
+    } else {
+        ArrayDimensionVector  tempDimensionLengths;
+        tempDimensionLengths[0] = numDims;
+        _Param(MinIndexArr)->ResizeDimensions(1, tempDimensionLengths, false);
+        _Param(MaxIndexArr)->ResizeDimensions(1, tempDimensionLengths, false);
+        for (IntIndex i = 0; i < numDims; ++i) {
+            IntIndex curDimSize = (i == numDims - 1) ? 1 : arrayIn->GetLength(numDims-1-i-1);
+            IntIndex *minIndexPtr = (IntIndex*)_Param(MinIndexArr)->BeginAt(i);
+            IntIndex *maxIndexPtr = (IntIndex*)_Param(MaxIndexArr)->BeginAt(i);
+            if (minIndex >= 0) {
+                *minIndexPtr = minIndex / curDimSize;
+                minIndex -= *minIndexPtr * curDimSize;
+            }
+            else
+                *minIndexPtr = minIndex;
+            if (maxIndex >= 0) {
+                *maxIndexPtr = maxIndex / curDimSize;
+                maxIndex -= *maxIndexPtr * curDimSize;
+            }
+            else
+                *maxIndexPtr = maxIndex;
+        }
+    }
+    return _NextInstruction();
+}
+
+static void CopySubArray(AQBlock1* &sourcePtr, AQBlock1* &destinationPtr, const UInt32 elementSize, const size_t elementsToCopy)
+{
+    if (elementsToCopy) {
+        size_t bytesToCopy = elementsToCopy * elementSize;
+        if (destinationPtr) {
+            memmove(destinationPtr, sourcePtr, bytesToCopy);
+            sourcePtr += bytesToCopy, destinationPtr += bytesToCopy;
+        }
+        else
+            sourcePtr += bytesToCopy;
+    }
+}
+
+// ArrayDeleteND function, can delete one or multiple rows, columns, pages, etc. in an ND Array
+VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex, IntIndex)
+{
+    TypedArrayCoreRef arrayOut = _Param(0);
+    TypedArrayCoreRef arrayIn = _Param(3);
+    IntIndex numberOfDimensions = arrayOut->Rank();
+    TypeRef deletedPartType = _ParamPointer(1);
+    IntIndex deletedPortionLength = (_ParamPointer(4) == NULL)? 1 : _Param(4);
+    IntIndex dimensionToDelete = (_ParamPointer(6) == NULL)? 0 : _Param(6);
+    if (dimensionToDelete < 0 || dimensionToDelete >= numberOfDimensions) {
+        dimensionToDelete = 0;
+        deletedPortionLength = 0;
+    }
+
+    IntIndex offset = (_ParamPointer(5) == NULL) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);;
+    Int32 rank = arrayIn->Rank();
+
+    IntIndex startIndex = offset > 0 ? offset : 0;
+    IntIndex endIndex = offset + deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
+
+    if (endIndex <= 0) {
+        endIndex = 0;
+    }
+    IntIndex arrayOutLength = arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - (endIndex - startIndex);
+    if (rank == 1) {
+        arrayOut->Resize1D(arrayOutLength);
+        if (startIndex > 0) {
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0), arrayOut->BeginAt(0), startIndex);
+        }
+
+        // check whether to delete single element or subArray from the input array
+        if (!deletedPartType->IsA(arrayIn->ElementType())) {
+            TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
+            deletedArray->Resize1D(endIndex - startIndex);
+            deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
+        } else if (endIndex - startIndex > 0 ){
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
+        } else
+            arrayOut->ElementType()->InitData(_ParamPointer(2));
+
+        if (endIndex < arrayIn->GetLength(0)) {
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
+        }
+    } else {
+        TypedArrayCoreRef deletedArray = *((TypedArrayCoreRef*)_ParamPointer(2));
+        Int32 elementSize = arrayIn->ElementType()->TopAQSize();
+        if (deletedArray->Rank() < numberOfDimensions && deletedPortionLength > 1)
+            deletedPortionLength = 1;
+        ArrayDimensionVector index, dimensionSize, newLengths, deletedArrayDimLen;
+        size_t totalNumberOfElements = 1;
+        for (Int32 i = 0, j = 0; i < numberOfDimensions; ++i) {
+            newLengths[i] = arrayIn->DimensionLengths()[i];
+            dimensionSize[i] = arrayIn->DimensionLengths()[numberOfDimensions-1-i];
+            if (i == numberOfDimensions-1-dimensionToDelete) {
+                deletedArrayDimLen[i] = deletedPortionLength;
+                if (numberOfDimensions == deletedPartType->Rank())
+                    ++j;
+            } else {
+                deletedArrayDimLen[i] = arrayIn->DimensionLengths()[j];
+                ++j;
+            }
+            totalNumberOfElements *= dimensionSize[i];
+        }
+        if (deletedPortionLength <= 0 || startIndex < 0 || startIndex > dimensionSize[dimensionToDelete]){
+            startIndex = 0;
+            deletedPortionLength = 0;
+        }
+        if (startIndex > dimensionSize[dimensionToDelete]) {
+            return _NextInstruction();
+        }
+        newLengths[numberOfDimensions-1-dimensionToDelete] -= deletedPortionLength;
+        deletedArray->ResizeDimensions(numberOfDimensions, deletedArrayDimLen, false);
+
+        for (Int32 i = 0; i < numberOfDimensions; i++)
+            index[i] = 0;
+        if (totalNumberOfElements) {
+            AQBlock1 *inputArrayPtr, *deletedArrayPtr, *outputArrayPtr;
+            if (arrayIn != arrayOut)
+                arrayOut->ResizeDimensions(numberOfDimensions, newLengths, false);
+            inputArrayPtr = arrayIn->BeginAt(0);
+            deletedArrayPtr = deletedArray->RawBegin();
+            outputArrayPtr = arrayOut->BeginAt(0);
+            UInt32 numberOfElementsInDeletedDimension = 1;
+            for (Int32 i = dimensionToDelete + 1; i < numberOfDimensions; ++i)
+                numberOfElementsInDeletedDimension *= dimensionSize[i];
+            size_t numberOfElementsBeforeDeleted = startIndex * numberOfElementsInDeletedDimension;
+            size_t numberOfElementsToBeDeleted = deletedPortionLength * numberOfElementsInDeletedDimension;
+            size_t numberOfElementsAfterDeleted = (dimensionSize[dimensionToDelete] - (startIndex + deletedPortionLength)) * numberOfElementsInDeletedDimension;
+            Int32 currentDimension;
+            do {
+                CopySubArray(inputArrayPtr, outputArrayPtr, elementSize, numberOfElementsBeforeDeleted);
+                CopySubArray(inputArrayPtr, deletedArrayPtr, elementSize, numberOfElementsToBeDeleted);
+                CopySubArray(inputArrayPtr, outputArrayPtr, elementSize, numberOfElementsAfterDeleted);
+                currentDimension = dimensionToDelete;
+                while (--currentDimension >= 0 && ++index[currentDimension] >= dimensionSize[currentDimension])
+                    index[currentDimension] = 0;
+            } while (currentDimension >= 0);
+        }
+        dimensionSize[dimensionToDelete] -= deletedPortionLength;
+        if (arrayIn == arrayOut)
+            arrayOut->ResizeDimensions(numberOfDimensions, newLengths, true);
+    }
     return _NextInstruction();
 }
 
@@ -790,9 +1086,13 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
 
     IntIndex startIndex = offset > 0? offset : 0;
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
+    if (arrayOut->Rank() != 1 || arrayIn->Rank()!=1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayDelete needs dimNum arg for 2-D or higher arrays");
+        return THREAD_EXEC()->Stop();
+    }
 
     if (endIndex <= 0) {
-        return _NextInstruction();
+        endIndex = 0;
     }
     IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
     arrayOut->Resize1D(arrayOutLength);
@@ -807,7 +1107,8 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
         deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
     } else if (endIndex - startIndex > 0 ){
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
-    }
+    } else
+        arrayOut->ElementType()->InitData(_ParamPointer(2));
 
     if (endIndex < arrayIn->Length()) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
@@ -1079,6 +1380,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
     TypedArrayCoreRef **arrayInputs = _ParamImmediate(ArrayPrimitives);
     IntIndex numberOfInput = (_ParamVarArgCount() -1);
     IntIndex length = (*arrayInputs[0])->Length();
+    if (arrayOut->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInterleave invalid array rank");
+        return THREAD_EXEC()->Stop();
+    }
     for(IntIndex i = 0; i < numberOfInput; i++) {
         if (length > (*arrayInputs[i])->Length()) {
             length = (*arrayInputs[i])->Length();
@@ -1089,6 +1394,34 @@ VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
         for(IntIndex k = 0; k < numberOfInput; k++) {
             TypedArrayCoreRef arrayK = *arrayInputs[k];
             arrayOut->ElementType()->CopyData(arrayK->BeginAt(i), arrayOut->BeginAt(i*numberOfInput + k));
+        }
+    }
+    return _NextInstruction();
+}
+
+struct ArrayDecimateParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(TypedArrayCoreRef*, ArrayOutputs[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArrayDecimate, ArrayDecimateParamBlock)
+{
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    TypedArrayCoreRef **arrayOutputs = _ParamImmediate(ArrayOutputs);
+    IntIndex numberOfOutputs = (_ParamVarArgCount() -1);
+    IntIndex length = arrayIn->Length();
+    IntIndex outLength = length / numberOfOutputs;
+    if (arrayIn->Rank() != 1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayDecimate invalid array rank");
+        return THREAD_EXEC()->Stop();
+    }
+    for(IntIndex k = 0; k < numberOfOutputs; k++) {
+        TypedArrayCoreRef arrayK = *arrayOutputs[k];
+        arrayK->Resize1D(outLength);
+        for (IntIndex i = 0; i < outLength; i++) {
+            arrayIn->ElementType()->CopyData(arrayIn->BeginAt(i*numberOfOutputs + k), arrayK->BeginAt(i));
         }
     }
     return _NextInstruction();
@@ -1315,10 +1648,12 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubset2D, "p(o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArrayInsertSubset, ArrayInsertSubsetND, "p(o(Array) i(Array) i(Int32) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReverse, "p(o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayRotate, "p(o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayDelete, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArrayDelete, ArrayDeleteND, "p(o(Array) o(StaticTypeAndData) i(Array) i(Int32) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArraySplit, "p(o(Array) o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_GENERIC(Sort1DArray, "p(o(Array) i(Array) s(Instruction))", EmitSortInstruction);
     DEFINE_VIREO_FUNCTION(Sort1DArrayInternal, "p(o(Array) i(Array) s(Instruction))")
@@ -1326,11 +1661,15 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_GENERIC(ArrayMaxMin, "p(i(Array) o(*) o(Int32) o(*) o(Int32))", EmitMaxMinInstruction);
     DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, "p(i(Array) o(*) o(Int32) o(*) o(Int32) s(Instruction))");
 
+    DEFINE_VIREO_GENERIC(ArrayMaxMin, "p(i(Array) o(*) o(Array) o(*) o(Array))", EmitMaxMinInstruction);
+    DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, "p(i(Array) o(*) o(Array) o(*) o(Array) s(Instruction))");
+
     DEFINE_VIREO_FUNCTION(ArrayReshape, "p(i(VarArgCount) o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayTranspose, "p(o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayInterpolate, "p(o(*) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayThreshold, "p(o(Double) i(Array) i(Double) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInterleave, "p(i(VarArgCount) o(Array) i(Array))")
+    DEFINE_VIREO_FUNCTION(ArrayDecimate, "p(i(VarArgCount) i(Array) o(Array))")
 
     DEFINE_VIREO_FUNCTION(IndexBundleClusterArray, "p(i(VarArgCount) o(Array) i(Array))")
     DEFINE_VIREO_FUNCTION(BuildClusterArray, "p(i(VarArgCount) o(Array) i(*))")
