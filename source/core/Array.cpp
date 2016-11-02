@@ -1564,6 +1564,15 @@ VIREO_FUNCTION_SIGNATURE3(BooleanArrayToNumber, TypedArrayCoreRef, StaticType, v
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsEmptyArray, TypedArrayCoreRef, Boolean)
+{
+    if (!_Param(0) || _Param(0)->Length()==0)
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
 //#define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
@@ -1677,6 +1686,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ClusterToArray, "p(o(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(NumberToBooleanArray, "p(i(StaticTypeAndData) o(Array))")
     DEFINE_VIREO_FUNCTION(BooleanArrayToNumber, "p(i(Array) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(IsEmptyArray, "p(i(Array) o(Boolean))")
 #ifdef VIREO_TYPE_ArrayND
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")

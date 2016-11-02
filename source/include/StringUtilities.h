@@ -15,6 +15,7 @@ SDG
 #define StringUtilities_h
 
 #include <string.h>
+#include <ctype.h>
 
 #include "DataTypes.h"
 
