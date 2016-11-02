@@ -444,7 +444,7 @@ VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
         _Param(1) = false;
     else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = isprint(c);
+        _Param(1) = c >= ' '; //isprint(c);
     }
     return _NextInstruction();
 }
@@ -456,7 +456,7 @@ VIREO_FUNCTION_SIGNATURE2(IsWhiteSpace, StringRef, Boolean)
         _Param(1) = false;
     else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = isspace(c);
+        _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\b'; //isspace(c);
     }
     return _NextInstruction();
 }
