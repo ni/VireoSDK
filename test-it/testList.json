@@ -33,6 +33,7 @@
                 "ArrayIndexEltNDV.via",
                 "ArrayInterpolate.via",
                 "ArrayInterleave.via",
+                "ArrayMaxMin.via",
                 "ArrayOfStrings.via",
                 "ArrayReplaceEltNDV.via",
                 "ArrayReplaceSubset2DV.via",

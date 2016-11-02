@@ -852,9 +852,15 @@ struct FindArrayMaxMinInstruction : public InstructionCore
 {
     _ParamDef(TypedArrayCoreRef, InArray);
     _ParamDef(void, MaxValue);
-    _ParamDef(IntIndex, MaxIndex);
+    union {
+        _ParamDef(IntIndex, MaxIndex);
+        _ParamDef(TypedArrayCoreRef, MaxIndexArr);
+    };
     _ParamDef(void, MinValue);
-    _ParamDef(IntIndex, MinIndex);
+    union {
+        _ParamDef(IntIndex, MinIndex);
+        _ParamDef(TypedArrayCoreRef, MinIndexArr);
+    };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()      { return this->_piNext; }
@@ -862,12 +868,12 @@ struct FindArrayMaxMinInstruction : public InstructionCore
 
 InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 {
-    ConstCStr pMaxMinOpName = "ArrayMaxMinInternal";
+    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
+    ConstCStr pMaxMinOpName = arrayArg->Rank() > 1 ? "ArrayMaxMinInternal" : "ArrayMaxMinInternal";
     SubString findMaxMinOpToken(pMaxMinOpName);
 
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
     InstructionCore* pInstruction = null;
-    TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
     TypeRef elementType  = arrayArg->ElementType();
     SubString LTName("IsLT");
     // Add param slot to hold the snippet
@@ -889,12 +895,13 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
 {
     TypedArrayCoreRef arrayIn = _Param(InArray);
     Instruction3<void, void, Boolean>* snippet = (Instruction3<void, void, Boolean>*)_ParamMethod(Snippet());
+    Int32 numDims = arrayIn->Rank();
     IntIndex len = arrayIn->Length();
-    if (arrayIn->Length() == 0) {
-        _Param(MaxIndex) =  _Param(MinIndex) = -1;
-    }
+    IntIndex maxIndex = 0, minIndex = 0;
     AQBlock1* minValue = arrayIn->BeginAt(0);
     AQBlock1* maxValue = minValue;
+    if (len == 0)
+        maxIndex = minIndex = -1;
     for (IntIndex i = 0; i < len; i++) {
         Boolean less;
         snippet->_p0 = arrayIn->BeginAt(i);
@@ -903,19 +910,50 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         _PROGMEM_PTR(snippet, _function)(snippet);
         if(less) {
             minValue = arrayIn->BeginAt(i);
-            _Param(MinIndex) = i;
+            minIndex = i;
         }
         snippet->_p0 = maxValue;
         snippet->_p1 = arrayIn->BeginAt(i);
         snippet->_p2 = &less;
         _PROGMEM_PTR(snippet, _function)(snippet);
         if(less) {
-            maxValue = arrayIn->BeginAt(i);
-            _Param(MaxIndex) = i;
+           maxValue = arrayIn->BeginAt(i);
+           maxIndex = i;
         }
     }
-    arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
-    arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+    if (len) {
+        arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+        arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+    } else {
+        arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
+        arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
+    }
+    if (numDims == 1) {
+        _Param(MinIndex) = minIndex;
+        _Param(MaxIndex) = maxIndex;
+    } else {
+        ArrayDimensionVector  tempDimensionLengths;
+        tempDimensionLengths[0] = numDims;
+        _Param(MinIndexArr)->ResizeDimensions(1, tempDimensionLengths, false);
+        _Param(MaxIndexArr)->ResizeDimensions(1, tempDimensionLengths, false);
+        for (IntIndex i = 0; i < numDims; ++i) {
+            IntIndex curDimSize = (i == numDims - 1) ? 1 : arrayIn->GetLength(numDims-1-i-1);
+            IntIndex *minIndexPtr = (IntIndex*)_Param(MinIndexArr)->BeginAt(i);
+            IntIndex *maxIndexPtr = (IntIndex*)_Param(MaxIndexArr)->BeginAt(i);
+            if (minIndex >= 0) {
+                *minIndexPtr = minIndex / curDimSize;
+                minIndex -= *minIndexPtr * curDimSize;
+            }
+            else
+                *minIndexPtr = minIndex;
+            if (maxIndex >= 0) {
+                *maxIndexPtr = maxIndex / curDimSize;
+                maxIndex -= *maxIndexPtr * curDimSize;
+            }
+            else
+                *maxIndexPtr = maxIndex;
+        }
+    }
     return _NextInstruction();
 }
 
@@ -1622,6 +1660,9 @@ DEFINE_VIREO_BEGIN(Array)
 
     DEFINE_VIREO_GENERIC(ArrayMaxMin, "p(i(Array) o(*) o(Int32) o(*) o(Int32))", EmitMaxMinInstruction);
     DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, "p(i(Array) o(*) o(Int32) o(*) o(Int32) s(Instruction))");
+
+    DEFINE_VIREO_GENERIC(ArrayMaxMin, "p(i(Array) o(*) o(Array) o(*) o(Array))", EmitMaxMinInstruction);
+    DEFINE_VIREO_FUNCTION(ArrayMaxMinInternal, "p(i(Array) o(*) o(Array) o(*) o(Array) s(Instruction))");
 
     DEFINE_VIREO_FUNCTION(ArrayReshape, "p(i(VarArgCount) o(Array) i(Array) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayTranspose, "p(o(Array) i(Array))")
