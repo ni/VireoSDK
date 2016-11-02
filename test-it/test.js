@@ -1,4 +1,4 @@
-#!/usr/bin/env node --stack-size=100
+#!/usr/bin/env node
 'use strict';
 
 // Node Test runner for *.via files against Vireo Targets
