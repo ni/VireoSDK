@@ -2157,10 +2157,10 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(IsDecimalDigit, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsHexDigit, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsOctalDigit, "GenericUnOp", EmitGenericUnOpInstruction);
-    DEFINE_VIREO_GENERIC(IsPrintable, "GenericUnOp", EmitGenericUnOpInstruction);
 #if 0
-    DEFINE_VIREO_GENERIC(IsWhiteSpace, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsPrintable, "GenericUnOp", EmitGenericUnOpInstruction);
 #endif
+    DEFINE_VIREO_GENERIC(IsWhiteSpace, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Add, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Sub, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(Mul, "GenericBinOp", EmitGenericBinOpInstruction);
