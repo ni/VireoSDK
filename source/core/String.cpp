@@ -393,7 +393,6 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     return _NextInstruction();
 }
 
-#if 0
 VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
 {
     if (!_Param(0) || _Param(0)->Length()==0)
@@ -470,7 +469,6 @@ VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
         _Param(1) = false;
     return _NextInstruction();
 }
-#endif
 
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
