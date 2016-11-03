@@ -177,6 +177,8 @@
                 "ReentrantMemLeak.via",
                 "ReentrantSubVISimple.via",
                 "ReentrantSubVIWtihShiftRegister.via",
+		"ReverseString.via",
+		"RotateString.via",
                 "Round.via",
                 "Scale2X.via",
                 "ScanFormat.via",
