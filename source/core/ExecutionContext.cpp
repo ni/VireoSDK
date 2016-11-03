@@ -123,13 +123,14 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-// Trigger - Decrement target fire count (may cause target to be activated)
-VIREO_FUNCTION_SIGNATURE1(FPSync, UInt32)
+// FPSync - Synchronously triggers a function on the JS module called fpSync and passes a string as the first parameter.
+// Useful for perfoming an action and immediately notifying JS about it
+VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
-    EM_ASM_({
-        Module.fpSync($0);
-    }, _Param(0));
+    EM_ASM_ARGS({
+        Module.fpSync(Pointer_stringify($0, $1));
+    }, (char*)_Param(0)->Begin(), _Param(0)->Length());
 #endif
     return _NextInstruction();
 }
@@ -351,7 +352,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 #endif
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
-    DEFINE_VIREO_FUNCTION(FPSync, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

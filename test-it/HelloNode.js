@@ -12,13 +12,13 @@ var SetupVJS = function () {
         }
     }
     vireo.stdout = '';
-    vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
+    vireo.core.print = function(text) { console.log('console: ' + text); };
 };
 
 SetupVJS();
 
 var text =
-    'define(c0 dv(.UInt32 90))\n' +
+    'define(c0 dv(.String "wubbalubbadubdub"))\n' +
     'define(HelloWorld dv(.VirtualInstrument (\n' +
         'Locals: c(' +
             'e(dv(.String "Hello, world. I can fly.") variable1)' +
@@ -45,7 +45,7 @@ var testString = '';
 var preTestString = '';
 
 console.log('test1');
-testString = 'fpsync called with (90)';
+testString = 'fpsync called with (wubbalubbadubdub)';
 testResult = currFPID === testString;
 console.assert(testResult, 'FPSync function called from vireo and passes value 90');
 
