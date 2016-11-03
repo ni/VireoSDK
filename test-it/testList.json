@@ -59,6 +59,7 @@
                 "ByValueFunctions.via",
                 "DefaultOutputs.via",
                 "DefaultTM.via",
+                "DHOStringToNumber.via",
                 "DuplicateSymbol.via",
                 "EggShellError1.via",
                 "EggShellError2.via",
