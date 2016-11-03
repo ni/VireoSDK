@@ -1,0 +1,53 @@
+IsEmptyString
+false
+true
+(false true false)
+(true false)
+IsEmptyArray
+false
+true
+false
+true
+false
+true
+IsNotANumPathRefnum
+true
+false
+true
+false
+(false true false)
+(true true)
+(false true)
+IsDecimalDigit
+true
+false
+false
+false
+IsHexDigit
+true
+true
+false
+false
+IsOctalDigit
+true
+false
+false
+false
+false
+IsPrintable
+true
+true
+false
+false
+true
+false
+false
+IsWhiteSpace
+false
+false
+false
+false
+true
+true
+true
+true

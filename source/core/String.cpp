@@ -393,6 +393,83 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
+{
+    if (!_Param(0) || _Param(0)->Length()==0)
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsDecimalDigit, StringRef, Boolean)
+{
+    StringRef str = _Param(0);
+    if (str->Length()==0)
+        _Param(1) = false;
+    else {
+        Utf8Char c = str->Begin()[0];
+        _Param(1) = c >= '0' && c <= '9';
+    }
+    return _NextInstruction();
+}
+VIREO_FUNCTION_SIGNATURE2(IsHexDigit, StringRef, Boolean)
+{
+    StringRef str = _Param(0);
+    if (str->Length()==0)
+        _Param(1) = false;
+    else {
+        Utf8Char c = str->Begin()[0];
+        _Param(1) = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsOctalDigit, StringRef, Boolean)
+{
+    StringRef str = _Param(0);
+    if (str->Length()==0)
+        _Param(1) = false;
+    else {
+        Utf8Char c = str->Begin()[0];
+        _Param(1) = c >= '0' && c <= '7';
+    }
+   return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
+{
+    StringRef str = _Param(0);
+    if (str->Length()==0)
+        _Param(1) = false;
+    else {
+        Utf8Char c = str->Begin()[0];
+        _Param(1) = c >= ' '; //isprint(c);
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsWhiteSpace, StringRef, Boolean)
+{
+    StringRef str = _Param(0);
+    if (str->Length()==0)
+        _Param(1) = false;
+    else {
+        Utf8Char c = str->Begin()[0];
+        _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v'; //isspace(c);
+    }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
+{
+    if (!_Param(0) || _Param(0)->Length()==0)
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
 {
@@ -662,6 +739,13 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(BranchIfLEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
+    DEFINE_VIREO_FUNCTION(IsEmptyString, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsDecimalDigit, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsHexDigit, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsOctalDigit, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsPrintable, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsWhiteSpace, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(IsNotANumPathRefnum, "p(i(String) o(Boolean))")
 
 	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
 
