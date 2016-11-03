@@ -739,7 +739,6 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(BranchIfLEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
-
     DEFINE_VIREO_FUNCTION(IsEmptyString, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsDecimalDigit, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsHexDigit, "p(i(String) o(Boolean))")

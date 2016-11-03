@@ -278,7 +278,6 @@ using namespace std;
 		return _NextInstruction();													\
 		}
 
-
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
