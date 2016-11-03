@@ -1,27 +1,10 @@
-var vireo = {};
-
-var SetupVJS = function () {
-    try {
-        vireo = require('../dist/vireo.js');
-    } catch (err) {
-        if (err.code === 'MODULE_NOT_FOUND') {
-            console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
-            process.exit(1);
-        } else {
-            throw err;
-        }
-    }
-    vireo.stdout = '';
-    vireo.core.print = function(text) { console.log('console: ' + text); };
-};
-
-SetupVJS();
+vireo = require('../target-support/js/vireo.js');
 
 var text =
-    'define(c0 dv(.String "wubbalubbadubdub"))\n' +
+    'define(c0 dv(.UInt32 90))\n' +
     'define(HelloWorld dv(.VirtualInstrument (\n' +
         'Locals: c(' +
-            'e(dv(.String "Hello, world. I can fly.") variable1)' +
+            'e(dv(.String "Hello, world. I can fly.你好世界。我能飛。") variable1)' +
         ')\n' +
         'clump (' +
             'Println(variable1)' +
@@ -30,64 +13,25 @@ var text =
     ') ) )\n'  +
     'enqueue(HelloWorld)\n';
 
-var currFPID = '';
-
-vireo.core.fpSync = function(fpId) {
-    currFPID = 'fpsync called with (' + fpId + ')';
-};
-
+vireo.core.fpSync = function(fpId) {console.log("***fpSync() Called with: " + fpId + " ***"); };
 vireo.loadVia(text);
 vireo.executeSlices(1);
 
+// Read a value after execution is done
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 
-var testResult = false;
-var testString = '';
-var preTestString = '';
+// Write a value and get it back
+vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify('May it be a good Day! 也許這是一個很好的一天'));
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 
-console.log('test1');
-testString = 'fpsync called with (wubbalubbadubdub)';
-testResult = currFPID === testString;
-console.assert(testResult, 'FPSync function called from vireo and passes value 90');
+// Write some specail charactes
+vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify('multi\nline with \'single\' and \"double\" quotes'));
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 
-console.log('test2');
-testString = 'Hello, world. I can fly.';
-testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-console.assert(testResult, 'Read a value after execution is done');
+// Write string that is not in JSON format.
+vireo.writeJSON('HelloWorld', 'variable1', 'Buenas Dias');
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
 
-// console.log('test3');
-// testString = 'Hello, world. I can fly.你好世界。我能飛。';
-// vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString));
-// testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-// console.assert(testResult, 'Read a value with unicode characters');
-
-console.log('test4');
-testString = 'May it be a good Day!';
-vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString));
-testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-console.assert(testResult, 'Write a value and get it back');
-
-console.log('test5');
-testString = 'multi\nline with \'single\' and \"double\" quotes';
-vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString));
-testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-console.assert(testResult, 'Write some special characters');
-
-console.log('test6');
-preTestString = 'multi\nline with \'single\' and \"double\" quotes';
-vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(preTestString));
-console.assert(JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === preTestString, 'The initial valid JSON is written');
-testString = 'Buenas Dias';
-vireo.writeJSON('HelloWorld', 'variable1', testString); // JSON.stringify intentionally left off
-testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === preTestString;
-console.assert(testResult, 'Write string that is not in JSON format is ignored');
-
-console.log('test7');
-preTestString = 'multi\nline with \'single\' and \"double\" quotes';
-vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(preTestString));
-console.assert(JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === preTestString, 'The initial valid JSON is written');
-testString = 'Buenas Dias';
-vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString)); // JSON.stringify intentionally added
-testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-console.assert(testResult, 'Write string that has been fixed');
-
-console.log('test end');
+// Write string that has been fixed.
+vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify('Buenas Dias'));
+console.log( '<' + vireo.readJSON('HelloWorld', 'variable1') + '>');
