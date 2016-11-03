@@ -15,7 +15,7 @@ vjs js:
 test: testnative testjs
 
 testjs:
-	cd test-it; node --stack-size=100 ./test.js -j
+	cd test-it; ./test.js -j
 
 testnative:
 	cd test-it; ./test.js -n
