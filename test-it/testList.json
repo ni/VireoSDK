@@ -57,8 +57,6 @@
                 "BuildArraySubVI.via",
                 "bundleStomp.via",
                 "ByValueFunctions.via",
-                "DecodeViaString.via",
-                "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",
                 "DefaultTM.via",
                 "DHOStringToNumber.via",
