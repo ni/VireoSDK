@@ -263,7 +263,6 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan(_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
 		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
@@ -277,6 +276,7 @@ using namespace std;
 			     && (_Param(0) < _Param(2) || _Param(4) && _Param(0)==_Param(1));	\
 		return _NextInstruction();													\
 		}
+//    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan(_Param(0))) ) \
 
 
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
@@ -292,10 +292,11 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(IsNE0, TYPE, "p(i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT0, TYPE, "p(i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE0, TYPE, "p(i("#TYPE") o(Boolean))") \
-    DEFINE_VIREO_FUNCTION_TYPED(IsNotANumPathRefnum, TYPE, "p(i("#TYPE") o(Boolean))") \
 	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
 	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")
+
+    //    DEFINE_VIREO_FUNCTION_TYPED(IsNotANumPathRefnum, TYPE, "p(i("#TYPE") o(Boolean))") \
 
 //------------------------------------------------------------
 // Conversion

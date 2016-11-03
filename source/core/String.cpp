@@ -393,6 +393,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     return _NextInstruction();
 }
 
+#if 0
 VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
 {
     if (!_Param(0) || _Param(0)->Length()==0)
@@ -469,6 +470,7 @@ VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
         _Param(1) = false;
     return _NextInstruction();
 }
+#endif
 
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
@@ -739,6 +741,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(BranchIfLEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
+#if 0
     DEFINE_VIREO_FUNCTION(IsEmptyString, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsDecimalDigit, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsHexDigit, "p(i(String) o(Boolean))")
@@ -746,6 +749,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(IsPrintable, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsWhiteSpace, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsNotANumPathRefnum, "p(i(String) o(Boolean))")
+#endif
 
 	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
 
