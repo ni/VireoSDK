@@ -57,6 +57,8 @@
                 "BuildArraySubVI.via",
                 "bundleStomp.via",
                 "ByValueFunctions.via",
+                "DefaultOutputs.via",
+                "DefaultTM.via",
                 "EggShellError1.via",
                 "EggShellError2.via",
                 "EggShellError3.via",
