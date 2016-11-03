@@ -55,7 +55,7 @@ help:
 
 EMCC= emcc
 EM_DBGFLAG = -g4
-EM_OPTFLAG = -Os -g4 # -Os -O3
+EM_OPTFLAG = -Os # -Os -O3
 
 ifneq ($(wildcard custom.mak),)
    include custom.mak
