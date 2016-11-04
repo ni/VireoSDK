@@ -1656,11 +1656,12 @@ char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
 
 // the format const used in Formatter and Parser
 ViaFormatChars TDViaFormatter::formatVIA =  {"VIA",  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
-ViaFormatChars TDViaFormatter::formatJSON = {"JSON", '[',']','{','}',',','\"', kViaFormat_QuotedFieldNames};
+ViaFormatChars TDViaFormatter::formatJSON = {"JSON", '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_SuppressInfNaN) };
+ViaFormatChars TDViaFormatter::formatJSONLVExt = {"JSON", '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN) };
 ViaFormatChars TDViaFormatter::formatC =    {"C",    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
 
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format)
+TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format, Boolean jsonLVExt/*= false*/)
 {
     // Might move all options to format string.
     _string = string;
@@ -1668,13 +1669,14 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
     _options._exponentialNotation = false;
-    
+    _error = false;
+
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._bEscapeStrings = false;
         _options._fmt = formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._bEscapeStrings = true;
-        _options._fmt = formatJSON;
+        _options._fmt = jsonLVExt ? formatJSONLVExt : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._fmt = formatC;
     }
@@ -1746,8 +1748,8 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     char buffer[kTempFormattingBufferSize];
     ConstCStr pBuff = buffer;
     Double value = ReadDoubleFromMemory(type, pData);
-
-    Int32 len;
+    Int32 len = 0;
+    Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
     if (isnan(value)) {
 #if 0
         // TODO unit tests are getting different -NaNs in different cases.
@@ -1759,17 +1761,24 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             len = 3;
         }
 #else
-        pBuff = "nan";
-        len = 3;
+        if (!suppressInfNaN) {
+            pBuff = _options._fmt.LongNameInfNaN() ?  "NaN" : "nan";
+            len = 3;
+        } else
+            _error = true;
 #endif
     } else if (isinf(value)) {
-        if (value < 0) {
-            pBuff = "-inf";
-            len = 4;
-        } else {
-            pBuff = "inf";
-            len = 3;
-        }
+        if (!suppressInfNaN) {
+            Boolean longForm = _options._fmt.LongNameInfNaN();
+            if (value < 0) {
+                pBuff = longForm ? "-Infinity" : "-inf";
+                len = longForm ? 9 : 4;
+            } else {
+                pBuff = longForm ? "Infinity" : "inf";
+                len = longForm ? 8 : 3;
+            }
+        } else
+            _error = true;
     } else {
         char formatBuffer[32];
         if (_options._precision >= 0)
@@ -1988,15 +1997,42 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(FlattenToJSON, StaticType, void, Boolean, StringRef)
+struct FlattenToJSONParamBlock : public VarArgInstruction
 {
-    _Param(3)->Resize1D(0);
+    _ParamImmediateDef(StaticTypeAndData, arg1[1]);
+    _ParamDef(Boolean, lvExtensions);
+    _ParamDef(StringRef, stringOut);
+    _ParamDef(ErrorCluster, errClust);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
+{
+    StaticTypeAndData *arg =  _ParamImmediate(arg1);
+
+    _Param(stringOut)->Resize1D(0);
+    if (_ParamVarArgCount() > 4 && _Param(errClust).status)
+        return _NextInstruction();
+
     SubString json("JSON");
-    TDViaFormatter formatter(_Param(3), true, 0, &json);
-    if (_Param(0).IsCluster()) {
-        formatter.FormatClusterData(_ParamPointer(0), _ParamPointer(1));
+    TDViaFormatter formatter(_Param(stringOut), true, 0, &json, _Param(lvExtensions));
+    if (arg[0]._paramType->IsCluster()) {
+        formatter.FormatClusterData(arg[0]._paramType, arg[0]._pData);
     } else {
-        formatter.FormatData(_ParamPointer(0), _ParamPointer(1));
+        formatter.FormatData(arg[0]._paramType, arg[0]._pData);
+    }
+    if (formatter.HasError()) {
+        if (_ParamVarArgCount() > 4) {
+            _Param(errClust).status = true;
+            _Param(errClust).code = -375011;
+            _Param(errClust).source->Resize1D(0);
+            _Param(errClust).source->AppendCStr("Flatten To JSON");
+        }
+        _Param(stringOut)->Resize1D(0);
+    } else if (_ParamVarArgCount() > 4) {
+        _Param(errClust).status = false;
+        _Param(errClust).code = 0;
+        _Param(errClust).source->Resize1D(0);
     }
     return _NextInstruction();
 }
@@ -2456,7 +2492,7 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(Type)o(String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(StaticTypeAndData) i(Int16) o(String))")
-    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(StaticTypeAndData) i(Boolean) o(String))")
+    DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(VarArgCount) i(StaticTypeAndData) i(Boolean) o(String) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(String) o(StaticTypeAndData) i(a(String *)) i(Boolean) i(Boolean) i(Boolean) )")
     DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(StaticTypeAndData) i(String) o(String))")
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(StaticTypeAndData) o(String))")

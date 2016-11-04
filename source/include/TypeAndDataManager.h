@@ -1091,6 +1091,12 @@ typedef TypedArray1D< UInt8 > BinaryBuffer, *BinaryBufferRef;
 typedef TypedArray1D< Int32 > Int32Array1D;
 typedef TypedArray1D< TypeRef > TypeRefArray1D;
 
+struct ErrorCluster {
+    Boolean status;
+    Int32 code;
+    StringRef source;
+};
+
 //------------------------------------------------------------
 //! Stack class to create a CString from Vireo String.
 class TempStackCStringFromString : public TempStackCString

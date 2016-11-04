@@ -99,6 +99,7 @@
                 "FlattenCoA.via",
                 "FlattenCluster.via",
                 "FlattenJSON.via",
+                "FlattenToJSONInfNaN.via",
                 "FlattenScalar.via",
                 "FloatConvertInteger.via",
                 "ForwardVIDefinitions.via",

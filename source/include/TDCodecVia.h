@@ -28,8 +28,11 @@ class InstructionAllocator;
 enum ViaFormat {
     kViaFormat_NoFieldNames = 0,
     kViaFormat_UseFieldNames = 1,
-    kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames + 2,
-    kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames + 4,
+    kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames | 2,
+    kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames | 4,
+    kViaFormat_FieldNameMask = kViaFormat_QuotedFieldNames | kViaFormat_PercentEncodeFieldNames,
+    kViaFormat_UseLongNameInfNaN = 8, // mask,  clear == use inf,nan, set == use Infinity/NaN
+    kViaFormat_SuppressInfNaN = 16, // use neither
 };
 
 struct ViaFormatChars
@@ -42,9 +45,11 @@ struct ViaFormatChars
     Utf8Char    _itemSeperator;
     Utf8Char    _quote;
     ViaFormat   _fieldNameFormat;
-    
+
     Boolean UseFieldNames()      { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
-    Boolean QuoteFieldNames()    { return _fieldNameFormat == kViaFormat_QuotedFieldNames; }
+    Boolean QuoteFieldNames()    { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
+    Boolean SuppressInfNaN()     { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
+    Boolean LongNameInfNaN()     { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
 };
 
 struct ViaFormatOptions
@@ -139,10 +144,11 @@ private:
     StringRef       _string;
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt() { return _options._fmt; }
+    Boolean _error;
     
     static const Int32 kTempFormattingBufferSize = 100;
 public:
-    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null);
+    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null, Boolean jsonLVExt = false);
     // Type formatters
     void    FormatType(TypeRef type);
     // Options
@@ -161,10 +167,12 @@ public:
     void    FormatElementUsageType(UsageTypeEnum value);
     void    FormatInt(EncodingEnum encoding, IntMax value);
     void    FormatIEEE754(TypeRef type, void* pData);
+    Boolean HasError() { return _error; }
     
     static char LocaleDefaultDecimalSeperator;
     static ViaFormatChars formatVIA;
     static ViaFormatChars formatJSON;
+    static ViaFormatChars formatJSONLVExt;
     static ViaFormatChars formatC;
 };
 
