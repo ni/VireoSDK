@@ -1090,12 +1090,19 @@ typedef String *StringRef;
 typedef TypedArray1D< UInt8 > BinaryBuffer, *BinaryBufferRef;
 typedef TypedArray1D< Int32 > Int32Array1D;
 typedef TypedArray1D< TypeRef > TypeRefArray1D;
+typedef TypedArray1D< StringRef > StringRefArray1D;
 
 struct ErrorCluster {
     Boolean status;
     Int32 code;
     StringRef source;
 };
+
+struct NIPath {
+    StringRefArray1D *components;
+    StringRef type;
+};
+typedef NIPath *NIPathRef;
 
 //------------------------------------------------------------
 //! Stack class to create a CString from Vireo String.
