@@ -16,6 +16,7 @@ SDG
 #include "TypeDefiner.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include <ctype.h>
 
 using namespace Vireo;
 
@@ -433,6 +434,12 @@ VIREO_FUNCTION_SIGNATURE2(IsDecimalDigit, StringRef, Boolean)
     }
     return _NextInstruction();
 }
+VIREO_FUNCTION_SIGNATURE2(IsDecimalDigitInt, Int32, Boolean)
+{
+    Utf8Char c = _Param(0);
+    _Param(1) = c >= '0' && c <= '9';
+    return _NextInstruction();
+}
 VIREO_FUNCTION_SIGNATURE2(IsHexDigit, StringRef, Boolean)
 {
     StringRef str = _Param(0);
@@ -442,6 +449,12 @@ VIREO_FUNCTION_SIGNATURE2(IsHexDigit, StringRef, Boolean)
         Utf8Char c = str->Begin()[0];
         _Param(1) = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
     }
+    return _NextInstruction();
+}
+VIREO_FUNCTION_SIGNATURE2(IsHexDigitInt, Int32, Boolean)
+{
+    Utf8Char c = _Param(0);
+    _Param(1) = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
     return _NextInstruction();
 }
 
@@ -457,6 +470,13 @@ VIREO_FUNCTION_SIGNATURE2(IsOctalDigit, StringRef, Boolean)
    return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsOctalDigitInt, Int32, Boolean)
+{
+    Utf8Char c = _Param(0);
+    _Param(1) = c >= '0' && c <= '7';
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
 {
     StringRef str = _Param(0);
@@ -464,8 +484,15 @@ VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
         _Param(1) = false;
     else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = c >= ' '; //isprint(c);
+        _Param(1) = isprint(c);
     }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsPrintableInt, Int32, Boolean)
+{
+    Utf8Char c = _Param(0);
+    _Param(1) = isprint(c);
     return _NextInstruction();
 }
 
@@ -476,8 +503,15 @@ VIREO_FUNCTION_SIGNATURE2(IsWhiteSpace, StringRef, Boolean)
         _Param(1) = false;
     else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v'; //isspace(c);
+        _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v';
     }
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(IsWhiteSpaceInt, Int32, Boolean)
+{
+    Utf8Char c = _Param(0);
+    _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v';
     return _NextInstruction();
 }
 
@@ -767,6 +801,11 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(IsOctalDigit, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsPrintable, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsWhiteSpace, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsDecimalDigit, IsDecimalDigitInt, "p(i(Int32) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsHexDigit, IsHexDigitInt, "p(i(Int32) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsOctalDigit, IsOctalDigitInt, "p(i(Int32) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsPrintable, IsPrintableInt, "p(i(Int32) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsWhiteSpace, IsWhiteSpaceInt, "p(i(Int32) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsNotANumPathRefnum, "p(i(String) o(Boolean))")
 
 	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")

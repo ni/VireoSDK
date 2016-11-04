@@ -1,0 +1,10 @@
+
+Expected [Infinity,NaN]; got '[Infinity,NaN]'
+
+
+
+When extensions are disabled we expect empty string; got ''
+true
+true
+
+Test pass: 'true'
