@@ -392,6 +392,26 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     }
     return _NextInstruction();
 }
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringToUpperInt, Int8, Int8)
+{
+    char c = _Param(0);
+    if ('a' <= c && c <= 'z') {
+        c =  (c - 0x20);
+    }
+    _Param(1) = c;
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(StringToLowerInt, Int8, Int8)
+{
+    char c = _Param(0);
+    if ('A' <= c && c <= 'Z') {
+        c =  (c + 0x20);
+    }
+    _Param(1) = c;
+    return _NextInstruction();
+}
 
 VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
 {
@@ -731,6 +751,8 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(StringIndexChar, "p(i(String) i(Int32) o(Utf32Char))")
     DEFINE_VIREO_FUNCTION(StringToUpper, "p(i(String) o(String))")
     DEFINE_VIREO_FUNCTION(StringToLower, "p(i(String) o(String))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringToUpper, StringToUpperInt, "p(i(Int32) o(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringToLower, StringToLowerInt, "p(i(Int32) o(Int32))")
     DEFINE_VIREO_FUNCTION(StringViaDecode, "p(i(String) o(String))")
     // StringConcatenate input can be string, or array of string.
     DEFINE_VIREO_FUNCTION(StringConcatenate, "p(i(VarArgCount) o(String) i(*))" )

@@ -2204,6 +2204,12 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(MaxAndMin, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))", EmitMaxMinValueInstruction);
     DEFINE_VIREO_FUNCTION(MaxMinValueInternal, "p(i(*) i(*) o(StaticTypeAndData) o(StaticTypeAndData) s(Instruction))");
 
+    DEFINE_VIREO_GENERIC(StringLength, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(StringReverse, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(StringRotate, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(StringToUpper, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(StringToLower, "GenericUnOp", EmitGenericUnOpInstruction);
+
 	DEFINE_VIREO_GENERIC(MaxAndMinElts, "p(i(*) i(*) o(*) o(*) s(Instruction))", EmitMaxMinEltsInstruction);
 	DEFINE_VIREO_FUNCTION(VectorMaxMinOp, "p(i(Array) i(Array) o(Array) o(Array) s(Instruction))")
 	DEFINE_VIREO_FUNCTION(ClusterMaxMinOp, "p(i(*) i(*) o(*) o(*) s(Instruction))")
