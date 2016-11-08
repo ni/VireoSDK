@@ -49,7 +49,8 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
        _options._bEscapeStrings = true;
        _options._fmt = jsonLVExt ? TDViaFormatter::formatJSONLVExt : TDViaFormatter::formatJSON;
-       _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
+       if (strictJSON)
+           _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
        _options._fmt = TDViaFormatter::formatC;
    }
