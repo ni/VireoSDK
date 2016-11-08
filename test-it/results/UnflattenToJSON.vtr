@@ -1,0 +1,27 @@
+
+When JSON is incorrect an error is expected. Error is 'true'; expected value is 'true'. Value is 'Default'; expected value is 'Default'
+
+When LabVIEW extensions are off an error is expected. Error is 'true'; expected value is 'true'. Value is '()'; expected value is '(0,0)'
+
+Path to JSON elements: Expected '('b' true 3 3.1)'; got '('b' true 3 3.1)'
+
+Path to JSON elements: Expected 'b'; got 'b'
+
+Did tests for element paths pass? 'true'
+
+When default null elements in on: Expected '('a' true 4 3.1)'; got '('a' true 4 3.1)'
+
+Did tests for default null elements on pass? 'true'
+
+When default null elements is off: Expected '('a' false 4 8)'; got '('a' false 4 8)'
+
+Did tests for default null elements off pass? 'true'
+
+Did tests for default null elements pass? 'true'
+
+Results when strict validation is on. Expected error to be 'true', got 'true'
+
+Results when strict validation is on. Expected '('b' true 3 3.1)', and got '('b' true 3 3.1)'
+(true -375007 'Unflatten From JSON')
+
+Did tests for strict validation pass? 'true'

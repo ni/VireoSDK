@@ -57,6 +57,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
     switch (severity) {
         case kWarning:
             preamble = "Warning";
+            _warningCount++;
             break;
         case kSoftDataError:
             preamble = "Error";

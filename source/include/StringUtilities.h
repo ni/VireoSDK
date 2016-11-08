@@ -273,10 +273,10 @@ public:
     Boolean ReadIntDim(IntIndex* value);
     
     //! Read the next sequence of digits and parse them as a Double.
-    Boolean ParseDouble(Double* value);
+    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false);
     
     //! Read a simple token name, value, punctuation, etc.
-    TokenTraits ReadToken(SubString* token);
+    TokenTraits ReadToken(SubString* token, Boolean suppressInfNaN = false);
 
     //! Read 2 digit hex value
     Boolean ReadHex2(Int32* value);

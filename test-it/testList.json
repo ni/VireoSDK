@@ -237,6 +237,7 @@
                 "TypedTemplatedLiterals.via",
                 "TypeValuesError.via",
                 "TypeValues.via",
+		"UnflattenToJSON.via",
                 "UnOpFunctions.via",
                 "UsageType.via",
                 "UserTypes.via",

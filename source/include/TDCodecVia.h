@@ -32,7 +32,8 @@ enum ViaFormat {
     kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames | 4,
     kViaFormat_FieldNameMask = kViaFormat_QuotedFieldNames | kViaFormat_PercentEncodeFieldNames,
     kViaFormat_UseLongNameInfNaN = 8, // mask,  clear == use inf,nan, set == use Infinity/NaN
-    kViaFormat_SuppressInfNaN = 16, // use neither
+    kViaFormat_SuppressInfNaN = 16, // use neither,
+    kViaFormat_JSONStrictValidation = 32
 };
 
 struct ViaFormatChars
@@ -50,6 +51,7 @@ struct ViaFormatChars
     Boolean QuoteFieldNames()    { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
     Boolean SuppressInfNaN()     { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
     Boolean LongNameInfNaN()     { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
+    Boolean JSONStrictValidation() { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
 };
 
 struct ViaFormatOptions
@@ -94,7 +96,8 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false);
+    void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = null);
     TypeRef ParseLiteral(TypeRef patternType);
     void    ParseData(TypeRef type, void* pData);
@@ -102,7 +105,7 @@ public:
     NIError ParseREPL();
     TypeRef ParseEnqueue();
     void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
-    TokenTraits ReadArrayItem(SubString* input, SubString* token);
+    TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN = false);
     void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);
