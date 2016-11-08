@@ -423,6 +423,19 @@ VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsEmptyPath, NIPath, Boolean)
+{
+    if (!_ParamPointer(0) || _ParamPointer(0)->components->Length()==0) {
+        if (_ParamPointer(0)->type->Length() > 0)
+            _Param(1) = true;
+        else
+            _Param(1) = false; // not-a-path is not considered empty
+    }
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE2(IsDecimalDigit, StringRef, Boolean)
 {
     StringRef str = _Param(0);
@@ -796,6 +809,9 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(IsEmptyString, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEmptyStringOrPath, IsEmptyString, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEmptyString, IsEmptyPath, "p(i(NIPath) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEmptyStringOrPath, IsEmptyPath, "p(i(NIPath) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsDecimalDigit, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsHexDigit, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsOctalDigit, "p(i(String) o(Boolean))")

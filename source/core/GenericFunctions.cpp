@@ -2155,6 +2155,7 @@ DEFINE_VIREO_BEGIN(Generics)
 
     DEFINE_VIREO_GENERIC(IsNotANumPathRefnum, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsEmptyString, "GenericUnOp", EmitGenericUnOpInstruction);
+    DEFINE_VIREO_GENERIC(IsEmptyStringOrPath, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsDecimalDigit, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsHexDigit, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(IsOctalDigit, "GenericUnOp", EmitGenericUnOpInstruction);

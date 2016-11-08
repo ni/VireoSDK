@@ -248,6 +248,9 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Array1D", "DataPointer");
     Define(tm, "Variant", "DataPointer");  // TODO is this any different from the Type type if the type has a default value?
 
+    Define(tm, "ErrorClust", "c(e(Boolean) e(Int32) e(String))");
+    Define(tm, "NIPath", "c(e(a(String *)) e(String))");
+
     // VarArgCount - Used in prototypes for vararg functions.
     // This parameter will be constant number, not a pointer to a number
     Define(tm, "VarArgCount", "DataPointer");
