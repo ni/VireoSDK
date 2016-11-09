@@ -15,7 +15,8 @@ start( VI<(
 	e(dv(.String "\r") crstr)
 	e(dv(.String "\n") nlstr)
 	e(a(.Boolean *) abool)
-
+	e(dv(.NIPath (() '')) notapath)
+	e(dv(.NIPath (() 'absolute')) emptypath)
 	e(c(e(.Boolean a) e(.Boolean b)) cbool)
 	e(.Boolean result)
     )
@@ -64,6 +65,10 @@ start( VI<(
 	ArrayReplaceEltNDV(emptyanum emptyanum inf 0)
 	IsNotANumPathRefnum(emptyanum abool)
 	Println(abool)
+	IsNotANumPathRefnum(notapath result)
+	Println(result)
+	IsNotANumPathRefnum(emptypath result)
+	Println(result)
 
 	Println("IsDecimalDigit")
 	IsDecimalDigit(decstr result)

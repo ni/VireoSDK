@@ -130,6 +130,7 @@
 		"IsDecimalDigitFail.via",
 		"IsEmptyStringFail.via",
 		"IsHexDigitFail.via",
+		"IsNotNaNPathRefNumFail.via",
 		"IsOctalDigitFail.via",
 		"IsPrintableFail.via",
 		"IsWhiteSpaceFail.via",

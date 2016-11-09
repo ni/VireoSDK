@@ -537,6 +537,16 @@ VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsNotAPath, NIPath, Boolean)
+{
+    if (!_ParamPointer(0) || (_Param(0).components->Length()==0 && _Param(0).type->Length()==0))
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
+
 //-----------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringViaDecode, StringRef, StringRef)
 {
@@ -823,6 +833,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION_CUSTOM(IsPrintable, IsPrintableInt, "p(i(Int32) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsWhiteSpace, IsWhiteSpaceInt, "p(i(Int32) o(Boolean))")
     DEFINE_VIREO_FUNCTION(IsNotANumPathRefnum, "p(i(String) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAPath, "p(i(NIPath) o(Boolean))")
 
 	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
 
