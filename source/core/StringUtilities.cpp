@@ -16,6 +16,7 @@ SDG
 #include "CharConversionsUTF16.h"
 #endif
 #include <stdlib.h>
+#include <math.h>
 #if (kVireoOS_win32U || kVireoOS_win64U )
 #include <limits>
 #endif
@@ -484,7 +485,7 @@ IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
 }
 //------------------------------------------------------------
 //! Read a token that represents a simple symbol or value, including *.
-TokenTraits SubString::ReadToken(SubString* token)
+TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=false*/)
 {
     TokenTraits tokenTraits = TokenTraits_Unrecognized;
 
@@ -549,8 +550,11 @@ TokenTraits SubString::ReadToken(SubString* token)
             _begin++;
         }
         SubString idToken(initialBegin, _begin);
-        
-        if (idToken.CompareCStr("inf") || idToken.CompareCStr("-inf") || idToken.CompareCStr("nan")) {
+
+        if (!suppressInfNaN && (idToken.CompareCStr("Infinity") || idToken.CompareCStr("-Infinity") || idToken.CompareCStr("NaN"))) {
+            tokenTraits = TokenTraits_IEEE754;
+        }
+        else if (!suppressInfNaN && (idToken.CompareCStr("inf") || idToken.CompareCStr("-inf") || idToken.CompareCStr("nan"))) {
             // Look for special IEE754 numeric tokens.
             tokenTraits = TokenTraits_IEEE754;
         } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
@@ -831,7 +835,7 @@ Boolean SubString::ReadInt(IntMax *pValue)
     return bNumberFound;
 }
 //------------------------------------------------------------
-Boolean SubString::ParseDouble(Double *pValue)
+Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/)
 {
     // TODO not so pleased with the standard functions for parsing  numbers
     // many are not thread safe, none seem to be bound on how many characters they will read
@@ -842,11 +846,15 @@ Boolean SubString::ParseDouble(Double *pValue)
     char* end = null;
     
     value = strtod(current, (char**)&end);
+    if (suppressInfNaN) {
+        if (isinf(value) || isnan(value))
+            end = (char*)current;
+    }
     Boolean bParsed = current != end;
     _begin += end - current;
     
 #if (kVireoOS_win32U || kVireoOS_win64U )
-    if (!bParsed) {
+    if (!bParsed && !suppressInfNaN) {
         Int32 length = Length();
         if (length >= 3 && strncmp("inf", (ConstCStr)_begin, 3) == 0) {
             value = std::numeric_limits<double>::infinity();

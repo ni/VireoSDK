@@ -34,7 +34,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format)
+TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -48,7 +48,9 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
        _options._fmt = TDViaFormatter::formatVIA;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
        _options._bEscapeStrings = true;
-       _options._fmt = TDViaFormatter::formatJSON;
+       _options._fmt = jsonLVExt ? TDViaFormatter::formatJSONLVExt : TDViaFormatter::formatJSON;
+       if (strictJSON)
+           _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
        _options._fmt = TDViaFormatter::formatC;
    }
@@ -687,8 +689,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     Int32 dimIndex;
     while (depth >= 0) {
         dimIndex = (rank - depth) - 1;
-
-        if(!ReadArrayItem(&tempString, &token)) {
+        if(!ReadArrayItem(&tempString, &token, Fmt().SuppressInfNaN())) {
              // Avoid infinite loop for incorrect input.
              break;
         }
@@ -719,7 +720,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
     }
 }
 
-TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token)
+TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN /*=false*/)
 {
     if (input->EatChar('{')) {
         input->EatWhiteSpaces();
@@ -729,12 +730,12 @@ TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token)
             if (!input->EatChar(*tsNameSuffix)) {
                return TokenTraits_Unrecognized;
             }
-            if (!ReadArrayItem(input, token)) { return TokenTraits_Unrecognized; }
+            if (!ReadArrayItem(input, token, suppressInfNaN)) { return TokenTraits_Unrecognized; }
             input->EatChar(',');
         }
         return TokenTraits_NestedExpression;
     } else {
-        return input->ReadToken(token);
+        return input->ReadToken(token, suppressInfNaN);
     }
     return TokenTraits_Unrecognized;
 }
@@ -868,6 +869,8 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
     SubString  token;
     switch (encoding) {
         case kEncoding_Array:
+            if (!pData)
+                return;
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_UInt:
@@ -914,9 +917,10 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_IEEE754Binary:
             {
-                _string.ReadToken(&token);
+                Boolean suppressInfNaN = Fmt().SuppressInfNaN();
+                _string.ReadToken(&token, suppressInfNaN);
                 Double value = 0.0;
-                Boolean readSuccess = token.ParseDouble(&value);
+                Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN);
                 if (!readSuccess)
                     return LOG_EVENT(kSoftDataError, "Data IEEE754 syntax error");
                 if (!pData)
@@ -934,7 +938,8 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             TokenTraits tt = _string.ReadToken(&token);
             token.TrimQuotedString(tt);
             if (aqSize == 1 && token.Length() >= 1) {
-                *(Utf8Char*)pData = *token.Begin();
+                if (pData)
+                    *(Utf8Char*)pData = *token.Begin();
             } else {
                 LOG_EVENT(kSoftDataError, "Scalar that is unicode");
                 // TODO support escaped chars, more error checking
@@ -1002,11 +1007,13 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                             found = fieldName.CompareViaEncodedString(&name);
                         }
                         if (!found) {
-                            return ;
+                            if (Fmt().JSONStrictValidation())
+                                LOG_EVENT(kWarning, "JSON field not found in cluster");
+                            return;
                         }
                         if (baseOffset == null) {
                             elementData = baseOffset ;
-                            return ;
+                            return;
                         }
                         ParseData(elementType, elementData);
                         _string.EatWhiteSpaces();
@@ -2006,6 +2013,9 @@ struct FlattenToJSONParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
+enum JSONLVErrors { KJSONLV_BadInfNaN = -375011, kJSONLV_StrictFieldNotFound = -375007, kJSONLV_InvalidPath = -375004, kJSONLV_InvalidString = -375003 };
+// TO-DO: Other possible errors not detected/handles: -375005 type mismatch,-375006 clust elem not found
+
 VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
 {
     StaticTypeAndData *arg =  _ParamImmediate(arg1);
@@ -2024,7 +2034,7 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
     if (formatter.HasError()) {
         if (_ParamVarArgCount() > 4) {
             _Param(errClust).status = true;
-            _Param(errClust).code = -375011;
+            _Param(errClust).code = KJSONLV_BadInfNaN;
             _Param(errClust).source->Resize1D(0);
             _Param(errClust).source->AppendCStr("Flatten To JSON");
         }
@@ -2044,28 +2054,72 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
  *      :default null elements
  *      :strict validation. whether allow json object contains items not defined in the cluster
  * */
-VIREO_FUNCTION_SIGNATURE7(UnflattenFromJSON, StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
+struct UnflattenFromJSONParamBlock : public VarArgInstruction
 {
-    SubString jsonString = _Param(0)->MakeSubStringAlias();
-    TypedArray1D<StringRef>* itemPath = _Param(3);
+    _ParamDef(StringRef, jsonString);
+    _ParamImmediateDef(StaticTypeAndData, arg1[1]);
+    _ParamDef(TypedArray1D<StringRef>*,itemPath);
+    _ParamDef(Boolean, lvExtensions);
+    _ParamDef(Boolean, defaultNullElements);
+    _ParamDef(Boolean, strictValidation);
+    _ParamDef(ErrorCluster, errClust);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
+{
+    if (_ParamVarArgCount() > 7 && _Param(errClust).status)
+        return _NextInstruction();
+
+    SubString jsonString = _Param(jsonString)->MakeSubStringAlias();
+    StaticTypeAndData *arg =  _ParamImmediate(arg1);
+
+    TypedArray1D<StringRef> *itemPath = _Param(itemPath);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat("JSON");
-    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat);
+    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation));
+    Boolean badPath = false;
     if (itemPath->Length()>0) {
-        Boolean existingPath = true;
-        for (IntIndex i=0; existingPath && i< itemPath->Length();i++) {
+        for (IntIndex i=0; !badPath && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
             if(!parser.EatJSONPath(&p)) {
-                existingPath = false;
+                badPath = true;
             }
         }
-        if (existingPath) {
-            parser.ParseData(_ParamPointer(1), _ParamPointer(2));
-        } else {
-            // PlatformIO::Print("not found\n");
+    }
+    if (!badPath) {
+        if (_Param(defaultNullElements))
+            parser.ParseData(arg[0]._paramType, arg[0]._pData);
+        else {
+            Int32 topSize = arg[0]._paramType->TopAQSize();
+            char buffer[topSize]; // passed in default data is overwritten since it's also the output.  Save a copy.
+            // ??? Refactor to make default and output different args?
+            memset(buffer, 0, topSize);
+            arg[0]._paramType->InitData(buffer);
+            arg[0]._paramType->CopyData(arg[0]._pData, buffer);
+            parser.ParseData(arg[0]._paramType, arg[0]._pData);
+            if (log.TotalErrorCount() > 0)
+                arg[0]._paramType->CopyData(buffer, arg[0]._pData);
+            arg[0]._paramType->ClearData(buffer);
         }
-    } else {
-        parser.ParseData(_ParamPointer(1), _ParamPointer(2));
+    }
+    if (_ParamVarArgCount() > 7) {
+        Int32 code = badPath ? kJSONLV_InvalidPath : kJSONLV_InvalidString;
+        if (badPath || log.TotalErrorCount() > 0) {
+                _Param(errClust).status = true;
+                _Param(errClust).code = code; // invalid string.  -375007 strict, -375005 type mismatch,-375006 clust elem not found
+                _Param(errClust).source->Resize1D(0);
+                _Param(errClust).source->AppendCStr("Unflatten From JSON");
+        } else if (log.WarningCount() > 0) {
+            _Param(errClust).status = true;
+            _Param(errClust).code = kJSONLV_StrictFieldNotFound;
+            _Param(errClust).source->Resize1D(0);
+            _Param(errClust).source->AppendCStr("Unflatten From JSON");
+        } else {
+            _Param(errClust).status = false;
+            _Param(errClust).code = 0;
+            _Param(errClust).source->Resize1D(0);
+        }
     }
     return _NextInstruction();
 }
@@ -2493,7 +2547,7 @@ DEFINE_VIREO_BEGIN(DataAndTypeCodecUtf8)
     DEFINE_VIREO_FUNCTION(DefaultValueToString, "p(i(Type)o(String))")
     DEFINE_VIREO_FUNCTION(ToString, "p(i(StaticTypeAndData) i(Int16) o(String))")
     DEFINE_VIREO_FUNCTION(FlattenToJSON, "p(i(VarArgCount) i(StaticTypeAndData) i(Boolean) o(String) io(c(e(.Boolean) e(.Int32) e(.String))))")
-    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p( i(String) o(StaticTypeAndData) i(a(String *)) i(Boolean) i(Boolean) i(Boolean) )")
+    DEFINE_VIREO_FUNCTION(UnflattenFromJSON, "p(i(VarArgCount) i(String) o(StaticTypeAndData) i(a(String *)) i(Boolean) i(Boolean) i(Boolean) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ToString, ToStringEx, "p(i(StaticTypeAndData) i(String) o(String))")
     DEFINE_VIREO_FUNCTION(ToTypeAndDataString, "p(i(StaticTypeAndData) o(String))")
 #endif
