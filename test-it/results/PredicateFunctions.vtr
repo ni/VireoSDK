@@ -18,6 +18,8 @@ false
 (false true false)
 (true true)
 (false true)
+true
+false
 IsDecimalDigit
 true
 false
