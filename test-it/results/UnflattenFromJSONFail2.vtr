@@ -1,0 +1,10 @@
+
+When LV extensions are off and there is an error the default value is returned. Expected value is '(nan inf)'; got '(nan inf)'.
+
+In this case an error is correctly returned: 'true'.
+
+When use default for null is on, nulls in the JSON string are expected to be replaced with default values. Expected value is '('a' true 4 3.1)'; got '('a' true 4 3.1)'.
+
+Use default for null test pass: 'true'.
+
+All tests pass: 'true'.
