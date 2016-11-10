@@ -788,6 +788,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     }
 }
 
+static char gSIPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y'};
+
 /* Adjust the numeric string.
  * 1. truncate the integer part if necessary for %f. %_2f   1345.55
  * 2. calculate the significant digits to guarantee the correctness.  %_2f 9.9
@@ -893,7 +895,6 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
         TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
         GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
     } else if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
-        char siPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y'};
         Int32 numberIndex = numberStart;
         Int32 baseIndex = 0;
         // baseIndex used to traverse the tempNumber char array.
@@ -948,8 +949,8 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[siIndex] != '0' ) {
-                    tempNumber[baseIndex] = siPrefixesTable[siIndex];
+                if (gSIPrefixesTable[siIndex] != '0' ) {
+                    tempNumber[baseIndex] = gSIPrefixesTable[siIndex];
                     baseIndex ++;
                 }
 
@@ -977,8 +978,8 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
 
                 Int32 siIndex = (Int32)((exponent+24)/3);
                 // Attention: -2 --- +2 will not be used
-                if (siPrefixesTable[siIndex] != '0' ) {
-                    tempNumber[baseIndex] = siPrefixesTable[siIndex];
+                if (gSIPrefixesTable[siIndex] != '0' ) {
+                    tempNumber[baseIndex] = gSIPrefixesTable[siIndex];
                     baseIndex ++;
                 }
             } else {
@@ -1187,6 +1188,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case 'o' : {
             intValue = strtoll(inpBegin, &endPointer, 8);
         }
+            break;
         case 'f' : case 'e' :{
             Double temp = strtold(inpBegin, &endPointer);
             // or round to even
@@ -1224,8 +1226,20 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                intValue = strtoll(inpBegin, &endPointer, 8);
                doubleValue = intValue;
            }
-           case 'f' : case 'e' :{
+           case 'f' : case 'e': case 'g': case 'p': {
                doubleValue = strtold(inpBegin, &endPointer);
+               if (formatOptions->FormatChar == 'p' && endPointer != NULL && endPointer < ConstCStr(truncateInput.End())) {
+                   char siPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y'};
+                   char prefix = *endPointer;
+                   int i = 0;
+                   for (; i < sizeof(siPrefixesTable); ++i)
+                       if (siPrefixesTable[i] == prefix)
+                           break;
+                   if (i < sizeof(siPrefixesTable)) {
+                       ++inpBegin;
+                       doubleValue *= pow(10.0, (i-8)*3);
+                   }
+               }
            }
                break;
            default:

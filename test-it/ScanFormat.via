@@ -31,7 +31,7 @@ define(HelloWorld dv(.VirtualInstrument (
 	e(dv(.String "-67 +ABCD") input11)
 	e(dv(.String "-67 -10") input12)
 	e(dv(.String "173 109088") input13)
-	e(dv(.String "-986 -10") input14)
+	e(dv(.String "-106 -809") input14)
 	e(dv(.String "12345845QQTAvasd ") input15)
 	e(dv(.String "123,  7200") input16)
 	e(dv(.String "1110100011") input17)
