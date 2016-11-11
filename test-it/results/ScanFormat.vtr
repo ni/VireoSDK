@@ -37,11 +37,11 @@ passed:<12>, remaining:()
 passed:<7>, remaining:()
 :<-103> <-16> 
 ---test scan Int base8------ (173 109088) 
-passed:<10>, remaining:()
-:<173> <109088> 
----test scan Int base8------ (-986 -10) 
-passed:<8>, remaining:()
-:<-986> <-10> 
+passed:<6>, remaining:(9088)
+:<123> <8> 
+---test scan Int base8------ (-106 -809) 
+passed:<5>, remaining:(-809)
+:<-70> <0> 
 ---test scan Intwidth------ (12345845QQTAvasd ) 
 passed:<5>, remaining:(845QQTAvasd )
 :<123> <45> 

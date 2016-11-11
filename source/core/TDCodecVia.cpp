@@ -843,6 +843,9 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             if (bExtraInitializersFound) {
                 LOG_EVENT(kWarning, "Ignoring extra array initializer elements");
             }
+        } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
+            return LOG_EVENT(kSoftDataError, "null encountered");
+            // only allow in JSON context?
         } else {
             return LOG_EVENT(kHardDataError, "'(' missing");
         }
@@ -882,9 +885,11 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     // The token didn't look like a number, so consume it anyway and
                     // Log an error.
                     SubString tempToken;
-                    _string.ReadSubexpressionToken(&tempToken);
-                    return LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
-                    }
+                    if (_string.ReadSubexpressionToken(&tempToken) == TokenTraits_SymbolName && tempToken.CompareCStr("null")) {
+                        return LOG_EVENT(kSoftDataError, "null encountered");
+                    } else
+                        return LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
+                }
 
                 if (!pData)
                     return; // If no where to put the parsed data, then all is done.
@@ -2013,8 +2018,8 @@ struct FlattenToJSONParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-enum JSONLVErrors { KJSONLV_BadInfNaN = -375011, kJSONLV_StrictFieldNotFound = -375007, kJSONLV_InvalidPath = -375004, kJSONLV_InvalidString = -375003 };
-// TO-DO: Other possible errors not detected/handles: -375005 type mismatch,-375006 clust elem not found
+enum JSONLVErrors { KJSONLV_BadInfNaN = -375011, kJSONLV_StrictFieldNotFound = -375007, kJSONLV_TypeMismatch = -375005,  kJSONLV_InvalidPath = -375004, kJSONLV_InvalidString = -375003 };
+// TO-DO: Other possible errors not detected/handles: -375006 clust elem not found
 
 VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
 {
@@ -2078,7 +2083,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
     EventLog log(EventLog::DevNull);
     SubString jsonFormat("JSON");
     TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation));
-    Boolean badPath = false;
+    Boolean badPath = false, badNulls = false;;
     if (itemPath->Length()>0) {
         for (IntIndex i=0; !badPath && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
@@ -2098,14 +2103,17 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
             arg[0]._paramType->InitData(buffer);
             arg[0]._paramType->CopyData(arg[0]._pData, buffer);
             parser.ParseData(arg[0]._paramType, arg[0]._pData);
-            if (log.TotalErrorCount() > 0)
+            if (log.TotalErrorCount() > 0) {
                 arg[0]._paramType->CopyData(buffer, arg[0]._pData);
+                if (log.HardErrorCount() == 0)
+                    badNulls = true;
+            }
             arg[0]._paramType->ClearData(buffer);
         }
     }
     if (_ParamVarArgCount() > 7) {
-        Int32 code = badPath ? kJSONLV_InvalidPath : kJSONLV_InvalidString;
-        if (badPath || log.TotalErrorCount() > 0) {
+        Int32 code = badPath ? kJSONLV_InvalidPath : badNulls ? kJSONLV_TypeMismatch :  kJSONLV_InvalidString;
+        if (badPath || badNulls || log.HardErrorCount() > 0) {
                 _Param(errClust).status = true;
                 _Param(errClust).code = code; // invalid string.  -375007 strict, -375005 type mismatch,-375006 clust elem not found
                 _Param(errClust).source->Resize1D(0);
