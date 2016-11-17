@@ -263,7 +263,7 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan(_Param(0))) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
 		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
