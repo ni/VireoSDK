@@ -23,6 +23,7 @@ make-it/esh
 target-support/
 dist/
 custom.mak
+settings.json
 
 # Coverage Files
 cov.info

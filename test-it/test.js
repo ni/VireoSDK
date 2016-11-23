@@ -326,7 +326,7 @@ function RunNativeTest(testName) {
 function SetupVJS()
 {
     try {
-        vireo = require('../dist/vireo.js');
+        vireo = require('../source/core/vireo.loader.js')().vireoAPI;
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
@@ -336,7 +336,7 @@ function SetupVJS()
         }
     }
     vireo.stdout = '';
-    vireo.core.print = function(text) { vireo.stdout = vireo.stdout + text + '\n'; };
+    vireo.setPrintFunction( function(text) { vireo.stdout = vireo.stdout + text + '\n'; });
 }
 
 // Testing functions for processing the tests against vireo.js or esh binary

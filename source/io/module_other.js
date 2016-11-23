@@ -14,8 +14,13 @@
             return currObj[subNamespace] === undefined ? currObj[subNamespace] = nextValue : currObj[subNamespace];
         }, root);
   }
-}(this, 'NationalInstruments.Vireo.Core.createVireoCore', function () {
+}(this, 'NationalInstruments.Vireo.ModuleBuilders.assignOtherAPIs', function () {
+    'use strict';
+    var assignOtherAPIs = function (vireoCore) {
+        var Module = vireoCore.Module;
+        var MODULE_OTHER_APIS = vireoCore.Module.otherAPIs = {};
+        var PUBLIC_OTHER_APIS = vireoCore.publicAPI.otherAPIs = {};
+    };
 
-// Begin var applyVireoEmscriptenModule = function (Module)
-var applyVireoEmscriptenModule = function (Module) {
-// Emscripten code starts here
+    return assignOtherAPIs;
+}));
