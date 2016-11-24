@@ -13,13 +13,106 @@
             var nextValue = currentIndex === arr.length - 1 ? factory() : {};
             return currObj[subNamespace] === undefined ? currObj[subNamespace] = nextValue : currObj[subNamespace];
         }, root);
-  }
+    }
 }(this, 'NationalInstruments.Vireo.ModuleBuilders.assignOtherAPIs', function () {
     'use strict';
+    // Static Private Variables (all vireo instances)
+    var OtherHelper;
+    (function () {
+        // Static private reference aliases
+        // None
+
+        // Constructor Function
+        OtherHelper = function () {
+            // Public Instance Properties
+            // None
+
+            // Private Instance Properties
+            // None
+        };
+
+        // Static Public Variables
+        // None
+
+        // Static Public Functions
+        // None
+
+        // Prototype creation
+        var child = OtherHelper;
+        var proto = child.prototype;
+
+        // Static Private Variables
+        // None
+
+        // Static Private Functions
+        // None
+
+        // Public Prototype Methods
+        // None
+    }());
+
+    var inheritFromParent = function (childConstructorFunction, parentConstructorFunction) {
+        childConstructorFunction.prototype = Object.create(parentConstructorFunction.prototype);
+        childConstructorFunction.prototype.constructor = childConstructorFunction;
+        return childConstructorFunction.prototype;
+    };
+
+    var OtherHelperChild;
+    (function (parent) {
+        // Static private reference aliases
+        // None
+
+        // Constructor Function
+        OtherHelperChild = function () {
+            parent.call(this);
+            // Public Instance Properties
+            // None
+
+            // Private Instance Properties
+            // None
+        };
+
+        // Static Public Variables
+        // None
+
+        // Static Public Functions
+        // None
+
+        // Prototype creation
+        var child = OtherHelperChild;
+        var proto = inheritFromParent(child, parent);
+
+        // Static Private Variables
+        // None
+
+        // Static Private Functions
+        // None
+
+        // Public Prototype Methods
+        // None
+    }(OtherHelper));
+
+    // Vireo Core Mixin Function
     var assignOtherAPIs = function (vireoCore) {
-        var Module = vireoCore.Module;
-        var MODULE_OTHER_APIS = vireoCore.Module.otherAPIs = {};
         var PUBLIC_OTHER_APIS = vireoCore.publicAPI.otherAPIs = {};
+        var Module = vireoCore.Module;
+        Module.otherAPIs = {};
+
+        // Note:
+        // Do not create a binding directly to other modules, ie:
+        // var MODULE_ANOTHER_API = vireoCore.Module.anotherAPI;
+        // MODULE_ANOTHER_API.awesomeFunction();
+        // This is because the module load order is not guaranteed and may bind to undefined accidently
+        // Instead use a dynamic binding to other module functions like:
+        // vireoCore.Module.anotherAPI.awesomeFunction();
+        // or
+        // Module.anotherAPI.awesomeFunction();
+
+        // Private Instance Variables (per vireo instance)
+        // None
+
+        // Exported functions
+        // None
     };
 
     return assignOtherAPIs;

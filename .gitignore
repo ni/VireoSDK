@@ -39,6 +39,7 @@ Vireo_VS/VireoCommandLine.vcxproj.user
 **.suo
 
 # Other
+c_cpp_properties.json
 Vireo_SimpleMake/asm/
 *.ipch
 hw10000.via
