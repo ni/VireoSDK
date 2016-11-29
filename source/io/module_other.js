@@ -53,7 +53,8 @@
         // None
 
         // Public Prototype Methods
-        // None
+        proto.example = function () {
+        };
     }());
 
     var inheritFromParent = function (childConstructorFunction, parentConstructorFunction) {
@@ -94,7 +95,9 @@
         // None
 
         // Public Prototype Methods
-        // None
+        proto.example = function () {
+            parent.prototype.example.call(this);
+        };
     }(OtherHelper));
 
     // Vireo Core Mixin Function

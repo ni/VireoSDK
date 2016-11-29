@@ -20,6 +20,7 @@
         buildGlobalNamespace();
     }
 }(this, 'NationalInstruments.Vireo.Core.createVireoCore', function () {
+    'use strict';
 
 // Begin var applyVireoEmscriptenModule = function (Module)
 var applyVireoEmscriptenModule = function (Module) {
