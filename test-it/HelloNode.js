@@ -1,10 +1,10 @@
 var vireo = {};
 
 var SetupVJS = function () {
-    var buildVireoInstance;
+    var Vireo;
     try {
-        buildVireoInstance = require('../source/core/vireo.loader.js');
-        vireo = buildVireoInstance().vireoAPI;
+        Vireo = require('../source/core/vireo.loader.js');
+        vireo = new Vireo().eggShell;
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
@@ -42,7 +42,6 @@ vireo.setFPSyncFunction(function (fpId) {
 
 vireo.loadVia(text);
 vireo.executeSlices(1);
-
 
 var testResult = false;
 var testString = '';

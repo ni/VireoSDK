@@ -22,12 +22,12 @@
         }
     };
 
-    var createAndRun = function (buildVireoInstance, viaCode) {
-        var publicAPI = buildVireoInstance();
+    var createAndRun = function (Vireo, viaCode) {
+        var vireo = new Vireo();
 
-        publicAPI.httpClient.enableHttpDebugging(true);
+        vireo.httpClient.enableHttpDebugging(true);
 
-        eggShell = publicAPI.vireoAPI;
+        eggShell = vireo.eggShell;
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };
@@ -35,7 +35,7 @@
     var runTest = function () {
         var viaCode = document.getElementById('viacode').textContent;
 
-        createAndRun(window.NationalInstruments.Vireo.buildVireoInstance, viaCode);
+        createAndRun(window.NationalInstruments.Vireo.Vireo, viaCode);
     };
 
     domReady(runTest);

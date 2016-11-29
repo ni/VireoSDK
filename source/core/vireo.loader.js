@@ -13,7 +13,7 @@
         // AMD. Register as a named module.
         define(globalName, [
             'NationalInstruments.Vireo.Core.createVireoCore',
-            'NationalInstruments.Vireo.ModuleBuilders.assignVireoAPI',
+            'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient'
         ], factory);
     } else if (typeof module === 'object' && module.exports) {
@@ -27,24 +27,29 @@
         // Browser globals (root is window)
         buildGlobalNamespace(
             root.NationalInstruments.Vireo.Core.createVireoCore,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignVireoAPI,
+            root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
             root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient
         );
     }
-}(this, 'NationalInstruments.Vireo.buildVireoInstance', function () {
+}(this, 'NationalInstruments.Vireo.Vireo', function () {
     'use strict';
     // Static Private Variables (all vireo instances)
     var createVireoCore = arguments[0];
     var moduleBuilders = Array.prototype.slice.call(arguments, 1);
 
     // Vireo Core Mixin Function
-    var buildVireoInstance = function () {
+    var Vireo = function Vireo () {
+        var that = this;
+
         var vireoCore = createVireoCore();
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder.call(undefined, vireoCore);
         });
-        return vireoCore.publicAPI;
+
+        Object.keys(vireoCore.publicAPI).forEach(function (key) {
+            that[key] = vireoCore.publicAPI[key];
+        });
     };
 
-    return buildVireoInstance;
+    return Vireo;
 }));

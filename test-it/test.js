@@ -325,8 +325,11 @@ function RunNativeTest(testName) {
 // Setup the vireo.js runtime for instruction execution
 function SetupVJS()
 {
+    var Vireo;
+
     try {
-        vireo = require('../source/core/vireo.loader.js')().vireoAPI;
+        Vireo = require('../source/core/vireo.loader.js');
+        vireo = new Vireo().eggShell;
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');

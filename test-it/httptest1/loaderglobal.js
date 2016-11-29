@@ -21,10 +21,8 @@
         }
     };
 
-    var createAndRun = function (buildVireoInstance, viaCode) {
-        var publicAPI = buildVireoInstance();
-
-        eggShell = publicAPI.vireoAPI;
+    var createAndRun = function (Vireo, viaCode) {
+        eggShell = new Vireo().eggShell;
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };
@@ -35,12 +33,12 @@
         // Assume amd if NI namespace not loaded for now
         if (window.NationalInstruments === undefined || window.NationalInstruments.Vireo === undefined) {
             console.log('using amd module');
-            requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireoInstance) {
-                createAndRun(buildVireoInstance, viaCode);
+            requirejs(['NationalInstruments.Vireo.Vireo'], function (Vireo) {
+                createAndRun(Vireo, viaCode);
             });
         } else {
             console.log('using global');
-            createAndRun(window.NationalInstruments.Vireo.buildVireoInstance, viaCode);
+            createAndRun(window.NationalInstruments.Vireo.Vireo, viaCode);
         }
     };
 

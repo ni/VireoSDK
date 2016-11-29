@@ -1,13 +1,13 @@
 requirejs.config({
     paths: {
         'NationalInstruments.Vireo.Core.createVireoCore': '../../dist/vireo',
-        'NationalInstruments.Vireo.ModuleBuilders.assignVireoAPI': '../../source/io/module_vireoapi',
+        'NationalInstruments.Vireo.ModuleBuilders.assignEggShell': '../../source/io/module_vireoapi',
         'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient': '../../source/io/module_httpClient',
-        'NationalInstruments.Vireo.buildVireoInstance': '../../source/core/vireo.loader'
+        'NationalInstruments.Vireo.Vireo': '../../source/core/vireo.loader'
     }
 });
 
-requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireoInstance) {
+requirejs(['NationalInstruments.Vireo.Vireo'], function (Vireo) {
     'use strict';
 
     var eggShell;
@@ -32,9 +32,8 @@ requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireo
 
     var runTest = function () {
         var viaCode = document.getElementById('viacode').textContent;
-        var publicAPI = buildVireoInstance();
+        eggShell = new Vireo().eggShell;
 
-        eggShell = publicAPI.vireoAPI;
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };

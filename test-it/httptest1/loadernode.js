@@ -1,10 +1,9 @@
 var fs = require('fs');
 
-var buildVireoInstance = require('../../source/core/vireo.loader.js');
+var Vireo = require('../../source/core/vireo.loader.js');
 var viaCode = fs.readFileSync('./loadernode.via', 'utf8');
 
-var publicAPI = buildVireoInstance();
-var eggShell = publicAPI.vireoAPI;
+var eggShell = new Vireo().eggShell;
 
 eggShell.loadVia(viaCode);
 
