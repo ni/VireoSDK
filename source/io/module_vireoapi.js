@@ -1,4 +1,4 @@
-// Using a modified UMD module format. Specifically a modified returnExportsGlobal (no dependencies) version
+// Using a modified UMD module format. Specifically a modified returnExports (no dependencies) version
 (function (root, globalName, factory) {
     'use strict';
     var buildGlobalNamespace = function () {
