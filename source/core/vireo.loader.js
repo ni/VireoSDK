@@ -37,17 +37,13 @@
     var createVireoCore = arguments[0];
     var moduleBuilders = Array.prototype.slice.call(arguments, 1);
 
-    // Vireo Core Mixin Function
+    // Vireo Class
     var Vireo = function Vireo () {
         var that = this;
 
-        var vireoCore = createVireoCore();
+        var Module = createVireoCore();
         moduleBuilders.forEach(function (currBuilder) {
-            currBuilder.call(undefined, vireoCore);
-        });
-
-        Object.keys(vireoCore.publicAPI).forEach(function (key) {
-            that[key] = vireoCore.publicAPI[key];
+            currBuilder.call(undefined, Module, that);
         });
     };
 

@@ -3,26 +3,23 @@
 // End var applyVireoEmscriptenModule = function (Module)
 
     var createVireoCore = function () {
-        var vireoCore = {
-            Module: {},
-            publicAPI: {}
-        };
+        var Module = {};
 
         // Need to cache and restore exports because emscripten overrides exports during applyVireoEmscriptenModule().
         // If we do not cache and restore exports then when createVireoCore is require() and invoked by the user,
         // subsequent require() calls will return [Emscripten Module object] instead of [Function: createVireoCore]
-        var cachedExports;
+        var cachedNodeExports;
         if (typeof module === 'object' && module.exports) {
-            cachedExports = module.exports;
+            cachedNodeExports = module.exports;
         }
 
-        applyVireoEmscriptenModule(vireoCore.Module);
+        applyVireoEmscriptenModule(Module);
 
-        if (cachedExports !== undefined) {
-            module.exports = cachedExports;
+        if (cachedNodeExports !== undefined) {
+            module.exports = cachedNodeExports;
         }
 
-        return vireoCore;
+        return Module;
     };
 
     return createVireoCore;

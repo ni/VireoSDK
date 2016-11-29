@@ -242,16 +242,15 @@
     }());
 
     // Vireo Core Mixin Function
-    var assignHttpClient = function (vireoCore) {
-        var PUBLIC_HTTP_CLIENT = vireoCore.publicAPI.httpClient = {};
-        var Module = vireoCore.Module;
+    var assignHttpClient = function (Module, publicAPI) {
         Module.httpClient = {};
+        publicAPI.httpClient = {};
 
         // Private Instance Variables (per vireo instance)
         var httpUsers = new HttpUsers();
 
         // Exported functions
-        PUBLIC_HTTP_CLIENT.enableHttpDebugging = function (enable) {
+        publicAPI.httpClient.enableHttpDebugging = function (enable) {
             if (typeof enable !== 'boolean') {
                 throw new Error('Must set HTTP debugging flag to either true or false');
             }

@@ -26,10 +26,9 @@
     // None
 
     // Vireo Core Mixin Function
-    var assignEggShell = function (vireoCore) {
-        var PUBLIC_EGG_SHELL = vireoCore.publicAPI.eggShell = {};
-        var Module = vireoCore.Module;
+    var assignEggShell = function (Module, publicAPI) {
         Module.eggShell = {};
+        publicAPI.eggShell = {};
 
         // Private Instance Variables (per vireo instance)
         var Vireo_Version = Module.cwrap('Vireo_Version', 'number', []);
@@ -52,10 +51,10 @@
 
         // Exported functions
         Module.eggShell.fpSync = function (/*fpIdStr*/) {
-            // Dummy noop function user can set with public api
+            // Dummy noop function user can replace by using eggShell.setFPSyncFunction
         };
 
-        PUBLIC_EGG_SHELL.setFPSyncFunction = function (fn) {
+        publicAPI.eggShell.setFPSyncFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error ('FPSync must be a callable function');
             }
@@ -63,7 +62,7 @@
             Module.eggShell.fpSync = fn;
         };
 
-        PUBLIC_EGG_SHELL.setPrintFunction = function (fn) {
+        publicAPI.eggShell.setPrintFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error ('Print must be a callable function');
             }
@@ -71,7 +70,7 @@
             Module.print = fn;
         };
 
-        PUBLIC_EGG_SHELL.setPrintErrorFunction = function (fn) {
+        publicAPI.eggShell.setPrintErrorFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error ('PrintError must be a callable function');
             }
@@ -79,48 +78,48 @@
             Module.printErr = fn;
         };
 
-        PUBLIC_EGG_SHELL._core_module_for_debug_only_do_not_use_anywhere = Module;
+        publicAPI.eggShell._core_module_for_debug_only_do_not_use_anywhere = Module;
 
-        // Exporting functions to both VIREO_API and PUBLIC_EGG_SHELL is not normal
-        // This is unique to the vireoAPI as it is consumed by other modules as well as users
-        Module.eggShell.version = PUBLIC_EGG_SHELL.version = Vireo_Version;
+        // Exporting functions to both Module.eggShell and publicAPI.eggShell is not normal
+        // This is unique to the eggShell API as it is consumed by other modules as well as users
+        Module.eggShell.version = publicAPI.eggShell.version = Vireo_Version;
 
-        Module.eggShell.reboot = PUBLIC_EGG_SHELL.reboot = function () {
+        Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
             EggShell_Delete(v_userShell);
             EggShell_Delete(v_root);
             v_root =  EggShell_Create(0);
             v_userShell = EggShell_Create(v_root);
         };
 
-        Module.eggShell.readDouble = PUBLIC_EGG_SHELL.readDouble = function (vi, path) {
+        Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (vi, path) {
             return EggShell_ReadDouble(v_userShell, vi, path);
         };
 
-        Module.eggShell.writeDouble = PUBLIC_EGG_SHELL.writeDouble = function (vi, path, value) {
+        Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {
             EggShell_WriteDouble(v_userShell, vi, path, value);
         };
 
-        Module.eggShell.readJSON = PUBLIC_EGG_SHELL.readJSON = function (vi, path) {
+        Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (vi, path) {
             return EggShell_ReadValueString(v_userShell, vi, path, 'JSON');
         };
 
-        Module.eggShell.writeJSON = PUBLIC_EGG_SHELL.writeJSON = function (vi, path, value) {
+        Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (vi, path, value) {
             EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
         };
 
-        Module.eggShell.dataWriteString = PUBLIC_EGG_SHELL.dataWriteString = function (destination, source, sourceLength) {
+        Module.eggShell.dataWriteString = publicAPI.eggShell.dataWriteString = function (destination, source, sourceLength) {
             Data_WriteString(v_userShell, destination, source, sourceLength);
         };
 
-        Module.eggShell.dataWriteInt32 = PUBLIC_EGG_SHELL.dataWriteInt32 = function (destination, value) {
+        Module.eggShell.dataWriteInt32 = publicAPI.eggShell.dataWriteInt32 = function (destination, value) {
             Data_WriteInt32(destination, value);
         };
 
-        Module.eggShell.dataWriteUInt32 = PUBLIC_EGG_SHELL.dataWriteUInt32 = function (destination, value) {
+        Module.eggShell.dataWriteUInt32 = publicAPI.eggShell.dataWriteUInt32 = function (destination, value) {
             Data_WriteUInt32(destination, value);
         };
 
-        Module.eggShell.loadVia = PUBLIC_EGG_SHELL.loadVia = function (viaText) {
+        Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
             if (typeof viaText !== 'string') {
                 throw new Error('Expected viaText to be a string');
             }
@@ -132,11 +131,11 @@
             return EggShell_REPL(v_userShell, viaText, -1);
         };
 
-        Module.eggShell.executeSlices = PUBLIC_EGG_SHELL.executeSlices = function (slices) {
+        Module.eggShell.executeSlices = publicAPI.eggShell.executeSlices = function (slices) {
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
-        Module.eggShell.setOccurrence = PUBLIC_EGG_SHELL.setOccurrence = function (occurrence) {
+        Module.eggShell.setOccurrence = publicAPI.eggShell.setOccurrence = function (occurrence) {
             Occurrence_Set(occurrence);
         };
     };

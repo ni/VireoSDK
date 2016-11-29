@@ -98,20 +98,17 @@
     }(OtherHelper));
 
     // Vireo Core Mixin Function
-    var assignOtherAPIs = function (vireoCore) {
-        var PUBLIC_OTHER_APIS = vireoCore.publicAPI.otherAPIs = {};
-        var Module = vireoCore.Module;
+    var assignOtherAPIs = function (Module, publicAPI) {
         Module.otherAPIs = {};
+        publicAPI.otherAPIs = {};
 
         // Note:
         // Do not create a binding directly to other modules, ie:
         // var MODULE_ANOTHER_API = vireoCore.Module.anotherAPI;
         // MODULE_ANOTHER_API.awesomeFunction();
-        // This is because the module load order is not guaranteed and may bind to undefined accidently
         // Instead use a dynamic binding to other module functions like:
-        // vireoCore.Module.anotherAPI.awesomeFunction();
-        // or
         // Module.anotherAPI.awesomeFunction();
+        // This is because the module load order is not guaranteed and may bind to undefined accidently
 
         // Private Instance Variables (per vireo instance)
         // None
