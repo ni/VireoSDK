@@ -101,7 +101,7 @@
         };
 
         Module.vireoAPI.readJSON = PUBLIC_VIREO_API.readJSON = function (vi, path) {
-            EggShell_ReadValueString(v_userShell, vi, path, 'JSON');
+            return EggShell_ReadValueString(v_userShell, vi, path, 'JSON');
         };
 
         Module.vireoAPI.writeJSON = PUBLIC_VIREO_API.writeJSON = function (vi, path, value) {

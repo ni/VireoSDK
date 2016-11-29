@@ -13,7 +13,6 @@
 
     var continueUntilDone = function () {
         var remainingSlices = eggShell.executeSlices(1000);
-        console.log(eggShell.readJSON('_%46unction%2Egvi', 'dataItem_String'));
 
         if (remainingSlices > 0) {
             setTimeout(continueUntilDone, 0);
