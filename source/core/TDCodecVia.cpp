@@ -2097,7 +2097,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
             parser.ParseData(arg[0]._paramType, arg[0]._pData);
         else {
             Int32 topSize = arg[0]._paramType->TopAQSize();
-            char buffer[topSize]; // passed in default data is overwritten since it's also the output.  Save a copy.
+            char *buffer = new char[topSize]; // passed in default data is overwritten since it's also the output.  Save a copy.
             // ??? Refactor to make default and output different args?
             memset(buffer, 0, topSize);
             arg[0]._paramType->InitData(buffer);
@@ -2109,6 +2109,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
                     badNulls = true;
             }
             arg[0]._paramType->ClearData(buffer);
+            delete[] buffer;
         }
     }
     if (_ParamVarArgCount() > 7) {
