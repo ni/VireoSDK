@@ -1,13 +1,4 @@
-requirejs.config({
-    paths: {
-        'NationalInstruments.Vireo.Core.createVireoCore': '../../dist/vireo',
-        'NationalInstruments.Vireo.ModuleBuilders.assignVireoAPI': '../../source/io/module_vireoapi',
-        'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient': '../../source/io/module_httpClient',
-        'NationalInstruments.Vireo.buildVireoInstance': '../../source/core/vireo.loader'
-    }
-});
-
-requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireoInstance) {
+(function () {
     'use strict';
 
     var eggShell;
@@ -22,22 +13,31 @@ requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireo
 
     var continueUntilDone = function () {
         var remainingSlices = eggShell.executeSlices(1000);
+        console.log(eggShell.readJSON('_%46unction%2Egvi', 'dataItem_String'));
 
         if (remainingSlices > 0) {
             setTimeout(continueUntilDone, 0);
         } else {
+            console.log(eggShell.readJSON('_%46unction%2Egvi', 'dataItem_String'));
             console.log('finished :D');
         }
     };
 
-    var runTest = function () {
-        var viaCode = document.getElementById('viacode').textContent;
+    var createAndRun = function (buildVireoInstance, viaCode) {
         var publicAPI = buildVireoInstance();
+
+        publicAPI.httpClient.enableHttpDebugging(true);
 
         eggShell = publicAPI.vireoAPI;
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };
 
+    var runTest = function () {
+        var viaCode = document.getElementById('viacode').textContent;
+
+        createAndRun(window.NationalInstruments.Vireo.buildVireoInstance, viaCode);
+    };
+
     domReady(runTest);
-});
+}());

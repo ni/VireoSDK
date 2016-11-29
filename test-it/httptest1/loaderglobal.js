@@ -2,7 +2,7 @@
     'use strict';
 
     var eggShell;
-    
+
     var domReady = function (callback) {
         if (document.readyState !== 'loading') {
             callback();
@@ -21,13 +21,27 @@
         }
     };
 
-    var runTest = function () {
-        var viaCode = document.getElementById('viacode').textContent;
-        var publicAPI = NationalInstruments.Vireo.buildVireoInstance();
-        
+    var createAndRun = function (buildVireoInstance, viaCode) {
+        var publicAPI = buildVireoInstance();
+
         eggShell = publicAPI.vireoAPI;
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
+    };
+
+    var runTest = function () {
+        var viaCode = document.getElementById('viacode').textContent;
+
+        // Assume amd if NI namespace not loaded for now
+        if (window.NationalInstruments === undefined || window.NationalInstruments.Vireo === undefined) {
+            console.log('using amd module');
+            requirejs(['NationalInstruments.Vireo.buildVireoInstance'], function (buildVireoInstance) {
+                createAndRun(buildVireoInstance, viaCode);
+            });
+        } else {
+            console.log('using global');
+            createAndRun(window.NationalInstruments.Vireo.buildVireoInstance, viaCode);
+        }
     };
 
     domReady(runTest);

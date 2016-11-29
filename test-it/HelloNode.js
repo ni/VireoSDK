@@ -1,8 +1,10 @@
 var vireo = {};
 
 var SetupVJS = function () {
+    var buildVireoInstance;
     try {
-        vireo = require('../dist/vireo.js');
+        buildVireoInstance = require('../source/core/vireo.loader.js');
+        vireo = buildVireoInstance().vireoAPI;
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
@@ -11,8 +13,10 @@ var SetupVJS = function () {
             throw err;
         }
     }
-    vireo.stdout = '';
-    vireo.core.print = function(text) { console.log('console: ' + text); };
+    //vireo.stdout = '';
+    vireo.setPrintFunction(function (text) {
+        console.log('console: ' + text);
+    });
 };
 
 SetupVJS();
@@ -32,9 +36,9 @@ var text =
 
 var currFPID = '';
 
-vireo.core.fpSync = function(fpId) {
+vireo.setFPSyncFunction(function (fpId) {
     currFPID = 'fpsync called with (' + fpId + ')';
-};
+});
 
 vireo.loadVia(text);
 vireo.executeSlices(1);

@@ -129,7 +129,7 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
     EM_ASM_ARGS({
-        Module.fpSync(Pointer_stringify($0, $1));
+        Module.vireoAPI.fpSync(Pointer_stringify($0, $1));
     }, (char*)_Param(0)->Begin(), _Param(0)->Length());
 #endif
     return _NextInstruction();

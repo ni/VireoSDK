@@ -1,12 +1,16 @@
 <html>
 <head>
+<!-- In this test the user loads require.js but it has nothing to do with vireo usage.
+The existing loaderglobal code should still be able to function -->
+<script data-main="loaderamdenvglobalmain" src="require.js"></script>
 <script src="../../dist/vireo.js"></script>
 <script src="../../source/io/module_vireoapi.js"></script>
-<script src="testsimple.js"></script>
-
+<script src="../../source/io/module_httpClient.js"></script>
+<script src="../../source/core/vireo.loader.js"></script>
+<script src="loaderglobal.js"></script>
 </head>
 <body>
-<script type="via/text" id="viacode">
+<script type="text/via" id="viacode">
 define(Mandelbrot dv(.VirtualInstrument (
     // Parameter list
     c(
