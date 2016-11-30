@@ -20,7 +20,7 @@
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
         module.exports = factory(
             require('../../dist/vireo.js'),
-            require('../../source/io/module_vireoapi.js'),
+            require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js')
         );
     } else {
