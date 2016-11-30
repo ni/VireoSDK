@@ -1,13 +1,14 @@
+/* global requirejs */
 (function () {
     'use strict';
 
     var eggShell;
 
     var domReady = function (callback) {
-        if (document.readyState !== 'loading') {
-            callback();
-        } else {
+        if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback);
+        } else {
+            callback();
         }
     };
 

@@ -1,5 +1,8 @@
-
-requirejs([], function () {
+/* global requirejs */
+(function () {
     'use strict';
-    console.log('main ran');
-});
+
+    requirejs([], function () {
+        console.log('main ran');
+    });
+}());

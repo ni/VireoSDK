@@ -6,7 +6,8 @@
   "devDependencies": {
     "colors": "^1.1.2",
     "diff": "^1.4.0",
-    "shelljs": "^0.5.3"
+    "shelljs": "^0.5.3",
+    "eslint": "^3.11.1"
   },
   "scripts": {
     "make": "make",

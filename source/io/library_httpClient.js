@@ -1,4 +1,4 @@
-/*global Module, mergeInto, LibraryManager */
+/* global Module, mergeInto, LibraryManager */
 (function () {
     'use strict';
     var httpClientCAPI = {

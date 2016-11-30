@@ -5,7 +5,7 @@
         var buildArgs = Array.prototype.slice.call(arguments);
         return globalName.split('.').reduce(function (currObj, subNamespace, currentIndex, globalNameParts) {
             var nextValue = currentIndex === globalNameParts.length - 1 ? factory.apply(undefined, buildArgs) : {};
-            return currObj[subNamespace] === undefined ? currObj[subNamespace] = nextValue : currObj[subNamespace];
+            return currObj[subNamespace] === undefined ? (currObj[subNamespace] = nextValue) : currObj[subNamespace];
         }, root);
     };
 
@@ -21,12 +21,28 @@
     }
 }(this, 'NationalInstruments.Vireo.ModuleBuilders.assignEggShell', function () {
     'use strict';
-
     // Static Private Variables (all vireo instances)
     // None
 
     // Vireo Core Mixin Function
     var assignEggShell = function (Module, publicAPI) {
+        // Disable new-cap for the cwrap functions so the names can be the same in C and JS
+        /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
+            'Vireo_Version',
+            'EggShell_Create',
+            'EggShell_Delete',
+            'EggShell_ReadDouble',
+            'EggShell_WriteDouble',
+            'EggShell_ReadValueString',
+            'EggShell_WriteValueString',
+            'Data_WriteString',
+            'Data_WriteInt32',
+            'Data_WriteUInt32',
+            'EggShell_REPL',
+            'EggShell_ExecuteSlices',
+            'Occurrence_Set'
+        ]}], */
+
         Module.eggShell = {};
         publicAPI.eggShell = {};
 
@@ -42,7 +58,7 @@
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var EggShell_REPL = Module.cwrap('EggShell_REPL', 'number', ['number', 'string', 'number']);
-        var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number',  'number']);
+        var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
         // Create shell for vireo instance
@@ -50,13 +66,13 @@
         var v_userShell = EggShell_Create(v_root);
 
         // Exported functions
-        Module.eggShell.fpSync = function (/*fpIdStr*/) {
+        Module.eggShell.fpSync = function (/* fpIdStr*/) {
             // Dummy noop function user can replace by using eggShell.setFPSyncFunction
         };
 
         publicAPI.eggShell.setFPSyncFunction = function (fn) {
             if (typeof fn !== 'function') {
-                throw new Error ('FPSync must be a callable function');
+                throw new Error('FPSync must be a callable function');
             }
 
             Module.eggShell.fpSync = fn;
@@ -64,7 +80,7 @@
 
         publicAPI.eggShell.setPrintFunction = function (fn) {
             if (typeof fn !== 'function') {
-                throw new Error ('Print must be a callable function');
+                throw new Error('Print must be a callable function');
             }
 
             Module.print = fn;
@@ -72,13 +88,13 @@
 
         publicAPI.eggShell.setPrintErrorFunction = function (fn) {
             if (typeof fn !== 'function') {
-                throw new Error ('PrintError must be a callable function');
+                throw new Error('PrintError must be a callable function');
             }
 
             Module.printErr = fn;
         };
 
-        publicAPI.eggShell._core_module_for_debug_only_do_not_use_anywhere = Module;
+        publicAPI.eggShell.internal_module_do_not_use_or_you_will_be_fired = Module;
 
         // Exporting functions to both Module.eggShell and publicAPI.eggShell is not normal
         // This is unique to the eggShell API as it is consumed by other modules as well as users
@@ -87,7 +103,7 @@
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
             EggShell_Delete(v_userShell);
             EggShell_Delete(v_root);
-            v_root =  EggShell_Create(0);
+            v_root = EggShell_Create(0);
             v_userShell = EggShell_Create(v_root);
         };
 

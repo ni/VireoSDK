@@ -5,7 +5,7 @@
         var buildArgs = Array.prototype.slice.call(arguments);
         return globalName.split('.').reduce(function (currObj, subNamespace, currentIndex, globalNameParts) {
             var nextValue = currentIndex === globalNameParts.length - 1 ? factory.apply(undefined, buildArgs) : {};
-            return currObj[subNamespace] === undefined ? currObj[subNamespace] = nextValue : currObj[subNamespace];
+            return currObj[subNamespace] === undefined ? (currObj[subNamespace] = nextValue) : currObj[subNamespace];
         }, root);
     };
 
@@ -84,9 +84,8 @@
         proto.getHeaderValue = function (header) {
             if (this.headers.hasOwnProperty(header)) {
                 return this.headers[header];
-            } else {
-                throw new Error('"' + header + '" is not included in the client handle.');
             }
+            throw new Error('"' + header + '" is not included in the client handle.');
         };
 
         proto.headerExist = function (header) {
@@ -182,15 +181,14 @@
                 var user = this.httpClients[strHandle];
                 this.log('The following handle(' + strHandle + ') was requested for: "' + user.getUserName() + '".');
                 return user;
-            } else {
-                return null;
             }
+            return null;
         };
 
         proto.addHeader = function (handle, header, value) {
-            var user = this.get (handle);
+            var user = this.get(handle);
             if (user instanceof HttpUser) {
-                user.addHeader (header, value);
+                user.addHeader(header, value);
                 this.log('The following header was added: ' + header + '(' + value + ') for user: "' + user.getUserName() + '".');
             } else {
                 throw new Error('Unknown handle(' + handle + ').');
@@ -198,9 +196,9 @@
         };
 
         proto.removeHeader = function (handle, header) {
-            var user = this.get (handle);
+            var user = this.get(handle);
             if (user instanceof HttpUser) {
-                user.removeHeader (header);
+                user.removeHeader(header);
                 this.log('The following header was removed: ' + header);
             } else {
                 throw new Error('Unknown handle(' + handle + ').');
@@ -208,36 +206,33 @@
         };
 
         proto.getHeaderValue = function (handle, header) {
-            var user = this.get (handle);
+            var user = this.get(handle);
             if (user instanceof HttpUser) {
-                var value = user.getHeaderValue (header);
+                var value = user.getHeaderValue(header);
                 this.log('The following value was returned: "' + value + '" for header: "' + header + '".');
                 return value;
-            } else {
-                throw new Error('Unknown handle(' + handle + ').');
             }
+            throw new Error('Unknown handle(' + handle + ').');
         };
 
         proto.headerExist = function (handle, header) {
-            var user = this.get (handle);
+            var user = this.get(handle);
             if (user instanceof HttpUser) {
-                var exist = user.headerExist (header);
+                var exist = user.headerExist(header);
                 this.log('The following headerExist value was returned: "' + exist + '" for header: "' + header + '".');
                 return exist;
-            } else {
-                throw new Error('Unknown handle(' + handle + ').');
             }
+            throw new Error('Unknown handle(' + handle + ').');
         };
 
         proto.listHeaders = function (handle) {
-            var user = this.get (handle);
+            var user = this.get(handle);
             if (user instanceof HttpUser) {
-                var value = user.listHeaders ();
+                var value = user.listHeaders();
                 this.log('The following list of headers was returned: "' + value + '".');
                 return value;
-            } else {
-                throw new Error('Unknown handle(' + handle + ').');
             }
+            throw new Error('Unknown handle(' + handle + ').');
         };
     }());
 
@@ -259,7 +254,7 @@
         };
 
         Module.httpClient.jsHttpClientOpen = function (cookieFileStart, cookieFileLength, userNameStart, userNameLength, passwordStart, passwordLength, verifyServer, userHandlePointer, errorMessage) {
-            //var cookieFile = Module.Pointer_stringify(cookieFileStart, cookieFileLength);
+            // var cookieFile = Module.Pointer_stringify(cookieFileStart, cookieFileLength);
             var userName = Module.Pointer_stringify(userNameStart, userNameLength);
             var password = Module.Pointer_stringify(passwordStart, passwordLength);
             var userHandle = 0;
@@ -393,7 +388,7 @@
                 var fullErrorText = '';
                 if (errorCode !== 0) {
                     fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
-                    //console.log(fullErrorText);
+                    // console.log(fullErrorText);
                 }
 
                 Module.eggShell.dataWriteInt32(errorCodePointer, errorCode);
@@ -406,7 +401,7 @@
             };
 
             try {
-                //NationalInstruments.Vireo.makeRequest(userHandle, methodName, urlString, timeOut, bufferString, successCallback, errorCallback, timeOutCallback);
+                // NationalInstruments.Vireo.makeRequest(userHandle, methodName, urlString, timeOut, bufferString, successCallback, errorCallback, timeOutCallback);
                 var httpUser = httpUsers.get(userHandle);
 
                 var request = new XMLHttpRequest();
@@ -423,7 +418,7 @@
                     }
                 }
 
-                request.onreadystatechange = function (/*event*/) {
+                request.onreadystatechange = function (/* event*/) {
                     if (request.readyState === 4) {
                         if (request.status === 200) {
                             // Success!
@@ -447,7 +442,7 @@
                     setErrorAndOccurrence(-1, methodName, event.target.statusText + '(' + event.target.status + ').');
                 };
 
-                request.ontimeout = function (/*event*/) {
+                request.ontimeout = function (/* event*/) {
                     setErrorAndOccurrence(-1, methodName, 'The time out value of ' + timeOut + ' was exceeded.');
                 };
 
@@ -456,12 +451,10 @@
                 } else {
                     request.send(bufferString);
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 setErrorAndOccurrence(-1, methodName, error.message);
             }
         };
-
     };
 
     return assignHttpClient;
