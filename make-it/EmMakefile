@@ -65,9 +65,11 @@ endif
 EM_OPTFLAGS ?= $(EM_OPTFLAG)	# Can be overrided in custom.mak
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
 EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
-EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
-EMLIBRARY= --js-library ../source/io/library_canvas2d.js --js-library ../source/io/library_httpClient.js
-EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js 
+EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
+EMLIBRARY = --js-library $(IOSOURCEDIR)/library_canvas2d.js --js-library $(IOSOURCEDIR)/library_httpClient.js
+PREJS = $(OBJS)/vireo.preamble.js
+POSTJS = $(OBJS)/vireo.postamble.js
+EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -129,9 +131,12 @@ $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
 	@mkdir -p $(OBJS)
 
+$(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
+	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
+
 vjs: $(TARGETDIR)/vireo.js
 
-$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo.preamble.js $(CORESOURCEDIR)/vireo.postamble.js 
+$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
 	python patchVireo.py $@
 

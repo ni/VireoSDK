@@ -22,6 +22,34 @@
 }(this, 'NationalInstruments.Vireo.Core.createVireoCore', function () {
     'use strict';
 
-// Begin var applyVireoEmscriptenModule = function (Module)
-var applyVireoEmscriptenModule = function (Module) {
-// Emscripten code starts here
+    var applyVireoEmscriptenModule = function (Module) {
+        if (typeof Module !== 'object') {
+            throw new Error('Must be provided an object to apply vireo');
+        }
+        // Emscripten code starts here
+        // {{insert_vireojs_here}}
+        // Emscripten code ends here
+    };
+
+    var createVireoCore = function () {
+        var Module = {};
+
+        // Need to cache and restore exports because emscripten overrides exports during applyVireoEmscriptenModule().
+        // If we do not cache and restore exports then when createVireoCore is require() and invoked by the user,
+        // subsequent require() calls will return [Emscripten Module object] instead of [Function: createVireoCore]
+        var cachedNodeExports;
+        if (typeof module === 'object' && module.exports) {
+            cachedNodeExports = module.exports;
+        }
+
+        applyVireoEmscriptenModule(Module);
+
+        if (cachedNodeExports !== undefined) {
+            module.exports = cachedNodeExports;
+        }
+
+        return Module;
+    };
+
+    return createVireoCore;
+}));

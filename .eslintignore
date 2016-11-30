@@ -1,10 +1,6 @@
 node_modules/*
 dist/*
-source/viagen/*
-make-it/make.js
-source/core/vireo.postamble.js
-source/core/vireo.preamble.js
+make-it/objs/*
 source/io/library_canvas2d.js
 source/io/library_webSocketClient.js
 source/io/module_webSocketClient.js
-test-it/httptest1/require.js
