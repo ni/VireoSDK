@@ -49,6 +49,13 @@ SDG
 #include <emscripten.h>
 #endif
 
+#if kVireoOS_emscripten
+extern "C" {
+    extern char * jsTimestampGetTimeZoneAbbr();
+    extern char * jsTimestampGetTimeZoneOffset();
+}
+#endif
+
 namespace Vireo
 {
 //------------------------------------------------------------
@@ -378,7 +385,7 @@ void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
     timeinfo = localtime(&rawtime);
     timeZoneAbbr = timeinfo->tm_zone;
 #elif kVireoOS_emscripten
-    timeZoneAbbr = emscripten_run_script_string("(function() {var now = new Date().toString(); var TZ = now.indexOf('(') > -1 ?now.match(/\\([^\\)]+\\)/)[0].match(/[A-Z]/g).join(''):now.match(/[A-Z]{3,4}/)[0];if (TZ == 'GMT' && /(GMT\\W*\\d{4})/.test(now)) TZ = RegExp.$1;return TZ;}());");
+    timeZoneAbbr = jsTimestampGetTimeZoneAbbr();
 #else
     timeZoneAbbr = "TODO-TMZ";
 #endif
@@ -429,7 +436,7 @@ Int32 Date::getLocaletimeZone()
 {
 #if kVireoOS_emscripten
     TempStackCString result;
-    result.AppendCStr(emscripten_run_script_string("new Date().getTimezoneOffset()"));
+    result.AppendCStr(jsTimestampGetTimeZoneOffset());
     EventLog log(EventLog::DevNull);
     SubString valueString(result.Begin(), result.End());
     TDViaParser parser(THREAD_TADM(), &valueString, &log, 1);

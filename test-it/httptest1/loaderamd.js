@@ -4,6 +4,7 @@
     requirejs.config({
         paths: {
             'NationalInstruments.Vireo.Core.createVireoCore': '../../dist/vireo',
+            'NationalInstruments.Vireo.Core.assignCoreHelpers': '../../source/core/module_coreHelpers',
             'NationalInstruments.Vireo.ModuleBuilders.assignEggShell': '../../source/io/module_eggShell',
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient': '../../source/io/module_httpClient',
             'NationalInstruments.Vireo.Vireo': '../../source/core/vireo.loader'

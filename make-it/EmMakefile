@@ -64,9 +64,13 @@ endif
 
 EM_OPTFLAGS ?= $(EM_OPTFLAG)	# Can be overrided in custom.mak
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
-EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
+
+# NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
+EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
-EMLIBRARY = --js-library $(IOSOURCEDIR)/library_canvas2d.js --js-library $(IOSOURCEDIR)/library_httpClient.js
+EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
+            --js-library $(IOSOURCEDIR)/library_canvas2d.js \
+            --js-library $(IOSOURCEDIR)/library_httpClient.js
 PREJS = $(OBJS)/vireo.preamble.js
 POSTJS = $(OBJS)/vireo.postamble.js
 EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
@@ -111,17 +115,13 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/VirtualInstrument.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
-    $(OBJS)/HttpClient.bc\
-    $(OBJS)/Emscripten.bc\
-    $(OBJS)/CEntryPoints.bc
+    $(OBJS)/HttpClient.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
 -include EmMakefile-AAL
 endif
 
-$(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
-	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
 	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp

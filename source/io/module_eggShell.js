@@ -66,18 +66,6 @@
         var v_userShell = EggShell_Create(v_root);
 
         // Exported functions
-        Module.eggShell.fpSync = function (/* fpIdStr*/) {
-            // Dummy noop function user can replace by using eggShell.setFPSyncFunction
-        };
-
-        publicAPI.eggShell.setFPSyncFunction = function (fn) {
-            if (typeof fn !== 'function') {
-                throw new Error('FPSync must be a callable function');
-            }
-
-            Module.eggShell.fpSync = fn;
-        };
-
         publicAPI.eggShell.setPrintFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error('Print must be a callable function');

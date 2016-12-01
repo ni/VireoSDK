@@ -2,12 +2,15 @@
     'use strict';
 
     var vireo = {};
+    var actualVireo;
 
     var setupVJS = function () {
         var Vireo;
         try {
             Vireo = require('../source/core/vireo.loader.js');
-            vireo = new Vireo().eggShell;
+
+            actualVireo = new Vireo();
+            vireo = actualVireo.eggShell;
         } catch (err) {
             if (err.code === 'MODULE_NOT_FOUND') {
                 console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
@@ -39,7 +42,7 @@
 
     var currFPID = '';
 
-    vireo.setFPSyncFunction(function (fpId) {
+    actualVireo.coreHelpers.setFPSyncFunction(function (fpId) {
         currFPID = 'fpsync called with (' + fpId + ')';
     });
 

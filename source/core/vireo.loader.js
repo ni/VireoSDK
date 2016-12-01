@@ -13,6 +13,7 @@
         // AMD. Register as a named module.
         define(globalName, [
             'NationalInstruments.Vireo.Core.createVireoCore',
+            'NationalInstruments.Vireo.Core.assignCoreHelpers',
             'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient'
         ], factory);
@@ -20,6 +21,7 @@
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
         module.exports = factory(
             require('../../dist/vireo.js'),
+            require('../../source/core/module_coreHelpers.js'),
             require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js')
         );
@@ -27,6 +29,7 @@
         // Browser globals (root is window)
         buildGlobalNamespace(
             root.NationalInstruments.Vireo.Core.createVireoCore,
+            root.NationalInstruments.Vireo.Core.assignCoreHelpers,
             root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
             root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient
         );
