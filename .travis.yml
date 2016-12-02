@@ -2,20 +2,29 @@ sudo: false
 language: cpp
 compiler: gcc
 addons:
-    apt:
-        sources:
-            - ubuntu-toolchain-r-test
-        packages:
-            - g++-4.9
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.9
 before_script:
-    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-    - git clone --depth 1 https://github.com/urho3d/emscripten-sdk.git && emscripten-sdk/emsdk activate --build=Release sdk-master-64bit && source emscripten-sdk/emsdk_env.sh
-    - cat ~/.emscripten
-    - emcc -v
-    - gcc -v
-    - node -v
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+- git clone --depth 1 https://github.com/urho3d/emscripten-sdk.git && emscripten-sdk/emsdk
+  activate --build=Release sdk-master-64bit && source emscripten-sdk/emsdk_env.sh
+- cat ~/.emscripten
+- emcc -v
+- gcc -v
+- node -v
 script:
-    - npm install
-    - make
-    - make testjs
-    - make testnative
+- npm install
+- make
+- make testjs
+- make testnative
+deploy:
+  provider: npm
+  email: mark.black@ni.com
+  api_key:
+    secure: bAvSpGaOGQAF+Owt4skNu/8WxD8JolOiODZxoSO5oNp2awyQC3LMvVgtCmPgCTOJkTJz2Fh0Dlwhdyc2iPragdn2ivxUvlJpiQLSSCpqW3SipcRRN8UupVe0C8tV72sSZs85cgBnD3a6Ib1+d3RW5sxrOuvVyb56C2jwiKWOzjM9CqJqRop4dqC6b1ArwYtjp1AH7WarxfYIZDOv6aJbv6t1yY+7EfHBQFCBNYZcSJ+WgsyITtdntnrhziYyXaJ3K0sCrb1STj9gLiqhSolU9v7l61IojKYH1H7mEA3pYxDXN+g1Lmxb63Ex5sMfPYjYxhd12wnw3c2rwomuNkGcoHiaslQrcV6K9FaAO5Ln7ARnQedAULRP+voHLsPnbah50L6lSPeiO+Rgsaip7hLeNTLcEZk+rwob/YqARaSfRfZzUTqqScPyFLX3iLRPn0CwCJdTHrBwNueirvV6U+e3Ghg22Qpeue3bmUZTkl7q+h1kZ+1WWjIw5b1tYFpjBXSZTiWv01lQxY7/seNKKk+GRXpSl527CkjxjfuBf4kA4yDNLvaZvcd33jw1DgSypIt+y2Jh02TSswTrjpXPFS3iXjmHvEjMu81/VBooCDy4b4zmho6YGpJuGVrRJNoDsmJzHirD0jMoC2jn5OT9XhC87zmEu2DoDhfysx2Q8LS3MOc=
+  on:
+    tags: true
+    repo: ni/VireoSDK
