@@ -1024,11 +1024,12 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
             newLengths[i] = arrayIn->DimensionLengths()[i];
             dimensionSize[i] = arrayIn->DimensionLengths()[numberOfDimensions-1-i];
             if (i == numberOfDimensions-1-dimensionToDelete) {
-                deletedArrayDimLen[i] = deletedPortionLength;
-                if (numberOfDimensions == deletedPartType->Rank())
+                if (numberOfDimensions == deletedPartType->Rank()) {
+                    deletedArrayDimLen[j] = deletedPortionLength;
                     ++j;
+                }
             } else {
-                deletedArrayDimLen[i] = arrayIn->DimensionLengths()[j];
+                deletedArrayDimLen[j] = arrayIn->DimensionLengths()[i];
                 ++j;
             }
             totalNumberOfElements *= dimensionSize[i];

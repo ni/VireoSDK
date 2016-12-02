@@ -26,6 +26,7 @@
                 "ArrayDecimate.via",
                 "ArrayDelete.via",
                 "ArrayDeleteFail.via",
+                "ArrayDeleteFail2.via",
                 "ArrayDemo.via",
                 "ArrayFillNDV.via",
                 "ArrayFillNDVFail.via",
