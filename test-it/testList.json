@@ -186,6 +186,7 @@
                 "ReentrantMemLeak.via",
                 "ReentrantSubVISimple.via",
                 "ReentrantSubVIWtihShiftRegister.via",
+                "ReplaceArraySubset2D.via",
                 "ReverseString.via",
                 "RotateString.via",
                 "Round.via",

@@ -1,0 +1,5 @@
+Replace ((1 2) (3 4)) 0 0 (10 20)
+
+Replaced array is '((10 20) (3 4))'; expected result is '((10 20)(3 4))'
+
+Test Pass: true
