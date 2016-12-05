@@ -150,8 +150,6 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             // Labview doesn't variable precision, it will mess up with the argument index.
             pOptions->VariablePrecision = true;
         } else if (c == '$') {
-        } else if (c == ';') {
-            // local conversion code
         } else if (strchr("hl", c)) {
             if(format->Length()<=0) {
                 bValid = false;
@@ -312,6 +310,36 @@ void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndD
     delete[] formatUnEscaped;
 }
 
+bool ReadLocalizationCodes(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, SubString& f, Boolean *validFormatString, FormatOptions *fOptions, Boolean *parseFinished) {
+    Utf8Char c;
+    if (f.PeekRawChar(&c) && c == ';') {
+        Utf8Char ignore;
+        f.ReadRawChar(&ignore);
+        return true;
+    }
+    if (f.PeekRawChar(&c, 1) && c == ';') {
+        Utf8Char decimalSeparator;
+        if (f.PeekRawChar(&decimalSeparator) && (decimalSeparator == ',' || decimalSeparator == '.')) {
+            fOptions->DecimalSeparator = decimalSeparator;
+            Utf8Char ignore;
+            f.ReadRawChar(&ignore);
+            f.ReadRawChar(&ignore);
+            return true;
+        }
+    }
+    return false;
+}
+
+void UpdateNumericStringWithDecimalSeparator(FormatOptions fOptions, char *numericString, Int32 size) {
+    for (int i = 0; i < size; i++)
+    {
+        if (numericString[i] == '.')
+        {
+            numericString[i] = fOptions.DecimalSeparator;
+        }
+    }
+}
+
 /**
  * main format function, all the %format functionality is done through this one
  * */
@@ -323,12 +351,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     IntIndex explicitPositionArgument = 0;
     Int32 totalArgument = 0;
     Int32 usedArguments = 0;
-    char activeDecimalPoint = '.';
     SubString f(format);            // Make a copy to use locally
 
     buffer->Resize1D(0);              // Clear buffer (wont do anything for fixed size)
     Boolean validFormatString = true;
     Utf8Char c = 0;
+    FormatOptions fOptions;
+    // We should assign the local decimal point to DecimalSeparator.
+    char defaultDecimalSeparator = '.';
+    fOptions.DecimalSeparator = defaultDecimalSeparator;
 
     while (validFormatString && f.ReadRawChar(&c))
     {
@@ -344,14 +375,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 case '\\':      buffer->Append('\\');      break;
                 default:  break;
             }
-        } else if (c == '%') {
-
-            FormatOptions fOptions;
+        }
+        else if (c == '%') {
+            Boolean parseFinished = false;
+            if (ReadLocalizationCodes(format, count, arguments, buffer, f, &validFormatString, &fOptions, &parseFinished)) continue;
             ReadPercentFormatOptions(&f, &fOptions);
-            // We should assign the local decimal point to DecimalSeparator.
-            fOptions.DecimalSeparator = activeDecimalPoint;
             totalArgument++;
-			usedArguments++;
+            usedArguments++;
             if (lastArgumentIndex == argumentIndex) {
                 // the previous argument is a legal argument. like %12$%
                 totalArgument --;
@@ -373,7 +403,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 fmtSubString->AliasAssign(fmtSubString->Begin()+ dollarFlag + 1, fmtSubString->End());
             }
             lastArgumentIndex = argumentIndex;
-            Boolean parseFinished = false;
             if (!fOptions.Valid) { 
                 // Format String is invalid
                 parseFinished = true;
@@ -473,6 +502,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 intDigits = (exponent >= 0)? (exponent): 0 ;
                         TempStackCString paddingPart;
                         RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, intDigits, truncateSignificant);
+                        UpdateNumericStringWithDecimalSeparator(fOptions, asciiReplacementString, sizeOfNumericString);
                         buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
                         argumentIndex++;
                     }
