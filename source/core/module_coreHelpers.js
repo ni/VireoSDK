@@ -49,16 +49,62 @@
             fpSync = fn;
         };
 
+        Module.coreHelpers.utf8ArrayToStringWithNull = function (u8Array, idxIn) {
+            /* eslint-disable no-continue, no-plusplus, no-bitwise */
+            var u0, u1, u2, u3, u4, u5;
+            var idx = idxIn;
+            var str = '';
+            while (true) {
+                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
+                u0 = u8Array[idx++];
+                if (idx > u8Array.length) {
+                    return str;
+                }
+                if (!(u0 & 0x80)) {
+                    str += String.fromCharCode(u0);
+                    continue;
+                }
+                u1 = u8Array[idx++] & 63;
+                if ((u0 & 0xE0) === 0xC0) {
+                    str += String.fromCharCode(((u0 & 31) << 6) | u1);
+                    continue;
+                }
+                u2 = u8Array[idx++] & 63;
+                if ((u0 & 0xF0) === 0xE0) {
+                    u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
+                } else {
+                    u3 = u8Array[idx++] & 63;
+                    if ((u0 & 0xF8) === 0xF0) {
+                        u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
+                    } else {
+                        u4 = u8Array[idx++] & 63;
+                        if ((u0 & 0xFC) === 0xF8) {
+                            u0 = ((u0 & 3) << 24) | (u1 << 18) | (u2 << 12) | (u3 << 6) | u4;
+                        } else {
+                            u5 = u8Array[idx++] & 63;
+                            u0 = ((u0 & 1) << 30) | (u1 << 24) | (u2 << 18) | (u3 << 12) | (u4 << 6) | u5;
+                        }
+                    }
+                }
+                if (u0 < 0x10000) {
+                    str += String.fromCharCode(u0);
+                } else {
+                    var ch = u0 - 0x10000;
+                    str += String.fromCharCode(0xD800 | (ch >> 10), 0xDC00 | (ch & 0x3FF));
+                }
+            }
+        };
+
         // Creating a shared string buffer in memory for passing strings into Vireo
         // WARNING: Functions in Vireo should not expect memory to live beyond stack frame
-        // https://github.com/kripken/emscripten/blob/07b87426f898d6e9c677db291d9088c839197291/src/library.js#L3669
-        // Made the buffer larger: https://github.com/kripken/emscripten/issues/4766
+        // Based on emscripten_run_script_string: https://github.com/kripken/emscripten/blob/fdc57b6f7c76b7e8589a41ad2db867e6878f0f3a/src/library.js#L3831
         Module.coreHelpers.writeJSStringToSharedBuffer = function (str) {
-            if (!bufferSize || bufferSize < (str.length * 4) + 1) {
+            var len = Module.lengthBytesUTF8(str);
+            if (!bufferSize || bufferSize < len + 1) {
                 if (bufferSize) {
                     Module._free(bufferPtr);
                 }
-                bufferSize = (str.length * 4) + 1;
+                bufferSize = len + 1;
                 bufferPtr = Module._malloc(bufferSize);
             }
             Module.writeStringToMemory(str, bufferPtr);

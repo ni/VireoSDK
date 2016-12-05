@@ -89,7 +89,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteString',\
     '_Data_WriteInt32',\
     '_Data_WriteUInt32'\
-    ]" -s RESERVED_FUNCTION_POINTERS=10
+    ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Assert.bc\
@@ -138,7 +138,6 @@ vjs: $(TARGETDIR)/vireo.js
 
 $(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
-	python patchVireo.py $@
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically

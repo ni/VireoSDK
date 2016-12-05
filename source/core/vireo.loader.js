@@ -44,7 +44,20 @@
     var Vireo = function () {
         var that = this;
 
-        var Module = createVireoCore();
+        var Module = {};
+
+        // Functions that must be on Module prior to construction
+        var ttyout = [];
+        Module.stdout = function (val) {
+            if (val === null || val === 0x0A) {
+                Module.print(Module.coreHelpers.utf8ArrayToStringWithNull(ttyout, 0));
+                ttyout = [];
+            } else {
+                ttyout.push(val);
+            }
+        };
+
+        createVireoCore(Module);
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder(Module, that);
         });

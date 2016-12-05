@@ -117,7 +117,7 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientGetHeader, UInt32, StringRef, StringRef, Int
 // handle(0), header(1), headerExist(2), value(3), error code(4), error message(5)
 VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, StringRef, Int32, StringRef)
 {
-    #if kVireoOS_emscripten
+#if kVireoOS_emscripten
     _Param(4) = jsHttpClientHeaderExist(
         _Param(0),
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
@@ -133,7 +133,7 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, Stri
     } else {
         _Param(3)->Resize1D(0);
     }
-    #endif
+#endif
     return _NextInstruction();
 }
 
