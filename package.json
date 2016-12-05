@@ -2,12 +2,12 @@
   "name": "vireo",
   "version": "2.0.0-alpha.16",
   "description": "SDK for an experimental vireo runtime engine.",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "colors": "^1.1.2",
     "diff": "^1.4.0",
     "shelljs": "^0.5.3"
   },
-  "devDependencies": {},
   "scripts": {
     "make": "make",
     "test": "make test"
