@@ -78,6 +78,90 @@ VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, IntIndex, void)
     }
     return _NextInstruction();
 }
+//------------------------------------------------------------
+struct ArrayIndexNDParamBlock : public VarArgInstruction
+{
+    _ParamDef(TypedArrayCoreRef, Array);
+    _ParamImmediateDef(StaticTypeAndData, Element);
+    _ParamImmediateDef(IntIndex*, Dimension1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+// ArrayIndexND - row-major index version, allowing unwired indexes to produce subarrays
+// Compare with ArrayIndexEltNDV, which is column major and always produces a scalar elem
+VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
+{
+    Int32 numDimensionInputs = ((_ParamVarArgCount() - 3));
+    TypedArrayCoreRef array = _Param(Array);
+    IntIndex **ppDimensions = _ParamImmediate(Dimension1);
+    IntIndex rank = array->Rank(), i, j = 0;
+    ArrayDimensionVector arrIndex, arrayLen, arraySlabLen;
+    bool empty = false;
+    IntIndex subRank = rank;
+    if (numDimensionInputs != rank) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex wrong number of dims");
+        return THREAD_EXEC()->Stop();
+    }
+    for (i = 0; i < rank; ++i)
+        if (ppDimensions[i] != null)
+            --subRank;
+    bool noneWired = false;
+    if (subRank == rank) {
+        noneWired = true;
+        --subRank;
+    }
+    for (i = 0; i < rank; ++i) {
+        bool wired = (ppDimensions[i] != null);
+        IntIndex idx = 0;
+        if (wired || (i==0 && noneWired)) {
+            idx = wired ? *ppDimensions[i] : 0;
+            wired = true;
+        } else {
+            arraySlabLen[subRank-1-j] = array->SlabLengths()[rank-1-i];
+        }
+
+        IntIndex len = array->DimensionLengths()[rank-1-i];
+        if (empty || idx < 0 || idx >= len) {
+            idx = 0;
+            len = 0;
+        } else
+            len -= idx;
+        arrIndex[rank-1-i] = idx;
+        if (!wired) {
+            arrayLen[subRank-1-j] = len;
+            ++j;
+        }
+        if (len == 0)
+            empty = true;
+    }
+    for (; j < rank; ++j) {
+        arraySlabLen[j] = arraySlabLen[j-1];
+        arrayLen[j] = 1;
+    }
+    if (subRank > 0) {
+        TypedArrayCoreRef arrayOut = *(TypedArrayCoreRef*)_ParamImmediate(Element._pData);
+        if (_ParamImmediate(Element._paramType)->BitEncoding() != kEncoding_Array || _ParamImmediate(Element._paramType)->Rank() != subRank) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex bad output rank");
+            return THREAD_EXEC()->Stop();
+        }
+        arrayOut->ResizeDimensions(subRank, arrayLen, false);
+        if (!empty) {
+            ArrayToArrayCopyHelper(array->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), array->BeginAtND(rank, arrIndex), arrayLen, arraySlabLen, subRank, rank, true);
+        }
+    } else {
+        void *pData = array->BeginAtND(rank, arrIndex);
+        if (!_ParamImmediate(Element._paramType)->IsA(array->ElementType())) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex bad output type");
+            return THREAD_EXEC()->Stop();
+        }
+        if (pData)
+            array->ElementType()->CopyData(pData, _ParamImmediate(Element._pData));
+        else
+            array->ElementType()->InitData(_ParamImmediate(Element._pData));
+    }
+    return _NextInstruction();
+}
+
 #ifdef VIREO_TYPE_ArrayND
 //------------------------------------------------------------
 struct ArrayFillNDVParamBlock : public VarArgInstruction
@@ -370,6 +454,7 @@ void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void*
 }
 
 //ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+// This function is obsoleted by prim ArrayReplaceSubset, implemented by ArrayReplaceSubsetND
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -422,7 +507,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
     return _NextInstruction();
 }
 
-//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+// ArrayReplaceSubset function for N-D array, the function can be used to replace a single element or any sub-array
+// by leaving the appropriate indexes unwired (*)
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -498,7 +584,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
                         --j;
                     }
                 }
-                ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAtND(rank, arrIndex), arrayOutSlabLengths,
+                AQBlock1 *pData = arrayOut->BeginAtND(rank, arrIndex);
+                if (pData)
+                    ArrayToArrayCopyHelper(arrayOut->ElementType(), pData, arrayOutSlabLengths,
                                        srcData, subArrayLen, subArray->SlabLengths(), arrayOut->Rank(), srcRank, true);
             }
         } else {
@@ -506,7 +594,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
                 badType= true;
             else {
                 AQBlock1 *srcData = (AQBlock1*)element;
-                arrayOut->ElementType()->CopyData(srcData, arrayOut->BeginAtND(rank, arrIndex));
+                AQBlock1 *pData = arrayOut->BeginAtND(rank, arrIndex);
+                if (pData)
+                    arrayOut->ElementType()->CopyData(srcData, pData);
             }
         }
         if (badType) {
@@ -1761,10 +1851,10 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayIndexElt, "p(i(Array) i(Int32) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayAppendElt, "p(io(Array) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, "p(o(Array) i(Array) i(Int32) i(*))")
-//    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubsetND, "p(i(VarArgCount) o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArrayReplaceSubset, ArrayReplaceSubsetND, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArrayIndex, ArrayIndexND, "p(i(VarArgCount) i(Array) o(StaticTypeAndData) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArrayInsertSubset, ArrayInsertSubsetND, "p(o(Array) i(Array) i(Int32) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
