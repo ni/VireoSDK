@@ -1,0 +1,64 @@
+
+define(c0 dv(.Int32 -2) )
+define(c1 dv(a(.Int32 *) (1 2 3 ) ) )
+define(c2 dv(.Int32 2) )
+define(c3 dv(.Int32 -2) )
+define(c4 dv(.Int32 4) )
+define(c5 dv(.Int32 5) )
+define(c6 dv(a(.Int32 *) () ) )
+//---------------------------------------------------
+//VI Definition: ArrayIndex.vi
+define(videf1 dv(.VirtualInstrument (
+    c(
+        e(.Int32 elem)
+	e(dv(a(.Int32 * *) ((1 2 3 4)(3 4 5 6)(7 8 9 10)( 4 3 2 1))) arrfoo)
+	e(a(.Int32 *) arrbar)
+	e(dv(a(.Int32 * * *) (((111 112 113)(121 122 123))((211 212 213)(221 222 223)))) arr3d)
+	e(a(.Int32 * *) arr2dout)
+	e(dv(a(.String * *) (("hello" "world")("abcde" "fg")("xyzzy" ""))) arrstr)
+	e(a(.String *) arrstrout)
+    )
+    clump(1 
+        ArrayIndex(c1 elem 1)
+        Println(elem)
+        ArrayIndex(c1 elem c3) // -2
+        Println(elem)
+        ArrayIndex(c1 elem c4) // 4
+        Println(elem)
+        ArrayIndex(c6 elem *)
+        Println(elem)
+        ArrayIndex(c1 elem c2) // 2
+        Println(elem)
+        ArrayIndex(c1 elem *)
+        Println(elem)
+
+	ArrayIndex(arrfoo arrbar -1 *)
+	Println(arrbar)
+
+	ArrayIndex(arrfoo elem 1 1)
+	Println(elem)
+
+	ArrayIndex(arrfoo arrbar * *)
+	Println(arrbar)
+
+	ArrayIndex(arrfoo arrbar 2 *)
+	Println(arrbar)
+
+	ArrayIndex(arrfoo arrbar * 1)
+	Println(arrbar)
+
+	ArrayIndex(arrstr arrstrout 1 *)
+	Println(arrstrout)
+
+	ArrayIndex(arr3d arr2dout 1 * *)
+	Println(arr2dout)
+
+	ArrayIndex(arr3d arr2dout * 1 *)
+	Println(arr2dout)
+
+	ArrayIndex(arr3d arr2dout * * 1)
+	Println(arr2dout)
+//--- end of vi
+    )
+)))
+enqueue(videf1)

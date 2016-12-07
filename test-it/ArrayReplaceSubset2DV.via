@@ -61,19 +61,19 @@ define(vi dv(.VirtualInstrument (
         Println(outarray3)
 
         Printf("replace ND * * 2 in %s\n" array3d)
-        ArrayReplaceSubsetNDV(local13 array3d * * 2 array2d)
+        ArrayReplaceSubset(local13 array3d * * 2 array2d)
         Println(local13)
 
         Printf("replace ND 1 * 1 in %s\n" array3d)
-        ArrayReplaceSubsetNDV(local13 array3d 1 * 1 array1d)
+        ArrayReplaceSubset(local13 array3d 1 * 1 array1d)
         Println(local13)
 
         Printf("replace ND * 1 in %s\n" g7)
-        ArrayReplaceSubsetNDV(local11 g7 * 1 g1)
+        ArrayReplaceSubset(local11 g7 * 1 g1)
         Println(local11)
 
         Printf("replace ND 1 1 in %s\n" elem)
-        ArrayReplaceSubsetNDV(local11 g7 1 1 elem)
+        ArrayReplaceSubset(local11 g7 1 1 elem)
         Println(local11)
     )
 )))
