@@ -310,7 +310,7 @@ void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndD
     delete[] formatUnEscaped;
 }
 
-bool ReadLocalizationCodes(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, SubString& f, Boolean *validFormatString, FormatOptions *fOptions, Boolean *parseFinished) {
+bool ReadLocalizedDecimalSeparator(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, SubString& f, Boolean *validFormatString, FormatOptions *fOptions, Boolean *parseFinished) {
     Utf8Char c;
     if (f.PeekRawChar(&c) && c == ';') {
         Utf8Char ignore;
@@ -390,7 +390,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         }
         else if (c == '%') {
             Boolean parseFinished = false;
-            if (ReadLocalizationCodes(format, count, arguments, buffer, f, &validFormatString, &fOptions, &parseFinished)) continue;
+            if (ReadLocalizedDecimalSeparator(format, count, arguments, buffer, f, &validFormatString, &fOptions, &parseFinished)) continue;
             ReadPercentFormatOptions(&f, &fOptions);
             totalArgument++;
             usedArguments++;
