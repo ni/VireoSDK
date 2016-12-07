@@ -16,6 +16,7 @@ IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
 
 clean:
 	rm -f $(OBJS)/*
+	rm -f $(TARGETDIR)/vireo.js*
 
 install:
 	mkdir -p $(SITEDIR)
