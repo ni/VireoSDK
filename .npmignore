@@ -1,5 +1,11 @@
-*
-.*
-!dist/vireo.js
-!README.md
-!LICENSE.txt
+# Ignore all files in all subdirectories
+**/*
+
+# Only visit the following subdirectories and extract specific files
+# npm will force include README*, LICENSE*, and package.json files
+# so do not visit subdirectories using **/* patterns or extra files will be included
+# can test output by running npm pack
+!/dist/vireo.js
+!/source/core/vireo.loader.js
+!/source/core/module_*.js
+!/source/io/module_*.js

@@ -162,12 +162,18 @@ void PlatformMemory::Free(void* pBuffer)
 void PlatformIO::Print(ConstCStr string)
 {
     fwrite(string, 1, strlen(string), stdout);
+#if kVireoOS_emscripten
+    fflush(stdout);
+#endif
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(Int32 len, ConstCStr string)
 {
     fwrite(string, 1, len, stdout);
+#if kVireoOS_emscripten
+    fflush(stdout);
+#endif
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
@@ -177,6 +183,9 @@ void PlatformIO::Printf(ConstCStr format, ...)
     va_start(args, format);
     vprintf(format, args);
     va_end(args);
+#if kVireoOS_emscripten
+    fflush(stdout);
+#endif
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
