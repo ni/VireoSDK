@@ -22,6 +22,8 @@ define(videf1 dv(.VirtualInstrument (
         e(a(.Int32 *) local8)
 	e(dv(a(.Int32 * *) ((1 2 3 4)(3 4 5 6)(7 8 9 10)( 4 3 2 1))) arrfoo)
 	e(a(.Int32 * *) arrbar)
+	e(dv(a(.Int32 * * *) (((111 112 113)(121 122 123))((211 212 213)(221 222 223)))) arr3d)
+	e(a(.Int32 * * *) arr3dout)
 	e(dv(a(.String * *) (("hello" "world")("abcde" "fg")("xyzzy" ""))) arrstr)
 	e(a(.String * *) arrstrout)
     )
@@ -46,6 +48,8 @@ define(videf1 dv(.VirtualInstrument (
 	Println(arrbar)
  	ArraySubset(arrstrout arrstr 1 2 0 1)
 	Println(arrstrout)
+ 	ArraySubset(arr3dout arr3d 1 * 1 * 0 2)
+	Println(arr3dout)
 //--- end of vi
     )
 )))

@@ -421,6 +421,99 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
     }
     return _NextInstruction();
 }
+
+//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetNDV, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    Int32 count = (_ParamVarArgCount()-2)/2;
+    Int32 i = 0, j = 0;
+    if (arrayOut != arrayIn) {
+        arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
+    }
+    ArrayDimensionVector arrIndex, subArrayLen, arrayOutSlabLengths;
+    IntIndex rank = arrayOut->Rank();
+    bool empty = false;
+    if (rank < 1 || count != rank+1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayRepalceSubset wrong number of index args");
+        return THREAD_EXEC()->Stop();
+    }
+    IntIndex expectedElemRank = rank;
+    for (i = 0; i < rank; ++i)
+        if (arguments[i]._pData != NULL)
+            --expectedElemRank;
+    bool noneWired = false;
+    if (expectedElemRank == rank) {
+        noneWired = true;
+        --expectedElemRank;
+    }
+    for (i = 0; i < rank; ++i) {
+        bool wired = (arguments[i]._pData != NULL);
+        IntIndex idx = 0;
+        if (wired || (i==0 && noneWired)) {
+            idx = wired ? *(IntIndex*)arguments[i]._pData : 0;
+        } else {
+            arrayOutSlabLengths[expectedElemRank-1-j] = arrayOut->SlabLengths()[rank-1-i];
+            ++j;
+        }
+
+        // Coerce index to non-negative integer
+        idx = Max(idx, 0);
+        // Calculate count from idx to end of array
+        IntIndex len = arrayOut->DimensionLengths()[rank-1-i];
+        idx = Min(idx, len);
+        len -= idx;
+        arrIndex[rank-1-i] = idx;
+        if (len == 0)
+            empty = true;
+    }
+    for (; j < rank; ++j)
+        arrayOutSlabLengths[j] = arrayOutSlabLengths[(j-1)];
+    void* element = arguments[i]._pData;
+    IntIndex srcRank =  arguments[i]._paramType->Rank();
+    if (srcRank != expectedElemRank) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset bad elem rank");
+        return THREAD_EXEC()->Stop();
+    }
+    if (!empty) {
+        bool badType = false;
+        if (srcRank > 0) {
+            TypedArrayCoreRef subArray = *(TypedArrayCoreRef*)element;
+            if (!arrayOut->ElementType()->IsA(subArray->ElementType()))
+                badType= true;
+            else {
+                AQBlock1 *srcData = subArray->BeginAt(0);
+                j = expectedElemRank-1;
+                for (i = 0; i < rank; ++i) {
+                    bool wired = (arguments[i]._pData != NULL);
+                    if (!(wired || (i==0 && noneWired))) {
+                        subArrayLen[j] = subArray->DimensionLengths()[j];
+                        if (subArrayLen[j] > arrayOut->DimensionLengths()[rank-1-i])
+                            subArrayLen[j] = arrayOut->DimensionLengths()[rank-1-i];
+                        --j;
+                    }
+                }
+                ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAtND(rank, arrIndex), arrayOutSlabLengths,
+                                       srcData, subArrayLen, subArray->SlabLengths(), arrayOut->Rank(), srcRank, true);
+            }
+        } else {
+            if (!arrayOut->ElementType()->IsA(arguments[i]._paramType))
+                badType= true;
+            else {
+                AQBlock1 *srcData = (AQBlock1*)element;
+                arrayOut->ElementType()->CopyData(srcData, arrayOut->BeginAtND(rank, arrIndex));
+            }
+        }
+        if (badType) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset bad elem type");
+            return THREAD_EXEC()->Stop();
+        }
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex)
 {
@@ -450,48 +543,60 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     return _NextInstruction();
 }
 
+//
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE6(ArraySubset2D, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex, IntIndex, IntIndex)
+struct IndexAndLength {
+    IntIndex *idx;
+    IntIndex *len;
+};
+
+struct ArraySubsetNDStruct : public VarArgInstruction
 {
-    TypedArrayCoreRef arrayOut = _Param(0);
-    TypedArrayCoreRef arrayIn = _Param(1);
+    _ParamDef(TypedArrayCoreRef, ArrayOut);
+    _ParamDef(TypedArrayCoreRef, ArrayIn);
+    _ParamImmediateDef(IndexAndLength, arg[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    Int32 count = (_ParamVarArgCount()-2)/2;
+    Int32 i;
     ArrayDimensionVector tempDimensionLengths;
     Int32 rank = arrayOut->Rank();
-
-    IntIndex idx0 = (_ParamPointer(2) != null) ? _Param(2) : 0;
-    // Coerce index to non-negative integer
-    idx0 = Max(idx0, 0);
-    IntIndex idx1 = (_ParamPointer(4) != null) ? _Param(4) : 0;
-    // Coerce index to non-negative integer
-    idx1 = Max(idx1, 0);
-
-    if (rank != 2 || (arrayOut == arrayIn && (idx0 != 0 || idx1 != 0))) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArraySubset inplace");
+    bool empty = false;
+    if (rank < 2 || count != rank) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArraySubset wrong number of index/length args");
         return THREAD_EXEC()->Stop();
     }
+    for (i = 0; i < rank; ++i) {
+        IntIndex idx = (_ParamImmediate(arg[i].idx) != null) ? *_ParamImmediate(arg[i].idx) : 0;
+    
+        // Coerce index to non-negative integer
+        idx = Max(idx, 0);
+        if (arrayOut == arrayIn && idx != 0) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Can't ArraySubset inplace");
+            return THREAD_EXEC()->Stop();
+        }
 
-    // Calculate count from idx to end of array
-    IntIndex maxLen = arrayIn->DimensionLengths()[1] - idx0;
-    maxLen = Max(maxLen, 0);
-
-    IntIndex len = (_ParamPointer(3) != null) ? _Param(3) : maxLen;
-    len = Max(len, 0);
-    len = Min(len, maxLen);
-
-    maxLen = arrayIn->DimensionLengths()[0] - idx1;
-    maxLen = Max(maxLen, 0);
-
-    IntIndex len1 = (_ParamPointer(5) != null) ? _Param(5) : maxLen;
-    len1 = Max(len1, 0);
-    len1 = Min(len1, maxLen);
-
-    tempDimensionLengths[0] = len1;
-    tempDimensionLengths[1] = len;
-    tempDimensionLengths[2] = idx1;
-    tempDimensionLengths[3] = idx0;
+        // Calculate count from idx to end of array
+        IntIndex maxLen = arrayIn->DimensionLengths()[rank-1-i] - idx;
+        maxLen = Max(maxLen, 0);
+    
+        IntIndex len = (_ParamImmediate(arg[i].len) != null) ? *_ParamImmediate(arg[i].len) : maxLen;
+        len = Max(len, 0);
+        len = Min(len, maxLen);
+    
+        tempDimensionLengths[rank-1-i] = len;
+        tempDimensionLengths[count+rank-1-i] = idx;
+        if (len == 0)
+            empty = true;
+    }
     arrayOut->ResizeDimensions(rank, tempDimensionLengths, false);
-    if (len > 0 && len1 > 0 && idx0 < arrayIn->DimensionLengths()[1] && idx1 < arrayIn->DimensionLengths()[0] && arrayOut != arrayIn) {
-        ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), arrayIn->BeginAtND(2, tempDimensionLengths+2), tempDimensionLengths, arrayIn->SlabLengths(), arrayOut->Rank(), arrayIn->Rank());
+    if (!empty && arrayOut != arrayIn) {
+        ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), arrayIn->BeginAtND(rank, tempDimensionLengths+rank), tempDimensionLengths, arrayIn->SlabLengths(), arrayOut->Rank(), arrayIn->Rank());
     }
     return _NextInstruction();
 }
@@ -1656,7 +1761,7 @@ DEFINE_VIREO_BEGIN(Array)
     //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubset2D, "p(o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubsetND, "p(i(VarArgCount) o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArrayInsertSubset, ArrayInsertSubsetND, "p(o(Array) i(Array) i(Int32) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
@@ -1692,6 +1797,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubsetNDV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(VarArgCount) i(Array) o(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )")
     // It might be helpful to have indexing functions that take the

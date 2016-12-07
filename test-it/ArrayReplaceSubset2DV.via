@@ -1,7 +1,8 @@
+// Tests both 2D and ND versions
 
 define(array1d dv(a(.Int32 *)   (1 2 3 4 5) ) )
-define(g1     dv(a(.Double *)    (2 3 4 5 6)))
-define(array2d dv(a(.Int32 * *) ((11 12 13 14 15)(21 22 23 24 25)) ) )
+define(g1     dv(a(.Double *)    (2 3 4 5 6 7 8)))
+define(array2d dv(a(.Int32 * *) ((81 82 83 84 85)(91 92 93 94 95)) ) )
 define(string2d dv(a(.String * *) (("abc" "def" "hjk")("21" "22" "23")) ) )
 define(g7 dv(a(.Double * *)((11 12)(21 22)(31 32 )(41 42)(51 52))))
 define(array3d dv(a(.Int32 * * *) (((111 112 113 114 115)(21 22 23 24 25))((211 212 213 214 215)(221 222 223 224 225))) ) )
@@ -18,6 +19,7 @@ define(vi dv(.VirtualInstrument (
         e(a(.Double *)     outarray2)
         e(a(.Double * *)    local11)
         e(a(.Double * *)    local12)
+        e(a(.Int32 * * *)    local13)
         e(a(.String * *)    outarray3)
     )
     clump(1
@@ -57,6 +59,22 @@ define(vi dv(.VirtualInstrument (
         Printf("replace subset of string array\n")
         ArrayReplaceSubset2DV(outarray3 string2d 1 0 stringelem)
         Println(outarray3)
+
+        Printf("replace ND * * 2 in %s\n" array3d)
+        ArrayReplaceSubsetNDV(local13 array3d * * 2 array2d)
+        Println(local13)
+
+        Printf("replace ND 1 * 1 in %s\n" array3d)
+        ArrayReplaceSubsetNDV(local13 array3d 1 * 1 array1d)
+        Println(local13)
+
+        Printf("replace ND * 1 in %s\n" g7)
+        ArrayReplaceSubsetNDV(local11 g7 * 1 g1)
+        Println(local11)
+
+        Printf("replace ND 1 1 in %s\n" elem)
+        ArrayReplaceSubsetNDV(local11 g7 1 1 elem)
+        Println(local11)
     )
 )))
 enqueue(vi)
