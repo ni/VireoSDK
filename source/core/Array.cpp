@@ -423,10 +423,14 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
 }
 
 //ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
-VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetNDV, ArrayReplaceSubsetStruct)
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    IntIndex rank = arrayOut->Rank();
+    if (rank == 1)
+        return ArrayReplaceSubset(_this);
+
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     Int32 count = (_ParamVarArgCount()-2)/2;
     Int32 i = 0, j = 0;
@@ -434,9 +438,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetNDV, ArrayReplaceSubsetStruct)
         arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
     }
     ArrayDimensionVector arrIndex, subArrayLen, arrayOutSlabLengths;
-    IntIndex rank = arrayOut->Rank();
     bool empty = false;
-    if (rank < 1 || count != rank+1) {
+    if (rank < 2 || count != rank+1) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayRepalceSubset wrong number of index args");
         return THREAD_EXEC()->Stop();
     }
@@ -1758,10 +1761,10 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayIndexElt, "p(i(Array) i(Int32) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayAppendElt, "p(io(Array) i(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceElt, "p(o(Array) i(Array) i(Int32) i(*))")
-    //DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
-    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
+//    DEFINE_VIREO_FUNCTION(ArrayReplaceSubset, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArraySubset, "p(o(Array) i(Array) i(Int32) i(Int32))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArraySubset, ArraySubsetND, "p(i(VarArgCount) o(Array) i(Array) i(Int32) i(Int32) i(Int32) i(Int32) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ArrayReplaceSubset, ArrayReplaceSubsetND, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayInsertElt, "p(o(Array) i(Array) i(Int32) i(*))")
     DEFINE_VIREO_FUNCTION_CUSTOM(ArrayInsertSubset, ArrayInsertSubsetND, "p(o(Array) i(Array) i(Int32) i(Int32) i(Array))")
     DEFINE_VIREO_FUNCTION(ArrayInsertSubset, "p(o(Array) i(Array) i(Int32) i(Array))")
@@ -1797,7 +1800,6 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(ArrayReplaceSubsetNDV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(VarArgCount) i(Array) o(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )")
     // It might be helpful to have indexing functions that take the
