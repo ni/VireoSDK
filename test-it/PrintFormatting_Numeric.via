@@ -55,6 +55,7 @@ Locals: c(
  	  Printf("%%.0f => *%.0f*\n" db2  )
 	  Printf("%%#10.6f => *%#10.6f*\n" db2  )
 	  Printf("Localization codes => *%;%f %,;%f %.;%f %f %;%f*\n" db2 db2 db2 db2 db2)
+	  Printf("ASCII Escape codes => *\\61\\\\62\\\\\\63\\\\\\\\64%d*\n" num1 )
 
 	  Printf("\nTest Float %f-------------------------\n" db6)
 	  Printf("%%010_1f => *%010_1f*\n" db6  )

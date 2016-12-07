@@ -363,7 +363,19 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
     while (validFormatString && f.ReadRawChar(&c))
     {
-        if (c == '\\' && f.ReadRawChar(&c)) {
+        Utf8Char c1, c2;
+        if (c == '\\' && f.PeekRawChar(&c1) && f.PeekRawChar(&c2, 1) && isalnum(c1) && isalnum(c2) && !islower(c1) && !islower(c2) ) {
+            // Process ASCII escape codes. LabVIEW supports only uppercase alphabets in the hex codes
+            f.ReadRawChar(&c1);
+            f.ReadRawChar(&c2);
+            char str[3];
+            str[0] = c1;
+            str[1] = c2;
+            str[2] = 0;
+            char ascii = strtol(str, null, 16);
+            buffer->Append(ascii);
+        }
+        else if (c == '\\' && f.ReadRawChar(&c)) {
             switch (c)
             {
                 case 'n':       buffer->Append('\n');      break;
