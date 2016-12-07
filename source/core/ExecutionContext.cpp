@@ -19,6 +19,12 @@ SDG
 #include <emscripten.h>
 #endif
 
+#if kVireoOS_emscripten
+extern "C" {
+    extern void jsExecutionContextFPSync(const char *, int);
+}
+#endif
+
 namespace Vireo {
 
 //------------------------------------------------------------
@@ -128,9 +134,7 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
-    EM_ASM_ARGS({
-        Module.fpSync(Pointer_stringify($0, $1));
-    }, (char*)_Param(0)->Begin(), _Param(0)->Length());
+    jsExecutionContextFPSync((char*)_Param(0)->Begin(), _Param(0)->Length());
 #endif
     return _NextInstruction();
 }

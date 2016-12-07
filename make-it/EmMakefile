@@ -64,10 +64,16 @@ endif
 
 EM_OPTFLAGS ?= $(EM_OPTFLAG)	# Can be overrided in custom.mak
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
-EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
-EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
-EMLIBRARY= --js-library ../source/io/library_canvas2d.js --js-library ../source/io/library_httpClient.js
-EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js 
+
+# NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
+EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
+EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
+EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
+            --js-library $(IOSOURCEDIR)/library_canvas2d.js \
+            --js-library $(IOSOURCEDIR)/library_httpClient.js
+PREJS = $(OBJS)/vireo.preamble.js
+POSTJS = $(OBJS)/vireo.postamble.js
+EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -83,7 +89,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteString',\
     '_Data_WriteInt32',\
     '_Data_WriteUInt32'\
-    ]" -s RESERVED_FUNCTION_POINTERS=10
+    ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Assert.bc\
@@ -109,17 +115,13 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/VirtualInstrument.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
-    $(OBJS)/HttpClient.bc\
-    $(OBJS)/Emscripten.bc\
-    $(OBJS)/CEntryPoints.bc
+    $(OBJS)/HttpClient.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
 -include EmMakefile-AAL
 endif
 
-$(OBJS)/%.Embind.bc: $(CORESOURCEDIR)/%.Embind.cpp
-	$(EMCC) $(EMFLAGS) --bind -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
 	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
@@ -129,11 +131,13 @@ $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
 	@mkdir -p $(OBJS)
 
+$(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
+	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
+
 vjs: $(TARGETDIR)/vireo.js
 
-$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(CORESOURCEDIR)/vireo.preamble.js $(CORESOURCEDIR)/vireo.postamble.js 
+$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
-	python patchVireo.py $@
 
 # In at least the initial test the compression made start up mcuh slower (2x?)
 # it was much better to let the server use gzip automatically
