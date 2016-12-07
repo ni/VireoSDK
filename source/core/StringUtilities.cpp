@@ -164,10 +164,10 @@ Boolean SubString::ReadRawChar(Utf8Char* token)
     }
 }
 //------------------------------------------------------------
-Boolean SubString::PeekRawChar(Utf8Char* token)
+Boolean SubString::PeekRawChar(Utf8Char* token, IntIndex pos)
 {
-    if (_begin < _end) {
-        *token = *_begin;
+    if (_begin + pos < _end) {
+        *token = *(_begin + pos);
         return true;
     } else {
         return false;

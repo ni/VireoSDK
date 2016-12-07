@@ -250,7 +250,7 @@ public:
     //! Fucntions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
-    Boolean PeekRawChar(Utf8Char* token);
+    Boolean PeekRawChar(Utf8Char* token, IntIndex pos = 0);
     Int32 LengthAferProcessingEscapes();
     void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
 
