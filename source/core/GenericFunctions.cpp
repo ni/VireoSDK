@@ -1316,11 +1316,22 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
 // Top level call must pass destRank >= 2, and sourceRank == destRank or destRank-1.
 AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank, bool preinit) {
     if (sourceRank == 1) {
-        if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
-            return NULL;
-        Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
-        if (!preinit && copiedLength < destSlabLengths[1]) {
-            memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+        Int32 elemSize = elementType->TopAQSize();
+        if (elemSize == destSlabLengths[0] && elemSize == sourceSlabLengths[0]) {
+            if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
+                return NULL;
+            Int32 copiedLength = sourceDimLengths[0] * elemSize;
+            if (!preinit && copiedLength < destSlabLengths[1]) {
+                memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+            }
+        } else {
+            AQBlock1 *pTemp = pDest;
+            for (IntIndex i = 0; i < sourceDimLengths[0]; ++i) {
+                if (elementType->CopyData(pSource, pTemp, 1))
+                    return NULL;
+                pTemp  += destSlabLengths[0];
+                pSource += sourceSlabLengths[0];
+            }
         }
         pDest += destSlabLengths[1];
     } else {

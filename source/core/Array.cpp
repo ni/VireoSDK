@@ -421,6 +421,99 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
     }
     return _NextInstruction();
 }
+
+//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetNDV, ArrayReplaceSubsetStruct)
+{
+    TypedArrayCoreRef arrayOut = _Param(ArrayOut);
+    TypedArrayCoreRef arrayIn = _Param(ArrayIn);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    Int32 count = (_ParamVarArgCount()-2)/2;
+    Int32 i = 0, j = 0;
+    if (arrayOut != arrayIn) {
+        arrayIn->Type()->CopyData(&arrayIn, &arrayOut);
+    }
+    ArrayDimensionVector arrIndex, subArrayLen, arrayOutSlabLengths;
+    IntIndex rank = arrayOut->Rank();
+    bool empty = false;
+    if (rank < 1 || count != rank+1) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayRepalceSubset wrong number of index args");
+        return THREAD_EXEC()->Stop();
+    }
+    IntIndex expectedElemRank = rank;
+    for (i = 0; i < rank; ++i)
+        if (arguments[i]._pData != NULL)
+            --expectedElemRank;
+    bool noneWired = false;
+    if (expectedElemRank == rank) {
+        noneWired = true;
+        --expectedElemRank;
+    }
+    for (i = 0; i < rank; ++i) {
+        bool wired = (arguments[i]._pData != NULL);
+        IntIndex idx = 0;
+        if (wired || (i==0 && noneWired)) {
+            idx = wired ? *(IntIndex*)arguments[i]._pData : 0;
+        } else {
+            arrayOutSlabLengths[expectedElemRank-1-j] = arrayOut->SlabLengths()[rank-1-i];
+            ++j;
+        }
+
+        // Coerce index to non-negative integer
+        idx = Max(idx, 0);
+        // Calculate count from idx to end of array
+        IntIndex len = arrayOut->DimensionLengths()[rank-1-i];
+        idx = Min(idx, len);
+        len -= idx;
+        arrIndex[rank-1-i] = idx;
+        if (len == 0)
+            empty = true;
+    }
+    for (; j < rank; ++j)
+        arrayOutSlabLengths[j] = arrayOutSlabLengths[(j-1)];
+    void* element = arguments[i]._pData;
+    IntIndex srcRank =  arguments[i]._paramType->Rank();
+    if (srcRank != expectedElemRank) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset bad elem rank");
+        return THREAD_EXEC()->Stop();
+    }
+    if (!empty) {
+        bool badType = false;
+        if (srcRank > 0) {
+            TypedArrayCoreRef subArray = *(TypedArrayCoreRef*)element;
+            if (!arrayOut->ElementType()->IsA(subArray->ElementType()))
+                badType= true;
+            else {
+                AQBlock1 *srcData = subArray->BeginAt(0);
+                j = expectedElemRank-1;
+                for (i = 0; i < rank; ++i) {
+                    bool wired = (arguments[i]._pData != NULL);
+                    if (!(wired || (i==0 && noneWired))) {
+                        subArrayLen[j] = subArray->DimensionLengths()[j];
+                        if (subArrayLen[j] > arrayOut->DimensionLengths()[rank-1-i])
+                            subArrayLen[j] = arrayOut->DimensionLengths()[rank-1-i];
+                        --j;
+                    }
+                }
+                ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAtND(rank, arrIndex), arrayOutSlabLengths,
+                                       srcData, subArrayLen, subArray->SlabLengths(), arrayOut->Rank(), srcRank, true);
+            }
+        } else {
+            if (!arrayOut->ElementType()->IsA(arguments[i]._paramType))
+                badType= true;
+            else {
+                AQBlock1 *srcData = (AQBlock1*)element;
+                arrayOut->ElementType()->CopyData(srcData, arrayOut->BeginAtND(rank, arrIndex));
+            }
+        }
+        if (badType) {
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset bad elem type");
+            return THREAD_EXEC()->Stop();
+        }
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex)
 {
@@ -1704,6 +1797,7 @@ DEFINE_VIREO_BEGIN(Array)
     DEFINE_VIREO_FUNCTION(ArrayFillNDV, "p(i(VarArgCount) o(Array) i(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayIndexElt2DV, "p(i(Array) i(*) i(*) o(*))")
     DEFINE_VIREO_FUNCTION(ArrayReplaceSubset2DV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ArrayReplaceSubsetNDV, "p(i(VarArgCount) o(Array) i(Array) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(ArrayIndexEltNDV, "p(i(VarArgCount) i(Array) o(*) i(Int32) )")
     DEFINE_VIREO_FUNCTION(ArrayReplaceEltNDV, "p(i(VarArgCount) o(Array) i(Array) i(*) i(Int32) )")
     // It might be helpful to have indexing functions that take the
