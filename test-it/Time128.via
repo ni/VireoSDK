@@ -98,7 +98,7 @@ define(HelloTime dv(.VirtualInstrument (
         Convert(3564013719.75 t5)
 	Printf("Time %s\n" t5)
 	Printf("//Time %<%H:%M:%S%2u %x>T\n" t5) // TO-DO Printf %T output is wrong in JS/emscripten
-	FormatDateTimeString(s "%.2c" t5 false)
+	FormatDateTimeString(s "%.2c" t5 true)
         Println(s)
     )
 ) ) )
