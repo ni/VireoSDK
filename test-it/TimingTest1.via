@@ -25,6 +25,7 @@ define(videf1 dv(.VirtualInstrument (
         e(.Int32 local4)
         e(.Int32 local5)
         e(.Int32 local6)
+        e(.UInt32 local7)
     )
         clump(1
         Trigger(1)                                // fork
@@ -36,7 +37,7 @@ define(videf1 dv(.VirtualInstrument (
         Copy(c6 local4 )                          // initialize i
         Perch(0)
         Println(c1)
-        WaitMilliseconds(c4)
+        WaitMilliseconds(c4 local7)
         Println(c3)
         BranchIfGE(1 local4 local6)
         Add(local4 c5 local4)                     // increment i
