@@ -23,6 +23,7 @@ SDG
     #include <windows.h>
     #include <time.h>
 #else
+    #include <time.h>
     #include <sys/time.h>
 #endif
 #elif defined(VIREO_DATE_TIME_VXWORKS)
@@ -96,6 +97,10 @@ Timestamp ATime128FromHILOTime(const uInt32 &high, const uInt32 &low)
 }
 #endif
 
+#if defined(VIREO_DATE_TIME_STDLIB)
+static const UInt32 kStdDT1970re1904 = 2082844800;
+#endif
+
 /**
  Functions for getting Timestamps
   */
@@ -118,7 +123,6 @@ void GetCurrentTimestamp(Timestamp *t)
     *t = Timestamp((Double)(stdTime/1000000UL), (stdTime % 1000000UL) / 1E6);
 
 #elif defined(VIREO_DATE_TIME_STDLIB)
-    static const UInt32 kStdDT1970re1904 = 2082844800;
     struct timeval tv;
     Int32 retval;
 
@@ -155,6 +159,18 @@ Timestamp::Timestamp(double seconds)
         _integer = (Int64)wholeSeconds;
         _fraction = (UInt64) (18446744073709551616.0 * (seconds - wholeSeconds));
     }
+}
+//------------------------------------------------------------
+Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year)
+{
+#if defined(VIREO_DATE_TIME_STDLIB)
+    struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
+    time_t t = timegm(&timeVal);
+    *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
+#else
+    _integer = 0;
+    _fraction = 0;
+#endif
 }
 //------------------------------------------------------------
 Double Timestamp::ToDouble() const
@@ -470,6 +486,33 @@ Int32 Date::isDTS()
 {
     return 0;
 }
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(DateTimeToTimestamp, LVDateTimeRec, Timestamp)
+{
+    LVDateTimeRec *dt = _ParamPointer(0);
+    Timestamp timestamp(dt->fractional_secs, dt->second, dt->minute, dt->hour, dt->day_of_month, dt->month, dt->year);
+    _Param(1) = timestamp;
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(TimestampToDateTime, Timestamp, LVDateTimeRec)
+{
+    Timestamp timestamp = _Param(0);
+    LVDateTimeRec *dt = _ParamPointer(1);
+    Int32 firstWeekDay = 0;
+    Int64 secondsOfYear = 0;
+    getDate(timestamp, &secondsOfYear, &dt->year,
+            &dt->month, &dt->day_of_month, &dt->hour,
+            &dt->minute, &dt->second, &dt->fractional_secs,
+            &firstWeekDay, NULL, NULL);
+    ++dt->day_of_month;
+    ++dt->month;
+    dt->day_of_year = Int32(secondsOfYear / (24*60*60));
+    dt->day_of_week = (firstWeekDay+1) % 7 + 1;
+    ++dt->day_of_year;
+    return _NextInstruction();
+}
 #endif
 
 
@@ -497,6 +540,11 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(Timestamp)i(Double)o(Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(Timestamp) o(Double))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ToTimestamp, "p(i(Double) o(Timestamp))")
+
+    DEFINE_VIREO_TYPE(LVDateTimeRec, "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour) e(Int32 day_of_month) e(Int32 month) e(Int32 year) e(Int32 day_of_week) e(Int32 day_of_year) e(Int32 dst))");
+    DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(LVDateTimeRec) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) o(LVDateTimeRec))")
+
 #endif
 #endif
 

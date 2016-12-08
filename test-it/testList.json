@@ -80,6 +80,7 @@
                 "CoreArray.via",
                 "CoreTypes.via",
                 "DateFormatString.via",
+                "DateTime.via",
                 "DecodeViaString.via",
                 "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",

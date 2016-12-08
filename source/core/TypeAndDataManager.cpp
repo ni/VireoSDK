@@ -2857,10 +2857,6 @@ DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_Double)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
-
-#if defined(VIREO_TYPE_Timestamp)
-    DEFINE_VIREO_TYPE(LVDateTimeRec, "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour) e(Int32 day_of_month) e(Int32 month) e(Int32 year) e(Int32 day_of_week) e(Int32 day_of_year) e(Int32 dst))");
-#endif
 #endif
 
     DEFINE_VIREO_TYPE(TypeManager, "DataPointer");

@@ -32,6 +32,7 @@ class Timestamp
     Timestamp(Int64 integer, UInt64 fraction)
         { _integer = integer; _fraction = fraction;}
     Timestamp(Double seconds);
+    Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year);
 
     Int64 Integer() const { return _integer; };
     UInt64 Fraction() const { return _fraction; };
@@ -105,5 +106,14 @@ class Date
         Date AtTimeZone(Int32 timeZone);
 };
 
+struct LVDateTimeRec {
+    Double fractional_secs;
+    Int32 second, minute, hour;
+    Int32 day_of_month, month, year;
+    Int32 day_of_week, day_of_year, dst;
+
+    LVDateTimeRec() : fractional_secs(0), second(0), minute(0), hour(0), day_of_month(0), month(0), year(0),
+        day_of_week(0), day_of_year(0), dst(0) {}
+};
 }  // namespace Vireo
 #endif // Timestamp_h
