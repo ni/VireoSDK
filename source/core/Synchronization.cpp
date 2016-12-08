@@ -139,6 +139,13 @@ void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickC
     }
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(TickCountMS, UInt32)
+{
+    Int64 nowMS = gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+    _Param(0) = UInt32(nowMS);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
     PlatformTickType future = gPlatform.Timer.MicrosecondsFromNowToTickCount(_Param(0));
@@ -148,6 +155,20 @@ VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
     PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(_Param(0));
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(WaitUntilMSMultiple, UInt32)
+{
+    UInt32 msMultiple = _Param(0);
+    if (msMultiple == 0) {
+        // This is supposed to yield immediately, but the unrolling in the execloop defeats this
+        THREAD_EXEC()->ClearBreakout();
+        return _NextInstruction();
+    }
+    Int64 nowMS = gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+    Int64 nextMS = ((nowMS + msMultiple) / msMultiple) * msMultiple;
+    PlatformTickType future = gPlatform.Timer.MicrosecondsToTickCount(nextMS * 1000);
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
@@ -351,6 +372,8 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(UInt32))")
     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(Int64))")
     DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMSMultiple, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION(TickCountMS, "p(i(UInt32))")
 
     // Base ObservableObject
     DEFINE_VIREO_TYPE(Observer, "c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))");
