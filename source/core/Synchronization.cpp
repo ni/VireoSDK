@@ -139,9 +139,33 @@ void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickC
     }
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(WaitTickCount, UInt32, UInt32)
+{
+    PlatformTickType future = gPlatform.Timer.TickCount() + _Param(0);
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)future;
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(WaitMicroseconds_, UInt32, UInt32)
+{
+    PlatformTickType future = gPlatform.Timer.MicrosecondsFromNowToTickCount(_Param(0));
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)(gPlatform.Timer.TickCountToMicroseconds(future));
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
     PlatformTickType future = gPlatform.Timer.MicrosecondsFromNowToTickCount(_Param(0));
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(WaitMilliseconds_, UInt32, UInt32)
+{
+    PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(_Param(0));
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)(gPlatform.Timer.TickCountToMilliseconds(future));
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
@@ -151,7 +175,12 @@ VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitUntilMSMultiple, UInt32)
+VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
+{
+    return THREAD_CLUMP()->WaitUntilTickCount(gPlatform.Timer.MicrosecondsToTickCount(_Param(0)), _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMSMultiple, UInt32, UInt32)
 {
     UInt32 msMultiple = _Param(0);
     if (msMultiple == 0) {
@@ -162,12 +191,40 @@ VIREO_FUNCTION_SIGNATURE1(WaitUntilMSMultiple, UInt32)
     Int64 nowMS = gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
     Int64 nextMS = ((nowMS + msMultiple) / msMultiple) * msMultiple;
     PlatformTickType future = gPlatform.Timer.MicrosecondsToTickCount(nextMS * 1000);
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)nextMS;
     return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(WaitUntilMicroseconds, Int64)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilUSMultiple, UInt32, UInt32)
 {
-    return THREAD_CLUMP()->WaitUntilTickCount(gPlatform.Timer.MicrosecondsToTickCount(_Param(0)), _NextInstruction());
+    UInt32 usMultiple = _Param(0);
+    if (usMultiple == 0) {
+        // This is supposed to yield immediately, but the unrolling in the execloop defeats this
+        THREAD_EXEC()->ClearBreakout();
+        return _NextInstruction();
+    }
+    Int64 nowUS = gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+    Int64 nextUS = ((nowUS + usMultiple) / usMultiple) * usMultiple;
+    PlatformTickType future = gPlatform.Timer.MicrosecondsToTickCount(nextUS);
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)nextUS;
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(WaitUntilTickCountMultiple, UInt32, UInt32)
+{
+    UInt32 tickMultiple = _Param(0);
+    if (tickMultiple == 0) {
+        // This is supposed to yield immediately, but the unrolling in the execloop defeats this
+        THREAD_EXEC()->ClearBreakout();
+        return _NextInstruction();
+    }
+    PlatformTickType nowTick = gPlatform.Timer.TickCount();
+    PlatformTickType future = ((nowTick + tickMultiple) / tickMultiple) * tickMultiple;
+    if (_ParamPointer(1))
+        _Param(1) = (UInt32)future;
+    return THREAD_CLUMP()->WaitUntilTickCount(future, _NextInstruction());
 }
 //------------------------------------------------------------
 void OccurrenceCore::SetOccurrence()
@@ -362,10 +419,15 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 DEFINE_VIREO_BEGIN(Synchronization)
 
     // Timers
+    DEFINE_VIREO_FUNCTION(WaitTickCount, "p(i(UInt32) o(UInt32))")
     DEFINE_VIREO_FUNCTION(WaitMilliseconds, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitMilliseconds, WaitMilliseconds_, "p(i(UInt32) o(UInt32))")
     DEFINE_VIREO_FUNCTION(WaitUntilMicroseconds, "p(i(Int64))")
-    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(UInt32))")
-    DEFINE_VIREO_FUNCTION(WaitUntilMSMultiple, "p(i(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitMicroseconds, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitMicroseconds, WaitMicroseconds_, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMSMultiple, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilUSMultiple, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION(WaitUntilTickCountMultiple, "p(i(UInt32) o(UInt32))")
 
     // Base ObservableObject
     DEFINE_VIREO_TYPE(Observer, "c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))");
