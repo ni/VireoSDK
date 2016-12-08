@@ -263,6 +263,12 @@ VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(ToTimestamp, Double, Timestamp)
+{
+    _Param(1) = Timestamp(_Param(0));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 Int64 SecondsFromBaseYear(Int64 year, Int64 baseYear)
 {
     Int64 secondsInyear = 31536000;
@@ -490,7 +496,7 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(Double)i(Timestamp)o(Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(Timestamp)i(Double)o(Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(Timestamp) o(Double))")
-
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ToTimestamp, "p(i(Double) o(Timestamp))")
 #endif
 #endif
 
