@@ -154,7 +154,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex bad output type");
             return THREAD_EXEC()->Stop();
         }
-        if (pData)
+        if (pData && !empty)
             array->ElementType()->CopyData(pData, _ParamImmediate(Element._pData));
         else
             array->ElementType()->InitData(_ParamImmediate(Element._pData));
