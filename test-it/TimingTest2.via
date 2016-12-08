@@ -38,10 +38,10 @@ define(videf1 dv(.VirtualInstrument (
         Copy(c6 local4 )                          // initialize i
         Perch(0)
         Println(c1)
- 	TickCountMS(ms)
+ 	GetMillisecondTickCount(ms)
  	Printf ("//Tick Count %u\n" ms)
         WaitUntilMSMultiple(c4)
- 	TickCountMS(ms)
+ 	GetMillisecondTickCount(ms)
  	Printf ("// - Tick Count %u\n" ms)
         Println(c3)
         BranchIfGE(1 local4 local6)
