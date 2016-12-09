@@ -6,8 +6,9 @@ define(MandelbrotMain dv(.VirtualInstrument (
 
         e(dv(.Utf8Char '.')    char1)
         e(dv(.Utf8Char '#')    char2)
-        e(dv(.Utf8Char @'
-')   charLineFeed)
+
+        // TODO changed to Int32 from Utf8Char due to https://github.com/ni/VireoSDK/issues/123
+        e(dv(.Int32 10) intLineFeed)
 
         e(dv(.String '.')    str1)
         e(dv(.String '#')    str2)
@@ -73,7 +74,7 @@ define(MandelbrotMain dv(.VirtualInstrument (
                 Add(x xDelta x)
             BranchIfLE(1 x xLast)
 
-        ArrayAppendElt(buffer charLineFeed)
+        ArrayAppendElt(buffer intLineFeed)
         Add(y yDelta y)
         BranchIfGE(0 y yLast)
 
