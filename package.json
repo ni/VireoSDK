@@ -1,9 +1,8 @@
 {
   "name": "vireo",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "SDK for an experimental vireo runtime engine.",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "eslint": "^3.11.1",
     "requirejs": "^2.3.2",

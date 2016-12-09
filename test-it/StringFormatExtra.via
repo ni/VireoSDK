@@ -2,6 +2,8 @@ define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.String "HelloWorldThisIsAString") input)
         e(dv(.Double 20.0) inputNum)
+		e(dv(.Double 9.96) inputDouble)
+		e(dv(.Int32 71) inputInt)
 
         e(dv(.String "") output)
         e(dv(.String "") output2)
@@ -18,6 +20,8 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "% miss") format11)
         e(dv(.String "%(\n") format12)
         e(dv(.String "%%s %s") format13)
+		e(dv(.String "%;%f %,;%f %.;%f %f %;%f\n") format14)
+		e(dv(.String "\\61\\\\62\\\\\\63\\\\\\\\64%d\n") format15)
     )
     clump (1
         Println("StringFormat (%s) Testing")
@@ -78,6 +82,14 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output2 format13 format1)
         StringFormat(output output2 input input)
         Println(output)
+
+		Println("> Localized Decimal Separator")
+		StringFormat(output format14 inputDouble inputDouble inputDouble inputDouble inputDouble)
+		Println(output)
+
+		Println("> ASCII Escape codes(Hex)")
+		StringFormat(output format15 inputInt)
+		Println(output)
     )
 ) ) )
 enqueue(HelloWorld)
