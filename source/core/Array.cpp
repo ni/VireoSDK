@@ -590,8 +590,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
                                        srcData, subArrayLen, subArray->SlabLengths(), arrayOut->Rank(), srcRank, true);
             }
         } else {
-            if (!arrayOut->ElementType()->IsA(arguments[i]._paramType))
-                badType= true;
+            TypeRef argType = arguments[i]._paramType;
+            if (!argType->IsA(arrayOut->ElementType())) {
+                badType = true;
+            }
             else {
                 AQBlock1 *srcData = (AQBlock1*)element;
                 AQBlock1 *pData = arrayOut->BeginAtND(rank, arrIndex);
