@@ -31,14 +31,12 @@
     <ClCompile Include="..\source\core\Thread.cpp" />
     <ClCompile Include="..\source\core\Timestamp.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataManager.cpp" />
-    <ClCompile Include="..\source\core\TypeAndDataManager.Embind.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
     <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
     <ClCompile Include="..\source\io\Canvas2d.cpp" />
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
-    <ClCompile Include="..\source\io\Emscripten.cpp" />
     <ClCompile Include="..\source\io\FileIO.cpp" />
     <ClCompile Include="..\source\io\HttpClient.cpp" />
     <ClCompile Include="..\source\io\WebSocketClient.cpp" />
