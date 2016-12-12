@@ -7,6 +7,10 @@ define(string2d dv(a(.String * *) (("abc" "def" "hjk")("21" "22" "23")) ) )
 define(g7 dv(a(.Double * *)((11 12)(21 22)(31 32 )(41 42)(51 52))))
 define(array3d dv(a(.Int32 * * *) (((111 112 113 114 115)(21 22 23 24 25))((211 212 213 214 215)(221 222 223 224 225))) ) )
 
+define (g0 dv(a(.Double * * *) (((1 2 3 )(4 5 6 )(7 8 9 )))))
+define (c3 dv(.Double 10))
+define (g5 dv(a(.Double * * *) (((1 2 3 )(4 10 6 )(7 8 9 )))))
+
 //---------------------------------------------------
 //VI Definition: indexing 2d array
 define(vi dv(.VirtualInstrument (
@@ -21,6 +25,7 @@ define(vi dv(.VirtualInstrument (
         e(a(.Double * *)    local12)
         e(a(.Int32 * * *)    local13)
         e(a(.String * *)    outarray3)
+        e(a(.Double * * *) local6)   // VariableArray
     )
     clump(1
         // 2D arrays 
@@ -75,6 +80,10 @@ define(vi dv(.VirtualInstrument (
         Printf("replace ND 1 1 in %s\n" elem)
         ArrayReplaceSubset(local11 g7 1 1 elem)
         Println(local11)
+
+        Printf("replace ND 0 1 1 in %s with element %s\n" g0 c3)
+        ArrayReplaceSubset(local6 g0 0 1 1 c3 )
+        Println(local6)
     )
 )))
 enqueue(vi)

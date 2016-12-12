@@ -82,9 +82,6 @@
     <ClCompile Include="..\source\core\TypeAndDataManager.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\TypeAndDataManager.Embind.cpp">
-      <Filter>VireoSource\Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -101,9 +98,6 @@
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\source\io\DebugGPIO.cpp">
-      <Filter>VireoSource\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\io\Emscripten.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
     <ClCompile Include="..\source\io\FileIO.cpp">

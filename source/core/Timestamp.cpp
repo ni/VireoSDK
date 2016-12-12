@@ -163,7 +163,7 @@ Timestamp::Timestamp(double seconds)
 //------------------------------------------------------------
 Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year)
 {
-#if defined(VIREO_DATE_TIME_STDLIB)
+#if defined(VIREO_DATE_TIME_STDLIB) && !kVireoOS_win32U
     struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
     time_t t = timegm(&timeVal);
     *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
