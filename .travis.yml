@@ -11,6 +11,13 @@ addons:
 before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
+- node -v
+- npm -v
+- python -V
+- pip -V
+install:
+- npm install
+- pip install --user -r requirements.txt
 before_script:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git && emscripten-sdk/emsdk
@@ -18,9 +25,9 @@ before_script:
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
-- node -v
+- pythonw -m httpbin.core --port 5000
+- curl https://localhost:5000/get?show_env=1
 script:
-- npm install
 - make
 - make testjs
 - make testnative

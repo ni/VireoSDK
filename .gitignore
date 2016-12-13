@@ -106,3 +106,5 @@ npm-debug.log
 make-it/linktest
 make-it/compile.bat
 make-it/make.exe
+env/
+*.tgz
