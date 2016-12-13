@@ -2,11 +2,15 @@ sudo: false
 language: cpp
 compiler: gcc
 addons:
+  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 before_script:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git && emscripten-sdk/emsdk
@@ -20,6 +24,7 @@ script:
 - make
 - make testjs
 - make testnative
+- npm run test
 deploy:
   provider: npm
   email: mark.black@ni.com

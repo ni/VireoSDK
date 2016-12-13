@@ -3,4 +3,3 @@ dist/*
 make-it/objs/*
 source/io/library_canvas2d.js
 source/io/library_webSocketClient.js
-source/io/module_webSocketClient.js

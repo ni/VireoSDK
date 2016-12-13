@@ -3,7 +3,8 @@ module.exports = {
     'env': {
         'amd': true,
         'node': true,
-        'browser': true
+        'browser': true,
+        'jasmine': true
     },
     'rules': {
         'no-console': 'off',
