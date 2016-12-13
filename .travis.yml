@@ -1,6 +1,8 @@
 sudo: false
 language: cpp
 compiler: gcc
+node_js:
+- 6
 addons:
   firefox: latest
   apt:
@@ -25,13 +27,14 @@ before_script:
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
-- pythonw -m httpbin.core --port 5000
+- nohup python -m httpbin.core --port 5000 &
 - curl https://localhost:5000/get?show_env=1
 script:
 - make
 - make testjs
 - make testnative
 - npm run test
+- cat ~/nohup.out
 deploy:
   provider: npm
   email: mark.black@ni.com
