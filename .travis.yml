@@ -31,11 +31,11 @@ before_script:
 - emcc -v
 - gcc -v
 - nohup python -m httpbin.core --port 5000 &
-- curl https://localhost:5000/get?show_env=1
 script:
 - make
 - make testjs
 - make testnative
+- curl https://localhost:5000/get?show_env=1
 - npm run test
 - cat ~/nohup.out
 deploy:
