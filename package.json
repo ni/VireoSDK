@@ -4,16 +4,21 @@
   "description": "SDK for an experimental vireo runtime engine.",
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^3.11.1",
-    "requirejs": "^2.3.2",
     "colors": "^1.1.2",
     "diff": "^1.4.0",
-    "shelljs": "^0.5.3"
+    "eslint": "^3.11.1",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.3.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "requirejs": "^2.3.2"
   },
   "scripts": {
-    "make": "make",
-    "test": "make test",
-    "lint": "eslint ."
+    "test": "npm run lint & npm run karma",
+    "lint": "eslint .",
+    "karma": "karma start --browsers PhantomJS,Firefox --single-run"
   },
   "repository": {
     "type": "git",
