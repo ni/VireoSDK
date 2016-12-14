@@ -35,9 +35,9 @@ script:
 - make
 - make testjs
 - make testnative
-- curl https://localhost:5000/get?show_env=1
+- curl http://localhost:5000/get?show_env=1
 - npm run test
-- cat ~/nohup.out
+- cat ./nohup.out
 deploy:
   provider: npm
   email: mark.black@ni.com
