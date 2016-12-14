@@ -29,7 +29,7 @@ install:
 - gcc -v
 before_script:
 - nohup python -m httpbin.core --port 5000 &
-- while [! nc -q 1 localhost 5000 </dev/null]; do sleep 1; done
+- while ! nc -q 1 localhost 5000 </dev/null; do sleep 2; done
 - curl http://localhost:5000/get?show_env=1
 script:
 - make
