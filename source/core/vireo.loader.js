@@ -57,6 +57,9 @@
             }
         };
 
+        if (typeof createVireoCore !== 'function') {
+            throw new Error('createVireoCore could not be found, make sure to build and include vireo.js before using');
+        }
         createVireoCore(Module);
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder(Module, that);
