@@ -39,43 +39,33 @@ describe('can run test suite file', function () {
             var rawVtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
             var rawResults = '';
             vireo.eggShell.reboot();
-            vireo.eggShell.loadVia(viaText);
             vireo.eggShell.setPrintFunction(function (text) {
                 rawResults += text + '\n';
             });
+            vireo.eggShell.loadVia(viaText);
             vireo.eggShell.executeSlices(1000000);
 
+            var normalizedResults = normalizeLineEndings(rawResults);
             var normalizedVtrText = normalizeLineEndings(rawVtrText);
-            var vtrNoComments = removeInlineComments(normalizedVtrText);
-            expect(JSON.stringify(rawResults)).toBe(JSON.stringify(vtrNoComments));
+            var vtrTextNoComments = removeInlineComments(normalizedVtrText);
+            expect(JSON.stringify(normalizedResults)).toBe(JSON.stringify(vtrTextNoComments));
         };
     };
+
+    var focusTests = [
+    ];
 
     var disabledTests = [
         'BadArgumentToVarArgInstruction',
         'BadComment',
-        'Banner',
-        'BitFields',
-        'BooleanFunctions',
-        'BranchErrors',
         'ClumpTriggerWait',
-        'EggShellError1',
-        'EggShellError2',
-        'EggShellError3',
-        'EggShellError4',
-        'EggShellError5',
         'EthanOpts2',
-        'ExtraArrayInializers',
         'GlobalCrossTalk',
         'HelloRequire',
-        'HelloRequireBad',
         'InlineArrayConstantsErrors',
         'ListDirectory',
-        'Literals',
         'MandelbrotInline',
         'MathFunctions',
-        'MissingType',
-        'MultiDimensionArrayDefaults',
         'Occurrence',
         'PID',
         'Parallel',
@@ -88,33 +78,34 @@ describe('can run test suite file', function () {
         'QueueType',
         'QueueTypeTemplate',
         'ReentrantSubVISimple',
+        'Round',
         'Scale2X',
         'StringFormatTime',
-        'StringTrim',
-        'Strings',
         'TicTock',
         'Time128',
         'TimingTest1',
         'TooManyArguments',
-        'TooManyDimensions',
-        'TypeChecking',
-        'TypeValuesError',
-        'VIScripting',
         'Viaduino'
     ];
-    var disabledTestsObj = disabledTests.reduce(function (obj, testName) {
+
+    var addNameToObject = function (obj, testName) {
         obj[testName] = true;
         return obj;
-    }, {});
+    };
+
+    var disabledTestsObj = disabledTests.reduce(addNameToObject, {});
+    var focusTestsObj = focusTests.reduce(addNameToObject, {});
 
     Object.keys(viaFiles).forEach(function (testName) {
         var viaAbsolutePath = viaFiles[testName];
         var vtrAbsolutePath = vtrFiles[testName];
 
-        if (disabledTestsObj[testName] === undefined) {
-            it(testName, createTestForVia(viaAbsolutePath, vtrAbsolutePath));
-        } else {
+        if (focusTestsObj[testName] === true) {
+            fit(testName, createTestForVia(viaAbsolutePath, vtrAbsolutePath));
+        } else if (disabledTestsObj[testName] === true) {
             xit(testName, createTestForVia(viaAbsolutePath, vtrAbsolutePath));
+        } else {
+            it(testName, createTestForVia(viaAbsolutePath, vtrAbsolutePath));
         }
     });
 });

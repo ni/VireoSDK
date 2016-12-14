@@ -64,6 +64,7 @@
         // Create shell for vireo instance
         var v_root = EggShell_Create(0);
         var v_userShell = EggShell_Create(v_root);
+        var userPrintFunction;
 
         // Exported functions
         publicAPI.eggShell.setPrintFunction = function (fn) {
@@ -71,6 +72,7 @@
                 throw new Error('Print must be a callable function');
             }
 
+            userPrintFunction = fn;
             Module.print = fn;
         };
 
@@ -130,6 +132,10 @@
 
             if (viaText.length === 0) {
                 throw new Error('Empty viaText provided, nothing to run');
+            }
+
+            if (userPrintFunction === undefined) {
+                console.warn('Failing to call eggShell.setPrintFunction prior to eggShell.loadVia may result in missed messages');
             }
 
             return EggShell_REPL(v_userShell, viaText, -1);
