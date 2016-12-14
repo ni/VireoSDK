@@ -1,8 +1,6 @@
 sudo: false
 language: cpp
 compiler: gcc
-node_js:
-- 6
 addons:
   firefox: latest
   apt:
@@ -14,8 +12,8 @@ before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - . $HOME/.nvm/nvm.sh
-- nvm install stable
-- nvm use stable
+- nvm install --lts
+- nvm use --lts
 - node -v
 - npm -v
 - python -V
@@ -24,18 +22,19 @@ install:
 - npm install
 - pip install --user -r requirements.txt
 before_script:
+- nohup python -m httpbin.core --port 5000 &
+- while ! nc -q 1 localhost 5000 </dev/null; do sleep 10; done
+- curl http://localhost:5000/get?show_env=1
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git && emscripten-sdk/emsdk
   activate --build=Release sdk-master-64bit && source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
-- nohup python -m httpbin.core --port 5000 &
 script:
 - make
 - make testjs
 - make testnative
-- curl http://localhost:5000/get?show_env=1
 - npm run test
 - cat ./nohup.out
 deploy:
