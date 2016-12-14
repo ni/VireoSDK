@@ -18,7 +18,10 @@
   "scripts": {
     "test": "npm run lint & npm run karma",
     "lint": "eslint .",
-    "karma": "karma start --browsers PhantomJS,Firefox --single-run"
+    "karma": "karma start --browsers PhantomJS,Firefox --single-run",
+    "prehttpbin-install": "python -V & pip -V & virtualenv --version",
+    "httpbin-install": "pip install -r requirements.txt",
+    "httpbin": "python -m httpbin.core --port 5000"
   },
   "repository": {
     "type": "git",
