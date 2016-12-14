@@ -230,6 +230,7 @@
                 "Threshold1DArray.via",
                 "TicTock.via",
                 "Time128.via",
+                "TimerCount.via",
                 "TimingTest1.via",
                 "TimingTest2.via",
                 "TooManyArguments.via",
@@ -258,6 +259,8 @@
                 "Viaduino.via",
                 "VIOverloads.via",
                 "VIScripting.via",
+                "Wait.via",
+                "WaitUntilMultiple.via",
                 "Waveform.via",
                 "ZDACrash1.via"
             ]
