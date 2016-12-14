@@ -12,8 +12,8 @@ before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - . $HOME/.nvm/nvm.sh
-- nvm install 'lts/*'
-- nvm use 'lts/*'
+- nvm install 6
+- nvm use 6
 - node -v
 - npm -v
 - python -V
