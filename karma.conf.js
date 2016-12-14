@@ -22,7 +22,7 @@ module.exports = function (config) {
             'source/io/module_*.js',
             'source/core/vireo*.loader.js',
             // test assets
-            'test-it/karma/utilities/*.testHelper.js',
+            'test-it/karma/utilities/testHelpers.*.js',
             {
                 pattern: 'test-it/*.via',
                 included: false
@@ -47,7 +47,7 @@ module.exports = function (config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress', 'kjhtml'],
+        reporters: ['dots', 'kjhtml'],
 
         // web server port
         port: 9876,
