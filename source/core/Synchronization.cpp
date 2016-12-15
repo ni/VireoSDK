@@ -298,7 +298,7 @@ VIREO_FUNCTION_SIGNATURE2(WaitUntilTickCountMultipleUInt8, UInt8, UInt8)
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE WaitUntilMicroSecondsMultipleImplementation(UInt32 usMultiple, void *timerValue, TimerValueResolutionEnum timerValueResolution, InstructionCore* nextInstruction)
+VIREO_FUNCTION_SIGNATURE WaitUntilMicrosecondsMultipleImplementation(UInt32 usMultiple, void *timerValue, TimerValueResolutionEnum timerValueResolution, InstructionCore* nextInstruction)
 {
     if (usMultiple == 0) {
         // This is supposed to yield immediately, but the unrolling in the execloop defeats this
@@ -309,29 +309,29 @@ VIREO_FUNCTION_SIGNATURE WaitUntilMicroSecondsMultipleImplementation(UInt32 usMu
     Int64 nextUS = ((nowUS + usMultiple) / usMultiple) * usMultiple;
     PlatformTickType future = gPlatform.Timer.MicrosecondsToTickCount(nextUS);
     if (!SetTimerValueWithResolution(timerValue, timerValueResolution, nextUS)) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Unable to set Timer Value on WaitUntilMicroSecondsMultipleImplementation.");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Unable to set Timer Value on WaitUntilMicrosecondsMultipleImplementation.");
         return THREAD_EXEC()->Stop();
     }
     return THREAD_CLUMP()->WaitUntilTickCount(future, nextInstruction);
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMicroSecondsMultiple, UInt32, UInt32)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMicrosecondsMultiple, UInt32, UInt32)
 {
-    return WaitUntilMicroSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitUntilMicrosecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMicroSecondsMultipleUInt16, UInt16, UInt16)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMicrosecondsMultipleUInt16, UInt16, UInt16)
 {
-    return WaitUntilMicroSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt16, _NextInstruction());
+    return WaitUntilMicrosecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt16, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMicroSecondsMultipleUInt8, UInt8, UInt8)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMicrosecondsMultipleUInt8, UInt8, UInt8)
 {
-    return WaitUntilMicroSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt8, _NextInstruction());
+    return WaitUntilMicrosecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt8, _NextInstruction());
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE WaitUntilMilliSecondsMultipleImplementation(UInt32 msMultiple, void *timerValue, TimerValueResolutionEnum timerValueResolution, InstructionCore* nextInstruction)
+VIREO_FUNCTION_SIGNATURE WaitUntilMillisecondsMultipleImplementation(UInt32 msMultiple, void *timerValue, TimerValueResolutionEnum timerValueResolution, InstructionCore* nextInstruction)
 {
     if (msMultiple == 0) {
         // This is supposed to yield immediately, but the unrolling in the execloop defeats this
@@ -342,25 +342,25 @@ VIREO_FUNCTION_SIGNATURE WaitUntilMilliSecondsMultipleImplementation(UInt32 msMu
     Int64 nextMS = ((nowMS + msMultiple) / msMultiple) * msMultiple;
     PlatformTickType future = gPlatform.Timer.MicrosecondsToTickCount(nextMS * 1000);
     if (!SetTimerValueWithResolution(timerValue, timerValueResolution, nextMS)) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Unable to set Timer Value on WaitUntilMilliSecondsMultipleImplementation.");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Unable to set Timer Value on WaitUntilMillisecondsMultipleImplementation.");
         return THREAD_EXEC()->Stop();
     }
     return THREAD_CLUMP()->WaitUntilTickCount(future, nextInstruction);
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMilliSecondsMultiple, UInt32, UInt32)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMillisecondsMultiple, UInt32, UInt32)
 {
-    return WaitUntilMilliSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitUntilMillisecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMilliSecondsMultipleUInt16, UInt16, UInt16)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMillisecondsMultipleUInt16, UInt16, UInt16)
 {
-    return WaitUntilMilliSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt16, _NextInstruction());
+    return WaitUntilMillisecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt16, _NextInstruction());
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(WaitUntilMilliSecondsMultipleUInt8, UInt8, UInt8)
+VIREO_FUNCTION_SIGNATURE2(WaitUntilMillisecondsMultipleUInt8, UInt8, UInt8)
 {
-    return WaitUntilMilliSecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt8, _NextInstruction());
+    return WaitUntilMillisecondsMultipleImplementation(_Param(0), _ParamPointer(1), kTimerValueResolution_UInt8, _NextInstruction());
 }
 
 //------------------------------------------------------------
@@ -574,12 +574,12 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(WaitUntilTickCountMultiple, "p(i(UInt32) o(UInt32))")
     DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilTickCountMultiple, WaitUntilTickCountMultipleUInt16, "p(i(UInt16) o(UInt16))")
     DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilTickCountMultiple, WaitUntilTickCountMultipleUInt8, "p(i(UInt8) o(UInt8))")
-    DEFINE_VIREO_FUNCTION(WaitUntilMicroSecondsMultiple, "p(i(UInt32) o(UInt32))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMicroSecondsMultiple, WaitUntilMicroSecondsMultipleUInt16, "p(i(UInt16) o(UInt16))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMicroSecondsMultiple, WaitUntilMicroSecondsMultipleUInt8, "p(i(UInt8) o(UInt8))")
-    DEFINE_VIREO_FUNCTION(WaitUntilMilliSecondsMultiple, "p(i(UInt32) o(UInt32))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMilliSecondsMultiple, WaitUntilMilliSecondsMultipleUInt16, "p(i(UInt16) o(UInt16))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMilliSecondsMultiple, WaitUntilMilliSecondsMultipleUInt8, "p(i(UInt8) o(UInt8))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMicrosecondsMultiple, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMicrosecondsMultiple, WaitUntilMicrosecondsMultipleUInt16, "p(i(UInt16) o(UInt16))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMicrosecondsMultiple, WaitUntilMicrosecondsMultipleUInt8, "p(i(UInt8) o(UInt8))")
+    DEFINE_VIREO_FUNCTION(WaitUntilMillisecondsMultiple, "p(i(UInt32) o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMillisecondsMultiple, WaitUntilMillisecondsMultipleUInt16, "p(i(UInt16) o(UInt16))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitUntilMillisecondsMultiple, WaitUntilMillisecondsMultipleUInt8, "p(i(UInt8) o(UInt8))")
 
     // Base ObservableObject
     DEFINE_VIREO_TYPE(Observer, "c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))");
