@@ -13,18 +13,18 @@ describe('Vireo loaded as a global in the browser', function () {
         expect(vireo).toBeDefined();
     });
 
-    xit('can run HelloWorld', function () {
+    it('can run HelloWorld', function () {
         var Vireo = window.NationalInstruments.Vireo.Vireo;
         var vireo = new Vireo();
+        var viaCode = 'start( VI<( clump( Println("Hello, sky. I can fly.") ) ) > )';
 
-        var text = window.testHelpers.fixtures.loadTestItVia('HelloWorld.via');
-        var textResult = window.testHelpers.fixtures.loadTestItVia('results/HelloWorld.vtr');
         var result = '';
         vireo.eggShell.setPrintFunction(function (text) {
             result += text + '\n';
         });
-        vireo.eggShell.loadVia(text);
+
+        vireo.eggShell.loadVia(viaCode);
         vireo.eggShell.executeSlices(1);
-        expect(result).toBe(textResult);
+        expect(result).toBe('Hello, sky. I can fly.\n');
     });
 });

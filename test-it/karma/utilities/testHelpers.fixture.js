@@ -24,14 +24,12 @@
         return cache[absoluteUrl];
     };
 
-    var loadTestItVia = function (relativePath) {
-        var absoluteUrl = basePathTestIt + relativePath;
-        return checkCache(absoluteUrl);
+    var convertToAbsoluteFromTestItDir = function (relativePath) {
+        return basePathTestIt + relativePath;
     };
 
-    var loadFixture = function (relativePath) {
-        var absoluteUrl = basePathFixture + relativePath;
-        return checkCache(absoluteUrl);
+    var convertToAbsoluteFromFixturesDir = function (relativePath) {
+        return basePathFixture + relativePath;
     };
 
     var loadAbsoluteUrl = function (absoluteUrl) {
@@ -39,8 +37,8 @@
     };
 
     window.testHelpers.fixtures = {
-        loadTestItVia: loadTestItVia,
-        loadFixture: loadFixture,
+        convertToAbsoluteFromTestItDir: convertToAbsoluteFromTestItDir,
+        convertToAbsoluteFromFixturesDir: convertToAbsoluteFromFixturesDir,
         loadAbsoluteUrl: loadAbsoluteUrl
     };
 }());
