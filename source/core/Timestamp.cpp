@@ -59,6 +59,7 @@ extern "C" {
 
 namespace Vireo
 {
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
 {
@@ -66,15 +67,65 @@ VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt32, UInt32)
+{
+    _Param(0) = (UInt32)gPlatform.Timer.TickCount();
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt16, UInt16)
+{
+    _Param(0) = (UInt16)gPlatform.Timer.TickCount();
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt8, UInt8)
+{
+    _Param(0) = (UInt8)gPlatform.Timer.TickCount();
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64)
 {
     _Param(0) = gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
     return _NextInstruction();
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt32, UInt32)
+{
+    _Param(0) = (UInt32) gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt16, UInt16)
+{
+    _Param(0) = (UInt16)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt8, UInt8)
+{
+    _Param(0) = (UInt8)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
 {
     _Param(0) = (UInt32) gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt16, UInt16)
+{
+    _Param(0) = (UInt16)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt8, UInt8)
+{
+    _Param(0) = (UInt8)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
     return _NextInstruction();
 }
 
@@ -476,8 +527,10 @@ Int32 Date::getLocaletimeZone()
     localtime_r(&now, &tm);
     _SystemLocaletimeZone = int(tm.tm_gmtoff);
 #else
-    // Not implemented for Win32 yet
-    _SystemLocaletimeZone = 0;
+    // flipping the sign of the time zone
+    TIME_ZONE_INFORMATION timeZoneInfo;
+    GetTimeZoneInformation(&timeZoneInfo);
+    _SystemLocaletimeZone = -int(timeZoneInfo.Bias * 60);
 #endif
     return _SystemLocaletimeZone;
 };
@@ -521,8 +574,16 @@ DEFINE_VIREO_BEGIN(Timestamp)
 
     // Low level time functions
     DEFINE_VIREO_FUNCTION(GetTickCount, "p(o(Int64))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetTickCount, GetTickCountUInt32, "p(o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetTickCount, GetTickCountUInt16, "p(o(UInt16))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetTickCount, GetTickCountUInt8, "p(o(UInt8))")
     DEFINE_VIREO_FUNCTION(GetMicrosecondTickCount, "p(o(Int64))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetMicrosecondTickCount, GetMicrosecondTickCountUInt32, "p(o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetMicrosecondTickCount, GetMicrosecondTickCountUInt16, "p(o(UInt16))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetMicrosecondTickCount, GetMicrosecondTickCountUInt8, "p(o(UInt8))")
     DEFINE_VIREO_FUNCTION(GetMillisecondTickCount, "p(o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetMillisecondTickCount, GetMillisecondTickCountUInt16, "p(o(UInt16))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetMillisecondTickCount, GetMillisecondTickCountUInt8, "p(o(UInt8))")
 
 #if defined(VIREO_TYPE_Timestamp)
     DEFINE_VIREO_TYPE(Timestamp, "c(e(Int64 seconds) e(UInt64 fraction))")

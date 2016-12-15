@@ -317,8 +317,10 @@ PlatformTickType PlatformTimer::TickCount()
 
 #elif (kVireoOS_emscripten)
 
-    // milliseconds
-    return (PlatformTickType) emscripten_get_now();
+    // On modern browsers emscripten_get_now(), uses performance.now, 
+    // which returns sub milliseconds on the fractional part of the double that is returned.
+    // Multiplying by a 1000 to get microseconds accuracy, before casting to PlatformTickType
+    return (PlatformTickType) (emscripten_get_now() * 1000);
 
 #elif (kVireoOS_ZynqARM)
 
@@ -365,7 +367,7 @@ PlatformTickType PlatformTimer::TickCount()
     //#error MicroSecondCount not defined
     return gTickCount;
 #else
-    retrn 0;
+    return 0;
 #endif
 }
 
@@ -413,8 +415,8 @@ PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
 
 #elif (kVireoOS_emscripten)
 
-    // Scale milliseconds to microseconds
-    return microseconds / 1000;
+    // Tick count is already in microseconds
+    return microseconds;
 
 #elif (kVireoOS_ZynqARM)
 
@@ -464,8 +466,8 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 
 #elif (kVireoOS_emscripten)
 
-    // Scale milliseconds to microseconds
-    return ticks * 1000;
+    // Tick count is already in microseconds
+    return ticks;
 
 #elif (kVireoOS_ZynqARM)
 

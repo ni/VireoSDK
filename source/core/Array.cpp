@@ -526,7 +526,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
     ArrayDimensionVector arrIndex, subArrayLen, arrayOutSlabLengths;
     bool empty = false;
     if (rank < 2 || count != rank+1) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayRepalceSubset wrong number of index args");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset wrong number of index args");
         return THREAD_EXEC()->Stop();
     }
     IntIndex expectedElemRank = rank;
