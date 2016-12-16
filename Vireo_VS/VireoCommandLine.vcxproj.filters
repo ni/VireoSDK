@@ -109,14 +109,14 @@
     <ClCompile Include="..\source\io\WebSocketClient.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\Date.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TimeFunctions.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\source\core\vireo.postamble.js">
-      <Filter>VireoSource\Core</Filter>
-    </None>
-    <None Include="..\source\core\vireo.preamble.js">
-      <Filter>VireoSource\Core</Filter>
-    </None>
     <None Include="..\source\include\ConversionTable.def">
       <Filter>VireoSource\Include</Filter>
     </None>
@@ -180,6 +180,12 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\VirtualInstrument.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Date.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\LVDateTimeRecord.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>
