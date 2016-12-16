@@ -4,16 +4,24 @@ describe('can run test suite file', function () {
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
+    var fixtures = window.testHelpers.fixtures;
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
-    var viaFiles = vireoRunner.matchNamesFromPaths(/test-it\/(.*)\.via$/);
-    var vtrFiles = vireoRunner.matchNamesFromPaths(/test-it\/results\/(.*)\.vtr$/);
+    var viaFiles = fixtures.matchNamesFromPaths(/test-it\/(\w*)\.via$/);
+    var vtrFiles = fixtures.matchNamesFromPaths(/test-it\/results\/(\w*)\.vtr$/);
 
-    var focusTests = vireoRunner.stringArrayToObjectMap([
+    var stringArrayToObjectMap = function (arr) {
+        return arr.reduce(function (obj, testName) {
+            obj[testName] = true;
+            return obj;
+        }, {});
+    };
+
+    var focusTests = stringArrayToObjectMap([
     ]);
 
-    var disabledTests = vireoRunner.stringArrayToObjectMap([
+    var disabledTests = stringArrayToObjectMap([
         'BadArgumentToVarArgInstruction',
         'BadComment',
         'ClumpTriggerWait',
@@ -49,7 +57,7 @@ describe('can run test suite file', function () {
     Object.keys(viaFiles).forEach(function (testName) {
         var viaAbsolutePath = viaFiles[testName];
         var vtrAbsolutePath = vtrFiles[testName];
-        var test = vireoRunner.createVTRTest(vireo, viaAbsolutePath, vtrAbsolutePath);
+        var test = vireoRunner.createVTRTestSync(vireo, viaAbsolutePath, vtrAbsolutePath);
 
         if (focusTests[testName] === true) {
             fit(testName, test);

@@ -10,7 +10,7 @@
         return multiLineString.replace(/^\/\/.*\n/gm, '');
     };
 
-    var createVTRTest = function (vireo, viaAbsolutePath, vtrAbsolutePath) {
+    var createVTRTestSync = function (vireo, viaAbsolutePath, vtrAbsolutePath) {
         return function () {
             expect(typeof viaAbsolutePath).toBe('string');
             expect(typeof vtrAbsolutePath).toBe('string');
@@ -18,7 +18,7 @@
             var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
             var rawVtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
             expect(typeof viaText).toBe('string');
-            expect(typeof vtrAbsolutePath).toBe('string');
+            expect(typeof rawVtrText).toBe('string');
 
             vireo.eggShell.reboot();
 
@@ -39,29 +39,63 @@
         };
     };
 
-    var stringArrayToObjectMap = function (arr) {
-        return arr.reduce(function (obj, testName) {
-            obj[testName] = true;
-            return obj;
-        }, {});
+    var rebootAndLoadVia = function (vireo, viaAbsolutePath) {
+        expect(typeof viaAbsolutePath).toBe('string');
+
+        var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
+        expect(typeof viaText).toBe('string');
+
+        vireo.eggShell.reboot();
+
+        var rawPrint = '';
+        vireo.eggShell.setPrintFunction(function (text) {
+            rawPrint += text + '\n';
+        });
+
+        var rawPrintError = '';
+        vireo.eggShell.setPrintErrorFunction(function (text) {
+            rawPrintError += text + '\n';
+        });
+
+        vireo.eggShell.loadVia(viaText);
+        expect(rawPrint).toBe('');
+        expect(rawPrintError).toBe('');
+
+        var runSlicesAsync = function (cb) {
+            expect(typeof cb).toBe('function');
+
+            (function runExecuteSlicesAsync () {
+                var remainingSlices = vireo.eggShell.executeSlices(1000);
+
+                if (remainingSlices > 0) {
+                    setTimeout(runExecuteSlicesAsync, 0);
+                } else {
+                    cb(rawPrint, rawPrintError);
+                }
+            }());
+        };
+
+        return runSlicesAsync;
     };
 
-    var matchNamesFromPaths = function (regexMatchName) {
-        var files = {};
-        Object.keys(window.__karma__.files).forEach(function (file) {
-            var fileParts = file.match(regexMatchName);
-            if (fileParts !== null) {
-                files[fileParts[1]] = file;
-            }
-        });
-        return files;
+    var createVIPathParser = function (vireo, viName) {
+        return function (path) {
+            return JSON.parse(vireo.eggShell.readJSON(viName, path));
+        };
+    };
+
+    var createVIPathWriter = function (vireo, viName) {
+        return function (path, value) {
+            vireo.eggShell.writeJSON(viName, path, JSON.stringify(value));
+        };
     };
 
     window.testHelpers.vireoRunner = {
         normalizeLineEndings: normalizeLineEndings,
         removeInlineComments: removeInlineComments,
-        createVTRTest: createVTRTest,
-        stringArrayToObjectMap: stringArrayToObjectMap,
-        matchNamesFromPaths: matchNamesFromPaths
+        createVTRTestSync: createVTRTestSync,
+        rebootAndLoadVia: rebootAndLoadVia,
+        createVIPathParser: createVIPathParser,
+        createVIPathWriter: createVIPathWriter
     };
 }());
