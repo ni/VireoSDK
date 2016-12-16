@@ -1,10 +1,12 @@
 describe('can run http suite', function () {
     'use strict';
-
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
+    var httpBinHelpers = window.testHelpers.httpBinHelpers;
+
+    httpBinHelpers.makeTestPendingIfHttpBinOffline();
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
@@ -16,7 +18,8 @@ describe('can run http suite', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        viPathWriter('url', 'http://localhost:5000/get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBe('');
@@ -55,7 +58,8 @@ describe('can run http suite', function () {
             var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
             var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-            viPathWriter('url', 'http://localhost:5000/delay/8');
+            var url = httpBinHelpers.convertToAbsoluteUrl('delay/8');
+            viPathWriter('url', url);
             viPathWriter('timeOut', timeout);
 
             var startTime = performance.now();
