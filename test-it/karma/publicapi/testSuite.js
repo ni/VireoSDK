@@ -31,7 +31,6 @@ describe('can run test suite file', function () {
         'InlineArrayConstantsErrors',
         'ListDirectory',
         'MandelbrotInline',
-        'MathFunctions',
         'Occurrence',
         'PID',
         'Parallel',
