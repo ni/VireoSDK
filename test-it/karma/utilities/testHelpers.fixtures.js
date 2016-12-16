@@ -36,9 +36,21 @@
         return checkCache(absoluteUrl);
     };
 
+    var matchNamesFromPaths = function (regexMatchName) {
+        var files = {};
+        Object.keys(window.__karma__.files).forEach(function (file) {
+            var fileParts = file.match(regexMatchName);
+            if (fileParts !== null) {
+                files[fileParts[1]] = file;
+            }
+        });
+        return files;
+    };
+
     window.testHelpers.fixtures = {
         convertToAbsoluteFromTestItDir: convertToAbsoluteFromTestItDir,
         convertToAbsoluteFromFixturesDir: convertToAbsoluteFromFixturesDir,
-        loadAbsoluteUrl: loadAbsoluteUrl
+        loadAbsoluteUrl: loadAbsoluteUrl,
+        matchNamesFromPaths: matchNamesFromPaths
     };
 }());

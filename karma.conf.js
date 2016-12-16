@@ -15,7 +15,7 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             // 3rd party resources
-            'node_modules/js-fixtures/fixtures.js',
+            // None
             // source files
             'dist/vireo*.js',
             'source/core/module_*.js',
@@ -29,6 +29,10 @@ module.exports = function (config) {
             },
             {
                 pattern: 'test-it/results/*.vtr',
+                included: false
+            },
+            {
+                pattern: 'test-it/karma/fixtures/**/*.*',
                 included: false
             },
             // test specs
