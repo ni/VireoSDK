@@ -107,7 +107,9 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/TDCodecLVFlat.bc\
 	$(OBJS)/TDCodecVia.bc\
 	$(OBJS)/Thread.bc\
+	$(OBJS)/Date.bc\
 	$(OBJS)/Timestamp.bc\
+	$(OBJS)/TimeFunctions.bc\
 	$(OBJS)/TypeAndDataManager.bc\
 	$(OBJS)/TypeAndDataReflection.bc\
 	$(OBJS)/TypeDefiner.bc\

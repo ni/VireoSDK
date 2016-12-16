@@ -121,7 +121,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
 EM_BC_FILES = $(OBJS)/VireoMerged.bc\
 	$(OBJS)/TypeAndDataManager.Embind.bc\
 	$(OBJS)/Thread.bc\
+	$(OBJS)/Date.bc\
 	$(OBJS)/Timestamp.bc\
+	$(OBJS)/TimeFunctions.bc\
 	$(OBJS)/Canvas2d.bc\
 	$(OBJS)/HttpClient.bc\
 	$(OBJS)/FileIO.bc\
