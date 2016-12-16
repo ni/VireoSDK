@@ -154,7 +154,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex bad output type");
             return THREAD_EXEC()->Stop();
         }
-        if (pData)
+        if (pData && !empty)
             array->ElementType()->CopyData(pData, _ParamImmediate(Element._pData));
         else
             array->ElementType()->InitData(_ParamImmediate(Element._pData));
@@ -526,7 +526,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
     ArrayDimensionVector arrIndex, subArrayLen, arrayOutSlabLengths;
     bool empty = false;
     if (rank < 2 || count != rank+1) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayRepalceSubset wrong number of index args");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayReplaceSubset wrong number of index args");
         return THREAD_EXEC()->Stop();
     }
     IntIndex expectedElemRank = rank;
@@ -590,8 +590,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
                                        srcData, subArrayLen, subArray->SlabLengths(), arrayOut->Rank(), srcRank, true);
             }
         } else {
-            if (!arrayOut->ElementType()->IsA(arguments[i]._paramType))
-                badType= true;
+            TypeRef argType = arguments[i]._paramType;
+            if (!argType->IsA(arrayOut->ElementType())) {
+                badType = true;
+            }
             else {
                 AQBlock1 *srcData = (AQBlock1*)element;
                 AQBlock1 *pData = arrayOut->BeginAtND(rank, arrIndex);

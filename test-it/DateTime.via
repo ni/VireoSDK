@@ -1,0 +1,24 @@
+//---------------------------------------------------
+define(videf1 dv(.VirtualInstrument (
+    c(
+        e(.Timestamp t)
+        e(.Timestamp t2)
+        e(.LVDateTimeRec datetime)
+    )
+    clump(1 
+
+        Convert(3563927319.75 t)
+	TimestampToDateTime(t datetime)
+	Println(datetime)
+
+        Convert(3564013719.75 t)
+	TimestampToDateTime(t datetime)
+	Println(t)
+	Println(datetime)
+
+	DateTimeToTimestamp(datetime t2)
+	Println(t2)
+//--- end of vi
+    )
+)))
+enqueue(videf1)

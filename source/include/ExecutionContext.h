@@ -17,6 +17,7 @@ SDG
 #include "TypeAndDataManager.h"
 #include "Instruction.h"
 #include "Timestamp.h"
+#include "Date.h"
 #include "EventLog.h"
 #include "Synchronization.h"
 

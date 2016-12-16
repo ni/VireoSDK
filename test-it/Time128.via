@@ -5,10 +5,12 @@ define(HelloTime dv(.VirtualInstrument (
      e(dv(.Timestamp (1 0)) t2)                     // 1.0 seconds
      e(.Timestamp t3)
      e(.Timestamp t4)
+     e(.Timestamp t5)
 
      e(dv(.Int32 4) i4)
 
      e(.Double d0)
+     e(.String s)
      e(.Boolean b1)
      e(.Boolean b2)
      e(.Boolean b3)
@@ -93,7 +95,11 @@ define(HelloTime dv(.VirtualInstrument (
         Printf("IsGE %s\n" b4)
         Printf("IsGT %s\n" b5)
 
-
+        Convert(3564013719.75 t5)
+	Printf("Time %s\n" t5)
+	Printf("//Time %<%H:%M:%S%2u %x>T\n" t5) // TO-DO Printf %T output is wrong in JS/emscripten
+	FormatDateTimeString(s "%.2c" t5 true)
+        Println(s)
     )
 ) ) )
 enqueue(HelloTime)

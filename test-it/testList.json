@@ -80,6 +80,7 @@
                 "CoreArray.via",
                 "CoreTypes.via",
                 "DateFormatString.via",
+                "DateTime.via",
                 "DecodeViaString.via",
                 "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",
@@ -229,7 +230,9 @@
                 "Threshold1DArray.via",
                 "TicTock.via",
                 "Time128.via",
+                "TimerCount.via",
                 "TimingTest1.via",
+                "TimingTest2.via",
                 "TooManyArguments.via",
                 "TooManyDimensions.via",
                 "TopVIWithArrayParameterData.via",
@@ -256,6 +259,8 @@
                 "Viaduino.via",
                 "VIOverloads.via",
                 "VIScripting.via",
+                "Wait.via",
+                "WaitUntilMultiple.via",
                 "Waveform.via",
                 "ZDACrash1.via"
             ]

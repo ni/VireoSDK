@@ -7,7 +7,7 @@ OUTPUT_DIR=../dist
 OUTPUT_EXE=$(OUTPUT_DIR)/esh
 
 COMMANDLINE = main.cpp
-CORE = Array.cpp Assert.cpp CEntryPoints.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp VirtualInstrument.cpp
+CORE = Array.cpp Assert.cpp CEntryPoints.cpp Date.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp VirtualInstrument.cpp
 #CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp
 

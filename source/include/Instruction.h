@@ -180,6 +180,8 @@ struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, ty
 //------------------------------------------------------------
 // Macros to make type strict single parameter function declarations for snippets
 // that take arguments passed in a param block
+#define VIREO_FUNCTION_SIGNATURE VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL
+
 #define VIREO_FUNCTION_SIGNATURET(_name_, t)  \
     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (t* _this _PROGMEM)
 

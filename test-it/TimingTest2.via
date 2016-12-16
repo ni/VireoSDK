@@ -6,11 +6,12 @@
 // up in the same slice that another went to sleep in 
 // This test failed before the fix was applied.
 
-define(c0 dv(.Int32 10) )
-define(c1 dv(.String 'Waiting') )
-define(c21 dv(.UInt32 10) )
-define(c2 dv(.UInt32 20) )
-define(c3 dv(.String 'Woke up') )
+define(c0 dv(.Int32 5) )
+define(c1 dv(.String 'Waiting 1') )
+define(c12 dv(.String 'Waiting 2') )
+define(c2 dv(.UInt32 140) )
+define(c3 dv(.String 'Woke up 1') )
+define(c32 dv(.String 'Woke up 2') )
 define(c4 dv(.UInt32 20) )
 define(c5 dv(.Int32 1) )
 define(c6 dv(.Int32 0) )
@@ -25,11 +26,11 @@ define(videf1 dv(.VirtualInstrument (
         e(.Int32 local4)
         e(.Int32 local5)
         e(.Int32 local6)
-        e(.UInt32 local7)
+        e(.UInt32 ms)
     )
         clump(1
         Trigger(1)                                // fork
-//        WaitMilliseconds(c2)
+        WaitMilliseconds(c2)
 
 //--- begin for loop
         Copy(c0 local5 )                          // set loop count
@@ -37,7 +38,11 @@ define(videf1 dv(.VirtualInstrument (
         Copy(c6 local4 )                          // initialize i
         Perch(0)
         Println(c1)
-        WaitMilliseconds(c4 local7)
+ 	GetMillisecondTickCount(ms)
+ 	Printf ("//Tick Count %u\n" ms)
+        WaitUntilMillisecondsMultiple(c4 *)
+ 	GetMillisecondTickCount(ms)
+ 	Printf ("// - Tick Count %u\n" ms)
         Println(c3)
         BranchIfGE(1 local4 local6)
         Add(local4 c5 local4)                     // increment i
@@ -52,9 +57,9 @@ define(videf1 dv(.VirtualInstrument (
         Sub(local2 c5 local3)
         Copy(c6 local1 )                          // initialize i
         Perch(0)
-        Println(c1)
-        WaitMilliseconds(c2)
-        Println(c3)
+        Println(c12)
+        WaitUntilMillisecondsMultiple(c4 *)
+        Println(c32)
         BranchIfGE(1 local1 local3)
         Add(local1 c5 local1)                     // increment i
         Branch(0)                                 // loop again
