@@ -340,6 +340,37 @@ void UpdateNumericStringWithDecimalSeparator(FormatOptions fOptions, char *numer
     }
 }
 
+void TruncateLeadingZerosFromTimeString(StringRef buffer)
+{
+    // Leading Hours and Minutes should be truncated if 0. Seconds should not be truncated if 0.
+    int indexToScan = 0;
+    bool nonZeroFound = false;
+    int numColon = 0; // Track this to ensure not removing leading 0 in seconds.
+    for (int i = 0; i < buffer->Capacity() && !nonZeroFound && numColon < 2; i++)
+    {
+        if (buffer->At(i) == ':')
+        {
+            numColon++;
+            for (int k = indexToScan; k < i; k++)
+            {
+                if (buffer->At(k) != '0')
+                {
+                    nonZeroFound = true;
+                    break;
+                }
+            }
+            if (!nonZeroFound)
+            {
+                indexToScan = i + 1;
+            }
+        }
+    }
+    if (indexToScan != 0)
+    {
+        buffer->Remove1D(0, indexToScan);
+    }
+}
+
 /**
  * main format function, all the %format functionality is done through this one
  * */
@@ -768,24 +799,21 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
                         if (datetimeFormat.Length() == 0) {
                             Int32 fractionLen = -1;
-                            if (fOptions.MinimumFieldWidth >= 0)
-                            {
-                                fractionLen = fOptions.MinimumFieldWidth;
-                            }
-                            if (fOptions.Precision >= 0) {
-                                fractionLen = fOptions.Precision;
-                            }
-                            if (fractionLen < 0) {
-                                fractionLen = 3;
-                            }
                             if (fOptions.FormatChar == 't') {
-                                if (fractionLen > 0) {
-                                    //  The %<digit>u is deep in this string.
-                                    sprintf(defaultFormatString, "%%#H:%%M:%%S.%%%du", (int)fractionLen);
-                                } else {
-                                    strcpy(defaultFormatString, "%H:%M:%S");
-                                }
+                                 fractionLen = 3;
+                                //  The %<digit>u is deep in this string.
+                                sprintf(defaultFormatString, "%%H:%%M:%%S%%%du", (int)fractionLen);
                             } else {
+                                if (fOptions.MinimumFieldWidth >= 0)
+                                {
+                                    fractionLen = fOptions.MinimumFieldWidth;
+                                }
+                                if (fOptions.Precision >= 0) {
+                                    fractionLen = fOptions.Precision;
+                                }
+                                if (fractionLen < 0) {
+                                    fractionLen = 3;
+                                }
                                 if (fractionLen > 0) {
                                     //  The %<digit>u is deep in this string.
                                     sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
@@ -807,8 +835,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         }
+                        if (fOptions.FormatChar == 't')
+                        {
+                            TruncateLeadingZerosFromTimeString(buffer);
+                        }
 #endif
-                         argumentIndex++;
+                        argumentIndex++;
                     }
                     break;
                     default:
