@@ -1,5 +1,4 @@
-
-
+/*
 WebSocketUser = function () {
     "use strict";
 
@@ -108,4 +107,4 @@ var webSocketUsers = new WebSocketUsers();
             NationalInstruments.Vireo.setOccurrence(occurrenceRef);
             return errorNum;
         }
-        
+*/
