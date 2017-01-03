@@ -390,7 +390,7 @@ void TruncateLeadingZerosFromTimeString(StringRef buffer)
     }
 }
 
-void CreateMimatchedFormatSpecifierError(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, FormatOptions fOptions, Boolean* validFormatString, Boolean* parseFinished)
+void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, FormatOptions fOptions, Boolean* validFormatString, Boolean* parseFinished)
 {
     *parseFinished = true;
     *validFormatString = false;
@@ -713,7 +713,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
                         {
-                            CreateMimatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
                             break;
                         }
                         IntMax intValue;
@@ -762,7 +762,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean())
                         {
-                            CreateMimatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
                             break;
                         }
                         STACK_VAR(String, tempString);
@@ -824,7 +824,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         if ((fOptions.FormatChar == 'T' && !argType->IsA(&TypeCommon::TypeTimestamp)) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
                         {
-                            CreateMimatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
                             break;
                         }
 
