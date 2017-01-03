@@ -20,7 +20,7 @@ define(videf2 dv(.VirtualInstrument (
     clump(1 
         Add(local2 local1 local3)
         Copy(local3 local4 )                      // FP Term
-        Printf("In SubVI with optional parameters %2s + %2s => %2s\n" local1 local2 local4)
+        Printf("In SubVI with optional parameters %2z + %2z => %2z\n" local1 local2 local4)
 //--- end of vi
     )
 )))

@@ -1,20 +1,20 @@
-DecStringToNumber 'xxc' 0 0 12
-DecStringToNumber 'xxc' 0 0 0 (nodflt)
-DecStringToNumber '123 456 abC' 0 3 123
-DecStringToNumber '123 456 abC' 3 7 456
-DecStringToNumber '123 456 abC' 7 7 12
-DecStringToNumber '123 456 abC' 7 7 0
-DecStringToNumber '65534' 0 5 127
-DecStringToNumber '-89' 0 3 -89
-DecStringToNumber '-189' 0 4 -128
-DecStringToNumber 'a373' 0 0 20.000000
-DecStringToNumber '('123' '456')' 0 3 (123 456)
-DecStringToNumber '('234' '567')' 0 3 (234 567)
-HexStringToNumber 'ffffffe' 5 7 254
-HexStringToNumber '7B2' 0 3 127
-HexStringToNumber 'FEED' 0 4 -275
-HexStringToNumber '-FFAB' 0 5 85
-HexStringToNumber 'FFAB' 0 4 65451
-OctalStringToNumber '17890' 0 2 15
-BinaryStringToNumber '   111fffffff' 0 5 7
-DecStringToNumber '('123' 'x456')' 0 0 (123 12)
+DecStringToNumber-1 'xxc' 0 0 12
+DecStringToNumber-2 'xxc' 0 0 0 (nodflt)
+DecStringToNumber-3 '123 456 abC' 0 3 123
+DecStringToNumber-4 '123 456 abC' 3 7 456
+DecStringToNumber-5 '123 456 abC' 7 7 12
+DecStringToNumber-6 '123 456 abC' 7 7 0
+DecStringToNumber-7 '65534' 0 5 127
+DecStringToNumber-8 '-89' 0 3 -89
+DecStringToNumber-9 '-189' 0 4 -128
+DecStringToNumber-10 'a373' 0 0 20.000000
+DecStringToNumber-11 '('123' '456')' 0 3 (123 456)
+DecStringToNumber-12 '('234' '567')' 0 3 (234 567)
+HexStringToNumber-1 'ffffffe' 5 7 254
+HexStringToNumber-2 '7B2' 0 3 127
+HexStringToNumber-3 'FEED' 0 4 -275
+HexStringToNumber-4 '-FFAB' 0 5 85
+HexStringToNumber-5 'FFAB' 0 4 65451
+OctalStringToNumber-1 '17890' 0 2 15
+BinaryStringToNumber-1 '   111fffffff' 0 5 7
+DecStringToNumber-13 '('123' 'x456')' 0 0 (123 12)

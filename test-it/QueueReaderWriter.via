@@ -22,33 +22,33 @@ define(TestProgram dv(.VirtualInstrument (
     clump (
         WaitMilliseconds(50)
         EnqueueElement(q c1_1 1000 timedOut)
-        Printf(">>Added1 new value %s\n" c1_1)
+        Printf(">>Added1 new value %.1f\n" c1_1)
 
         WaitMilliseconds(51)
         EnqueueElement(q c1_2 1000 timedOut)
-        Printf(">>Added1 new value %s\n" c1_2)
+        Printf(">>Added1 new value %.1f\n" c1_2)
 
         WaitMilliseconds(52)
         EnqueueElement(q c1_3 1000 timedOut)
-        Printf(">>Added1 new value %s\n" c1_3)
+        Printf(">>Added1 new value %.1f\n" c1_3)
 
         WaitMilliseconds(53)
         EnqueueElement(q c1_4 1000 timedOut)
-        Printf(">>Added1 new value %s\n" c1_4)
+        Printf(">>Added1 new value %.1f\n" c1_4)
     )
 
     clump (
         WaitMilliseconds(61)
         DequeueElement(q y 55 timedOut)
-        Printf("Dequeued1 value is %s to:%s\n" y timedOut)
+        Printf("Dequeued1 value is %.1f to:%s\n" y timedOut)
         DequeueElement(q y 70 timedOut)
-        Printf("Dequeued2 value is %s to:%s\n" y timedOut)
+        Printf("Dequeued2 value is %.1f to:%s\n" y timedOut)
         DequeueElement(q y 72 timedOut)
-        Printf("Dequeued3 value is %s to:%s\n" y timedOut)
+        Printf("Dequeued3 value is %.1f to:%s\n" y timedOut)
         DequeueElement(q y 73 timedOut)
-        Printf("Dequeued4 value is %s to:%s\n" y timedOut)
+        Printf("Dequeued4 value is %.1f to:%s\n" y timedOut)
         DequeueElement(q y 73 timedOut)
-        Printf("Dequeued5 value is %s to:%s\n" y timedOut)
+        Printf("Dequeued5 value is %.1f to:%s\n" y timedOut)
     )
 
 ) ) )

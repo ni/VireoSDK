@@ -17,29 +17,29 @@ define(HelloTypeValues dv(.VirtualInstrument (
         // Since the VI uses a Global as the initial value.
         // The VIs data space will pick up the value the global has when
         // the VI is constructed
-        Printf("local1 value is  %s, expecting 505 \n" local1)
-        Printf("GlobalVar1 value is  %s, expecting 505 \n" GlobalVar1)
-        Printf("GlobalConst1 value is  %s, expecting 42 \n" GlobalConst1)
+        Printf("local1 value is  %d, expecting 505 \n" local1)
+        Printf("GlobalVar1 value is  %d, expecting 505 \n" GlobalVar1)
+        Printf("GlobalConst1 value is  %d, expecting 42 \n" GlobalConst1)
         
 //      Copy(local1 GlobalConst1)  cant write on constants
         Copy(GlobalConst1 local1)
-        Printf("local1 value is  %s, expecting 42 \n" local1)
-        Printf("GlobalVar1 value is  %s, expecting 505 \n" GlobalVar1)
+        Printf("local1 value is  %d, expecting 42 \n" local1)
+        Printf("GlobalVar1 value is  %d, expecting 505 \n" GlobalVar1)
         
         Copy(local1 GlobalVar1)
-        Printf("local1 value is  %s, expecting 42 \n" local1)
-        Printf("GlobalVar1 value is  %s, expecting 42 \n" GlobalVar1)  
+        Printf("local1 value is  %d, expecting 42 \n" local1)
+        Printf("GlobalVar1 value is  %d, expecting 42 \n" GlobalVar1)  
         
         Printf("-------------\n")
         TypeOf(GlobalVar1 vType)
-        Printf("PrintType for GlobalVar1 <%s>\n" vType)
+        Printf("PrintType for GlobalVar1 <%z>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalVar1 base <%s>\n" vType)
+        Printf("PrintType for GlobalVar1 base <%z>\n" vType)
 
         TypeOf(GlobalConst1 vType)
-        Printf("PrintType for GlobalConst1 <%s>\n" vType)
+        Printf("PrintType for GlobalConst1 <%z>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalConst1 base <%s>\n" vType)
+        Printf("PrintType for GlobalConst1 base <%z>\n" vType)
 
         Printf("-------------\n")
         Printf("local2 value is  %s \n" local2)
@@ -56,14 +56,14 @@ define(HelloTypeValues dv(.VirtualInstrument (
         Printf("-------------\n")
 
         TypeOf(GlobalVar2 vType)
-        Printf("PrintType for GlobalVar2 <%s>\n" vType)
+        Printf("PrintType for GlobalVar2 <%z>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalVar2 base <%s>\n" vType)
+        Printf("PrintType for GlobalVar2 base <%z>\n" vType)
 
         TypeOf(GlobalConst2 vType)
-        Printf("PrintType for GlobalConst2 <%s>\n" vType)
+        Printf("PrintType for GlobalConst2 <%z>\n" vType)
         TypeBaseType(vType vType)
-        Printf("PrintType for GlobalConst2 base <%s>\n" vType)
+        Printf("PrintType for GlobalConst2 base <%z>\n" vType)
 
 
     )

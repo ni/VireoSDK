@@ -94,7 +94,7 @@ define(SubVIWithOneOneInAndOneOutputParam dv(.VirtualInstrument (
  e(dv(.String 'Inside call: SubVIWithOneOneInAndOneOutputParam') sInside)
   )
   clump(1
-  Printf(" Inside SubVIWithOneOneInputOutputParam input value is <%s> result is <%s>\n" x result)
+  Printf(" Inside SubVIWithOneOneInputOutputParam input value is <%z> result is <%z>\n" x result)
     Println(sInside)
    )
  )))
@@ -105,7 +105,7 @@ define(SubVIWithOneOneInputOutputParam dv(.VirtualInstrument (
  e(dv(.String 'Inside call: SubVIWithOneOneInputOutputParam') sInside)
   )
   clump(1
-  Printf(" Inside SubVIWithOneOneInputOutputParam input value is %s\n" x)
+  Printf(" Inside SubVIWithOneOneInputOutputParam input value is %z\n" x)
     Println(sInside)
    )
  )))

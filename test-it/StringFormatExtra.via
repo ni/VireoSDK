@@ -8,7 +8,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "") output)
         e(dv(.String "") output2)
         e(dv(.String "%s\n") format1)
-        e(dv(.String "%s %s\n") format2)
+        e(dv(.String "%s %z\n") format2)
         e(dv(.String "%10.6s\n") format3)
         e(dv(.String "%2.10s\n") format4)
         e(dv(.String "%10s\n") format5)
