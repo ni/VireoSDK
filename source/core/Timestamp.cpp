@@ -7,7 +7,7 @@ This software is subject to the terms described in the LICENSE.TXT file
 SDG
 */
 
-/*! \file
+/*! \file Timestamp implementation file
  */
 
 #include "TypeDefiner.h"
@@ -33,28 +33,21 @@ SDG
 #endif
 
 #if (kVireoOS_win32U || kVireoOS_win64U)
-#define NOMINMAX
-#include <windows.h>
+    #define NOMINMAX
+    #include <windows.h>
 #elif kVireoOS_macosxU
-#define _BSD_SOURCE
-#include <pthread.h>
-#include <time.h>
-#include <mach/mach_time.h>
+    #define _BSD_SOURCE
+    #include <pthread.h>
+    #include <time.h>
+    #include <mach/mach_time.h>
 #elif (kVireoOS_linuxU)
-#define _BSD_SOURCE
-#include <pthread.h>
-#include <time.h>
+    #define _BSD_SOURCE
+    #include <pthread.h>
+    #include <time.h>
 #elif kVireoOS_ZynqARM
-#include <xscutimer.h>
+    #include <xscutimer.h>
 #elif kVireoOS_emscripten
-#include <emscripten.h>
-#endif
-
-#if kVireoOS_emscripten
-extern "C" {
-    extern char * jsTimestampGetTimeZoneAbbr();
-    extern char * jsTimestampGetTimeZoneOffset();
-}
+    #include <emscripten.h>
 #endif
 
 namespace Vireo
