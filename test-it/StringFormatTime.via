@@ -9,6 +9,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%t\n") format_t1)
         e(dv(.String "%<Abbrv-Weekday: %a\nWeekday: %A\nAbbrv-Month: %b\nMonth: %B\nDefault: %c\nDayNum: %d\n24Hour: %H\n12Hour: %I\nDayOfYear: %j\nMonthNum: %m\nMinute: %M\nAM/PM: %p\nSecond: %S\nfracSeconds: %3u\nWeekNum: %U\nWeekdayNum: %w\nWeekNum: %W\nlocale: %x\nLongDate: %.1x\nAbbvDate: %.2x\nLocaleTime: %X\nYearInCentury: %y\nYear: %Y\nDiff(locale/universal): %z\nTimeZone: %Z\n>T") format_T1)
         e(dv(.String "%T\n") format_T2)
+        e(dv(.Timestamp (3559753482 2268949521066274848)) vTime5)
     )
     clump (1
         Println("Testing Time Format")
@@ -26,6 +27,10 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("\n")
 
         StringFormat(output format_T2 vTime4)
+        Printf(output)
+        Printf("\n")
+
+        StringFormat(output format_T2 vTime5)
         Printf(output)
         Printf("\n")
     )

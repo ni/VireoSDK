@@ -427,7 +427,23 @@ class TypeCommon
 private:
     TypeRef         _next;              // Linked list of all Types in a TypeManager
     TypeManagerRef  _typeManager;       // TypeManger that owns this type
+
 public:
+    static const SubString TypeInt8;
+    static const SubString TypeInt16;
+    static const SubString TypeInt32;
+    static const SubString TypeInt64;
+    static const SubString TypeUInt8;
+    static const SubString TypeUInt16;
+    static const SubString TypeUInt32;
+    static const SubString TypeUInt64;
+    static const SubString TypeDouble;
+    static const SubString TypeSingle;
+    static const SubString TypeBoolean;
+    static const SubString TypeString;
+    static const SubString TypeTimestamp;
+    static const SubString TypeStaticTypeAndData;
+
     TypeCommon(TypeManagerRef typeManager);
     TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypeRef Next()                      { return _next; }
@@ -557,7 +573,9 @@ public:
     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
-    
+    Boolean IsNumeric();
+    Boolean IsBoolean();
+    Boolean IsString();
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {return _topAQSize * _typeManager->AQBitLength(); }  // TODO defer to type manager for scale factor;
 };

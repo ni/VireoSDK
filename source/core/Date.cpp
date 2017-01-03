@@ -68,7 +68,7 @@ namespace Vireo {
         return totalSeconds;
     }
     //------------------------------------------------------------
-    Int32 getYear(Int64 wholeSeconds, UInt64 fractions, Int32* yearSeconds, Int32* weekDays)
+    Int32 getYear(Int64 wholeSeconds, Int32* yearSeconds, Int32* weekDays)
     {
         // Does not account for leap seconds.
         Int64 secondsInyear = 31536000;
@@ -134,7 +134,7 @@ namespace Vireo {
         Int32 secondsOfYear = 0;
         Int32 firstweekDay = 0;
 
-        Int32 year = getYear(timestamp.Integer(), timestamp.Fraction(), &secondsOfYear, &firstweekDay);
+        Int32 year = getYear(timestamp.Integer(), &secondsOfYear, &firstweekDay);
         if (yearPtr!= NULL) {
             *yearPtr = year;
         }
@@ -255,7 +255,7 @@ namespace Vireo {
         // flipping the sign of the time zone
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);
-        _SystemLocaletimeZone = -int(timeZoneInfo.Bias * 60);
+        _SystemLocaletimeZone = -int((timeZoneInfo.Bias + timeZoneInfo.DaylightBias)* 60);
 #endif
         return _SystemLocaletimeZone;
     };

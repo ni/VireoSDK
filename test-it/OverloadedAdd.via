@@ -13,7 +13,7 @@ define(Add dv(.VirtualInstrument (
         o(.BigInt z)
     )
     clump(1
-        Printf("Adding %s %s now go implement it!\n" x y)
+        Printf("Adding %z %z now go implement it!\n" x y)
     )
  )))
 
@@ -35,7 +35,7 @@ define(TopVI dv(.VirtualInstrument (
     )
     clump(
         Add(xi yi zi)
-        Printf(" %s + %s = %s \n" xi yi zi)
+        Printf(" %z + %z = %z \n" xi yi zi)
 
         Add(xbi ybi zbi)
 

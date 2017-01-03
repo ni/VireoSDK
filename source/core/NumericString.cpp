@@ -87,7 +87,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
         SubString order("$");
         SubString percent("%");
 
-        if (strchr("diuoxXfFeEgGaAcsptTbB%", c)) {
+        if (strchr("diuoxXfFeEgGaAcsptTbB%z", c)) {
             pOptions->FormatChar = c;
             break;
         }
@@ -293,13 +293,32 @@ void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData a
 }
 
 /**
- * Error reporing function for when the Format String is invalid
+ * Error reporting function for when the Format String is invalid
  * This will clear the current buffer string and return on what format
  * specifier it failed on.
  * */
 void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
     buffer->Resize1D(0);
     buffer->AppendCStr("Error: Invalid format string provided: '");
+    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("' in '");
+    IntIndex length = format->Length()*2;
+    Utf8Char* formatUnEscaped = new Utf8Char[length];
+    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
+    buffer->AppendUtf8Str(formatUnEscaped, newLength);
+    buffer->AppendCStr("'\n");
+    delete[] formatUnEscaped;
+}
+
+/**
+ * Error reporting function for when there is a type mismatch between 
+ * arguments and the format specifiers.
+ * This will clear the current buffer string and return on what format
+ * specifier it failed on.
+ * */
+void ErrMismatchedFormatSpecifier(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+    buffer->Resize1D(0);
+    buffer->AppendCStr("Error: Invalid format specifier type mismatch: '");
     buffer->AppendUtf8Str(formatSpecifier, 3);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
@@ -338,6 +357,49 @@ void UpdateNumericStringWithDecimalSeparator(FormatOptions fOptions, char *numer
             numericString[i] = fOptions.DecimalSeparator;
         }
     }
+}
+
+void TruncateLeadingZerosFromTimeString(StringRef buffer)
+{
+    // Leading Hours and Minutes should be truncated if 0. Seconds should not be truncated if 0.
+    int indexToScan = 0;
+    bool nonZeroFound = false;
+    int numColon = 0; // Track this to ensure not removing leading 0 in seconds.
+    for (int i = 0; i < buffer->Capacity() && !nonZeroFound && numColon < 2; i++)
+    {
+        if (buffer->At(i) == ':')
+        {
+            numColon++;
+            for (int k = indexToScan; k < i; k++)
+            {
+                if (buffer->At(k) != '0')
+                {
+                    nonZeroFound = true;
+                    break;
+                }
+            }
+            if (!nonZeroFound)
+            {
+                indexToScan = i + 1;
+            }
+        }
+    }
+    if (indexToScan != 0)
+    {
+        buffer->Remove1D(0, indexToScan);
+    }
+}
+
+void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, FormatOptions fOptions, Boolean* validFormatString, Boolean* parseFinished)
+{
+    *parseFinished = true;
+    *validFormatString = false;
+    Utf8Char tempString[3];
+    tempString[0] = '%';
+    tempString[1] = fOptions.FormatChar;
+    tempString[2] = '\0';
+    ErrMismatchedFormatSpecifier(format, count, arguments, buffer, tempString);
+    buffer->Resize1D(0);
 }
 
 /**
@@ -628,7 +690,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'o': case 'u':
                     case 'x': case 'X':
                     {
-                        // To cover the max range formats like %d ned to beturned into %lld
+                        // To cover the max range formats like %d need to be turned into %lld
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString tempFormat((Utf8Char*)"%", 1);
                         SubString *fmtSubString = &fOptions.FmtSubString;
@@ -649,6 +711,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         char formattedNumber[2*kTempCStringLength];
                         TypeRef argType = arguments[argumentIndex]._paramType;
+                        if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
+                        {
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            break;
+                        }
                         IntMax intValue;
                         EncodingEnum enc = argType->BitEncoding();
                         if (enc == kEncoding_IEEE754Binary) {
@@ -689,8 +756,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         buffer->AppendCStr("%");
                     }
                     break;
+                    case 'z':      //%z
                     case 's':      //%s
                     {
+                        TypeRef argType = arguments[argumentIndex]._paramType;
+                        if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean())
+                        {
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            break;
+                        }
                         STACK_VAR(String, tempString);
                         TDViaFormatter formatter(tempString.Value, false);
                         formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
@@ -747,8 +821,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
                              tz = 0;
                         }
-                        SubString strDateType("Timestamp");
                         TypeRef argType = arguments[argumentIndex]._paramType;
+                        if ((fOptions.FormatChar == 'T' && !argType->IsA(&TypeCommon::TypeTimestamp)) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
+                        {
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            break;
+                        }
 
                         SubString datetimeFormat;
                         TempStackCString defaultTimeFormat;
@@ -768,24 +846,21 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
                         if (datetimeFormat.Length() == 0) {
                             Int32 fractionLen = -1;
-                            if (fOptions.MinimumFieldWidth >= 0)
-                            {
-                                fractionLen = fOptions.MinimumFieldWidth;
-                            }
-                            if (fOptions.Precision >= 0) {
-                                fractionLen = fOptions.Precision;
-                            }
-                            if (fractionLen < 0) {
-                                fractionLen = 3;
-                            }
                             if (fOptions.FormatChar == 't') {
-                                if (fractionLen > 0) {
-                                    //  The %<digit>u is deep in this string.
-                                    sprintf(defaultFormatString, "%%#H:%%M:%%S.%%%du", (int)fractionLen);
-                                } else {
-                                    strcpy(defaultFormatString, "%H:%M:%S");
-                                }
+                                 fractionLen = 3;
+                                //  The %<digit>u is deep in this string.
+                                sprintf(defaultFormatString, "%%H:%%M:%%S%%%du", (int)fractionLen);
                             } else {
+                                if (fOptions.MinimumFieldWidth >= 0)
+                                {
+                                    fractionLen = fOptions.MinimumFieldWidth;
+                                }
+                                if (fOptions.Precision >= 0) {
+                                    fractionLen = fOptions.Precision;
+                                }
+                                if (fractionLen < 0) {
+                                    fractionLen = 3;
+                                }
                                 if (fractionLen > 0) {
                                     //  The %<digit>u is deep in this string.
                                     sprintf(defaultFormatString, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
@@ -797,7 +872,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
                         }
 #if defined(VIREO_TIME_FORMATTING)
-                        if (argType->IsA(&strDateType)) {
+                        if (argType->IsA(&TypeCommon::TypeTimestamp)) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
@@ -807,8 +882,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             Date date(time, tz);
                             validFormatString = ToString(date, &datetimeFormat, buffer);
                         }
+                        if (fOptions.FormatChar == 't')
+                        {
+                            TruncateLeadingZerosFromTimeString(buffer);
+                        }
 #endif
-                         argumentIndex++;
+                        argumentIndex++;
                     }
                     break;
                     default:

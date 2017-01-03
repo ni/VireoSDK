@@ -148,11 +148,11 @@ namespace Vireo
     #if defined(VIREO_DATE_TIME_STDLIB) && !kVireoOS_win32U
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
         time_t t = timegm(&timeVal);
-        *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
-    #else
-        _integer = 0;
-        _fraction = 0;
+    #elif kVireoOS_win32U
+        struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0};
+        time_t t = _mkgmtime(&timeVal);
     #endif
+        *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
     }
     //------------------------------------------------------------
     Double Timestamp::ToDouble() const

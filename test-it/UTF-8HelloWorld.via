@@ -23,7 +23,7 @@ define(PrintLengths  dv(.VirtualInstrument (
     // some fonts will use two spaces per character or fractional amounts
     
     Printf("------------------------------------123456789.123456789.123456789.123456789-.\n")
-    Printf("ArrayLength (%2d) StringLength (%2s) -%s-\n" aLen sLen string)
+    Printf("ArrayLength (%2d) StringLength (%2z) -%z-\n" aLen sLen string)
    )
  )))
 

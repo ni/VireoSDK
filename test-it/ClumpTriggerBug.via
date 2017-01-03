@@ -24,7 +24,7 @@ define(videf1 dv(.VirtualInstrument (
         //Copy(local2 local4)	  // set local4 to local2
         Printf("beforeWait\n")
         Wait(2)                                   // join
-        Printf("inside 0 %s (should be last line)\n" local3)
+        Printf("inside 0 %d (should be last line)\n" local3)
         //Add(local4 local3 local5)	
         //Copy(local5 local6 )                      // FP Term
 // Println(local6)
@@ -37,7 +37,7 @@ define(videf1 dv(.VirtualInstrument (
     )
     clump(2
         Add(local2 local1 local3)
-        Printf("inside 2 %s\n" local3)
+        Printf("inside 2 %d\n" local3)
     )
 )))
 //--------------------------------------------------

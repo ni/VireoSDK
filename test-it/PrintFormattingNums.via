@@ -23,14 +23,6 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.Double -1.5) vNODouble)
     )
     clump (1
-        Printf("String ( hint its not a number so it should be 0)\n")
-        Printf("Int with default justify    -----------\n")
-        Printf("Int no field width          -%d-\n" vString)
-        Printf("Int to samll field width    -%1d-\n" vString)
-        Printf("Int matching field width    -%3d-\n" vString)
-        Printf("Int larger   field width    -%4d-\n" vString)
-        Printf("Int xlarge   field width    -%50d-\n" vString)
-
         Printf("Bool\n")
         Printf("Int with default justify    -----------\n")
         Printf("Int no field width          -%d-\n" vBool)
@@ -103,7 +95,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vUInt64)
         Printf("Int xlarge   field width    -%50d-\n" vUInt64)
 
-        Printf("Single %s\n" vSingle)
+        Printf("Single %.1f\n" vSingle)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vSingle)
         Printf("Int to samll field width    -%1d-\n" vSingle)
@@ -111,7 +103,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vSingle)
         Printf("Int xlarge   field width    -%50d-\n" vSingle)
 
-        Printf("Double %s\n" vDouble)
+        Printf("Double %.1f\n" vDouble)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vDouble)
         Printf("Int to samll field width    -%1d-\n" vDouble)
@@ -119,7 +111,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vDouble)
         Printf("Int xlarge   field width    -%50d-\n" vDouble)
 
-        Printf("SingleUp %s\n" vSingleUp)
+        Printf("SingleUp %.2f\n" vSingleUp)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vSingleUp)
         Printf("Int to samll field width    -%1d-\n" vSingleUp)
@@ -127,7 +119,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vSingleUp)
         Printf("Int xlarge   field width    -%50d-\n" vSingleUp)
 
-        Printf("DoubleUp %s\n" vDoubleUp)
+        Printf("DoubleUp %.2f\n" vDoubleUp)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vDoubleUp)
         Printf("Int to samll field width    -%1d-\n" vDoubleUp)
@@ -135,7 +127,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vDoubleUp)
         Printf("Int xlarge   field width    -%50d-\n" vDoubleUp)
 
-        Printf("SingleDown %s\n" vSingleDown)
+        Printf("SingleDown %.2f\n" vSingleDown)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vSingleDown)
         Printf("Int to samll field width    -%1d-\n" vSingleDown)
@@ -143,7 +135,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vSingleDown)
         Printf("Int xlarge   field width    -%50d-\n" vSingleDown)
 
-        Printf("DoubleDown %s\n" vDoubleDown)
+        Printf("DoubleDown %.2f\n" vDoubleDown)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vDoubleDown)
         Printf("Int to samll field width    -%1d-\n" vDoubleDown)
@@ -151,7 +143,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vDoubleDown)
         Printf("Int xlarge   field width    -%50d-\n" vDoubleDown)
 
-        Printf("NESingleDown %s\n" vNESingle)
+        Printf("NESingleDown %.1f\n" vNESingle)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vNESingle)
         Printf("Int to samll field width    -%1d-\n" vNESingle)
@@ -159,7 +151,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vNESingle)
         Printf("Int xlarge   field width    -%50d-\n" vNESingle)
 
-        Printf("NEDoubleDown %s\n" vNEDouble)
+        Printf("NEDoubleDown %.1f\n" vNEDouble)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vNEDouble)
         Printf("Int to samll field width    -%1d-\n" vNEDouble)
@@ -167,7 +159,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vNEDouble)
         Printf("Int xlarge   field width    -%50d-\n" vNEDouble)
 
-        Printf("NOSingleDown %s\n" vNOSingle)
+        Printf("NOSingleDown %.1f\n" vNOSingle)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vNOSingle)
         Printf("Int to samll field width    -%1d-\n" vNOSingle)
@@ -175,7 +167,7 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("Int larger   field width    -%4d-\n" vNOSingle)
         Printf("Int xlarge   field width    -%50d-\n" vNOSingle)
 
-        Printf("NODoubleDown %s\n" vNODouble)
+        Printf("NODoubleDown %.1f\n" vNODouble)
         Printf("Int with left justify set   -----------\n")
         Printf("Int no field width          -%d-\n" vNODouble)
         Printf("Int to samll field width    -%1d-\n" vNODouble)

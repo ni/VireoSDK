@@ -13,9 +13,9 @@ define(HelloComplex dv(.VirtualInstrument (
     )
     clump(
         Polar(dMagnitude dPhase dCmplx)
-        Printf("Double: Polar(%s %s) => %s\n" dMagnitude dPhase dCmplx)
+        Printf("Double: Polar(%.1f %.1f) => %z\n" dMagnitude dPhase dCmplx)
         Polar(sMagnitude sPhase sCmplx)
-        Printf("Single: Polar(%s %s) => %s\n" sMagnitude sPhase sCmplx)
+        Printf("Single: Polar(%.1f %.1f) => %z\n" sMagnitude sPhase sCmplx)
     )
  ) ) )
 enqueue(HelloComplex)

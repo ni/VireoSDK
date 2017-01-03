@@ -27,9 +27,9 @@ define(videf1 dv(.VirtualInstrument (
        Println(c1)
 
         ArrayLength(arrayOfDoubleBounded2dMixed value)
-        Printf("Array(-5 4) length %s\n" value)
+        Printf("Array(-5 4) length %d\n" value)
         ArrayCapacity(arrayOfDoubleBounded2dMixed value)
-        Printf("Array(-5 4) capacity %s\n" value)
+        Printf("Array(-5 4) capacity %d\n" value)
     )
 )))
 enqueue(videf1)

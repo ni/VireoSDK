@@ -56,64 +56,64 @@ define(Test dv(.VirtualInstrument (
     //---------------------------------------------------------
 
     NumberToExponentialString(d123 * * outString)
-    Printf("NumberToExponentialString %s %d %d '%s'\n" d123 * * outString)
+    Printf("NumberToExponentialString %z %d %d '%s'\n" d123 * * outString)
 
     NumberToExponentialString(d123 8 1 outString)
-    Printf("NumberToExponentialString %s %d %d '%s'\n" d123 8 1 outString)
+    Printf("NumberToExponentialString %z %d %d '%s'\n" d123 8 1 outString)
 
     NumberToExponentialString(s123 * * outString)
-    Printf("NumberToExponentialString %s %d %d '%s'\n" s123 * * outString)
+    Printf("NumberToExponentialString %z %d %d '%s'\n" s123 * * outString)
 
     NumberToExponentialString(aDouble * * aString)
-    Printf("NumberToExponentialString %s %d %d %s\n" aDouble * * aString)
+    Printf("NumberToExponentialString %z %d %d %z\n" aDouble * * aString)
 
     NumberToExponentialString(clustValue 11 2 clustString)
-    Printf("NumberToExponentialString %s %d %d %s\n" clustValue 11 2 clustString)
+    Printf("NumberToExponentialString %z %d %d %z\n" clustValue 11 2 clustString)
 
     NumberToFloatString(d123 7 * outString)
-    Printf("NumberToFloatString %s %d %d '%s'\n" d123 7 * outString)
+    Printf("NumberToFloatString %z %d %d '%s'\n" d123 7 * outString)
 
     NumberToFloatString(n287 5 0 outString )
-    Printf("NumberToFloatString %s %d %d '%s'\n" n287 5 0 outString)
+    Printf("NumberToFloatString %z %d %d '%s'\n" n287 5 0 outString)
 
     NumberToEngineeringString(d123 2 * outString)
-    Printf("NumberToEngineeringString %s %d %d '%s'\n" d123 2 * outString)
+    Printf("NumberToEngineeringString %z %d %d '%s'\n" d123 2 * outString)
 
     NumberToEngineeringString(n216 10 0 outString)
-    Printf("NumberToEngineeringString %s %d %d '%s'\n" n216 10 0 outString)
+    Printf("NumberToEngineeringString %z %d %d '%s'\n" n216 10 0 outString)
 
     NumberToDecimalString(d123 2 outString)
-    Printf("NumberToDecimalString %s %d '%s'\n" d123 * outString)
+    Printf("NumberToDecimalString %z %d '%s'\n" d123 * outString)
 
     NumberToDecimalString(4.6 3 outString)
-    Printf("NumberToDecimalString %s %d '%s'\n" 4.6 3 outString)
+    Printf("NumberToDecimalString %z %d '%s'\n" 4.6 3 outString)
 
     NumberToDecimalString(clustValue 8 clustString)
-    Printf("NumberToDecimalString %s %d '%s'\n" clustValue 8 clustString)
+    Printf("NumberToDecimalString %z %d '%z'\n" clustValue 8 clustString)
 
     NumberToHexString(d123 2 outString)
-    Printf("NumberToHexString %s %d '%s'\n" d123 * outString)
+    Printf("NumberToHexString %z %d '%s'\n" d123 * outString)
 
     NumberToHexString(clustValue 8 clustString)
-    Printf("NumberToHexString %s %d '%s'\n" clustValue 8 clustString)
+    Printf("NumberToHexString %z %d '%z'\n" clustValue 8 clustString)
 
     NumberToHexString(width 8 outString)
-    Printf("NumberToHexString %s %d '%s'\n" width 8 outString)
+    Printf("NumberToHexString %z %d '%s'\n" width 8 outString)
 
     NumberToHexString(i64DB 8 outString)
-    Printf("NumberToHexString %s %d '%s'\n" i64DB 8 outString)
+    Printf("NumberToHexString %z %d '%s'\n" i64DB 8 outString)
 
     NumberToHexString(i64Neg 8 outString)
-    Printf("NumberToHexString %s %d '%s'\n" i64Neg 8 outString)
+    Printf("NumberToHexString %z %d '%s'\n" i64Neg 8 outString)
 
     NumberToHexString(i32Neg 6 outString)
-    Printf("NumberToHexString %s %d '%s'\n" i32Neg 6 outString)
+    Printf("NumberToHexString %z %d '%s'\n" i32Neg 6 outString)
 
     NumberToOctalString(d123 2 outString)
-    Printf("NumberToOctalString %s %d '%s'\n" d123 * outString)
+    Printf("NumberToOctalString %z %d '%s'\n" d123 * outString)
 
     NumberToBinaryString(d123 2 outString)
-    Printf("NumberToBinaryString %s %d '%s'\n" d123 * outString)
+    Printf("NumberToBinaryString %z %d '%s'\n" d123 * outString)
    )
  ) ) )
 enqueue(Test)

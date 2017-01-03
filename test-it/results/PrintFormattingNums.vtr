@@ -1,10 +1,3 @@
-String ( hint its not a number so it should be 0)
-Int with default justify    -----------
-Int no field width          -0-
-Int to samll field width    -0-
-Int matching field width    -  0-
-Int larger   field width    -   0-
-Int xlarge   field width    -                                                 0-
 Bool
 Int with default justify    -----------
 Int no field width          -1-

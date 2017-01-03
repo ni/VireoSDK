@@ -9,19 +9,19 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(a(.UInt32 *) (0 200)) d_transitions)
     )
     clump (
-        Printf("Empty analog waveform %s \n" a_wave)
-        Printf("  Analog parts %s %s %s \n" a_wave.Y a_wave.t0 a_wave.dt)
+        Printf("Empty analog waveform %z \n" a_wave)
+        Printf("  Analog parts %z %z %z \n" a_wave.Y a_wave.t0 a_wave.dt)
         Copy(a_data a_wave.Y)
-        Printf("  Analog parts %s %s %s \n" a_wave.Y a_wave.t0 a_wave.dt)
+        Printf("  Analog parts %z %z %z \n" a_wave.Y a_wave.t0 a_wave.dt)
 
 
 
-        Printf("Empty digtal waveform %s \n" d_wave)
-        Printf("  Digtal parts %s %s\n" d_wave.data d_wave.transitions)
+        Printf("Empty digtal waveform %z \n" d_wave)
+        Printf("  Digtal parts %z %z\n" d_wave.data d_wave.transitions)
         Copy(d_data d_wave.data)
-        Printf("  Digtal parts %s %s\n" d_wave.data d_wave.transitions)
+        Printf("  Digtal parts %z %z\n" d_wave.data d_wave.transitions)
         Copy(d_transitions d_wave.transitions)
-        Printf("  Digtal parts %s %s\n" d_wave.data d_wave.transitions)
+        Printf("  Digtal parts %z %z\n" d_wave.data d_wave.transitions)
     )
 ) ) )
 
