@@ -2021,7 +2021,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         if (fractionLen<=0) {
                             output->AppendCStr(".");
                         } else {
-                            size = sprintf(fractionString, "%.*f", (int)fractionLen, date.FractionSecond());
+                            size = sprintf(fractionString, "%.*f", (int)fractionLen, date.FractionalSecond());
                             output->Append(size-1, (Utf8Char*)fractionString+1);
                         }
                     }

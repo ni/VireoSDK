@@ -1,0 +1,18 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.UInt32 0) handle)
+        e('' url)
+        e('' outputFile)
+        e(0 timeOut)
+        e('' headers)
+        e('' body)
+        e(0 errorCode)
+        e('' errorMessage)
+    )
+    clump (
+        // handle(0), url(1), output file(2), timeOut(3), headers(4), body(5), errorCode(6), errorMessage(7), ocurrence(8)
+        HttpClientGet(handle url outputFile timeOut headers body errorCode errorMessage)
+    )
+) ) )
+
+enqueue(MyVI)

@@ -2,24 +2,41 @@ sudo: false
 language: cpp
 compiler: gcc
 addons:
+  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
-before_script:
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- nvm install 6
+- nvm use 6
+- node -v
+- npm -v
+- python -V
+- pip -V
+install:
+- npm install
+- pip install --user -r requirements.txt
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-- git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git && emscripten-sdk/emsdk
-  activate --build=Release sdk-master-64bit && source emscripten-sdk/emsdk_env.sh
+- git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git
+- emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
+- source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
-- node -v
+before_script:
+- nohup python -m httpbin.core --port 5000 &
+- while ! nc -q 1 localhost 5000 </dev/null; do sleep 2; done
+- curl http://localhost:5000/get?show_env=1
 script:
-- npm install
 - make
 - make testjs
 - make testnative
+- npm run test
+- cat ./nohup.out
 deploy:
   provider: npm
   email: mark.black@ni.com

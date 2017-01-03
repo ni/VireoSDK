@@ -33,13 +33,14 @@ class Date {
         Int32 _firstWeekDay;
         Int32 _timeZoneOffset;
         ConstCStr _timeZoneString;
-        Int32 _DTS;
-        static Int32 _SystemLocaletimeZone;
+        Int32 _dayTimeSaving;
+        static Int32 _systemLocaleTimeZone;
+
     public:
-        Date(Timestamp timestamp, Int32 timeZone);
-        static void getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
+        Date(Timestamp timestamp, Int32 timeZoneOffset);
+        static void getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
             Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL,
-            Int32* minPtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL,
+            Int32* minutePtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL,
             Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL, ConstCStr* timeZoneString = NULL);
         static Int32 getLocaletimeZone();
         Int32 Year() const { return _year; };
@@ -53,11 +54,9 @@ class Date {
         Int64 SecondsOfYear() const {return _secondsOfYear;};
         Int32 TimeZoneOffset() const {return _timeZoneOffset;};
         ConstCStr TimeZoneString() const { return _timeZoneString; };
-        Int32 DTS() const {return _DTS;}
-        Int32 isDTS();
-        Double FractionSecond() const {return  _fractionalSecond;};
-        // return a new date object at other time zone
-        Date AtTimeZone(Int32 timeZone);
+        Int32 DayTimeSaving() const {return _dayTimeSaving;}
+        Int32 isDayTimeSaving();
+        Double FractionalSecond() const {return  _fractionalSecond;};
 };
 
 }
