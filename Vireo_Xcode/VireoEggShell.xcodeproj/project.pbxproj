@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		444C46841E1C5A540037FA98 /* Date.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46821E1C5A540037FA98 /* Date.cpp */; };
+		444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46831E1C5A540037FA98 /* TimeFunctions.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
@@ -233,6 +235,11 @@
 		443536B31CFF4979002BA5DB /* VIOverloads.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = VIOverloads.via; path = "../test-it/VIOverloads.via"; sourceTree = "<group>"; };
 		443536B41CFF4979002BA5DB /* Waveform.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Waveform.via; path = "../test-it/Waveform.via"; sourceTree = "<group>"; };
 		443536B51CFF4979002BA5DB /* ZDACrash1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ZDACrash1.via; path = "../test-it/ZDACrash1.via"; sourceTree = "<group>"; };
+		444C46821E1C5A540037FA98 /* Date.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Date.cpp; path = ../source/core/Date.cpp; sourceTree = "<group>"; };
+		444C46831E1C5A540037FA98 /* TimeFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeFunctions.cpp; path = ../source/core/TimeFunctions.cpp; sourceTree = "<group>"; };
+		444C46861E1C5ABC0037FA98 /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = ../source/include; sourceTree = "<group>"; };
+		444C46871E1C5ABC0037FA98 /* Date.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Date.h; path = ../source/include/Date.h; sourceTree = "<group>"; };
+		444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LVDateTimeRecord.h; path = ../source/include/LVDateTimeRecord.h; sourceTree = "<group>"; };
 		44ABE7D61D3D3FEF008EB066 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = test.js; path = "../test-it/test.js"; sourceTree = "<group>"; };
 		44ABE7D71D3D6A20008EB066 /* Scale2X.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Scale2X.via; path = "../test-it/Scale2X.via"; sourceTree = "<group>"; };
 		44ABE7D81D3D6A20008EB066 /* UnOpFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = UnOpFunctions.via; path = "../test-it/UnOpFunctions.via"; sourceTree = "<group>"; };
@@ -274,7 +281,6 @@
 		4744496F19098ED8002A9A96 /* IntroTypeExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroTypeExamples.md; path = ../source/dox/IntroTypeExamples.md; sourceTree = "<group>"; };
 		4744497019099FD1002A9A96 /* IntroParallelClumpExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroParallelClumpExamples.md; path = ../source/dox/IntroParallelClumpExamples.md; sourceTree = "<group>"; };
 		4744497119099FE3002A9A96 /* IntroArrayExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroArrayExamples.md; path = ../source/dox/IntroArrayExamples.md; sourceTree = "<group>"; };
-		4744A9DA1818486000E1F7D9 /* VireoMerged.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VireoMerged.cpp; path = ../source/core/VireoMerged.cpp; sourceTree = "<group>"; };
 		4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TypeDefiner.cpp; path = ../source/core/TypeDefiner.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		4744A9DE1818599100E1F7D9 /* TypeDefiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TypeDefiner.h; path = ../source/include/TypeDefiner.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4744A9E2181A2EB700E1F7D9 /* ForwardVIDefinitions.via */ = {isa = PBXFileReference; lastKnownFileType = text; name = ForwardVIDefinitions.via; path = "../test-it/ForwardVIDefinitions.via"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.java; };
@@ -783,6 +789,8 @@
 		479AFE8C170DCFB2002C0FF0 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				444C46821E1C5A540037FA98 /* Date.cpp */,
+				444C46831E1C5A540037FA98 /* TimeFunctions.cpp */,
 				47D84DD317C2A271009053DB /* Array.cpp */,
 				47E220B01950C1F700988185 /* Assert.cpp */,
 				47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */,
@@ -805,7 +813,6 @@
 				47D84DE417C2A271009053DB /* Timestamp.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
 				47B76CD81B28DB090083AEEB /* Platform.cpp */,
-				4744A9DA1818486000E1F7D9 /* VireoMerged.cpp */,
 			);
 			name = core;
 			sourceTree = "<group>";
@@ -813,6 +820,9 @@
 		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				444C46861E1C5ABC0037FA98 /* include */,
+				444C46871E1C5ABC0037FA98 /* Date.h */,
+				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
 				47B76CD71B28DACA0083AEEB /* Platform.h */,
 				475DCFA918654336003810C0 /* ConversionTable.def */,
 				4797A38E1862265B00E643D7 /* CEntryPoints.h */,
@@ -1065,8 +1075,10 @@
 				47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */,
 				472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */,
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
+				444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
+				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,
 				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
