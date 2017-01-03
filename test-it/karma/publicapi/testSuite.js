@@ -24,13 +24,16 @@ describe('can run test suite file', function () {
     var disabledTests = stringArrayToObjectMap([
         'BadArgumentToVarArgInstruction',
         'BadComment',
+        'BooleanFunctions',
         'ClumpTriggerWait',
         'EthanOpts2',
+        'FloatConvertInteger',
         'GlobalCrossTalk',
         'HelloRequire',
         'InlineArrayConstantsErrors',
         'ListDirectory',
         'MandelbrotInline',
+        'MathFunctions',
         'Occurrence',
         'PID',
         'Parallel',
@@ -46,11 +49,16 @@ describe('can run test suite file', function () {
         'Round',
         'Scale2X',
         'StringFormatTime',
+        'SubVIParallelCalls',
         'TicTock',
         'Time128',
+        'TimerCount',
         'TimingTest1',
+        'TimingTest2',
         'TooManyArguments',
-        'Viaduino'
+        'Viaduino',
+        'Wait',
+        'WaitUntilMultiple'
     ]);
 
     Object.keys(viaFiles).forEach(function (testName) {
