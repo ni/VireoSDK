@@ -52,7 +52,7 @@ define(ConverterToStaticLinkCPP dv(VirtualInstrument (
             TypeGetSubElement(dsType index eltType)
             TypeName(eltType typeName)
             TypeElementName(eltType eltName)
-            Printf("  %s _%s;\n" typeName eltName)
+            Printf("  %z _%z;\n" typeName eltName)
             Add(index 1 index)
         BranchIfLT(0 index count)
         Printf("};\n")
@@ -62,7 +62,7 @@ define(ConverterToStaticLinkCPP dv(VirtualInstrument (
         Printf("//-------------------------\n")
         Printf("DST_HelloWorld  ds = " )
         ToString(HelloWorld.Locals "C" eltValue)
-        Printf("%s;\n" eltValue)
+        Printf("%z;\n" eltValue)
 
         // Print clump initializer
 
@@ -89,7 +89,7 @@ define(ConverterToStaticLinkCPP dv(VirtualInstrument (
                 // The instruction type is a pointer.
                 // To get access to the pointer's description get its sub element
                 TypeSubElementCount(parameterListType count2)
-                Printf("   _I%s(%s" count2 internalName)
+                Printf("   _I%z(%z" count2 internalName)
                 Init(index2)
 
                     // Loop through all arguments
@@ -103,7 +103,7 @@ define(ConverterToStaticLinkCPP dv(VirtualInstrument (
                         InstructionArg(inst index2 argValuePointer)
                         TypeManagerPointerToSymbolPath(* argType argValuePointer argSymbolName)
 
-                        Printf(", %s" argSymbolName)
+                        Printf(", %z" argSymbolName)
                         Add(index2 1 index2)
                         Perch(4)
                     BranchIfLT(2 index2 count2)

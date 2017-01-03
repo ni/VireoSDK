@@ -537,6 +537,21 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, SubStrin
 //------------------------------------------------------------
 // TypeCommon
 //------------------------------------------------------------
+const SubString TypeCommon::TypeInt8 = SubString("Int8");
+const SubString TypeCommon::TypeInt16 = SubString("Int16");
+const SubString TypeCommon::TypeInt32 = SubString("Int32");
+const SubString TypeCommon::TypeInt64 = SubString("Int64");
+const SubString TypeCommon::TypeUInt8 = SubString("UInt8");
+const SubString TypeCommon::TypeUInt16 = SubString("UInt16");
+const SubString TypeCommon::TypeUInt32 = SubString("UInt32");
+const SubString TypeCommon::TypeUInt64 = SubString("UInt64");
+const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
+const SubString TypeCommon::TypeSingle = SubString("Single");
+const SubString TypeCommon::TypeBoolean = SubString(tsBooleanType);
+const SubString TypeCommon::TypeString = SubString(tsStringType);
+const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
+const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
+
 TypeCommon::TypeCommon(TypeManagerRef typeManager)
 {
     _typeManager = typeManager;
@@ -761,6 +776,43 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
         return true;
     }
     return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsNumeric()
+{
+   TypeRef t = this;
+   while (t) {
+      if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64) || 
+          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeDouble) || t->Name().Compare(&TypeSingle)) {
+         return true;
+      }
+      t = t->BaseType();
+   }
+   return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsBoolean()
+{
+   TypeRef t = this;
+   while (t) {
+      if (t->Name().Compare(&TypeBoolean)) {
+         return true;
+      }
+      t = t->BaseType();
+   }
+   return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsString()
+{
+   TypeRef t = this;
+   while (t) {
+      if (t->Name().Compare(&TypeString)) {
+         return true;
+      }
+      t = t->BaseType();
+   }
+   return false;
 }
 //------------------------------------------------------------
 //! Parse an element path by name. Base class only knows

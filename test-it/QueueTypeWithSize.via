@@ -19,34 +19,34 @@ define(TestQueueTemplates dv(.VirtualInstrument (
     )
     clump (
 
-        Printf(" qOpen              : %s \n" qOpen)
-        Printf(" qDouble            : %s \n" qDouble)
-        Printf(" qDoubleFixed4      : %s \n" qDoubleFixed4)
-        Printf(" qDoubleBounded4    : %s \n" qDoubleBounded4)
-        Printf(" qDoubleVariable    : %s \n" qDoubleVariable)
-        Printf(" qDoubleFloatDim    : %s \n" qDoubleFloatDim)
-        Printf(" qDoubleBoolDim     : %s \n" qDoubleBoolDim)
-        Printf(" qDoubleStrDim      : %s \n" qDoubleStrDim)
+        Printf(" qOpen              : %z \n" qOpen)
+        Printf(" qDouble            : %z \n" qDouble)
+        Printf(" qDoubleFixed4      : %z \n" qDoubleFixed4)
+        Printf(" qDoubleBounded4    : %z \n" qDoubleBounded4)
+        Printf(" qDoubleVariable    : %z \n" qDoubleVariable)
+        Printf(" qDoubleFloatDim    : %z \n" qDoubleFloatDim)
+        Printf(" qDoubleBoolDim     : %z \n" qDoubleBoolDim)
+        Printf(" qDoubleStrDim      : %z \n" qDoubleStrDim)
 /*
         // Put an elements in each queue
         EnqueueElement(qDouble x 10 timedOut)
-        Printf("Enqueued Value %s, timed out %s\n" x timedOut)
+        Printf("Enqueued Value %z, timed out %z\n" x timedOut)
         EnqueueElement(qInt32  i 10 timedOut)
-        Printf("Enqueued Value %s, timed out %s\n" i timedOut)
+        Printf("Enqueued Value %z, timed out %z\n" i timedOut)
 
         // Pull them out
         DequeueElement(qDouble y 10 timedOut)
-        Printf("Dequeued Value %s, timed out %s\n" y timedOut)
+        Printf("Dequeued Value %z, timed out %z\n" y timedOut)
 
         DequeueElement(qInt32 j 10 timedOut)
-        Printf("Dequeued Value %s, timed out %s\n" j timedOut)
+        Printf("Dequeued Value %z, timed out %z\n" j timedOut)
 
         // Try again, these call will time out
         DequeueElement(qDouble y 10 timedOut)
-        Printf("Dequeued Value %s, timed out %s\n" y timedOut)
+        Printf("Dequeued Value %z, timed out %z\n" y timedOut)
 
         DequeueElement(qInt32 j 10 timedOut)
-        Printf("Dequeued Value %s, timed out %s\n" j timedOut)
+        Printf("Dequeued Value %z, timed out %z\n" j timedOut)
 */
     )
 ) ) )

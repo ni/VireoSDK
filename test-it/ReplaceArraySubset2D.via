@@ -43,9 +43,9 @@ define (_%50layground%2Egvi dv(.VirtualInstrument (
         e(.Boolean local36)   // Boolean
     )
         clump(1
-		Printf("Replace %s %d %d %s\n" g0 c1 * g18)
+		Printf("Replace %z %d %d %z\n" g0 c1 * g18)
         ArrayReplaceSubset2DV(local19 g0 c1 * g18 )
-		Printf("\nReplaced array is '%s'; expected result is '((10 20)(3 4))'\n" local19)
+		Printf("\nReplaced array is '%z'; expected result is '((10 20)(3 4))'\n" local19)
         ArrayIndexElt2DV(local19 c15 c16 local20 )
         IsEQ(local20 c17 local21)
         ArrayIndexElt2DV(local19 c12 c13 local22 )
@@ -67,7 +67,7 @@ define (_%50layground%2Egvi dv(.VirtualInstrument (
         And(local21 local36 local36)
         Copy(local36 local34 )
         Copy(local34 di_500 )
-		Printf("\nTest Pass: %s\n" local34)
+		Printf("\nTest Pass: %z\n" local34)
 /* Clump Ended. */    )
 )))
 enqueue (_%50layground%2Egvi)

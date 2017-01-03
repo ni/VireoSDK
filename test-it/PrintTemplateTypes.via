@@ -43,40 +43,40 @@ define(Test dv(.VirtualInstrument (
     // Array dimensions
     //----
     TypeBaseType(.t1_star vType)
-    Printf("Name '%s' value '%s' structure '%s' \n" .t1_star t1_star vType)    
+    Printf("Name '%z' value '%z' structure '%z' \n" .t1_star t1_star vType)    
 
     TypeBaseType(.t1_0 vType)
-    Printf("Name '%s' value '%s' structure '%s' \n" .t1_0 t1_0 vType)    
+    Printf("Name '%z' value '%z' structure '%z' \n" .t1_0 t1_0 vType)    
     
     TypeBaseType(.t1_1 vType)
-    Printf("Name '%s' value '%s' structure '%s' \n" .t1_1 t1_1 vType)    
+    Printf("Name '%z' value '%z' structure '%z' \n" .t1_1 t1_1 vType)    
 
     TypeBaseType(.t1_254 vType)
-    Printf("Name '%s' value '%s' structure '%s' \n" .t1_254 t1_254 vType)    
+    Printf("Name '%z' value '%z' structure '%z' \n" .t1_254 t1_254 vType)    
 
     TypeBaseType(.t1_255 vType)
-    Printf("Name '%s' value '%s' structure '%s' \n" .t1_255 t1_255 vType)    
+    Printf("Name '%z' value '%z' structure '%z' \n" .t1_255 t1_255 vType)    
 
     // Bit Blocks
     TypeBaseType(.bb_i0 vType)
     TypeTopAQSize(.bb_i0 size)
-    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_i0 bb_i0 size vType)    
+    Printf("Name '%z' value '%z' AQSize %z structure '%z' \n" .bb_i0 bb_i0 size vType)    
 
     TypeBaseType(.bb_i1 vType)
     TypeTopAQSize(.bb_i1 size)
-    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_i1 bb_i1 size vType)    
+    Printf("Name '%z' value '%z' AQSize %z structure '%z' \n" .bb_i1 bb_i1 size vType)    
 
     TypeBaseType(.bb_0 vType)
     TypeTopAQSize(.bb_0 size)
-    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_0 bb_0 size vType)    
+    Printf("Name '%z' value '%z' AQSize %z structure '%z' \n" .bb_0 bb_0 size vType)    
 
     TypeBaseType(.bb_1 vType)
     TypeTopAQSize(.bb_1 size)
-    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_1 bb_1 size vType)    
+    Printf("Name '%z' value '%z' AQSize %z structure '%z' \n" .bb_1 bb_1 size vType)    
 
     TypeBaseType(.bb_255 vType)
     TypeTopAQSize(.bb_255 size)
-    Printf("Name '%s' value '%s' AQSize %s structure '%s' \n" .bb_255 bb_255 size vType)    
+    Printf("Name '%z' value '%z' AQSize %z structure '%z' \n" .bb_255 bb_255 size vType)    
 
     // Bit Blocks
     TypeOf(bb_0 vType) 

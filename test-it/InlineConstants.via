@@ -35,14 +35,14 @@ define(HelloWorld dv(.VirtualInstrument (
         StringToLower("Hello, World" str)
         Printf("passing inline constant value <%s>\n" str)
         Mul(6 7 i)
-        Printf("passing inline constant value <%s>\n" i)
+        Printf("passing inline constant value <%d>\n" i)
         Add(3.2 1.85 x)
-        Printf("passing inline constant value <%s>\n" x)
+        Printf("passing inline constant value <%.2f>\n" x)
 
         BooleanConvertInt16(true i16)
-        Printf("passing inline constant value <%s>\n" i16)
+        Printf("passing inline constant value <%d>\n" i16)
         BooleanConvertInt16(false i16)
-        Printf("passing inline constant value <%s>\n" i16)
+        Printf("passing inline constant value <%d>\n" i16)
 
 
         // MulInt32(6 7 9) not allowed.

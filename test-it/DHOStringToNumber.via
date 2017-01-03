@@ -53,83 +53,83 @@ define(Test dv(.VirtualInstrument (
     // String to Int32
     Copy(c0 offset)
     DecimalStringToNumber(badString offset defaultVal endoffset value)
-    Printf("DecStringToNumber '%s' %d %d %d\n" badString offset endoffset value)
+    Printf("DecStringToNumber-1 '%s' %d %d %d\n" badString offset endoffset value)
     DecimalStringToNumber(badString offset * endoffset value)
-    Printf("DecStringToNumber '%s' %d %d %d (nodflt)\n" badString offset endoffset value)
+    Printf("DecStringToNumber-2 '%s' %d %d %d (nodflt)\n" badString offset endoffset value)
 
     Copy(c0 offset)
     DecimalStringToNumber(cString offset * endoffset value)
-    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+    Printf("DecStringToNumber-3 '%s' %d %d %d\n" cString offset endoffset value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
-    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+    Printf("DecStringToNumber-4 '%s' %d %d %d\n" cString offset endoffset value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset defaultVal endoffset value)
-    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+    Printf("DecStringToNumber-5 '%s' %d %d %d\n" cString offset endoffset value)
 
     Copy(endoffset offset)
     DecimalStringToNumber(cString offset * * value)
-    Printf("DecStringToNumber '%s' %d %d %d\n" cString offset endoffset value)
+    Printf("DecStringToNumber-6 '%s' %d %d %d\n" cString offset endoffset value)
 
     Copy(0 offset)
     DecimalStringToNumber('65534' 0 92 endoffset i8value )
-    Printf("DecStringToNumber '%s' %d %d %d\n" '65534' offset endoffset i8value)
+    Printf("DecStringToNumber-7 '%s' %d %d %d\n" '65534' offset endoffset i8value)
 
     Copy(0 offset)
     DecimalStringToNumber('-89' 0 92 endoffset i8value )
-    Printf("DecStringToNumber '%s' %d %d %d\n" '-89' offset endoffset i8value)
+    Printf("DecStringToNumber-8 '%s' %d %d %d\n" '-89' offset endoffset i8value)
 
     Copy(0 offset)
     DecimalStringToNumber('-189' 0 92 endoffset i8value )
-    Printf("DecStringToNumber '%s' %d %d %d\n" '-189' offset endoffset i8value)
+    Printf("DecStringToNumber-9 '%s' %d %d %d\n" '-189' offset endoffset i8value)
     //---------------------------------------------------------
 
     // String to Double
     Copy(c0 offset)
     DecimalStringToNumber(stringa373 * default20 local2 local1)
-    Printf("DecStringToNumber '%s' %d %d %f\n" stringa373 0 local2 local1)
+    Printf("DecStringToNumber-10 '%s' %d %d %f\n" stringa373 0 local2 local1)
 
     Copy(c0 offset)
     DecimalStringToNumber(aString * defaultVal local2 aValue)
-    Printf("DecStringToNumber '%s' %d %d %s\n" aString 0 local2 aValue)
+    Printf("DecStringToNumber-11 '%z' %d %d %z\n" aString 0 local2 aValue)
 
     Copy(c0 offset)
     DecimalStringToNumber(clustString * defaultVal local2 clustValue)
-    Printf("DecStringToNumber '%s' %d %d %s\n" clustString 0 local2 clustValue)
+    Printf("DecStringToNumber-12 '%z' %d %d %z\n" clustString 0 local2 clustValue)
 
     Copy(5 offset)
     HexStringToNumber('ffffffe'  offset defaultVal endoffset value)
-    Printf("HexStringToNumber 'ffffffe' %d %d %d\n" offset endoffset value)
+    Printf("HexStringToNumber-1 'ffffffe' %d %d %d\n" offset endoffset value)
 
     Copy(0 offset)
     HexStringToNumber('7B2' 0 92 endoffset i8value )
-    Printf("HexStringToNumber '%s' %d %d %d\n" '7B2' offset endoffset i8value)
+    Printf("HexStringToNumber-2 '%s' %d %d %d\n" '7B2' offset endoffset i8value)
 
     Copy(0 offset)
     HexStringToNumber('FEED' 0 92 endoffset i16value )
-    Printf("HexStringToNumber '%s' %d %d %d\n" 'FEED' offset endoffset i16value)
+    Printf("HexStringToNumber-3 '%s' %d %d %d\n" 'FEED' offset endoffset i16value)
 
     Copy(0 offset)
     HexStringToNumber('-FFAB' 0 92 endoffset i16value )
-    Printf("HexStringToNumber '%s' %d %d %d\n" '-FFAB' offset endoffset i16value)
+    Printf("HexStringToNumber-4 '%s' %d %d %d\n" '-FFAB' offset endoffset i16value)
 
     Copy(0 offset)
     HexStringToNumber('FFAB' 0 92 endoffset u16value )
-    Printf("HexStringToNumber '%s' %d %d %u\n" 'FFAB' offset endoffset u16value)
+    Printf("HexStringToNumber-5 '%s' %d %d %u\n" 'FFAB' offset endoffset u16value)
 
     Copy(0 offset)
     OctalStringToNumber('17890'  offset defaultVal endoffset value)
-    Printf("OctalStringToNumber '17890' %d %d %d\n" offset endoffset value)
+    Printf("OctalStringToNumber-1 '17890' %d %d %d\n" offset endoffset value)
 
     Copy(0 offset)
     BinaryStringToNumber('  111fffffff'  offset defaultVal endoffset value)
-    Printf("BinaryStringToNumber '   111fffffff' %d %d %d\n" offset endoffset value)
+    Printf("BinaryStringToNumber-1 '   111fffffff' %d %d %d\n" offset endoffset value)
 
     Copy(c0 offset)
     DecimalStringToNumber(aBadString 0 defaultVal local2 aValue)
-    Printf("DecStringToNumber '%s' %d %d %s\n" aBadString 0 local2 aValue)
+    Printf("DecStringToNumber-13 '%z' %d %d %z\n" aBadString 0 local2 aValue)
 
     Copy(c0 offset)
     //DecimalStringToNumber(aBadString 0 default20 local2 aValue) // default type mismatch, generates error, move to separate test to check for error

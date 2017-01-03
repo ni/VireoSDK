@@ -5,6 +5,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.Double 999999.9999) vTime3)
         e(dv(.Timestamp (9999 0)) vTime4)
         e(dv(.Timestamp (1 0)) vTime5)
+        e(dv(.Double 91.8) vTime6)
 
         e(dv(.String "") output)
         e(dv(.String "%<Hour: %H\nMinute: %M\nSecond: %S\nfracSeconds: %3u\n>t") format_t1)
@@ -26,9 +27,15 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf(output)
 
         StringFormat(output format_t2 vTime4)
-        Printf(output)
+        Printf("Output:<%s>\n" output) // Error case: Expect no output
 
         StringFormat(output format_t2 vTime5)
+        Printf("Output:<%s>\n" output) // Error case: Expect no output
+
+        StringFormat(output format_t2 vTime6)
+        Printf(output)
+
+        StringFormat(output format_t2 vTime2)
         Printf(output)
     )
 ) ) )

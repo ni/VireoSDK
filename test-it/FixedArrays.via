@@ -18,39 +18,39 @@ define(Test dv(.VirtualInstrument (
   clump(1
   
     Printf('Hello World The value is %d and %d\n' value value)
-    Printf('All values can be printed as a string %s\n' value)
-    Printf('Arrays can be printed as a string %s\n' arrayOfDoubleDynamic1ddv)
+    Printf('All values can be printed as a string %z\n' value)
+    Printf('Arrays can be printed as a string %z\n' arrayOfDoubleDynamic1ddv)
     Printf('percent can be printed as <%%>\n')
    
  //   Printf('HelloWorld. Value = %s array is %s' value arrayOfDoubleDynamic1d)
     // Test initial sizes
     //------
     ArrayLength(arrayOfDoubleBounded1d value)
-    Printf("Array(-5) length %s\n" value)
+    Printf("Array(-5) length %d\n" value)
     ArrayCapacity(arrayOfDoubleBounded1d value)
-    Printf("Array(-5) capacity %s\n" value)
+    Printf("Array(-5) capacity %d\n" value)
     //------
     ArrayLength(arrayOfDoubleBounded2d value)
-    Printf("Array(-5 -4) length %s\n" value)
+    Printf("Array(-5 -4) length %d\n" value)
     ArrayCapacity(arrayOfDoubleBounded2d value)
-    Printf("Array(-5 -4) capacity %s\n" value)
+    Printf("Array(-5 -4) capacity %d\n" value)
     //------
     ArrayLength(arrayOfDoubleBounded2dMixed value)
-    Printf("Array(-5 4) length %s\n" value)
+    Printf("Array(-5 4) length %d\n" value)
     ArrayCapacity(arrayOfDoubleBounded2dMixed value)
-    Printf("Array(-5 4) capacity %s\n" value)
+    Printf("Array(-5 4) capacity %d\n" value)
     //------
     ArrayLength(arrayOfDoubleBounded2dMixed2 value)
-    Printf("Array(5 -4) length %s\n" value)
+    Printf("Array(5 -4) length %d\n" value)
     ArrayCapacity(arrayOfDoubleBounded2dMixed2 value)
-    Printf("Array(5 -4) capacity %s\n" value)
+    Printf("Array(5 -4) capacity %d\n" value)
     //------
     ArrayLength(arrayOfDoubleDynamic1d value)
     Println(value)
     ArrayLength(arrayOfDoubleFixed1d value)
-    Printf("Array(5) default length %s\n" value)
+    Printf("Array(5) default length %d\n" value)
     ArrayLength(arrayOfDoubleFixed1ddv value)
-    Printf("Array(5) (7 8 9) length %s\n" value)
+    Printf("Array(5) (7 8 9) length %d\n" value)
     ArrayLength(arrayOfDoubleFixed2d value)
     Println(value)
     ArrayLength(arrayOfDoubleFixed3d value)
