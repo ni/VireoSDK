@@ -32,16 +32,17 @@ class Date {
         Int64 _secondsOfYear;
         Int32 _firstWeekDay;
         Int32 _timeZoneOffset;
-        ConstCStr _timeZoneString;
+        char* _timeZoneString;
         Int32 _dayTimeSaving;
         static Int32 _systemLocaleTimeZone;
 
     public:
         Date(Timestamp timestamp, Int32 timeZoneOffset);
+        ~Date();
         static void getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
             Int32* monthPtr = NULL, Int32* dayPtr = NULL, Int32* hourPtr = NULL,
             Int32* minutePtr = NULL, Int32* secondPtr = NULL, Double* fractionPtr = NULL,
-            Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL, ConstCStr* timeZoneString = NULL);
+            Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL, char** timeZoneString = NULL);
         static Int32 getLocaletimeZone();
         Int32 Year() const { return _year; };
         Int32 Month() const { return _month; };
