@@ -125,11 +125,28 @@ namespace Vireo {
         return currentYear;
     }
 
+#if kVireoOS_win32U
+    std::string abbreviateTimeZoneName(std::string input)
+    {
+        char prev = ' ';
+        std::string output;
+        for (int i = 0; i < input.length(); i++)
+        {
+            if (prev == ' ' && input[i] != ' ')
+            {
+                output += input[i];
+            }
+            prev = input[i];
+        }
+        return output;
+    }
+#endif
+
     //------------------------------------------------------------
     void Date::getDate(Timestamp timestamp, Int64* secondofYearPtr, Int32* yearPtr,
                  Int32* monthPtr, Int32* dayPtr, Int32* hourPtr,
                  Int32* minPtr, Int32* secondPtr, Double* fractionPtr,
-                 Int32* weekPtr, Int32* weekOfFirstDay, ConstCStr* timeZoneString)
+                 Int32* weekPtr, Int32* weekOfFirstDay, char** timeZoneString)
     {
         Int32 secondsOfYear = 0;
         Int32 firstweekDay = 0;
@@ -174,17 +191,35 @@ namespace Vireo {
             }
         }
         // Get timezone abbrevation
-        ConstCStr timeZoneAbbr;
+        char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU)
+        char* timeZoneAbbr;
         time_t rawtime;
         struct tm* timeinfo;
         time(&rawtime);
         timeinfo = localtime(&rawtime);
-        timeZoneAbbr = timeinfo->tm_zone;
+        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo->tm_zone);
 #elif kVireoOS_emscripten
-        timeZoneAbbr = jsTimestampGetTimeZoneAbbr();
-#else
-        timeZoneAbbr = "TODO-TMZ";
+        TempStackCString result;
+        result.AppendCStr(jsTimestampGetTimeZoneAbbr());
+        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", result.BeginCStr());
+#elif kVireoOS_win32U
+        TIME_ZONE_INFORMATION timeZoneInfo;
+        int rc = GetTimeZoneInformation(&timeZoneInfo);
+        wchar_t *timeZoneName = L"TimeZoneUnknown";
+        if (rc == TIME_ZONE_ID_STANDARD)
+        {
+            timeZoneName = timeZoneInfo.StandardName;
+        }
+        else if (rc == TIME_ZONE_ID_DAYLIGHT)
+        {
+            timeZoneName = timeZoneInfo.DaylightName;
+        }
+        //int timeZoneStringSize = wcslen(timeZoneName) + 1;
+        //wcstombs(timeZoneAbbr, timeZoneName, timeZoneStringSize - 1);
+        wcstombs(timeZoneAbbr, timeZoneName, sizeof(timeZoneAbbr));
+        std::string timeZone = abbreviateTimeZoneName(timeZoneAbbr);
+        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeZone.c_str());
 #endif
         Int32 days = secondsofMonth/(24*3600);
         Int32 secondsofHour = secondsofMonth%(24*3600);
@@ -213,8 +248,14 @@ namespace Vireo {
         if (weekPtr != NULL) {
             *weekPtr = (secondsOfYear/(24*3600)+firstweekDay)%7;
         }
-        if (timeZoneString != NULL) {
-            *timeZoneString = timeZoneAbbr;
+        if (timeZoneString != NULL)
+        {
+            if (*timeZoneString != NULL)
+            {
+                free(*timeZoneString);
+            }
+            *timeZoneString = (char *)malloc(strlen(timeZoneAbbr)+1);
+            strncpy(*timeZoneString, timeZoneAbbr, strlen(timeZoneAbbr)+1);
         }
     }
 
@@ -223,11 +264,21 @@ namespace Vireo {
     //------------------------------------------------------------
     Date::Date(Timestamp timestamp, Int32 timeZone)
     {
+        _timeZoneString = NULL;
         _timeZoneOffset = timeZone;
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
         _DTS = isDTS();
+    }
+
+    Date::~Date()
+    {
+        if (_timeZoneString)
+        {
+            free(_timeZoneString);
+            _timeZoneString = NULL;
+        }
     }
     //------------------------------------------------------------
     Int32 Date::getLocaletimeZone()
@@ -255,7 +306,7 @@ namespace Vireo {
         // flipping the sign of the time zone
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);
-        _SystemLocaletimeZone = -int((timeZoneInfo.Bias + timeZoneInfo.DaylightBias)* 60);
+        _SystemLocaletimeZone = -int((timeZoneInfo.Bias)* 60);
 #endif
         return _SystemLocaletimeZone;
     };

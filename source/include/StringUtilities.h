@@ -340,7 +340,7 @@ class CompareSubString
 };
 
 //------------------------------------------------------------
-//! A class for makking temporary null terminated strings for calling OS APIs
+//! A class for making temporary null terminated strings for calling OS APIs
 #define kTempCStringLength 255
  
 class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
