@@ -99,6 +99,9 @@
         // WARNING: Functions in Vireo should not expect memory to live beyond stack frame
         // Based on emscripten_run_script_string: https://github.com/kripken/emscripten/blob/fdc57b6f7c76b7e8589a41ad2db867e6878f0f3a/src/library.js#L3831
         Module.coreHelpers.writeJSStringToSharedBuffer = function (str) {
+            if (typeof str !== 'string') {
+                throw new Error('writeJSStringToSharedBuffer() expects a string input');
+            }
             var len = Module.lengthBytesUTF8(str);
             if (!bufferSize || bufferSize < len + 1) {
                 if (bufferSize) {
@@ -126,7 +129,7 @@
         };
 
         Module.coreHelpers.jsTimestampGetTimeZoneOffset = function () {
-            return Module.coreHelpers.writeJSStringToSharedBuffer(new Date().getTimezoneOffset());
+            return Module.coreHelpers.writeJSStringToSharedBuffer(new Date().getTimezoneOffset().toString());
         };
     };
 
