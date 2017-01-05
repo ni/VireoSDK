@@ -191,18 +191,18 @@ namespace Vireo {
         ++dt->day_of_year;
         return _NextInstruction();
     }
-    VIREO_FUNCTION_SIGNATURE5(GetDateTimeString, Timestamp, Boolean, Int32, StringRef, StringRef) {
+    VIREO_FUNCTION_SIGNATURE6(GetDateTimeString, Timestamp, Int32, Boolean, Boolean, StringRef, StringRef) {
         Timestamp timestamp;
-        Boolean useUTC = true; // add as argument?
         if (_ParamPointer(0))
             timestamp = _Param(0);
         else
             Timestamp::GetCurrentTimestamp(&timestamp);
-        Boolean useSeconds = _ParamPointer(1) ? _Param(1) : false;
-        Int32 format = _ParamPointer(2) ? _Param(2) : 0;
-        StringRef *dateStr = _ParamPointer(3);
-        StringRef *timeStr = _ParamPointer(4);
-        Int32 tz = Date::getLocaletimeZone();
+        Boolean useSeconds = _ParamPointer(2) ? _Param(2) : false;
+        Boolean useUTC = _ParamPointer(3) ? _Param(3) : false;
+        Int32 format = _ParamPointer(1) ? _Param(1) : 0;
+        StringRef *dateStr = _ParamPointer(4);
+        StringRef *timeStr = _ParamPointer(5);
+        Int32 tz = useUTC ? 0 :  Date::getLocaletimeZone();
         Date date(timestamp, tz);
         TempStackCString formatString;
         SubString tempFormat;
@@ -265,7 +265,7 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_TYPE(LVDateTimeRec, kLVDateTimeTypeStr);
     DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") o(Timestamp))")
     DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) o(" kLVDateTimeTypeStr "))")
-    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(Boolean) i(Int32) o(String) o(String))");
+    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(Int32 format) i(Boolean showSecs) i(Boolean useUTC) o(String) o(String))");
 #endif
 #endif
 
