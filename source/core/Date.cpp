@@ -14,6 +14,7 @@ SDG
 #include "TDCodecVia.h"
 #include "Date.h"
 
+#include <stdio.h>
 #if defined(VIREO_DATE_TIME_STDLIB)
 #if kVireoOS_win32U
     #include <windows.h>
@@ -195,7 +196,6 @@ namespace Vireo {
         // Get timezone abbrevation
         char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU)
-        char* timeZoneAbbr;
         time_t rawtime;
         struct tm* timeinfo;
         time(&rawtime);
