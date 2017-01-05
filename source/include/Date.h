@@ -33,7 +33,7 @@ class Date {
         Int32 _firstWeekDay;
         Int32 _timeZoneOffset;
         char* _timeZoneString;
-        Int32 _dayTimeSaving;
+        Int32 _daylightSavingTime;
         static Int32 _systemLocaleTimeZone;
 
     public:
@@ -55,8 +55,8 @@ class Date {
         Int64 SecondsOfYear() const {return _secondsOfYear;};
         Int32 TimeZoneOffset() const {return _timeZoneOffset;};
         ConstCStr TimeZoneString() const { return _timeZoneString; };
-        Int32 DayTimeSaving() const {return _dayTimeSaving;}
-        Int32 isDayTimeSaving();
+        Int32 DaylightSavingTime() const {return _daylightSavingTime;}
+        Int32 isDaylightSavingTime();
         Double FractionalSecond() const {return  _fractionalSecond;};
 };
 

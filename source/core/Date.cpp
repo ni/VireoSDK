@@ -56,11 +56,11 @@ extern "C" {
 namespace Vireo {
 #if defined(VIREO_TYPE_Timestamp)
 
-    static const Int64 secondsInYear = 31536000;
-    static const Int64 secondsInLeapYear = 31622400;
-    static const Int32 secondsPerMinute = 60;
-    static const Int32 secondsPerHour = secondsPerMinute * 60;
-    static const Int32 secondsPerDay = secondsPerHour * 24;
+    static const Int64 kSecondsInYear = 31536000;
+    static const Int64 kSecondsInLeapYear = 31622400;
+    static const Int32 kSecondsPerMinute = 60;
+    static const Int32 kSecondsPerHour = kSecondsPerMinute * 60;
+    static const Int32 kSecondsPerDay = kSecondsPerHour * 24;
 
     Int32 Date::_systemLocaleTimeZone = 0;
 
@@ -68,7 +68,7 @@ namespace Vireo {
     Int64 SecondsFromBaseYear(Int64 year, Int64 baseYear)
     {
         Int64 numberOfLeap = (year-1)/4 - (year-1)/100 + (year-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
-        Int64 totalSeconds = numberOfLeap*secondsInLeapYear + (year - baseYear - numberOfLeap)*secondsInYear;
+        Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (year - baseYear - numberOfLeap)*kSecondsInYear;
         return totalSeconds;
     }
 
@@ -79,18 +79,18 @@ namespace Vireo {
         Int32 baseYear = 1903;
         Int32 baseWeek = 3;
         Int32 currentYear = baseYear;
-        Int32 yearMax = (Int32)(wholeSeconds / secondsInYear);
-        Int32 yearMin = (Int32)(wholeSeconds / secondsInLeapYear);
+        Int32 yearMax = (Int32)(wholeSeconds / kSecondsInYear);
+        Int32 yearMin = (Int32)(wholeSeconds / kSecondsInLeapYear);
 
         if (wholeSeconds >= 0) {
             for (Int32 i = yearMin; i <= yearMax; i++) {
                 Int32 year = baseYear + i;
                 Int32 numberOfLeap = 0;
                 numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSeconds = numberOfLeap*secondsInLeapYear + (i-numberOfLeap)*secondsInYear;
+                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i-numberOfLeap)*kSecondsInYear;
                 Int32 nextyear = baseYear + i +1;
                 numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSecondsNext = numberOfLeap*secondsInLeapYear + (i+1-numberOfLeap)*secondsInYear;
+                Int64 totalSecondsNext = numberOfLeap*kSecondsInLeapYear + (i+1-numberOfLeap)*kSecondsInYear;
                 if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
                     currentYear = nextyear;
                     *yearSeconds = (Int32)(wholeSeconds - totalSeconds);
@@ -102,11 +102,11 @@ namespace Vireo {
                 Int32 year = baseYear + i;
                 Int32 numberOfLeap = 0;
                 numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSeconds = numberOfLeap*secondsInLeapYear + (i-numberOfLeap)*secondsInYear;
+                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i-numberOfLeap)*kSecondsInYear;
                 Int32 previousyear = baseYear + i - 1;
                 numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400)
                         - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSecondsPrevious = numberOfLeap*secondsInLeapYear + (i-1-numberOfLeap)*secondsInYear;
+                Int64 totalSecondsPrevious = numberOfLeap*kSecondsInLeapYear + (i-1-numberOfLeap)*kSecondsInYear;
                 if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
                     currentYear = year;
                     // this will make sure the *yearSeconds is always positive
@@ -120,8 +120,8 @@ namespace Vireo {
         }
         Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400
                 - (baseYear/4-baseYear/100+baseYear/400);
-        Int64 totalSeconds = numberOfLeap*secondsInLeapYear + (currentYear - baseYear - numberOfLeap)*secondsInYear;
-        Int32 weekdaysOfyear = (totalSeconds/secondsPerDay + baseWeek)%7;
+        Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (currentYear - baseYear - numberOfLeap)*kSecondsInYear;
+        Int32 weekdaysOfyear = (totalSeconds/kSecondsPerDay + baseWeek)%7;
         weekdaysOfyear = (weekdaysOfyear < 0) ? (weekdaysOfyear + 7) : weekdaysOfyear;
         *weekDays = weekdaysOfyear;
         return currentYear;
@@ -165,29 +165,29 @@ namespace Vireo {
             *secondsOfYearPtr = secondsOfYear;
         }
         Int32 currentMonth = -2;
-        Int32 secondsofMonth = -2;
+        Int32 secondsOfMonth = -2;
         if ((year%4 == 0) && ((year%100 != 0) || (year%400 == 0))) {
             // leap year
-            Int32 dayofMonth[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            Int32 dayOfMonth[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
             Int32 seconds = 0;
             for (Int32 i = 0; i < 12; i++) {
-                secondsofMonth = seconds;
-                seconds+= secondsPerDay * dayofMonth[i];
+                secondsOfMonth = seconds;
+                seconds+= kSecondsPerDay * dayOfMonth[i];
                 if (seconds > secondsOfYear) {
                     currentMonth = i;
-                    secondsofMonth = secondsOfYear - secondsofMonth;
+                    secondsOfMonth = secondsOfYear - secondsOfMonth;
                     break;
                 }
             }
         } else {
-            Int32 dayofMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            Int32 dayOfMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
             Int32 seconds = 0;
             for (Int32 i = 0; i < 12; i++) {
-                secondsofMonth = seconds;
-                seconds+= secondsPerDay * dayofMonth[i];
+                secondsOfMonth = seconds;
+                seconds+= kSecondsPerDay * dayOfMonth[i];
                 if (seconds > secondsOfYear) {
                     currentMonth = i;
-                    secondsofMonth = secondsOfYear - secondsofMonth;
+                    secondsOfMonth = secondsOfYear - secondsOfMonth;
                     break;
                 }
             }
@@ -223,12 +223,12 @@ namespace Vireo {
         std::string timeZone = abbreviateTimeZoneName(timeZoneAbbr);
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeZone.c_str());
 #endif
-        Int32 days = secondsofMonth / secondsPerDay;
-        Int32 secondsofHour = secondsofMonth % secondsPerDay;
-        Int32 hours = secondsofHour / secondsPerHour;
-        Int32 secondsofMinutes = secondsofHour % secondsPerHour;
-        Int32 minutes = secondsofMinutes / secondsPerMinute;
-        Int32 seconds = secondsofMinutes % secondsPerMinute;
+        Int32 days = secondsOfMonth / kSecondsPerDay;
+        Int32 secondsOfHour = secondsOfMonth % kSecondsPerDay;
+        Int32 hours = secondsOfHour / kSecondsPerHour;
+        Int32 secondsOfMinutes = secondsOfHour % kSecondsPerHour;
+        Int32 minutes = secondsOfMinutes / kSecondsPerMinute;
+        Int32 seconds = secondsOfMinutes % kSecondsPerMinute;
         if (monthPtr != NULL) {
             *monthPtr = currentMonth;
         }
@@ -248,7 +248,7 @@ namespace Vireo {
             *fractionPtr = timestamp.ToDouble() - timestamp.Integer();
         }
         if (weekPtr != NULL) {
-            *weekPtr = (secondsOfYear/secondsPerDay + firstweekDay)%7;
+            *weekPtr = (secondsOfYear/kSecondsPerDay + firstweekDay)%7;
         }
         if (timeZoneString != NULL)
         {
@@ -269,7 +269,7 @@ namespace Vireo {
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
-        _dayTimeSaving = isDayTimeSaving();
+        _daylightSavingTime = isDaylightSavingTime();
     }
 
     Date::~Date()
@@ -293,7 +293,7 @@ namespace Vireo {
         TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
         Int32 minutes;
         parser.ParseData(parseType, &minutes);
-        _systemLocaleTimeZone = -(minutes * secondsPerMinute);
+        _systemLocaleTimeZone = -(minutes * kSecondsPerMinute);
         // flipping the sign of the time zone since JS runtime will be positive
         // for being behind UTC and negative for being ahead. ctime assumes
         // negative for behind and postive for ahead. We attempt to match the ctime result.
@@ -307,13 +307,13 @@ namespace Vireo {
         // flipping the sign of the time zone
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);
-        _systemLocaleTimeZone = -int((timeZoneInfo.Bias) * secondsPerMinute);
+        _systemLocaleTimeZone = -int((timeZoneInfo.Bias) * kSecondsPerMinute);
 #endif
         return _systemLocaleTimeZone;
     };
 
     //------------------------------------------------------------
-    Int32 Date::isDayTimeSaving()
+    Int32 Date::isDaylightSavingTime()
     {
         return 0;
     }
