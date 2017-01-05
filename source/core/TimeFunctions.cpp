@@ -193,6 +193,7 @@ namespace Vireo {
     }
     VIREO_FUNCTION_SIGNATURE5(GetDateTimeString, Timestamp, Boolean, Int32, StringRef, StringRef) {
         Timestamp timestamp;
+        Boolean useUTC = true; // add as argument?
         if (_ParamPointer(0))
             timestamp = _Param(0);
         else
@@ -214,14 +215,14 @@ namespace Vireo {
                 formatString.AppendCStr("%a, %b %#d, %Y");
             tempFormat.AliasAssign(formatString.Begin(), formatString.End());
             (*dateStr)->Resize1D(0);
-            DateToString(date, &tempFormat, *dateStr);
+            DateTimeToString(date, useUTC, &tempFormat, *dateStr);
         }
         if (timeStr) {
             formatString.Clear();
             formatString.AppendCStr(useSeconds ? "%#I:%M:%S %p" : "%#I:%M %p");
             tempFormat.AliasAssign(formatString.Begin(), formatString.End());
             (*timeStr)->Resize1D(0);
-            DateToString(date, &tempFormat, *timeStr);
+            DateTimeToString(date, useUTC, &tempFormat, *timeStr);
         }
         return _NextInstruction();
     }
