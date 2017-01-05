@@ -174,20 +174,26 @@ namespace Vireo {
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(TimestampToDateTime, Timestamp, LVDateTimeRec)
+    VIREO_FUNCTION_SIGNATURE3(TimestampToDateTime, Timestamp, Boolean, LVDateTimeRec)
     {
         Timestamp timestamp = _Param(0);
-        LVDateTimeRec *dt = _ParamPointer(1);
-        Int32 firstWeekDay = 0;
-        Int64 secondsOfYear = 0;
-        Date::getDate(timestamp, &secondsOfYear, &dt->year,
-                &dt->month, &dt->day_of_month, &dt->hour,
-                &dt->minute, &dt->second, &dt->fractional_secs,
-                &firstWeekDay, NULL, NULL);
+        Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
+        LVDateTimeRec *dt = _ParamPointer(2);
+
+        Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
+        Date date(timestamp, timeZoneOffset);
+        dt->year = date.Year();
+        dt->month = date.Month();
+        dt->day_of_month = date.Day();
+        dt->hour = date.Hour();
+        dt->minute = date.Minute();
+        dt->second = date.Second();
+        dt->fractional_secs = date.FractionalSecond();
+
         ++dt->day_of_month;
         ++dt->month;
-        dt->day_of_year = Int32(secondsOfYear / (24*60*60));
-        dt->day_of_week = (firstWeekDay+1) % 7 + 1;
+        dt->day_of_year = Int32(date.SecondsOfYear() / kSecondsPerDay);
+        dt->day_of_week = (date.WeekDay() + 1) % kDaysInWeek + 1;
         ++dt->day_of_year;
         return _NextInstruction();
     }
@@ -229,7 +235,7 @@ DEFINE_VIREO_BEGIN(Timestamp)
 #define kLVDateTimeTypeStr  "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour) e(Int32 day_of_month) e(Int32 month) e(Int32 year) e(Int32 day_of_week) e(Int32 day_of_year) e(Int32 dst))"
     DEFINE_VIREO_TYPE(LVDateTimeRec, kLVDateTimeTypeStr);
     DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") o(Timestamp))")
-    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) o(" kLVDateTimeTypeStr "))")
+    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) i(Boolean) o(" kLVDateTimeTypeStr "))")
 #endif
 #endif
 
