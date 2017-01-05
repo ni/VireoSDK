@@ -2176,6 +2176,9 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     return validFormatString;
 }
 
+Boolean DateToString(const Date& date, SubString* format, StringRef output) {
+    return ToString(date, format, output);
+}
 
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {

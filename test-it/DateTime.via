@@ -4,6 +4,8 @@ define(videf1 dv(.VirtualInstrument (
         e(.Timestamp t)
         e(.Timestamp t2)
         e(.LVDateTimeRec datetime)
+        e(.String datestr)
+        e(.String timestr)
     )
     clump(1 
 
@@ -18,6 +20,36 @@ define(videf1 dv(.VirtualInstrument (
 
 	DateTimeToTimestamp(datetime t2)
 	Println(t2)
+
+	GetDateTimeString(* false 0 * *)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* false 0 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* true 0 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(t2 false 0 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* false 1 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* true 1 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(t2 false 1 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* false 2 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(* true 2 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
+
+	GetDateTimeString(t2 false 2 datestr timestr)
+	Printf("%s %s\n" datestr timestr)
 //--- end of vi
     )
 )))
