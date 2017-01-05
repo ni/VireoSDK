@@ -59,5 +59,7 @@ class Date {
         Double FractionalSecond() const {return  _fractionalSecond;};
 };
 
+Boolean DateToString(const Date& date, SubString* format, StringRef output);
+
 }
 #endif
