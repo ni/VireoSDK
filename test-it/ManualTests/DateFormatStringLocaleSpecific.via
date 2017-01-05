@@ -1,0 +1,21 @@
+define(HelloTime dv(.VirtualInstrument (
+    c(
+ 	e(dv(.Timestamp (912457663 0x8000000000000000)) t4)
+	e(dv(.String "")s1)
+     )
+    clump (1
+	FormatDateTimeString(s1 "%y (=%Y) %H (=%I %p) %M %S %.3u" t4 false)
+	Printf("13:(%s)\n" s1)
+	FormatDateTimeString(s1 "%x %.3X" t4 false)
+	Printf("14:(%s)\n" s1)
+	FormatDateTimeString(s1 "%a %A %b %B %d %j %m %U %w %W"  t4 false)
+	Printf("15:(%s)\n" s1)
+	FormatDateTimeString(s1 "%c"  t4 false)
+	Printf("16:(%s)\n" s1)
+	FormatDateTimeString(s1 "%z"  t4 false)
+	Printf("17:(%s)\n" s1)
+	FormatDateTimeString(s1 "%Z"  t4 false)
+	Printf("18:(%s)\n" s1)
+    )
+) ) )
+enqueue(HelloTime)
