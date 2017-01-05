@@ -191,6 +191,40 @@ namespace Vireo {
         ++dt->day_of_year;
         return _NextInstruction();
     }
+    VIREO_FUNCTION_SIGNATURE5(GetDateTimeString, Timestamp, Boolean, Int32, StringRef, StringRef) {
+        Timestamp timestamp;
+        if (_ParamPointer(0))
+            timestamp = _Param(0);
+        else
+            Timestamp::GetCurrentTimestamp(&timestamp);
+        Boolean useSeconds = _ParamPointer(1) ? _Param(1) : false;
+        Int32 format = _ParamPointer(2) ? _Param(2) : 0;
+        StringRef *dateStr = _ParamPointer(3);
+        StringRef *timeStr = _ParamPointer(4);
+        Int32 tz = Date::getLocaletimeZone();
+        Date date(timestamp, tz);
+        TempStackCString formatString;
+        SubString tempFormat;
+        if (dateStr) {
+            if (format == 0)
+                formatString.AppendCStr("%#x");
+            else if (format == 1)
+                formatString.AppendCStr("%A, %B %#d, %Y");
+            else
+                formatString.AppendCStr("%a, %b %#d, %Y");
+            tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+            (*dateStr)->Resize1D(0);
+            DateToString(date, &tempFormat, *dateStr);
+        }
+        if (timeStr) {
+            formatString.Clear();
+            formatString.AppendCStr(useSeconds ? "%#I:%M:%S %p" : "%#I:%M %p");
+            tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+            (*timeStr)->Resize1D(0);
+            DateToString(date, &tempFormat, *timeStr);
+        }
+        return _NextInstruction();
+    }
 #endif
 
 DEFINE_VIREO_BEGIN(Timestamp)
@@ -230,6 +264,7 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_TYPE(LVDateTimeRec, kLVDateTimeTypeStr);
     DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") o(Timestamp))")
     DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) o(" kLVDateTimeTypeStr "))")
+    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(Boolean) i(Int32) o(String) o(String))");
 #endif
 #endif
 

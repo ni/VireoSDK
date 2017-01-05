@@ -2163,6 +2163,9 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
     return validFormatString;
 }
 
+Boolean DateToString(const Date& date, SubString* format, StringRef output) {
+    return ToString(date, format, output);
+}
 
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {
