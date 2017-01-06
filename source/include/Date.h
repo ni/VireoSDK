@@ -67,5 +67,7 @@ class Date {
         Double FractionalSecond() const {return  _fractionalSecond;};
 };
 
+Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output);
+
 }
 #endif

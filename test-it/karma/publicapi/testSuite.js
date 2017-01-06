@@ -26,6 +26,7 @@ describe('can run test suite file', function () {
         'BadComment',
         'BooleanFunctions',
         'ClumpTriggerWait',
+        'DateTime',
         'EthanOpts2',
         'FloatConvertInteger',
         'GlobalCrossTalk',
