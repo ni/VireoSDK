@@ -2077,7 +2077,12 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                             localeFormatString.AppendCStr("%a, %b %d, %Y");
                         } else {
                             // to do locale specific format
-                            localeFormatString.AppendCStr("%m/%d/%Y");
+                            if (fOption.RemoveLeading) {
+                                localeFormatString.AppendCStr("%#m/%#d/%Y");
+                            }
+                            else {
+                                localeFormatString.AppendCStr("%m/%d/%Y");
+                            }
                         }
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = DateTimeToString(date, isUTC, &localformat, output);

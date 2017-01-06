@@ -81,6 +81,7 @@
                 "CoreTypes.via",
                 "DateFormatString.via",
                 "DateTime.via",
+                "DateTimeRecordToTimestamp.via",
                 "DecodeViaString.via",
                 "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",

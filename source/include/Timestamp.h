@@ -40,7 +40,7 @@ public:
     //! Add two timestamps, one operand should be relative.
     Timestamp const operator+(const Timestamp & value);
 
-    //! Add interger number of seconds to a timestamp.
+    //! Add integer number of seconds to a timestamp.
     Timestamp const operator+(const Int64 & value);
 
     //! Subtract two timestamps, result is a relative value.
