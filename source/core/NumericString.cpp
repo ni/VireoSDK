@@ -1730,13 +1730,13 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
  *             scan string will throw the error.
  *         case 3: The format code and the output value doesn't match.
  *            Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
- *            The labview will automatically change the output value when your wire a input with the different input.
+ *            The LabVIEW will automatically change the output value when your wire a input with the different input.
  *            e.g."10.85" %f -> int 11.0
  *                "10.85" %d -> int 10
  *                "10.85" %d ->double 10
  *            be careful, the conversion means different from the conversion in C++.
  *            It only reach the max value or min value.
- *            Be careful, complex double only sipport %f,
+ *            Be careful, complex double only support %f,
  *            if you use the %d, it only read the int.
  *
  * */
