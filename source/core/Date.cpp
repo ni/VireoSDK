@@ -57,12 +57,6 @@ extern "C" {
 namespace Vireo {
 #if defined(VIREO_TYPE_Timestamp)
 
-    static const Int64 kSecondsInYear = 31536000;
-    static const Int64 kSecondsInLeapYear = 31622400;
-    static const Int32 kSecondsPerMinute = 60;
-    static const Int32 kSecondsPerHour = kSecondsPerMinute * 60;
-    static const Int32 kSecondsPerDay = kSecondsPerHour * 24;
-
     Int32 Date::_systemLocaleTimeZone = 0;
 
     //------------------------------------------------------------
@@ -71,6 +65,13 @@ namespace Vireo {
         Int64 numberOfLeap = (year-1)/4 - (year-1)/100 + (year-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
         Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (year - baseYear - numberOfLeap)*kSecondsInYear;
         return totalSeconds;
+    }
+
+    //------------------------------------------------------------
+    Int32 numberOfLeapYears(Int32 year, Int32 baseYear)
+    {
+        Int32 numberOfYears = year / 4 - year / 100 + year / 400 - (baseYear / 4 - baseYear / 100 + baseYear / 400);
+        return numberOfYears;
     }
 
     //------------------------------------------------------------
@@ -86,28 +87,26 @@ namespace Vireo {
         if (wholeSeconds >= 0) {
             for (Int32 i = yearMin; i <= yearMax; i++) {
                 Int32 year = baseYear + i;
-                Int32 numberOfLeap = 0;
-                numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i-numberOfLeap)*kSecondsInYear;
-                Int32 nextyear = baseYear + i +1;
-                numberOfLeap = nextyear/4 - nextyear/100 + nextyear/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSecondsNext = numberOfLeap*kSecondsInLeapYear + (i+1-numberOfLeap)*kSecondsInYear;
+                Int32 numberOfLeap = numberOfLeapYears(year, baseYear);
+                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i - numberOfLeap)*kSecondsInYear;
+                Int32 nextYear = baseYear + i + 1;
+                numberOfLeap = numberOfLeapYears(nextYear, baseYear);
+                Int64 totalSecondsNext = numberOfLeap*kSecondsInLeapYear + (i + 1 - numberOfLeap)*kSecondsInYear;
                 if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
-                    currentYear = nextyear;
+                    currentYear = nextYear;
                     *yearSeconds = (Int32)(wholeSeconds - totalSeconds);
                     break;
                 }
             }
-        } else if (wholeSeconds < 0) {
+        }
+        else if (wholeSeconds < 0) {
             for (Int32 i = yearMax; i <= yearMin; i++) {
                 Int32 year = baseYear + i;
-                Int32 numberOfLeap = 0;
-                numberOfLeap = year/4 - year/100 + year/400 - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i-numberOfLeap)*kSecondsInYear;
-                Int32 previousyear = baseYear + i - 1;
-                numberOfLeap = (previousyear/4 - previousyear/100 + previousyear/400)
-                        - (baseYear/4-baseYear/100+baseYear/400);
-                Int64 totalSecondsPrevious = numberOfLeap*kSecondsInLeapYear + (i-1-numberOfLeap)*kSecondsInYear;
+                Int32 numberOfLeap = numberOfLeapYears(year, baseYear);
+                Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (i - numberOfLeap)*kSecondsInYear;
+                Int32 previousYear = baseYear + i - 1;
+                numberOfLeap = numberOfLeapYears(previousYear, baseYear);
+                Int64 totalSecondsPrevious = numberOfLeap*kSecondsInLeapYear + (i - 1 - numberOfLeap)*kSecondsInYear;
                 if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
                     currentYear = year;
                     // this will make sure the *yearSeconds is always positive
@@ -115,15 +114,15 @@ namespace Vireo {
                     break;
                 }
             }
-        } else {
+        }
+        else {
             *yearSeconds = 0;
             currentYear = 1904;
         }
-        Int64 numberOfLeap = (currentYear-1)/4 - (currentYear-1)/100 + (currentYear-1)/400
-                - (baseYear/4-baseYear/100+baseYear/400);
+        Int64 numberOfLeap = numberOfLeapYears(currentYear - 1, baseYear);
         Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (currentYear - baseYear - numberOfLeap)*kSecondsInYear;
-        Int32 weekdaysOfyear = (totalSeconds/kSecondsPerDay + baseWeek)%7;
-        weekdaysOfyear = (weekdaysOfyear < 0) ? (weekdaysOfyear + 7) : weekdaysOfyear;
+        Int32 weekdaysOfyear = (totalSeconds / kSecondsPerDay + baseWeek) % kDaysInWeek;
+        weekdaysOfyear = (weekdaysOfyear < 0) ? (weekdaysOfyear + kDaysInWeek) : weekdaysOfyear;
         *weekDays = weekdaysOfyear;
         return currentYear;
     }
@@ -146,6 +145,12 @@ namespace Vireo {
 #endif
 
     //------------------------------------------------------------
+    Boolean isLeapYear(Int32 year)
+    {
+        return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
+    }
+
+    //------------------------------------------------------------
     void Date::getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
                  Int32* monthPtr, Int32* dayPtr, Int32* hourPtr,
                  Int32* minutePtr, Int32* secondPtr, Double* fractionPtr,
@@ -165,34 +170,24 @@ namespace Vireo {
         if (secondsOfYearPtr != NULL) {
             *secondsOfYearPtr = secondsOfYear;
         }
+
         Int32 currentMonth = -2;
         Int32 secondsOfMonth = -2;
-        if ((year%4 == 0) && ((year%100 != 0) || (year%400 == 0))) {
-            // leap year
-            Int32 dayOfMonth[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-            Int32 seconds = 0;
-            for (Int32 i = 0; i < 12; i++) {
-                secondsOfMonth = seconds;
-                seconds+= kSecondsPerDay * dayOfMonth[i];
-                if (seconds > secondsOfYear) {
-                    currentMonth = i;
-                    secondsOfMonth = secondsOfYear - secondsOfMonth;
-                    break;
-                }
-            }
-        } else {
-            Int32 dayOfMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-            Int32 seconds = 0;
-            for (Int32 i = 0; i < 12; i++) {
-                secondsOfMonth = seconds;
-                seconds+= kSecondsPerDay * dayOfMonth[i];
-                if (seconds > secondsOfYear) {
-                    currentMonth = i;
-                    secondsOfMonth = secondsOfYear - secondsOfMonth;
-                    break;
-                }
+        Int32 dayOfMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        if (isLeapYear(year)) {
+            dayOfMonth[1] = 29;
+        }
+        Int32 seconds = 0;
+        for (Int32 i = 0; i < 12; i++) {
+            secondsOfMonth = seconds;
+            seconds += kSecondsPerDay * dayOfMonth[i];
+            if (seconds > secondsOfYear) {
+                currentMonth = i;
+                secondsOfMonth = secondsOfYear - secondsOfMonth;
+                break;
             }
         }
+
         // Get timezone abbrevation
         char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU)
@@ -228,7 +223,7 @@ namespace Vireo {
         Int32 hours = secondsOfHour / kSecondsPerHour;
         Int32 secondsOfMinutes = secondsOfHour % kSecondsPerHour;
         Int32 minutes = secondsOfMinutes / kSecondsPerMinute;
-        Int32 seconds = secondsOfMinutes % kSecondsPerMinute;
+        seconds = secondsOfMinutes % kSecondsPerMinute;
         if (monthPtr != NULL) {
             *monthPtr = currentMonth;
         }
@@ -248,7 +243,7 @@ namespace Vireo {
             *fractionPtr = timestamp.ToDouble() - timestamp.Integer();
         }
         if (weekPtr != NULL) {
-            *weekPtr = (secondsOfYear/kSecondsPerDay + firstweekDay)%7;
+            *weekPtr = (secondsOfYear  /kSecondsPerDay + firstweekDay) % kDaysInWeek;
         }
         if (timeZoneString != NULL)
         {

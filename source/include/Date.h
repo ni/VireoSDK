@@ -19,6 +19,13 @@ SDG
 
 namespace Vireo {
 
+    static const Int64 kSecondsInYear = 31536000;
+    static const Int64 kSecondsInLeapYear = 31622400;
+    static const Int32 kSecondsPerMinute = 60;
+    static const Int32 kSecondsPerHour = kSecondsPerMinute * 60;
+    static const Int32 kSecondsPerDay = kSecondsPerHour * 24;
+    static const Int32 kDaysInWeek = 7;
+
 class Date {
     private:
         Double _fractionalSecond;
