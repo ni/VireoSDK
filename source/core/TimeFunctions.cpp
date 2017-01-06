@@ -166,11 +166,14 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(DateTimeToTimestamp, LVDateTimeRec, Timestamp)
+    VIREO_FUNCTION_SIGNATURE3(DateTimeToTimestamp, LVDateTimeRec, Boolean, Timestamp)
     {
         LVDateTimeRec *dt = _ParamPointer(0);
+        Boolean isUTC = _ParamPointer(1) ? _Param(1) : false;
+        Int32 timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
         Timestamp timestamp(dt->fractional_secs, dt->second, dt->minute, dt->hour, dt->day_of_month, dt->month, dt->year);
-        _Param(1) = timestamp;
+        Timestamp local = timestamp - timeZoneOffset;
+        _Param(2) = local;
         return _NextInstruction();
     }
     //------------------------------------------------------------
@@ -198,7 +201,7 @@ namespace Vireo {
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE6(GetDateTimeString, Timestamp, Int32, Boolean, Boolean, StringRef, StringRef) {
+    VIREO_FUNCTION_SIGNATURE6(GetDateTimeString, Timestamp, UInt16, Boolean, Boolean, StringRef, StringRef) {
         Timestamp timestamp;
         if (_ParamPointer(0))
             timestamp = _Param(0);
@@ -270,9 +273,9 @@ DEFINE_VIREO_BEGIN(Timestamp)
 
 #define kLVDateTimeTypeStr  "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour) e(Int32 day_of_month) e(Int32 month) e(Int32 year) e(Int32 day_of_week) e(Int32 day_of_year) e(Int32 dst))"
     DEFINE_VIREO_TYPE(LVDateTimeRec, kLVDateTimeTypeStr);
-    DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") o(Timestamp))")
-    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) i(Boolean) o(" kLVDateTimeTypeStr "))")
-    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(Int32 format) i(Boolean showSecs) i(Boolean useUTC) o(String) o(String))");
+    DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") i(Boolean isUTC) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) i(Boolean toUTC) o(" kLVDateTimeTypeStr "))")
+    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(UInt16 format) i(Boolean showSecs) i(Boolean useUTC) o(String) o(String))");
 #endif
 #endif
 

@@ -60,14 +60,6 @@ namespace Vireo {
     Int32 Date::_systemLocaleTimeZone = 0;
 
     //------------------------------------------------------------
-    Int64 SecondsFromBaseYear(Int64 year, Int64 baseYear)
-    {
-        Int64 numberOfLeap = (year-1)/4 - (year-1)/100 + (year-1)/400 - (baseYear/4-baseYear/100+baseYear/400);
-        Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (year - baseYear - numberOfLeap)*kSecondsInYear;
-        return totalSeconds;
-    }
-
-    //------------------------------------------------------------
     Int32 numberOfLeapYears(Int32 year, Int32 baseYear)
     {
         Int32 numberOfYears = year / 4 - year / 100 + year / 400 - (baseYear / 4 - baseYear / 100 + baseYear / 400);
