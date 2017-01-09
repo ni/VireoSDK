@@ -183,8 +183,8 @@ namespace Vireo {
         Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
         LVDateTimeRec *dt = _ParamPointer(2);
 
-        Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
-        Date date(timestamp, timeZoneOffset);
+        //Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
+        Date date(timestamp, toUTC ? true : false); // timeZoneOffset);
         dt->year = date.Year();
         dt->month = date.Month();
         dt->day_of_month = date.Day();
@@ -193,10 +193,9 @@ namespace Vireo {
         dt->second = date.Second();
         dt->fractional_secs = date.FractionalSecond();
 
-        ++dt->day_of_month;
         ++dt->month;
         dt->day_of_year = Int32(date.SecondsOfYear() / kSecondsPerDay);
-        dt->day_of_week = (date.WeekDay() + 1) % kDaysInWeek + 1;
+        dt->day_of_week = date.WeekDay() % kDaysInWeek + 1;
         ++dt->day_of_year;
         return _NextInstruction();
     }
@@ -233,7 +232,9 @@ namespace Vireo {
             tempFormat.AliasAssign(formatString.Begin(), formatString.End());
             (*timeStr)->Resize1D(0);
             DateTimeToString(date, useUTC, &tempFormat, *timeStr);
+            formatString.Clear();
         }
+
         return _NextInstruction();
     }
 #endif
