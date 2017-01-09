@@ -163,6 +163,14 @@ namespace Vireo
         return answer;
     }
     //------------------------------------------------------------
+    Timestamp const Timestamp::operator-(const Int64& value)
+    {
+        Timestamp answer;
+        answer._integer = _integer - value;
+        answer._fraction = _fraction;
+        return answer;
+    }
+    //------------------------------------------------------------
     Timestamp const Timestamp::operator+(const Timestamp& value)
     {
         Timestamp answer;

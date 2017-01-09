@@ -166,29 +166,74 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(DateTimeToTimestamp, LVDateTimeRec, Timestamp)
+    VIREO_FUNCTION_SIGNATURE3(DateTimeToTimestamp, LVDateTimeRec, Boolean, Timestamp)
     {
         LVDateTimeRec *dt = _ParamPointer(0);
+        Boolean isUTC = _ParamPointer(1) ? _Param(1) : false;
+        Int32 timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
         Timestamp timestamp(dt->fractional_secs, dt->second, dt->minute, dt->hour, dt->day_of_month, dt->month, dt->year);
-        _Param(1) = timestamp;
+        Timestamp local = timestamp - timeZoneOffset;
+        _Param(2) = local;
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(TimestampToDateTime, Timestamp, LVDateTimeRec)
+    VIREO_FUNCTION_SIGNATURE3(TimestampToDateTime, Timestamp, Boolean, LVDateTimeRec)
     {
         Timestamp timestamp = _Param(0);
-        LVDateTimeRec *dt = _ParamPointer(1);
-        Int32 firstWeekDay = 0;
-        Int64 secondsOfYear = 0;
-        Date::getDate(timestamp, &secondsOfYear, &dt->year,
-                &dt->month, &dt->day_of_month, &dt->hour,
-                &dt->minute, &dt->second, &dt->fractional_secs,
-                &firstWeekDay, NULL, NULL);
+        Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
+        LVDateTimeRec *dt = _ParamPointer(2);
+
+        Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
+        Date date(timestamp, timeZoneOffset);
+        dt->year = date.Year();
+        dt->month = date.Month();
+        dt->day_of_month = date.Day();
+        dt->hour = date.Hour();
+        dt->minute = date.Minute();
+        dt->second = date.Second();
+        dt->fractional_secs = date.FractionalSecond();
+
         ++dt->day_of_month;
         ++dt->month;
-        dt->day_of_year = Int32(secondsOfYear / (24*60*60));
-        dt->day_of_week = (firstWeekDay+1) % 7 + 1;
+        dt->day_of_year = Int32(date.SecondsOfYear() / kSecondsPerDay);
+        dt->day_of_week = (date.WeekDay() + 1) % kDaysInWeek + 1;
         ++dt->day_of_year;
+        return _NextInstruction();
+    }
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE6(GetDateTimeString, Timestamp, UInt16, Boolean, Boolean, StringRef, StringRef) {
+        Timestamp timestamp;
+        if (_ParamPointer(0))
+            timestamp = _Param(0);
+        else
+            Timestamp::GetCurrentTimestamp(&timestamp);
+        Boolean useSeconds = _ParamPointer(2) ? _Param(2) : false;
+        Boolean useUTC = _ParamPointer(3) ? _Param(3) : false;
+        Int32 format = _ParamPointer(1) ? _Param(1) : 0;
+        StringRef *dateStr = _ParamPointer(4);
+        StringRef *timeStr = _ParamPointer(5);
+        Int32 tz = useUTC ? 0 :  Date::getLocaletimeZone();
+        Date date(timestamp, tz);
+        TempStackCString formatString;
+        SubString tempFormat;
+        if (dateStr) {
+            if (format == 0)
+                formatString.AppendCStr("%#x");
+            else if (format == 1)
+                formatString.AppendCStr("%A, %B %#d, %Y");
+            else
+                formatString.AppendCStr("%a, %b %#d, %Y");
+            tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+            (*dateStr)->Resize1D(0);
+            DateTimeToString(date, useUTC, &tempFormat, *dateStr);
+        }
+        if (timeStr) {
+            formatString.Clear();
+            formatString.AppendCStr(useSeconds ? "%#I:%M:%S %p" : "%#I:%M %p");
+            tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+            (*timeStr)->Resize1D(0);
+            DateTimeToString(date, useUTC, &tempFormat, *timeStr);
+        }
         return _NextInstruction();
     }
 #endif
@@ -228,8 +273,9 @@ DEFINE_VIREO_BEGIN(Timestamp)
 
 #define kLVDateTimeTypeStr  "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour) e(Int32 day_of_month) e(Int32 month) e(Int32 year) e(Int32 day_of_week) e(Int32 day_of_year) e(Int32 dst))"
     DEFINE_VIREO_TYPE(LVDateTimeRec, kLVDateTimeTypeStr);
-    DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") o(Timestamp))")
-    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) o(" kLVDateTimeTypeStr "))")
+    DEFINE_VIREO_FUNCTION(DateTimeToTimestamp, "p(i(" kLVDateTimeTypeStr ") i(Boolean isUTC) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION(TimestampToDateTime, "p(i(Timestamp) i(Boolean toUTC) o(" kLVDateTimeTypeStr "))")
+    DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(UInt16 format) i(Boolean showSecs) i(Boolean useUTC) o(String) o(String))");
 #endif
 #endif
 

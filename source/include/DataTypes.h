@@ -285,11 +285,16 @@ protected:
 public:
 
     //! Construct the array and initialize it as empty.
-    FixedCArray()
+    void Clear()
     {
         this->_begin = _buffer;
         this->_end = _buffer;
         *NonConstEnd() = (T) 0;
+    }
+
+    FixedCArray()
+    {
+        Clear();
     }
     
     //! Construct the array and initialize it from a SubVector.

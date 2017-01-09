@@ -207,7 +207,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 //---------------------------------------------------------------------------------------------
 void GenerateFinalNumeric (const FormatOptions* , char* , Int32* , TempStackCString* , Boolean );
 void RefactorLabviewNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32 );
-Boolean ToString(const Date& date, SubString* format, StringRef output);
+Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output);
 
 void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
 {
@@ -574,7 +574,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             sizeOfNumericString = snprintf(asciiReplacementString, sizeof(asciiReplacementString), formatCode, tempDouble);
                         }
                         Int32 intDigits = (exponent >= 0)? (exponent): 0 ;
-                        TempStackCString paddingPart;
                         RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, intDigits, truncateSignificant);
                         UpdateNumericStringWithDecimalSeparator(fOptions, asciiReplacementString, sizeOfNumericString);
                         buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
@@ -875,12 +874,12 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (argType->IsA(&TypeCommon::TypeTimestamp)) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             Date date(time, tz);
-                            validFormatString = ToString(date, &datetimeFormat, buffer);
+                            validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
                         } else {
                             Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                             Timestamp time(tempDouble);
                             Date date(time, tz);
-                            validFormatString = ToString(date, &datetimeFormat, buffer);
+                            validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
                         }
                         if (fOptions.FormatChar == 't')
                         {
@@ -1860,7 +1859,7 @@ char abbrMonthName[12][10] = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July",
 char monthName[12][10] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
 //------------------------------------------------------------
-Boolean ToString(const Date& date, SubString* format, StringRef output)
+Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output)
 {
     TempStackCString formatString;
     SubString tempFormat(format);
@@ -1906,7 +1905,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         localeFormatString.Append(&formatSubString);
                         localeFormatString.AppendCStr("X");
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
-                        validFormatString = ToString(date, &localformat, output);
+                        validFormatString = DateTimeToString(date, isUTC, &localformat, output);
                     }
                         break;
                     case 'd':
@@ -2078,10 +2077,15 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                             localeFormatString.AppendCStr("%a, %b %d, %Y");
                         } else {
                             // to do locale specific format
-                            localeFormatString.AppendCStr("%m/%d/%Y");
+                            if (fOption.RemoveLeading) {
+                                localeFormatString.AppendCStr("%#m/%#d/%Y");
+                            }
+                            else {
+                                localeFormatString.AppendCStr("%m/%d/%Y");
+                            }
                         }
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
-                        validFormatString = ToString(date, &localformat, output);
+                        validFormatString = DateTimeToString(date, isUTC, &localformat, output);
                     }
                         break;
                     case 'X':
@@ -2104,7 +2108,7 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         }
                         localeFormatString.AppendCStr(" %p");
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
-                        validFormatString = ToString(date, &localformat, output);
+                        validFormatString = DateTimeToString(date, isUTC, &localformat, output);
                     }
                         break;
                     case 'y':
@@ -2142,13 +2146,27 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
                         Int32 seconddiff = totalSeconds%60;
                         char difference[64];
                         Int32 size = 0;
-                        size = sprintf(difference, "%03d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        if (hourdiff < 0)
+                        {
+                            size = snprintf(difference, sizeof(difference), "%03d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        }
+                        else
+                        {
+                            size = snprintf(difference, sizeof(difference), "%02d:%02d:%02d", (int)hourdiff, (int)mindiff, (int)seconddiff);
+                        }
                         output->Append(size, (Utf8Char*)difference);
                     }
                         break;
                     case 'Z':
                     {
-                        output->AppendCStr(date.TimeZoneString());
+                        if (isUTC)
+                        {
+                            output->AppendCStr("UTC");
+                        }
+                        else
+                        {
+                            output->AppendCStr(date.TimeZoneString());
+                        }
                     }
                         break;
                     default:
@@ -2163,7 +2181,6 @@ Boolean ToString(const Date& date, SubString* format, StringRef output)
     return validFormatString;
 }
 
-
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {
     //  Int64 wholeSeconds = _Param(2).Integer();
@@ -2175,7 +2192,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
     // clear the buffer
     output->Resize1D(0);
     if (output != NULL) {
-        ToString(date, &format, output);
+        DateTimeToString(date, isUTC, &format, output);
     }
     return _NextInstruction();
 }
