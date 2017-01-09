@@ -25,6 +25,7 @@ namespace Vireo {
     static const Int32 kSecondsPerHour = kSecondsPerMinute * 60;
     static const Int32 kSecondsPerDay = kSecondsPerHour * 24;
     static const Int32 kDaysInWeek = 7;
+    static const UInt32 kStdDT1970re1904 = 2082844800;
 
 class Date {
     private:
@@ -50,7 +51,8 @@ class Date {
             Int32* weekPtr = NULL, Int32* weekOfFirstDay = NULL, char** timeZoneString = NULL);
 
     public:
-        Date(Timestamp timestamp, Int32 timeZoneOffset);
+        Date(Timestamp timestamp, Int32 timeZoneOffset); // this API is conceptually wrong; tzo should be computed from UTC date
+        Date(Timestamp timestamp, bool isUTC = false);
         ~Date();
         static Int32 getLocaletimeZone();
         Int32 Year() const { return _year; };

@@ -67,11 +67,11 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    Int32 getYear(Int64 wholeSeconds, Int32* yearSeconds, Int32* weekDays)
+    Int32 getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays)
     {
         // Thursday, January 01, 1903
         Int32 baseYear = 1903;
-        Int32 baseWeek = 3;
+        Int32 baseWeek = 4; // 3;  3 was with 0=Monday, want 0=Sunday
         Int32 currentYear = baseYear;
         Int32 yearMax = (Int32)(wholeSeconds / kSecondsInYear);
         Int32 yearMin = (Int32)(wholeSeconds / kSecondsInLeapYear);
@@ -146,9 +146,9 @@ namespace Vireo {
     void Date::getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
                  Int32* monthPtr, Int32* dayPtr, Int32* hourPtr,
                  Int32* minutePtr, Int32* secondPtr, Double* fractionPtr,
-                 Int32* weekPtr, Int32* weekOfFirstDay, char** timeZoneString)
+                 Int32* weekDayPtr, Int32* weekOfFirstDay, char** timeZoneString)
     {
-        Int32 secondsOfYear = 0;
+        Int64 secondsOfYear = 0;
         Int32 firstweekDay = 0;
 
         Int32 year = getYear(timestamp.Integer(), &secondsOfYear, &firstweekDay);
@@ -220,7 +220,7 @@ namespace Vireo {
             *monthPtr = currentMonth;
         }
         if (dayPtr != NULL) {
-            *dayPtr = days;
+            *dayPtr = days+1;
         }
         if (hourPtr != NULL) {
             *hourPtr = hours;
@@ -234,8 +234,8 @@ namespace Vireo {
         if (fractionPtr != NULL) {
             *fractionPtr = timestamp.ToDouble() - timestamp.Integer();
         }
-        if (weekPtr != NULL) {
-            *weekPtr = (secondsOfYear  /kSecondsPerDay + firstweekDay) % kDaysInWeek;
+        if (weekDayPtr != NULL) {
+            *weekDayPtr = (secondsOfYear/kSecondsPerDay + firstweekDay) % kDaysInWeek;
         }
         if (timeZoneString != NULL)
         {
@@ -257,6 +257,44 @@ namespace Vireo {
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
         _daylightSavingTime = isDaylightSavingTime();
+    }
+
+    Date::Date(Timestamp timestamp, bool isUTC) {
+#ifdef VIREO_DATE_TIME_STDLIB
+        struct tm tm;
+        time_t time = timestamp.Integer() - kStdDT1970re1904;
+        if (isUTC)
+            gmtime_r(&time, &tm);
+        else
+            localtime_r(&time, &tm);
+        _timeZoneOffset = int(isUTC ? 0 : tm.tm_gmtoff);
+        _secondsOfYear = 0;
+        _year = tm.tm_year + 1900;
+        _month = tm.tm_mon;
+        _day = tm.tm_mday;
+        _hour = tm.tm_hour;
+        _minute = tm.tm_min;
+        _second = tm.tm_sec;
+        _weekday = tm.tm_wday;
+        _fractionalSecond = timestamp.ToDouble() - timestamp.Integer();
+
+        getYear(timestamp.Integer() + _timeZoneOffset , &_secondsOfYear, &_firstWeekDay);
+
+        const char *tz = isUTC ? "UTC" : tm.tm_zone;
+        _daylightSavingTime = tm.tm_isdst;
+        if (tm.tm_zone) {
+            _timeZoneString = (char *)malloc(strlen(tz)+1);
+            strncpy(_timeZoneString, tm.tm_zone, strlen(tz)+1);
+        } else
+            _timeZoneString = NULL;
+#else
+        _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
+        _timeZoneString = NULL;
+        Timestamp local = timestamp + _timeZoneOffset;
+        getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
+                &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
+        _daylightSavingTime = isDaylightSavingTime();
+#endif
     }
 
     Date::~Date()

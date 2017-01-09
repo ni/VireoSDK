@@ -1916,8 +1916,8 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
-char abbrWeekDayName[7][10] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-char weekDayName[7][10] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+char abbrWeekDayName[7][10] = {"Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+char weekDayName[7][10] = {"Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 char abbrMonthName[12][10] = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"};
 char monthName[12][10] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
@@ -1976,9 +1976,9 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         char days[10];
                         Int32 size = 0;
                         if (fOption.RemoveLeading) {
-                            size = sprintf(days, "%d", (int)(date.Day() + 1));
+                            size = sprintf(days, "%d", (int)(date.Day()));
                         } else {
-                            size = sprintf(days, "%02d", (int)(date.Day() + 1));
+                            size = sprintf(days, "%02d", (int)(date.Day()));
                         }
                         output->Append(size, (Utf8Char*)days);
                     }
@@ -2094,7 +2094,10 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         Int32 size = 0;
                         Int32 weekofyear = 0;
                         // First Monday as week one.
-                        weekofyear = (Int32) ((date.SecondsOfYear()/(24*3600)+ 7-date.FirstWeekDay())/7);
+                        Int32 firstWeekDay = (date.FirstWeekDay()+6)%7;
+                        if (firstWeekDay == 0)
+                            firstWeekDay = 7;
+                        weekofyear = (Int32) ((date.SecondsOfYear()/(24*3600) + firstWeekDay)/7);
                         if (fOption.RemoveLeading) {
                             size = sprintf(weekNumberString, "%d", (int)weekofyear);
                         } else {
@@ -2107,7 +2110,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                     {
                         char weekday[10];
                         Int32 size = 0;
-                        size = sprintf(weekday, "%d", (int)((date.WeekDay()+1)%7));
+                        size = sprintf(weekday, "%d", (int)((date.WeekDay()/*+1*/)%7));
                         output->Append(size, (Utf8Char*)weekday);
                     }
                         break;
@@ -2117,11 +2120,10 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         Int32 size = 0;
                         Int32 weekofyear = 0;
                         // First Sunday as week one.
-                        if (date.SecondsOfYear()/(24*3600) < (6 - date.FirstWeekDay())) {
-                            weekofyear = 0;
-                        } else {
-                            weekofyear = (Int32) (1 + (date.SecondsOfYear()/(24*3600) - (6 - date.FirstWeekDay()))/7);
-                        }
+                        Int32 firstWeekDay = date.FirstWeekDay();
+                        if (firstWeekDay == 0)
+                            firstWeekDay = 7;
+                        weekofyear = (Int32) ((date.SecondsOfYear()/(24*3600) + firstWeekDay)/7);
                         if (fOption.RemoveLeading) {
                             size = sprintf(weekNumberString, "%d", (int)weekofyear);
                         } else {

@@ -71,10 +71,6 @@ namespace Vireo
     }
     #endif
 
-    #if defined(VIREO_DATE_TIME_STDLIB)
-    static const UInt32 kStdDT1970re1904 = 2082844800;
-    #endif
-
     /**
      Functions for getting Timestamps
       */
