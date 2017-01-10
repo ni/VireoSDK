@@ -206,7 +206,7 @@ public:
     //! Returns a pointer just past the last element in the vector.
     const T*  End()   const  { return _end; }
     
-    //! Returns the lenght of the vector.
+    //! Returns the length of the vector.
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
     
     //! Return true if the blocks are equivalent.
