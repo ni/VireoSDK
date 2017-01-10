@@ -218,7 +218,7 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             index++;
         }
         TypeRef argType = arguments[i]._paramType;
-        if (argType->IsA("Timestamp")) {
+        if (argType->IsTimestamp()) {
             buffer->AppendCStr("%T");
             return ;
         }
@@ -821,7 +821,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                              tz = 0;
                         }
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        if ((fOptions.FormatChar == 'T' && !argType->IsA(&TypeCommon::TypeTimestamp)) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
+                        if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
                         {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
                             break;
@@ -871,7 +871,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             datetimeFormat.AliasAssign(defaultTimeFormat.Begin(),defaultTimeFormat.End());
                         }
 #if defined(VIREO_TIME_FORMATTING)
-                        if (argType->IsA(&TypeCommon::TypeTimestamp)) {
+                        if (argType->IsTimestamp()) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             Date date(time, tz);
                             validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
@@ -1232,7 +1232,7 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
     return false;
 }
 //----------------------------------------------------------------------------------------------------
-Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument, TempStackCString* formatString)
+Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument)
 {
     if (argument == null)
         return false;
@@ -1499,7 +1499,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
  * */
 Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticTypeAndData arguments[])
 {
-    // the rules for ScanString in Labview is a subset of the sscanf.
+    // the rules for ScanString in LabVIEW is a subset of the sscanf.
     // p will be treated as f;
     // binary should be processed.
     // should be very careful when try to parse a float with local decimal point
@@ -1507,11 +1507,11 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
     IntIndex argumentIndex = 0;
     IntIndex filledItems = 0;
     char activeDecimalPoint = '.';
-    TempStackCString tempFormat((Utf8Char*)"%", 1);
     Utf8Char c = 0;
     Utf8Char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
+    UInt32 offsetPastScan = 0;
     while (canScan && input->Length()>0 && f.ReadRawChar(&c)) {
         if (isspace(c)) {
             // eat all spaces
@@ -1523,6 +1523,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                     break;
                 }
             }
+            offsetPastScan += (begin - input->Begin());
             input->AliasAssign((Utf8Char*)begin, input->End());
         } else if (c == '%') {
             FormatOptions fOptions;
@@ -1534,7 +1535,6 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 parseFinished = true;
                 canScan = false;
             }
-            TempStackCString formatString;
             IntIndex endPointer;
             while (!parseFinished) {
                 StaticTypeAndData *pArg = (argumentIndex < argCount) ? &(arguments[argumentIndex]) : null;
@@ -1542,10 +1542,11 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 switch (fOptions.FormatChar) {
                 case 'b': case 'B':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                        offsetPastScan += endPointer;
                     }
                     argumentIndex++;
                 }
@@ -1554,10 +1555,11 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 case 'o': case 'u':
                 case 'x': case 'X':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg);
                     if  (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                        offsetPastScan += endPointer;
                     }
                     argumentIndex++;
                 }
@@ -1566,51 +1568,55 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 case 'e': case 'E':
                 case 'f': case 'F':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                        offsetPastScan += endPointer;
                     }
                     argumentIndex++;
                 }
                 break;
                 case 's': case '[':
                 {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg, &formatString);
+                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg);
                     if (canScan) {
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
+                        offsetPastScan += endPointer;
                     }
                     argumentIndex++;
                 }
                 break;
                 case '%': {    //%%
                     input->ReadRawChar(&inputChar);
+                    ++offsetPastScan;
                     if (inputChar == '%') {
-                        input->AliasAssign(input->Begin()+1,input->End());
-                        format->AliasAssign(format->Begin()+1, format->End());
                         } else{
                             canScan = false;
                         }
                 }
                 break;
-                default:
+                default: {
                     canScan = false;
+                }
                 break;
                 }
              }
         } else {
             if (input->ReadRawChar(&inputChar)) {
+                ++offsetPastScan;
                 if (inputChar != c) {
                     canScan = false;
                     input->AliasAssign(input->Begin()-1, input->End());
+                    --offsetPastScan;
                 }
             } else {
                 canScan = false;
             }
         }
     }
-    return filledItems;
+    return offsetPastScan;
 }
 //-------------------------------------------------------------
 /**
@@ -1730,13 +1736,13 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
  *             scan string will throw the error.
  *         case 3: The format code and the output value doesn't match.
  *            Parse the value according the format code. Then convert the parsed value to the output type. The default output type is double.
- *            The labview will automatically change the output value when your wire a input with the different input.
+ *            The LabVIEW will automatically change the output value when your wire a input with the different input.
  *            e.g."10.85" %f -> int 11.0
  *                "10.85" %d -> int 10
  *                "10.85" %d ->double 10
  *            be careful, the conversion means different from the conversion in C++.
  *            It only reach the max value or min value.
- *            Be careful, complex double only sipport %f,
+ *            Be careful, complex double only support %f,
  *            if you use the %d, it only read the int.
  *
  * */
@@ -1768,20 +1774,77 @@ struct StringScanStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
+
+void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, StaticTypeAndData arguments[])
+{
+    for (Int32 i = 0; i < argCount; i++)
+    {
+        TypeRef argType = arguments[i]._paramType;
+        if (argType->IsString() || argType->IsBoolean()) // TODO: Add IsEnum()
+        {
+            format->AppendCStr("%s ");
+        }
+        else if (argType->IsNumeric())
+        {
+            if (argType->IsFloat())
+            {
+                format->AppendCStr("%f ");
+            }
+            else
+            {
+                format->AppendCStr("%d ");
+            }
+        }
+        else if (argType->IsTimestamp())
+        {
+            format->AppendCStr("%T ");
+        }
+        else
+        {
+            error->code = -1; // TODO-ErrorCluster fix error codes
+            error->status = true;
+            break;
+        }
+        if (error->status == false && format->Length() > 255)
+        {
+            error->code = -1; // TODO-ErrorCluster fix error codes
+            error->status = true;
+            break;
+        }
+    }
+    if (!error->status)
+    {
+        int len = format->Length();
+        if (len > 0)
+        {
+            format->Remove1D(len - 1, 1);
+        }
+    }
+}
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 {
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
     input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
+    UInt32 newOffset = _Param(InitialPos);
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    
+    ErrorCluster errorCluster;
+
+    memset(&errorCluster, 0, sizeof(errorCluster)); // TODO Delete this after adding errorCluster parameter
     // Calculate number of parameters.
     // Each scan parameters has both type and data.
     Int32 argCount = (_ParamVarArgCount() - 5) / 2;
-    FormatScan(&input, &format, argCount, arguments);
+    STACK_VAR(String, tempFormat);
+	if (format.Length() == 0)
+    {
+        MakeFormatString(tempFormat.Value, &errorCluster, argCount, arguments);
+        format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
+    }
+    newOffset += FormatScan(&input, &format, argCount, arguments);
     
-    _Param(OffsetPast) = _Param(StringInput)->Length() - input.Length();
+    _Param(OffsetPast) = newOffset;
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());

@@ -799,9 +799,9 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 VIREO_ASSERT(pFirstEltInSlice == null);
                 pFirstEltInSlice = pArray->RawBegin();
             }
-            // Get the dim lengths and slabs for tha actual array, not its
+            // Get the dim lengths and slabs for the actual array, not its
             // reference type. The reference type may indicate variable size
-            // but the actaul array will always have a specific size.
+            // but the actual array will always have a specific size.
             IntIndex* pLengths = pArray->DimensionLengths();
             IntIndex* pSlabs = pArray->SlabLengths();
 
@@ -895,7 +895,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     return; // If no where to put the parsed data, then all is done.
                 
                 if (WriteIntToMemory(type, pData, value) != kNIError_Success)
-                    LOG_EVENT(kSoftDataError, "Data int size not suported");
+                    LOG_EVENT(kSoftDataError, "Data int size not supported");
 
             }
             break;

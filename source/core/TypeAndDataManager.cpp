@@ -30,8 +30,8 @@ struct MallocInfo {
 // TypeManager
 //------------------------------------------------------------
 // TODO each thread can have one active TypeManager at a time.
-// this is not thread local so the rutime is not ready for
-// multithread execution.
+// this is not thread local so the runtime is not ready for
+// multi-threaded execution.
 VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 
 //------------------------------------------------------------
@@ -43,7 +43,7 @@ void TypeManager::Delete()
     tm->DeleteTypes(true);
     tm->PrintMemoryStat("ES Delete end", true);
 
-    // Give C++ an chance to clean up any memeber data.
+    // Give C++ an chance to clean up any member data.
     tm->~TypeManager();
     gPlatform.Mem.Free(tm);
 }
@@ -181,9 +181,9 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     // as their parent should be cleaned up by now.
     
     // Clear out any default values. They may depend on types
-    // The OwnsDefDef property does not forward the the query
+    // The OwnsDefDef property does not forward the query
     // to wrapped types. The prevents base types in on TADM
-    // from being being cleared by wraps from derived TADMs.
+    // from being cleared by wraps from derived TADMs.
     
     TypeRef type = _typeList;
     while (type) {
@@ -348,7 +348,7 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     // Once the object is created then obj->Name() is used to
     // get pointers to the internal name. This storage
     // sharing works since the types last as long as the
-    // the dictinary does.
+    // the dictionary does.
     
     Boolean bNewInThisTM = existingOverload ? (existingOverload->TheTypeManager() != this) : true;
     
@@ -545,8 +545,8 @@ const SubString TypeCommon::TypeUInt8 = SubString("UInt8");
 const SubString TypeCommon::TypeUInt16 = SubString("UInt16");
 const SubString TypeCommon::TypeUInt32 = SubString("UInt32");
 const SubString TypeCommon::TypeUInt64 = SubString("UInt64");
-const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeSingle = SubString("Single");
+const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeBoolean = SubString(tsBooleanType);
 const SubString TypeCommon::TypeString = SubString(tsStringType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
@@ -736,7 +736,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
     return bMatch;
 }
 //------------------------------------------------------------
-// Dig throught nested type names to see if one of the names
+// Dig through nested type names to see if one of the names
 // matches the one provided.
 Boolean TypeCommon::IsA(TypeRef otherType)
 {
@@ -783,13 +783,27 @@ Boolean TypeCommon::IsNumeric()
    TypeRef t = this;
    while (t) {
       if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64) || 
-          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeDouble) || t->Name().Compare(&TypeSingle)) {
+          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
          return true;
       }
       t = t->BaseType();
    }
    return false;
 }
+
+//------------------------------------------------------------
+Boolean TypeCommon::IsFloat()
+{
+   TypeRef t = this;
+   while (t) {
+      if (t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
+         return true;
+      }
+      t = t->BaseType();
+   }
+   return false;
+}
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsBoolean()
 {
@@ -802,6 +816,7 @@ Boolean TypeCommon::IsBoolean()
    }
    return false;
 }
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsString()
 {
@@ -814,6 +829,20 @@ Boolean TypeCommon::IsString()
    }
    return false;
 }
+
+//------------------------------------------------------------
+Boolean TypeCommon::IsTimestamp()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeTimestamp)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+
 //------------------------------------------------------------
 //! Parse an element path by name. Base class only knows
 //! about structural attributes.
@@ -993,7 +1022,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 {
     *end = null;
     
-    // Check for strucutural attributes
+    // Check for structural attributes
     TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
     if (type)
         return type;
@@ -1149,7 +1178,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     if (subAQSize == 0) {
         // For subtypes that have not been promoted to being addressable
         // determine the size of the addressable block that can contain it
-        // since Clusters are alwasy addressable.
+        // since Clusters are always addressable.
         subAQSize = _tm->BitLengthToAQSize(element->BitLength());
         if (IsVariableLengthDim(subAQSize))
             subAQSize = 0;
@@ -1305,7 +1334,7 @@ NIError ClusterType::ClearData(void* pData)
         {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
             // If the element is an input or output in a subVI call, the calling VI will clear
-            // the data this is an alias to. For In/Out types this is normarly zeroed out as
+            // the data this is an alias to. For In/Out types this is normally zeroed out as
             // part of the call sequence unless the VI is aborted.
             if ((*pType)->IsAlias()) {
                 (*pType)->ZeroOutTop(pEltData);
@@ -1506,7 +1535,7 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
 }
 //------------------------------------------------------------
 // Copy the elements from the handle at pData to the one at pDataCopy
-// if target is null, alocate handle.
+// if target is null, allocate handle.
 NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
 {
     NIError err = kNIError_Success;
@@ -1655,7 +1684,7 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     Boolean isTemplateType = false;
     //  Boolean hasVarArg = false; TODO look for upto one and only one var arg type
     
-    // The param block describes the structure allocated for a single instuction object
+    // The param block describes the structure allocated for a single instruction object
     // For a native function. The size will be base plus the storage needed for pointers
     // to each element.
     
@@ -1680,11 +1709,11 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     }
     alignmentCalculator.Finish();
     
-    // Since it is a funnction, the size is the size of a pointer-to-a-function with that parameter list
+    // Since it is a function, the size is the size of a pointer-to-a-function with that parameter list
     _isValid = alignmentCalculator.IsValid;
     _aqAlignment = alignmentCalculator.AggregateAlignment;
     _topAQSize = alignmentCalculator.AggregateSize;
-    _isFlat = isFlat;  // TODO alwasy should be false ?? param blocks
+    _isFlat = isFlat;  // TODO always should be false ?? param blocks
     _isTemplate = isTemplateType;
     _encoding = kEncoding_ParameterBlock;
 }
@@ -1712,14 +1741,14 @@ DefaultValueType* DefaultValueType::FinalizeDVT()
     // Constants can ( e.g. could) be shared but it has to be carefully boot strapped
     // (1) The DefaultValueType object is created. It has storage inlined in the object
     // (2) The storage in the DVT is used as a location for the parser to read in the data
-    // (3) Once loaded the type can be finialized and the default value now makes up part of the binary
+    // (3) Once loaded the type can be finalized and the default value now makes up part of the binary
     // name for the type.
     //
     // Types with mutable defaults (e.g variables) can not be merged.
     // Non flat could be merged, but are not yet. To do so the entire sub-value would have to match.
-    // partial mathces are not currently allowed since there is not a provision for sharing ownership for sparse
+    // partial matches are not currently allowed since there is not a provision for sharing ownership for sparse
     // sets of data in deeply structured data. The root of the value must own all elements beneath it.
-    // That menas two arays of constant strings cannot share strings instances that happen to be the same.
+    // That means two arrays of constant strings cannot share strings instances that happen to be the same.
     
     if (!IsMutableValue() && IsFlat()) {
         // The binary name is not set yet.
@@ -1748,11 +1777,11 @@ void* DefaultValueType::Begin(PointerAccessEnum mode)
         return null;
     }
     
-    // If pointer is neeeded for initialization, reading, or
+    // If pointer is needed for initialization, reading, or
     // clearing then its OK.
     
-    // Storage for the value immediately follows the storeage used for
-    // the C++ object. The ammount is determined by
+    // Storage for the value immediately follows the storage used for
+    // the C++ object. The amount is determined by
     // DefaultValueType::StructSize when the object was constructed.
     
     return this + 1;
@@ -1824,7 +1853,7 @@ TypedArrayCore::TypedArrayCore(TypeRef type)
     this->_typeRef = type;
     this->_eltTypeRef = type->GetSubElement(0);
 
-    // Resize it to 0, This will trigger any allocatons necesary for fixed or ounded arrays
+    // Resize it to 0, This will trigger any allocations necessary for fixed or bounded arrays
     ResizeDimensions(0, null, false);
 }
 //------------------------------------------------------------
@@ -1886,7 +1915,7 @@ void TypedArrayCore::AQFree()
 }
 //------------------------------------------------------------
 // If the array is a of a generic type then its element type
-// can be set dynamicaly so long as the specified type maintains
+// can be set dynamically so long as the specified type maintains
 // a an IsA() relationship with the Array's Type ElementType.
 Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
 {
@@ -1997,16 +2026,16 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     
     // Three sets of dimension sizes are used in this algorithm:
     //
-    // (1) The requested dimension lenghts.
+    // (1) The requested dimension lengths.
     //
-    // (2) The underlying type's dimension lenghts, which may be variable fixed or bounded.
+    // (2) The underlying type's dimension lengths, which may be variable fixed or bounded.
     //     Requests must be constrained to these specifications.
     //
-    // (3) The current actual dimension lenght of the values.
+    // (3) The current actual dimension length of the values.
     //
     // If the requested size contains a variable sentinel the existing value size will be used.
     // If the requested size if bounded (negative) the bounded size will be used.
-    // Current actual dimension lenghts are regular positive integers, never bounded or variable sentinels.
+    // Current actual dimension lengths are regular positive integers, never bounded or variable sentinels.
     //
     //
 
@@ -2136,7 +2165,7 @@ Boolean TypedArrayCore::Resize1DOrEmpty(Int32 length)
     return false;
 }
 //------------------------------------------------------------
-//! Replace elements by copying over exisitng ones, exend if needed.
+//! Replace elements by copying over existing ones, extend if needed.
 NIError TypedArrayCore::Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate)
 {
     NIError err = kNIError_Success;
@@ -2317,7 +2346,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 value = t->Integer();
             }
@@ -2423,7 +2452,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
             }
@@ -2481,7 +2510,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 *t = Timestamp(value);
             }

@@ -30,7 +30,7 @@ enum TokenTraits
     TokenTraits_IEEE754,        // 123.0
     TokenTraits_String,         // 'abc', "abc"
     TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_Punctuation,    // ,  (Many 'punctuation' are resered: * @ $ _)
+    TokenTraits_Punctuation,    // ,  (Many 'punctuation' are reserved: * @ $ _)
     TokenTraits_SymbolName,     // a123
     TokenTraits_WildCard,       // *
     TokenTraits_Nesting,        // ( ) [ ] { }
@@ -39,11 +39,11 @@ enum TokenTraits
 };
 
 //------------------------------------------------------------
-// The VIA grammar considers many specail characters
+// The VIA grammar considers many special characters
 // such as '.'and '*'to be identifier characters
 
 enum AsciiCharTraitsEnum {
-    kACT_Id          = 0x01,    // Valid part of an identier
+    kACT_Id          = 0x01,    // Valid part of an identifier
     kACT_Punctuation = 0x02,
     kACT_Letter      = 0x04,    // A-Z, a-z, utf8 to be added
     kACT_Space       = 0x08,
