@@ -80,6 +80,7 @@
                 "CoreArray.via",
                 "CoreTypes.via",
                 "DateFormatString.via",
+                "DateFormatStringLocaleSpecific.via",
                 "DateTime.via",
                 "DateTimeRecordToTimestamp.via",
                 "DecodeViaString.via",

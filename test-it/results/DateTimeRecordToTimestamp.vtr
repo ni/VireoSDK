@@ -1,2 +1,5 @@
+All tests pass: 'true'.
     UTC On pass: 'true'.
         value: '12/5/2016 9:23:46.123 PM'.
+    UTC Off pass: 'true'.
+        value: '12/5/2016 3:23:46.123 PM'.
