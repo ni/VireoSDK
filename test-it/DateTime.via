@@ -41,8 +41,8 @@ define(videf1 dv(.VirtualInstrument (
     Printf("%s %s\n" datestr timestr)
 
     // local-time:
-    //GetDateTimeString(t2 2 false false datestr timestr)
-    //Printf("%s %s\n" datestr timestr)
+    GetDateTimeString(t2 2 false false datestr timestr)
+    Printf("%s %s\n" datestr timestr)
 
     Convert(7776000.0 tt) // test date with DST
     Sub(t2 tt t2)
@@ -50,8 +50,8 @@ define(videf1 dv(.VirtualInstrument (
     Printf("%s %s\n" datestr timestr)
 
     // local-time:
-    //GetDateTimeString(t2 2 false false datestr timestr)
-    //Printf("%s %s\n" datestr timestr)
+    GetDateTimeString(t2 2 false false datestr timestr)
+    Printf("%s %s\n" datestr timestr)
 
 //--- end of vi
     )
