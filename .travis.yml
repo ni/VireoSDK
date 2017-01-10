@@ -10,6 +10,7 @@ addons:
     - g++-4.9
 before_install:
 - export DISPLAY=:99.0
+- export TZ=CST6CDT
 - sh -e /etc/init.d/xvfb start
 - nvm install 6
 - nvm use 6
