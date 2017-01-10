@@ -22,6 +22,7 @@ describe('can run test suite file', function () {
     ]);
 
     var disabledTests = stringArrayToObjectMap([
+        'A',
         'BadArgumentToVarArgInstruction',
         'BadComment',
         'BooleanFunctions',

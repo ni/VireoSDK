@@ -26,10 +26,10 @@ define(videf1 dv(.VirtualInstrument (
     Printf("%s %s\n" datestr timestr)
 
     GetDateTimeString(* 0 false true datestr timestr)
-    Printf("//%s %s\n" datestr timestr)
+    //Printf("//%s %s\n" datestr timestr)
 
     GetDateTimeString(* 0 false true datestr timestr)
-    Printf("//%s %s\n" datestr timestr)
+    //Printf("//%s %s\n" datestr timestr)
 
     GetDateTimeString(t2 0 false true datestr timestr)
     Printf("%s %s\n" datestr timestr)
