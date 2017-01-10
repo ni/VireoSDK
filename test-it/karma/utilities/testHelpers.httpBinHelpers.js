@@ -1,5 +1,6 @@
 (function () {
     'use strict';
+    window.testHelpers = window.testHelpers || {};
 
     var convertToAbsoluteUrl = function (relativePath) {
         return 'http://localhost:5000/' + relativePath;
