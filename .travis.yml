@@ -36,6 +36,9 @@ script:
 - make testjs
 - make testnative
 - npm run test
+- jobs -l
+- kill $!
+- wait
 - cat ./nohup.out
 deploy:
   provider: npm
