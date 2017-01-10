@@ -74,8 +74,8 @@ typedef String *StringRef;
 typedef TypeCommon  *TypeRef;
 typedef TypeManager *TypeManagerRef;
 
-// StaticType is used for functions tha take types determined at load time.
-// specifiying StaticType for the parameter will result in the instruction holding a TypeCommon*
+// StaticType is used for functions the take types determined at load time.
+// specifying StaticType for the parameter will result in the instruction holding a TypeCommon*
 // Instead of a TypeRef*
 typedef TypeCommon StaticType;
 
@@ -421,7 +421,7 @@ public:
 //! Base class for all type definition types.
 class TypeCommon
 {
-// Core internal methods are for keeping track of Type bjects in seperate
+// Core internal methods are for keeping track of Type objects in separate
 // TypeManager layers
     friend class TypeManager;
 private:
@@ -574,8 +574,10 @@ public:
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     Boolean IsNumeric();
+    Boolean IsFloat();
     Boolean IsBoolean();
     Boolean IsString();
+    Boolean IsTimestamp();
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {return _topAQSize * _typeManager->AQBitLength(); }  // TODO defer to type manager for scale factor;
 };
@@ -620,8 +622,8 @@ public:
 // the scan is O(n) with a small C for n Types at that level of the type manager and Type Mangers that
 // the derive from it.
 // 2. for the Named Type node the value may be changed. This does not change the type, only the result of what
-// the type->InitValue method does. For a variante type this means the type of the value may change
-// but not notiosn that the value is a variant. A bit tenious perhaps. s
+// the type->InitValue method does. For a variant type this means the type of the value may change
+// but not notion that the value is a variant. A bit tenious perhaps.
 
 
 //------------------------------------------------------------
@@ -629,7 +631,7 @@ public:
 class NamedType : public WrappedType
 {
 private:
-    NamedTypeRef            _nextOverload; // May point to one in curent or root type manager.
+    NamedTypeRef            _nextOverload; // May point to one in current or root type manager.
     InlineArray<Utf8Char>   _name;
     NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
 public:

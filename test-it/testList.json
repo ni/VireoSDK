@@ -195,6 +195,7 @@
                 "Round.via",
                 "Scale2X.via",
                 "ScanFormat.via",
+                "ScanFormat2.via",
                 "SearchSplitString.via",
                 "ShabangHelloWorld.via",
                 "SharedArray.via",

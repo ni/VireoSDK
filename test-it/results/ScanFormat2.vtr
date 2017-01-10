@@ -1,0 +1,7 @@
+1::remaining< XYZ>, offsetPast<8>, value1<11>
+2::remaining< XYZ>, offsetPast<8>, value1<11>
+3::remaining<>, offsetPast<12>, value1<11>, value2<XYZ>
+4::remaining<>, offsetPast<6>, value1<aaa>, value2<bb>
+5::remaining<>, offsetPast<6>, value1<aaa>, value2<bb>
+6::remaining< bb>, offsetPast<6>, value1<aaa>
+7::remaining<456789>, offsetPast<7>, value1<0.1>, value2<2.3>

@@ -545,8 +545,8 @@ const SubString TypeCommon::TypeUInt8 = SubString("UInt8");
 const SubString TypeCommon::TypeUInt16 = SubString("UInt16");
 const SubString TypeCommon::TypeUInt32 = SubString("UInt32");
 const SubString TypeCommon::TypeUInt64 = SubString("UInt64");
-const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeSingle = SubString("Single");
+const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeBoolean = SubString(tsBooleanType);
 const SubString TypeCommon::TypeString = SubString(tsStringType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
@@ -736,7 +736,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
     return bMatch;
 }
 //------------------------------------------------------------
-// Dig throught nested type names to see if one of the names
+// Dig through nested type names to see if one of the names
 // matches the one provided.
 Boolean TypeCommon::IsA(TypeRef otherType)
 {
@@ -783,13 +783,27 @@ Boolean TypeCommon::IsNumeric()
    TypeRef t = this;
    while (t) {
       if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64) || 
-          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeDouble) || t->Name().Compare(&TypeSingle)) {
+          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
          return true;
       }
       t = t->BaseType();
    }
    return false;
 }
+
+//------------------------------------------------------------
+Boolean TypeCommon::IsFloat()
+{
+   TypeRef t = this;
+   while (t) {
+      if (t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
+         return true;
+      }
+      t = t->BaseType();
+   }
+   return false;
+}
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsBoolean()
 {
@@ -802,6 +816,7 @@ Boolean TypeCommon::IsBoolean()
    }
    return false;
 }
+
 //------------------------------------------------------------
 Boolean TypeCommon::IsString()
 {
@@ -814,6 +829,20 @@ Boolean TypeCommon::IsString()
    }
    return false;
 }
+
+//------------------------------------------------------------
+Boolean TypeCommon::IsTimestamp()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeTimestamp)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+
 //------------------------------------------------------------
 //! Parse an element path by name. Base class only knows
 //! about structural attributes.
@@ -2317,7 +2346,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 value = t->Integer();
             }
@@ -2423,7 +2452,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
             }
@@ -2481,7 +2510,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             }
             break;
         case kEncoding_Cluster:
-            if (type->IsA("Timestamp")) {
+            if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 *t = Timestamp(value);
             }
