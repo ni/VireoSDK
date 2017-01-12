@@ -269,7 +269,7 @@
             }
 
             Module.eggShell.dataWriteUInt32(userHandlePointer, userHandle);
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -283,7 +283,7 @@
                 errorString = 'Unable to close HTTP handle: ' + error.message;
             }
 
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -299,7 +299,7 @@
                 errorString = 'Unable to add header to HTTP handle: ' + error.message;
             }
 
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -314,7 +314,7 @@
                 errorString = 'Unable to remove header from HTTP handle: ' + error.message;
             }
 
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -331,8 +331,8 @@
                 errorString = 'Unable to get header value from HTTP handle: ' + error.message;
             }
 
-            Module.eggShell.dataWriteString(value, valueText, valueText.length);
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(value, valueText);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -350,7 +350,7 @@
             }
 
             Module.eggShell.dataWriteUInt32(headerExistPointer, headerExist ? 1 : 0);
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -366,8 +366,8 @@
                 errorString = 'Unable to list headers for HTTP handle: ' + error.message;
             }
 
-            Module.eggShell.dataWriteString(list, listText, listText.length);
-            Module.eggShell.dataWriteString(errorMessage, errorString, errorString.length);
+            Module.eggShell.dataWriteString(list, listText);
+            Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
@@ -392,7 +392,7 @@
                 }
 
                 Module.eggShell.dataWriteInt32(errorCodePointer, errorCode);
-                Module.eggShell.dataWriteString(errorMessage, fullErrorText, fullErrorText.length);
+                Module.eggShell.dataWriteString(errorMessage, fullErrorText);
                 Module.eggShell.setOccurrence(occurrenceRef);
                 if (!occurrenceHasBeenSet) {
                     occurrenceHasBeenSet = true;
@@ -426,9 +426,9 @@
                             var headersText = request.getAllResponseHeaders();
                             var bodyText = request.responseText;
 
-                            Module.eggShell.dataWriteString(headers, headersText, headersText.length);
+                            Module.eggShell.dataWriteString(headers, headersText);
                             if (body) {
-                                Module.eggShell.dataWriteString(body, bodyText, bodyText.length);
+                                Module.eggShell.dataWriteString(body, bodyText);
                             }
 
                             setErrorAndOccurrence(0, '');

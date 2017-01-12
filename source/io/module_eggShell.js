@@ -113,7 +113,8 @@
             EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
         };
 
-        Module.eggShell.dataWriteString = publicAPI.eggShell.dataWriteString = function (destination, source, sourceLength) {
+        Module.eggShell.dataWriteString = publicAPI.eggShell.dataWriteString = function (destination, source) {
+            var sourceLength = Module.lengthBytesUTF8(source);
             Data_WriteString(v_userShell, destination, source, sourceLength);
         };
 
@@ -138,7 +139,8 @@
                 console.warn('Failing to call eggShell.setPrintFunction prior to eggShell.loadVia may result in missed messages');
             }
 
-            return EggShell_REPL(v_userShell, viaText, -1);
+            var viaTextLength = Module.lengthBytesUTF8(viaText);
+            return EggShell_REPL(v_userShell, viaText, viaTextLength);
         };
 
         Module.eggShell.executeSlices = publicAPI.eggShell.executeSlices = function (slices) {
