@@ -18,7 +18,7 @@
 
 #include "TypeAndDataManager.h"
 
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if kVireoOS_windows
   #define NOMINMAX
   #include <Windows.h>
 #elif kVireoOS_macosxU

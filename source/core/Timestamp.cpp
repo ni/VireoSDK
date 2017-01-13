@@ -10,6 +10,7 @@ SDG
 /*! \file Timestamp implementation file
  */
 
+#include "BuildConfig.h"
 #include "TypeDefiner.h"
 #include "Timestamp.h"
 #include "TDCodecVia.h"
@@ -19,7 +20,7 @@ SDG
 #include <float.h> /* DBL_EPSILON */
 
 #if defined(VIREO_DATE_TIME_STDLIB)
-#if kVireoOS_win32U
+#if kVireoOS_windows
     #include <windows.h>
     #include <time.h>
 #else
@@ -32,7 +33,7 @@ SDG
     #include <tickLib.h>
 #endif
 
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
     #define NOMINMAX
     #include <windows.h>
 #elif kVireoOS_macosxU
@@ -76,7 +77,7 @@ namespace Vireo
       */
     void Timestamp::GetCurrentTimestamp(Timestamp *t)
     {
-    #if WIN32
+    #if kVireoOS_win32U 
         struct timeval tv;
         Int32 retval;
         FILETIME ft;
@@ -134,12 +135,14 @@ namespace Vireo
     //------------------------------------------------------------
     Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year)
     {
-    #if defined(VIREO_DATE_TIME_STDLIB) && !kVireoOS_win32U
+    #ifdef VIREO_DATE_TIME_STDLIB
+    #if !kVireoOS_windows
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
         time_t t = timegm(&timeVal);
-    #elif kVireoOS_win32U
+    #else
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0};
         time_t t = _mkgmtime(&timeVal);
+    #endif
     #endif
         *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
     }

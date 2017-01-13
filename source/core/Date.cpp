@@ -10,13 +10,14 @@ SDG
 /*! \file Date implementation file
  */
 
+#include "BuildConfig.h"
 #include "TypeDefiner.h"
 #include "TDCodecVia.h"
 #include "Date.h"
 
 #include <stdio.h>
 #if defined(VIREO_DATE_TIME_STDLIB)
-#if kVireoOS_win32U
+#if kVireoOS_windows
     #include <windows.h>
     #include <time.h>
 #else
@@ -29,7 +30,7 @@ SDG
     #include <tickLib.h>
 #endif
 
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
     #define NOMINMAX
     #include <windows.h>
 #elif kVireoOS_macosxU
@@ -119,7 +120,7 @@ namespace Vireo {
         return currentYear;
     }
 
-#if kVireoOS_win32U
+#if kVireoOS_windows
     std::string abbreviateTimeZoneName(std::string input)
     {
         char prev = ' ';
@@ -192,7 +193,7 @@ namespace Vireo {
         TempStackCString result;
         result.AppendCStr(jsTimestampGetTimeZoneAbbr());
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", result.BeginCStr());
-#elif kVireoOS_win32U
+#elif kVireoOS_windows
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformation(&timeZoneInfo);
         wchar_t *timeZoneName = L"TimeZoneUnknown";
@@ -261,6 +262,7 @@ namespace Vireo {
 
     Date::Date(Timestamp timestamp, bool isUTC) {
 #ifdef VIREO_DATE_TIME_STDLIB
+#if !kVireoOS_windows
         struct tm tm;
         time_t time = timestamp.Integer() - kStdDT1970re1904;
         if (isUTC)
@@ -294,6 +296,7 @@ namespace Vireo {
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
         _daylightSavingTime = isDaylightSavingTime();
+#endif
 #endif
     }
 

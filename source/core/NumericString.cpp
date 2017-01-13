@@ -20,7 +20,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
-#if !(kVireoOS_win32U || kVireoOS_win64U )
+#if !kVireoOS_windows
     #include <math.h>
 #endif
 

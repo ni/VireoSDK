@@ -17,7 +17,7 @@ SDG
 #endif
 #include <stdlib.h>
 #include <math.h>
-#if (kVireoOS_win32U || kVireoOS_win64U )
+#if kVireoOS_windows
 #include <limits>
 #endif
 
@@ -853,7 +853,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     Boolean bParsed = current != end;
     _begin += end - current;
     
-#if (kVireoOS_win32U || kVireoOS_win64U )
+#if (kVireoOS_windows )
     if (!bParsed && !suppressInfNaN) {
         Int32 length = Length();
         if (length >= 3 && strncmp("inf", (ConstCStr)_begin, 3) == 0) {
