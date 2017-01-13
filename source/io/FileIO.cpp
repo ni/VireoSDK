@@ -12,7 +12,7 @@
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
-#ifdef kVireoOS_win32U
+#ifdef kVireoOS_windows
 	#include <windows.h>
 	#include <codecvt>
     #include <io.h>
@@ -126,7 +126,7 @@ VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
     TempStackCStringFromString    cString(_Param(path));
 
     // TODO(fileio): What permissions should created files have?  Currently, all permissions are given.
-#ifdef kVireoOS_win32U
+#ifdef kVireoOS_windows
     // TODO(fileio) error handling
     int refnum;
     _sopen_s(&refnum, cString.BeginCStr(), flags, _SH_DENYWR, 0);
@@ -260,7 +260,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 {
     TempStackCStringFromString    cString(_Param(0));
     TypedArray1D<StringRef>* fileNames = _Param(1);
-#if kVireoOS_win32U
+#if kVireoOS_windows
 	HANDLE dir_handle = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA ffd;
 	std::string directory_path = std::string(cString.BeginCStr());

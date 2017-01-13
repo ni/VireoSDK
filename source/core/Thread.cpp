@@ -14,7 +14,7 @@ SDG
 #include "BuildConfig.h"
 #include "Thread.h"
 
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
     #define NOMINMAX
     #include <Windows.h>
 #elif (kVireoOS_linuxU || kVireoOS_macosxU)
@@ -27,7 +27,7 @@ namespace Vireo {
 //------------------------------------------------------------
 Mutex::Mutex()
 {
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
 
     HANDLE hdl;
     hdl = ::CreateMutex(NULL, false, NULL);
@@ -48,7 +48,7 @@ Mutex::Mutex()
 //------------------------------------------------------------
 Mutex::~Mutex()
 {
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
 
     ::CloseHandle((HANDLE)_nativeMutex);
 
@@ -62,7 +62,7 @@ Mutex::~Mutex()
 //------------------------------------------------------------
 void Mutex::Acquire()
 {
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
 
     ::WaitForSingleObject((HANDLE)_nativeMutex, INFINITE);
 
@@ -76,7 +76,7 @@ void Mutex::Acquire()
 //------------------------------------------------------------
 void Mutex::Release()
 {
-#if (kVireoOS_win32U || kVireoOS_win64U)
+#if (kVireoOS_windows)
 
     ::ReleaseMutex((HANDLE)_nativeMutex);
 

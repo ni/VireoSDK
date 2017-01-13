@@ -20,8 +20,13 @@ SDG
 
 #if defined(WIN32)
 	#define kVireoOS_win32U 1
+	#define kVireoOS_windows 1
 #endif
 
+#if defined(WIN64)
+	#define kVireoOS_win64U 1
+	#define kVireoOS_windows 1
+#endif
 
 // Definitions common for most platforms
 // Platform specific overrides are found in the sections below
@@ -205,7 +210,7 @@ SDG
 #elif defined (__OS_ANDROID__)
     #define VIREO_DATE_TIME_STDLIB
 
-#elif (kVireoOS_win32U || kVireoOS_win64U)
+#elif (kVireoOS_windows)
 #if (_MSC_VER < 1900)
     #define snprintf _snprintf
 #endif

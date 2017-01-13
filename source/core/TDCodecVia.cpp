@@ -21,7 +21,7 @@ SDG
 
 #include "VirtualInstrument.h" //TODO remove once it is all driven by the type system.
 
-#if !(kVireoOS_win32U || kVireoOS_win64U )
+#if !kVireoOS_windows
     #include <math.h>
 #endif
 
