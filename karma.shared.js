@@ -14,6 +14,9 @@
             // 3rd party resources
             // None
             // source files
+
+            // TODO mraj So far core.js is only used for es6 Map support for PhantomJS, can remove with PhantomJS 2.5
+            'node_modules/core-js/client/core.js',
             'dist/vireo*.js',
             'source/core/module_*.js',
             'source/io/module_*.js',
