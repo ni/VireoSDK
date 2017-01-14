@@ -8,8 +8,8 @@
         var statusLine = responseLines[0];
         var statusLineParts = statusLine.split(' ');
         var httpVersion = statusLineParts[0];
-        var statusCode = statusLineParts[1];
-        var reasonPhrase = statusLineParts[2];
+        var statusCode = parseInt(statusLineParts[1], 10);
+        var reasonPhrase = statusLineParts.slice(2).join(' ');
 
         var headerLines = responseLines.slice(1);
         var headers = {};

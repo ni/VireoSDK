@@ -115,14 +115,14 @@
 
             request.timeout = requestData.xhrTimeout;
 
-            // Register event listeners
+            // Create event listeners
             var eventListeners = {};
 
             var completeRequest = function (header, text, labviewCode, errorMessage) {
-                request.removeEventListener('load', eventListeners.load);
-                request.removeEventListener('error', eventListeners.error);
-                request.removeEventListener('timeout', eventListeners.timeout);
-                request.removeEventListener('abort', eventListeners.abort);
+                // Unregister event listeners
+                Object.keys(eventListeners).forEach(function (eventName) {
+                    request.removeEventListener(eventName, eventListeners[eventName]);
+                });
 
                 var responseData = {
                     header: header,
@@ -142,10 +142,8 @@
 
                 var header = statusLine + allResponseHeaders;
                 var text = request.response;
-                var labviewCode = CODES.NO_ERROR;
-                var errorMessage = '';
 
-                completeRequest(header, text, labviewCode, errorMessage);
+                completeRequest(header, text, CODES.NO_ERROR, '');
             };
 
             eventListeners.error = function () {
@@ -160,10 +158,10 @@
                 completeRequest('', '', CODES.ABORT, 'Request Aborted');
             };
 
-            request.addEventListener('load', eventListeners.load);
-            request.addEventListener('error', eventListeners.error);
-            request.addEventListener('timeout', eventListeners.timeout);
-            request.addEventListener('abort', eventListeners.abort);
+            // Register event listeners
+            Object.keys(eventListeners).forEach(function (eventName) {
+                request.addEventListener(eventName, eventListeners[eventName]);
+            });
 
             // Add request headers
             this._headers.forEach(function (header, value) {

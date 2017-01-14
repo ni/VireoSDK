@@ -3,7 +3,9 @@
     window.testHelpers = window.testHelpers || {};
 
     var convertToAbsoluteUrl = function (relativePath) {
-        return 'http://localhost:5000/' + relativePath;
+        // For some reason resolving localhost on Windows 7 can be slow, so use home ip directly
+        // Also some processes were on port 5000 so switched to higher port
+        return 'http://127.0.0.1:64526/' + relativePath;
     };
 
     var showWarningAndMakePending = function () {
