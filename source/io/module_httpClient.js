@@ -25,6 +25,19 @@
     /* global Map */
 
     // Static Private Variables (all vireo instances)
+    var TRUE = 1;
+    var FALSE = 0;
+
+    var NULL = 0;
+
+    var CODES = {
+        NO_ERROR: 0,
+        INVALID_HANDLE: -1967362020,
+        TIMEOUT: -12345,
+        ABORT: -12345,
+        NETWORK_ERROR: -12345
+    };
+
     var HttpClient;
     (function () {
         // Static private reference aliases
@@ -58,18 +71,6 @@
         // None
 
         // Public Prototype Methods
-        // Object.defineProperty(proto, 'username', {
-        //     get: function () {
-        //         return this._username;
-        //     }
-        // });
-
-        // Object.defineProperty(proto, 'password', {
-        //     get: function () {
-        //         return this._password;
-        //     }
-        // });
-
         proto.addHeader = function (header, value) {
             this._headers.set(header, value);
         };
@@ -90,7 +91,7 @@
         };
 
         proto.headerExists = function (header) {
-            return this._headers.ha(header);
+            return this._headers.has(header);
         };
 
         proto.listHeaders = function () {
@@ -103,60 +104,80 @@
             return outputHeaders.join('\r\n');
         };
 
-        proto.createRequest = function () {
-            // var responseData = {
-            //     header: header,
-            //     text: text,
-            //     labviewCode: labviewCode,
-            //     errorMessage: errorMessage
-            // };
-            // try {
-            //     var httpUser = httpUsers.get(userHandle);
+        proto.createRequest = function (requestData, cb) {
+            var request = new XMLHttpRequest();
 
-            //     var request = new XMLHttpRequest();
-            //     request.open(methodName, url);
-            //     request.timeout = timeOut;
+            // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
+            request.withCredentials = true;
 
-            //     // Set the headers
-            //     if (httpUser instanceof HttpUser) {
-            //         var allHeaders = httpUser.getHeaders();
-            //         for (var key in allHeaders) {
-            //             if (allHeaders.hasOwnProperty(key)) {
-            //                 request.setRequestHeader(key, allHeaders[key]);
-            //             }
-            //         }
-            //     }
+            // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
+            request.responseType = 'text';
 
-            //     request.onreadystatechange = function (/* event*/) {
-            //         if (request.readyState === 4) {
-            //             if (request.status === 200) {
-            //                 // Success!
-            //                 // var errorString = '';
+            request.timeout = requestData.xhrTimeout;
 
+            // Register event listeners
+            var eventListeners = {};
 
-            //                 setErrorAndOccurrence(0, '');
-            //             } else {
-            //                 setErrorAndOccurrence(-1, methodName, request.statusText + '(' + request.status + ').');
-            //             }
-            //         }
-            //     };
+            var completeRequest = function (header, text, labviewCode, errorMessage) {
+                request.removeEventListener('load', eventListeners.load);
+                request.removeEventListener('error', eventListeners.error);
+                request.removeEventListener('timeout', eventListeners.timeout);
+                request.removeEventListener('abort', eventListeners.abort);
 
-            //     request.onerror = function (event) {
-            //         setErrorAndOccurrence(-1, methodName, event.target.statusText + '(' + event.target.status + ').');
-            //     };
+                var responseData = {
+                    header: header,
+                    text: text,
+                    labviewCode: labviewCode,
+                    errorMessage: errorMessage
+                };
 
-            //     request.ontimeout = function (/* event*/) {
-            //         setErrorAndOccurrence(-1, methodName, 'The time out value of ' + timeout + ' was exceeded.');
-            //     };
+                cb(responseData);
+            };
 
-            //     if (buffer === undefined) {
-            //         request.send();
-            //     } else {
-            //         request.send(buffer);
-            //     }
-            // } catch (error) {
-            //     setErrorAndOccurrence(-1, methodName, error.message);
-            // }
+            eventListeners.load = function () {
+                // TODO mraj is there a way to get the HTTP version from the request?
+                var httpVersion = 'HTTP/1.1';
+                var statusLine = httpVersion + ' ' + request.status + ' ' + request.statusText + '\r\n';
+                var allResponseHeaders = request.getAllResponseHeaders();
+
+                var header = statusLine + allResponseHeaders;
+                var text = request.response;
+                var labviewCode = CODES.NO_ERROR;
+                var errorMessage = '';
+
+                completeRequest(header, text, labviewCode, errorMessage);
+            };
+
+            eventListeners.error = function () {
+                completeRequest('', '', CODES.NETWORK_ERROR, 'Network Error');
+            };
+
+            eventListeners.timeout = function () {
+                completeRequest('', '', CODES.TIMEOUT, 'Timeout');
+            };
+
+            eventListeners.abort = function () {
+                completeRequest('', '', CODES.ABORT, 'Request Aborted');
+            };
+
+            request.addEventListener('load', eventListeners.load);
+            request.addEventListener('error', eventListeners.error);
+            request.addEventListener('timeout', eventListeners.timeout);
+            request.addEventListener('abort', eventListeners.abort);
+
+            // Add request headers
+            this._headers.forEach(function (header, value) {
+                request.setRequestHeader(header, value);
+            });
+
+            // Open and send the request
+            request.open(requestData.method, requestData.url, true, this._username, this._password);
+
+            if (requestData.buffer === undefined) {
+                request.send();
+            } else {
+                request.send(requestData.buffer);
+            }
         };
     }());
 
@@ -243,15 +264,6 @@
         // Private Instance Variables (per vireo instance)
         var httpClientManager = new HttpClientManager();
 
-        var TRUE = 1;
-        var FALSE = 0;
-
-        var NULL = 0;
-
-        var CODES = {
-            INVALID_HANDLE: -1967362020
-        };
-
         var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
 
         // TODO mraj switch to this after error handling corrected
@@ -297,7 +309,7 @@
         Module.httpClient.jsHttpClientOpen = function (cookieFileBegin, cookieFileLength, usernameBegin, usernameLength, passwordBegin, passwordLength, verifyServer, handlePointer, errorMessage) {
             var username = Module.Pointer_stringify(usernameBegin, usernameLength);
             var password = Module.Pointer_stringify(passwordBegin, passwordLength);
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             // TODO mraj if error in then return handle as 0, error passthrough
@@ -309,7 +321,7 @@
         };
 
         Module.httpClient.jsHttpClientClose = function (handle, errorMessage) {
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             // TODO mraj check if handle exists
@@ -326,7 +338,7 @@
         Module.httpClient.jsHttpClientAddHeader = function (handle, headerBegin, headerLength, valueBegin, valueLength, errorMessage) {
             var header = Module.Pointer_stringify(headerBegin, headerLength);
             var value = Module.Pointer_stringify(valueBegin, valueLength);
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:AddHeader');
@@ -345,7 +357,7 @@
 
         Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerBegin, headerLength, errorMessage) {
             var header = Module.Pointer_stringify(headerBegin, headerLength);
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:RemoveHeader');
@@ -365,7 +377,7 @@
         Module.httpClient.jsHttpClientGetHeader = function (handle, headerBegin, headerLength, value, errorMessage) {
             var header = Module.Pointer_stringify(headerBegin, headerLength);
             var valueText = '';
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:GetHeader');
@@ -386,7 +398,7 @@
         Module.httpClient.jsHttpClientHeaderExists = function (handle, headerBegin, headerLength, headerExistPointer, errorMessage) {
             var header = Module.Pointer_stringify(headerBegin, headerLength);
             var headerExist = false;
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:HeaderExist');
@@ -406,7 +418,7 @@
 
         Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorMessage) {
             var listText = '';
-            var returnValue = 0;
+            var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
             var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:ListHeaders');
@@ -429,11 +441,13 @@
 
             // TODO mraj, check status and code pointer to implement the merge errors behavior https://zone.ni.com/reference/en-XX/help/371361H-01/glang/merge_errors_function/
             // ie error overrides warning, but error does not override error, and warning does not override warning?
-            if (code !== 0) {
+            if (code !== CODES.NO_ERROR) {
                 Module.eggShell.dataWriteInt32(codePointer, code);
                 Module.eggShell.dataWriteString(sourcePointer, source);
-                Module.eggShell.setOccurrence(occurrencePointer);
             }
+
+            // Regardless of error set the occurrence
+            Module.eggShell.setOccurrence(occurrencePointer);
         };
 
         Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlBegin, urlLength, outputFileBegin, outputFileLength, bufferBegin, bufferLength, timeout, headers, body, codePointer, sourcePointer, occurrencePointer) {
@@ -444,7 +458,7 @@
             // Nullable output parameter: body
 
             var outputFile;
-            if (outputFile !== NULL) {
+            if (outputFileBegin !== NULL) {
                 outputFile = Module.Pointer_stringify(outputFileBegin, outputFileLength);
 
                 if (outputFile !== '') {
@@ -471,10 +485,22 @@
                 }
             }
 
+            // In LabVIEW timeout -1 means wait forever, in xhr timeout 0 means wait forever
+            // TODO mraj check if functions can have default values. Until then assume 0 was meant to be the default 10000
+            var xhrTimeout;
+
+            if (timeout < 0) {
+                xhrTimeout = 0;
+            } else if (timeout === 0) {
+                xhrTimeout = 10000;
+            } else {
+                xhrTimeout = timeout;
+            }
+
             var requestData = {
                 method: method,
                 url: url,
-                timeout: timeout,
+                xhrTimeout: xhrTimeout,
                 buffer: buffer
             };
 
