@@ -22,8 +22,8 @@
             return Module.httpClient.jsHttpClientGetHeader.apply(undefined, arguments);
         },
 
-        jsHttpClientHeaderExist: function () {
-            return Module.httpClient.jsHttpClientHeaderExist.apply(undefined, arguments);
+        jsHttpClientHeaderExists: function () {
+            return Module.httpClient.jsHttpClientHeaderExists.apply(undefined, arguments);
         },
 
         jsHttpClientListHeaders: function () {
