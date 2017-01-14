@@ -58,17 +58,17 @@
         // None
 
         // Public Prototype Methods
-        Object.defineProperty(proto, 'username', {
-            get: function () {
-                return this._username;
-            }
-        });
+        // Object.defineProperty(proto, 'username', {
+        //     get: function () {
+        //         return this._username;
+        //     }
+        // });
 
-        Object.defineProperty(proto, 'password', {
-            get: function () {
-                return this._password;
-            }
-        });
+        // Object.defineProperty(proto, 'password', {
+        //     get: function () {
+        //         return this._password;
+        //     }
+        // });
 
         proto.addHeader = function (header, value) {
             this._headers.set(header, value);
@@ -103,10 +103,61 @@
             return outputHeaders.join('\r\n');
         };
 
-        // // Iterates across the headers cb(header, value)
-        // proto.forEachHeader = function (cb) {
-        //     this._headers.forEach(cb);
-        // };
+        proto.createRequest = function () {
+            // var responseData = {
+            //     header: header,
+            //     text: text,
+            //     labviewCode: labviewCode,
+            //     errorMessage: errorMessage
+            // };
+            // try {
+            //     var httpUser = httpUsers.get(userHandle);
+
+            //     var request = new XMLHttpRequest();
+            //     request.open(methodName, url);
+            //     request.timeout = timeOut;
+
+            //     // Set the headers
+            //     if (httpUser instanceof HttpUser) {
+            //         var allHeaders = httpUser.getHeaders();
+            //         for (var key in allHeaders) {
+            //             if (allHeaders.hasOwnProperty(key)) {
+            //                 request.setRequestHeader(key, allHeaders[key]);
+            //             }
+            //         }
+            //     }
+
+            //     request.onreadystatechange = function (/* event*/) {
+            //         if (request.readyState === 4) {
+            //             if (request.status === 200) {
+            //                 // Success!
+            //                 // var errorString = '';
+
+
+            //                 setErrorAndOccurrence(0, '');
+            //             } else {
+            //                 setErrorAndOccurrence(-1, methodName, request.statusText + '(' + request.status + ').');
+            //             }
+            //         }
+            //     };
+
+            //     request.onerror = function (event) {
+            //         setErrorAndOccurrence(-1, methodName, event.target.statusText + '(' + event.target.status + ').');
+            //     };
+
+            //     request.ontimeout = function (/* event*/) {
+            //         setErrorAndOccurrence(-1, methodName, 'The time out value of ' + timeout + ' was exceeded.');
+            //     };
+
+            //     if (buffer === undefined) {
+            //         request.send();
+            //     } else {
+            //         request.send(buffer);
+            //     }
+            // } catch (error) {
+            //     setErrorAndOccurrence(-1, methodName, error.message);
+            // }
+        };
     }());
 
     var HttpClientManager;
@@ -192,6 +243,48 @@
         // Private Instance Variables (per vireo instance)
         var httpClientManager = new HttpClientManager();
 
+        var TRUE = 1;
+        var FALSE = 0;
+
+        var NULL = 0;
+
+        var CODES = {
+            INVALID_HANDLE: -1967362020
+        };
+
+        var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
+
+        // TODO mraj switch to this after error handling corrected
+        // var findhttpClientOrWriteError = function (handle, sourceIfError, statusPointer, codePointer, sourcePointer) {
+        //     var httpClient = httpClientManager.get(handle);
+
+        //     if (httpClient === undefined) {
+        //         Module.eggShell.dataWriteUInt32(statusPointer, TRUE);
+        //         Module.eggShell.dataWriteUInt32(codePointer, CODES.INVALID_HANDLE);
+        //         Module.eggShell.dataWriteString(sourcePointer, potentialSourceMessage);
+        //     }
+
+        //     return httpClient;
+        // };
+
+        var findhttpClientOrWriteError = function (handle, sourceIfError) {
+            // statusPointer unused
+            var code = 0;
+            var source = '';
+            var httpClient = httpClientManager.get(handle);
+
+            if (httpClient === undefined) {
+                code = CODES.INVALID_HANDLE;
+                source = sourceIfError + ', Handle Not Found';
+            }
+
+            return {
+                httpClient: httpClient,
+                code: code,
+                source: source
+            };
+        };
+
         // Exported functions
         publicAPI.httpClient.enableHttpDebugging = function (enable) {
             if (typeof enable !== 'boolean') {
@@ -201,9 +294,9 @@
             httpClientManager.enableHttpDebugging(enable);
         };
 
-        Module.httpClient.jsHttpClientOpen = function (cookieFileStart, cookieFileLength, usernameStart, usernameLength, passwordStart, passwordLength, verifyServer, handlePointer, errorMessage) {
-            var username = Module.Pointer_stringify(usernameStart, usernameLength);
-            var password = Module.Pointer_stringify(passwordStart, passwordLength);
+        Module.httpClient.jsHttpClientOpen = function (cookieFileBegin, cookieFileLength, usernameBegin, usernameLength, passwordBegin, passwordLength, verifyServer, handlePointer, errorMessage) {
+            var username = Module.Pointer_stringify(usernameBegin, usernameLength);
+            var password = Module.Pointer_stringify(passwordBegin, passwordLength);
             var returnValue = 0;
             var errorString = '';
 
@@ -230,48 +323,59 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientAddHeader = function (userHandle, headerStart, headerLength, valueStart, valueLength, errorMessage) {
-            var header = Module.Pointer_stringify(headerStart, headerLength);
-            var value = Module.Pointer_stringify(valueStart, valueLength);
+        Module.httpClient.jsHttpClientAddHeader = function (handle, headerBegin, headerLength, valueBegin, valueLength, errorMessage) {
+            var header = Module.Pointer_stringify(headerBegin, headerLength);
+            var value = Module.Pointer_stringify(valueBegin, valueLength);
             var returnValue = 0;
             var errorString = '';
-            try {
-                httpUsers.addHeader(userHandle, header, value);
-            } catch (error) {
-                returnValue = -1;
-                errorString = 'Unable to add header to HTTP handle: ' + error.message;
+
+            var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:AddHeader');
+            var httpClient = results.httpClient;
+
+            if (httpClient === undefined) {
+                returnValue = results.code;
+                errorString = results.source;
+            } else {
+                httpClient.addHeader(header, value);
             }
 
             Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientRemoveHeader = function (userHandle, headerStart, headerLength, errorMessage) {
-            var header = Module.Pointer_stringify(headerStart, headerLength);
+        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerBegin, headerLength, errorMessage) {
+            var header = Module.Pointer_stringify(headerBegin, headerLength);
             var returnValue = 0;
             var errorString = '';
-            try {
-                httpUsers.removeHeader(userHandle, header);
-            } catch (error) {
-                returnValue = -1;
-                errorString = 'Unable to remove header from HTTP handle: ' + error.message;
+
+            var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:RemoveHeader');
+            var httpClient = results.httpClient;
+
+            if (httpClient === undefined) {
+                returnValue = results.code;
+                errorString = results.source;
+            } else {
+                httpClient.removeHeader(handle, header);
             }
 
             Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientGetHeader = function (userHandle, headerStart, headerLength, value, errorMessage) {
-            var header = Module.Pointer_stringify(headerStart, headerLength);
+        Module.httpClient.jsHttpClientGetHeader = function (handle, headerBegin, headerLength, value, errorMessage) {
+            var header = Module.Pointer_stringify(headerBegin, headerLength);
             var valueText = '';
             var returnValue = 0;
             var errorString = '';
-            try {
-                valueText = httpUsers.getHeaderValue(userHandle, header);
-            } catch (error) {
-                valueText = '';
-                returnValue = -1;
-                errorString = 'Unable to get header value from HTTP handle: ' + error.message;
+
+            var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:GetHeader');
+            var httpClient = results.httpClient;
+
+            if (httpClient === undefined) {
+                returnValue = results.code;
+                errorString = results.source;
+            } else {
+                valueText = httpClient.getHeaderValue(handle, header);
             }
 
             Module.eggShell.dataWriteString(value, valueText);
@@ -279,34 +383,40 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientHeaderExist = function (userHandle, headerStart, headerLength, headerExistPointer, errorMessage) {
-            var header = Module.Pointer_stringify(headerStart, headerLength);
+        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerBegin, headerLength, headerExistPointer, errorMessage) {
+            var header = Module.Pointer_stringify(headerBegin, headerLength);
             var headerExist = false;
             var returnValue = 0;
             var errorString = '';
-            try {
-                headerExist = httpUsers.headerExist(userHandle, header);
-            } catch (error) {
-                headerExist = false;
-                returnValue = -1;
-                errorString = 'Unable to verify if header exists in HTTP handle: ' + error.message;
+
+            var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:HeaderExist');
+            var httpClient = results.httpClient;
+
+            if (httpClient === undefined) {
+                returnValue = results.code;
+                errorString = results.source;
+            } else {
+                headerExist = httpClient.headerExist(handle, header);
             }
 
-            Module.eggShell.dataWriteUInt32(headerExistPointer, headerExist ? 1 : 0);
+            Module.eggShell.dataWriteUInt32(headerExistPointer, headerExist ? TRUE : FALSE);
             Module.eggShell.dataWriteString(errorMessage, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientListHeaders = function (userHandle, list, errorMessage) {
+        Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorMessage) {
             var listText = '';
             var returnValue = 0;
             var errorString = '';
-            try {
-                listText = httpUsers.listHeaders(userHandle);
-            } catch (error) {
-                listText = '';
-                returnValue = -1;
-                errorString = 'Unable to list headers for HTTP handle: ' + error.message;
+
+            var results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:ListHeaders');
+            var httpClient = results.httpClient;
+
+            if (httpClient === undefined) {
+                returnValue = results.code;
+                errorString = results.source;
+            } else {
+                listText = httpClient.listHeaders(handle);
             }
 
             Module.eggShell.dataWriteString(list, listText);
@@ -314,88 +424,69 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, userHandle, url, urlLength, outputFileStart, outputFileLength, buffer, bufferLength, timeOut, headers, body, errorCodePointer, errorMessage, occurrenceRef) {
-            var methodNames = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
-            var methodName = methodNames[methodId];
+        var setOccurenceAndError = function (code, source, codePointer, sourcePointer, occurrencePointer) {
+            // TODO mraj, check codePointer for any existing error, dont override existing error
 
-            // Setup parameters
-            var urlString = Module.Pointer_stringify(url, urlLength);
-            // var outputFile = Module.Pointer_stringify(outputFileStart, outputFileLength);
-            var bufferString;
-            if (buffer) {
-                bufferString = Module.Pointer_stringify(buffer, bufferLength);
+            // TODO mraj, check status and code pointer to implement the merge errors behavior https://zone.ni.com/reference/en-XX/help/371361H-01/glang/merge_errors_function/
+            // ie error overrides warning, but error does not override error, and warning does not override warning?
+            if (code !== 0) {
+                Module.eggShell.dataWriteInt32(codePointer, code);
+                Module.eggShell.dataWriteString(sourcePointer, source);
+                Module.eggShell.setOccurrence(occurrencePointer);
+            }
+        };
+
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlBegin, urlLength, outputFileBegin, outputFileLength, bufferBegin, bufferLength, timeout, headers, body, codePointer, sourcePointer, occurrencePointer) {
+            var method = METHOD_NAMES[methodId];
+            var url = Module.Pointer_stringify(urlBegin, urlLength);
+
+            // Nullable input parameters: handle, outputFile, buffer
+            // Nullable output parameter: body
+
+            var outputFile;
+            if (outputFile !== NULL) {
+                outputFile = Module.Pointer_stringify(outputFileBegin, outputFileLength);
+
+                if (outputFile !== '') {
+                    setOccurenceAndError(-1, 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature', codePointer, sourcePointer, occurrencePointer);
+                    return;
+                }
             }
 
-            var occurrenceHasBeenSet = false;
-            var setErrorAndOccurrence = function (errorCode, operation, additionalErrorText) {
-                var fullErrorText = '';
-                if (errorCode !== 0) {
-                    fullErrorText = 'Unable to complete ' + operation + ' operation. Look at your browser console log for more details : ' + additionalErrorText;
-                    // console.log(fullErrorText);
-                }
+            var buffer;
+            if (bufferBegin !== NULL) {
+                buffer = Module.Pointer_stringify(bufferBegin, bufferLength);
+            }
 
-                Module.eggShell.dataWriteInt32(errorCodePointer, errorCode);
-                Module.eggShell.dataWriteString(errorMessage, fullErrorText);
-                Module.eggShell.setOccurrence(occurrenceRef);
-                if (!occurrenceHasBeenSet) {
-                    occurrenceHasBeenSet = true;
-                    Module.eggShell.setOccurrence(occurrenceRef);
+            var httpClient, results;
+            if (handle === NULL) {
+                httpClient = new HttpClient('', '');
+            } else {
+                results = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:' + method);
+                httpClient = results.httpClient;
+
+                if (httpClient === undefined) {
+                    setOccurenceAndError(results.code, results.source, codePointer, sourcePointer, occurrencePointer);
+                    return;
                 }
+            }
+
+            var requestData = {
+                method: method,
+                url: url,
+                timeout: timeout,
+                buffer: buffer
             };
 
-            try {
-                var httpUser = httpUsers.get(userHandle);
+            httpClient.createRequest(requestData, function (responseData) {
+                Module.eggShell.dataWriteString(headers, responseData.header);
 
-                var request = new XMLHttpRequest();
-                request.open(methodName, urlString);
-                request.timeout = timeOut;
-
-                // Set the headers
-                if (httpUser instanceof HttpUser) {
-                    var allHeaders = httpUser.getHeaders();
-                    for (var key in allHeaders) {
-                        if (allHeaders.hasOwnProperty(key)) {
-                            request.setRequestHeader(key, allHeaders[key]);
-                        }
-                    }
+                if (body !== NULL) {
+                    Module.eggShell.dataWriteString(body, responseData.text);
                 }
 
-                request.onreadystatechange = function (/* event*/) {
-                    if (request.readyState === 4) {
-                        if (request.status === 200) {
-                            // Success!
-                            // var errorString = '';
-                            var headersText = request.getAllResponseHeaders();
-                            var bodyText = request.responseText;
-
-                            Module.eggShell.dataWriteString(headers, headersText);
-                            if (body) {
-                                Module.eggShell.dataWriteString(body, bodyText);
-                            }
-
-                            setErrorAndOccurrence(0, '');
-                        } else {
-                            setErrorAndOccurrence(-1, methodName, request.statusText + '(' + request.status + ').');
-                        }
-                    }
-                };
-
-                request.onerror = function (event) {
-                    setErrorAndOccurrence(-1, methodName, event.target.statusText + '(' + event.target.status + ').');
-                };
-
-                request.ontimeout = function (/* event*/) {
-                    setErrorAndOccurrence(-1, methodName, 'The time out value of ' + timeOut + ' was exceeded.');
-                };
-
-                if (bufferString === undefined) {
-                    request.send();
-                } else {
-                    request.send(bufferString);
-                }
-            } catch (error) {
-                setErrorAndOccurrence(-1, methodName, error.message);
-            }
+                setOccurenceAndError(responseData.labviewCode, 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage, codePointer, sourcePointer, occurrencePointer);
+            });
         };
     };
 

@@ -39,7 +39,7 @@ extern "C" {
     extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
     extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
-    extern Int32 jsHttpClientHeaderExist(UInt32, const char *, int, UInt32 *, StringRef);
+    extern Int32 jsHttpClientHeaderExists(UInt32, const char *, int, UInt32 *, StringRef);
     extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
 	extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
 }
@@ -118,7 +118,7 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientGetHeader, UInt32, StringRef, StringRef, Int
 VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, StringRef, Int32, StringRef)
 {
 #if kVireoOS_emscripten
-    _Param(4) = jsHttpClientHeaderExist(
+    _Param(4) = jsHttpClientHeaderExists(
         _Param(0),
         (char*)_Param(1)->Begin(), _Param(1)->Length(),
         _ParamPointer(2),
