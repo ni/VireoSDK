@@ -29,9 +29,9 @@ install:
 - emcc -v
 - gcc -v
 before_script:
-- nohup python -m httpbin.core --port 5000 &
-- while ! nc -q 1 localhost 5000 </dev/null; do sleep 2; done
-- curl http://localhost:5000/get?show_env=1
+- nohup python -m httpbin.core --port 64526 &
+- while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
+- curl http://127.0.0.1:64526/get?show_env=1
 script:
 - make
 - make testjs

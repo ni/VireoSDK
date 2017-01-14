@@ -62,12 +62,11 @@ describe('Performing a GET test', function () {
             expect(viPathParser('handle')).toBe(0);
 
             // header
-            // TODO mraj enable when header ouput valid
-            // var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
-            // expect(responseHeader.httpVersion).toBe('HTTP/1.1');
-            // expect(responseHeader.statusCode).toBe(200);
-            // expect(responseHeader.reasonPhrase).toBe('OK');
-            // expect(responseHeader.headers.length).toBeGreaterThan(0);
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
 
             // body
             var httpBinBody = JSON.parse(viPathParser('body'));
@@ -104,12 +103,12 @@ describe('Performing a GET test', function () {
             expect(viPathParser('handle')).toBe(0);
 
             // header
-            // TODO mraj enable when header ouput valid
+            // TODO mraj Phantomjs is treating an empty 404 as an error (http error handler is triggered instead of load)
             // var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
-            // expect(responseHeader.httpVersion).toBe('HTTP/1.0');
+            // expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             // expect(responseHeader.statusCode).toBe(404);
             // expect(responseHeader.reasonPhrase).toBe('NOT FOUND');
-            // expect(responseHeader.headers.length).toBeGreaterThan(0);
+            // expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
 
             // body
             expect(viPathParser('body')).toBe('');
@@ -147,10 +146,10 @@ describe('Performing a GET test', function () {
             // expect(responseHeader.httpVersion).toBe('HTTP/1.0');
             // expect(responseHeader.statusCode).toBe(418);
             // expect(responseHeader.reasonPhrase).toBe('I\'M A TEAPOT');
-            // expect(responseHeader.headers.length).toBeGreaterThan(0);
+            // expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
 
             // body
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('body')).not.toBe('');
 
             // error
             // TODO mraj enable when have correct error output
