@@ -12,7 +12,7 @@
         cp = require('child_process'),
         vireo = {};
 
-
+    var dots = false;
     var app = {};
     app.testFailures = {};
     app.totalResultLines = 0;
@@ -105,7 +105,6 @@
         return testlist;
     };
 
-
     // Load all of the tests
     var loadTests = function (testFile) {
         var testListString,
@@ -132,85 +131,6 @@
         return path.extname(name) === '.via';
     };
 
-    /*
-    // Open and process the blacklist JSON file
-    var GenerateBlacklist = function () {
-        if (blacklist === null) {
-            try {
-                var fileContent = fs.readFileSync('testBlacklist.json').toString();
-                var jsonObject = JSON.parse(fileContent);
-                blacklist = jsonObject.blacklist;
-            } catch (err) {
-                if (err.code === 'ENOENT') {
-                    console.log('WARNING: testBlacklist.json not present');
-                } else {
-                    console.log('WARNING: testBlacklist.json contains parse error');
-                }
-                blacklist = [];
-            }
-        }
-    };
-
-    // Filter function to check if a test is within the blacklist
-    var IsNotBlackList = function (name) {
-        GenerateBlacklist();
-        for (var i = 0; i < blacklist.length; i += 1) {
-            var item = blacklist[i];
-            if (item.filename === name) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    // Print out the blacklist of via tests
-    var PrintBlackList = function () {
-        GenerateBlacklist();
-        if (blacklist.length > 0) {
-            console.log('\n');
-            console.log('=====================================================================================');
-            console.log('The following tests(' + blacklist.length + ') were not executed. They are blacklisted.');
-            for (var i = 0; i < blacklist.length; i += 1) {
-                var item = blacklist[i];
-                console.log('  "' + item.filename + '"\t' + item.reason);
-            }
-            console.log('=====================================================================================');
-        } else {
-            console.log('=================================================================');
-            console.log('There aren\'t tests that are blacklisted.');
-            console.log('=================================================================');
-        }
-    };
-
-    var PrintCharactersToConsole = function (testName, oldResults, cleanNewResults) {
-        var firstDifferenceFound = false;
-        var maxLength = oldResults.length;
-        if (cleanNewResults.length > maxLength) {
-            maxLength = cleanNewResults.length;
-        }
-        console.log('=======================================================');
-        console.log('"' + testName + '"');
-        console.log('Comparing oldResults(' + oldResults.length + ') vs cleanNewResults(' + cleanNewResults.length + ')');
-        console.log('=======================================================');
-        for (var i = 0; i < maxLength; i += 1) {
-            var oldResultsText = '';
-            if (i < oldResults.length) {
-                oldResultsText = oldResults.charCodeAt(i);
-            }
-            var cleanNewResultsText = '';
-            if (i < cleanNewResults.length) {
-                cleanNewResultsText = cleanNewResults.charCodeAt(i);
-            }
-            var differenceText = '';
-            if (!firstDifferenceFound && (i < oldResults.length) && (i < cleanNewResults.length) && oldResults[i] !== cleanNewResults[i]) {
-                differenceText = ' <---------- Found first difference';
-                firstDifferenceFound = true;
-            }
-            console.log(oldResultsText + '\t' + cleanNewResultsText + '\t' + differenceText);
-        }
-    };
-    */
-
     // Compare the two strings and check for equality.
     // This is the way that we test the inputs for vireo to the expected
     // outputs.
@@ -233,8 +153,15 @@
         app.totalResultLines += lineCount;
 
         if (oldResults === cleanNewResults) {
-            console.log('Test for "' + testName + '" passed. (' + msec + 'ms)');
+            if (dots === true) {
+                process.stdout.write('.');
+            } else {
+                console.log('Test for "' + testName + '" passed. (' + msec + 'ms)');
+            }
         } else {
+            if (dots === true) {
+                console.log('');
+            }
             console.log(('Test for "' + testName + '" failed.').red);
             diffs = jsdiff.diffLines(oldResults, cleanNewResults);
             results = '';
@@ -358,7 +285,7 @@
 
     // -------------------- Main Function
     // TODO mraj this needs to be refactored, complexity 38 is too high
-    /* eslint complexity: ["error", 38]*/
+    /* eslint complexity: ["error", 40]*/
     (function () {
         var configFile = 'testList.json',
             testMap = loadTests(configFile),
@@ -392,6 +319,8 @@
             } else if (arg === '-n') {
                 tester = NativeTester;
                 testNative = true;
+            } else if (arg === '--dots') {
+                dots = true;
             } else if (arg === '-e') {
                 execOnly = true;
                 once = true;
@@ -540,9 +469,9 @@
 
             // Check the testFailures (if any)
             if (Object.keys(app.testFailures).length > 0) {
-                console.log('=============================================');
+                console.log('\n=============================================');
                 console.log('The following tests failed: ' + Object.keys(app.testFailures).length);
-                console.log('=============================================');
+                console.log('=============================================\n');
                 for (var test in app.testFailures) {
                     if (app.testFailures.hasOwnProperty(test)) {
                         console.log('===========================');
