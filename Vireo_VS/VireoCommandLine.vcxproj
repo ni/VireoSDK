@@ -24,6 +24,7 @@
     <ClCompile Include="..\source\core\NumericString.cpp" />
     <ClCompile Include="..\source\core\Platform.cpp" />
     <ClCompile Include="..\source\core\Queue.cpp" />
+    <ClCompile Include="..\source\core\RefNum.cpp" />
     <ClCompile Include="..\source\core\String.cpp" />
     <ClCompile Include="..\source\core\StringUtilities.cpp" />
     <ClCompile Include="..\source\core\Synchronization.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
+    <ClCompile Include="..\source\core\UnitTest.cpp" />
     <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
     <ClCompile Include="..\source\io\Canvas2d.cpp" />
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
@@ -59,6 +61,7 @@
     <ClInclude Include="..\source\include\Instruction.h" />
     <ClInclude Include="..\source\include\LVDateTimeRecord.h" />
     <ClInclude Include="..\source\include\Platform.h" />
+    <ClInclude Include="..\source\include\RefNum.h" />
     <ClInclude Include="..\source\include\StringUtilities.h" />
     <ClInclude Include="..\source\include\Synchronization.h" />
     <ClInclude Include="..\source\include\TDCodecLVFlat.h" />
@@ -68,6 +71,7 @@
     <ClInclude Include="..\source\include\Timestamp.h" />
     <ClInclude Include="..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\source\include\TypeDefiner.h" />
+    <ClInclude Include="..\source\include\UnitTest.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

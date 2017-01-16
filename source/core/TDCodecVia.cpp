@@ -1519,7 +1519,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
 {
     TypeManagerScope scope(tm);
-    
+
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
     

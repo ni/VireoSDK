@@ -9,6 +9,7 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TDCodecVia.h"
+#include "UnitTest.h"
 
 #if kVireoOS_emscripten
     #include <emscripten.h>
@@ -33,6 +34,11 @@ int VIREO_MAIN(int argc, const char * argv[])
     LOG_PLATFORM_MEM("Mem after init")
 
 	SubString fileName;
+    bool pass;
+    if (VireoUnitTest::RunTests(pass)) { // runs tests and returns true if in unit test build; else does nothing and returns false
+        gPlatform.IO.Printf("Unit Tests %s\n", pass ? "Passed" : "Failed");
+        return pass ? 0 : 1;
+    }
 
 	if (argc >= 2) {
 		for (Int32 arg = 1; arg < argc; ++arg) {
