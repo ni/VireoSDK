@@ -15,10 +15,10 @@ vjs js:
 test: testnative testjs
 
 testjs:
-	cd test-it; ./test.js -j
+	cd test-it; ./test.js -j --dots
 
 testnative:
-	cd test-it; ./test.js -n
+	cd test-it; ./test.js -n --dots
 
 clean:
 	cd make-it; make clean
