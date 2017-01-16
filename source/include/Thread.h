@@ -14,6 +14,8 @@ SDG
 #ifndef Thread_h
 #define Thread_h
 
+#include "DataTypes.h"
+
 namespace Vireo
 {
 
@@ -29,6 +31,8 @@ namespace Vireo
     #define MUTEX_CLASS_MEMBER
     #define MUTEX_SCOPE()
 #endif
+
+bool CompareAndSwapUInt32(volatile UInt32 *ptr, UInt32 new_value, UInt32 old_value);
 
 #ifdef VIREO_MULTI_THREAD
 //------------------------------------------------------------

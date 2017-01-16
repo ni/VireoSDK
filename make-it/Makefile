@@ -5,9 +5,11 @@ INCDIR=../source/include
 BIN=../bin
 OUTPUT_DIR=../dist
 OUTPUT_EXE=$(OUTPUT_DIR)/esh
+OUTPUT_TEST_EXE=$(OUTPUT_DIR)/esh-test
 
 COMMANDLINE = main.cpp
-CORE = Array.cpp Assert.cpp CEntryPoints.cpp Date.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp VirtualInstrument.cpp
+CORE = Array.cpp Assert.cpp CEntryPoints.cpp Date.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp RefNum.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp UnitTest.cpp VirtualInstrument.cpp
+UNITTEST = RefNumTest.cpp
 #CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp
 
@@ -15,6 +17,7 @@ OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
 COMMANDLINEOBJS = $(COMMANDLINE:%.cpp=$(OBJDIR)/%.o)
 COREOBJS = $(CORE:%.cpp=$(OBJDIR)/%.o)
 IOOBJS = $(IO:%.cpp=$(OBJDIR)/%.o)
+UTOBJS = $(UNITTEST:%.cpp=$(OBJDIR)/%.o)
 
 DEPS = $(OBJS:%.o=%.d)
 
@@ -113,11 +116,11 @@ install: esh
 	@echo '==> esh installed to $(PROGRAM_DIR)'
 
 clean:
-	rm -f $(OUTPUT_EXE) libvireo.so $(BIN)/esh *~ $(INCDIR)/*~
+	rm -f $(OUTPUT_EXE) $(OUTPUT_TEST_EXE) libvireo.so $(BIN)/esh *~ $(INCDIR)/*~
 	rm -rf $(OBJDIR)
 
 simple:
-	make esh
+	make esh esh-test
 	$(STRIP)
 
 coverage:
@@ -200,9 +203,13 @@ help:
 
 esh:	$(OUTPUT_EXE)
 
+esh-test:	$(OUTPUT_TEST_EXE)
+
 # Build the executable with symbols stripped
 $(OUTPUT_EXE): $(OBJDIR) $(OBJS) $(OUTPUT_DIR)
 	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
+$(OUTPUT_TEST_EXE): $(OBJDIR) $(OBJS) $(UTOBJS) $(OUTPUT_DIR)
+	$(CC) -o $@ $(TARGETARCH) $(LDFLAGS) $(OBJS) $(UTOBJS) $(LIBS)
 
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
@@ -228,5 +235,8 @@ $(COREOBJS): $(OBJDIR)/%.o: ../source/core/%.cpp
 
 $(IOOBJS): $(OBJDIR)/%.o: ../source/io/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(UTOBJS): $(OBJDIR)/%.o: ../source/unittest/%.cpp
+	$(CC) $(CFLAGS) -DVIREO_UNIT_TEST=1 -c -o $@ $<
 
 -include $(DEPS)

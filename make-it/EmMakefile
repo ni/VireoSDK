@@ -10,6 +10,7 @@ SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
 TARGETDIR=$(VIREO_SDK_DIR)/dist
 CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
 IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
+UTSOURCEDIR=$(VIREO_SDK_DIR)/source/unittest
 
 .PHONY: clean install help vjs dox
 .DEFAULT_GOAL=help
@@ -102,6 +103,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Math.bc\
 	$(OBJS)/NumericString.bc\
 	$(OBJS)/Platform.bc\
+	$(OBJS)/RefNum.bc\
 	$(OBJS)/Queue.bc\
 	$(OBJS)/String.bc\
 	$(OBJS)/StringUtilities.bc\
@@ -116,7 +118,9 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/TypeAndDataReflection.bc\
 	$(OBJS)/TypeDefiner.bc\
 	$(OBJS)/TypeTemplates.bc\
+	$(OBJS)/UnitTest.bc\
 	$(OBJS)/VirtualInstrument.bc\
+	$(OBJS)/RefNumTest.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
     $(OBJS)/HttpClient.bc
@@ -129,6 +133,8 @@ endif
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
 	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
+	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
+$(OBJS)/%.bc: $(UTSOURCEDIR)/%.cpp
 	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 
 $(EM_BC_FILES): | $(OBJS)

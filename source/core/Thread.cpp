@@ -10,7 +10,6 @@ SDG
 /*! \file
  */
 
-#ifdef VIREO_MULTI_THREAD
 #include "BuildConfig.h"
 #include "Thread.h"
 
@@ -24,6 +23,24 @@ SDG
 #endif
 
 namespace Vireo {
+
+bool CompareAndSwapUInt32(volatile UInt32 *ptr, UInt32 new_value, UInt32 old_value) {
+#if (kVireoOS_linuxU || kVireoOS_macosxU)
+    return __sync_bool_compare_and_swap(ptr, old_value, new_value);
+#elif kVireosOS_windows
+    return InterlockedCompareExchange((volatile LONG*)ptr, LONG(new_value), LONG(old_value)) == old_value;
+#else
+    // #if VIREO_MULTI_THREAD ... ???
+    if (*ptr == old_value) {
+        *ptr = new_value;
+        return true;
+    } else
+        return false;
+#endif
+}
+
+#ifdef VIREO_MULTI_THREAD
+
 //------------------------------------------------------------
 Mutex::Mutex()
 {
@@ -88,5 +105,5 @@ void Mutex::Release()
 #endif
 }
 
-}  // namespace Vireo
 #endif
+}  // namespace Vireo
