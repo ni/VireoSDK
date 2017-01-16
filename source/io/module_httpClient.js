@@ -101,6 +101,7 @@
                 outputHeaders.push(header.trim() + ': ' + value.trim());
             });
 
+            // Avoid a trailing \r\n append
             return outputHeaders.join('\r\n');
         };
 
@@ -448,7 +449,7 @@
             Module.eggShell.setOccurrence(occurrencePointer);
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headers, body, codePointer, sourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headersPointer, bodyPointer, codePointer, sourcePointer, occurrencePointer) {
             var method = METHOD_NAMES[methodId];
             var url = Module.eggShell.dataReadString(urlPointer);
 
@@ -505,10 +506,10 @@
             };
 
             httpClient.createRequest(requestData, function (responseData) {
-                Module.eggShell.dataWriteString(headers, responseData.header);
+                Module.eggShell.dataWriteString(headersPointer, responseData.header);
 
-                if (body !== NULL) {
-                    Module.eggShell.dataWriteString(body, responseData.text);
+                if (bodyPointer !== NULL) {
+                    Module.eggShell.dataWriteString(bodyPointer, responseData.text);
                 }
 
                 setOccurenceAndError(responseData.labviewCode, 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage, codePointer, sourcePointer, occurrencePointer);
