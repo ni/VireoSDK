@@ -127,7 +127,7 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, Stri
     if ((_Param(4) == 0) && (_Param(2) == 1)) {
         _Param(4) = jsHttpClientGetHeader(
             _Param(0),
-			_Param(1),
+            _Param(1),
             _Param(3),
             _Param(5));
     } else {
