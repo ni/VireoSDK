@@ -35,12 +35,15 @@
             'EggShell_WriteDouble',
             'EggShell_ReadValueString',
             'EggShell_WriteValueString',
+            'Data_GetStringBegin',
+            'Data_GetStringLength',
             'Data_WriteString',
             'Data_WriteInt32',
             'Data_WriteUInt32',
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
-            'Occurrence_Set'
+            'Occurrence_Set',
+            'Pointer_stringify'
         ]}], */
 
         Module.eggShell = {};
@@ -54,6 +57,8 @@
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_ReadValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
+        var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
+        var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
@@ -111,6 +116,13 @@
 
         Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (vi, path, value) {
             EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
+        };
+
+        Module.eggShell.dataReadString = publicAPI.eggShell.dataReadString = function (stringPointer) {
+            var begin = Data_GetStringBegin(stringPointer);
+            var length = Data_GetStringLength(stringPointer);
+            var str = Module.Pointer_stringify(begin, length);
+            return str;
         };
 
         Module.eggShell.dataWriteString = publicAPI.eggShell.dataWriteString = function (destination, source) {

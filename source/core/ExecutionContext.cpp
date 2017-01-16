@@ -19,13 +19,13 @@ SDG
 #include <emscripten.h>
 #endif
 
+namespace Vireo {
+
 #if kVireoOS_emscripten
 extern "C" {
-    extern void jsExecutionContextFPSync(const char *, int);
+    extern void jsExecutionContextFPSync(StringRef);
 }
 #endif
-
-namespace Vireo {
 
 //------------------------------------------------------------
 Boolean ExecutionContext::_classInited;
@@ -134,7 +134,7 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
-    jsExecutionContextFPSync((char*)_Param(0)->Begin(), _Param(0)->Length());
+    jsExecutionContextFPSync(_Param(0));
 #endif
     return _NextInstruction();
 }

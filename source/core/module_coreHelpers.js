@@ -37,8 +37,9 @@
         var bufferPtr, bufferSize;
 
         // Exported functions
-        Module.coreHelpers.jsExecutionContextFPSync = function (fpStringStart, fpStringLength) {
-            fpSync(Module.Pointer_stringify(fpStringStart, fpStringLength));
+        Module.coreHelpers.jsExecutionContextFPSync = function (fpStringPointer) {
+            var fpString = Module.eggShell.dataReadString(fpStringPointer);
+            fpSync(fpString);
         };
 
         publicAPI.coreHelpers.setFPSyncFunction = function (fn) {

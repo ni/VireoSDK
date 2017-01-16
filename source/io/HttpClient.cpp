@@ -34,14 +34,14 @@ enum HttpClientMethodId {
 };
 
 extern "C" {
-    extern Int32 jsHttpClientOpen(const char *, int, const char*, int, const char*, int, UInt32, UInt32 *, StringRef);
+    extern Int32 jsHttpClientOpen(StringRef, StringRef, StringRef, UInt32, UInt32 *, StringRef);
     extern Int32 jsHttpClientClose(UInt32, StringRef);
-    extern Int32 jsHttpClientAddHeader(UInt32, const char *, int, const char *, int, StringRef);
-    extern Int32 jsHttpClientRemoveHeader(UInt32, const char *, int, StringRef);
-    extern Int32 jsHttpClientGetHeader(UInt32, const char *, int, StringRef, StringRef);
-    extern Int32 jsHttpClientHeaderExists(UInt32, const char *, int, UInt32 *, StringRef);
+    extern Int32 jsHttpClientAddHeader(UInt32, StringRef, StringRef, StringRef);
+    extern Int32 jsHttpClientRemoveHeader(UInt32, StringRef, StringRef);
+    extern Int32 jsHttpClientGetHeader(UInt32, StringRef, StringRef, StringRef);
+    extern Int32 jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef);
     extern Int32 jsHttpClientListHeaders(UInt32, StringRef, StringRef);
-	extern void jsHttpClientMethod(HttpClientMethodId, UInt32, const char *, int, const char *, int, const char *, int, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
+	extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
@@ -51,9 +51,9 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 {
 #if kVireoOS_emscripten
     _Param(5) = jsHttpClientOpen(
-        (char*)_Param(0)->Begin(), _Param(0)->Length(),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
-        (char*)_Param(2)->Begin(), _Param(2)->Length(),
+        _Param(0),
+        _Param(1),
+        _Param(2),
         _Param(3),
         _ParamPointer(4),
         _Param(6)
@@ -79,8 +79,8 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientAddHeader, UInt32, StringRef, StringRef, Int
 #if kVireoOS_emscripten
     _Param(3) = jsHttpClientAddHeader(
         _Param(0),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
-        (char*)_Param(2)->Begin(), _Param(2)->Length(),
+        _Param(1),
+        _Param(2),
         _Param(4));
 #endif
     return _NextInstruction();
@@ -93,7 +93,7 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientRemoveHeader, UInt32, StringRef, Int32, Stri
 #if kVireoOS_emscripten
     _Param(2) = jsHttpClientRemoveHeader(
         _Param(0),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
+        _Param(1),
         _Param(3));
 #endif
     return _NextInstruction();
@@ -106,7 +106,7 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientGetHeader, UInt32, StringRef, StringRef, Int
 #if kVireoOS_emscripten
     _Param(3) = jsHttpClientGetHeader(
         _Param(0),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
+        _Param(1),
         _Param(2),
         _Param(4));
 #endif
@@ -120,14 +120,14 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHeaderExist, UInt32, StringRef, UInt32, Stri
 #if kVireoOS_emscripten
     _Param(4) = jsHttpClientHeaderExists(
         _Param(0),
-        (char*)_Param(1)->Begin(), _Param(1)->Length(),
+        _Param(1),
         _ParamPointer(2),
         _Param(5));
     
     if ((_Param(4) == 0) && (_Param(2) == 1)) {
         _Param(4) = jsHttpClientGetHeader(
             _Param(0),
-            (char*)_Param(1)->Begin(), _Param(1)->Length(),
+			_Param(1),
             _Param(3),
             _Param(5));
     } else {
@@ -164,9 +164,9 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 		jsHttpClientMethod(
 			kGet,
 			_Param(0),
-			(char*)_Param(1)->Begin(), _Param(1)->Length(),
-			(char*)_Param(2)->Begin(), _Param(2)->Length(),
-			null, 0,
+			_Param(1),
+			_Param(2),
+			null,
 			_Param(3),
 			_Param(4),
 			_Param(5),
@@ -199,9 +199,9 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, I
 		jsHttpClientMethod(
 			kHead,
 			_Param(0),
-			(char*)_Param(1)->Begin(), _Param(1)->Length(),
-			null,0,
-			null,0,
+			_Param(1),
+			null,
+			null,
 			_Param(2),
 			_Param(3),
 			null,
@@ -235,9 +235,9 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 		jsHttpClientMethod(
 			kPut,
 			_Param(0),
-			(char*)_Param(1)->Begin(), _Param(1)->Length(),
-			(char*)_Param(2)->Begin(), _Param(2)->Length(),
-			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(1),
+			_Param(2),
+			_Param(3),
 			_Param(4),
 			_Param(5),
 			_Param(6),
@@ -270,9 +270,9 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 		jsHttpClientMethod(
 			kDelete,
 			_Param(0),
-			(char*)_Param(1)->Begin(), _Param(1)->Length(),
-			(char*)_Param(2)->Begin(), _Param(2)->Length(),
-			null,0,
+			_Param(1),
+			_Param(2),
+			null,
 			_Param(3),
 			_Param(4),
 			_Param(5),
@@ -305,9 +305,9 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 		jsHttpClientMethod(
 			kPost,
 			_Param(0),
-			(char*)_Param(1)->Begin(), _Param(1)->Length(),
-			(char*)_Param(2)->Begin(), _Param(2)->Length(),
-			(char*)_Param(3)->Begin(), _Param(3)->Length(),
+			_Param(1),
+			_Param(2),
+			_Param(3),
 			_Param(4),
 			_Param(5),
 			_Param(6),
