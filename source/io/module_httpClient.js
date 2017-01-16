@@ -277,21 +277,21 @@
         //     return httpClient;
         // };
 
-        var findhttpClientOrWriteError = function (handle, sourceIfError) {
+        var findhttpClientOrWriteError = function (handle, errorSourceIfError) {
             // statusPointer unused
-            var code = 0;
-            var source = '';
+            var errorCode = 0;
+            var errorSource = '';
             var httpClient = httpClientManager.get(handle);
 
             if (httpClient === undefined) {
-                code = CODES.INVALID_HANDLE;
-                source = sourceIfError + ', Handle Not Found';
+                errorCode = CODES.INVALID_HANDLE;
+                errorSource = errorSourceIfError + ', Handle Not Found';
             }
 
             return {
                 httpClient: httpClient,
-                code: code,
-                source: source
+                code: errorCode,
+                source: errorSource
             };
         };
 
@@ -304,9 +304,9 @@
             httpClientManager.enableHttpDebugging(enable);
         };
 
-        Module.httpClient.jsHttpClientOpen = function (cookieFileBegin, cookieFileLength, usernameBegin, usernameLength, passwordBegin, passwordLength, verifyServer, handlePointer, errorMessage) {
-            var username = Module.Pointer_stringify(usernameBegin, usernameLength);
-            var password = Module.Pointer_stringify(passwordBegin, passwordLength);
+        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServer, handlePointer, errorSourcePointer) {
+            var username = Module.eggShell.dataReadString(usernamePointer);
+            var password = Module.eggShell.dataReadString(passwordPointer);
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
@@ -314,7 +314,7 @@
             var handle = httpClientManager.create(username, password);
 
             Module.eggShell.dataWriteUInt32(handlePointer, handle);
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
@@ -333,9 +333,9 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientAddHeader = function (handle, headerBegin, headerLength, valueBegin, valueLength, errorMessage) {
-            var header = Module.Pointer_stringify(headerBegin, headerLength);
-            var value = Module.Pointer_stringify(valueBegin, valueLength);
+        Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorSourcePointer) {
+            var header = Module.eggShell.dataReadString(headerPointer);
+            var value = Module.eggShell.dataReadString(valuePointer);
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
@@ -349,12 +349,12 @@
                 httpClient.addHeader(header, value);
             }
 
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerBegin, headerLength, errorMessage) {
-            var header = Module.Pointer_stringify(headerBegin, headerLength);
+        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorSourcePointer) {
+            var header = Module.eggShell.dataReadString(headerPointer);
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
 
@@ -368,12 +368,12 @@
                 httpClient.removeHeader(handle, header);
             }
 
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientGetHeader = function (handle, headerBegin, headerLength, value, errorMessage) {
-            var header = Module.Pointer_stringify(headerBegin, headerLength);
+        Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, value, errorSourcePointer) {
+            var header = Module.eggShell.dataReadString(headerPointer);
             var valueText = '';
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
@@ -389,12 +389,12 @@
             }
 
             Module.eggShell.dataWriteString(value, valueText);
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerBegin, headerLength, headerExistPointer, errorMessage) {
-            var header = Module.Pointer_stringify(headerBegin, headerLength);
+        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistPointer, errorSourcePointer) {
+            var header = Module.eggShell.dataReadString(headerPointer);
             var headerExist = false;
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
@@ -410,11 +410,11 @@
             }
 
             Module.eggShell.dataWriteUInt32(headerExistPointer, headerExist ? TRUE : FALSE);
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorMessage) {
+        Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorSourcePointer) {
             var listText = '';
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
@@ -430,34 +430,34 @@
             }
 
             Module.eggShell.dataWriteString(list, listText);
-            Module.eggShell.dataWriteString(errorMessage, errorString);
+            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        var setOccurenceAndError = function (code, source, codePointer, sourcePointer, occurrencePointer) {
+        var setOccurenceAndError = function (errorCode, errorSource, errorCodePointer, errorSourcePointer, occurrencePointer) {
             // TODO mraj, check codePointer for any existing error, dont override existing error
 
             // TODO mraj, check status and code pointer to implement the merge errors behavior https://zone.ni.com/reference/en-XX/help/371361H-01/glang/merge_errors_function/
             // ie error overrides warning, but error does not override error, and warning does not override warning?
-            if (code !== CODES.NO_ERROR) {
-                Module.eggShell.dataWriteInt32(codePointer, code);
-                Module.eggShell.dataWriteString(sourcePointer, source);
+            if (errorCode !== CODES.NO_ERROR) {
+                Module.eggShell.dataWriteInt32(errorCodePointer, errorCode);
+                Module.eggShell.dataWriteString(errorSourcePointer, errorSource);
             }
 
             // Regardless of error set the occurrence
             Module.eggShell.setOccurrence(occurrencePointer);
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlBegin, urlLength, outputFileBegin, outputFileLength, bufferBegin, bufferLength, timeout, headers, body, codePointer, sourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headers, body, codePointer, sourcePointer, occurrencePointer) {
             var method = METHOD_NAMES[methodId];
-            var url = Module.Pointer_stringify(urlBegin, urlLength);
+            var url = Module.eggShell.dataReadString(urlPointer);
 
             // Nullable input parameters: handle, outputFile, buffer
             // Nullable output parameter: body
 
             var outputFile;
-            if (outputFileBegin !== NULL) {
-                outputFile = Module.Pointer_stringify(outputFileBegin, outputFileLength);
+            if (outputFilePointer !== NULL) {
+                outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
                     setOccurenceAndError(-1, 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature', codePointer, sourcePointer, occurrencePointer);
@@ -466,8 +466,8 @@
             }
 
             var buffer;
-            if (bufferBegin !== NULL) {
-                buffer = Module.Pointer_stringify(bufferBegin, bufferLength);
+            if (bufferPointer !== NULL) {
+                buffer = Module.eggShell.dataReadString(bufferPointer);
             }
 
             var httpClient, results;
@@ -485,6 +485,8 @@
 
             // In LabVIEW timeout -1 means wait forever, in xhr timeout 0 means wait forever
             // TODO mraj check if functions can have default values. Until then assume 0 was meant to be the default 10000
+            // Vireo does have a concept of unwired values, have to use _ParamPointer and check if it is null
+            // then in viaCode a * is used for unwired values
             var xhrTimeout;
 
             if (timeout < 0) {

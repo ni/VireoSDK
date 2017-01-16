@@ -22,6 +22,8 @@ VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices);
 VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm);
 VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
 VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
+VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
+VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length);
 VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value);
 VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value);

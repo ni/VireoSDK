@@ -194,6 +194,18 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     return "";
 }
 //------------------------------------------------------------
+VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
+{
+    VIREO_ASSERT(String::ValidateHandle(stringObject));
+    return stringObject->Begin();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
+{
+    VIREO_ASSERT(String::ValidateHandle(stringObject));
+    return stringObject->Length();
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));
