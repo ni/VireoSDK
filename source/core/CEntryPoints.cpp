@@ -214,6 +214,14 @@ VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, co
     stringObject->CopyFrom(length, buffer);
 }
 //------------------------------------------------------------
+VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer) {
+    return *booleanPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value) {
+    *destination = value;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value)
 {
     *destination = value;

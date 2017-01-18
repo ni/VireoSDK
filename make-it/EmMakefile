@@ -90,6 +90,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
     '_Data_WriteString',\
+	'_Data_ReadBoolean',\
+	'_Data_WriteBoolean',\
     '_Data_WriteInt32',\
     '_Data_WriteUInt32'\
     ]"

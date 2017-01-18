@@ -305,18 +305,38 @@
             httpClientManager.enableHttpDebugging(enable);
         };
 
-        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServer, handlePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer /* , errorStatusPointer, errorCodePointer, errorSourcePointer*/) {
+            // var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             var username = Module.eggShell.dataReadString(usernamePointer);
             var password = Module.eggShell.dataReadString(passwordPointer);
-            var returnValue = CODES.NO_ERROR;
-            var errorString = '';
+            // var verifyServer = verifyServerInt32 !== FALSE;
+            // var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+            // var errorCode = Module.eggShell.dataReadInt32(errorCodePointer);
+            // var errorSource = Module.eggShell.dataReadString(errorSourcePointer);
+
+            // console.log('cookieFile', cookieFile);
+            // console.log('username', username);
+            // console.log('password', password);
+            // console.log('verifyServer', verifyServer);
+            // console.log('errorStatus', errorStatus);
+            // console.log('errorCode', errorCode);
+            // console.log('errorSource', errorSource);
+
+            // Module.eggShell.dataWriteBoolean(errorStatusPointer, false);
+            // Module.eggShell.dataWriteInt32(errorCodePointer, -55);
+            // Module.eggShell.dataWriteString(errorSourcePointer, 'wubbalubbadubdub');
+
+            // errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+            // errorCode = Module.eggShell.dataReadInt32(errorCodePointer);
+            // errorSource = Module.eggShell.dataReadString(errorSourcePointer);
+
+            // console.log('errorStatus', errorStatus);
+            // console.log('errorCode', errorCode);
+            // console.log('errorSource', errorSource);
 
             // TODO mraj if error in then return handle as 0, error passthrough
             var handle = httpClientManager.create(username, password);
-
             Module.eggShell.dataWriteUInt32(handlePointer, handle);
-            Module.eggShell.dataWriteString(errorSourcePointer, errorString);
-            return returnValue;
         };
 
         Module.httpClient.jsHttpClientClose = function (handle, errorMessage) {

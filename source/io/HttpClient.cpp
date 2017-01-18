@@ -34,7 +34,7 @@ enum HttpClientMethodId {
 };
 
 extern "C" {
-    extern Int32 jsHttpClientOpen(StringRef, StringRef, StringRef, UInt32, UInt32 *, StringRef);
+    extern void jsHttpClientOpen(StringRef, StringRef, StringRef, UInt32, UInt32 *, Boolean *, Int32 *, StringRef);
     extern Int32 jsHttpClientClose(UInt32, StringRef);
     extern Int32 jsHttpClientAddHeader(UInt32, StringRef, StringRef, StringRef);
     extern Int32 jsHttpClientRemoveHeader(UInt32, StringRef, StringRef);
@@ -46,17 +46,19 @@ extern "C" {
 #endif
 
 //------------------------------------------------------------
-// Cookie file(0), userName(1), password(2), verify Server(3), handle(4), error code(5), error message(6)
-VIREO_FUNCTION_SIGNATURE7(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, Int32, StringRef)
+// Cookie file(0), userName(1), password(2), verify Server(3), handle(4), error cluster(5)
+VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    _Param(5) = jsHttpClientOpen(
+    jsHttpClientOpen(
         _Param(0),
         _Param(1),
         _Param(2),
         _Param(3),
         _ParamPointer(4),
-        _Param(6)
+		&_Param(5).status,
+		&_Param(5).code,
+		_Param(5).source
         );
 #endif
     return _NextInstruction();
@@ -330,7 +332,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.UInt32) o(.UInt32) io(.Int32) o(.String))")
+    DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.UInt32) o(.UInt32) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(HttpClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(.Int32) o(.String) )")
     DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(.Int32) o(.String))")

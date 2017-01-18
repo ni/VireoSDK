@@ -37,6 +37,8 @@
             'EggShell_WriteValueString',
             'Data_GetStringBegin',
             'Data_GetStringLength',
+            'Data_ReadBoolean',
+            'Data_WriteBoolean',
             'Data_WriteString',
             'Data_WriteInt32',
             'Data_WriteUInt32',
@@ -60,6 +62,8 @@
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
+        var Data_ReadBoolean = Module.cwrap('Data_ReadBoolean', 'number', ['number']);
+        var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var EggShell_REPL = Module.cwrap('EggShell_REPL', 'number', ['number', 'string', 'number']);
@@ -118,23 +122,42 @@
             EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
         };
 
-        Module.eggShell.dataReadString = publicAPI.eggShell.dataReadString = function (stringPointer) {
+        Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
             var str = Module.Pointer_stringify(begin, length);
             return str;
         };
 
-        Module.eggShell.dataWriteString = publicAPI.eggShell.dataWriteString = function (destination, source) {
+        Module.eggShell.dataWriteString = function (destination, source) {
             var sourceLength = Module.lengthBytesUTF8(source);
             Data_WriteString(v_userShell, destination, source, sourceLength);
         };
 
-        Module.eggShell.dataWriteInt32 = publicAPI.eggShell.dataWriteInt32 = function (destination, value) {
+        Module.eggShell.dataReadBoolean = function (booleanPointer) {
+            var numericValue = Data_ReadBoolean(booleanPointer);
+            return numericValue !== 0;
+        };
+
+        Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
+            var numericValue = booleanValue ? 1 : 0;
+            Data_WriteBoolean(booleanPointer, numericValue);
+        };
+
+        Module.eggShell.dataReadInt32 = function (intPointer) {
+            return Module.getValue(intPointer, 'i32');
+        };
+
+        Module.eggShell.dataWriteInt32 = function (destination, value) {
             Data_WriteInt32(destination, value);
         };
 
-        Module.eggShell.dataWriteUInt32 = publicAPI.eggShell.dataWriteUInt32 = function (destination, value) {
+        // TODO mraj we need to validate both of these unsigned functions are working correctly
+        Module.eggShell.dataReadUInt32 = function (intPointer) {
+            return Module.getValue(intPointer, 'i32');
+        };
+
+        Module.eggShell.dataWriteUInt32 = function (destination, value) {
             Data_WriteUInt32(destination, value);
         };
 
@@ -159,7 +182,7 @@
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
-        Module.eggShell.setOccurrence = publicAPI.eggShell.setOccurrence = function (occurrence) {
+        Module.eggShell.setOccurrence = function (occurrence) {
             Occurrence_Set(occurrence);
         };
     };
