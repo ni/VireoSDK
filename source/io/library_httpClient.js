@@ -3,7 +3,7 @@
     'use strict';
     var httpClientCAPI = {
         jsHttpClientOpen: function () {
-            return Module.httpClient.jsHttpClientOpen.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientOpen.apply(undefined, arguments);
         },
 
         jsHttpClientClose: function () {
