@@ -32,10 +32,12 @@
 
     var CODES = {
         NO_ERROR: 0,
-        INVALID_HANDLE: -1967362020,
-        TIMEOUT: -12345,
-        ABORT: -12345,
-        NETWORK_ERROR: -12345
+        RECEIVE_INVALID_HANDLE: -1,
+        CLOSE_INVALID_HANDLE: -1967362020,
+        TIMEOUT: -50,
+        ABORT: -100,
+        NETWORK_ERROR: -150,
+        WEBVI_UNSUPPORTED_INPUT: -200
     };
 
     var HttpClient;
@@ -246,6 +248,8 @@
                 return;
             }
 
+            // We do not abort any existing requests with this handle
+
             this._httpClients.delete(handle);
             this._log('[HTTPClient] Deleted handle:', handle);
         };
@@ -305,53 +309,92 @@
             httpClientManager.enableHttpDebugging(enable);
         };
 
-        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer /* , errorStatusPointer, errorCodePointer, errorSourcePointer*/) {
-            // var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
-            var username = Module.eggShell.dataReadString(usernamePointer);
-            var password = Module.eggShell.dataReadString(passwordPointer);
-            // var verifyServer = verifyServerInt32 !== FALSE;
-            // var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            // var errorCode = Module.eggShell.dataReadInt32(errorCodePointer);
-            // var errorSource = Module.eggShell.dataReadString(errorSourcePointer);
+        Module.httpClient.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
+            // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
 
-            // console.log('cookieFile', cookieFile);
-            // console.log('username', username);
-            // console.log('password', password);
-            // console.log('verifyServer', verifyServer);
-            // console.log('errorStatus', errorStatus);
-            // console.log('errorCode', errorCode);
-            // console.log('errorSource', errorSource);
+            var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
+            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
 
-            // Module.eggShell.dataWriteBoolean(errorStatusPointer, false);
-            // Module.eggShell.dataWriteInt32(errorCodePointer, -55);
-            // Module.eggShell.dataWriteString(errorSourcePointer, 'wubbalubbadubdub');
+            var existingError = existingErrorStatus;
+            var newError = newErrorStatus;
+            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
+            var newWarning = newErrorCode !== CODES.NO_ERROR;
 
-            // errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            // errorCode = Module.eggShell.dataReadInt32(errorCodePointer);
-            // errorSource = Module.eggShell.dataReadString(errorSourcePointer);
+            if (existingError) {
+                return;
+            }
 
-            // console.log('errorStatus', errorStatus);
-            // console.log('errorCode', errorCode);
-            // console.log('errorSource', errorSource);
+            if (newError) {
+                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
+                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
+                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+                return;
+            }
 
-            // TODO mraj if error in then return handle as 0, error passthrough
-            var handle = httpClientManager.create(username, password);
-            Module.eggShell.dataWriteUInt32(handlePointer, handle);
+            if (existingWarning) {
+                return;
+            }
+
+            if (newWarning) {
+                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
+                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
+                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+                return;
+            }
+
+            // If no error or warning then pass through
+            // Note: merge errors function ignores newSource if no newError or newWarning so replicated here
+            return;
         };
 
-        Module.httpClient.jsHttpClientClose = function (handle, errorMessage) {
-            var returnValue = CODES.NO_ERROR;
-            var errorString = '';
+        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var newSource;
 
-            // TODO mraj check if handle exists
-            // if error and exists, close handle and pass error through
-            // if error and no exists, pass error through
-            // if no error and exists, close handle
-            // if no error and no exists, error -1967362020
+            // TODO mraj the following handle check can be removed if we can confirm Vireo initializes the value of out parameters to zero
+            var handle = Module.eggShell.dataReadInt32(handlePointer);
+            if (handle !== 0) {
+                throw new Error('Expected value of handle to be zero. Need to initialize value prior to running.');
+            }
+
+            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+            if (errorStatus) {
+                return;
+            }
+
+            var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
+            if (cookieFile !== '') {
+                newSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default)';
+                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                return;
+            }
+
+            var verifyServer = verifyServerInt32 !== FALSE;
+            if (verifyServer !== true) {
+                newSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default)';
+                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                return;
+            }
+
+            var username = Module.eggShell.dataReadString(usernamePointer);
+            var password = Module.eggShell.dataReadString(passwordPointer);
+
+            var newHandle = httpClientManager.create(username, password);
+            Module.eggShell.dataWriteUInt32(handlePointer, newHandle);
+        };
+
+        Module.httpClient.jsHttpClientClose = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var newSource;
+
+            var handleExists = httpClientManager.get(handle) !== undefined;
+            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+
+            if (handleExists === false && errorStatus === false) {
+                newSource = 'LabVIEWHTTPClient:CloseHandle, Attempted to close an invalid or non-existant handle';
+                Module.httpClient.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            }
+
+            // Always destroy the handle
             httpClientManager.destroy(handle);
-
-            Module.eggShell.dataWriteString(errorMessage, errorString);
-            return returnValue;
         };
 
         Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorSourcePointer) {
