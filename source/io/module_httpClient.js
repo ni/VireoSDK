@@ -347,6 +347,11 @@
             return;
         };
 
+        Module.httpClient.mergeErrorsAndSetOccurrence = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer, occurrencePointer) {
+            Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer);
+            Module.eggShell.setOccurrence(occurrencePointer);
+        };
+
         Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var newSource;
 
@@ -397,7 +402,7 @@
             httpClientManager.destroy(handle);
         };
 
-        Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = Module.eggShell.dataReadString(valuePointer);
             var returnValue = CODES.NO_ERROR;
@@ -417,7 +422,7 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var header = Module.eggShell.dataReadString(headerPointer);
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
@@ -436,7 +441,7 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, value, errorSourcePointer) {
+        Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, value, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var header = Module.eggShell.dataReadString(headerPointer);
             var valueText = '';
             var returnValue = CODES.NO_ERROR;
@@ -457,7 +462,7 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistPointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistPointer, value, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var header = Module.eggShell.dataReadString(headerPointer);
             var headerExist = false;
             var returnValue = CODES.NO_ERROR;
@@ -473,12 +478,14 @@
                 headerExist = httpClient.headerExist(handle, header);
             }
 
+            // TODO mraj write header value
+
             Module.eggShell.dataWriteUInt32(headerExistPointer, headerExist ? TRUE : FALSE);
             Module.eggShell.dataWriteString(errorSourcePointer, errorString);
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorSourcePointer) {
+        Module.httpClient.jsHttpClientListHeaders = function (handle, list, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var listText = '';
             var returnValue = CODES.NO_ERROR;
             var errorString = '';
@@ -498,21 +505,8 @@
             return returnValue;
         };
 
-        var setOccurenceAndError = function (errorCode, errorSource, errorCodePointer, errorSourcePointer, occurrencePointer) {
-            // TODO mraj, check codePointer for any existing error, dont override existing error
-
-            // TODO mraj, check status and code pointer to implement the merge errors behavior https://zone.ni.com/reference/en-XX/help/371361H-01/glang/merge_errors_function/
-            // ie error overrides warning, but error does not override error, and warning does not override warning?
-            if (errorCode !== CODES.NO_ERROR) {
-                Module.eggShell.dataWriteInt32(errorCodePointer, errorCode);
-                Module.eggShell.dataWriteString(errorSourcePointer, errorSource);
-            }
-
-            // Regardless of error set the occurrence
-            Module.eggShell.setOccurrence(occurrencePointer);
-        };
-
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headersPointer, bodyPointer, codePointer, sourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headersPointer, bodyPointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+            var newSource;
             var method = METHOD_NAMES[methodId];
             var url = Module.eggShell.dataReadString(urlPointer);
 
@@ -524,7 +518,8 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    setOccurenceAndError(-1, 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature', codePointer, sourcePointer, occurrencePointer);
+                    newSource = 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature';
+                    Module.httpClient.mergeErrorsAndSetOccurrence(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer);
                     return;
                 }
             }
@@ -542,7 +537,7 @@
                 httpClient = results.httpClient;
 
                 if (httpClient === undefined) {
-                    setOccurenceAndError(results.code, results.source, codePointer, sourcePointer, occurrencePointer);
+                    // setOccurenceAndError(results.code, results.source, codePointer, sourcePointer, occurrencePointer);
                     return;
                 }
             }
@@ -575,7 +570,9 @@
                     Module.eggShell.dataWriteString(bodyPointer, responseData.text);
                 }
 
-                setOccurenceAndError(responseData.labviewCode, 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage, codePointer, sourcePointer, occurrencePointer);
+                var newStatus = responseData.labviewCode !== CODES.NO_ERROR;
+                var newSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
+                Module.httpClient.mergeErrorsAndSetOccurrence(newStatus, responseData.labviewCode, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer);
             });
         };
     };
