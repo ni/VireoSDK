@@ -39,6 +39,7 @@
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
     <ClCompile Include="..\source\core\UnitTest.cpp" />
     <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
+    <ClCompile Include="..\source\core\Waveform.cpp" />
     <ClCompile Include="..\source\io\Canvas2d.cpp" />
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
     <ClCompile Include="..\source\io\FileIO.cpp" />
@@ -73,6 +74,7 @@
     <ClInclude Include="..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\source\include\UnitTest.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
+    <ClInclude Include="..\source\include\Waveform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>

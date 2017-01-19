@@ -123,7 +123,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/RefNumTest.bc\
     $(OBJS)/Canvas2d.bc\
     $(OBJS)/FileIO.bc\
-    $(OBJS)/HttpClient.bc
+    $(OBJS)/HttpClient.bc \
+    $(OBJS)/Waveform.bc \
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
