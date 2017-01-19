@@ -7,27 +7,27 @@
         },
 
         jsHttpClientClose: function () {
-            return Module.httpClient.jsHttpClientClose.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientClose.apply(undefined, arguments);
         },
 
         jsHttpClientAddHeader: function () {
-            return Module.httpClient.jsHttpClientAddHeader.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientAddHeader.apply(undefined, arguments);
         },
 
         jsHttpClientRemoveHeader: function () {
-            return Module.httpClient.jsHttpClientRemoveHeader.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientRemoveHeader.apply(undefined, arguments);
         },
 
         jsHttpClientGetHeader: function () {
-            return Module.httpClient.jsHttpClientGetHeader.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientGetHeader.apply(undefined, arguments);
         },
 
         jsHttpClientHeaderExists: function () {
-            return Module.httpClient.jsHttpClientHeaderExists.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientHeaderExists.apply(undefined, arguments);
         },
 
         jsHttpClientListHeaders: function () {
-            return Module.httpClient.jsHttpClientListHeaders.apply(undefined, arguments);
+            Module.httpClient.jsHttpClientListHeaders.apply(undefined, arguments);
         },
 
         jsHttpClientMethod: function () {
