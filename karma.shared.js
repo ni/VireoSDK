@@ -63,6 +63,13 @@
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: [],
 
+        customLaunchers: {
+            PhantomJS_Debug: {
+                base: 'PhantomJS',
+                debug: true
+            }
+        },
+
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
         singleRun: false,
