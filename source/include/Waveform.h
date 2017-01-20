@@ -22,7 +22,7 @@ namespace Vireo {
 struct AnalogWaveform {
     Timestamp _t0;
     Double _dt;
-    TypedObjectRef _Y;
+    TypedArrayCoreRef _Y;
     // TODO Add attributes
 };
 
