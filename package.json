@@ -21,6 +21,8 @@
     "lint": "eslint .",
     "karma": "karma start --browsers PhantomJS,Firefox --single-run",
     "karma-longrun": "karma start karma.longrun.conf.js --browsers Firefox --single-run",
+    "karma-firefox": "karma start --browsers Firefox --single-run",
+    "karma-phantomjs-debug": "karma start --browsers PhantomJS_Debug --single-run",
     "prehttpbin-install": "python -V && pip -V && virtualenv --version",
     "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
     "httpbin": "python -m httpbin.core --port 64526"
