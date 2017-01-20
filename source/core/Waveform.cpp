@@ -30,17 +30,16 @@ DEFINE_VIREO_TYPE(DigitalWaveform, "c(e(a(UInt8 * *) data)e(a(UInt32 *) transiti
 DEFINE_VIREO_END()
 #endif
 
-VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double, TypedObjectRef)
+VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double, TypedArrayCoreRef)
 {
     _Param(0)._t0 = _Param(1);
     _Param(0)._dt = _Param(2);
 
-    TypedObjectRef* argY_source = _ParamPointer(3);
-    TypedObjectRef* waveY_dest = &_Param(0)._Y;
-    SubString waveY_elemType =  (*waveY_dest)->ElementType()->Name();
-    if (! (*argY_source)->ElementType()->Name().Compare(&waveY_elemType) )
+    TypedArrayCoreRef* argY_source = _ParamPointer(3);
+    TypedArrayCoreRef* waveY_dest = &_Param(0)._Y;
+    if (! (*argY_source)->ElementType()->IsA((*waveY_dest)->ElementType()) )
     {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "AnalogWaveformBuild() Type of argument-3 does not match with type of output waveform");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "AnalogWaveformBuild() Type of argument-3 does not match type of output waveform");
         return THREAD_EXEC()->Stop();
     }
     TypeRef type = (*argY_source)->Type();
