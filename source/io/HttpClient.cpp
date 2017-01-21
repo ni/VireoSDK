@@ -35,7 +35,7 @@ extern "C" {
     extern void jsHttpClientGetHeader(UInt32, StringRef, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, Boolean *, Int32 *, StringRef, OccurrenceRef);
+    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32 *, StringRef, StringRef, Boolean *, Int32 *, StringRef, OccurrenceRef);
 }
 #endif
 
@@ -166,7 +166,7 @@ VIREO_FUNCTION_SIGNATURE8(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
             _Param(1),
             _Param(2),
             null,
-            _Param(3),
+            _ParamPointer(3),
             _Param(4),
             _Param(5),
             &_Param(6).status,
@@ -202,7 +202,7 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientHead, UInt32, StringRef, Int32, StringRef, E
             _Param(1),
             null,
             null,
-            _Param(2),
+            _ParamPointer(2),
             _Param(3),
             null,
             &_Param(4).status,
@@ -239,7 +239,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientPut, UInt32, StringRef, StringRef, StringRef
             _Param(1),
             _Param(2),
             _Param(3),
-            _Param(4),
+            _ParamPointer(4),
             _Param(5),
             _Param(6),
             &_Param(7).status,
@@ -275,7 +275,7 @@ VIREO_FUNCTION_SIGNATURE8(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
             _Param(1),
             _Param(2),
             null,
-            _Param(3),
+            _ParamPointer(3),
             _Param(4),
             _Param(5),
             &_Param(6).status,
@@ -311,7 +311,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientPost, UInt32, StringRef, StringRef, StringRe
             _Param(1),
             _Param(2),
             _Param(3),
-            _Param(4),
+            _ParamPointer(4),
             _Param(5),
             _Param(6),
             &_Param(7).status,

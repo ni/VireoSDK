@@ -40,6 +40,9 @@
         WEBVI_UNSUPPORTED_INPUT: -200
     };
 
+    var DEFAULT_TIMEOUT = 10000;
+    var TIMEOUT_IMMEDIATELY = 1;
+
     var HttpClient;
     (function () {
         // Static private reference aliases
@@ -505,7 +508,7 @@
             return returnValue;
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeout, headersPointer, bodyPointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
             var newSource;
             var method = METHOD_NAMES[methodId];
             var url = Module.eggShell.dataReadString(urlPointer);
@@ -542,18 +545,22 @@
                 }
             }
 
-            // In LabVIEW timeout -1 means wait forever, in xhr timeout 0 means wait forever
-            // TODO mraj check if functions can have default values. Until then assume 0 was meant to be the default 10000
-            // Vireo does have a concept of unwired values, have to use _ParamPointer and check if it is null
-            // then in viaCode a * is used for unwired values
             var xhrTimeout;
+            var timeout;
 
-            if (timeout < 0) {
-                xhrTimeout = 0;
-            } else if (timeout === 0) {
-                xhrTimeout = 10000;
+            if (timeoutPointer === NULL) {
+                xhrTimeout = DEFAULT_TIMEOUT;
             } else {
-                xhrTimeout = timeout;
+                timeout = Module.eggShell.dataReadInt32(timeoutPointer);
+
+                // In LabVIEW timeout -1 means wait forever, in xhr timeout 0 means wait forever
+                if (timeout < 0) {
+                    xhrTimeout = 0;
+                } else if (timeout === 0) {
+                    xhrTimeout = TIMEOUT_IMMEDIATELY;
+                } else {
+                    xhrTimeout = timeout;
+                }
             }
 
             var requestData = {

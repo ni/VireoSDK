@@ -3,7 +3,6 @@ define(MyVI dv(VirtualInstrument (
         e(dv(.UInt32 0) handle)
         e('' url)
         e('' outputFile)
-        e(10000 timeout)
         e('' headers)
         e('' body)
         e(c(
@@ -14,7 +13,7 @@ define(MyVI dv(VirtualInstrument (
     )
     clump (
         // handle(0), url(1), output file(2), timeout(3), headers(4), body(5), error(6), ocurrence(7)
-        HttpClientGet(handle url outputFile timeout headers body error)
+        HttpClientGet(handle url outputFile * headers body error)
     )
 ) ) )
 
