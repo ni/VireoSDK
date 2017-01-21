@@ -10,7 +10,15 @@ describe('can run HTTP Get suite', function () {
     httpBinHelpers.makeTestPendingIfHttpBinOffline();
 
     // Sharing Vireo instances across tests make them run soooo much faster
-    var vireo = new Vireo();
+    // var vireo = new Vireo();
+
+    // TODO mraj using the same vireo instance causes an abort when one http call results in a none 200 response code
+    // See https://github.com/ni/VireoSDK/issues/163
+    var vireo;
+
+    beforeEach(function () {
+        vireo = new Vireo();
+    });
 
     // The timeout does not seem to timeout fast enough and things get weird on fail
     var originalTimeout;
@@ -35,7 +43,7 @@ describe('can run HTTP Get suite', function () {
 
         var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
         viPathWriter('url', url);
-        viPathWriter('timeOut', timeout);
+        viPathWriter('timeout', timeout);
 
         var startTime = performance.now();
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -44,6 +52,38 @@ describe('can run HTTP Get suite', function () {
             var timeoutBuffered = timeout + (timeout * 0.5);
 
             expect(runTime).toBeLessThan(timeoutBuffered);
+
+            expect(rawPrint).toBe('');
+            expect(rawPrintError).toBe('');
+
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBe('');
+            expect(viPathParser('body')).toBe('');
+            done();
+        });
+    });
+
+    it('GET method with default timeout of 10 seconds times out with httpbin delay of 30s', function (done) {
+        var timeout = 10000;
+
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('longrun/DefaultTimeout.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        viPathWriter('url', url);
+        // Do not write timeout, default of 10s should be used
+
+        var startTime = performance.now();
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            var endTime = performance.now();
+            var runTime = endTime - startTime;
+            var timeoutBuffered = timeout + (timeout * 0.5);
+
+            expect(runTime).toBeLessThan(timeoutBuffered);
+            expect(runTime).toBeGreaterThan(timeout);
 
             expect(rawPrint).toBe('');
             expect(rawPrintError).toBe('');
