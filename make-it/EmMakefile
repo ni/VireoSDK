@@ -90,8 +90,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
     '_Data_WriteString',\
-	'_Data_ReadBoolean',\
-	'_Data_WriteBoolean',\
+    '_Data_ReadBoolean',\
+    '_Data_WriteBoolean',\
     '_Data_WriteInt32',\
     '_Data_WriteUInt32'\
     ]"
@@ -123,10 +123,10 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/UnitTest.bc\
 	$(OBJS)/VirtualInstrument.bc\
 	$(OBJS)/RefNumTest.bc\
-    $(OBJS)/Canvas2d.bc\
-    $(OBJS)/FileIO.bc\
-    $(OBJS)/HttpClient.bc \
-    $(OBJS)/Waveform.bc \
+	$(OBJS)/Canvas2d.bc\
+	$(OBJS)/FileIO.bc\
+	$(OBJS)/HttpClient.bc\
+	$(OBJS)/Waveform.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
