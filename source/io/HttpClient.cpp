@@ -62,7 +62,8 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientClose(_Param(0),
+    jsHttpClientClose(
+        _Param(0),
         &_Param(1).status,
         &_Param(1).code,
         _Param(1).source);
@@ -119,7 +120,7 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, Err
 
 //------------------------------------------------------------
 // handle(0), header(1), headerExist(2), value(3), error cluster(4)
-VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExist, UInt32, StringRef, UInt32, StringRef, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
     jsHttpClientHeaderExists(
@@ -339,7 +340,7 @@ DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_FUNCTION(HttpClientAddHeader, "p(io(.UInt32) i(.String) i(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(HttpClientRemoveHeader, "p(io(.UInt32) i(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(HttpClientGetHeader, "p(io(.UInt32) i(.String) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
-    DEFINE_VIREO_FUNCTION(HttpClientHeaderExist, "p(io(.UInt32) i(.String) o(.UInt32) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
+    DEFINE_VIREO_FUNCTION(HttpClientHeaderExists, "p(io(.UInt32) i(.String) o(.UInt32) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(.UInt32) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))))")
     DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))) s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(.UInt32) i(.String) i(.Int32) o(.String) io(c(e(.Boolean) e(.Int32) e(.String))) s(.Occurrence))")
