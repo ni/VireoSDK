@@ -1,15 +1,11 @@
 describe('Tests that fail to run on PahntomJS', function () {
     'use strict';
-
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
-
-    // Skip test if httpbin offline
-    httpBinHelpers.makeTestPendingIfHttpBinOffline();
 
     // Sharing Vireo instances across tests make them run soooo much faster
     // var vireo = new Vireo();
@@ -19,6 +15,7 @@ describe('Tests that fail to run on PahntomJS', function () {
     var vireo;
 
     beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
         vireo = new Vireo();
     });
 
