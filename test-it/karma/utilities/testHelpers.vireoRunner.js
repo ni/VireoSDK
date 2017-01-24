@@ -28,7 +28,9 @@
             });
 
             vireo.eggShell.loadVia(viaText);
-            vireo.eggShell.executeSlices(1000000);
+            while (vireo.eggShell.executeSlices(1000000)) {
+                // repeat until it returns zero
+            }
 
             var normalizedResults = normalizeLineEndings(rawResults);
             var normalizedVtrText = normalizeLineEndings(rawVtrText);
