@@ -410,7 +410,7 @@
             }
 
             var header = Module.eggShell.dataReadString(headerPointer);
-            httpClient.removeHeader(handle, header);
+            httpClient.removeHeader(header);
         };
 
         Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
@@ -468,7 +468,7 @@
                 return;
             }
 
-            var list = httpClient.listHeaders(handle);
+            var list = httpClient.listHeaders();
             Module.eggShell.dataWriteString(listPointer, list);
         };
 
