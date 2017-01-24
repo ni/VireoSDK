@@ -99,7 +99,7 @@
         proto.listHeaders = function () {
             var outputHeaders = [];
 
-            this._headers.forEach(function (header, value) {
+            this._headers.forEach(function (value, header) {
                 outputHeaders.push(header.trim() + ': ' + value.trim());
             });
 
@@ -182,7 +182,7 @@
             });
 
             // Add request headers
-            this._headers.forEach(function (header, value) {
+            this._headers.forEach(function (value, header) {
                 request.setRequestHeader(header, value);
             });
 
