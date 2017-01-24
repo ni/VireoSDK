@@ -34,6 +34,19 @@
   #include <emscripten.h>
 #endif
 
+// Enable VIREO_JOURNAL_ALLOCS to use supplementary map to track all mallocs and remember which
+// actual pointers are leaked.  (map itself does not go through Platform Malloc and is not tracked.)
+// Combine with VIREO_TRACK_MEMORY_ALLLOC_COUNTER in TypeAndDataManager to
+// record allocation number in each Malloc, and set gWatchAlloc to find a specific allocation
+// reported leaked in a previous run.
+
+#define VIREO_JOURNAL_ALLOCS 0
+
+#if VIREO_JOURNAL_ALLOCS
+#include <set>
+std::set <void*> gAllocSet;
+#endif
+
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
 
 #include <new>
@@ -112,6 +125,9 @@ void* PlatformMemory::Malloc(size_t countAQ)
 #endif
     void* pBuffer = malloc(countAQ);
     if (pBuffer) {
+#if VIREO_JOURNAL_ALLOCS
+        gAllocSet.insert(pBuffer);
+#endif
         memset(pBuffer, 0, countAQ);
 #if defined(VIREO_TRACK_MALLOC)
         _totalAllocated += logicalSize;
@@ -133,8 +149,18 @@ void* PlatformMemory::Realloc(void* pBuffer, size_t countAQ)
     size_t newLogicalSize = countAQ;
     countAQ += sizeof(size_t);
 #endif
-
+#if VIREO_JOURNAL_ALLOCS
+    if (pBuffer) {
+        std::set<void*>::iterator it = gAllocSet.find(pBuffer);
+        if (it != gAllocSet.end())
+            gAllocSet.erase(it);
+    }
+#endif
     pBuffer = realloc(pBuffer, countAQ);
+#if VIREO_JOURNAL_ALLOCS
+    if (pBuffer)
+        gAllocSet.insert(pBuffer);
+#endif
 
 #if defined(VIREO_TRACK_MALLOC)
     if (pBuffer) {
@@ -155,8 +181,25 @@ void PlatformMemory::Free(void* pBuffer)
 #else
     _totalAllocated--;
 #endif
+#if VIREO_JOURNAL_ALLOCS
+    if (pBuffer) {
+        std::set<void*>::iterator it = gAllocSet.find(pBuffer);
+        gAllocSet.erase(it);
+    }
+#endif
     free(pBuffer);
 }
+#if VIREO_JOURNAL_ALLOCS
+void DumpPlatformMemoryLeaks() { // to be called from debugger
+    std::set<void*>::iterator it = gAllocSet.begin(), ite = gAllocSet.end();
+    while (it != ite) {
+        void *pBuffer = *it;
+        size_t s = ((size_t*)pBuffer)[2]; // hack, but this is just for debugging
+        gPlatform.IO.Printf("Leak %lx %ld\n", pBuffer, s);
+        ++it;
+    }
+}
+#endif
 //============================================================
 //! Static memory deallocator used for all TM memory management.
 void PlatformIO::Print(ConstCStr string)
@@ -164,6 +207,10 @@ void PlatformIO::Print(ConstCStr string)
     fwrite(string, 1, strlen(string), stdout);
 #if kVireoOS_emscripten
     fflush(stdout);
+#endif
+#if VIREO_JOURNAL_ALLOCS
+    if (*string == 256) // never true, hack to prevent dead code elim, only for debugging
+        DumpPlatformMemoryLeaks();
 #endif
 }
 //------------------------------------------------------------

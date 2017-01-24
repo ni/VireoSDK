@@ -15,8 +15,6 @@ Craig S.
 #include "RefNum.h"
 #include "UnitTest.h"
 
-#include <vector>
-
 using namespace Vireo;
 
 #ifndef VIREO_TEST_REFNUM

@@ -56,6 +56,7 @@ private:
     virtual void VisitElement(ElementType* type);
     virtual void VisitNamed(NamedType* type);
     virtual void VisitPointer(PointerType* type);
+    virtual void VisitRefNumVal(RefNumValType* type);
     virtual void VisitDefaultValue(DefaultValueType* type);
     virtual void VisitDefaultPointer(DefaultPointerType* type);
     virtual void VisitCustomDataProc(CustomDataProcType* type);
@@ -251,6 +252,10 @@ void DataReflectionVisitor::VisitNamed(NamedType* type)
 }
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitPointer(PointerType* type)
+{
+}
+//------------------------------------------------------------
+void DataReflectionVisitor::VisitRefNumVal(RefNumValType *type)
 {
 }
 //------------------------------------------------------------

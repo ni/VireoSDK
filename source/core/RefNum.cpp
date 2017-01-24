@@ -20,9 +20,9 @@ using namespace Vireo;
 
 #define kNumberOfIndexBits	20
 #define kNumberOfMagicBits	(32 - kNumberOfIndexBits)				// 12 bits of magic number 4K
-#define IndexFromRefNum(mc) (UInt32(mc) & kMaxIndex)                // retrieves the pouch index portion of the refnum
-#define kMagicNumberShift 	kNumberOfIndexBits						// bits magic number is shifted  2^20 possible refnums
-#define kMaxIndex 			((1U << kNumberOfIndexBits) - 1)		// 1M
+#define IndexFromRefNum(mc) (UInt32(mc) & kMaxIndex)             // retrieves the pouch index portion of the refnum
+#define kMagicNumberShift 	kNumberOfIndexBits					// bits magic number is shifted  2^20 possible refnums
+#define kMaxIndex 			((1U << kNumberOfIndexBits) - 1)	// 1M
 #define kMaxMagicNumber 	((1U << kNumberOfMagicBits) - 1)
 
 #define MagicMask(mn) (UInt32(mn) & kMaxMagicNumber)                   // retrieves the magic number portion of the refnum
@@ -269,4 +269,42 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
         }
     }
     return previousRefCount;
+}
+
+RefNumManager::CleanupMap RefNumManager::_s_CleanupMap; // Singleton for refnum cleanup procs
+
+void RefNumManager::AddCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg) {
+    _s_CleanupMap[vi].push_back(CleanupRecord(proc, arg));
+}
+
+void RefNumManager::RemoveCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg) {
+    CleanupMap::iterator viIter = _s_CleanupMap.find(vi);
+    if (viIter != _s_CleanupMap.end()) {
+        std::vector<CleanupRecord>::iterator it = viIter->second.begin(), nit, ite = viIter->second.end();
+        while (it != ite) {
+            if (it->proc == proc && it->arg == arg) {
+                // just leave holes, whole vector will be deallocated when VI finishes
+                it->proc = NULL;
+                it->arg = 0;
+            }
+            ++it;
+        }
+    }
+}
+
+void RefNumManager::RunCleanupProcs(VirtualInstrument *vi) {
+    CleanupMap::iterator viIter = _s_CleanupMap.find(vi);
+    if (viIter != _s_CleanupMap.end()) {
+        std::vector<CleanupRecord>::iterator it = viIter->second.begin(), ite = viIter->second.end();
+        while (it != ite) {
+            if (it->proc)
+                (*it->proc)(it->arg);
+            ++it;
+        }
+        _s_CleanupMap.erase(viIter);
+    }
+}
+
+void Vireo::RunCleanupProcs(VirtualInstrument *vi) {
+    return RefNumManager::RunCleanupProcs(vi);
 }

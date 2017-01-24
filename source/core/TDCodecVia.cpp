@@ -306,6 +306,8 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         type = ParseEquivalence();
     } else if (typeFunction.CompareCStr(tsPointerTypeToken)) {
         type = ParsePointerType(false);
+    } else if (typeFunction.CompareCStr(tsRefNumTypeToken)) {
+        type = ParseRefNumType();
     } else if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr("start")) {
         type = ParseEnqueue();
     } else {
@@ -602,6 +604,17 @@ TypeRef TDViaParser::ParsePointerType(Boolean shortNotation)
             return BadType();
     }
     return pointer;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseRefNumType()
+{
+    if (!_string.EatChar('('))
+        return BadType();
+    TypeRef subType = ParseType();
+    RefNumValType *refnum = RefNumValType::New(_typeManager, subType);
+    if (!_string.EatChar(')'))
+        return BadType();
+    return refnum;
 }
 //------------------------------------------------------------
 EncodingEnum TDViaParser::ParseEncoding(SubString *string)
@@ -1638,6 +1651,12 @@ private:
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
+    virtual void VisitRefNumVal(RefNumValType* type)
+    {
+        _pFormatter->_string->AppendCStr("^");
+        type->BaseType()->Accept(this);
+        _pFormatter->_string->AppendCStr("");
+    }
     //------------------------------------------------------------
     virtual void VisitDefaultValue(DefaultValueType* type)
     {
@@ -1813,7 +1832,7 @@ void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
         FormatType(*(TypeRef*) pData);
     } else {
         // For types that do not support serialization
-        // serialize the pointer type and weather it is null or not
+        // serialize the pointer type and whether it is null or not
         _string->Append('^');
         _string->Append(name.Length(), (Utf8Char*)name.Begin());
         if ((*(void**)pData) == null) {
@@ -1966,6 +1985,17 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_Cluster:
             FormatClusterData(type, pData);
+            break;
+        case kEncoding_RefNum:
+            {
+                RefNumValType *refType = *(RefNumValType**)pData;
+                SubString name = refType->Name();
+                UInt32 refnum = refType->GetRefNum();
+                _string->AppendCStr("refnum ");
+                FormatInt(kEncoding_UInt, refnum);
+                _string->Append(' ');
+                _string->Append(name.Length(), (Utf8Char*)name.Begin());
+            }
             break;
         default:
             Int32 len = snprintf(buffer, sizeof(buffer), "***TODO pointer type");

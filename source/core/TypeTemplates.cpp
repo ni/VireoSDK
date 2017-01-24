@@ -33,8 +33,7 @@ class TypeTemplateVisitor : public TypeVisitor
  private:
     TypeRef  LookupParameter(IntIndex i);
     IntIndex AcceptIntDim(IntIndex value);
-    
- private:
+
     virtual void VisitBad(TypeRef type);
     virtual void VisitBitBlock(BitBlockType* type);
     virtual void VisitBitCluster(BitClusterType* type);
@@ -45,6 +44,7 @@ class TypeTemplateVisitor : public TypeVisitor
     virtual void VisitElement(ElementType* type);
     virtual void VisitNamed(NamedType* type);
     virtual void VisitPointer(PointerType* type);
+    virtual void VisitRefNumVal(RefNumValType* type);
     virtual void VisitDefaultValue(DefaultValueType* type);
     virtual void VisitDefaultPointer(DefaultPointerType* type);
     virtual void VisitCustomDataProc(CustomDataProcType* type);
@@ -213,7 +213,8 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
     // not strictly true any longer.
     VIREO_ASSERT(subType != type->GetSubElement(0));
 
-    _newType = ArrayType::New(_typeManager, subType, type->Rank(), newDimensions);
+    Boolean inhibitUniq = type->Rank() > 0 && _inhibitTypeUniqueness;
+    _newType = ArrayType::New(_typeManager, subType, type->Rank(), newDimensions, inhibitUniq);
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
@@ -321,6 +322,21 @@ void TypeTemplateVisitor::VisitPointer(PointerType* type)
     TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         _newType = PointerType::New(_typeManager, newBaseType);
+    } else {
+        _newType = type;
+    }
+}
+//------------------------------------------------------------
+void TypeTemplateVisitor::VisitRefNumVal(RefNumValType *type)
+{
+    if (!type->IsTemplate()) {
+        _newType = type;
+        return;
+    }
+
+    TypeRef newBaseType = Accept(type->BaseType());
+    if (newBaseType != type->BaseType()) {
+        _newType = RefNumValType::New(_typeManager, newBaseType);
     } else {
         _newType = type;
     }

@@ -133,6 +133,7 @@ private :
     TypeRef ParseNamedType();
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
+    TypeRef ParseRefNumType();
     EncodingEnum ParseEncoding(SubString* string);
 };
 
@@ -221,6 +222,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsNamedTypeToken        "."
 #define tsParamBlockTypeToken   "p"  // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
+#define tsRefNumTypeToken       "refnum"
+
 #define tsDefaultValueToken     "dv"
 #define tsVarValueToken         "var"
 

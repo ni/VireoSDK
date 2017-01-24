@@ -1,0 +1,88 @@
+
+define(TestProgram dv(.VirtualInstrument (
+    c(
+        e(.QueueRefNum<.Double> q)
+        e(.QueueRefNum<.Double> lq)
+        e(dv(.Double 42.5) x)
+        e(.Double y)
+        e(.Double y2)
+        e(.Double y3)
+        e(.Boolean timedOut)
+        e(.Int32 ms)
+        e(.Int32 ne)
+        e(.Int32 pendingD)
+        e(.Int32 pendingE)
+        e(a(.Double *) remainingElts)
+        e(.ErrorClust err)
+        e(.ErrorClust err2)
+        e(.ErrorClust err3)
+        e(dv(.Double 1.1) c1_1)
+        e(dv(.Double 1.2) c1_2)
+        e(dv(.Double 1.3) c1_3)
+        e(dv(.Double 1.4) c1_4)
+    )
+
+    clump (
+        Trigger(1)
+        Trigger(2)
+        Trigger(3)
+        Trigger(4)
+        Wait(1)
+        Wait(2)
+        Wait(3)
+        Wait(4)
+        Printf("Done\n")
+    )
+
+    clump (
+        ObtainQueue(q * * * * err)
+        ObtainQueue(lq 1 * * * err)
+
+        WaitMilliseconds(50)
+        GetQueueStatus(lq true ms * * pendingE * remainingElts err)
+        Printf("GQS LQ pendingInsert %d %z\n" pendingE remainingElts)
+        WaitMilliseconds(100)
+        GetQueueStatus(q true ms * pendingD * * remainingElts err)
+        Printf("GQS Q pendingRemove %d\n" pendingD)
+        Enqueue(q c1_1 1000 timedOut err)
+        Printf(">>Added1 new value %.1f\n" c1_1)
+
+        GetQueueStatus(q true ms * pendingD pendingE ne remainingElts err)
+        Printf("GQS Q pendingRemove %d numElts %d\n" pendingD ne)
+        WaitMilliseconds(100)
+        Enqueue(q c1_2 1000 timedOut err)
+        Printf(">>Added1 new value %.1f\n" c1_2)
+
+        WaitMilliseconds(200)
+        ReleaseQueue(q * * err)
+        ReleaseQueue(lq * * err)
+    )
+
+    clump (
+        WaitMilliseconds(60)
+    )
+    clump (
+        Printf("Clump1\n")
+        WaitMilliseconds(10)
+        Enqueue(lq 1.0 100 timedOut err2)
+        WaitMilliseconds(10)
+        Printf("Starting Dequeue1\n")
+        Dequeue(q y2 * timedOut err2)
+        Printf("Dequeued1 value is %.1f to:%s err:%z\n" y2 timedOut err2)
+    )
+    clump (
+        Printf("Clump2\n")
+        WaitMilliseconds(20)
+        Enqueue(lq 2.0 100 timedOut err3)
+        WaitMilliseconds(10)
+        Printf("Starting Dequeue2\n")
+        Dequeue(q y2 800 timedOut err3)
+        Printf("Dequeued2 value is %.1f to:%s err:%z\n" y2 timedOut err3)
+    )
+
+) ) )
+
+
+enqueue(TestProgram)
+
+

@@ -1,0 +1,36 @@
+
+define(TestProgram dv(.VirtualInstrument (
+    c(
+        e(.QueueRefNum<.String> q)
+        e(.QueueRefNum<.Double> q2)
+        e(.Double y)
+        e(.Int32 ms)
+        e(.Int32 ne)
+        e(.Boolean timedOut)
+        e(.Boolean overflowed)
+        e(a(.String *) remainingElts)
+        e(.ErrorClust err)
+    )
+
+    clump (
+        ObtainQueue(q * * * * err)
+        ObtainQueue(q2 * * * * err)
+        Enqueue(q "abc" 1000 timedOut err)
+        Enqueue(q "def" 1000 timedOut err)
+        Enqueue(q "ghi"  1000 timedOut err)
+        Enqueue(q2 99.0  1000 timedOut err)
+        GetQueueStatus(q true ms * * * ne remainingElts err)
+        Printf("GetQueueStatus: elts=%z\n" remainingElts)
+        FlushQueue(q remainingElts err)
+        Printf("FlushQueue remainingElts=%z\n" remainingElts)
+        FlushQueue(q2 * err)
+
+        ReleaseQueue(q * * err)  // intentionally leak queue ref
+        ReleaseQueue(q2 * * err)  // intentionally leak queue ref
+
+    )
+
+) ) )
+
+
+enqueue(TestProgram)

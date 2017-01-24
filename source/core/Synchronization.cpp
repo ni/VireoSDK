@@ -14,6 +14,7 @@
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
+#include "RefNum.h"
 
 using namespace Vireo;
 
@@ -23,12 +24,20 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
     // clump should be set up by now.
     VIREO_ASSERT(pObserver->_clump != null)
-
     // in MT, lock object
+    if (_observerList) { // add to end for scheduling fairness
+        Observer* pVisitor = _observerList;
+        while (pVisitor->_next) { // O(n), but observerList should be short
+            pVisitor = pVisitor->_next;
+        }
+        pVisitor->_next = pObserver;
+        pObserver->_next = null;
+    } else {
+        pObserver->_next = _observerList;
+        _observerList = pObserver;
+    }
     pObserver->_object = this;
     pObserver->_info = info;
-    pObserver->_next = _observerList;
-    _observerList = pObserver;
 }
 //------------------------------------------------------------
 //! Remove an observer from the ObservableObject's list
@@ -59,7 +68,7 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
 }
 //------------------------------------------------------------
 //! Look in the waiting list for waiters that have a matching info.
-void ObservableCore::ObserveStateChange(IntMax info)
+void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
 {
     Observer *pNext = null;
     Observer ** ppPrevious = &_observerList;
@@ -71,11 +80,23 @@ void ObservableCore::ObserveStateChange(IntMax info)
             *ppPrevious = pNext;
             pObserver->_next = null;
             pObserver->_clump->EnqueueRunQueue();
+            if (!wakeAll)
+                break; // only enqueue first one found
         } else {
             ppPrevious = &pObserver->_next;
         }
     }
 }
+
+IntIndex ObservableCore::ObserverCount(IntMax info) {
+    IntIndex count = 0;
+    for (Observer* pObserver = _observerList; pObserver; pObserver = pObserver->_next) {
+        if (pObserver->_info == info)
+            ++count;
+    }
+    return count;
+}
+
 //------------------------------------------------------------
 void Timer::CheckTimers(PlatformTickType t)
 {
@@ -367,7 +388,7 @@ VIREO_FUNCTION_SIGNATURE2(WaitUntilMillisecondsMultipleUInt8, UInt8, UInt8)
 void OccurrenceCore::SetOccurrence()
 {
     _setCount++;
-    ObserveStateChange(_setCount);
+    ObserveStateChange(_setCount, true);
 }
 //------------------------------------------------------------
 Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
@@ -385,7 +406,7 @@ VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32
 {
     OccurrenceCore *pOcc = _Param(0)->ObjBegin();
     Boolean bIgnorePrevious = _Param(1);
-    UInt32 msTimeout = _Param(2);
+    UInt32 msTimeout = _ParamPointer(2) ? _Param(2) : -1;
 
     if (!bIgnorePrevious && pOcc->HasOccurred(_Param(3), bIgnorePrevious)) {
         _Param(3) = pOcc->Count();
@@ -395,7 +416,7 @@ VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        PlatformTickType future = gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout);
+        PlatformTickType future = msTimeout > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
         pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
         pOcc->InsertObserver(pObserver+1, pOcc->Count()+1);
         return clump->WaitOnObservableObject(_this);
@@ -412,6 +433,9 @@ VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
     pOcc->SetOccurrence();
     return _NextInstruction();
 }
+
+enum QueueObserverInfoSentinel { kQueueEnqueueObserverInfo = -1, kQueueDequeueObserverInfo = 1 };
+
 //------------------------------------------------------------
 IntIndex QueueCore::RemoveIndex()
 {
@@ -421,53 +445,432 @@ IntIndex QueueCore::RemoveIndex()
         return _elements->Length() - (_count - _insert);
     }
 }
+Boolean QueueCore::HasRoom(IntIndex additionalCount) {
+    IntIndex length = _elements->Length();
+    IntIndex space = length - _count;
+
+    return (space >= additionalCount);
+}
 //------------------------------------------------------------
-Boolean QueueCore::TryMakeRoom(IntIndex additionalCount)
+Boolean QueueCore::TryMakeRoom(IntIndex additionalCount, IntIndex insert)
 {
     IntIndex length = _elements->Length();
     IntIndex space = length - _count;
 
     if (space >= additionalCount) {
         // There is enough room, wrap the insert location as needed.
-        if (_insert >= length) {
+        if (insert == RemoveIndex() && _count > 0) {
+            // Insert at opposite end (front), shift data to make room
+            AQBlock1 *pData = _elements->BeginAt(insert);
+            TypeRef elemType = _elements->ElementType();
+            elemType->CopyData(pData, (AQBlock1*)pData + additionalCount * elemType->TopAQSize(),_count);
+        } else if (_insert >= length) {
             _insert = 0;
         }
         return true;
     } else {
         // Not enough room, grow (if possible)
-        NIError err = _elements->Insert1D(_insert, additionalCount);
+        NIError err = _elements->Insert1D(insert, additionalCount);
         return (err == kNIError_Success);
     }
 }
 //------------------------------------------------------------
 Boolean QueueCore::Enqueue(void* pData)
 {
-    if (!TryMakeRoom(1))
+    /* ???
+     This needs to be refactored.  If the Queue is not fixed/bounded, the array will continue to grow
+     in size to the maximum count of items ever enqueued, even if most or all of the items are dequeueed
+     as they are queued so the conceptual size of the queue is always small.
+     (This was probably the idea behind the unimplemented Compress() method in the header.)  -CS */
+
+    if (!TryMakeRoom(1, _insert))
         return false;
 
     TypeRef eltType = _elements->ElementType();
     void* pTarget = _elements->BeginAt(_insert);
     eltType->CopyData(pData, pTarget);
+
     _count++;
     _insert++;
-    ObserveStateChange(1);
+    ObserveStateChange(kQueueDequeueObserverInfo, false); // wake waiting dequeues
     return true;
 }
 //------------------------------------------------------------
-Boolean QueueCore::Dequeue(void* pData)
+// Insert at front of queue instead of end
+Boolean QueueCore::PushFront(void* pData)
+{
+    IntIndex front = RemoveIndex();
+    if (!TryMakeRoom(1, front))
+        return false;
+
+    TypeRef eltType = _elements->ElementType();
+    void* pTarget = _elements->BeginAt(front);
+    eltType->CopyData(pData, pTarget);
+    _count++;
+    _insert++;
+    ObserveStateChange(kQueueDequeueObserverInfo, false); // wake waiting dequeues
+    return true;
+}
+//------------------------------------------------------------
+Boolean QueueCore::Dequeue(void* pData, bool skipObserver)
 {
     TypeRef eltType = _elements->ElementType();
     if (_count < 1) {
-        eltType->InitData(pData);
+        if (pData)
+            eltType->InitData(pData);
         return false;
     } else {
         void* pSource = _elements->BeginAt(RemoveIndex());
-        eltType->CopyData(pSource, pData);
+        if (pData)
+            eltType->CopyData(pSource, pData);
         _count--;
-        ObserveStateChange(-1);
+        if (!skipObserver)
+            ObserveStateChange(kQueueEnqueueObserverInfo, false);
         return true;
     }
 }
+//------------------------------------------------------------
+Boolean QueueCore::Peek(void* pData, IntIndex skipCount)
+{
+    TypeRef eltType = _elements->ElementType();
+    if (_count < skipCount+1) {
+        if (pData)
+            eltType->InitData(pData);
+        return false;
+    } else {
+        IntIndex removeIndex = RemoveIndex() + skipCount;
+        if (removeIndex >= _elements->Length())
+            removeIndex -= _elements->Length();
+        void* pSource = _elements->BeginAt(removeIndex);
+        if (pData)
+            eltType->CopyData(pSource, pData);
+        return true;
+    }
+}
+
+
+class QueueRefNum : public RefNumManager {
+private:
+    typedef TypedRefNum<QueueRef, true> QueueRefNumType;
+    static QueueRefNumType _s_QueueRefNum; // manages refnum storage
+public:
+    static QueueRefNumType &RefNumManager() { return _s_QueueRefNum; }
+};
+
+QueueRefNum::QueueRefNumType QueueRefNum::_s_QueueRefNum;
+
+// Get the underlying array type from the RefNum Queue template type
+static inline TypeRef GetQueueArrayTypeRef(RefNumValType* refNumPtr) {
+    TypeRef type = refNumPtr->GetSubElement(0);
+    TypeRef clustType = type ? type->GetSubElement(0) : NULL;
+    TypeRef queueType = clustType ? clustType->GetSubElement(1) : NULL;
+    return queueType;
+}
+
+// Get the underlying base element type from the RefNum Queue template type
+static inline TypeRef GetQueueElemTypeRef(RefNumValType* refNumPtr) {
+    TypeRef type = GetQueueArrayTypeRef(refNumPtr);
+    return type ? type->GetSubElement(0) : NULL;
+}
+
+// Cleanup Proc for disposing queue refnums when top-level VI finishes
+static void CleanUpQueueRefNum(intptr_t arg) {
+    RefNum refnum = RefNum(arg);
+    QueueRef queueRef = NULL;
+    if (QueueRefNum::RefNumManager().DisposeRefNum(refnum, &queueRef) == kNIError_Success) {
+        QueueCore *pQV = queueRef->ObjBegin();
+        pQV->Type()->ClearData(&queueRef);
+    }
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boolean, Boolean, ErrorCluster)
+{
+    // ??? do nothing if error in
+    Int32 maxSize = _ParamPointer(1) && _Param(1) >= 0 ? _Param(1) : -1;
+    Int32 errCode = 0;
+    Boolean create = _ParamPointer(3) ? _Param(3) : true;
+    Boolean *createdPtr = _ParamPointer(4);
+    String *name = _ParamPointer(2) ? _Param(2) : NULL;
+    RefNumValType* refnumPtr = _Param(0);
+    if (name && name->Length()==0)
+        name = NULL;
+    ErrorCluster *errPtr = _ParamPointer(5);
+    if (errPtr && errPtr->status) {
+        refnumPtr->SetRefNum(0);
+        if (createdPtr)
+            *createdPtr = false;
+        return _NextInstruction();
+    }
+
+    if (maxSize == 0 || name || !create)
+        errCode = maxSize == 0 ? kQueueZeroSize : kQueueArgErr;
+    TypeRef type = refnumPtr->GetSubElement(0);
+    QueueRef queueRef = NULL;
+
+    // Set embedded array in Queue to be variable or fixed
+    TypeRef queueType = GetQueueArrayTypeRef(refnumPtr);
+    IntIndex *dimLengths = queueType && queueType->Rank() == 1 ? queueType->DimensionLengths() : NULL;
+    if (dimLengths) {
+        if (_ParamPointer(1)) { // maxSize wired
+            IntIndex newDimLength = maxSize > 0 ? maxSize : kArrayVariableLengthSentinel;
+            // It's okay to dynamically modify the type's dimSize here because the RefNumValType's
+            // TypeVisitor which created it ensured it was not shared/unique'd with other existing types
+            // (TODO The Type system should have getters/setters for setting dim lengths and not return
+            // the raw dim array, allowing us to modify it this way. But fixing this also entails making
+            // Vireo type methods const-correct.)
+            dimLengths[0] = newDimLength; // e.g. queueType->SetDimensionLength(0, newDimLength)
+        }
+        refnumPtr->SetMaxSize(maxSize);
+    }
+    else
+        errCode = kQueueArgErr;
+    if (!errCode) {
+        NIError status = type->InitData((void*)&queueRef, (TypeRef)NULL);
+        if (status == kNIError_Success) {
+            RefNum rn = QueueRefNum::RefNumManager().NewRefNum(&queueRef);
+            refnumPtr->SetRefNum(rn);
+            if (createdPtr)
+                *createdPtr = true;
+            VirtualInstrument* vi = THREAD_CLUMP()->TopVI();
+            QueueRefNum::AddCleanupProc(vi, CleanUpQueueRefNum, rn);
+        } else
+            errCode = kQueueMemFull;
+    }
+    if (errCode) {
+        refnumPtr->SetRefNum(0);
+        if (createdPtr)
+            *createdPtr = false;
+        if (errPtr)
+            errPtr->SetError(true, errCode, "ObtainQueue");
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, void, ErrorCluster)
+{
+    RefNumValType* refnumPtr = _Param(0);
+    ErrorCluster *errPtr = _ParamPointer(3);
+    QueueRef queueRef = NULL;
+    TypeRef type = refnumPtr->GetSubElement(0);
+    if (QueueRefNum::RefNumManager().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
+        if (errPtr)
+            errPtr->SetError(true, kQueueArgErr, "QueueRelease");
+    }
+    else
+        type->ClearData(&queueRef);
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumValType*, TypedArrayCoreRef, ErrorCluster) {
+    RefNumValType* refnumPtr = _Param(0);
+    TypedArrayCoreRef remainingElts = _ParamPointer(1) ? _Param(1) : NULL;
+    ErrorCluster *errPtr = _ParamPointer(2);
+    QueueRef queueRef = NULL;
+    if ((errPtr && errPtr->status)
+        || QueueRefNum::RefNumManager().GetRefNumData(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kQueueArgErr, "FlushQueue");
+        if (remainingElts)
+            remainingElts->Resize1D(0);
+        return _NextInstruction();
+    }
+    QueueCore *pQV = queueRef->ObjBegin();
+
+    IntIndex count = pQV->Count();
+    AQBlock1 *pData = NULL;
+    if (remainingElts) {
+        remainingElts->Resize1D(count);
+        pData = remainingElts->BeginAt(0);
+    }
+    Int32 eltSize = pQV->EltType()->TopAQSize();
+    for (IntIndex i = 0; i < count; ++i) {
+        pQV->Dequeue(pData);
+        if (remainingElts)
+            pData = (AQBlock1*)pData + eltSize;
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumValType*, Boolean,Int32,StringRef,Int32,Int32,Int32,TypedArrayCoreRef, ErrorCluster) {
+    // p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(numElems)o(Array elements) io(ErrorClust err))
+    Boolean returnElems = _ParamPointer(1) ? _Param(1) : false;
+    RefNumValType* refnumPtr = _Param(0);
+    ErrorCluster *errPtr = _ParamPointer(8);
+    IntIndex count = 0;
+    Int32 maxSize = -1;
+    QueueRef queueRef = NULL;
+    QueueCore *pQV = NULL;
+    if ((errPtr && errPtr->status)
+        || QueueRefNum::RefNumManager().GetRefNumData(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kQueueArgErr, "GetQueueStatus");
+    } else {
+        pQV = queueRef->ObjBegin();
+        maxSize = refnumPtr->GetMaxSize();
+        count = pQV->Count();
+    }
+    if (_ParamPointer(2))
+        _Param(2) = maxSize;
+    if (_ParamPointer(3)) // name
+        _Param(3)->Resize1D(0);
+
+    if (_ParamPointer(4)) // pendingRemove
+        _Param(4) = pQV ? pQV->ObserverCount(kQueueDequeueObserverInfo) : 0;
+    if (_ParamPointer(5)) // pendingInsert
+        _Param(5) = pQV ? pQV->ObserverCount(kQueueEnqueueObserverInfo) : 0;
+    if (_ParamPointer(6)) // numElems
+        _Param(6) = count;
+    if (_ParamPointer(7)) { // elements array
+        if (returnElems && pQV) {
+            _Param(7)->Resize1D(count);
+            AQBlock1 *pData = _Param(7)->BeginAt(0);
+            Int32 eltSize = pQV->EltType()->TopAQSize();
+            for (IntIndex i = 0; i < count; ++i) {
+                pQV->Peek(pData, i);
+                pData = (AQBlock1*)pData + eltSize;
+            }
+        }
+        else
+            _Param(7)->Resize1D(0);
+    }
+    return _NextInstruction();
+}
+
+// Common routine used to retry Enqueue and Dequeue if they block
+static InstructionCore* HandleQueueReschedule(IntMax info, Boolean done, QueueCore *pQV, Int32 timeOut, InstructionCore *_this, InstructionCore *_next) {
+    // If it succeeded or timed out then its time to move to the next instruction.
+    VIClump* clump = THREAD_CLUMP();
+
+    // If the instruction needs to retry it will use two Observer records
+    // [0] is for the timer and
+    // [1] is for the queue
+    // These records are reserved if necessary in below. If none are reserved
+    // then this is the primary execution of the instruction
+
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (done || (pObserver && pObserver[0]._info == 0)) {
+        clump->ClearObservationStates();
+        return  _next;
+    }
+    if (pObserver) {
+        // This is a retry and another clump got the element but
+        // there is still time to wait, continue waiting.
+        return clump->WaitOnObservableObject(_this);
+    } else if (timeOut != 0) {
+        // This is the initial call and a timeout has been supplied.
+        // Wait on the queue and the timeout. -1 will wait forever.
+        pObserver = clump->ReserveObservationStatesWithTimeout(2, timeOut > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut) : 0);
+        pQV->InsertObserver(pObserver+1, info); // info identifies enqueue vs. dequeue
+        return clump->WaitOnObservableObject(_this);
+    } // else with timeout == 0 just continue immediately.
+
+    return _next;
+}
+
+//------------------------------------------------------------
+// Helper function shared by Enqueue, EnqueueFront, and LossyEnqueue
+static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumValType*, void, void, Boolean, ErrorCluster>* _this, Boolean lossy, Boolean front, ConstCStr primName) {
+    RefNumValType* refnumPtr = _Param(0);
+    ErrorCluster *errPtr = _ParamPointer(4);
+    Int32 timeOut = lossy ? 0 : (_ParamPointer(2) ? *(Int32*)_ParamPointer(2) : -1);
+    Boolean *boolOut = _ParamPointer(3);
+    void *overflowElem = lossy ? _ParamPointer(2) : NULL;
+    QueueRef queueRef = NULL;
+    if ((errPtr && errPtr->status)
+        || QueueRefNum::RefNumManager().GetRefNumData(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        if (errPtr)
+            errPtr->SetError(true, kQueueArgErr, primName);
+        if (boolOut)
+            *boolOut = false;
+        if (overflowElem) {
+            TypeRef eltType = GetQueueElemTypeRef(refnumPtr);
+            if (eltType)
+                eltType->InitData(overflowElem);
+        }
+        return _NextInstruction();
+    }
+    Int32 maxSize = refnumPtr->GetMaxSize();
+    QueueCore *pQV = queueRef->ObjBegin();
+
+    if (lossy) {
+        TypeRef eltType = pQV->EltType();
+        Boolean overflowed = false;
+        if (maxSize > 0 && !pQV->HasRoom(1)) {
+            pQV->Dequeue(overflowElem, true);
+            overflowed = true;
+        } else {
+            eltType->InitData(overflowElem);
+        }
+        if (boolOut) // overflowed?
+            *boolOut = overflowed;
+    }
+
+    // First time or retry either way, attempt to enqueue value
+    Boolean done = front ? pQV->PushFront(_ParamPointer(1)) :  pQV->Enqueue(_ParamPointer(1));
+    if (!lossy && boolOut) // timedOut?
+        *boolOut = !done;
+
+    return HandleQueueReschedule(kQueueEnqueueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
+}
+
+VIREO_FUNCTION_SIGNATURE5(QueueRef_Enqueue, RefNumValType*, void, void, Boolean, ErrorCluster)
+{
+    return QueueRef_EnqueueCore(_this, false, false, "Enqueue");
+}
+VIREO_FUNCTION_SIGNATURE5(QueueRef_EnqueueFront, RefNumValType*, void, void, Boolean, ErrorCluster)
+{
+    return QueueRef_EnqueueCore(_this, false, true, "EnqueueFront");
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(QueueRef_LossyEnqueue, RefNumValType*, void, void, Boolean, ErrorCluster)
+{
+    return QueueRef_EnqueueCore(_this, true, false, "LossyEnqueue");
+}
+
+static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumValType*, void, Int32, Boolean, ErrorCluster>* _this, Boolean preview)
+{
+    RefNumValType* refnumPtr = _Param(0);
+    ErrorCluster *errPtr = _ParamPointer(4);
+    QueueRef queueRef = NULL;
+    if ((errPtr && errPtr->status)
+        || QueueRefNum::RefNumManager().GetRefNumData(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        if (errPtr)
+            errPtr->SetError(true, kQueueArgErr, "Dequeue");
+        if (_ParamPointer(3))
+            _Param(3) = false;
+        if (_ParamPointer(1)) {
+            TypeRef eltType = GetQueueElemTypeRef(refnumPtr);
+            if (eltType)
+                eltType->InitData(_ParamPointer(1));
+        }
+        return _NextInstruction();
+    }
+    QueueCore *pQV = queueRef->ObjBegin();
+
+    // First time or retry either way, attempt to dequeue value
+    Boolean done = preview ? pQV->Peek(_ParamPointer(1)) : pQV->Dequeue(_ParamPointer(1));
+    if (_ParamPointer(3))
+        _Param(3) = !done;
+
+    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
+    return HandleQueueReschedule(kQueueDequeueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
+}
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(QueueRef_Dequeue, RefNumValType*, void, Int32, Boolean, ErrorCluster)
+{
+    return QueueRef_DequeueCore(_this, false);
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(QueueRef_PeekQueue, RefNumValType*, void, Int32, Boolean, ErrorCluster)
+{
+    return QueueRef_DequeueCore(_this, true);
+}
+
+//
+// Legacy Vireo static Queue implementaiton (remove?)
+//
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(Queue_Obtain, void, StringRef)
 {
@@ -478,79 +881,25 @@ VIREO_FUNCTION_SIGNATURE2(Queue_Obtain, void, StringRef)
 VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
 {
     QueueCore *pQV = _Param(0)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-
-    // If the instruction needs to retry it will use two Observer records
-    // [0] is for the timer and
-    // [1] is for the queue
-    // These records are reserved if necessary in below. If none are reserved
-    // then this is the primary execution of the instruction
 
     // First time or retry either way, attempt to enqueue value
     Boolean done = pQV->Enqueue(_ParamPointer(1));
     _Param(3) = !done;
 
-    // If it succeeded or timed out then its time to move to the next instruction.
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (done || (pObserver && pObserver[0]._info == 0)) {
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
-
-    Int32 timeOut = _Param(2);
-    if (pObserver) {
-        // This is a retry and another clump got the element but
-        // there is still time to wait, continue waiting.
-        return clump->WaitOnObservableObject(_this);
-    } else if (timeOut != 0) {
-        // This is the initial call and a timeout has been supplied.
-        // Wait on the queue and the timeout. -1 will wait forever.
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));
-        pQV->InsertObserver(pObserver+1, -1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // With timeout == 0 just continue immediately.
-        return _NextInstruction();
-    }
+    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
+    return HandleQueueReschedule(kQueueEnqueueObserverInfo,  done, pQV, timeOut, _this, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
 {
     QueueCore *pQV = _Param(0)->ObjBegin();
-    VIClump* clump = THREAD_CLUMP();
-
-    // If the instruction needs to retry it will use two Observer records
-    // [0] is for the timer and
-    // [1] is for the queue
-    // These records are reserved if necessary in below. If none are reserved
-    // then this is the primary execution of the instruction
 
     // First time or retry either way, attempt to dequeue value
     Boolean done = pQV->Dequeue(_ParamPointer(1));
     _Param(3) = !done;
 
-    // If it succeeded or timed out then its time to move to the next instruction.
-    Observer* pObserver = clump->GetObservationStates(2);
-    if (done || (pObserver && pObserver[0]._info == 0)) {
-        clump->ClearObservationStates();
-        return _NextInstruction();
-    }
-
-    Int32 timeOut = _Param(2);
-    if (pObserver) {
-        // This is a retry and another clump got the element but
-        // there is still time to wait, continue waiting.
-        return clump->WaitOnObservableObject(_this);
-    } else if (timeOut != 0) {
-        // This is the initial call and a timeout has been supplied.
-        // Wait on the queue and the timeout. -1 will wait forever.
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, gPlatform.Timer.MillisecondsFromNowToTickCount(timeOut));
-        pQV->InsertObserver(pObserver+1, 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
-        // With timeout == 0 just continue immediately.
-        return _NextInstruction();
-    }
+    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
+    return HandleQueueReschedule(kQueueDequeueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
 }
 
 DEFINE_VIREO_BEGIN(Synchronization)
@@ -591,24 +940,25 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
     // Queues
-    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count))")
-    DEFINE_VIREO_TYPE(Queue, "a(QueueValue)")
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count))") // Queue internval representation
+    DEFINE_VIREO_TYPE(Queue, "a(QueueValue)") // ZDA
 
-    DEFINE_VIREO_FUNCTION_CUSTOM(Obtain, Queue_Obtain, "p(o(Queue queue)i(String name))")
+    // Dynamic, refnum-based queues
+    DEFINE_VIREO_TYPE(QueueRefNum, "refnum(Queue)")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ObtainQueue, QueueRef_Obtain, "p(o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorClust error))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Enqueue, QueueRef_Enqueue, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueFront, QueueRef_EnqueueFront, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(LossyEnqueue, QueueRef_LossyEnqueue, "p(io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems) io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements) io(ErrorClust err))")
+
+    // Static queues
     DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue queue)i(* element)i(Int32 timeOut)o(Boolean timedOut))")
     DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue queue)o(* element)i(Int32 timeOut)o(Boolean timedOut))")
 
     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue<.$1> queue)i($1 element)i(Int32 timeOut)o(Boolean timedOut))")
     // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue<.$1> queue)o($1 element)i(Int32 timeOut)o(Boolean timedOut))")
-
-    // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElementAtOppositeEnd, Queue_EnqueueElement,  "p(io(Queue queue)i(Double element))")
-    // DEFINE_VIREO_FUNCTION(LossyEnqueueElement, "")
-
-    #if 0
-    DEFINE_VIREO_FUNCTION(PreviewElement, "")
-    DEFINE_VIREO_FUNCTION(Status, "")
-    DEFINE_VIREO_FUNCTION(Release, "")
-    DEFINE_VIREO_FUNCTION(Flush, "")
-    #endif
-
 DEFINE_VIREO_END()

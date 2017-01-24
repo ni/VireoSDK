@@ -15,6 +15,10 @@ SDG
 #include <limits>
 #include <math.h>
 
+// Set VIREO_TRACK_MEMORY_ALLLOC_COUNTER to record monotonically increasing allocation number
+// with each allocation, to aid leak tracking, etc.
+#define VIREO_TRACK_MEMORY_ALLLOC_COUNTER 0
+
 namespace Vireo
 {
 
@@ -23,6 +27,9 @@ namespace Vireo
 struct MallocInfo {
     size_t          _length;        // how big the block is
     TypeManagerRef  _manager;       // which TypeManaer was used to allocate it.
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+    size_t  _allocNum;
+#endif
 };
 #endif
 
@@ -82,12 +89,20 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
         _badType = TADM_NEW_PLACEMENT(TypeCommon)(this);
     }
 }
+#ifdef VIREO_TRACK_MEMORY_QUANTITY
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+static size_t s_MemAllocCounter = 0;
+#endif
+#endif
+
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+size_t gAllocNumWatch = 0;
+#endif
 //------------------------------------------------------------
 //! Private static Malloc used by TM.
 void* TypeManager::Malloc(size_t countAQ)
 {
     VIREO_ASSERT(countAQ != 0);
-
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures ++;
         THREAD_EXEC()->ClearBreakout();
@@ -110,6 +125,11 @@ void* TypeManager::Malloc(size_t countAQ)
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
         ((MallocInfo*)pBuffer)->_length = allocationCount;
         ((MallocInfo*)pBuffer)->_manager = this;
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+        if (gAllocNumWatch && s_MemAllocCounter == gAllocNumWatch)
+            gPlatform.IO.Printf("[mem break]\n");
+        ((MallocInfo*)pBuffer)->_allocNum = s_MemAllocCounter++;
+#endif
         pBuffer = (MallocInfo*)pBuffer + 1;
 #endif
 
@@ -126,7 +146,10 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
     pBuffer = (MallocInfo*)pBuffer - 1;
     size_t currentSize = ((MallocInfo*)pBuffer)->_length;
-    
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+    ((MallocInfo*)pBuffer)->_allocNum = -((MallocInfo*)pBuffer)->_allocNum;
+#endif
+
     countAQ += sizeof(MallocInfo);
     preserveAQ += sizeof(MallocInfo);
 #endif
@@ -142,6 +165,9 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
         TrackAllocation(pNewBuffer, countAQ, true);
         ((MallocInfo*)pNewBuffer)->_length = countAQ;
         VIREO_ASSERT(this == ((MallocInfo*)pNewBuffer)->_manager);
+#if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
+        ((MallocInfo*)pNewBuffer)->_allocNum = s_MemAllocCounter++;
+#endif
         pNewBuffer = (MallocInfo*)pNewBuffer + 1;
 #else
         TrackAllocation(pBuffer, 1, false);
@@ -1475,12 +1501,13 @@ NIError EquivalenceType::ClearData(void* pData)
 //------------------------------------------------------------
 // ArrayType
 //------------------------------------------------------------
-ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
+ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths, Boolean inhibitUniq)
 {
     ArrayType* type = TADM_NEW_PLACEMENT_DYNAMIC(ArrayType, rank)(typeManager, elementType, rank, dimensionLengths);
 
     SubString binaryName((AQBlock1*)&type->_topAQSize, (AQBlock1*)(&type->_dimensionLengths[0] + rank));
-    
+    if (inhibitUniq)
+        return type;
     return (ArrayType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
@@ -1807,6 +1834,21 @@ PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 {
 }
 //------------------------------------------------------------
+// RefNumValType
+//------------------------------------------------------------
+RefNumValType* RefNumValType::New(TypeManagerRef typeManager, TypeRef type)
+{
+    return TADM_NEW_PLACEMENT(RefNumValType)(typeManager, type);
+}
+//------------------------------------------------------------
+RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
+: WrappedType(typeManager, type)
+{
+    _refnum = 0;
+    _maxSize = -1;
+    _encoding = kEncoding_RefNum;
+}
+//------------------------------------------------------------
 // DefaultPointerType
 //------------------------------------------------------------
 DefaultPointerType* DefaultPointerType::New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
@@ -2072,6 +2114,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     
     IntIndex newCapacity = 1;
     IntIndex newLength = 1;
+    Boolean bOK = true;
     
     while(iRequestedDim.HasNext()) {
         *pSlabLengths++ = slabLength;
@@ -2081,7 +2124,9 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         
         // Now compare with the type's specifications
         if (typesDimLength >= 0) {
-            // Fixed trumps request
+            // Fixed sized overrides request
+            if (dimLength > typesDimLength)
+                bOK = false;
             dimCapactiy = typesDimLength;
             dimLength = dimCapactiy;
             // TODO ignore excessive request or flag as error
@@ -2102,8 +2147,6 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         *pValueLengths++ = dimLength;
         pTypesLengths++;
     }
-    
-    Boolean bOK = true;
 
     // 1. If fewer actual elements are needed, clear the old ones.
     if (newLength < originalLength) {
@@ -2111,7 +2154,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     }
     
     // 2. If underlying capacity changes, change that.
-    if (newCapacity != Capacity()) {
+    if (bOK && newCapacity != Capacity()) {
         VIREO_ASSERT(newLength <= newCapacity);
         bOK = ResizeCapacity(slabLength, Capacity(), newCapacity, (newLength < newCapacity));
     }
@@ -2219,7 +2262,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
         memmove(pDest, pPosition, countBytes);
     }
     if (!ElementType()->IsFlat()) {
-        memset(pPosition, 0, AQBlockLength(count));
+        // memset(pPosition, 0, AQBlockLength(count));  // ??? This causes a leak because Resize1D already Init
         ElementType()->InitData(pPosition, count);
     }
     if (pSource != null) {
@@ -2829,6 +2872,7 @@ private:
     virtual void VisitElement(ElementType* type) { gPlatform.IO.Printf("");type->BaseType()->Accept(this); }
     virtual void VisitNamed(NamedType* type) {} // gPlatform.IO.Printf("<.%s>", &type->Name());// type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
     virtual void VisitPointer(PointerType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
+    virtual void VisitRefNumVal(RefNumValType* type) { gPlatform.IO.Printf("<rn> "); type->BaseType()->Accept(this); }
     virtual void VisitDefaultValue(DefaultValueType* type)  { gPlatform.IO.Printf("<dv> "); }
     virtual void VisitDefaultPointer(DefaultPointerType* type) { gPlatform.IO.Printf("<defptr> "); }
     virtual void VisitCustomDataProc(CustomDataProcType* type) { gPlatform.IO.Printf("<customproc> "); }
