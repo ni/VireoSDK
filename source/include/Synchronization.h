@@ -51,7 +51,8 @@ public:
 public:
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
-    void ObserveStateChange(IntMax info);
+    void ObserveStateChange(IntMax info, Boolean wakeAll);
+    IntIndex ObserverCount(IntMax info);
 };
 typedef TypedObject<ObservableCore> ObservableObject, *ObservableRef;
 
@@ -86,22 +87,30 @@ class QueueCore : public ObservableCore
 {
 private:
     TypedArrayCoreRef _elements;
-    
+
     //! Index where the next element will be stored (may be one past end if full)
     IntIndex   _insert;
-    
+
     //! How many elements are in the queue
     IntIndex   _count;
-    
+
     IntIndex RemoveIndex();
 public:
     Boolean Compress();
-    Boolean TryMakeRoom(IntIndex length);
+    Boolean TryMakeRoom(IntIndex length, IntIndex insert);
     Boolean Enqueue(void* pData);
-    Boolean Dequeue(void* pData);
+    Boolean PushFront(void* pData);
+    Boolean Dequeue(void* pData, bool skipObserver = false);
+    Boolean Peek(void* pData, IntIndex skipCount = 0);
     Boolean HasRoom(IntIndex count);
+    IntIndex Count() const { return _count; }
+    TypeRef EltType() const { return _elements->ElementType(); }
+    TypeRef Type() const { return _elements->Type(); }
 };
 typedef TypedObject<QueueCore> QueueObject, *QueueRef;
+
+// Queue prim LV error return codes
+enum { kQueueArgErr=1, kQueueMemFull=2, kQueueNameTypeMismatch = 1904, kQueueNoSuchName=1100, kQueueWrongContext=1491, kQueueZeroSize=1548 };
 
 } // namespace Vireo
 

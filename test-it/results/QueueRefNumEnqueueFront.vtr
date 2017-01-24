@@ -1,0 +1,8 @@
+GetQueueStatus: maxsize=4 numElem=4 remainingElts=(3 2 1 0)
+EnqueueFront with full queue, to=true err=(false 0 '')
+EnqueueFront with full queue zero timeout, to=true err=(false 0 '')
+LossyEnqueue with full queue, overflow?=true overflowElem=3 err=(false 0 '')
+PeekQueue y=2 to=0
+Dequeue y=2 to=0
+Dequeue y=1 to=0
+FlushQueue remainingElts=(0 5)

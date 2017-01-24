@@ -136,6 +136,13 @@ public:
     void EnqueueRunQueue()  { TheExecutionContext()->EnqueueRunQueue(this); }
 
     VirtualInstrument*  OwningVI()      { return _owningVI; }
+    VirtualInstrument*  CallerVI()      { return _caller->OwningVI(); }
+    VirtualInstrument*  TopVI()      {
+        VIClump *caller = this;
+        while (caller->_caller)
+            caller = caller->_caller;
+        return caller->_owningVI;
+    }
     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
     Observer*           ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
     InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
@@ -328,6 +335,8 @@ public:
 };
 
 typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *GenericEmitFunction) (ClumpParseState*);
+
+void RunCleanupProcs(VirtualInstrument *vi);
 
 }
 #endif //VirtualInstrument_h

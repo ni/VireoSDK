@@ -1,0 +1,42 @@
+
+define(TestProgram dv(.VirtualInstrument (
+    c(
+        e(.QueueRefNum<.Double> q)
+        e(.Double y)
+        e(.Int32 maxsize)
+        e(.Int32 ne)
+        e(.Boolean timedOut)
+        e(.Boolean overflowed)
+        e(a(.Double *) remainingElts)
+        e(.ErrorClust err)
+    )
+
+    clump (
+        ObtainQueue(q 4 * * * err)
+        Enqueue(q 0.0 1000 timedOut err)
+        EnqueueFront(q 1.0 1000 timedOut err)
+        EnqueueFront(q 2.0 1000 timedOut err)
+        EnqueueFront(q 3.0 1000 timedOut err)
+        GetQueueStatus(q true maxsize * * * ne remainingElts err)
+        Printf("GetQueueStatus: maxsize=%d numElem=%d remainingElts=%z\n" maxsize ne remainingElts)
+        EnqueueFront(q 4.0 10 timedOut err)
+        Printf("EnqueueFront with full queue, to=%z err=%z\n" timedOut err)
+        EnqueueFront(q 4.0 0 timedOut err)
+        Printf("EnqueueFront with full queue zero timeout, to=%z err=%z\n" timedOut err)
+        LossyEnqueue(q 5.0 y overflowed err)
+        Printf("LossyEnqueue with full queue, overflow?=%z overflowElem=%z err=%z\n" overflowed y err)
+        PeekQueue(q y 55 timedOut err)
+        Printf("PeekQueue y=%z to=%d\n" y timedOut)
+        Dequeue(q y 55 timedOut err)
+        Printf("Dequeue y=%z to=%d\n" y timedOut)
+        Dequeue(q y 55 timedOut err)
+        Printf("Dequeue y=%z to=%d\n" y timedOut)
+	FlushQueue(q remainingElts err)
+        Printf("FlushQueue remainingElts=%z\n" remainingElts)
+        ReleaseQueue(q * * err)
+    )
+
+) ) )
+
+
+enqueue(TestProgram)

@@ -106,6 +106,7 @@ void VirtualInstrument::PressGo()
     VIREO_ASSERT( rootClump->FireCount() == 1 )
     rootClump->Trigger();
 }
+
 //------------------------------------------------------------
 void VirtualInstrument::GoIsDone()
 {
@@ -113,6 +114,7 @@ void VirtualInstrument::GoIsDone()
     // there is nothing for the the debugger to read.
     // So this is postponed until the VI the cleared
     // ClearParamBlock();
+    RunCleanupProcs(this);
 }
 #endif
 //------------------------------------------------------------

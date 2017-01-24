@@ -22,9 +22,9 @@
 
 namespace Vireo {
 
+/* Manage storage of refnum-associated typed data */
 typedef UInt32 RefNum;
 typedef intptr_t RefNumDataBase;
-//typedef RefNumDataBase* RefNumData;
 typedef void* RefNumData;
 
 struct RefNumCommonHeader {
@@ -136,6 +136,32 @@ typename RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T,_isRefCounted>::C
         return reinterpret_cast<RefNumHeaderAndData*>(&it->second);
     }
 }
+
+// ---------------------
+/* Manage automatic cleanup of Queue refnums when a top-level VI completes.
+ */
+class VirtualInstrument;
+
+class RefNumManager {
+public:
+    typedef void (*CleanupProc)(intptr_t);
+    struct CleanupRecord {
+        CleanupProc proc;
+        intptr_t arg;
+        CleanupRecord(CleanupProc p, intptr_t a) : proc(p), arg(a) { }
+    };
+private:
+    // Move this to a data structure hanging off of the VirtualInstrument?
+    // There won't be many top-level VIs so this is not expensive, and may
+    // be cheaper than adding permanent fields to the VirtualInstrument structure
+    // since subVI don't need it.
+    typedef std::map<VirtualInstrument*, std::vector<CleanupRecord> > CleanupMap;
+    static CleanupMap _s_CleanupMap;
+public:
+    static void AddCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg);
+    static void RemoveCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg);
+    static void RunCleanupProcs(VirtualInstrument *vi);
+};
 
 } // namespace
 

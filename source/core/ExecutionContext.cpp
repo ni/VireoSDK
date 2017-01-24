@@ -77,7 +77,8 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
         // Since there is no caller its a top VI
 #ifndef VIREO_MICRO
         VirtualInstrument* vi = runningQueueElt->OwningVI();
-        vi->GoIsDone();
+        if (runningQueueElt == vi->Clumps()->Begin())
+            vi->GoIsDone();
 #endif
     }
 

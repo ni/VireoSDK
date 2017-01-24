@@ -1,0 +1,2 @@
+GetQueueStatus: elts=('abc' 'def' 'ghi')
+FlushQueue remainingElts=('abc' 'def' 'ghi')

@@ -62,6 +62,7 @@ class PointerType;
 class DefaultValueType;
 class DefaultPointerType;
 class CustomDataProcType;
+class RefNumValType;
 class TypeManager;
 class ExecutionContext;
 class IDataProcs;
@@ -136,6 +137,7 @@ enum EncodingEnum {
     kEncoding_BiasedInt,        // Used for IEEE754 exponents
     kEncoding_ZigZagInt,        // Protocol buffers
     kEncoding_S1CInt,           // In case we ever run on a CDC 170 Cyber mainframe ;)
+    kEncoding_RefNum,           // LV-style refnum, holds type and Int value
     
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
@@ -401,7 +403,11 @@ public:
 //! Visitor class for types.
 class TypeVisitor
 {
+protected:
+    Boolean _inhibitTypeUniqueness;
 public:
+    TypeVisitor() { _inhibitTypeUniqueness = false; }
+
     virtual void VisitBad(TypeRef type) = 0;
     virtual void VisitBitBlock(BitBlockType* type) = 0;
     virtual void VisitBitCluster(BitClusterType* type) = 0;
@@ -412,9 +418,12 @@ public:
     virtual void VisitElement(ElementType* type) = 0;
     virtual void VisitNamed(NamedType* type) = 0;
     virtual void VisitPointer(PointerType* type) = 0;
+    virtual void VisitRefNumVal(RefNumValType* type) = 0;
     virtual void VisitDefaultValue(DefaultValueType* type) = 0;
     virtual void VisitDefaultPointer(DefaultPointerType* type) = 0;
     virtual void VisitCustomDataProc(CustomDataProcType* type) = 0;
+    virtual Boolean GetInhibitTypeUniqueness() const { return _inhibitTypeUniqueness; }
+    virtual void SetInhibitTypeUniqueness(Boolean t) { _inhibitTypeUniqueness = t; }
 };
 
 //------------------------------------------------------------
@@ -836,7 +845,7 @@ private:
 
 public:
     
-    static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths);
+    static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths, Boolean inhibitUniq = false);
    
     // _pDefault is a singleton for each instance of an ArrayType used as the default
     // value, allocated one demand
@@ -844,7 +853,7 @@ public:
     
     // In the type dimension is described as follows:
     // negative=bounded, positive=fixed, zero=fix with no elements
-    // negative VariableDimensionSentinel means varible, and will not be prealocated.
+    // negative VariableDimensionSentinel means variable, and will not be prealocated.
     IntDim    _dimensionLengths[1];
     
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
@@ -890,6 +899,36 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
     // TODO Add GetSubElementAddressFromPath
+};
+//------------------------------------------------------------
+//! A type describes a pointer to another type. Initial value will be null.
+class RefNumValType : public WrappedType
+{
+protected:
+    UInt32   _refnum;
+    Int32   _maxSize;
+    RefNumValType(TypeManagerRef typeManager, TypeRef type);
+public:
+    static RefNumValType* New(TypeManagerRef typeManager, TypeRef type);
+    virtual void    Accept(TypeVisitor *tv)     {
+        Boolean tUniq = tv->GetInhibitTypeUniqueness();
+        tv->SetInhibitTypeUniqueness(true);
+        tv->VisitRefNumVal(this); // make sure refnum's Queue Array is independent (not unique'd) so its dimSize can be changed dynamically
+        tv->SetInhibitTypeUniqueness(tUniq);
+    }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual Int32   SubElementCount()                  { return 1; }
+    virtual NIError InitData(void* pData, TypeRef pattern = null)
+    {
+        *(RefNumValType**)pData = this;
+        return kNIError_Success;
+    }
+    virtual NIError ClearData(void* pData) { return kNIError_Success; } // ???
+    virtual void*   Begin(PointerAccessEnum mode)       { return (void*)&_refnum; }
+    UInt32 GetRefNum() const { return _refnum; }
+    Int32 GetMaxSize() const { return _maxSize; }
+    void SetRefNum(UInt32 refNum) { _refnum = refNum; }
+    void SetMaxSize(Int32 maxSize) { _maxSize = maxSize; }
 };
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example, the address to a C function.
@@ -1116,6 +1155,15 @@ struct ErrorCluster {
     Boolean status;
     Int32 code;
     StringRef source;
+
+    void SetError(Boolean s, Int32 c, ConstCStr str) {
+        status = s;
+        code = c;
+        if (source) {
+            source->Resize1D(0);
+            source->AppendCStr(str);
+        }
+    }
 };
 
 struct NIPath {
