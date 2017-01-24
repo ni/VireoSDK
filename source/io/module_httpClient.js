@@ -121,18 +121,11 @@
             // Create event listeners
             var eventListeners = {};
 
-            var completeRequest = function (header, text, labviewCode, errorMessage) {
+            var completeRequest = function (responseData) {
                 // Unregister event listeners
                 Object.keys(eventListeners).forEach(function (eventName) {
                     request.removeEventListener(eventName, eventListeners[eventName]);
                 });
-
-                var responseData = {
-                    header: header,
-                    text: text,
-                    labviewCode: labviewCode,
-                    errorMessage: errorMessage
-                };
 
                 cb(responseData);
             };
@@ -144,21 +137,43 @@
                 var allResponseHeaders = request.getAllResponseHeaders();
 
                 var header = statusLine + allResponseHeaders;
-                var text = request.response;
-
-                completeRequest(header, text, CODES.NO_ERROR, '');
+                completeRequest({
+                    header: header,
+                    text: request.response,
+                    status: request.status,
+                    labviewCode: CODES.NO_ERROR,
+                    errorMessage: ''
+                });
             };
 
             eventListeners.error = function () {
-                completeRequest('', '', CODES.NETWORK_ERROR, 'Network Error');
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.NETWORK_ERROR,
+                    errorMessage: 'Network Error'
+                });
             };
 
             eventListeners.timeout = function () {
-                completeRequest('', '', CODES.TIMEOUT, 'Timeout');
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.TIMEOUT,
+                    errorMessage: 'Timeout'
+                });
             };
 
             eventListeners.abort = function () {
-                completeRequest('', '', CODES.ABORT, 'Request Aborted');
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.ABORT,
+                    errorMessage: 'Request Aborted'
+                });
             };
 
             // Register event listeners
@@ -322,7 +337,7 @@
             }
 
             // If no error or warning then pass through
-            // Note: merge errors function ignores newSource if no newError or newWarning so replicated here
+            // Note: merge errors function ignores newErrorSource if no newError or newWarning so replicated here
             return;
         };
 
@@ -332,18 +347,18 @@
                 return;
             }
 
-            var newSource;
+            var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default)';
-                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default)';
+                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default)';
-                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default)';
+                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
@@ -354,13 +369,13 @@
         };
 
         Module.httpClient.jsHttpClientClose = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var newSource;
+            var newErrorSource;
             var handleExists = httpClientManager.get(handle) !== undefined;
             var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
 
             if (handleExists === false && errorStatus === false) {
-                newSource = 'LabVIEWHTTPClient:CloseHandle, Attempted to close an invalid or non-existant handle';
-                Module.httpClient.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = 'LabVIEWHTTPClient:CloseHandle, Attempted to close an invalid or non-existant handle';
+                Module.httpClient.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             // Always destroy the handle
@@ -409,12 +424,12 @@
                 return;
             }
 
-            var newSource;
+            var newErrorSource;
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newSource = 'LabVIEWHTTPClient:GetHeader, The header ' + header + ' does not exist';
-                Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = 'LabVIEWHTTPClient:GetHeader, The header ' + header + ' does not exist';
+                Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
@@ -457,14 +472,14 @@
             Module.eggShell.dataWriteString(listPointer, list);
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
             var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
             if (errorStatus) {
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
-            var newSource;
+            var newErrorSource;
             var method = METHOD_NAMES[methodId];
 
             // Nullable input parameters: handle, outputFile, buffer
@@ -475,8 +490,8 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newSource = 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature';
-                    Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature';
+                    Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     Module.eggShell.setOccurrence(occurrencePointer);
                     return;
                 }
@@ -526,15 +541,16 @@
 
             httpClient.createRequest(requestData, function (responseData) {
                 Module.eggShell.dataWriteString(headersPointer, responseData.header);
+                Module.eggShell.dataWriteUInt32(statusCodePointer, responseData.status);
 
                 if (bodyPointer !== NULL) {
                     Module.eggShell.dataWriteString(bodyPointer, responseData.text);
                 }
 
-                var newStatus = responseData.labviewCode !== CODES.NO_ERROR;
-                var newCode = responseData.labviewCode;
-                var newSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
-                Module.httpClient.mergeErrors(newStatus, newCode, newSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;
+                var newErrorCode = responseData.labviewCode;
+                var newErrorSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
+                Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrence(occurrencePointer);
             });
         };
