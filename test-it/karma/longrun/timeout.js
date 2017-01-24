@@ -1,13 +1,10 @@
-describe('can run HTTP Get suite', function () {
+describe('Timeout test suite', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
-
-    // Skip test if httpbin offline
-    httpBinHelpers.makeTestPendingIfHttpBinOffline();
 
     // Sharing Vireo instances across tests make them run soooo much faster
     // var vireo = new Vireo();
@@ -17,6 +14,7 @@ describe('can run HTTP Get suite', function () {
     var vireo;
 
     beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
         vireo = new Vireo();
     });
 

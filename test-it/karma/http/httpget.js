@@ -7,9 +7,6 @@ describe('Performing a GET test', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    // Skip test if httpbin offline
-    httpBinHelpers.makeTestPendingIfHttpBinOffline();
-
     // Sharing Vireo instances across tests make them run soooo much faster
     // var vireo = new Vireo();
 
@@ -18,6 +15,7 @@ describe('Performing a GET test', function () {
     var vireo;
 
     beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
         vireo = new Vireo();
     });
 
