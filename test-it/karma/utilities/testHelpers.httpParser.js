@@ -35,11 +35,13 @@
     var parseUrlElement = document.createElement('a');
 
     var parseUrl = function (url) {
+        // Add and remove the element to workaround IE https://connect.microsoft.com/IE/Feedback/Details/1002846
+        document.body.appendChild(parseUrlElement);
         parseUrlElement.href = url;
 
         // idea from https://gist.github.com/jlong/2428561
         // ex: http://example.com:3000/pathname/?search=test#hash
-        return {
+        var data = {
             protocol: parseUrlElement.protocol, // => "http:"
             hostname: parseUrlElement.hostname, // => "example.com"
             port: parseUrlElement.port, // => "3000"
@@ -48,6 +50,9 @@
             hash: parseUrlElement.hash, // => "#hash"
             host: parseUrlElement.host // => "example.com:3000"
         };
+
+        document.body.removeChild(parseUrlElement);
+        return data;
     };
 
     window.testHelpers.httpParser = {
