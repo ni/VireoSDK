@@ -37,6 +37,7 @@ describe('Performing a GET test', function () {
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('headers')).toBeDefined();
             expect(viPathParser('body')).toBeDefined();
+            expect(viPathParser('statusCode')).toBe(200);
             expect(viPathParser('error.status')).toBe(false);
             expect(viPathParser('error.code')).toBe(0);
             expect(viPathParser('error.source')).toBe('');
@@ -75,6 +76,9 @@ describe('Performing a GET test', function () {
             expect(httpBinBody.headers).toEqual(jasmine.any(Object));
             expect(requestUrl.pathname).toBe('/get');
 
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
             // error
             expect(viPathParser('error.status')).toBe(false);
             expect(viPathParser('error.code')).toBe(0);
@@ -112,6 +116,9 @@ describe('Performing a GET test', function () {
 
             // body
             expect(viPathParser('body')).not.toBe('');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(418);
 
             // error
             expect(viPathParser('error.status')).toBe(false);

@@ -55,10 +55,13 @@ describe('can run HTTP Get suite', function () {
 
             expect(rawPrint).toBe('');
             expect(rawPrintError).toBe('');
-
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('headers')).toBe('');
             expect(viPathParser('body')).toBe('');
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.code')).toBe(-50);
+            expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
     });
@@ -91,6 +94,10 @@ describe('can run HTTP Get suite', function () {
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('headers')).toBe('');
             expect(viPathParser('body')).toBe('');
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.code')).toBe(-50);
+            expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
     });
