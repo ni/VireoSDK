@@ -63,6 +63,10 @@
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: [],
 
+        // Hostname to be used when capturing browsers.
+        // This seems to reduce intermittent hangs on Windows 7 using IE 11
+        hostname: '127.0.0.1',
+
         customLaunchers: {
             PhantomJS_Debug: {
                 base: 'PhantomJS',

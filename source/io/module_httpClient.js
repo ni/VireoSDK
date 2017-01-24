@@ -110,14 +110,6 @@
         proto.createRequest = function (requestData, cb) {
             var request = new XMLHttpRequest();
 
-            // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
-            request.withCredentials = true;
-
-            // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
-            request.responseType = 'text';
-
-            request.timeout = requestData.xhrTimeout;
-
             // Create event listeners
             var eventListeners = {};
 
@@ -181,14 +173,24 @@
                 request.addEventListener(eventName, eventListeners[eventName]);
             });
 
+            // Open request to set properties
+            request.open(requestData.method, requestData.url, true, this._username, this._password);
+
             // Add request headers
             this._headers.forEach(function (value, header) {
                 request.setRequestHeader(header, value);
             });
 
-            // Open and send the request
-            request.open(requestData.method, requestData.url, true, this._username, this._password);
+            // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
+            request.withCredentials = true;
 
+            // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
+            request.responseType = 'text';
+
+            // In IE 11 the timeout property may only be set after calling open and before calling send
+            request.timeout = requestData.xhrTimeout;
+
+            // Send request
             if (requestData.buffer === undefined) {
                 request.send();
             } else {
