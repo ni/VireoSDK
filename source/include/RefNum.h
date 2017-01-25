@@ -74,10 +74,11 @@ protected:
     virtual ~RefNumStorageBase() { }
 
 public:
-    Int32		ReleaseRefNumRights(const RefNum &refnum);
-    bool		IsARefNum(const RefNum &refnum);
-    Int32		GetRefNumCount();
-    NIError		GetRefNumList(RefNumList &list);
+    RefNum  CloneRefNum(RefNum refnum);
+    Int32   ReleaseRefNumRights(const RefNum &refnum);
+    bool    IsARefNum(const RefNum &refnum);
+    Int32	GetRefNumCount();
+    NIError	GetRefNumList(RefNumList &list);
 };
 
 template <typename T, bool _isRefCounted>
