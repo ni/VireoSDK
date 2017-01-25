@@ -188,6 +188,7 @@
                 "QueueRefNumCleanup.via",
                 "QueueRefNumEnqueueFront.via",
                 "QueueRefNumGetStatus.via",
+                "QueueRefNumNamed.via",
                 "Random.via",
                 "ReadWriteUsingPaths.via",
                 "ReentrantMemLeak2.via",

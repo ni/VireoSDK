@@ -901,7 +901,7 @@ public:
     // TODO Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
-//! A type describes a pointer to another type. Initial value will be null.
+//! A type describes a refnum to another type.
 class RefNumValType : public WrappedType
 {
 protected:
@@ -980,7 +980,7 @@ public:
         { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
 };
 //------------------------------------------------------------
-//! The core C++ implimentation for ArrayType typed data's value.
+//! The core C++ implementation for ArrayType typed data's value.
 class TypedArrayCore
 {
 protected:

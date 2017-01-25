@@ -80,6 +80,19 @@ RefNumStorageBase::RefNumHeaderAndData* RefNumStorageBase::CreateRefNumIndex(Ref
 }
 
 /**
+ Clone a refnum, but with a different magic number.  Resulting refnum is not
+ valid to look up storage but can be used by an outside manager to
+ maintain refnum alias (e.g. for named Queues).
+s*/
+RefNum RefNumStorageBase::CloneRefNum(RefNum refnum) {
+    UInt32 index = IndexFromRefNum(refnum);
+    UInt32 refnumMagic = UInt32(MagicFromRefNum(refnum));
+    ++refnumMagic;
+    RefNum newRefNum = MakeRefNum(index, refnumMagic);
+    return newRefNum;
+}
+
+/**
  Create a new refnum with the given info
 */
 RefNum RefNumStorageBase::NewRefNum(RefNumDataPtr info) {
@@ -214,10 +227,12 @@ bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr 
                     UInt32 newRefCount = MakePackedMagicNum(refCount+1, refnumMagic);
                     if( CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
                         // Performance here is crucial; it runs for each read/write
-                        if(_dataSize == sizeof(RefNumDataBase))
-                            *info = rnp->_refData;
-                        else
-                            memmove(info, &rnp->_refData, _dataSize);
+                        if (info) {
+                            if(_dataSize == sizeof(RefNumDataBase))
+                                *info = rnp->_refData;
+                            else
+                                memmove(info, &rnp->_refData, _dataSize);
+                        }
                         rightsWereAcquired = true;
                         break;
                     }
