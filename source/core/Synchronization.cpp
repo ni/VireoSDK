@@ -552,7 +552,7 @@ Boolean QueueCore::Peek(void* pData, IntIndex skipCount)
 class QueueRefNumManager : public RefNumManager {
 private:
     typedef TypedRefNum<QueueRef, true> QueueRefNumType;
-    static QueueRefNumType _s_QueueRefNum; // manages refnum storage
+    QueueRefNumType _QueueRefNumTypeStorage; // manages refnum storage
     
     struct StringRefCmp {
         bool operator()(const StringRef& a, const StringRef &b) const {
@@ -568,61 +568,63 @@ private:
             }
         };
     };
+    static QueueRefNumManager _s_singleton;
 public:
     typedef std::map<StringRef, RefNum, StringRefCmp> NamedRefNumMapType;
 private:
     typedef std::map<RefNum, RefNum> RefnumAliasMapType;
-    static NamedRefNumMapType _s_namedRefMap;
-    static RefnumAliasMapType _s_refAliasMap;
+    NamedRefNumMapType _namedRefMap;
+    RefnumAliasMapType _refAliasMap;
 public:
-    static QueueRefNumType &RefNumManager() { return _s_QueueRefNum; }
-    static NamedRefNumMapType &NamedRefNumMap() { return _s_namedRefMap; }
-    static RefNum NewRefnumAlias(RefNum refnum);
-    static bool DisposeAlias(RefNum refnum);
-    static NIError LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr);
+    static QueueRefNumManager &QueueRefManager() { return _s_singleton; }
+    static QueueRefNumType &RefNumStorage() { return _s_singleton.RefNumManager(); }
+
+    QueueRefNumType &RefNumManager() { return _QueueRefNumTypeStorage; }
+    NamedRefNumMapType &NamedRefNumMap() { return _namedRefMap; }
+    RefNum NewRefnumAlias(RefNum refnum);
+    bool DisposeAlias(RefNum refnum);
+    NIError LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr);
 };
+
+QueueRefNumManager QueueRefNumManager::_s_singleton;
 
 RefNum QueueRefNumManager::NewRefnumAlias(RefNum refnum)
 {
-    if (_s_QueueRefNum.AcquireRefNumRights(refnum, NULL)) { // increase ref count
-        RefNum newRefnum = _s_QueueRefNum.CloneRefNum(refnum);
-        while (_s_refAliasMap.find(newRefnum) != _s_refAliasMap.end())  // make sure unique
-            newRefnum = _s_QueueRefNum.CloneRefNum(newRefnum);
-        _s_refAliasMap[newRefnum] = refnum;
+    if (_QueueRefNumTypeStorage.AcquireRefNumRights(refnum, NULL)) { // increase ref count
+        RefNum newRefnum = _QueueRefNumTypeStorage.CloneRefNum(refnum);
+        while (_refAliasMap.find(newRefnum) != _refAliasMap.end())  // make sure unique
+            newRefnum = _QueueRefNumTypeStorage.CloneRefNum(newRefnum);
+        _refAliasMap[newRefnum] = refnum;
         return newRefnum;
     }
     return kNotARefNum;
 }
 bool QueueRefNumManager::DisposeAlias(RefNum refnum)
 {
-    RefnumAliasMapType::iterator it = _s_refAliasMap.find(refnum);
-    if (it != _s_refAliasMap.end()) {
+    RefnumAliasMapType::iterator it = _refAliasMap.find(refnum);
+    if (it != _refAliasMap.end()) {
         RefNum realRefnum = it->second;
-        if (_s_QueueRefNum.ReleaseRefNumRights(realRefnum) <= 2) { // decrease ref count
+        if (_QueueRefNumTypeStorage.ReleaseRefNumRights(realRefnum) <= 2) { // decrease ref count
             QueueRef queueRef = NULL;
-            if (_s_QueueRefNum.DisposeRefNum(realRefnum, &queueRef) == kNIError_Success) {
+            if (_QueueRefNumTypeStorage.DisposeRefNum(realRefnum, &queueRef) == kNIError_Success) {
                 QueueCore *pQV = queueRef->ObjBegin();
                 if (pQV)
                     pQV->Type()->ClearData(&queueRef);
             }
         }
-        _s_refAliasMap.erase(refnum);
+        _refAliasMap.erase(refnum);
         return true;
     }
     return false;
 }
 NIError QueueRefNumManager::LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr)
 {
-    RefnumAliasMapType::iterator it = _s_refAliasMap.find(refnum);
-    if (it != _s_refAliasMap.end())
+    RefnumAliasMapType::iterator it = _refAliasMap.find(refnum);
+    if (it != _refAliasMap.end())
         refnum = it->second;
     NIError err = RefNumManager().GetRefNumData(refnum, queueRefPtr);
     return err;
 }
-
-QueueRefNumManager::QueueRefNumType QueueRefNumManager::_s_QueueRefNum;
-QueueRefNumManager::NamedRefNumMapType QueueRefNumManager::_s_namedRefMap;
-QueueRefNumManager::RefnumAliasMapType QueueRefNumManager::_s_refAliasMap;
 
 // Get the underlying array type from the RefNum Queue template type
 static inline TypeRef GetQueueArrayTypeRef(RefNumValType* refNumPtr) {
@@ -642,9 +644,9 @@ static inline TypeRef GetQueueElemTypeRef(RefNumValType* refNumPtr) {
 static void CleanUpQueueRefNum(intptr_t arg) {
     RefNum refnum = RefNum(arg);
     QueueRef queueRef = NULL;
-    if (QueueRefNumManager::DisposeAlias(refnum)) {
+    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnum)) {
         // was a named clone
-    } else if (QueueRefNumManager::RefNumManager().DisposeRefNum(refnum, &queueRef) == kNIError_Success) {
+    } else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnum, &queueRef) == kNIError_Success) {
         QueueCore *pQV = queueRef->ObjBegin();
         if (pQV)
             pQV->Type()->ClearData(&queueRef);
@@ -676,9 +678,9 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boo
 
     if (name) {
         // see if named queue already exists
-        QueueRefNumManager::NamedRefNumMapType::iterator it = QueueRefNumManager::NamedRefNumMap().find(name);
-        if (it != QueueRefNumManager::NamedRefNumMap().end()) {
-            if (QueueRefNumManager::RefNumManager().GetRefNumData(it->second, &queueRef) == kNIError_Success) {
+        QueueRefNumManager::NamedRefNumMapType::iterator it = QueueRefNumManager::QueueRefManager().NamedRefNumMap().find(name);
+        if (it != QueueRefNumManager::QueueRefManager().NamedRefNumMap().end()) {
+            if (QueueRefNumManager::RefNumStorage().GetRefNumData(it->second, &queueRef) == kNIError_Success) {
                 TypeRef namedQueueType = queueRef->ObjBegin()->EltType();
                 TypeRef newQueueType = queueType->GetSubElement(0);
                 if (newQueueType->CompareType(namedQueueType))
@@ -713,19 +715,19 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boo
         NIError status = type->InitData((void*)&queueRef, (TypeRef)NULL);
         if (status == kNIError_Success) {
             if (!refnumVal) {
-                refnumVal = QueueRefNumManager::RefNumManager().NewRefNum(&queueRef);
+                refnumVal = QueueRefNumManager::RefNumStorage().NewRefNum(&queueRef);
                 if (!refnumVal)
                     errCode = kQueueMemFull;
                 else {
                     if (createdPtr)
                         *createdPtr = true;
                     if (name) {
-                        QueueRefNumManager::NamedRefNumMap()[name] = refnumVal;
-                        refnumVal = QueueRefNumManager::NewRefnumAlias(refnumVal);
+                        QueueRefNumManager::QueueRefManager().NamedRefNumMap()[name] = refnumVal;
+                        refnumVal = QueueRefNumManager::QueueRefManager().NewRefnumAlias(refnumVal);
                     }
                 }
             } else { // must be named to already have refnumVal defined, create alias
-                refnumVal = QueueRefNumManager::NewRefnumAlias(refnumVal);
+                refnumVal = QueueRefNumManager::QueueRefManager().NewRefnumAlias(refnumVal);
             }
             refnumPtr->SetRefNum(refnumVal);
             VirtualInstrument* vi = THREAD_CLUMP()->TopVI();
@@ -749,10 +751,10 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, void, Err
     ErrorCluster *errPtr = _ParamPointer(3);
     QueueRef queueRef = NULL;
     TypeRef type = refnumPtr->GetSubElement(0);
-    if (QueueRefNumManager::DisposeAlias(refnumPtr->GetRefNum())) {
+    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum())) {
         // was a named queue alias
     }
-    else if (QueueRefNumManager::RefNumManager().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
+    else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
         if (errPtr)
             errPtr->SetError(true, kQueueArgErr, "QueueRelease");
     }
@@ -767,7 +769,7 @@ VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumValType*, TypedArrayCoreRef
     ErrorCluster *errPtr = _ParamPointer(2);
     QueueRef queueRef = NULL;
     if ((errPtr && errPtr->status)
-        || QueueRefNumManager::LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr && !errPtr->status)
             errPtr->SetError(true, kQueueArgErr, "FlushQueue");
         if (remainingElts)
@@ -801,7 +803,7 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumValType*, Boolean,Int32
     QueueRef queueRef = NULL;
     QueueCore *pQV = NULL;
     if ((errPtr && errPtr->status)
-        || QueueRefNumManager::LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr && !errPtr->status)
             errPtr->SetError(true, kQueueArgErr, "GetQueueStatus");
     } else {
@@ -877,7 +879,7 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumValType*, void, 
     void *overflowElem = lossy ? _ParamPointer(2) : NULL;
     QueueRef queueRef = NULL;
     if ((errPtr && errPtr->status)
-        || QueueRefNumManager::LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr)
             errPtr->SetError(true, kQueueArgErr, primName);
         if (boolOut)
@@ -933,7 +935,7 @@ static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumValType*, void, 
     ErrorCluster *errPtr = _ParamPointer(4);
     QueueRef queueRef = NULL;
     if ((errPtr && errPtr->status)
-        || QueueRefNumManager::LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+        || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr)
             errPtr->SetError(true, kQueueArgErr, "Dequeue");
         if (_ParamPointer(3))
