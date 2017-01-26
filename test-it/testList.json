@@ -270,6 +270,7 @@
                 "Wait.via",
                 "WaitUntilMultiple.via",
                 "Waveform.via",
+                "WaveformAnalogBuildMissingArgs.via",
                 "ZDACrash1.via"
             ]
         }

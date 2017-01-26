@@ -32,6 +32,7 @@ html_coverage_output/
 # Visual Studio Ignores
 /Vireo_VS/.vs/*
 Vireo_VS/Debug/*
+Vireo_VS/Release/*
 Vireo_VS/VireoCommandLine.sdf
 Vireo_VS/VireoCommandLine.vcxproj.user
 **.VC.db
