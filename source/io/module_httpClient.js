@@ -31,14 +31,21 @@
     var NULL = 0;
 
     var CODES = {
+        // Shared
         NO_ERROR: 0,
-        RECEIVE_INVALID_HANDLE: -1,
-        CLOSE_INVALID_HANDLE: -1967362020,
-        TIMEOUT: -50,
-        ABORT: -100,
-        NETWORK_ERROR: -150,
-        WEBVI_UNSUPPORTED_INPUT: -200,
-        HEADER_DOES_NOT_EXIST: 363528
+        NETWORK_ERROR: -1967370240, // Internal Networking Error, the HTTP Client network errors are too specific
+        CLOSE_INVALID_HANDLE: -1967362020, // The provided refnum is invalid
+        RECEIVE_INVALID_HANDLE: 1, // An input parameter is invalid
+        TIMEOUT: 56, // The network operation exceeded the user-specified or system time limit.
+        INVALID_URL: 363500,
+        ABORT: 363508,
+        HEADER_DOES_NOT_EXIST: 363528,
+        HTTP_CLIENT_UNKNOWN_ERROR: 363798,
+
+        // WebVI Specific
+        WEBVI_UNSUPPORTED_INPUT: 363798,
+        INVALID_HEADER: 363798,
+        FORBIDDEN_HEADER_WARNING: 363798
     };
 
     var DEFAULT_TIMEOUT_MS = 10000;
@@ -64,7 +71,45 @@
         // None
 
         // Static Public Functions
-        // None
+        // https://fetch.spec.whatwg.org/#forbidden-header-name
+        var forbiddenHeaderNames = [
+            'Accept-Charset',
+            'Accept-Encoding',
+            'Access-Control-Request-Headers',
+            'Access-Control-Request-Method',
+            'Connection',
+            'Content-Length',
+            'Cookie',
+            'Cookie2',
+            'Date',
+            'DNT',
+            'Expect',
+            'Host',
+            'Keep-Alive',
+            'Origin',
+            'Referer',
+            'TE',
+            'Trailer',
+            'Transfer-Encoding',
+            'Upgrade',
+            'Via'
+        ];
+
+        var forbiddenHeadersLookupTable = forbiddenHeaderNames.reduce(function (lookupTable, headerName) {
+            lookupTable[headerName.toLowerCase()] = true;
+            return lookupTable;
+        }, {});
+
+        HttpClient.isForbiddenHeaderName = function (headerName) {
+            var lowerCaseHeaderName = headerName.toLowerCase();
+            if (forbiddenHeadersLookupTable[lowerCaseHeaderName] === true) {
+                return true;
+            }
+            if (lowerCaseHeaderName.indexOf('proxy-') === 0 || lowerCaseHeaderName.indexOf('sec-') === 0) {
+                return true;
+            }
+            return false;
+        };
 
         // Prototype creation
         var child = HttpClient;
@@ -122,6 +167,8 @@
                 cb(responseData);
             };
 
+            // load, error, timeout, and abort are mutually exclusive and one will fire after send
+            // See https://xhr.spec.whatwg.org/#suggested-names-for-events-using-the-progressevent-interface
             eventListeners.load = function () {
                 // TODO mraj is there a way to get the HTTP version from the request?
                 var httpVersion = 'HTTP/1.1';
@@ -174,12 +221,35 @@
             });
 
             // Open request to set properties
-            request.open(requestData.method, requestData.url, true, this._username, this._password);
+            try {
+                request.open(requestData.method, requestData.url, true, this._username, this._password);
+            } catch (ex) {
+                // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
+                // Instead of trying to detect, always say invalid url and add message to source
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.INVALID_URL,
+                    errorMessage: ex.message ? ex.message : 'Invalid URL'
+                });
+                return;
+            }
 
             // Add request headers
-            this._headers.forEach(function (value, header) {
-                request.setRequestHeader(header, value);
-            });
+            try {
+                this._headers.forEach(function (value, header) {
+                    request.setRequestHeader(header, value);
+                });
+            } catch (ex) {
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.INVALID_HEADER,
+                    errorMessage: ex.message ? ex.message : 'Invalid Header'
+                });
+            }
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
             request.withCredentials = true;
@@ -290,7 +360,7 @@
             var httpClient = httpClientManager.get(handle);
 
             if (httpClient === undefined) {
-                Module.httpClient.mergeErrors(true, CODES.INVALID_HANDLE, errorSourceIfError + ', Handle Not Found', errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, errorSourceIfError + ', Handle Not Found', errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
@@ -398,6 +468,14 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = Module.eggShell.dataReadString(valuePointer);
             httpClient.addHeader(header, value);
+
+            var newWarningSource;
+            if (HttpClient.isForbiddenHeaderName(header)) {
+                newWarningSource = 'LabVIEWHTTPClient:AddHeader, Warning, adding the following header is forbidden in WebVIs: ' + header;
+
+                // A status of false with a non-zero error code is a warning
+                Module.httpClient.mergeErrors(false, CODES.FORBIDDEN_HEADER_WARNING, newWarningSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            }
         };
 
         Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {

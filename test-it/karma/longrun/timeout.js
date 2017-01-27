@@ -6,6 +6,8 @@ describe('Timeout test suite', function () {
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
 
+    var TIMEOUT_CODE = 56;
+
     // Sharing Vireo instances across tests make them run soooo much faster
     // var vireo = new Vireo();
 
@@ -58,7 +60,7 @@ describe('Timeout test suite', function () {
             expect(viPathParser('body')).toBe('');
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBe(true);
-            expect(viPathParser('error.code')).toBe(-50);
+            expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
@@ -94,7 +96,7 @@ describe('Timeout test suite', function () {
             expect(viPathParser('body')).toBe('');
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBe(true);
-            expect(viPathParser('error.code')).toBe(-50);
+            expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
