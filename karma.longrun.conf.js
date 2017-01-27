@@ -8,7 +8,7 @@ module.exports = function (config) {
 
     sharedConfig.files = sharedConfig.files.concat([
         // test specs
-        'test-it/karma/longrun/*.js'
+        'test-it/karma/longrun/*.test.js'
     ]);
 
     // level of logging
