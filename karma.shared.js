@@ -67,6 +67,7 @@
         // This seems to reduce intermittent hangs on Windows 7 using IE 11
         hostname: '127.0.0.1',
 
+        // Aliases for launchers that provide custom settings
         customLaunchers: {
             PhantomJS_Debug: {
                 base: 'PhantomJS',
@@ -81,6 +82,9 @@
         // How long will Karma wait for a message from a browser before disconnecting from it (in ms).
         // default: 10000
         browserNoActivityTimeout: 60000,
+
+        // Enable or disable failure on running empty test-suites. If disabled the program will return exit-code 0 and display a warning.
+        failOnEmptyTestSuite: false,
 
         // Concurrency level
         // how many browser should be started simultaneous

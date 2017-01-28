@@ -6,30 +6,20 @@ describe('Timeout test suite', function () {
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
 
+    // Setting jasmine.DEFALT_TIMEOUT_INTERVAL seems to not be picked up reliably
+    // Not sure why so switched to setting it per 'it' block
+    var JASMINE_TIMEOUT_MS = 50000;
     var TIMEOUT_CODE = 56;
-
-    // Sharing Vireo instances across tests make them run soooo much faster
-    // var vireo = new Vireo();
-
-    // TODO mraj using the same vireo instance causes an abort when one http call results in a none 200 response code
-    // See https://github.com/ni/VireoSDK/issues/163
     var vireo;
+
+    beforeEach(function (done) {
+        httpBinHelpers.queryHttpBinStatus(done);
+    });
 
     beforeEach(function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
+        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = new Vireo();
-    });
-
-    // The timeout does not seem to timeout fast enough and things get weird on fail
-    var originalTimeout;
-
-    beforeEach(function () {
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
-    });
-
-    afterEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
     it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
@@ -64,7 +54,7 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
-    });
+    }, JASMINE_TIMEOUT_MS);
 
     it('GET method with default timeout of 10 seconds times out with httpbin delay of 30s', function (done) {
         var timeout = 10000;
@@ -100,5 +90,5 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
-    });
+    }, JASMINE_TIMEOUT_MS);
 });
