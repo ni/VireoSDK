@@ -8,27 +8,56 @@
         return 'http://127.0.0.1:64526/' + relativePath;
     };
 
-    var showWarningAndMakePending = function () {
-        console.warn('HTTPBin Server offline, skipping HTTP tests');
-        pending();
+    var serverOnline;
+    var queryHttpBinStatus = function (done) {
+        var loadFailed = function () {
+            serverOnline = false;
+            done();
+        };
+        var loadPassed = function () {
+            serverOnline = true;
+            done();
+        };
+
+        if (typeof serverOnline === 'boolean') {
+            if (serverOnline) {
+                loadPassed();
+            } else {
+                loadFailed();
+            }
+            return;
+        }
+
+        var url = convertToAbsoluteUrl('get?show_env=1');
+        var request = new XMLHttpRequest();
+        request.addEventListener('load', function () {
+            if (request.status === 200) {
+                loadPassed();
+            } else {
+                loadFailed();
+            }
+        });
+        request.addEventListener('error', loadFailed);
+        request.addEventListener('timeout', loadFailed);
+        request.addEventListener('abort', loadFailed);
+        request.open('GET', url);
+        request.send();
     };
 
+    // Calling pending was not working right for async functions, probably related to https://github.com/jasmine/jasmine/issues/937
     var makeTestPendingIfHttpBinOffline = function () {
-        var request = new XMLHttpRequest();
-        var url = convertToAbsoluteUrl('get?show_env=1');
-        request.open('GET', url, false);
-        try {
-            request.send();
-        } catch (e) {
-            showWarningAndMakePending();
+        if (typeof serverOnline !== 'boolean') {
+            throw new Error('queryHttpBinStatus must be called before makeTestPendingIfHttpBinOffline');
         }
-        if (request.status !== 200) {
-            showWarningAndMakePending();
+        if (serverOnline === false) {
+            console.warn('HTTPBin Server offline, skipping HTTP tests');
+            pending();
         }
     };
 
     window.testHelpers.httpBinHelpers = {
         convertToAbsoluteUrl: convertToAbsoluteUrl,
-        makeTestPendingIfHttpBinOffline: makeTestPendingIfHttpBinOffline
+        makeTestPendingIfHttpBinOffline: makeTestPendingIfHttpBinOffline,
+        queryHttpBinStatus: queryHttpBinStatus
     };
 }());

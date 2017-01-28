@@ -7,15 +7,15 @@ describe('Performing a GET test', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    // Sharing Vireo instances across tests make them run soooo much faster
-    // var vireo = new Vireo();
-
-    // TODO mraj using the same vireo instance causes an abort when one http call results in a none 200 response code
-    // See https://github.com/ni/VireoSDK/issues/163
     var vireo;
+
+    beforeEach(function (done) {
+        httpBinHelpers.queryHttpBinStatus(done);
+    });
 
     beforeEach(function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
+        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = new Vireo();
     });
 
