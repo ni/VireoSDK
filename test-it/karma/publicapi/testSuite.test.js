@@ -63,6 +63,7 @@ describe('can run test suite file', function () {
     ]);
 
     Object.keys(viaFiles).forEach(function (testName) {
+        /* eslint no-restricted-globals: 'off' */
         var viaAbsolutePath = viaFiles[testName];
         var vtrAbsolutePath = vtrFiles[testName];
         var test = vireoRunner.createVTRTestSync(vireo, viaAbsolutePath, vtrAbsolutePath);

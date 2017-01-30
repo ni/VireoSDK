@@ -108,9 +108,7 @@ module.exports = {
         'max-statements-per-line': 'off',
         'max-statements': 'off',
         'multiline-ternary': ['error', 'never'],
-        'new-cap': ['error', {'capIsNewExceptions': [
-            'Pointer_stringify'
-        ]}],
+        'new-cap': ['error'],
         'new-parens': 'error',
         'newline-after-var': 'off',
         'newline-before-return': 'off',
@@ -127,6 +125,7 @@ module.exports = {
         'no-nested-ternary': 'error',
         'no-new-object': 'error',
         'no-plusplus': 'error',
+        'no-restricted-globals': ['error', 'fdescribe', 'fit'],
         'no-restricted-syntax': 'error',
         'no-tabs': 'error',
         'no-trailing-spaces': 'error',

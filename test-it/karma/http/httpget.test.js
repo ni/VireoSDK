@@ -1,4 +1,4 @@
-describe('Performing a GET test', function () {
+describe('Performing a GET request', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -88,7 +88,7 @@ describe('Performing a GET test', function () {
 
     // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
 
-    it('validating an unusual response code', function (done) {
+    it('validating an unusual 4XX response code', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
@@ -117,6 +117,47 @@ describe('Performing a GET test', function () {
 
             // status code
             expect(viPathParser('statusCode')).toBe(418);
+
+            // error
+            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBe('');
+
+            done();
+        });
+    });
+
+    it('validating a response with UTF8 data', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var bodyTextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/utf8.txt');
+        var bodyText = fixtures.loadAbsoluteUrl(bodyTextUrl);
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('encoding/utf8');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBe('');
+            expect(rawPrintError).toBe('');
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+
+            // body
+            expect(viPathParser('body')).toBe(bodyText);
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
 
             // error
             expect(viPathParser('error.status')).toBe(false);
