@@ -1,4 +1,4 @@
-describe('Tests that fail to run on PahntomJS', function () {
+describe('Tests that fail to run on PhantomJS', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -19,7 +19,7 @@ describe('Tests that fail to run on PahntomJS', function () {
         vireo = new Vireo();
     });
 
-    it('validating a 404 response', function (done) {
+    it('validating a 404 response with empty response body', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);

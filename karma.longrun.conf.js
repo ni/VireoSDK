@@ -7,6 +7,9 @@ module.exports = function (config) {
     var sharedConfig = require('./karma.shared.js');
 
     sharedConfig.files = sharedConfig.files.concat([
+        // test assets
+        'test-it/karma/utilities/extendJasmineTimeout.js',
+
         // test specs
         'test-it/karma/longrun/*.test.js'
     ]);
