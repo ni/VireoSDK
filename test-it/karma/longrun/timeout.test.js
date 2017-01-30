@@ -8,7 +8,6 @@ describe('Timeout test suite', function () {
 
     // Setting jasmine.DEFALT_TIMEOUT_INTERVAL seems to not be picked up reliably
     // Not sure why so switched to setting it per 'it' block
-    var JASMINE_TIMEOUT_MS = 50000;
     var TIMEOUT_CODE = 56;
     var vireo;
 
@@ -39,9 +38,8 @@ describe('Timeout test suite', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             var endTime = performance.now();
             var runTime = endTime - startTime;
-            var timeoutBuffered = timeout + (timeout * 0.5);
 
-            expect(runTime).toBeLessThan(timeoutBuffered);
+            expect(runTime).toBeNear(timeout, timeout * 0.5);
 
             expect(rawPrint).toBe('');
             expect(rawPrintError).toBe('');
@@ -54,7 +52,7 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
-    }, JASMINE_TIMEOUT_MS);
+    });
 
     it('GET method with default timeout of 10 seconds times out with httpbin delay of 30s', function (done) {
         var timeout = 10000;
@@ -73,10 +71,8 @@ describe('Timeout test suite', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             var endTime = performance.now();
             var runTime = endTime - startTime;
-            var timeoutBuffered = timeout + (timeout * 0.5);
 
-            expect(runTime).toBeLessThan(timeoutBuffered);
-            expect(runTime).toBeGreaterThan(timeout);
+            expect(runTime).toBeNear(timeout, timeout * 0.5);
 
             expect(rawPrint).toBe('');
             expect(rawPrintError).toBe('');
@@ -90,5 +86,5 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
         });
-    }, JASMINE_TIMEOUT_MS);
+    });
 });
