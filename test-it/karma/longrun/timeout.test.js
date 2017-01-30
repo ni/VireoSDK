@@ -5,6 +5,7 @@ describe('Timeout test suite', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
+    var httpParser = window.testHelpers.httpParser;
 
     // Setting jasmine.DEFALT_TIMEOUT_INTERVAL seems to not be picked up reliably
     // Not sure why so switched to setting it per 'it' block
@@ -84,6 +85,58 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.status')).toBe(true);
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
+            done();
+        });
+    });
+
+    it('GET method with timeout -1 succeeds with httpbin delay of 20s', function (done) {
+        var timeout = -1;
+        var httpBinDelay = 20000;
+
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/20');
+        viPathWriter('url', url);
+        viPathWriter('timeout', timeout);
+
+        var startTime = performance.now();
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            var endTime = performance.now();
+            var runTime = endTime - startTime;
+
+            expect(runTime).toBeNear(httpBinDelay, httpBinDelay * 0.5);
+
+            expect(rawPrint).toBe('');
+            expect(rawPrintError).toBe('');
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+
+            // body
+            var httpBinBody = JSON.parse(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toEqual({});
+            expect(httpBinBody.headers).toEqual(jasmine.any(Object));
+            expect(requestUrl.pathname).toBe('/delay/20');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBe('');
             done();
         });
     });
