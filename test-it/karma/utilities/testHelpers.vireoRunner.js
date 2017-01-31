@@ -12,15 +12,15 @@
             expect(vtrAbsolutePath).toBeNonEmptyString();
 
             var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
-            var rawVtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
+            var vtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
             expect(viaText).toBeNonEmptyString();
-            expect(rawVtrText).toBeString();
+            expect(vtrText).toBeString();
 
             vireo.eggShell.reboot();
 
-            var rawResults = '';
+            var results = '';
             vireo.eggShell.setPrintFunction(function (text) {
-                rawResults += text + '\n';
+                results += text + '\n';
             });
 
             vireo.eggShell.loadVia(viaText);
@@ -28,12 +28,13 @@
                 // repeat until it returns zero
             }
 
-            var normalizedResults = window.testHelpers.textFormat.normalizeLineEndings(rawResults);
-            var normalizedVtrText = window.testHelpers.textFormat.normalizeLineEndings(rawVtrText);
-            var vtrTextNoComments = removeInlineComments(normalizedVtrText);
+            var resultsNormalized = window.testHelpers.textFormat.normalizeLineEndings(results);
+            var resultsNoComments = removeInlineComments(resultsNormalized);
+            var vtrTextNormalized = window.testHelpers.textFormat.normalizeLineEndings(vtrText);
+            var vtrTextNoComments = removeInlineComments(vtrTextNormalized);
 
             // Print the JSON.stringify versions so whitespace characters are encoded and easier to inspect
-            expect(JSON.stringify(normalizedResults)).toBe(JSON.stringify(vtrTextNoComments));
+            expect(JSON.stringify(resultsNoComments)).toBe(JSON.stringify(vtrTextNoComments));
         };
     };
 
