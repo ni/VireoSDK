@@ -2,10 +2,6 @@
     'use strict';
     window.testHelpers = window.testHelpers || {};
 
-    var normalizeLineEndings = function (multiLineString) {
-        return multiLineString.replace(/\r\n/gm, '\n');
-    };
-
     var removeInlineComments = function (multiLineString) {
         return multiLineString.replace(/^\/\/.*\n/gm, '');
     };
@@ -32,8 +28,8 @@
                 // repeat until it returns zero
             }
 
-            var normalizedResults = normalizeLineEndings(rawResults);
-            var normalizedVtrText = normalizeLineEndings(rawVtrText);
+            var normalizedResults = window.testHelpers.textFormat.normalizeLineEndings(rawResults);
+            var normalizedVtrText = window.testHelpers.textFormat.normalizeLineEndings(rawVtrText);
             var vtrTextNoComments = removeInlineComments(normalizedVtrText);
 
             // Print the JSON.stringify versions so whitespace characters are encoded and easier to inspect
@@ -93,8 +89,6 @@
     };
 
     window.testHelpers.vireoRunner = {
-        normalizeLineEndings: normalizeLineEndings,
-        removeInlineComments: removeInlineComments,
         createVTRTestSync: createVTRTestSync,
         rebootAndLoadVia: rebootAndLoadVia,
         createVIPathParser: createVIPathParser,
