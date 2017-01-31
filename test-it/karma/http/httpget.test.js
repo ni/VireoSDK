@@ -6,6 +6,7 @@ describe('Performing a GET request', function () {
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
+    var textFormat = window.testHelpers.textFormat;
 
     var vireo;
 
@@ -130,7 +131,7 @@ describe('Performing a GET request', function () {
     it('validating a response with UTF8 data', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
         var bodyTextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/utf8.txt');
-        var bodyText = fixtures.loadAbsoluteUrl(bodyTextUrl);
+        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(bodyTextUrl));
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -154,7 +155,8 @@ describe('Performing a GET request', function () {
             expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            expect(viPathParser('body')).toBe(bodyText);
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBe(bodyText);
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
