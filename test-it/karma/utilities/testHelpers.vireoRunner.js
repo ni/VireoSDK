@@ -12,13 +12,13 @@
 
     var createVTRTestSync = function (vireo, viaAbsolutePath, vtrAbsolutePath) {
         return function () {
-            expect(typeof viaAbsolutePath).toBe('string');
-            expect(typeof vtrAbsolutePath).toBe('string');
+            expect(viaAbsolutePath).toBeNonEmptyString();
+            expect(vtrAbsolutePath).toBeNonEmptyString();
 
             var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
             var rawVtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
-            expect(typeof viaText).toBe('string');
-            expect(typeof rawVtrText).toBe('string');
+            expect(viaText).toBeNonEmptyString();
+            expect(rawVtrText).toBeString();
 
             vireo.eggShell.reboot();
 
@@ -42,10 +42,10 @@
     };
 
     var rebootAndLoadVia = function (vireo, viaAbsolutePath) {
-        expect(typeof viaAbsolutePath).toBe('string');
+        expect(viaAbsolutePath).toBeNonEmptyString();
 
         var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
-        expect(typeof viaText).toBe('string');
+        expect(viaText).toBeNonEmptyString();
 
         vireo.eggShell.reboot();
 
@@ -60,11 +60,11 @@
         });
 
         vireo.eggShell.loadVia(viaText);
-        expect(rawPrint).toBe('');
-        expect(rawPrintError).toBe('');
+        expect(rawPrint).toBeEmptyString();
+        expect(rawPrintError).toBeEmptyString();
 
         var runSlicesAsync = function (cb) {
-            expect(typeof cb).toBe('function');
+            expect(cb).toBeFunction();
 
             (function runExecuteSlicesAsync () {
                 var remainingSlices = vireo.eggShell.executeSlices(1000);

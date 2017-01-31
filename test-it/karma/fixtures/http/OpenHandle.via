@@ -12,7 +12,6 @@ define(MyVI dv(VirtualInstrument (
         ) error)
     )
     clump (
-        // Cookie file(0), username(1), password(2), verify Server(3), handle(4), error cluster(5)
         HttpClientOpen(cookieFile username password verifyServer handle error)
     )
 ) ) )

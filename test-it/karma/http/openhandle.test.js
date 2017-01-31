@@ -20,16 +20,16 @@ describe('Running an Open Handle call', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
-            expect(viPathParser('cookieFile')).toBe('');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('cookieFile')).toBeEmptyString();
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBeGreaterThan(0);
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
             done();
         });
     });
@@ -43,16 +43,16 @@ describe('Running an Open Handle call', function () {
 
         viPathWriter('cookieFile', 'C:\\Awesomefile');
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('cookieFile')).toBe('C:\\Awesomefile');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).not.toBe('');
+            expect(viPathParser('error.source')).toBeNonEmptyString();
             done();
         });
     });
@@ -66,16 +66,16 @@ describe('Running an Open Handle call', function () {
 
         viPathWriter('verifyServer', 0);
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
-            expect(viPathParser('cookieFile')).toBe('');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('cookieFile')).toBeEmptyString();
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(0);
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).not.toBe('');
+            expect(viPathParser('error.source')).toBeNonEmptyString();
             done();
         });
     });
@@ -91,14 +91,14 @@ describe('Running an Open Handle call', function () {
         viPathWriter('error.code', 5000);
         viPathWriter('error.source', 'wubalubadubdub');
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
-            expect(viPathParser('cookieFile')).toBe('');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('cookieFile')).toBeEmptyString();
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(5000);
             expect(viPathParser('error.source')).toBe('wubalubadubdub');
             done();
@@ -117,14 +117,14 @@ describe('Running an Open Handle call', function () {
         viPathWriter('error.source', 'wubalubadubdub');
         viPathWriter('cookieFile', 'C:\\Awesomefile');
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('cookieFile')).toBe('C:\\Awesomefile');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(5000);
             expect(viPathParser('error.source')).toBe('wubalubadubdub');
             done();
@@ -143,16 +143,16 @@ describe('Running an Open Handle call', function () {
         viPathWriter('error.source', 'wubalubadubdub');
         viPathWriter('cookieFile', 'C:\\Awesomefile');
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('cookieFile')).toBe('C:\\Awesomefile');
-            expect(viPathParser('username')).toBe('');
-            expect(viPathParser('password')).toBe('');
+            expect(viPathParser('username')).toBeEmptyString();
+            expect(viPathParser('password')).toBeEmptyString();
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).not.toBe('');
+            expect(viPathParser('error.source')).toBeNonEmptyString();
             done();
         });
     });

@@ -17,8 +17,8 @@ describe('Cluster test suite', function () {
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('errorCluster')).toEqual({
                 status: false,
                 code: 0,

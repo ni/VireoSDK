@@ -30,15 +30,15 @@ describe('Performing a GET request', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBeDefined();
-            expect(viPathParser('body')).toBeDefined();
+            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('body')).toBeNonEmptyString();
             expect(viPathParser('statusCode')).toBe(200);
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
             done();
         });
     });
@@ -54,8 +54,8 @@ describe('Performing a GET request', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -65,22 +65,22 @@ describe('Performing a GET request', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(200);
             expect(responseHeader.reasonPhrase).toBe('OK');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
             var httpBinBody = JSON.parse(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toEqual({});
-            expect(httpBinBody.headers).toEqual(jasmine.any(Object));
+            expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(requestUrl.pathname).toBe('/get');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
 
             done();
         });
@@ -99,8 +99,8 @@ describe('Performing a GET request', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -110,18 +110,18 @@ describe('Performing a GET request', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(418);
             expect(responseHeader.reasonPhrase).toBe('I\'M A TEAPOT');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            expect(viPathParser('body')).not.toBe('');
+            expect(viPathParser('body')).toBeNonEmptyString();
 
             // status code
             expect(viPathParser('statusCode')).toBe(418);
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
 
             done();
         });
@@ -140,8 +140,8 @@ describe('Performing a GET request', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -151,7 +151,7 @@ describe('Performing a GET request', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(200);
             expect(responseHeader.reasonPhrase).toBe('OK');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
             expect(viPathParser('body')).toBe(bodyText);
@@ -160,10 +160,76 @@ describe('Performing a GET request', function () {
             expect(viPathParser('statusCode')).toBe(200);
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
 
+            done();
+        });
+    });
+
+    it('with open, get, close and a simple 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenGetClose.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBeGreaterThan(0);
+            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('body')).toBeNonEmptyString();
+            expect(viPathParser('statusCode')).toBe(200);
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            done();
+        });
+    });
+
+    it('with open, get, close and validates a 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenGetClose.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBeGreaterThan(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = JSON.parse(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toEqual({});
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(requestUrl.pathname).toBe('/get');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
             done();
         });
     });
