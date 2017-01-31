@@ -195,6 +195,7 @@
                 });
             };
 
+            // Desktop does not try and return partial response data in timeout scenarios so do not attempt to here
             eventListeners.timeout = function () {
                 completeRequest({
                     header: '',
@@ -422,14 +423,14 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default)';
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default of empty string)';
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default)';
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default of true)';
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -570,7 +571,7 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature';
+                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', Output File unsupported in WebVIs (please leave as default of empty string)';
                     Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     Module.eggShell.setOccurrence(occurrencePointer);
                     return;
