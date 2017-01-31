@@ -42,13 +42,13 @@ describe('Timeout test suite', function () {
 
             expect(runTime).toBeNear(timeout, timeout * 0.5);
 
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBe('');
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
@@ -75,14 +75,14 @@ describe('Timeout test suite', function () {
 
             expect(runTime).toBeNear(timeout, timeout * 0.5);
 
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBe('');
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
@@ -110,8 +110,8 @@ describe('Timeout test suite', function () {
 
             expect(runTime).toBeNear(httpBinDelay, httpBinDelay * 0.5);
 
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -121,22 +121,22 @@ describe('Timeout test suite', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(200);
             expect(responseHeader.reasonPhrase).toBe('OK');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
             var httpBinBody = JSON.parse(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toEqual({});
-            expect(httpBinBody.headers).toEqual(jasmine.any(Object));
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(requestUrl.pathname).toBe('/delay/20');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
             done();
         });
     });

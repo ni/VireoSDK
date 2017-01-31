@@ -14,7 +14,6 @@ define(MyVI dv(VirtualInstrument (
         ) error)
     )
     clump (
-        // handle(0), url(1), output file(2), timeout(3), headers(4), body(5), status code(6), error(7), ocurrence(8)
         HttpClientGet(handle url outputFile timeout headers body statusCode error)
     )
 ) ) )

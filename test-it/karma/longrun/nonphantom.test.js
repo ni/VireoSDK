@@ -30,8 +30,8 @@ describe('Tests that fail to run on PhantomJS', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -41,15 +41,15 @@ describe('Tests that fail to run on PhantomJS', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(404);
             expect(responseHeader.reasonPhrase).toBe('NOT FOUND');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('body')).toBeEmptyString();
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
 
             done();
         });
