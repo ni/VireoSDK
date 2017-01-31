@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 //------------------------------------------------------------
-// Cookie file(0), userName(1), password(2), verify Server(3), handle(4), error cluster(5)
+// Cookie file(0), username(1), password(2), verify Server(3), handle(4), error cluster(5)
 VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
