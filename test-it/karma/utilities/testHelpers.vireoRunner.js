@@ -30,11 +30,22 @@
                 return;
             }
 
+            var executeSlicesInvocationCount = 0;
+
             (function runExecuteSlicesAsync () {
-                var remainingSlices = vireo.eggShell.executeSlices(1000);
+                // TODO mraj Executing 1000 slices at a time ran much slower, need better tuning of this value
+                var remainingSlices = vireo.eggShell.executeSlices(1000000);
+                executeSlicesInvocationCount += 1;
 
                 if (remainingSlices > 0) {
-                    setImmediate(runExecuteSlicesAsync);
+                    // The setImmediate polyfill in PhantomJS does not work when combined with xhr requests.
+                    // I think the polyfill blocks servicing network ops...
+                    // so periodically use setTimeout to let PhantomJS service the network stack
+                    if (executeSlicesInvocationCount % 1000 === 0) {
+                        setTimeout(runExecuteSlicesAsync, 0);
+                    } else {
+                        setImmediate(runExecuteSlicesAsync);
+                    }
                 } else {
                     cb(rawPrint, rawPrintError);
                 }
