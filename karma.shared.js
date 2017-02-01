@@ -18,6 +18,7 @@
             // TODO mraj So far core.js is only used for es6 Map support for PhantomJS, can remove with PhantomJS 2.5
             'node_modules/core-js/client/core.js',
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
+            'node_modules/setimmediate/setImmediate.js',
             'dist/vireo.js',
             'source/core/module_*.js',
             'source/io/module_*.js',
