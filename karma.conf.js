@@ -16,5 +16,7 @@ module.exports = function (config) {
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     sharedConfig.logLevel = config.LOG_INFO;
 
+    // The jasmine default timeout is 5000ms so this is cutting it close
+    sharedConfig.reportSlowerThan = 4000;
     config.set(sharedConfig);
 };
