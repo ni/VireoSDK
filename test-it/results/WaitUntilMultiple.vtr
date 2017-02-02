@@ -7,7 +7,3 @@ All tests pass: 'true'.
         Ticks different: 'true'.
         Microseconds different: 'true'.
         Milliseconds different: 'true'.
-    UInt8  counter size: 'true'.
-        Ticks different: 'true'.
-        Microseconds different: 'true'.
-        Milliseconds different: 'true'.
