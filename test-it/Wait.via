@@ -107,7 +107,6 @@ define (_%54estVI_Wait%2Egvi dv(.VirtualInstrument (
         Wait(8)
         Wait(9)
         And(local73 local59 local80)
-        And(local33 local80 local80)
         Copy(local80 local75 )
         Copy(local75 dataItem_Actual )
         Printf ("All tests pass: '%s'.\n" dataItem_Actual)
@@ -119,10 +118,6 @@ define (_%54estVI_Wait%2Egvi dv(.VirtualInstrument (
         Printf ("        Ticks different: '%s'.\n" dataItem_UInt16TicksDifferent)
         Printf ("        Microseconds different: '%s'.\n" dataItem_UInt16MicrosecondsDifferent)
         Printf ("        Milliseconds different: '%s'.\n" dataItem_UInt16MillisecondsDifferent)
-        Printf ("    UInt8  counter size: '%s'.\n" dataItem_UInt8CounterSize)
-        Printf ("        Ticks different: '%s'.\n" dataItem_UInt8TicksDifferent)
-        Printf ("        Microseconds different: '%s'.\n" dataItem_UInt8MicrosecondsDifferent)
-        Printf ("        Milliseconds different: '%s'.\n" dataItem_UInt8MillisecondsDifferent)
 /* Clump Ended. */    )
     clump(1
         Convert(c1 local9)
