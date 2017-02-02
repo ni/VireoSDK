@@ -45,5 +45,6 @@
   "bugs": {
     "url": "https://github.com/NI/VireoSDK/issues"
   },
-  "homepage": "https://github.com/NI/VireoSDK#readme"
+  "homepage": "https://github.com/NI/VireoSDK#readme",
+  "main": "source/core/vireo.loader.js"
 }
