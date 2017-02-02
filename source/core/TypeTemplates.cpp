@@ -44,6 +44,7 @@ class TypeTemplateVisitor : public TypeVisitor
     virtual void VisitElement(ElementType* type);
     virtual void VisitNamed(NamedType* type);
     virtual void VisitPointer(PointerType* type);
+    virtual void VisitEnum(EnumType* type);
     virtual void VisitRefNumVal(RefNumValType* type);
     virtual void VisitDefaultValue(DefaultValueType* type);
     virtual void VisitDefaultPointer(DefaultPointerType* type);
@@ -337,6 +338,21 @@ void TypeTemplateVisitor::VisitRefNumVal(RefNumValType *type)
     TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         _newType = RefNumValType::New(_typeManager, newBaseType);
+    } else {
+        _newType = type;
+    }
+}
+//------------------------------------------------------------
+void TypeTemplateVisitor::VisitEnum(EnumType* type)
+{
+    if (!type->IsTemplate()) {
+        _newType = type;
+        return;
+    }
+
+    TypeRef newBaseType = Accept(type->BaseType());
+    if (newBaseType != type->BaseType()) {
+        _newType = EnumType::New(_typeManager, newBaseType);
     } else {
         _newType = type;
     }

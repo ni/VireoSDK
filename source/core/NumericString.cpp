@@ -224,7 +224,8 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
         }
         switch (argType->BitEncoding()) {
 
-        case kEncoding_UInt: {
+        case kEncoding_UInt:
+        case kEncoding_Enum: {
             buffer->AppendCStr("%u");
         }
         break;
@@ -726,7 +727,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                                 intValue = ConvertNumericRange(kEncoding_S2CInt, 8, intValue);
                             }
-                        } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt || enc == kEncoding_Boolean) {
+                        } else if (enc == kEncoding_UInt || enc == kEncoding_S2CInt || enc == kEncoding_Boolean || enc == kEncoding_Enum) {
                             intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                             if (argType->BitLength() < 64 && fOptions.FormatChar != 'd')
                                 intValue &= (1LL<<(argType->BitLength()))-1;
@@ -759,7 +760,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 's':      //%s
                     {
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean())
+                        if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean() && !argType->IsEnum())
                         {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
                             break;
@@ -1257,7 +1258,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     char* endPointer = null;
     
     switch (argumentType->BitEncoding()) {
-    case kEncoding_UInt: {
+    case kEncoding_UInt: case kEncoding_Enum: {
         IntMax intValue = 0;
         switch (formatOptions->FormatChar) {
         case 'x' : {

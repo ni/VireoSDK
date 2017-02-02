@@ -13,6 +13,7 @@ SDG
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
@@ -273,7 +274,9 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     }
     
     Boolean bTypeFunction = _string.ComparePrefix('(');
-    if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
+    if (typeFunction.ComparePrefixCStr(tsEnumTypeToken) && (typeFunction.Length()==4 || isdigit(typeFunction.Begin()[4]))) {
+        type = ParseEnumType(&typeFunction);
+    } else if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
         // Eat the deprecated dot prefix if it exists.
         typeFunction.EatChar('.');
         
@@ -356,7 +359,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
     
     if (patternType) {
         EncodingEnum enc = patternType->BitEncoding();
-        if (enc == kEncoding_S2CInt || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary) {
+        if (enc == kEncoding_S2CInt || enc == kEncoding_UInt || enc == kEncoding_IEEE754Binary || enc == kEncoding_Enum) {
             if (tt == TokenTraits_Integer || tt == TokenTraits_IEEE754) {
                 literalsType = patternType;
             }
@@ -575,7 +578,7 @@ TypeRef TDViaParser::ParseBitBlock()
     } else if (!lengthToken.ReadIntDim(&length)) {
             return BadType();        
     }
-    
+
     if (!_string.ReadToken(&encoding))
         return BadType();
     
@@ -617,6 +620,40 @@ TypeRef TDViaParser::ParseRefNumType()
     return refnum;
 }
 //------------------------------------------------------------
+TypeRef TDViaParser::ParseEnumType(SubString *token)
+{
+    TypeRef subType = _typeManager->FindType(&TypeCommon::TypeUInt32);
+    if (token->CompareCStr(tsEnum "8")) {
+        subType = _typeManager->FindType(&TypeCommon::TypeUInt8);
+    } else if (token->CompareCStr(tsEnum "16")) {
+        subType = _typeManager->FindType(&TypeCommon::TypeUInt16);
+    } else if (token->CompareCStr(tsEnum "64")) {
+        subType = _typeManager->FindType(&TypeCommon::TypeUInt64);
+    } else if (!token->CompareCStr(tsEnum) && !token->CompareCStr(tsEnum "32"))
+        return BadType();
+    EncodingEnum subEncoding = subType->BitEncoding();
+    EnumType *enumVal = EnumType::New(_typeManager, subType);
+    if (_string.EatChar('(')) {
+        SubString enumValToken;
+        while (!_string.EatChar(')')) {
+            TokenTraits tt = _string.ReadToken(&enumValToken);
+            if (tt == TokenTraits_SymbolName) {
+                STACK_VAR(String, decodedStr);
+                decodedStr.Value->AppendViaDecoded(&enumValToken);
+                enumValToken = decodedStr.Value->MakeSubStringAlias();
+                enumVal->AddEnumItem(&enumValToken);
+            } else if (tt == TokenTraits_String) {
+                enumValToken.TrimQuotedString(tt);
+                enumVal->AddEnumItem(&enumValToken);
+            } else
+                return BadType();
+        }
+    }
+    if (subEncoding != kEncoding_UInt && subEncoding != kEncoding_S2CInt)
+        return BadType();
+    return enumVal;
+}
+//------------------------------------------------------------
 EncodingEnum TDViaParser::ParseEncoding(SubString *string)
 {
     EncodingEnum enc = kEncoding_None;
@@ -644,7 +681,10 @@ EncodingEnum TDViaParser::ParseEncoding(SubString *string)
         enc = kEncoding_Generic;
     } else if (string->CompareCStr(tsPointer)) {
         enc = kEncoding_Pointer ;
+    } else if (string->CompareCStr(tsEnum)) {
+        enc = kEncoding_Enum;
     }
+
     return enc;
 }
 //------------------------------------------------------------
@@ -889,6 +929,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 return;
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
+        case kEncoding_Enum:
         case kEncoding_UInt:
         case kEncoding_S2CInt:
             {
@@ -906,7 +947,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
 
                 if (!pData)
                     return; // If no where to put the parsed data, then all is done.
-                
                 if (WriteIntToMemory(type, pData, value) != kNIError_Success)
                     LOG_EVENT(kSoftDataError, "Data int size not supported");
 
@@ -963,9 +1003,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 // TODO support escaped chars, more error checking
             }
             }
-            break;
-        case kEncoding_Enum:
-            //TODO some fun work here.
             break;
         case kEncoding_None:
             //TODO any thing to do ? value for empty cluster, how
@@ -1453,6 +1490,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             state.AddDataTargetArgument(&token, true, false);
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true, true);
+                        } else if (formalParameterTypeName.CompareCStr("EnumTypeAndData")) {
+                            state.AddDataTargetArgument(&token, true, true);
                         } else if (formalType->IsStaticParam()) {
                             LOG_EVENT(kSoftDataError, "unexpeced static parameter");
                         } else {
@@ -1651,6 +1690,13 @@ private:
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
+    //------------------------------------------------------------
+    virtual void VisitEnum(EnumType* type)
+    {
+        _pFormatter->_string->AppendCStr("enum(");
+        type->BaseType()->Accept(this);
+        _pFormatter->_string->AppendCStr(")");
+    }
     virtual void VisitRefNumVal(RefNumValType* type)
     {
         _pFormatter->_string->AppendCStr("^");
@@ -1720,6 +1766,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
         case kEncoding_S2CInt:          str = tsSInt;           break;
+        case kEncoding_Enum:           str = tsEnum;            break;
         case kEncoding_Pointer:         str = tsPointer;        break;
         case kEncoding_IEEE754Binary:   str = tsIEEE754Binary;  break;
         case kEncoding_Ascii:           str = tsAscii;          break;
@@ -1752,7 +1799,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
 
     if (encoding == kEncoding_S2CInt) {
         format = "%*lld";
-    } else if (encoding == kEncoding_UInt) {
+    } else if (encoding == kEncoding_UInt || encoding == kEncoding_Enum) {
         format = "%*llu";
     } else if (encoding == kEncoding_DimInt) {
         if (value == kArrayVariableLengthSentinel) {
@@ -1960,10 +2007,21 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     switch (encoding) {
         case kEncoding_UInt:
         case kEncoding_S2CInt:
+        case kEncoding_Enum:
         case kEncoding_DimInt:
             {
-            IntMax intValue = ReadIntFromMemory(type, pData);
-            FormatInt(type->BitEncoding(), intValue);
+                IntMax intValue = ReadIntFromMemory(type, pData);
+                if (type->IsEnum()) {
+                    StringRef itemName = type->GetEnumItemName(IntIndex(intValue));
+                    if (itemName)
+                        _string->Append(itemName);
+                    else { // enum index out of range
+                        _string->Append('<');
+                        FormatInt(kEncoding_UInt, intValue);
+                        _string->Append('>');
+                    }
+                } else
+                    FormatInt(type->BitEncoding(), intValue);
             }
             break;
         case kEncoding_IEEE754Binary:
@@ -2502,6 +2560,7 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
         case kEncoding_Boolean:
         case kEncoding_UInt:
         case kEncoding_S2CInt:
+        case kEncoding_Enum:
         case kEncoding_IEEE754Binary:
             if (destEncoding == kEncoding_Array && destType->Rank() == 1 && destType->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
                 StringRef string = *(StringRef*)pDestData;
