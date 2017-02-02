@@ -7,7 +7,7 @@
     var setupVJS = function () {
         var Vireo;
         try {
-            Vireo = require('../source/core/vireo.loader.js');
+            Vireo = require('../');
 
             actualVireo = new Vireo();
             vireo = actualVireo.eggShell;

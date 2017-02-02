@@ -1,8 +1,6 @@
 (function () {
     'use strict';
 
-    // Looks like the timeout tests have some kind of long running interactions with the httpbin server
-    // I think after a timeout test runs the browser is holding a socket to the server. When a new request is made to the server, the same socket is trying to be reused, and the request takes longer
-    // By extending the timeout across all tests in the timeout test suite we may avoid timing out during these interactions (if that is even what is happening)
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
+    // The PID test takes between 4-6 seconds on PhantomJS so change timeout from default of 5000 to 10000
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 }());
