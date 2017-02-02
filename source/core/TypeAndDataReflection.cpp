@@ -56,6 +56,7 @@ private:
     virtual void VisitElement(ElementType* type);
     virtual void VisitNamed(NamedType* type);
     virtual void VisitPointer(PointerType* type);
+    virtual void VisitEnum(EnumType* type);
     virtual void VisitRefNumVal(RefNumValType* type);
     virtual void VisitDefaultValue(DefaultValueType* type);
     virtual void VisitDefaultPointer(DefaultPointerType* type);
@@ -253,6 +254,11 @@ void DataReflectionVisitor::VisitNamed(NamedType* type)
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitPointer(PointerType* type)
 {
+}
+//------------------------------------------------------------
+void DataReflectionVisitor::VisitEnum(EnumType* type)
+{
+    Accept(type->BaseType(), _pHayStack);
 }
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitRefNumVal(RefNumValType *type)

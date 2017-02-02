@@ -232,7 +232,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Utf32Char", "Int32");              // A single Unicode codepoint (no special encoding or escapes)
     Define(tm, "Utf8Array1D", "a(Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
     Define(tm, tsStringType, "Utf8Array1D");
-    Define(tm, "StringArray1D", "a(String *)");
+    Define(tm, tsStringArrayType, "a(String *)");
 
     // Special types for the execution system.
     Define(tm, "CodePointer", "c(e(bb(HostPointerSize Pointer)))");
@@ -263,6 +263,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(StaticType) e(DataPointer))");
+    Define(tm, "EnumTypeAndData", "StaticTypeAndData"); // same but only matches enums, not overriding other matches
  
     Define(tm, "SubString", "c(e(DataPointer begin)e(DataPointer end))");
 }

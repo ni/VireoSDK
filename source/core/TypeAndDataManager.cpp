@@ -1241,10 +1241,11 @@ ParamBlockAlignmentCalculator::ParamBlockAlignmentCalculator(TypeManagerRef tm)
 Int32 ParamBlockAlignmentCalculator::AlignNextElement(TypeRef element)
 {
     static SubString  stad("StaticTypeAndData");
+    static SubString  etad("EnumTypeAndData");
 
     Int32 elementOffset = _aqOffset;
     IsValid &= element->IsValid();
-    if (element->IsA(&stad)) {
+    if (element->IsA(&stad) || element->IsA(&etad)) {
         // The StaticTypeAndData parameter is two pointers
         _aqOffset += 2 * sizeof(void*);
     } else {
@@ -1803,7 +1804,7 @@ void* DefaultValueType::Begin(PointerAccessEnum mode)
     if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite) ) {
         return null;
     }
-    
+
     // If pointer is needed for initialization, reading, or
     // clearing then its OK.
     
@@ -1848,6 +1849,39 @@ RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
     _maxSize = -1;
     _encoding = kEncoding_RefNum;
 }
+//------------------------------------------------------------
+// EnumType
+//------------------------------------------------------------
+EnumType* EnumType::New(TypeManagerRef typeManager, TypeRef type)
+{
+    return TADM_NEW_PLACEMENT(EnumType)(typeManager, type);
+}
+//------------------------------------------------------------
+EnumType::EnumType(TypeManagerRef typeManager, TypeRef type)
+: WrappedType(typeManager, type)
+{
+    TypeRef itemType = typeManager->FindType(tsStringArrayType);
+    _items = (StringRefArray1D*) StringRefArray1D::New(itemType);
+    _encoding = kEncoding_Enum;
+}
+void EnumType::AddEnumItem(SubString *name) {
+    STACK_VAR(String, string);
+    string.Value->CopyFromSubString(name);
+    _items->Append(string.Value);
+}
+StringRef EnumType::GetEnumItemName(IntIndex i) {
+    if (i >= 0 && i < _items->Length())
+        return *_items->BeginAt(i);
+    return NULL;
+}
+IntIndex EnumType::GetEnumItemCount() {
+    return _items ? _items->Length() : 0;
+}
+EnumType::~EnumType() {
+    TypeRef itemType = TheTypeManager()->FindType(tsStringArrayType);
+    itemType->ClearData(&_items);
+}
+
 //------------------------------------------------------------
 // DefaultPointerType
 //------------------------------------------------------------
@@ -2371,6 +2405,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_UInt:
+        case kEncoding_Enum:
             // Use unsigned int casts to avoid sign extension
             switch (aqSize) {
                 case 0: value = 0;                              break;
@@ -2431,6 +2466,7 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
             }
             break;
         case kEncoding_UInt:
+        case kEncoding_Enum:
             switch (aqSize) {
                 case 1:  *(UInt8*)pData  = (Int8)value;         break;
                 case 2:  *(UInt16*)pData = (UInt16)value;       break;
@@ -2480,6 +2516,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             }
             break;
         case kEncoding_UInt:
+        case kEncoding_Enum:
             switch (aqSize) {
                 case 1:  value = *(UInt8*)pData;            break;
                 case 2:  value = *(UInt16*)pData;           break;
@@ -2537,6 +2574,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             }
             break;
         case kEncoding_UInt:
+        case kEncoding_Enum:
             switch (aqSize) {
                 case 1:  *(UInt8*)pData  = (Int8)value;     break;
                 case 2:  *(UInt16*)pData = (UInt16)value;   break;
@@ -2873,6 +2911,7 @@ private:
     virtual void VisitNamed(NamedType* type) {} // gPlatform.IO.Printf("<.%s>", &type->Name());// type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
     virtual void VisitPointer(PointerType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
     virtual void VisitRefNumVal(RefNumValType* type) { gPlatform.IO.Printf("<rn> "); type->BaseType()->Accept(this); }
+    virtual void VisitEnum(EnumType* type) { gPlatform.IO.Printf("<enum> "); type->BaseType()->Accept(this); }
     virtual void VisitDefaultValue(DefaultValueType* type)  { gPlatform.IO.Printf("<dv> "); }
     virtual void VisitDefaultPointer(DefaultPointerType* type) { gPlatform.IO.Printf("<defptr> "); }
     virtual void VisitCustomDataProc(CustomDataProcType* type) { gPlatform.IO.Printf("<customproc> "); }

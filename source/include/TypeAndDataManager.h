@@ -59,6 +59,7 @@ class NamedType;
 class ArrayType;
 class ElementType;
 class PointerType;
+class EnumType;
 class DefaultValueType;
 class DefaultPointerType;
 class CustomDataProcType;
@@ -88,6 +89,7 @@ typedef TypeCommon StaticType;
 #define tsDoubleType        "Double"
 #define tsStringType        "String"
 #define tsTypeType          "Type"
+#define tsStringArrayType   "StringArray1D"
 #define tsWildCard          "*"
 
 //------------------------------------------------------------
@@ -419,6 +421,7 @@ public:
     virtual void VisitNamed(NamedType* type) = 0;
     virtual void VisitPointer(PointerType* type) = 0;
     virtual void VisitRefNumVal(RefNumValType* type) = 0;
+    virtual void VisitEnum(EnumType* type) = 0;
     virtual void VisitDefaultValue(DefaultValueType* type) = 0;
     virtual void VisitDefaultPointer(DefaultPointerType* type) = 0;
     virtual void VisitCustomDataProc(CustomDataProcType* type) = 0;
@@ -506,6 +509,8 @@ public:
     Boolean IsZDA()                 { return (IsArray() && Rank() ==0); }
     //! True if the type is an aggregate of other types.
     Boolean IsCluster()              { return BitEncoding() == kEncoding_Cluster; }
+    //! True if type is an enum
+    Boolean IsEnum()               { return BitEncoding() == kEncoding_Enum; }
     //! True if data can be copied by a simple block copy.
     Boolean IsFlat()                { return _isFlat != 0; }
     //! True if all types the type is composed of have been resolved to valid types.
@@ -567,6 +572,8 @@ public:
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     //! Free up any storage and put value to null/zero state.
     virtual NIError ClearData(void* pData);
+    virtual StringRef GetEnumItemName(IntIndex index) { return NULL; }
+    virtual IntIndex GetEnumItemCount()              { return 0; }
     
     //! Initialize a linear block to the deault value for the type.
     NIError InitData(void* pData, IntIndex count);
@@ -612,6 +619,9 @@ public:
     virtual IntIndex BitLength()                        { return _wrapped->BitLength(); }
     virtual SubString Name()                            { return _wrapped->Name(); }
     virtual IntIndex* DimensionLengths()                { return _wrapped->DimensionLengths(); }
+    virtual StringRef GetEnumItemName(IntIndex index)    { return _wrapped->GetEnumItemName(index); }
+    virtual IntIndex GetEnumItemCount()                { return _wrapped->GetEnumItemCount(); }
+
     // Data operations
     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped->Begin(mode); }
     virtual NIError InitData(void* pData, TypeRef pattern = null)
@@ -929,6 +939,26 @@ public:
     Int32 GetMaxSize() const { return _maxSize; }
     void SetRefNum(UInt32 refNum) { _refnum = refNum; }
     void SetMaxSize(Int32 maxSize) { _maxSize = maxSize; }
+};
+//------------------------------------------------------------
+//! A type describes a pointer to another type. Initial value will be null.
+class EnumType : public WrappedType
+{
+private:
+    TypedArray1D<StringRef> *_items;
+protected:
+    EnumType(TypeManagerRef typeManager, TypeRef type);
+public:
+    static EnumType* New(TypeManagerRef typeManager, TypeRef type);
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitEnum(this); }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    void AddEnumItem(SubString *name);
+    virtual Int32   SubElementCount()                   { return 1; }
+    virtual StringRef GetEnumItemName(IntIndex index);
+    virtual IntIndex GetEnumItemCount();
+    virtual ~EnumType();
+
+    // TODO Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example, the address to a C function.
