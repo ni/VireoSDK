@@ -1,0 +1,15 @@
+define(MyVI dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(.AnalogWaveform<.Double> ((3566073600 123) 5.8 (1.2 1.3 1.0 -0.5)) )wave_dbl_1) 
+        //                    (0x00...... D48DF700  0x00...... 0x00....7B)
+        e(.AnalogWaveform<.Int32>  wave_i32_1)
+        e(dv(a(.Int32 *) (10 20 30)) a_i32_1)
+        e(dv(.Timestamp (456 123)) timestamp)
+    )
+    clump (
+        AnalogWaveformBuild(wave_i32_1 timestamp 6.8 a_i32_1)
+    )
+) ) )
+
+enqueue(MyVI)
