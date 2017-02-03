@@ -124,7 +124,7 @@ describe('Timeout test suite', function () {
             expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            var httpBinBody = JSON.parse(viPathParser('body'));
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
