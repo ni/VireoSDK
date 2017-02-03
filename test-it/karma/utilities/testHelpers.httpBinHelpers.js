@@ -55,9 +55,22 @@
         }
     };
 
+    var parseBody = function (body) {
+        var httpBinBody = JSON.parse(body);
+
+        var headersLowerCase = Object.keys(httpBinBody.headers).reduce(function (obj, header) {
+            obj[header.toLowerCase()] = httpBinBody.headers[header];
+            return obj;
+        }, {});
+
+        httpBinBody.headersLowerCase = headersLowerCase;
+        return httpBinBody;
+    };
+
     window.testHelpers.httpBinHelpers = {
         convertToAbsoluteUrl: convertToAbsoluteUrl,
         makeTestPendingIfHttpBinOffline: makeTestPendingIfHttpBinOffline,
-        queryHttpBinStatus: queryHttpBinStatus
+        queryHttpBinStatus: queryHttpBinStatus,
+        parseBody: parseBody
     };
 }());
