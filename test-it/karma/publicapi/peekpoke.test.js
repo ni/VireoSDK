@@ -21,7 +21,7 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: 123
             },
             dt: 5.8,
-            Y: [1.2, 1.3, 1, -0.5]
+            Y: [1.2, 1.3, 1, -0.5] // eslint-disable-line id-length
         });
 
         expect(viPathParser('wave_i32_1')).toEqual({
@@ -30,7 +30,7 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: 0
             },
             dt: 0,
-            Y: []
+            Y: [] // eslint-disable-line id-length
         });
 
         var newValue = {
@@ -39,7 +39,7 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: 456
             },
             dt: 10.5,
-            Y: [5, 25]
+            Y: [5, 25] // eslint-disable-line id-length
         };
         viPathWriter('wave_i32_1', newValue);
         expect(viPathParser('wave_i32_1')).toEqual(newValue);
@@ -50,7 +50,7 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: 656
             },
             dt: 20.5,
-            Y: [45, 55]
+            Y: [45, 55] // eslint-disable-line id-length
         };
         viPathWriter('wave_i32_1.t0', newValue2.t0);
         viPathWriter('wave_i32_1.dt', newValue2.dt);
@@ -64,7 +64,7 @@ describe('Peek/Poke different datatypes', function () {
                     fraction: 123
                 },
                 dt: 6.8,
-                Y: [10, 20, 30]
+                Y: [10, 20, 30] // eslint-disable-line id-length
             });
             done();
         });
