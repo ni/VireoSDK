@@ -21,7 +21,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -45,7 +45,7 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -90,7 +90,7 @@ describe('Performing a GET request', function () {
     // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
 
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -129,7 +129,7 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a response with UTF8 data', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
         var bodyTextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/utf8.txt');
         var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(bodyTextUrl));
 
@@ -171,7 +171,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, get, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenClose.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -195,7 +195,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenClose.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -237,7 +237,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, get, add header, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddClose.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
