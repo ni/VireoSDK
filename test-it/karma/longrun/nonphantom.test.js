@@ -20,7 +20,7 @@ describe('Tests that fail to run on PhantomJS', function () {
     });
 
     it('validating a 404 response with empty response body', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');

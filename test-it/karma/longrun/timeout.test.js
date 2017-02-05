@@ -25,7 +25,7 @@ describe('Timeout test suite', function () {
     it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
         var timeout = 1000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -93,7 +93,7 @@ describe('Timeout test suite', function () {
         var timeout = -1;
         var httpBinDelay = 20000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
