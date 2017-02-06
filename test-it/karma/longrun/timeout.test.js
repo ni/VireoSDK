@@ -7,8 +7,6 @@ describe('Timeout test suite', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    // Setting jasmine.DEFALT_TIMEOUT_INTERVAL seems to not be picked up reliably
-    // Not sure why so switched to setting it per 'it' block
     var TIMEOUT_CODE = 56;
     var vireo;
 

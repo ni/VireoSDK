@@ -236,7 +236,7 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('with open, get, add header, close and validates a 200 response', function (done) {
+    it('with open, add header, get, close and validates a 200 response', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
