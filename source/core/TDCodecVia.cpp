@@ -274,7 +274,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     }
     
     Boolean bTypeFunction = _string.ComparePrefix('(');
-    if (typeFunction.ComparePrefixCStr(tsEnumTypeToken) && (typeFunction.Length()==4 || isdigit(typeFunction.Begin()[4]))) {
+    if (typeFunction.ComparePrefixCStr(tsEnumTypeToken) && (typeFunction.Length()==tsEnumTypeTokenLen || isdigit(typeFunction.Begin()[tsEnumTypeTokenLen]))) {
         type = ParseEnumType(&typeFunction);
     } else if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
         // Eat the deprecated dot prefix if it exists.

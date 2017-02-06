@@ -27,15 +27,15 @@ ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize, Boolean isEnum)
     if (((uintptr_t) pSource % aqSize != 0) || ((uintptr_t) pDest % aqSize != 0))
         return null;
     if (isEnum) {
-        switch (aqSize) {
+        switch (aqSize) { // these are bytes not bits.  Enums are max UInt64 sized.
             case 1:     return "CopyEnum1";   break;
             case 2:     return "CopyEnum2";   break;
             case 4:     return "CopyEnum4";   break;
-            case 8:     return "CopyENum8";   break;
+            case 8:     return "CopyEnum8";   break;
             default:    return null;      break;
         }
     }
-    switch (aqSize) {
+    switch (aqSize) { // copy sizes go to 32 bytes just for efficiency
         case 1:     return "Copy1";   break;
         case 2:     return "Copy2";   break;
         case 4:     return "Copy4";   break;
