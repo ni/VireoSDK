@@ -556,7 +556,7 @@
         Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
             var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
             if (errorStatus) {
-                Module.eggShell.setOccurrence(occurrencePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
                 return;
             }
 
@@ -573,7 +573,7 @@
                 if (outputFile !== '') {
                     newErrorSource = 'LabVIEWHTTPClient:' + method + ', Output File unsupported in WebVIs (please leave as default of empty string)';
                     Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                    Module.eggShell.setOccurrence(occurrencePointer);
+                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
                 }
             }
@@ -589,7 +589,7 @@
             } else {
                 httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:' + method, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 if (httpClient === undefined) {
-                    Module.eggShell.setOccurrence(occurrencePointer);
+                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
                 }
             }
@@ -632,7 +632,7 @@
                 var newErrorCode = responseData.labviewCode;
                 var newErrorSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
                 Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                Module.eggShell.setOccurrence(occurrencePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
         };
     };

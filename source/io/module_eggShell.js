@@ -182,8 +182,13 @@
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
-        Module.eggShell.setOccurrence = function (occurrence) {
-            Occurrence_Set(occurrence);
+        Module.eggShell.setOccurrenceAsync = function (occurrence) {
+            // TODO mraj currently setOccurrenceAsync is only called
+            // by relatively slow operation, may need to change from setTimeout
+            // to improve performance in the future
+            setTimeout(function () {
+                Occurrence_Set(occurrence);
+            }, 0);
         };
     };
 
