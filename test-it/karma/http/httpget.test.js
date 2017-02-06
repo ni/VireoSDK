@@ -8,6 +8,7 @@ describe('Performing a GET request', function () {
     var httpParser = window.testHelpers.httpParser;
     var textFormat = window.testHelpers.textFormat;
 
+    var WEBVI_UNSUPPORTED_INPUT = 363798;
     var vireo;
 
     beforeEach(function (done) {
@@ -40,6 +41,32 @@ describe('Performing a GET request', function () {
             expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
             expect(viPathParser('error.source')).toBeEmptyString();
+            done();
+        });
+    });
+
+    it('errors with an output file parameter', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var invalidOutputFile = 'C:\\any\\path';
+        viPathWriter('url', url);
+        viPathWriter('outputFile', invalidOutputFile);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
+            expect(viPathParser('error.source')).toBeNonEmptyString();
             done();
         });
     });
