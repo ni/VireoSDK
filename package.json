@@ -34,7 +34,8 @@
     "karma-start": "karma start",
     "prehttpbin-install": "python -V && pip -V && virtualenv --version",
     "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
-    "httpbin": "python -m httpbin.core --port 64526"
+    "httpbin": "python -m httpbin.core --port 64526",
+    "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"" 
   },
   "repository": {
     "type": "git",
