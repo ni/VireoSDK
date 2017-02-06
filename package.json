@@ -31,6 +31,7 @@
     "karma-browsers": "karma start --browsers IE,Chrome,Firefox --single-run",
     "karma-browsers-longrun": "karma start karma.longrun.conf.js --browsers IE,Chrome,Firefox --single-run",
     "karma-coverage": "karma start karma.coverage.conf.js",
+    "karma-start": "karma start",
     "prehttpbin-install": "python -V && pip -V && virtualenv --version",
     "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
     "httpbin": "python -m httpbin.core --port 64526"
