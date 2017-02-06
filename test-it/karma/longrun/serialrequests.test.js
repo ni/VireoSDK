@@ -70,7 +70,7 @@ describe('Tests that perform multiple serial requests', function () {
             expect(viPathParser('statusCode1')).toBe(200);
 
             // header 2
-            var responseHeader2 = httpParser.parseResponseHeader(viPathParser('headers1'));
+            var responseHeader2 = httpParser.parseResponseHeader(viPathParser('headers2'));
             expect(responseHeader2.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader2.statusCode).toBe(200);
             expect(responseHeader2.reasonPhrase).toBe('OK');
