@@ -28,6 +28,10 @@ define(MyVI dv(VirtualInstrument (
     )
     clump (
         HttpClientOpen(cookieFile username password verifyServer handle error)
+
+        // Added pragma: no-cache so IE11 will not cache the network request
+        HttpClientAddHeader(handle 'pragma' 'no-cache' error)
+
         HttpClientAddHeader(handle header value error)
         HttpClientGet(handle url outputFile timeout headers body statusCode error)
         HttpClientClose(handle error)
