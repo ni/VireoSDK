@@ -152,7 +152,7 @@ describe('Performing a HEAD request', function () {
         });
     });
 
-    it('with open, get, close and a simple 200 response', function (done) {
+    it('with open, head, close and a simple 200 response', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
@@ -175,7 +175,7 @@ describe('Performing a HEAD request', function () {
         });
     });
 
-    it('with open, get, close and validates a 200 response', function (done) {
+    it('with open, head, close and validates a 200 response', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
@@ -210,7 +210,7 @@ describe('Performing a HEAD request', function () {
         });
     });
 
-    it('with open, add header, get, close and validates a 200 response', function (done) {
+    it('with open, add header, head, close and validates a 200 response', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenAddMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
