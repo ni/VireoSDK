@@ -1,0 +1,33 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        // Shared
+        e(dv(.UInt32 0) handle)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+
+        // OpenHandle parameters
+        e('' cookieFile)
+        e('' username)
+        e('' password)
+        e(dv(.UInt32 1) verifyServer)
+
+        // PUT parameters
+        e('' url)
+        e('' outputFile)
+        e('' buffer)
+        e(10000 timeout)
+        e('' headers)
+        e('' body)
+        e(dv(.UInt32 0) statusCode)
+    )
+    clump (
+        HttpClientOpen(cookieFile username password verifyServer handle error)
+        HttpClientPut(handle url outputFile buffer timeout headers body statusCode error)
+        HttpClientClose(handle error)
+    )
+) ) )
+
+enqueue(MyVI)
