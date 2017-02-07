@@ -59,7 +59,7 @@ describe('Tests that perform multiple serial requests', function () {
             // body 1
             var httpBinBody1 = httpBinHelpers.parseBody(viPathParser('body1'));
             var requestUrl1 = httpParser.parseUrl(httpBinBody1.url);
-            expect(httpBinBody1.args).toEqual({});
+            expect(httpBinBody1.args).toBeEmptyObject();
             expect(httpBinBody1.headers).toBeNonEmptyObject();
             expect(httpBinBody1.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody1.headersLowerCase).not.toHaveMember(header2);
@@ -79,7 +79,7 @@ describe('Tests that perform multiple serial requests', function () {
             // body 2
             var httpBinBody2 = httpBinHelpers.parseBody(viPathParser('body2'));
             var requestUrl2 = httpParser.parseUrl(httpBinBody1.url);
-            expect(httpBinBody2.args).toEqual({});
+            expect(httpBinBody2.args).toBeEmptyObject();
             expect(httpBinBody2.headers).toBeNonEmptyObject();
             expect(httpBinBody2.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody2.headersLowerCase).toHaveMember(header2);
