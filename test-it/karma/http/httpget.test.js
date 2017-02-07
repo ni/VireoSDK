@@ -98,7 +98,7 @@ describe('Performing a GET request', function () {
             // body
             var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toEqual({});
+            expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(requestUrl.pathname).toBe('/get');
 
@@ -248,7 +248,7 @@ describe('Performing a GET request', function () {
             // body
             var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toEqual({});
+            expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(requestUrl.pathname).toBe('/get');
 
@@ -294,7 +294,7 @@ describe('Performing a GET request', function () {
             // body
             var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toEqual({});
+            expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(httpBinBody.headersLowerCase[header]).toBe(value);
             expect(requestUrl.pathname).toBe('/get');
@@ -348,7 +348,7 @@ describe('Performing a GET request', function () {
             // body 1
             var httpBinBody1 = httpBinHelpers.parseBody(viPathParser('body1'));
             var requestUrl1 = httpParser.parseUrl(httpBinBody1.url);
-            expect(httpBinBody1.args).toEqual({});
+            expect(httpBinBody1.args).toBeEmptyObject();
             expect(httpBinBody1.headers).toBeNonEmptyObject();
             expect(httpBinBody1.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody1.headersLowerCase).not.toHaveMember(header2);
@@ -376,7 +376,7 @@ describe('Performing a GET request', function () {
             // body 2
             var httpBinBody2 = httpBinHelpers.parseBody(viPathParser('body2'));
             var requestUrl2 = httpParser.parseUrl(httpBinBody1.url);
-            expect(httpBinBody2.args).toEqual({});
+            expect(httpBinBody2.args).toBeEmptyObject();
             expect(httpBinBody2.headers).toBeNonEmptyObject();
             expect(httpBinBody2.headersLowerCase).not.toHaveMember(header1);
             expect(httpBinBody2.headersLowerCase).toHaveMember(header2);
