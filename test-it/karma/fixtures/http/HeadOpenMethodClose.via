@@ -14,7 +14,7 @@ define(MyVI dv(VirtualInstrument (
         e('' password)
         e(dv(.UInt32 1) verifyServer)
 
-        // GET parameters
+        // HEAD parameters
         e('' url)
         e(10000 timeout)
         e('' headers)

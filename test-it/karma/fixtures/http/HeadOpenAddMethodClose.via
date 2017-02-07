@@ -18,7 +18,7 @@ define(MyVI dv(VirtualInstrument (
         e('' header)
         e('' value)
 
-        // GET parameters
+        // HEAD parameters
         e('' url)
         e(10000 timeout)
         e('' headers)
