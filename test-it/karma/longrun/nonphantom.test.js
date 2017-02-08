@@ -1,4 +1,4 @@
-describe('Tests that fail to run on PahntomJS', function () {
+describe('Tests that fail to run on PhantomJS', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -7,20 +7,20 @@ describe('Tests that fail to run on PahntomJS', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    // Sharing Vireo instances across tests make them run soooo much faster
-    // var vireo = new Vireo();
-
-    // TODO mraj using the same vireo instance causes an abort when one http call results in a none 200 response code
-    // See https://github.com/ni/VireoSDK/issues/163
     var vireo;
+
+    beforeEach(function (done) {
+        httpBinHelpers.queryHttpBinStatus(done);
+    });
 
     beforeEach(function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
+        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = new Vireo();
     });
 
-    it('validating a 404 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+    it('validating a 404 response with empty response body', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -30,8 +30,8 @@ describe('Tests that fail to run on PahntomJS', function () {
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             // handle
             expect(viPathParser('handle')).toBe(0);
@@ -41,15 +41,15 @@ describe('Tests that fail to run on PahntomJS', function () {
             expect(responseHeader.httpVersion).toBe('HTTP/1.1');
             expect(responseHeader.statusCode).toBe(404);
             expect(responseHeader.reasonPhrase).toBe('NOT FOUND');
-            expect(Object.keys(responseHeader.headers).length).toBeGreaterThan(0);
+            expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('body')).toBeEmptyString();
 
             // error
-            expect(viPathParser('error.status')).toBe(false);
+            expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBe('');
+            expect(viPathParser('error.source')).toBeEmptyString();
 
             done();
         });

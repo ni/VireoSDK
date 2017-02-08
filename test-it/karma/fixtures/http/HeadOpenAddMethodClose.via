@@ -1,0 +1,39 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        // Shared
+        e(dv(.UInt32 0) handle)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+
+        // OpenHandle parameters
+        e('' cookieFile)
+        e('' username)
+        e('' password)
+        e(dv(.UInt32 1) verifyServer)
+
+        // AddHeader parameters
+        e('' header)
+        e('' value)
+
+        // HEAD parameters
+        e('' url)
+        e(10000 timeout)
+        e('' headers)
+        e(dv(.UInt32 0) statusCode)
+    )
+    clump (
+        HttpClientOpen(cookieFile username password verifyServer handle error)
+
+        // Added pragma: no-cache so IE11 will not cache the network request
+        HttpClientAddHeader(handle 'pragma' 'no-cache' error)
+
+        HttpClientAddHeader(handle header value error)
+        HttpClientHead(handle url timeout headers statusCode error)
+        HttpClientClose(handle error)
+    )
+) ) )
+
+enqueue(MyVI)

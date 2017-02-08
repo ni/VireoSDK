@@ -621,6 +621,12 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
         // they are fully polymorphic.
         InternalAddArg(null, ActualArgumentType());
+        static SubString etad("EnumTypeAndData");
+        if (FormalParameterType()->IsA(&etad)) {
+            if (!ActualArgumentType()->IsEnum()) {
+                _argumentState = kArgumentTypeMismatch;
+            }
+        }
 	} else if (dsTypeName.CompareCStr(tsWildCard) && FormalParameterType()->IsOptionalParam()) {
         // '*' as an argument means no value is passed. If its marked as optional this is OK
         // the '*' is not the generic type in this case.

@@ -7,7 +7,7 @@
     var setupVJS = function () {
         var Vireo;
         try {
-            Vireo = require('../source/core/vireo.loader.js');
+            Vireo = require('../');
 
             actualVireo = new Vireo();
             vireo = actualVireo.eggShell;
@@ -63,11 +63,11 @@
     testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
     console.assert(testResult, 'Read a value after execution is done');
 
-    // console.log('test3');
-    // testString = 'Hello, world. I can fly.你好世界。我能飛。';
-    // vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString));
-    // testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
-    // console.assert(testResult, 'Read a value with unicode characters');
+    console.log('test3');
+    testString = 'Hello, world. I can fly.你好世界。我能飛。';
+    vireo.writeJSON('HelloWorld', 'variable1', JSON.stringify(testString));
+    testResult = JSON.parse(vireo.readJSON('HelloWorld', 'variable1')) === testString;
+    console.assert(testResult, 'Read a value with unicode characters');
 
     console.log('test4');
     testString = 'May it be a good Day!';

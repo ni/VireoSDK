@@ -2,34 +2,41 @@
   "name": "vireo",
   "version": "5.3.0",
   "description": "SDK for an experimental vireo runtime engine.",
-  "dependencies": {},
   "devDependencies": {
     "colors": "^1.1.2",
     "core-js": "^2.4.1",
     "diff": "^1.4.0",
     "eslint": "^3.11.1",
     "jasmine-core": "^2.5.2",
+    "jasmine-expect": "^3.5.0",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
     "karma-firefox-launcher": "^1.0.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.2",
-    "requirejs": "^2.3.2"
+    "karma-verbose-reporter": "0.0.5",
+    "requirejs": "^2.3.2",
+    "setimmediate": "^1.0.5"
   },
   "scripts": {
     "test": "npm run lint && npm run karma && npm run karma-longrun",
     "lint": "eslint .",
     "karma": "karma start --browsers PhantomJS,Firefox --single-run",
     "karma-longrun": "karma start karma.longrun.conf.js --browsers Firefox --single-run",
-    "karma-firefox": "karma start --browsers Firefox --single-run",
-    "karma-phantomjs-debug": "karma start --browsers PhantomJS_Debug --single-run",
     "karma-browsers": "karma start --browsers IE,Chrome,Firefox --single-run",
     "karma-browsers-longrun": "karma start karma.longrun.conf.js --browsers IE,Chrome,Firefox --single-run",
+    "karma-coverage": "karma start karma.coverage.conf.js",
+    "karma-start": "karma start",
+    "karma-firefox": "karma start --browsers Firefox --single-run",
+    "karma-chrome": "karma start --browsers Chrome --single-run",
+    "karma-phantomjs-debug": "karma start --browsers PhantomJS_Debug --single-run",
     "prehttpbin-install": "python -V && pip -V && virtualenv --version",
     "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
-    "httpbin": "python -m httpbin.core --port 64526"
+    "httpbin": "python -m httpbin.core --port 64526",
+    "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"" 
   },
   "repository": {
     "type": "git",
@@ -43,5 +50,6 @@
   "bugs": {
     "url": "https://github.com/NI/VireoSDK/issues"
   },
-  "homepage": "https://github.com/NI/VireoSDK#readme"
+  "homepage": "https://github.com/NI/VireoSDK#readme",
+  "main": "source/core/vireo.loader.js"
 }

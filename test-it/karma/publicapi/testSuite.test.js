@@ -5,6 +5,7 @@ describe('can run test suite file', function () {
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
+    var textFormat = window.testHelpers.textFormat;
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
@@ -22,50 +23,35 @@ describe('can run test suite file', function () {
     ]);
 
     var disabledTests = stringArrayToObjectMap([
-        'A',
-        'BadArgumentToVarArgInstruction',
-        'BadComment',
-        'BooleanFunctions',
-        'ClumpTriggerWait',
-        'EthanOpts2',
-        'FloatConvertInteger',
-        'GlobalCrossTalk',
-        'HelloRequire',
-        'InlineArrayConstantsErrors',
-        'ListDirectory',
-        'MandelbrotInline',
-        'MathFunctions',
-        'Occurrence',
-        'PID',
-        'Parallel',
-        'Parallel2',
-        'Pi',
-        'Pi_EthanOpts',
-        'Pi_NonReentrant',
-        'QueueOfNothingReaderWriter',
-        'QueueReaderWriter',
-        'QueueType',
-        'QueueTypeTemplate',
-        'ReentrantSubVISimple',
-        'Round',
-        'Scale2X',
-        'StringFormatTime',
-        'SubVIParallelCalls',
-        'TicTock',
-        'Time128',
-        'TimerCount',
-        'TimingTest1',
-        'TimingTest2',
-        'TooManyArguments',
-        'Viaduino',
-        'Wait',
-        'WaitUntilMultiple'
+        'HelloRequire', // native only
+        'ListDirectory', // native only
+        'StringFormatTime' // manual
     ]);
 
+    var removeInlineComments = function (multiLineString) {
+        return multiLineString.replace(/^\/\/.*\n/gm, '');
+    };
+
     Object.keys(viaFiles).forEach(function (testName) {
+        /* eslint no-restricted-globals: 'off' */
         var viaAbsolutePath = viaFiles[testName];
         var vtrAbsolutePath = vtrFiles[testName];
-        var test = vireoRunner.createVTRTestSync(vireo, viaAbsolutePath, vtrAbsolutePath);
+
+        var test = function (done) {
+            var vtrText = fixtures.loadAbsoluteUrl(vtrAbsolutePath);
+            var vtrTextNormalized = textFormat.normalizeLineEndings(vtrText);
+            var vtrTextNoComments = removeInlineComments(vtrTextNormalized);
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaAbsolutePath);
+
+            runSlicesAsync(function (results, errorText) {
+                expect(errorText).toBeEmptyString();
+
+                var resultsNormalized = textFormat.normalizeLineEndings(results);
+                var resultsNoComments = removeInlineComments(resultsNormalized);
+                expect(resultsNoComments).toBe(vtrTextNoComments);
+                done();
+            });
+        };
 
         if (focusTests[testName] === true) {
             fit(testName, test);

@@ -258,7 +258,7 @@
         var Vireo;
 
         try {
-            Vireo = require('../source/core/vireo.loader.js');
+            Vireo = require('../');
             vireo = new Vireo().eggShell;
         } catch (err) {
             if (err.code === 'MODULE_NOT_FOUND') {

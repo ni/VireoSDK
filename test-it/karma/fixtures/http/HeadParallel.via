@@ -1,0 +1,80 @@
+define(MyVI dv(VirtualInstrument (
+     Locals: c(
+        // OpenHandle 1 parameters
+        e(dv(.UInt32 0) handle1)
+        e('' cookieFile1)
+        e('' username1)
+        e('' password1)
+        e(dv(.UInt32 1) verifyServer1)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error1)
+
+        // AddHeader 1 parameters
+        e('' header1)
+        e('' value1)
+
+        // HEAD 1 parameters
+        e('' url1)
+        e(10000 timeout1)
+        e('' headers1)
+        e(dv(.UInt32 0) statusCode1)
+
+        // OpenHandle 2 parameters
+        e(dv(.UInt32 0) handle2)
+        e('' cookieFile2)
+        e('' username2)
+        e('' password2)
+        e(dv(.UInt32 1) verifyServer2)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error2)
+
+        // AddHeader 2 parameters
+        e('' header2)
+        e('' value2)
+
+        // HEAD 2 parameters
+        e('' url2)
+        e(10000 timeout2)
+        e('' headers2)
+        e(dv(.UInt32 0) statusCode2)
+    )
+
+    // Root clump
+    clump(1
+         Trigger(1)
+         Trigger(2)
+         Wait(1)
+         Wait(2)
+    )
+
+    // Clump 1
+    clump(1
+        Perch(0)
+        HttpClientOpen(cookieFile1 username1 password1 verifyServer1 handle1 error1)
+        // Added pragma: no-cache so IE11 will not cache the network request
+        HttpClientAddHeader(handle1 'pragma' 'no-cache' error1)
+        HttpClientAddHeader(handle1 header1 value1 error1)
+        HttpClientHead(handle1 url1 timeout1 headers1 statusCode1 error1)
+        HttpClientClose(handle1 error1)
+    )
+
+    // Clump 2
+    clump(1
+        Perch(0)
+        HttpClientOpen(cookieFile2 username2 password2 verifyServer2 handle2 error2)
+        // Added pragma: no-cache so IE11 will not cache the network request
+        HttpClientAddHeader(handle2 'pragma' 'no-cache' error2)
+        HttpClientAddHeader(handle2 header2 value2 error2)
+        HttpClientHead(handle2 url2 timeout2 headers2 statusCode2 error2)
+        HttpClientClose(handle2 error2)
+    )
+)))
+
+
+enqueue(MyVI)

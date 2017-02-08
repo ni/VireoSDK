@@ -10,19 +10,38 @@ describe('Cluster test suite', function () {
 
     it('verifies default values in a cluster', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/errorcluster.via');
+        var viName = 'MyVI';
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
-        // var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('errorCluster')).toEqual({
                 status: false,
                 code: 0,
                 source: ''
             });
+
+            var newValue = {
+                status: true,
+                code: -45,
+                source: 'ha ha ha'
+            };
+            viPathWriter('errorCluster', newValue);
+            expect(viPathParser('errorCluster')).toEqual(newValue);
+
+            var newValue2 = {
+                status: false,
+                code: -98,
+                source: 'oh oh oh'
+            };
+            viPathWriter('errorCluster.status', newValue2.status);
+            viPathWriter('errorCluster.code', newValue2.code);
+            viPathWriter('errorCluster.source', newValue2.source);
+            expect(viPathParser('errorCluster')).toEqual(newValue2);
 
             expect(viPathParser('errorClusterDefault')).toEqual({
                 status: true,

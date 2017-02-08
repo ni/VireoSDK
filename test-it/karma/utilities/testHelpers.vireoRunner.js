@@ -2,50 +2,11 @@
     'use strict';
     window.testHelpers = window.testHelpers || {};
 
-    var normalizeLineEndings = function (multiLineString) {
-        return multiLineString.replace(/\r\n/gm, '\n');
-    };
-
-    var removeInlineComments = function (multiLineString) {
-        return multiLineString.replace(/^\/\/.*\n/gm, '');
-    };
-
-    var createVTRTestSync = function (vireo, viaAbsolutePath, vtrAbsolutePath) {
-        return function () {
-            expect(typeof viaAbsolutePath).toBe('string');
-            expect(typeof vtrAbsolutePath).toBe('string');
-
-            var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
-            var rawVtrText = window.testHelpers.fixtures.loadAbsoluteUrl(vtrAbsolutePath);
-            expect(typeof viaText).toBe('string');
-            expect(typeof rawVtrText).toBe('string');
-
-            vireo.eggShell.reboot();
-
-            var rawResults = '';
-            vireo.eggShell.setPrintFunction(function (text) {
-                rawResults += text + '\n';
-            });
-
-            vireo.eggShell.loadVia(viaText);
-            while (vireo.eggShell.executeSlices(1000000)) {
-                // repeat until it returns zero
-            }
-
-            var normalizedResults = normalizeLineEndings(rawResults);
-            var normalizedVtrText = normalizeLineEndings(rawVtrText);
-            var vtrTextNoComments = removeInlineComments(normalizedVtrText);
-
-            // Print the JSON.stringify versions so whitespace characters are encoded and easier to inspect
-            expect(JSON.stringify(normalizedResults)).toBe(JSON.stringify(vtrTextNoComments));
-        };
-    };
-
     var rebootAndLoadVia = function (vireo, viaAbsolutePath) {
-        expect(typeof viaAbsolutePath).toBe('string');
+        expect(viaAbsolutePath).toBeNonEmptyString();
 
         var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
-        expect(typeof viaText).toBe('string');
+        expect(viaText).toBeNonEmptyString();
 
         vireo.eggShell.reboot();
 
@@ -59,18 +20,32 @@
             rawPrintError += text + '\n';
         });
 
-        vireo.eggShell.loadVia(viaText);
-        expect(rawPrint).toBe('');
-        expect(rawPrintError).toBe('');
+        var niError = vireo.eggShell.loadVia(viaText);
 
         var runSlicesAsync = function (cb) {
-            expect(typeof cb).toBe('function');
+            expect(cb).toBeFunction();
+
+            if (niError !== 0) {
+                cb(rawPrint, rawPrintError);
+                return;
+            }
+
+            var executeSlicesInvocationCount = 0;
 
             (function runExecuteSlicesAsync () {
-                var remainingSlices = vireo.eggShell.executeSlices(1000);
+                // TODO mraj Executing 1000 slices at a time ran much slower, need better tuning of this value
+                var remainingSlices = vireo.eggShell.executeSlices(1000000);
+                executeSlicesInvocationCount += 1;
 
                 if (remainingSlices > 0) {
-                    setTimeout(runExecuteSlicesAsync, 0);
+                    // The setImmediate polyfill in PhantomJS does not work when combined with xhr requests.
+                    // I think the polyfill blocks servicing network ops...
+                    // so periodically use setTimeout to let PhantomJS service the network stack
+                    if (executeSlicesInvocationCount % 1000 === 0) {
+                        setTimeout(runExecuteSlicesAsync, 0);
+                    } else {
+                        setImmediate(runExecuteSlicesAsync);
+                    }
                 } else {
                     cb(rawPrint, rawPrintError);
                 }
@@ -93,9 +68,6 @@
     };
 
     window.testHelpers.vireoRunner = {
-        normalizeLineEndings: normalizeLineEndings,
-        removeInlineComments: removeInlineComments,
-        createVTRTestSync: createVTRTestSync,
         rebootAndLoadVia: rebootAndLoadVia,
         createVIPathParser: createVIPathParser,
         createVIPathWriter: createVIPathWriter

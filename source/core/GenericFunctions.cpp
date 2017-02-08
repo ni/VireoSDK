@@ -21,13 +21,21 @@ namespace Vireo
 {
 
 //------------------------------------------------------------
-ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
+ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize, Boolean isEnum)
 {
     // If the source or dest are not aligned to aqSize bytes, return null.
     if (((uintptr_t) pSource % aqSize != 0) || ((uintptr_t) pDest % aqSize != 0))
         return null;
-
-    switch (aqSize) {
+    if (isEnum) {
+        switch (aqSize) { // these are bytes not bits.  Enums are max UInt64 sized.
+            case 1:     return "CopyEnum1";   break;
+            case 2:     return "CopyEnum2";   break;
+            case 4:     return "CopyEnum4";   break;
+            case 8:     return "CopyEnum8";   break;
+            default:    return null;      break;
+        }
+    }
+    switch (aqSize) { // copy sizes go to 32 bytes just for efficiency
         case 1:     return "Copy1";   break;
         case 2:     return "Copy2";   break;
         case 4:     return "Copy4";   break;
@@ -57,19 +65,14 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         void* pDest = pInstructionBuilder->_argPointers[1];
         void* extraParam = null;
         ConstCStr copyOpName = null;
-        if (originalCopyOp.CompareCStr("CopyTop")) {
-            copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize());
+        if (sourceType->IsFlat() || originalCopyOp.CompareCStr("CopyTop")) {
+            copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize(), destType->IsEnum());
             if (!copyOpName) {
                 copyOpName = "CopyN";
                 // For CopyN a count is passed as well
                 extraParam = (void*) (size_t)sourceType->TopAQSize();
-            }
-        } else if (sourceType->IsFlat()) {
-            copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize());
-            if (!copyOpName) {
-                copyOpName = "CopyN";
-                // For CopyN a count is passed as well
-                extraParam = (void*) (size_t)sourceType->TopAQSize();
+            } else if (destType->IsEnum()) {
+                extraParam = (void*) (uintptr_t)destType->GetEnumItemCount();
             }
         } else if (sourceType->IsArray()) {
             VIREO_ASSERT(!destType->IsInputParam());
@@ -147,6 +150,11 @@ DECLARE_VIREO_PRIMITIVE2( Copy4, Int32, Int32, (_Param(1) = _Param(0)) )
 DECLARE_VIREO_PRIMITIVE2( Copy8, Int64, Int64, (_Param(1) = _Param(0)) )
 DECLARE_VIREO_PRIMITIVE2( Copy16, Block128, Block128, (_Param(1) = _Param(0)) )
 DECLARE_VIREO_PRIMITIVE2( Copy32, Block256, Block256, (_Param(1) = _Param(0)) )
+
+    DECLARE_VIREO_PRIMITIVE3( CopyEnum1, UInt8,  UInt8, void, ( _Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2))-1) )
+    DECLARE_VIREO_PRIMITIVE3( CopyEnum2, UInt16, UInt16, void, ( _Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2))-1) )
+    DECLARE_VIREO_PRIMITIVE3( CopyEnum4, UInt32, UInt32, void, ( _Param(1) = _Param(0) < UInt32(uintptr_t(_ParamPointer(2))) ? _Param(0) : UInt32(uintptr_t(_ParamPointer(2)))-1) )
+    DECLARE_VIREO_PRIMITIVE3( CopyEnum8, UInt64, UInt64, void, ( _Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2))-1) )
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(CopyN, void, void, void)
@@ -429,7 +437,6 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
     }
 
-    
     switch(destType->BitEncoding()) {
         case kEncoding_Array:
         {
@@ -2112,7 +2119,31 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
     
     return _NextInstruction();
 }
-//------------------------------------------------------------      
+VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
+{
+    Int32 sourceSize = _ParamPointer(0)->TopAQSize();
+    Int32 destSize = _ParamPointer(2)->TopAQSize();
+    IntIndex numElems = _ParamPointer(2)->GetEnumItemCount();
+    UInt32 val = 0;
+    switch (sourceSize) {
+        case 1: val = *(UInt8*)_ParamPointer(1); break;
+        case 2: val = *(UInt16*)_ParamPointer(1); break;
+        case 4: val = *(UInt32*)_ParamPointer(1); break;
+        case 8: val = UInt32(*(UInt64*)_ParamPointer(1)); break;
+        default: break;
+    }
+    if (val >= numElems)
+        val = numElems-1;
+    switch (destSize) {
+        case 1: *(UInt8*)_ParamPointer(3) = val; break;
+        case 2: *(UInt16*)_ParamPointer(3) = val; break;
+        case 4: *(UInt32*)_ParamPointer(3) = val; break;
+        case 8: *(UInt64*)_ParamPointer(3) = val; break;
+        default: break;
+    }
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Init, "p(i(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Clear, "p(i(StaticTypeAndData))");
@@ -2125,7 +2156,7 @@ DEFINE_VIREO_BEGIN(Generics)
     // to determine the correct behaviour.
     DEFINE_VIREO_GENERIC(Copy, "GenericUnOp", EmitGenericCopyInstruction);
     DEFINE_VIREO_GENERIC(CopyTop, "GenericUnOp", EmitGenericCopyInstruction);
-    
+
     // Internal copy operation for flat blocks of of data.
     DEFINE_VIREO_FUNCTION(Copy1, "p(i(Int8) o(Int8))");
     DEFINE_VIREO_FUNCTION(Copy2, "p(i(Int16)  o(Int16))");
@@ -2134,7 +2165,13 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Copy16, "p(i(Block128) o(Block128))");
     DEFINE_VIREO_FUNCTION(Copy32, "p(i(Block256) o(Block256))");
     DEFINE_VIREO_FUNCTION(CopyN, "p(i(DataPointer) o(DataPointer) i(Int32))");
-    
+    DEFINE_VIREO_FUNCTION(CopyEnum1, "p(i(UInt8) o(UInt8) i(UInt8))");
+    DEFINE_VIREO_FUNCTION(CopyEnum2, "p(i(UInt16)  o(UInt16) i(UInt16))");
+    DEFINE_VIREO_FUNCTION(CopyEnum4, "p(i(UInt32)  o(UInt32) i(UInt32))");
+    DEFINE_VIREO_FUNCTION(CopyEnum8, "p(i(UInt64)  o(UInt64) i(UInt64))");
+
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
+
     // Deep copy where needed for objects/arrays/strings.
     DEFINE_VIREO_FUNCTION(CopyObject, "p(i(Object) o(Object))")
 
@@ -2210,6 +2247,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(Conjugate, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Floor, "GenericUnOp", EmitGenericUnOpInstruction);
 	DEFINE_VIREO_GENERIC(RoundToNearest, "GenericUnOp", EmitGenericUnOpInstruction);
+
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(Sign, "GenericUnOp", EmitGenericUnOpInstruction);
 	DEFINE_VIREO_GENERIC(Reciprocal, "GenericUnOp", EmitGenericUnOpInstruction);

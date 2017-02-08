@@ -5,37 +5,25 @@ describe('Timeout test suite', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
+    var httpParser = window.testHelpers.httpParser;
 
     var TIMEOUT_CODE = 56;
-
-    // Sharing Vireo instances across tests make them run soooo much faster
-    // var vireo = new Vireo();
-
-    // TODO mraj using the same vireo instance causes an abort when one http call results in a none 200 response code
-    // See https://github.com/ni/VireoSDK/issues/163
     var vireo;
+
+    beforeEach(function (done) {
+        httpBinHelpers.queryHttpBinStatus(done);
+    });
 
     beforeEach(function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
+        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = new Vireo();
-    });
-
-    // The timeout does not seem to timeout fast enough and things get weird on fail
-    var originalTimeout;
-
-    beforeEach(function () {
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 50000;
-    });
-
-    afterEach(function () {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
     });
 
     it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
         var timeout = 1000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Get.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -49,17 +37,16 @@ describe('Timeout test suite', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             var endTime = performance.now();
             var runTime = endTime - startTime;
-            var timeoutBuffered = timeout + (timeout * 0.5);
 
-            expect(runTime).toBeLessThan(timeoutBuffered);
+            expect(runTime).toBeNear(timeout, timeout * 0.5);
 
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBe('');
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
             done();
@@ -83,21 +70,71 @@ describe('Timeout test suite', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             var endTime = performance.now();
             var runTime = endTime - startTime;
-            var timeoutBuffered = timeout + (timeout * 0.5);
 
-            expect(runTime).toBeLessThan(timeoutBuffered);
-            expect(runTime).toBeGreaterThan(timeout);
+            expect(runTime).toBeNear(timeout, timeout * 0.5);
 
-            expect(rawPrint).toBe('');
-            expect(rawPrintError).toBe('');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBe('');
-            expect(viPathParser('body')).toBe('');
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
-            expect(viPathParser('error.status')).toBe(true);
+            expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toBe('LabVIEWHTTPClient:GET, Timeout');
+            done();
+        });
+    });
+
+    it('GET method with timeout -1 succeeds with httpbin delay of 20s', function (done) {
+        var timeout = -1;
+        var httpBinDelay = 20000;
+
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/20');
+        viPathWriter('url', url);
+        viPathWriter('timeout', timeout);
+
+        var startTime = performance.now();
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            var endTime = performance.now();
+            var runTime = endTime - startTime;
+
+            expect(runTime).toBeNear(httpBinDelay, httpBinDelay * 0.5);
+
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(requestUrl.pathname).toBe('/delay/20');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
             done();
         });
     });

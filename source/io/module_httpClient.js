@@ -195,6 +195,7 @@
                 });
             };
 
+            // Desktop does not try and return partial response data in timeout scenarios so do not attempt to here
             eventListeners.timeout = function () {
                 completeRequest({
                     header: '',
@@ -422,14 +423,14 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default)';
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default of empty string)';
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default)';
+                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default of true)';
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -555,7 +556,7 @@
         Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
             var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
             if (errorStatus) {
-                Module.eggShell.setOccurrence(occurrencePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
                 return;
             }
 
@@ -570,9 +571,9 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', outputFile is not a supported feature';
+                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', Output File unsupported in WebVIs (please leave as default of empty string)';
                     Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                    Module.eggShell.setOccurrence(occurrencePointer);
+                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
                 }
             }
@@ -588,7 +589,7 @@
             } else {
                 httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:' + method, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 if (httpClient === undefined) {
-                    Module.eggShell.setOccurrence(occurrencePointer);
+                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
                 }
             }
@@ -631,7 +632,7 @@
                 var newErrorCode = responseData.labviewCode;
                 var newErrorSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
                 Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                Module.eggShell.setOccurrence(occurrencePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
         };
     };
