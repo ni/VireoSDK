@@ -2097,7 +2097,9 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]
 // Resize an array to match an existing pattern. The pattern
 // may be an existing array or array type definition. The latter may
 // contain variable or bounded dimension lengths.
-Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements)
+// noInit=true prevents initializing non-flat data when the array is grown.  This is used by Insert, which will move elements
+// upward and doesn't want to have to do extra work to deflate these new elements first.
+Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean noInit /*=false*/)
 {
     Int32 valuesRank = Rank();
     
@@ -2198,7 +2200,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     // TODO honor bOK status.
     if (!preserveElements) {
         ElementType()->InitData(BeginAt(0), newLength);
-    } else if ((newLength > originalLength) && bOK) {
+    } else if ((newLength > originalLength) && !noInit && bOK) {
         ElementType()->InitData(BeginAt(originalLength), (newLength - originalLength));
     }
 
@@ -2285,7 +2287,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
     // Add room, initially at the end of the block
     IntIndex currentLength = Length();
     IntIndex neededLength = currentLength + count;
-    if (!Resize1D(neededLength))
+    if (!Resize1DNoInit(neededLength))
         return kNIError_kInsufficientResources;
     
     // Move elements after insertion point down
@@ -2297,7 +2299,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
         memmove(pDest, pPosition, countBytes);
     }
     if (!ElementType()->IsFlat()) {
-        // memset(pPosition, 0, AQBlockLength(count));  // ??? This causes a leak because Resize1D already Init
+        memset(pPosition, 0, AQBlockLength(count));
         ElementType()->InitData(pPosition, count);
     }
     if (pSource != null) {
