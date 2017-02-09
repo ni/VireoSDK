@@ -1103,13 +1103,16 @@ public:
     IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
     
     //! Resize for multi dim arrays
-    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld);
+    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean noInit = false);
     
     //! Make this array match the shape of the reference type.
     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
     
     //! Resize for 1d arrays, if not enough memory leave as is.
     Boolean Resize1D(IntIndex length)       { return ResizeDimensions(1, &length, true); }
+
+    //! Resize for 1d arrays, if not enough memory leave as is. Leave new memory uninit (for insert to copy over).
+    Boolean Resize1DNoInit(IntIndex length) { return ResizeDimensions(1, &length, true, true); }
     
     //! Resize, if not enough memory, then size to zero
     Boolean Resize1DOrEmpty(IntIndex length);

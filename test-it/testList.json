@@ -180,6 +180,7 @@
                 "PrintTemplateTypes.via",
                 "PrintTypes.via",
                 "PrintTypeVectors.via",
+                "QueueBug.via",
                 "QueueOfNothingReaderWriter.via",
                 "QueueReaderWriter.via",
                 "QueueTypeTemplate.via",

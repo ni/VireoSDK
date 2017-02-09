@@ -288,13 +288,12 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
     tempString.Value->Append('<');
-    for ( Int32 i = 0; true; i++) {
+    for ( Int32 i = 0; i < nTParams; i++) {
         tempString.Value->Append('.');
-        name =  (*_parameters->Begin())->Name();
+        name =  (_parameters->Begin()[i])->Name();
         tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
-        if (i >= nTParams)
-            break;
-        tempString.Value->Append(' ');
+        if (i < nTParams-1)
+            tempString.Value->Append(' ');
     }
     tempString.Value->Append('>');
     name = tempString.Value->MakeSubStringAlias();
