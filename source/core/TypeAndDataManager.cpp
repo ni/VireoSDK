@@ -1678,8 +1678,6 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         path->SplitString(&pathHead, &pathTail, '.');
         *end = null;
 
-        //gPlatform.IO.Print(" Using array indexes in paths\n");
-
         // may allow end point relative as well ???
         if (allowDynamic) { // Variable sized arrays can only be indexed if allowDynamic is true.
             IntMax index = 0;
