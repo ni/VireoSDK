@@ -1846,6 +1846,7 @@ RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type)
 {
     _refnum = 0;
+    _isFlat = true;
     _maxSize = -1;
     _encoding = kEncoding_RefNum;
 }

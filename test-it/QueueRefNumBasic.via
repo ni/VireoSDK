@@ -2,6 +2,7 @@
 define(TestProgram dv(.VirtualInstrument (
     c(
         e(.QueueRefNum<.Double> q)
+        e(.QueueRefNum<.Double> q2)
         e(.Double y)
         e(.Int32 ms)
         e(.Int32 ne)
@@ -13,7 +14,8 @@ define(TestProgram dv(.VirtualInstrument (
 
     clump (
         ObtainQueue(q 5 * * * err)
-        Enqueue(q 1.0 1000 timedOut err)
+        Copy(q q2)
+        Enqueue(q2 1.0 1000 timedOut err)
         Enqueue(q 2.0 1000 timedOut err)
         Enqueue(q 3.0 1000 timedOut err)
         Enqueue(q 4.0 1000 timedOut err)

@@ -1,4 +1,8 @@
-# Vireo [![Build Status](https://travis-ci.org/ni/VireoSDK.svg?branch=incoming)](https://travis-ci.org/ni/VireoSDK)
+# Vireo
+[![Build Status](https://travis-ci.org/ni/VireoSDK.svg?branch=incoming)](https://travis-ci.org/ni/VireoSDK)
+[![dependencies Status](https://david-dm.org/ni/VireoSDK/status.svg)](https://david-dm.org/ni/VireoSDK)
+[![devDependencies Status](https://david-dm.org/ni/VireoSDK/dev-status.svg)](https://david-dm.org/ni/VireoSDK?type=dev)
+[![Repository Size](https://reposs.herokuapp.com/?path=ni/VireoSDK&style=flat&color=brightgreen)](https://github.com/ruddfawcett/reposs)
 
 A compact parallel execution runtime for VIs saved in VI assembly format (.via files).
 
