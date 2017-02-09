@@ -110,6 +110,7 @@
                 "ForwardVIDefinitions.via",
                 "Functional.via",
                 "Generics.via",
+                "GetObjPathArrayIndex.via",
                 "GlobalCrossTalk.via",
                 "GlobalVarValues.via",
                 "GlobalZDAFieldReferences.via",
