@@ -1196,6 +1196,8 @@ struct ErrorCluster {
     }
 };
 
+#define ERROR_CLUST_TYPE_STRING "c(e(Boolean status) e(Int32 code) e(String source))"
+
 struct NIPath {
     StringRefArray1D *components;
     StringRef type;
