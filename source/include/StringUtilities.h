@@ -233,7 +233,7 @@ public:
     void EatRawChars(Int32 count);
 
     //! Creat two sub strings base on the first occurence of a separator
-    void SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
+    Boolean SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
     
     //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }

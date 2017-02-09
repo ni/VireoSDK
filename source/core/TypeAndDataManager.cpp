@@ -1069,7 +1069,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
             *end = (AQBlock1*)start + (subType->ElementOffset());
             
             // If there is a tail recurse, repin start and recurse.
-            if (pathTail.Length()) {
+            if (pathTail.Length() > 0) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
             } else {
                 return subType;
@@ -1676,20 +1676,38 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         SubString pathHead;
         SubString pathTail;
         path->SplitString(&pathHead, &pathTail, '.');
-
-        gPlatform.IO.Print(" Using array indexes in paths\n");
-
-        // If the path has a tail it needs to index the array.
-        // There may be more than one way to do so raw1d indexes, or multidim
-        // may allow end point relative as well ???
-        if (pathTail.Length()) {
-            subType = GetSubElementAddressFromPath(path, start, end, allowDynamic);
-        } else {
-            // TODO parse indexes.
-            // Variable sized arrays can only be indexed if allowDynamic is true.
-            subType = null;
-        }
         *end = null;
+
+        //gPlatform.IO.Print(" Using array indexes in paths\n");
+
+        // may allow end point relative as well ???
+        if (allowDynamic) { // Variable sized arrays can only be indexed if allowDynamic is true.
+            IntMax index = 0;
+            if (pathHead.ReadInt(&index) && index >= 0 && index < array->Length()) {
+                ArrayDimensionVector dimIndex;
+                IntIndex rank = array->Rank(), dim = 0;
+                if (pathHead.SplitString(NULL, &pathHead, ',')) {
+                    dimIndex[rank-1 - dim++] = IntIndex(index);
+                    while (dim < rank && pathHead.ReadInt(&index)) {
+                        dimIndex[rank-1 - dim++] = IntIndex(index);
+                        if (!pathHead.SplitString(NULL, &pathHead, ','))
+                            break;
+                    }
+                    while (dim < rank)
+                        dimIndex[rank-1 - dim++] = 0;
+                    if (pathHead.Length() == 0) {
+                        subType = array->ElementType();
+                        *end = (AQBlock1*)array->BeginAtND(rank, dimIndex);
+                    }
+                } else {
+                    subType = array->ElementType();
+                    *end = (AQBlock1*)array->BeginAt(IntIndex(index));
+                }
+            }
+        }
+        if (*end && pathTail.Length()) {
+            subType = subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
+        }
     }
     return subType;
 }
@@ -2861,7 +2879,7 @@ VIREO_FUNCTION_SIGNATURE3(TypeWriteValue, TypeRef, Int32,  TypeRef)
 #endif
 
 //------------------------------------------------------------
-//! Parse through a path from a starting point to target sub element.
+//! Parse through a path from a starting point to target subelement, return subelement type.
 VIREO_FUNCTION_SIGNATURE4(TypeGetSubElementFromPath, StaticType, void, StringRef, TypeRef)
 {
     TypeRef type = _ParamPointer(0);
@@ -2874,6 +2892,22 @@ VIREO_FUNCTION_SIGNATURE4(TypeGetSubElementFromPath, StaticType, void, StringRef
     _Param(3) = targetType;
   //  TypeManagerRef tm = _ParamPointer(0) ? _Param(0) : THREAD_TADM();
   //  tm->PointerToSymbolPath(_Param(1), _Param(2), _Param(3));
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+//! Parse through a path from a starting point to target subelement, return subelement value if it matches expected output type.
+VIREO_FUNCTION_SIGNATURE5(GetSubElementFromPath, StaticType, void, StringRef, StaticType, void)
+{
+    TypeRef type = _ParamPointer(0);
+    void* pValue = _ParamPointer(1);
+    SubString path = _Param(2)->MakeSubStringAlias();
+    void* pTargetValue = NULL;
+
+    TypeRef targetType = type->GetSubElementAddressFromPath(&path, pValue, &pTargetValue, true);
+    if (pTargetValue && targetType && targetType->CompareType(_ParamPointer(3)))
+        _ParamPointer(3)->CopyData(pTargetValue, _ParamPointer(4));
+    else
+        _ParamPointer(3)->InitData(_ParamPointer(4));;
     return _NextInstruction();
 }
 
@@ -3040,6 +3074,7 @@ DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     DEFINE_VIREO_FUNCTION(TypeGetSubElementFromPath, "p(i(StaticTypeAndData)i(String)o(Type))");
+    DEFINE_VIREO_FUNCTION(GetSubElementFromPath, "p(i(StaticTypeAndData)i(String)o(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(TypeManagerPointerToSymbolPath, "p(i(TypeManager)i(Type)i(DataPointer)o(String)o(Int32))");
     DEFINE_VIREO_FUNCTION(InstructionType, "p(i(Instruction)o(Type )o(String))");
     DEFINE_VIREO_FUNCTION(InstructionArg, "p(i(Instruction)i(Int32)o(DataPointer))");
