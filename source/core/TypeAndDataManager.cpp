@@ -1694,17 +1694,17 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
                     while (dim < rank)
                         dimIndex[rank-1 - dim++] = 0;
                     if (pathHead.Length() == 0) {
-                        subType = array->ElementType();
                         *end = (AQBlock1*)array->BeginAtND(rank, dimIndex);
                     }
                 } else {
-                    subType = array->ElementType();
                     *end = (AQBlock1*)array->BeginAt(IntIndex(index));
                 }
             }
         }
-        if (*end && pathTail.Length()) {
-            subType = subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
+        if (*end) {
+            subType = array->ElementType();
+            if (pathTail.Length())
+                subType = subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
         }
     }
     return subType;
