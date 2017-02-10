@@ -1069,7 +1069,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
             *end = (AQBlock1*)start + (subType->ElementOffset());
             
             // If there is a tail recurse, repin start and recurse.
-            if (pathTail.Length() > 0) {
+            if (pathTail.Length()) {
                 return subType->GetSubElementAddressFromPath(&pathTail, *end, end, allowDynamic);
             } else {
                 return subType;
