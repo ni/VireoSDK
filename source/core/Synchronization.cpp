@@ -900,7 +900,7 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumValType*, void, 
         if (maxSize > 0 && !pQV->HasRoom(1)) {
             pQV->Dequeue(overflowElem, true);
             overflowed = true;
-        } else {
+        } else if (overflowElem) {
             eltType->InitData(overflowElem);
         }
         if (boolOut) // overflowed?

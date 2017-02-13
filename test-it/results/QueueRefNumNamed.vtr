@@ -1,4 +1,4 @@
-Obtain named queue with type mismatch refnum 0 Queue<.String .String> (true 1904 'ObtainQueue')
+Obtain named queue with type mismatch refnum 0 Queue<.String> (true 1904 'ObtainQueue')
 GetQueueStatus orig ref q: maxsize=-1 numElem=4 elts=(1 2 3 4)
 GetQueueStatus named queue q2 (clone ref): maxsize=-1 numElem=4 elts=(1 2 3 4)
 FlushQueue q (orig ref) remainingElts=(1 2 3 4)
