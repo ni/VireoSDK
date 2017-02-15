@@ -139,8 +139,12 @@ public:
     VirtualInstrument*  CallerVI()      { return _caller->OwningVI(); }
     VirtualInstrument*  TopVI()      {
         VIClump *caller = this;
-        while (caller->_caller)
-            caller = caller->_caller;
+        do {
+            while (caller->_waitingClumps)
+                caller = caller->_waitingClumps;
+            while (caller->_caller)
+                caller = caller->_caller;
+        } while (caller->_waitingClumps);
         return caller->_owningVI;
     }
     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
