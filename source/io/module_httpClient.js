@@ -253,7 +253,10 @@
             }
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
-            request.withCredentials = true;
+            // Setting to false so communication to servers with Access-Control-Allow-Origin: *
+            // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
+            // TODO mraj: We need a way to expose this configuration to users
+            request.withCredentials = false;
 
             // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
             request.responseType = 'text';
