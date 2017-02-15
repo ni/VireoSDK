@@ -582,6 +582,7 @@ public:
     QueueRefNumType &RefNumManager() { return _QueueRefNumTypeStorage; }
     NamedRefNumMapType &NamedRefNumMap() { return _namedRefMap; }
     RefNum NewRefnumAlias(RefNum refnum);
+    RefNum LookupAlias(RefNum refnum);
     bool DisposeAlias(RefNum refnum);
     NIError LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr);
 };
@@ -598,6 +599,13 @@ RefNum QueueRefNumManager::NewRefnumAlias(RefNum refnum)
         return newRefnum;
     }
     return kNotARefNum;
+}
+RefNum QueueRefNumManager::LookupAlias(RefNum refnum) {
+    RefnumAliasMapType::iterator it = _refAliasMap.find(refnum);
+    if (it != _refAliasMap.end()) {
+        return it->second;
+    }
+    return refnum;
 }
 bool QueueRefNumManager::DisposeAlias(RefNum refnum)
 {
@@ -751,22 +759,65 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boo
     }
     return _NextInstruction();
 }
+static void GetQueueRefName(RefNumValType *refnumPtr, StringRef *stringRef) {
+    if (stringRef) {
+        if (refnumPtr) {
+            RefNum realRefnum = QueueRefNumManager::QueueRefManager().LookupAlias(refnumPtr->GetRefNum());
+            QueueRefNumManager::NamedRefNumMapType::iterator it = QueueRefNumManager::QueueRefManager().NamedRefNumMap().begin(), ite = QueueRefNumManager::QueueRefManager().NamedRefNumMap().end();
+            while (it != ite) {
+                if (it->second == realRefnum)
+                    break;
+                ++it;
+            }
+            if (it != ite)
+                (*stringRef)->Type()->CopyData(&it->first,stringRef);
+            else
+                (*stringRef)->Resize1D(0);
+        }
+        else
+            (*stringRef)->Resize1D(0);
+    }
+}
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, void, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, TypedArrayCoreRef, ErrorCluster)
 {
     RefNumValType* refnumPtr = _Param(0);
     ErrorCluster *errPtr = _ParamPointer(3);
     QueueRef queueRef = NULL;
     TypeRef type = refnumPtr->GetSubElement(0);
-    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum())) {
-        // was a named queue alias
+    QueueCore *pQV = NULL;
+    if (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
+        pQV = queueRef->ObjBegin();
     }
-    else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
-        if (errPtr)
-            errPtr->SetError(true, kQueueArgErr, "QueueRelease");
+    if (_ParamPointer(2)) { // elements array
+        if (pQV) {
+            IntIndex count = pQV->Count();
+            _Param(2)->Resize1D(count);
+            AQBlock1 *pData = _Param(2)->BeginAt(0);
+            Int32 eltSize = pQV->EltType()->TopAQSize();
+            for (IntIndex i = 0; i < count; ++i) {
+                pQV->Peek(pData, i);
+                pData = (AQBlock1*)pData + eltSize;
+            }
+        }
+        else
+            _Param(2)->Resize1D(0);
     }
-    else
-        type->ClearData(&queueRef);
+    if (_ParamPointer(1)) { // name
+        GetQueueRefName(refnumPtr, _ParamPointer(1));
+    }
+    if (refnumPtr) {
+        if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum())) {
+            // was a named queue alias
+        }
+        else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
+            if (errPtr && !errPtr->status)
+                errPtr->SetError(true, kQueueArgErr, "ReleaseQueue");
+        }
+        else
+            type->ClearData(&queueRef);
+    } else if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kQueueArgErr, "ReleaseQueue");
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -821,8 +872,7 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumValType*, Boolean,Int32
     if (_ParamPointer(2))
         _Param(2) = maxSize;
     if (_ParamPointer(3)) // name
-        _Param(3)->Resize1D(0);
-
+        GetQueueRefName(refnumPtr, _ParamPointer(3));
     if (_ParamPointer(4)) // pendingRemove
         _Param(4) = pQV ? pQV->ObserverCount(kQueueDequeueObserverInfo) : 0;
     if (_ParamPointer(5)) // pendingInsert
