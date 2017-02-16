@@ -1,0 +1,10 @@
+
+Value for dataItem_TestResultElements2: 'true'. Expected value is 'true'.
+
+Queue name is: 'my queue 2'. Expected value is 'my queue 2'.
+
+Queue name is: 'my queue'. Expected value is 'my queue'.
+
+Value for dataItem_TestResultNew is 'true', expected value is 'true'.
+
+All tests pass: 'true'.
