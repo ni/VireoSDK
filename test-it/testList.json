@@ -147,6 +147,7 @@
                 "MandelbrotInline.via",
                 "MandelbrotStringConcat.via",
                 "Mandelbrot.via",
+                "MatchPat.via",
                 "MathFunctions.via",
                 "MaxAndMinElts.via",
                 "MaxAndMin.via",

@@ -20,6 +20,7 @@
     <ClCompile Include="..\source\core\EventLog.cpp" />
     <ClCompile Include="..\source\core\ExecutionContext.cpp" />
     <ClCompile Include="..\source\core\GenericFunctions.cpp" />
+    <ClCompile Include="..\source\core\MatchPat.cpp" />
     <ClCompile Include="..\source\core\Math.cpp" />
     <ClCompile Include="..\source\core\NumericString.cpp" />
     <ClCompile Include="..\source\core\Platform.cpp" />

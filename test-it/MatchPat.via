@@ -1,0 +1,68 @@
+//trace
+define(MatchPatternTest dv(.VirtualInstrument (
+ c(
+ e(dv(.String "a.*f") pat1)
+ e(dv(.String "!@#abcdefghi") str)
+ e(dv(.String "abcdexhi") str2)
+
+ e(dv(.String "^Ya[ab]+ada[ba]+ado+!*") pat2)
+ e(dv(.String "Yabbadabbbadoo!!") str3)
+ e(dv(.String "nYabbadabbbadoo!!") str4)
+ e(dv(.String "Yaadabbbadoo!!") str5)
+ e(dv(.String "Yabbadabbbadoofoo") str6)
+
+ e(dv(.String ".[^z\\r\\n]+\\n") pat3)
+ e(dv(.String "abcz\ndef\n") str7)
+ e(dv(.String "\nzHello\nWorld\n") str8)
+
+ e(dv(.String "xy[^a-y]+y") pat4)
+ e(dv(.String "xyzzy") str9)
+ e(dv(.String "xy\01\02y") str10)
+ e(dv(.String "xy[~a-y]+y") pat5)
+
+ e(dv(.String "") before)
+ e(dv(.String "") match)
+ e(dv(.String "") after)
+ e(dv(.Int32 0) off)
+ e(dv(.Int32 0) offOut)
+ )
+ clump(1 
+   MatchPattern(str pat1 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str pat1 off before match after offOut)
+
+   MatchPattern(str2 pat1 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str2 pat1 off before match after offOut)
+
+   MatchPattern(str3 pat2 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str3 pat2 off before match after offOut)
+
+   MatchPattern(str4 pat2 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str4 pat2 off before match after offOut)
+
+   MatchPattern(str4 pat2 1 before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str4 pat2 1 before match after offOut)
+
+   MatchPattern(str5 pat2 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str5 pat2 off before match after offOut)
+
+   MatchPattern(str6 pat2 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str6 pat2 off before match after offOut)
+
+   MatchPattern(str7 pat3 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str7 pat3 off before match after offOut)
+
+   MatchPattern(str8 pat3 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str8 pat3 off before match after offOut)
+
+   MatchPattern(str9 pat4 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str9 pat4 off before match after offOut)
+
+   MatchPattern(str10 pat4 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str10 pat4 off before match after offOut)
+
+   MatchPattern(str10 pat5 off before match after offOut)
+   Printf("'%s' '%s' %d -> '%s' '%s' '%s' %d\n" str10 pat5 off before match after offOut)
+   )
+)))
+
+enqueue(MatchPatternTest)

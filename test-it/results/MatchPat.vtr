@@ -1,0 +1,22 @@
+'!@#abcdefghi' 'a.*f' 0 -> '!@#' 'abcdef' 'ghi' 9
+'abcdexhi' 'a.*f' 0 -> 'abcdexhi' '' '' -1
+'Yabbadabbbadoo!!' '^Ya[ab]+ada[ba]+ado+!*' 0 -> '' 'Yabbadabbbadoo!!' '' 16
+'nYabbadabbbadoo!!' '^Ya[ab]+ada[ba]+ado+!*' 0 -> 'nYabbadabbbadoo!!' '' '' -1
+'nYabbadabbbadoo!!' '^Ya[ab]+ada[ba]+ado+!*' 1 -> 'n' 'Yabbadabbbadoo!!' '' 17
+'Yaadabbbadoo!!' '^Ya[ab]+ada[ba]+ado+!*' 0 -> 'Yaadabbbadoo!!' '' '' -1
+'Yabbadabbbadoofoo' '^Ya[ab]+ada[ba]+ado+!*' 0 -> '' 'Yabbadabbbadoo' 'foo' 14
+'abcz
+def
+' '.[^z\r\n]+\n' 0 -> 'abcz' '
+def
+' '' 9
+'
+zHello
+World
+' '.[^z\r\n]+\n' 0 -> '
+' 'zHello
+' 'World
+' 8
+'xyzzy' 'xy[^a-y]+y' 0 -> '' 'xyzzy' '' 5
+'xyy' 'xy[^a-y]+y' 0 -> 'xyy' '' '' -1
+'xyy' 'xy[~a-y]+y' 0 -> '' 'xyy' '' 5
