@@ -212,7 +212,9 @@ public:
     SubString(ConstCStr begin)          { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
     SubString(const Utf8Char* begin, const Utf8Char* end) { AliasAssign(begin, end); }
     SubString(SubString* original)      { AliasAssign(original->Begin(), original->End()); }
-    void AliasAssignCStr(ConstCStr begin) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin + strlen(begin))); }
+    void AliasAssignCStrLen(ConstCStr begin, IntIndex n) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + n) : begin)); }
+    void AliasAssignCStr(ConstCStr begin) { AliasAssignCStrLen(begin, IntIndex(strlen(begin))); }
+    void AliasAssignLen(const Utf8Char *begin, IntIndex len) { AliasAssign(begin, begin + len); }
     
     //! Skip all tokens and comments up to the next eol sequence
     void EatToEol();

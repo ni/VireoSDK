@@ -1165,7 +1165,12 @@ class String : public TypedArray1D< Utf8Char >
 {
 public:
     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
-    void CopyFromSubString(SubString* string)   { CopyFrom(string->Length(), string->Begin()); }
+    void CopyFromSubString(SubString* string)   {
+        if (string->Length())
+            CopyFrom(string->Length(), string->Begin());
+        else
+            Resize1D(0);
+    }
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }

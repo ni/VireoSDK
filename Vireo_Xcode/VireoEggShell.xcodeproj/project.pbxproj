@@ -12,6 +12,8 @@
 		444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468B1E26D73C0037FA98 /* RefNum.cpp */; };
 		444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468F1E299A390037FA98 /* RefNumTest.cpp */; };
 		444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46921E2D70AB0037FA98 /* UnitTest.cpp */; };
+		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
+		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
@@ -247,6 +249,9 @@
 		444C468F1E299A390037FA98 /* RefNumTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RefNumTest.cpp; path = ../source/unittest/RefNumTest.cpp; sourceTree = "<group>"; };
 		444C46911E2D69ED0037FA98 /* UnitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnitTest.h; path = include/UnitTest.h; sourceTree = "<group>"; };
 		444C46921E2D70AB0037FA98 /* UnitTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnitTest.cpp; path = core/UnitTest.cpp; sourceTree = "<group>"; };
+		4466C7971E4F08EE004B5E31 /* MatchPat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MatchPat.cpp; path = core/MatchPat.cpp; sourceTree = "<group>"; };
+		4466C7981E4F08EE004B5E31 /* Waveform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Waveform.cpp; path = core/Waveform.cpp; sourceTree = "<group>"; };
+		4466C79B1E4FEDFB004B5E31 /* Waveform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Waveform.h; path = include/Waveform.h; sourceTree = "<group>"; };
 		44ABE7D61D3D3FEF008EB066 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = test.js; path = "../test-it/test.js"; sourceTree = "<group>"; };
 		44ABE7D71D3D6A20008EB066 /* Scale2X.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Scale2X.via; path = "../test-it/Scale2X.via"; sourceTree = "<group>"; };
 		44ABE7D81D3D6A20008EB066 /* UnOpFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = UnOpFunctions.via; path = "../test-it/UnOpFunctions.via"; sourceTree = "<group>"; };
@@ -823,9 +828,11 @@
 				444C468B1E26D73C0037FA98 /* RefNum.cpp */,
 				47E180571A083769007A8DB4 /* Synchronization.cpp */,
 				47D84DE017C2A271009053DB /* Thread.cpp */,
+				4466C7981E4F08EE004B5E31 /* Waveform.cpp */,
 				47D84DE117C2A271009053DB /* Queue.cpp */,
 				47D84DE217C2A271009053DB /* String.cpp */,
 				47D84DE317C2A271009053DB /* StringUtilities.cpp */,
+				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
 				472A07891AA6204A008109FA /* NumericString.cpp */,
 				47D84DE417C2A271009053DB /* Timestamp.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
@@ -838,6 +845,7 @@
 		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 				444C46871E1C5ABC0037FA98 /* Date.h */,
 				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
 				47B76CD71B28DACA0083AEEB /* Platform.h */,
@@ -1080,6 +1088,7 @@
 				47D84DE717C2A271009053DB /* Array.cpp in Sources */,
 				47D84DE817C2A271009053DB /* CEntryPoints.cpp in Sources */,
 				47A877761AE6DAEB00EC5D77 /* HttpClient.cpp in Sources */,
+				4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */,
 				47D84DEB17C2A271009053DB /* DataQueue.cpp in Sources */,
 				47E180581A083769007A8DB4 /* Synchronization.cpp in Sources */,
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
@@ -1103,6 +1112,7 @@
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
+				4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,
 				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
