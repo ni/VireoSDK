@@ -36,6 +36,10 @@
 
         var bufferPtr, bufferSize;
 
+        var trackingFPS = false;
+        var lastTime = 0;
+        var currentFPS = 0;
+
         // Exported functions
         Module.coreHelpers.jsExecutionContextFPSync = function (fpStringPointer) {
             var fpString = Module.eggShell.dataReadString(fpStringPointer);
@@ -131,6 +135,22 @@
 
         Module.coreHelpers.jsTimestampGetTimeZoneOffset = function () {
             return Module.coreHelpers.writeJSStringToSharedBuffer(new Date().getTimezoneOffset().toString());
+        };
+
+        Module.coreHelpers.jsCurrentBrowserFPS = function () {
+            if (trackingFPS === false) {
+                trackingFPS = true;
+                lastTime = performance.now();
+
+                requestAnimationFrame(function vireoFPSTracker (currentTime) {
+                    var timeBetweenFrames = currentTime - lastTime;
+                    currentFPS = 1000 / timeBetweenFrames;
+                    lastTime = currentTime;
+                    requestAnimationFrame(vireoFPSTracker);
+                });
+            }
+
+            return currentFPS;
         };
     };
 
