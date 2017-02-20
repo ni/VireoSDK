@@ -79,7 +79,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     
 #if kVireoOS_emscripten
     // To learn more about event loops and emscripten
-    // https://github.com/kripken/emscripten/wiki/Emscripten-browser-environment
+    // http://kripken.github.io/emscripten-site/docs/porting/emscripten-runtime-environment.html
     emscripten_set_main_loop(RunExec, 50, null);
 #else
     do {

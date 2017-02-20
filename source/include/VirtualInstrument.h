@@ -34,6 +34,7 @@ class VIClump;
     e(a(*) Locals)                 \
     e(a(Clump *) Clumps)           \
     e(Int32 LineNumberBase)        \
+    e(SubString VIName)            \
     e(SubString ClumpSource)       \
 ))"
 
@@ -51,6 +52,7 @@ private:
     void ClearTopVIParamBlock();
 public:
     Int32                   _lineNumberBase;
+    SubString               _viName;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
 public :
     NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
@@ -64,6 +66,9 @@ public:
     TypedObjectRef Params()             { return _params; }
     TypedObjectRef Locals()             { return _locals; }
     TypedArray1D<VIClump>* Clumps()     { return _clumps; }
+    SubString VIName()                  { return _viName; }
+    void SetVIName(SubString s)         { _viName = s; }
+    SubString ClumpSource() const       { return _clumpSource; }
 };
 
 //------------------------------------------------------------
@@ -140,11 +145,10 @@ public:
     VirtualInstrument*  TopVI()      {
         VIClump *caller = this;
         do {
-            while (caller->_waitingClumps)
-                caller = caller->_waitingClumps;
-            while (caller->_caller)
+            if (caller->_caller)
                 caller = caller->_caller;
-        } while (caller->_waitingClumps);
+            caller = caller->_owningVI->Clumps()->Begin();
+        } while (caller->_caller);
         return caller->_owningVI;
     }
     Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };

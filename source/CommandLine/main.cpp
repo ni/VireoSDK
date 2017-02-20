@@ -46,36 +46,38 @@ int VIREO_MAIN(int argc, const char * argv[])
             if (strcmp(argv[arg], "-d") == 0)
                 gShells._pRootShell->DumpPrimitiveDictionary();
 			gShells._pUserShell = TypeManager::New(gShells._pRootShell);
-			fileName.AliasAssignCStr(argv[arg]);
-			if (fileName.Length() && argv[arg][0] != '-') {
-				{
-					TypeManagerScope scope(gShells._pUserShell);
-					STACK_VAR(String, buffer);
+            {
+                TypeManagerScope scope(gShells._pUserShell);
+                STACK_VAR(String, buffer);
+                fileName.AliasAssignCStr(argv[arg]);
+                if (fileName.Length() && argv[arg][0] != '-') {
+                    {
+                        gPlatform.IO.ReadFile(&fileName, buffer.Value);
+                        if (buffer.Value->Length() == 0) {
+                            gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
+                        }
 
-					gPlatform.IO.ReadFile(&fileName, buffer.Value);
-					if (buffer.Value->Length() == 0) {
-						gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
-					}
+                        SubString input = buffer.Value->MakeSubStringAlias();
+                        gShells._keepRunning = true;
+                        if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
+                            gShells._keepRunning = false;
+                        }
 
-					SubString input = buffer.Value->MakeSubStringAlias();
-					gShells._keepRunning = true;
-					if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
-						gShells._keepRunning = false;
-					}
-
-					LOG_PLATFORM_MEM("Mem after load")
-				}
-#if defined(kVireoOS_emscripten)
-				emscripten_set_main_loop(RunExec, 40, null);
-#else
-				while (gShells._keepRunning) {
-					RunExec(); // deletes TypeManagers on exit
-				}
-#endif
-            } else {
-                gShells._pUserShell->Delete();
-                gShells._pRootShell->Delete();
+                        LOG_PLATFORM_MEM("Mem after load")
+                    }
+    #if defined(kVireoOS_emscripten)
+                    emscripten_set_main_loop(RunExec, 40, null);
+    #else
+                    while (gShells._keepRunning) {
+                        RunExec(); // deletes TypeManagers on exit
+                    }
+    #endif
+                }
             }
+            LOG_PLATFORM_MEM("Mem after execution")
+            gShells._pUserShell->Delete();
+            gShells._pRootShell->Delete();
+            LOG_PLATFORM_MEM("Mem after cleanup")
 		}
     } else {
         // Interactive mode is experimental.
@@ -114,9 +116,5 @@ void RunExec() {
 #if defined(kVireoOS_emscripten)
         emscripten_cancel_main_loop();
 #endif
-        LOG_PLATFORM_MEM("Mem after execution")
-        gShells._pUserShell->Delete();
-        gShells._pRootShell->Delete();
-        LOG_PLATFORM_MEM("Mem after cleanup")
     }
 }
