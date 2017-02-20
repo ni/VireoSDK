@@ -219,7 +219,7 @@ VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
 
         count = 0;
         vi = runningQueueElt->OwningVI();
-        do {
+        do { // ! This loop must match the preflight in terms of assigning and testing caller
             SubString s = vi->VIName();
             _Param(0)->At(count)->CopyFromSubString(&s);
             caller = vi->Clumps()->Begin()->_caller;
