@@ -60,6 +60,7 @@
                 "bundleStomp.via",
                 "ByValueFunctions.via",
                 "Calculate.via",
+                "CallChain.via",
                 "CalVIMultipleTimesObserveOldValues.via",
                 "CaseComparison.via",
                 "CheckCopyDataMemoryLeak.via",

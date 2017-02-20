@@ -198,6 +198,41 @@ VIREO_FUNCTION_SIGNATURE1(Branch, InstructionCore)
     return _ParamPointer(0);
 }
 //------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
+{
+    ExecutionContextRef exec = THREAD_EXEC();
+
+    VIClump* runningQueueElt = exec->_runningQueueElt;
+    VirtualInstrument* vi = runningQueueElt->OwningVI();
+    VIClump *caller = runningQueueElt;
+    Int32 count = 0;
+
+    if (_ParamPointer(0)) {
+        do { // preflight caller chain to count subVI depth
+            caller = vi->Clumps()->Begin()->_caller; // caller only set on entry clump
+            if (caller)
+                vi = caller->OwningVI();
+            ++count;
+        } while (caller);
+
+        _Param(0)->Resize1D(count);
+
+        count = 0;
+        vi = runningQueueElt->OwningVI();
+        do {
+            SubString s = vi->VIName();
+            _Param(0)->At(count)->CopyFromSubString(&s);
+            caller = vi->Clumps()->Begin()->_caller;
+            if (caller)
+                vi = caller->OwningVI();
+            ++count;
+        } while (caller);
+
+    }
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 ExecutionContext::ExecutionContext()
 {
     if (!_classInited) {
@@ -364,6 +399,7 @@ DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_FUNCTION(CallVI, "p(i(Clump) i(Instruction copyInProc) i(Instruction copyOutProc))")
     DEFINE_VIREO_FUNCTION(Done, "p()")
     DEFINE_VIREO_FUNCTION(Stop, "p(i(Boolean))")
+    DEFINE_VIREO_FUNCTION(CallChain, "p(o(a(String *)))")
     DEFINE_VIREO_FUNCTION(CulDeSac, "p(i(Boolean))")
 DEFINE_VIREO_END()
 }  // namespace Vireo

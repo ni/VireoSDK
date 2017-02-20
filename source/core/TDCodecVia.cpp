@@ -426,7 +426,13 @@ TypeRef TDViaParser::ParseDefine()
     SubString symbolName;
     _string.ReadToken(&symbolName);
     TypeRef type = ParseType();
-    
+    if (type->IsA(VI_TypeName)) {
+        VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)type->Begin(kPARead);
+        if (vio && vio->ObjBegin()) {
+            VirtualInstrument *vi = vio->ObjBegin();
+            vi->SetVIName(symbolName);
+        }
+    }
     if (!_string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
         return BadType();
