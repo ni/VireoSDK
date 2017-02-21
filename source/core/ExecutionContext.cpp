@@ -144,7 +144,7 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 // CurrentBrowserFPS - Returns the framerate of the browser in frames per second 
 // First call starts the monitor and returns an FPS of zero
 // Subsequent calls return the most recent calculated FPS value
-VIREO_FUNCTION_SIGNATURE1(CurrentBrowserFPS, Double)
+VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
 {
 #if kVireoOS_emscripten
     *_ParamPointer(0) = jsCurrentBrowserFPS();
@@ -405,7 +405,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
-    DEFINE_VIREO_FUNCTION(CurrentBrowserFPS, "p(o(Double))")
+    DEFINE_VIREO_FUNCTION(CurrentBrowserFPS, "p(o(Double) io(" ERROR_CLUST_TYPE_STRING "))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")
