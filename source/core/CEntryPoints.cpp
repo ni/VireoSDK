@@ -194,6 +194,22 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     return "";
 }
 //------------------------------------------------------------
+//! Get the Length of an Array Symbol. Returns -1 if the Symbol is not found or not a 1D Array.
+VIREO_EXPORT Int32 EggShell_GetArrayLength(TypeManagerRef tm, const char* viName, const char* eltName)
+{
+    TypeManagerScope scope(tm);
+    void *pData = null;
+
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (actualType == null || !actualType->IsArray() || actualType->Rank() != 1)
+        return -1;
+    
+    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+    return actualArray->GetLength(0);
+}
+//------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));
