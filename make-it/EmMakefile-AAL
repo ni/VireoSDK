@@ -21,7 +21,7 @@ endif
 ifneq (,$(wildcard $(VIREO_SDK_DIR)/private/*))
   ANALYSIS_WRAPPERS_SOURCE_DIRECTORY=$(VIREO_SDK_DIR)/private
 else
-  ANALYSIS_WRAPPERS_SOURCE_DIRECTORY=../vi.lib/Analysis
+  ANALYSIS_WRAPPERS_SOURCE_DIRECTORY=../../vi.lib/Analysis
 endif
 
 ifeq (,$(wildcard $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrapper*.cpp))
@@ -32,7 +32,7 @@ $(OBJS)/NoAnalysisLibrary.bc: | no-analysis
 	rm $(OBJS)/NoAnalysis.cpp
 
 no-analysis::
-	$(info Note: Analysis library not found in $(VIREO_SDK_DIR)/private or ../vi.lib/Analysis; omitting from build.)
+	$(info Note: Analysis library not found in $(ANALYSIS_ROOT_DIRECTORY) or Analysis Wrappers not found in $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY); omitting from build.)
 else
 
 ifeq (,$(AAL_ONLY))
