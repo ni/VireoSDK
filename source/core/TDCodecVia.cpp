@@ -2017,17 +2017,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_DimInt:
             {
                 IntMax intValue = ReadIntFromMemory(type, pData);
-                if (type->IsEnum()) {
-                    StringRef itemName = type->GetEnumItemName(IntIndex(intValue));
-                    if (itemName)
-                        _string->Append(itemName);
-                    else { // enum index out of range
-                        _string->Append('<');
-                        FormatInt(kEncoding_UInt, intValue);
-                        _string->Append('>');
-                    }
-                } else
-                    FormatInt(type->BitEncoding(), intValue);
+                FormatInt(type->BitEncoding(), intValue);
             }
             break;
         case kEncoding_IEEE754Binary:
