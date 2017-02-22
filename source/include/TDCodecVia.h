@@ -36,6 +36,10 @@ enum ViaFormat {
     kViaFormat_JSONStrictValidation = 32
 };
 
+#define kJSONEncoding "JSON"
+#define kVIAEncoding "VIA"
+#define kCEncoding "C"
+
 struct ViaFormatChars
 {
     ConstCStr   _name;
@@ -47,11 +51,12 @@ struct ViaFormatChars
     Utf8Char    _quote;
     ViaFormat   _fieldNameFormat;
 
-    Boolean UseFieldNames()      { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
-    Boolean QuoteFieldNames()    { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
-    Boolean SuppressInfNaN()     { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
-    Boolean LongNameInfNaN()     { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
+    Boolean UseFieldNames()        { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
+    Boolean QuoteFieldNames()      { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
+    Boolean SuppressInfNaN()       { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
+    Boolean LongNameInfNaN()       { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
     Boolean JSONStrictValidation() { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
+    Boolean GenerateJSON()         { return strcmp(_name, kJSONEncoding) == 0; }
 };
 
 struct ViaFormatOptions
