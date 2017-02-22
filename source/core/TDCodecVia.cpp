@@ -1738,10 +1738,10 @@ private:
 char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
 
 // the format const used in Formatter and Parser
-ViaFormatChars TDViaFormatter::formatVIA =  {"VIA",  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
-ViaFormatChars TDViaFormatter::formatJSON = {"JSON", '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_SuppressInfNaN) };
-ViaFormatChars TDViaFormatter::formatJSONLVExt = {"JSON", '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN) };
-ViaFormatChars TDViaFormatter::formatC =    {"C",    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
+ViaFormatChars TDViaFormatter::formatVIA =       { kVIAEncoding,  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
+ViaFormatChars TDViaFormatter::formatJSON =      { kJSONEncoding, '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_SuppressInfNaN) };
+ViaFormatChars TDViaFormatter::formatJSONLVExt = { kJSONEncoding, '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN) };
+ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
 
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format, Boolean jsonLVExt/*= false*/)
@@ -2013,21 +2013,30 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
     switch (encoding) {
         case kEncoding_UInt:
         case kEncoding_S2CInt:
-        case kEncoding_Enum:
         case kEncoding_DimInt:
             {
                 IntMax intValue = ReadIntFromMemory(type, pData);
-                if (type->IsEnum()) {
+                FormatInt(type->BitEncoding(), intValue);
+            }
+            break;
+        case kEncoding_Enum:
+            {
+                IntMax intValue = ReadIntFromMemory(type, pData);
+                if (Fmt().GenerateJSON()) {
+                    FormatInt(type->BitEncoding(), intValue);
+                }
+                else
+                {
                     StringRef itemName = type->GetEnumItemName(IntIndex(intValue));
-                    if (itemName)
+                    if (itemName) {
                         _string->Append(itemName);
+                    }
                     else { // enum index out of range
                         _string->Append('<');
                         FormatInt(kEncoding_UInt, intValue);
                         _string->Append('>');
                     }
-                } else
-                    FormatInt(type->BitEncoding(), intValue);
+                }
             }
             break;
         case kEncoding_IEEE754Binary:
@@ -2123,7 +2132,7 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
     if (_ParamVarArgCount() > 4 && _Param(errClust).status)
         return _NextInstruction();
 
-    SubString json("JSON");
+    SubString json(kJSONEncoding);
     TDViaFormatter formatter(_Param(stringOut), true, 0, &json, _Param(lvExtensions));
     if (arg[0]._paramType->IsCluster()) {
         formatter.FormatClusterData(arg[0]._paramType, arg[0]._pData);
@@ -2175,7 +2184,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
 
     TypedArray1D<StringRef> *itemPath = _Param(itemPath);
     EventLog log(EventLog::DevNull);
-    SubString jsonFormat("JSON");
+    SubString jsonFormat(kJSONEncoding);
     TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation));
     Boolean badPath = false, badNulls = false;;
     if (itemPath->Length()>0) {
