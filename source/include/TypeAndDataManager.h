@@ -1165,7 +1165,7 @@ class String : public TypedArray1D< Utf8Char >
 {
 public:
     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
-    void CopyFromSubString(SubString* string)   {
+    void CopyFromSubString(const SubString* string)   {
         if (string->Length())
             CopyFrom(string->Length(), string->Begin());
         else
