@@ -34,7 +34,7 @@ class VIClump;
     e(a(*) Locals)                 \
     e(a(Clump *) Clumps)           \
     e(Int32 LineNumberBase)        \
-    e(SubString VIName)            \
+    e(DataPointer VIName)          \
     e(SubString ClumpSource)       \
 ))"
 
@@ -52,7 +52,7 @@ private:
     void ClearTopVIParamBlock();
 public:
     Int32                   _lineNumberBase;
-    SubString               _viName;
+    Utf8Char*               _viName;
     SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
 public :
     NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
@@ -62,12 +62,23 @@ public :
 
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
+    ~VirtualInstrument()               { if (_viName) delete _viName; }
     TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypedObjectRef Params()             { return _params; }
     TypedObjectRef Locals()             { return _locals; }
     TypedArray1D<VIClump>* Clumps()     { return _clumps; }
-    SubString VIName()                  { return _viName; }
-    void SetVIName(SubString s)         { _viName = s; }
+    SubString VIName()                  {
+        SubString s;
+        if (_viName)
+            s.AliasAssignLen(_viName, IntIndex(strlen(ConstCStr(_viName))));
+        return s;
+    }
+    void SetVIName(const SubString *s)   {
+        IntIndex len = s->Length();
+        _viName = (Utf8Char*)malloc(len+1);
+        memcpy(_viName, s->Begin(), len);
+        _viName[len] = 0;
+    }
     SubString ClumpSource() const       { return _clumpSource; }
 };
 

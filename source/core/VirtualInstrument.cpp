@@ -29,6 +29,7 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     // The preliminary initialization defines a generic VI
     // finish it out by defining its type.
     _typeManager = tm;
+    _viName = NULL;
     _params->SetElementType(paramsType, false);
     _locals->SetElementType(localsType, false);
     _clumps->Resize1D(clumpCount);
