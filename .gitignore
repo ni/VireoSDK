@@ -35,6 +35,7 @@ Vireo_VS/Debug/*
 Vireo_VS/Release/*
 Vireo_VS/VireoCommandLine.sdf
 Vireo_VS/VireoCommandLine.vcxproj.user
+Vireo_VS/_Resharper.Caches/*
 **.VC.db
 **.opendb
 **.suo
