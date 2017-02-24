@@ -62,7 +62,7 @@ public :
 
 public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
-    ~VirtualInstrument()               { if (_viName) delete _viName; }
+    ~VirtualInstrument()               { if (_viName) delete[] _viName; }
     TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypedObjectRef Params()             { return _params; }
     TypedObjectRef Locals()             { return _locals; }
