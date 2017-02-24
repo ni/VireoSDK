@@ -8,7 +8,7 @@ describe('Arrays in Vireo', function () {
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
 
-    it('expose their length in the public api', function (done) {
+    fit('expose their length in the public api', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromTestItDir('ArrayDemo.via');
         var viName = 'ArrayDemo';
 
@@ -30,6 +30,17 @@ describe('Arrays in Vireo', function () {
             expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 1)).toBe(2);
             expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 2)).toBe(3);
             expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', -1)).toBe(-1);
+
+            var heap32 = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.HEAP32;
+            var begin = vireo.eggShell.getArrayBegin(viName, 'fixedArray1dwithDefaults') / 4;
+            var length = vireo.eggShell.getArrayDimLength(viName, 'fixedArray1dwithDefaults', 0);
+            var i, currentPointer;
+            var results = [];
+            for (i = 0; i < length; i += 1) {
+                currentPointer = begin + i;
+                results[i] = heap32[currentPointer];
+            }
+            console.log(results);
             done();
         });
     });
