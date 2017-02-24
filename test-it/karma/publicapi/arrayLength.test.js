@@ -8,7 +8,7 @@ describe('Arrays in Vireo', function () {
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
 
-    fit('expose their length in the public api', function (done) {
+    it('expose their length in the public api', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromTestItDir('ArrayDemo.via');
         var viName = 'ArrayDemo';
 
@@ -40,7 +40,7 @@ describe('Arrays in Vireo', function () {
                 currentPointer = begin + i;
                 results[i] = heap32[currentPointer];
             }
-            console.log(results);
+            expect(results).toEqual([1, 2, 3, 4, 0]);
             done();
         });
     });
