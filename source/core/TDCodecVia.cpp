@@ -430,7 +430,7 @@ TypeRef TDViaParser::ParseDefine()
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)type->Begin(kPARead);
         if (vio && vio->ObjBegin()) {
             VirtualInstrument *vi = vio->ObjBegin();
-            vi->SetVIName(&symbolName);
+            vi->SetVIName(symbolName);
         }
     }
     if (!_string.EatChar(')')) {
