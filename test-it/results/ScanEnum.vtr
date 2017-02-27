@@ -10,4 +10,9 @@
 10   Enum value is 'magenta', expected value is 'magenta'.
 11   Enum value is 'red', expected value is 'red'.
 12   Enum value is 'green', expected value is 'green'.
-13 All tests pass: 'true'.
+13 Scan enum from string pass: 'true'.
+14   Reminder is '', expected value is ''.
+15   Offset is '14', expected value is '14'.
+16   Not error found is 'true', expected value is 'true'.
+17   Enum value is 'redblue', expected value is 'redblue'.
+18 All tests pass: 'true'.
