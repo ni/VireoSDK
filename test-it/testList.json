@@ -188,6 +188,7 @@
                 "QueueBugEnqueueElement.via",
                 "QueueBugObtainQueue.via",
                 "QueueBugReleaseQueue.via",
+                "QueueErrorCodes.via",
                 "QueueOfNothingReaderWriter.via",
                 "QueueReaderWriter.via",
                 "QueueTypeTemplate.via",

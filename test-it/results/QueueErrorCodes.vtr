@@ -1,0 +1,5 @@
+01 All tests pass: 'true'.
+02   Zero size error is 'true', expected value is 'true'.
+03   Queue name does not exist error is 'true', expected value is 'true'.
+04   Queue type mismatch error is 'true', expected value is 'true'.
+05   Queue argument error is 'true', expected value is 'true'.
