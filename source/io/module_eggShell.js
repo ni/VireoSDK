@@ -35,7 +35,7 @@
             'EggShell_WriteDouble',
             'EggShell_ReadValueString',
             'EggShell_WriteValueString',
-            'EggShell_GetArrayLength',
+            'EggShell_Get1DArrayLength',
             'Data_GetStringBegin',
             'Data_GetStringLength',
             'Data_ReadBoolean',
@@ -60,7 +60,7 @@
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_ReadValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
-        var EggShell_GetArrayLength = Module.cwrap('EggShell_GetArrayLength', 'number', ['number', 'string', 'string']);
+        var EggShell_Get1DArrayLength = Module.cwrap('EggShell_Get1DArrayLength', 'number', ['number', 'string', 'string']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
@@ -124,8 +124,8 @@
             EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
         };
 
-        Module.eggShell.getArrayLength = publicAPI.eggShell.getArrayLength = function (vi, path) {
-            return EggShell_GetArrayLength(v_userShell, vi, path);
+        Module.eggShell.get1DArrayLength = publicAPI.eggShell.get1DArrayLength = function (vi, path) {
+            return EggShell_Get1DArrayLength(v_userShell, vi, path);
         };
 
         Module.eggShell.dataReadString = function (stringPointer) {

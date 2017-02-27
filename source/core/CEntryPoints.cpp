@@ -195,7 +195,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
 }
 //------------------------------------------------------------
 //! Get the Length of an Array Symbol. Returns -1 if the Symbol is not found or not a 1D Array.
-VIREO_EXPORT Int32 EggShell_GetArrayLength(TypeManagerRef tm, const char* viName, const char* eltName)
+VIREO_EXPORT Int32 EggShell_Get1DArrayLength(TypeManagerRef tm, const char* viName, const char* eltName)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
