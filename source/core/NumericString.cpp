@@ -1355,16 +1355,26 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
 {
     Boolean found = false;
     if (formatChar == 's') {
+        IntIndex longestMatchIndex = 0;
+        IntIndex longestMatchLength = 0;
         for (IntIndex i = 0; i < argumentType->GetEnumItemCount(); i++) {
             SubString itemName = argumentType->GetEnumItemName(i)->MakeSubStringAlias();
             if (in->ComparePrefix(itemName.Begin(), itemName.Length()))
             {
                 found = true;
-                IntMax intValue = i;
-                WriteIntToMemory(argumentType, argument->_pData, intValue);
-                *endPointer = beginPointer + itemName.Length();
-                break;
+                if (itemName.Length() > longestMatchLength)
+                {
+                    longestMatchIndex = i;
+                    longestMatchLength = itemName.Length();
+                }
             }
+        }
+
+        if (found)
+        {
+            IntMax intValue = longestMatchIndex;
+            WriteIntToMemory(argumentType, argument->_pData, intValue);
+            *endPointer = beginPointer + longestMatchLength;
         }
     }
     else {
