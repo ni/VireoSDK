@@ -209,6 +209,7 @@
                 "RotateString.via",
                 "Round.via",
                 "Scale2X.via",
+                "ScanEnum.via",
                 "ScanFormat.via",
                 "ScanFormat2.via",
                 "SearchSplitString.via",

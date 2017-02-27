@@ -1351,6 +1351,31 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
 }
 
 //----------------------------------------------------------------------------------------------------
+Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argumentType, char formatChar, char* beginPointer, char** endPointer)
+{
+    Boolean found = false;
+    if (formatChar == 's') {
+        for (IntIndex i = 0; i < argumentType->GetEnumItemCount(); i++) {
+            SubString itemName = argumentType->GetEnumItemName(i)->MakeSubStringAlias();
+            if (in->ComparePrefix(itemName.Begin(), itemName.Length()))
+            {
+                found = true;
+                IntMax intValue = i;
+                WriteIntToMemory(argumentType, argument->_pData, intValue);
+                *endPointer = beginPointer + itemName.Length();
+                break;
+            }
+        }
+    }
+    else {
+        IntScanString(argument, argumentType, formatChar, beginPointer, endPointer);
+        found = true;
+    }
+
+    return found;
+}
+
+//----------------------------------------------------------------------------------------------------
 Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument)
 {
     if (argument == null)
@@ -1377,8 +1402,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     
     switch (argumentType->BitEncoding()) {
         case kEncoding_UInt: 
-        case kEncoding_Enum:
             IntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
+            break;
+        case kEncoding_Enum:
+            if (!EnumScanString(&in, argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer))
+                return false;
             break;
         case kEncoding_S2CInt:
         case kEncoding_DimInt: 

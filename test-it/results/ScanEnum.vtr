@@ -1,0 +1,13 @@
+01 Scan enum from number pass: 'true'.
+02   Reminder is '', expected value is ''.
+03   Offset is '8', expected value is '8'.
+04   Not error found is 'true', expected value is 'true'.
+05   Enum value is 'magenta', expected value is 'magenta'.
+06 Scan enum from string pass: 'true'.
+07   Reminder is ' other', expected value is ' other'.
+08   Offset is '24', expected value is '24'.
+09   Not error found is 'true', expected value is 'true'.
+10   Enum value is 'magenta', expected value is 'magenta'.
+11   Enum value is 'red', expected value is 'red'.
+12   Enum value is 'green', expected value is 'green'.
+13 All tests pass: 'true'.
