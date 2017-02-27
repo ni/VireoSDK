@@ -17,14 +17,14 @@ describe('Arrays in Vireo', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(vireo.eggShell.getArrayLength(viName, 'variableArray1d')).toBe(0);
-            expect(vireo.eggShell.getArrayLength(viName, 'fixedArray1d')).toBe(5);
-            expect(vireo.eggShell.getArrayLength(viName, 'boundedArray1d')).toBe(0);
-            expect(vireo.eggShell.getArrayLength(viName, 'variableArray1dwithDefaults')).toBe(4);
-            expect(vireo.eggShell.getArrayLength(viName, 'fixedArray1dwithDefaults')).toBe(5);
-            expect(vireo.eggShell.getArrayLength(viName, 'boundedArray1dwithDefaults')).toBe(4);
-            expect(vireo.eggShell.getArrayLength(viName, 'fixedArray2d')).toBe(-1);
-            expect(vireo.eggShell.getArrayLength(viName, 'fixedArray3d')).toBe(-1);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'variableArray1d')).toBe(0);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray1d')).toBe(5);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'boundedArray1d')).toBe(0);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'variableArray1dwithDefaults')).toBe(4);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray1dwithDefaults')).toBe(5);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'boundedArray1dwithDefaults')).toBe(4);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray2d')).toBe(-1);
+            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray3d')).toBe(-1);
             done();
         });
     });
