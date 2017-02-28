@@ -250,19 +250,17 @@ using namespace std;
     
 //------------------------------------------------------------
 // Comparison
-#define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
+#define DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE) \
     DECLARE_VIREO_PRIMITIVE3( IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <  _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <= _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsLE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <= 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
@@ -277,6 +275,16 @@ using namespace std;
 			     && (_Param(0) < _Param(2) || _Param(4) && _Param(0)==_Param(1));	\
 		return _NextInstruction();													\
 		}
+
+#define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
+    DECLARE_VIREO_PRIMITIVE2( IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
+    DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE)
+
+#define DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN() \
+    DECLARE_VIREO_PRIMITIVE2( IsLT0Boolean, Boolean, Boolean, (_Param(1) = false) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsGE0Boolean, Boolean, Boolean, (_Param(1) = true) ) \
+    DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(Boolean)
 
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(IsLT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
@@ -348,7 +356,7 @@ using namespace std;
     
 //------------------------------------------------------------
 // Boolean
-DECLARE_VIREO_COMPARISON_PRIMITIVES(Boolean)
+DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN()
 //DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
 DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfTrue, Boolean, (_Param(1)) )
 DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfFalse, Boolean, (!_Param(1)) )
