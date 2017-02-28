@@ -937,8 +937,9 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumValType*, void, 
     QueueRef queueRef = NULL;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
+        Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr)
-            errPtr->SetError(true, kQueueArgErr, primName);
+            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, primName);
         if (boolOut)
             *boolOut = false;
         if (overflowElem) {
@@ -993,8 +994,9 @@ static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumValType*, void, 
     QueueRef queueRef = NULL;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
+        Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr)
-            errPtr->SetError(true, kQueueArgErr, "Dequeue");
+            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue");
         if (_ParamPointer(3))
             _Param(3) = false;
         if (_ParamPointer(1)) {
