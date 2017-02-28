@@ -78,6 +78,8 @@ define(TestProgram dv(.VirtualInstrument (
         Printf("Starting Dequeue2\n")
         Dequeue(q y2 800 timedOut err3)
         Printf("Dequeued2 value is %.1f to:%s err:%z\n" y2 timedOut err3)
+        Dequeue(q y2 400 timedOut err3)
+        Printf("Dequeued3 value is %.1f to:%s err:%z\n" y2 timedOut err3)
     )
 
 ) ) )
