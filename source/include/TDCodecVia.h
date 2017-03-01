@@ -33,7 +33,8 @@ enum ViaFormat {
     kViaFormat_FieldNameMask = kViaFormat_QuotedFieldNames | kViaFormat_PercentEncodeFieldNames,
     kViaFormat_UseLongNameInfNaN = 8, // mask,  clear == use inf,nan, set == use Infinity/NaN
     kViaFormat_SuppressInfNaN = 16, // use neither,
-    kViaFormat_JSONStrictValidation = 32
+    kViaFormat_JSONStrictValidation = 32,
+    kViaFormat_QuoteInfNanNames = 64
 };
 
 #define kJSONEncoding "JSON"
@@ -55,6 +56,7 @@ struct ViaFormatChars
     Boolean QuoteFieldNames()      { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
     Boolean SuppressInfNaN()       { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
     Boolean LongNameInfNaN()       { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
+    Boolean QuotedNameInfNaN()     { return (_fieldNameFormat & kViaFormat_QuoteInfNanNames) ? true : false; }
     Boolean JSONStrictValidation() { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
     Boolean GenerateJSON()         { return strcmp(_name, kJSONEncoding) == 0; }
 };
@@ -158,7 +160,7 @@ private:
     
     static const Int32 kTempFormattingBufferSize = 100;
 public:
-    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null, Boolean jsonLVExt = false);
+    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null, Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
     // Type formatters
     void    FormatType(TypeRef type);
     // Options
@@ -183,6 +185,7 @@ public:
     static ViaFormatChars formatVIA;
     static ViaFormatChars formatJSON;
     static ViaFormatChars formatJSONLVExt;
+    static ViaFormatChars formatJSONEggShell;
     static ViaFormatChars formatC;
 };
 

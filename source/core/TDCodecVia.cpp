@@ -1752,10 +1752,11 @@ char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
 ViaFormatChars TDViaFormatter::formatVIA =       { kVIAEncoding,  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
 ViaFormatChars TDViaFormatter::formatJSON =      { kJSONEncoding, '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_SuppressInfNaN) };
 ViaFormatChars TDViaFormatter::formatJSONLVExt = { kJSONEncoding, '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN) };
+ViaFormatChars TDViaFormatter::formatJSONEggShell = { kJSONEncoding, '[',']','{','}',',','\"', ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN | kViaFormat_QuoteInfNanNames) };
 ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{','}','{','}',',','\"', kViaFormat_NoFieldNames};
 
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format, Boolean jsonLVExt/*= false*/)
+TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth, SubString* format, Boolean jsonLVExt/*= false*/, Boolean quoteInfNaN/*= false*/)
 {
     // Might move all options to format string.
     _string = string;
@@ -1770,7 +1771,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
         _options._fmt = formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._bEscapeStrings = true;
-        _options._fmt = jsonLVExt ? formatJSONLVExt : formatJSON;
+        _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._fmt = formatC;
     }
@@ -1845,33 +1846,33 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     Double value = ReadDoubleFromMemory(type, pData);
     Int32 len = 0;
     Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
+    Boolean quotedInfNaN = _options._fmt.QuotedNameInfNaN();
+
     if (isnan(value)) {
-#if 0
-        // TODO unit tests are getting different -NaNs in different cases.
-        if (signbit(value)) {
-            pBuff = "-nan";
-            len = 4;
-        } else {
-            pBuff = "nan";
-            len = 3;
-        }
-#else
         if (!suppressInfNaN) {
-            pBuff = _options._fmt.LongNameInfNaN() ?  "NaN" : "nan";
+            pBuff = _options._fmt.LongNameInfNaN() ?  "\"NaN\"" : "\"nan\"";
             len = 3;
+            if (quotedInfNaN)
+                len += 2;
+            else
+                pBuff++;
         } else
             _error = true;
-#endif
     } else if (isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {
-                pBuff = longForm ? "-Infinity" : "-inf";
+                pBuff = longForm ? "\"-Infinity\"" : "\"-inf\"";
                 len = longForm ? 9 : 4;
             } else {
-                pBuff = longForm ? "Infinity" : "inf";
+                pBuff = longForm ? "\"Infinity\"" : "\"inf\"";
                 len = longForm ? 8 : 3;
             }
+            if (quotedInfNaN)
+                len += 2;
+            else
+                pBuff++;
+
         } else
             _error = true;
     } else {
