@@ -1853,9 +1853,9 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             pBuff = _options._fmt.LongNameInfNaN() ?  "\"NaN\"" : "\"nan\"";
             len = 3;
             if (quotedInfNaN)
-                len += 2;
+                len += 2; // include quotes
             else
-                pBuff++;
+                pBuff++; // skip quotes
         } else
             _error = true;
     } else if (isinf(value)) {
@@ -1869,10 +1869,9 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
                 len = longForm ? 8 : 3;
             }
             if (quotedInfNaN)
-                len += 2;
+                len += 2; // include quotes
             else
-                pBuff++;
-
+                pBuff++; // skip quotes
         } else
             _error = true;
     } else {
