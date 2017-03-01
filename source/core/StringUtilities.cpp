@@ -1066,6 +1066,8 @@ void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
         while(ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value))
                 *pDest++ = (Utf8Char)value;
+            else if (c == '+')
+                *pDest++ = ' ';
             else
                 *pDest++ = c;
         }
