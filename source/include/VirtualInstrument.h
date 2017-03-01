@@ -73,12 +73,7 @@ public:
             s.AliasAssignLen(_viName, IntIndex(strlen(ConstCStr(_viName))));
         return s;
     }
-    void SetVIName(const SubString &s)   {
-        IntIndex len = s.Length();
-        _viName = new Utf8Char[len+1];
-        memcpy(_viName, s.Begin(), len);
-        _viName[len] = 0;
-    }
+    void SetVIName(const SubString &s, bool decode);
     SubString ClumpSource() const       { return _clumpSource; }
 };
 

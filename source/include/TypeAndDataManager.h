@@ -270,8 +270,8 @@ public:
     TypeRef Define(const SubString* name, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
-    TypeRef FindType(const SubString* name);
-    NamedTypeRef FindTypeCore(const SubString* name);
+    TypeRef FindType(const SubString* name, Boolean decode = false);
+    NamedTypeRef FindTypeCore(const SubString* name, Boolean decode = false);
     TypeRef BadType();
 
     Int32   AQAlignment(Int32 size);

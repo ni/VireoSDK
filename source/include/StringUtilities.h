@@ -374,6 +374,38 @@ public:
     }
 };
 
+//------------------------------------------------------------
+//! A class for making temporary %-code decoded SubStrings
+class DecodedSubString {
+public:
+    DecodedSubString() : _decodedStr(null) { }
+    DecodedSubString(const SubString &s, bool decode = true, bool alwaysAlloc = false);
+
+    void Init(const SubString &s, bool decode, bool alwaysAlloc = false);
+    SubString GetSubString() {
+        SubString s;
+        s.AliasAssignLen(_decodedStr, IntIndex(strlen(ConstCStr(_decodedStr))));
+        return s;
+    }
+    Utf8Char *DetachValue() {
+        if (_decodedStr != _buffer) {
+            Utf8Char *ret = _decodedStr;
+            _decodedStr = null;
+            return ret;
+        }
+        return null;
+    }
+    ~DecodedSubString() {
+        if (_decodedStr && _decodedStr != _buffer)
+            delete[] _decodedStr;
+    }
+private:
+    enum { kMaxInlineDecodedSize = 1024 };
+
+    Utf8Char _buffer[kMaxInlineDecodedSize];
+    Utf8Char *_decodedStr;
+};
+
 } // namespace Vireo
 
 #endif //StringUtilities_h
