@@ -1951,19 +1951,30 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
     IntIndex dimensionLength = pDimLengths[rank];
     AQBlock1 *pElement = pBegin;
 
-    Boolean bPastFirst = false;
     _string->Append(Fmt()._arrayPre);
-    while (dimensionLength-- > 0) {
-        if (bPastFirst) {
-            _string->Append(Fmt()._itemSeperator);
-        }
+    IntIndex origLen = *_string->DimensionLengths();
+    if (dimensionLength-- > 0) {
         if (rank == 0) {
             FormatData(elementType, pElement);
         } else {
             FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
         }
         pElement += elementLength;
-        bPastFirst = true;
+        if (rank == 0) { // estimate total array size based on first element and pre-allocate
+            IntIndex preAlloc = origLen + (1+dimensionLength) * (*_string->DimensionLengths() - origLen+1);
+            origLen = *_string->DimensionLengths();
+            _string->ResizeDimensions(1, &preAlloc, true, true);
+            *_string->DimensionLengths() = origLen;
+        }
+    }
+    while (dimensionLength-- > 0) {
+        _string->Append(Fmt()._itemSeperator);
+        if (rank == 0) {
+            FormatData(elementType, pElement);
+        } else {
+            FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
+        }
+        pElement += elementLength;
     }
     _string->Append(Fmt()._arrayPost);
 }

@@ -143,10 +143,10 @@ typedef Int64   AQBlock8;
 //------------------------------------------------------------
 #ifdef VIREO_USING_ASSERTS
     #ifdef VIREO_MICRO
-        #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, __FILE__, __LINE__ );
+        #define VIREO_ASSERT( _TEST_ ) if (!(_TEST_)) VireoAssert_Hidden( _TEST_, __FILE__, __LINE__ ); else;
         void VireoAssert_Hidden(Boolean test, ConstCStr file, int line);
     #else
-        #define VIREO_ASSERT( _TEST_ ) VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ );
+        #define VIREO_ASSERT( _TEST_ ) if (!(_TEST_)) VireoAssert_Hidden( _TEST_, #_TEST_, __FILE__, __LINE__ ); else;
         void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int line);
     #endif
 #else
