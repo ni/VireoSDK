@@ -6,7 +6,7 @@ define(c0 dv(.Int32 5) )
 define(c1 dv(.Int32 1) )
 
 //---------------------------------------------------
-define(videf2 dv(.VirtualInstrument (
+define(videf2%20foo dv(.VirtualInstrument (
     c(
         o(dv(.Int32 0) local4)   // result
         i(dv(.Int32 42) local1)   // b
@@ -57,7 +57,7 @@ define(videf3 dv(.ReentrantVirtualInstrument (
 )))
 
 //---------------------------------------------------
-define(videf dv(.VirtualInstrument (
+define(My%20VI.vi dv(.VirtualInstrument (
     c(
         e(.Int32 local1)   // result
         e(dv(a(String *) ()) callchain)
@@ -65,7 +65,7 @@ define(videf dv(.VirtualInstrument (
     clump(1
         CallChain(callchain)
         Printf("videf Callchain: %z\n" callchain)
-        videf2(local1 c0 c1)  //call the subvi and overwrite the inputs with constant data
+        "videf2 foo"(local1 c0 c1)  //call the subvi and overwrite the inputs with constant data
         CallChain(callchain)
         Printf("videf Callchain: %z\n" callchain)
         videf3()
@@ -73,4 +73,4 @@ define(videf dv(.VirtualInstrument (
     )
 )))
 
-enqueue(videf)
+enqueue("My VI.vi")

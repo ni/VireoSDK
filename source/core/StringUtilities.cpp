@@ -1040,6 +1040,44 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
     }
     return -1;
 }
+
+// Helper class for storing a temporary copy of a %-code decoded copy of a SubString
+void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
+    const Utf8Char *cp = s.Begin();
+    IntIndex len = s.Length();
+    if (_decodedStr && _decodedStr != _buffer)
+        delete[] _decodedStr;
+    if (decode) {
+        while (cp != s.End()) {
+            if (*cp=='%' && cp+2 < s.End())
+                len -= 2;
+            ++cp;
+        }
+    }
+    if (alwaysAlloc || len >= kMaxInlineDecodedSize)
+        _decodedStr = new Utf8Char[len+1];
+    else
+        _decodedStr = _buffer;
+    if (decode) {
+        SubString ss = s;
+        Utf8Char c;
+        Int32 value;
+        Utf8Char *pDest = _decodedStr;
+        while(ss.ReadRawChar(&c)) {
+            if (c == '%' && ss.ReadHex2(&value))
+                *pDest++ = (Utf8Char)value;
+            else
+                *pDest++ = c;
+        }
+    } else
+        memcpy(_decodedStr, s.Begin(), len);
+    _decodedStr[len] = 0;
+}
+
+DecodedSubString::DecodedSubString(const SubString &s, bool decode, bool alwaysAlloc) : _decodedStr(null) {
+    Init(s, decode, alwaysAlloc);
+}
+
 #if 0
 //------------------------------------------------------------
 //! A tool for debugging UTF8 encodings

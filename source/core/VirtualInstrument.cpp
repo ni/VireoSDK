@@ -117,6 +117,12 @@ void VirtualInstrument::GoIsDone()
     // ClearParamBlock();
     RunCleanupProcs(this);
 }
+//------------------------------------------------------------
+void VirtualInstrument::SetVIName(const SubString &s, bool decode)   {
+    DecodedSubString decodedStr(s, decode, true);
+    _viName = decodedStr.DetachValue();
+}
+
 #endif
 //------------------------------------------------------------
 // If the QE is running, then suspend current QE and add it to this QE's list
@@ -457,13 +463,19 @@ TypeRef ClumpParseState::StartNextOverload()
         VirtualInstrument* vi = AddSubVITargetArgument(t);
         _instructionPointerType = t;
         _instructionType = vi->Params()->ElementType();
+    } else if (t && t->IsString()) {
+        StringRef *str = (StringRef*)t->Begin(kPARead);
+        if (str) {
+            SubString ss = (*str)->MakeSubStringAlias();
+            t = _clump->TheTypeManager()->FindTypeCore(&ss);
+        }
     }
     return _instructionType;
 }
 //------------------------------------------------------------
 TypeRef ClumpParseState::StartInstruction(SubString* opName)
 {
-    _nextFunctionDefinition = _clump->TheTypeManager()->FindTypeCore(opName);
+    _nextFunctionDefinition = _clump->TheTypeManager()->FindTypeCore(opName, true);
     _genericFunctionDefinition = null;
 
     // Look for a generic loader.

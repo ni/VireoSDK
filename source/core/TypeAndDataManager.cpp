@@ -397,7 +397,7 @@ TypeRef TypeManager::FindType(ConstCStr name)
 }
 //------------------------------------------------------------
 //! Find a type by is symbol name.
-TypeRef TypeManager::FindType(const SubString* name)
+TypeRef TypeManager::FindType(const SubString* name, Boolean decode /*= false*/)
 {
     MUTEX_SCOPE()
 
@@ -405,7 +405,7 @@ TypeRef TypeManager::FindType(const SubString* name)
     SubString pathTail;
     name->SplitString(&pathHead, &pathTail, '.');
     
-    TypeRef type = FindTypeCore(&pathHead);
+    TypeRef type = FindTypeCore(&pathHead, decode);
 
     if (type && pathTail.Length()) {
         void* temp;
@@ -428,7 +428,7 @@ TypeRef TypeManager::FindType(const SubString* name)
     return type;
 }
 //------------------------------------------------------------
-NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
+NamedTypeRef TypeManager::FindTypeCore(const SubString* name, Boolean decode /*=false*/)
 {
     MUTEX_SCOPE()
 
@@ -438,7 +438,13 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name)
     // to the entry is returned. The Symbol cannot be deleted until instructions (VIs) are cleared.
     // Since a referenced type must exist before the instruction can reference it,
     // this works out fine.
-
+    DecodedSubString decodedStr;
+    SubString decodedSubStr;
+    if (decode) {
+        decodedStr.Init(*name, true, false);
+        decodedSubStr = decodedStr.GetSubString();
+        name = &decodedSubStr;
+    }
     TypeDictionaryIterator iter;
     iter = _typeNameDictionary.find(*name);
     NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : null;

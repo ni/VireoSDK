@@ -94,7 +94,16 @@ TypeRef TDViaParser::ParseEnqueue()
     }
     
     TypeRef vit = ParseType();  // Could be a type or inlined VI.
-    
+    if (vit->IsString()) { // allow VI names to be quoted
+        StringRef *str = (StringRef*)vit->Begin(kPARead);
+        if (str) {
+            viName = (*str)->MakeSubStringAlias();
+            vit = _typeManager->FindTypeCore(&viName);
+        }
+    } else {
+        viName = vit->Name();
+    }
+
     if (! _string.EatChar(')')) {
         LOG_EVENT(kHardDataError, "')' missing");
         return type;
@@ -280,7 +289,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         // Eat the deprecated dot prefix if it exists.
         typeFunction.EatChar('.');
         
-        type = _typeManager->FindType(&typeFunction);
+        type = _typeManager->FindType(&typeFunction, true);
         if (!type) {
             LOG_EVENTV(kSoftDataError,"Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
             type = BadType();
@@ -424,13 +433,15 @@ TypeRef TDViaParser::ParseDefine()
     }
     
     SubString symbolName;
-    _string.ReadToken(&symbolName);
+    TokenTraits tt = _string.ReadToken(&symbolName);
     TypeRef type = ParseType();
     if (type->IsA(VI_TypeName)) {
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)type->Begin(kPARead);
         if (vio && vio->ObjBegin()) {
             VirtualInstrument *vi = vio->ObjBegin();
-            vi->SetVIName(symbolName);
+            symbolName.TrimQuotedString(tt);
+            vi->SetVIName(symbolName, tt != TokenTraits_String && tt != TokenTraits_VerbatimString);
+            symbolName = vi->VIName(); // might have been decoded
         }
     }
     if (!_string.EatChar(')')) {
@@ -1393,8 +1404,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     SubString  token;
     SubString  instructionNameToken;
     SubString  argExpressionTokens[ClumpParseState::kMaxArguments];
-    
-    _string.ReadToken(&token);
+    TokenTraits tt = _string.ReadToken(&token);
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
 
@@ -1403,7 +1413,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     
     // Read first instruction, or firecount. If no instruction then the closing paren
     // of the clump will be found immediately
-    _string.ReadToken(&token);
+    tt = _string.ReadToken(&token);
     IntMax fireCount = 1;
     if (token.ReadInt(&fireCount)) {
         _string.ReadToken(&instructionNameToken);
@@ -1446,6 +1456,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
         } else {
+            instructionNameToken.TrimQuotedString(tt);
             Boolean keepTrying = state.StartInstruction(&instructionNameToken) != null;
 
             // Start reading actual parameters
@@ -1528,7 +1539,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 LOG_EVENTV(kSoftDataError, "Instruction not generated '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
             }
         }
-        _string.ReadToken(&instructionNameToken);
+        tt = _string.ReadToken(&instructionNameToken);
     }
     state.CommitClump();
 
