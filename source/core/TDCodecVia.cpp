@@ -448,7 +448,7 @@ TypeRef TDViaParser::ParseDefine()
         LOG_EVENT(kHardDataError, "')' missing");
         return BadType();
     }
-    
+
     TypeRef namedType = _typeManager->Define(&symbolName, type);
     if (!namedType) {
         LOG_EVENT(kHardDataError, "Can't define symbol");
