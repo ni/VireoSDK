@@ -185,7 +185,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
 
     if (returnBuffer) {
         SubString formatss(format);
-        TDViaFormatter formatter(returnBuffer, true, 0, &formatss);
+        TDViaFormatter formatter(returnBuffer, true, 0, &formatss, true, true);
         formatter.FormatData(actualType, pData);
         // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
