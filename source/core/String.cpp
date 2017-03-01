@@ -784,6 +784,39 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGEString, InstructionCore, StringRef, StringRe
     }
 }
 
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef)
+{
+   SubString initString = _Param(0)->MakeSubStringAlias();
+   SubString multiLineInputStr = _Param(1)->MakeSubStringAlias();
+   Int32 lineIndex = _Param(2);
+   _Param(3)->CopyFromSubString(&initString);
+
+   if (lineIndex >= 0) {
+      const Utf8Char* ch = multiLineInputStr.Begin();
+      while (ch < multiLineInputStr.End() && lineIndex > 0) {
+         if (*ch == '\n') {
+            --lineIndex;
+         }
+         else if (*ch == '\r') {
+            if ((ch+1) < multiLineInputStr.End() && (*(ch+1) == '\n')) {
+               ++ch;
+            }
+            --lineIndex;
+         }
+         ++ch;
+      }
+      const Utf8Char *start = ch;
+      for (; ch < multiLineInputStr.End() && !(*ch == '\n' || *ch == '\r'); ++ch);
+      const Utf8Char *end = ch;
+      SubString nthLineString;
+      nthLineString.AliasAssign(start, end);
+      Int32 initStrLength = initString.Length();
+      _Param(3)->InsertSubString(initStrLength, &nthLineString);
+   }
+   return _NextInstruction();
+}
+
 DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,				\
 						 Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
 						 StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
@@ -818,6 +851,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(BranchIfLEString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGTString, "p(i(BranchTarget) i(String) i(String))")
     DEFINE_VIREO_FUNCTION(BranchIfGEString, "p(i(BranchTarget) i(String) i(String))")
+    DEFINE_VIREO_FUNCTION(StringPickLine, "p(i(String) i(String) i(Int32) o(String))")
     DEFINE_VIREO_FUNCTION(IsEmptyString, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEmptyStringOrPath, IsEmptyString, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEmptyString, IsEmptyPath, "p(i(NIPath) o(Boolean))")
