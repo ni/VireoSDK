@@ -2213,7 +2213,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     }
     
     // 2. If underlying capacity changes, change that.
-    if (bOK && newCapacity != Capacity()) {
+    if (bOK && ((!noInit && newCapacity != Capacity()) || (noInit && newCapacity > Capacity()))) {
         VIREO_ASSERT(newLength <= newCapacity);
         bOK = ResizeCapacity(slabLength, Capacity(), newCapacity, (newLength < newCapacity));
     }
