@@ -48,13 +48,6 @@ SDG
     #include <emscripten.h>
 #endif
 
-#if kVireoOS_emscripten
-extern "C" {
-    extern char * jsTimestampGetTimeZoneAbbr();
-    extern char * jsTimestampGetTimeZoneOffset();
-}
-#endif
-
 namespace Vireo {
 #if defined(VIREO_TYPE_Timestamp)
 
@@ -176,24 +169,22 @@ namespace Vireo {
             seconds += kSecondsPerDay * dayOfMonth[i];
             if (seconds > secondsOfYear) {
                 currentMonth = i;
-                secondsOfMonth = secondsOfYear - secondsOfMonth;
+                secondsOfMonth = Int32(secondsOfYear - secondsOfMonth);
                 break;
             }
         }
 
         // Get timezone abbrevation
         char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
-#if (kVireoOS_linuxU || kVireoOS_macosxU)
-        time_t rawtime;
-        struct tm* timeinfo;
-        time(&rawtime);
-        timeinfo = localtime(&rawtime);
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo->tm_zone);
-#elif kVireoOS_emscripten
-        TempStackCString result;
-        result.AppendCStr(jsTimestampGetTimeZoneAbbr());
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", result.BeginCStr());
+#if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
+        time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
+        struct tm timeinfo;
+        localtime_r(&rawtime, &timeinfo);
+        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
+// #elif kVireoOS_emscripten variant deleted (03/2017); localtime_r works correctly
 #elif kVireoOS_windows
+        // Issue #218 TODO - FIXME: return time zone info/dst based on timestamp.Integer(), not current time.
+        // Possibly use SystemTimeToTzSpecificLocalTime
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformation(&timeZoneInfo);
         wchar_t *timeZoneName = L"TimeZoneUnknown";
@@ -290,7 +281,7 @@ namespace Vireo {
         } else
             _timeZoneString = NULL;
 #else
-        _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
+        _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
         _timeZoneString = NULL;
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
@@ -309,29 +300,21 @@ namespace Vireo {
         }
     }
 
+
     //------------------------------------------------------------
-    Int32 Date::getLocaletimeZone()
+    Int32 Date::getLocaletimeZone(Int64 utcTime)
     {
-#if kVireoOS_emscripten
-        TempStackCString result;
-        result.AppendCStr(jsTimestampGetTimeZoneOffset());
-        EventLog log(EventLog::DevNull);
-        SubString valueString(result.Begin(), result.End());
-        TDViaParser parser(THREAD_TADM(), &valueString, &log, 1);
-        TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
-        Int32 minutes;
-        parser.ParseData(parseType, &minutes);
-        _systemLocaleTimeZone = -(minutes * kSecondsPerMinute);
-        // flipping the sign of the time zone since JS runtime will be positive
-        // for being behind UTC and negative for being ahead. ctime assumes
-        // negative for behind and postive for ahead. We attempt to match the ctime result.
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted (03/2017); the localtime_r emulation works correctly
+#if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
-        time_t now = time(NULL);
-        localtime_r(&now, &tm);
+        time_t timeVal = utcTime - kStdDT1970re1904;
+        localtime_r(&timeVal, &tm);
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
+        // Issue #218 TODO -  FIXME: if utcTime is non-zero, time zone bias should be based on utcTime passed in
+        // (in GMT secs since epoch), not current time.
+        // Possibly use SystemTimeToTzSpecificLocalTime
+        
         // flipping the sign of the time zone
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);

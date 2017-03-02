@@ -1770,6 +1770,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
         _options._bEscapeStrings = false;
         _options._fmt = formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
+        _options._precision = 17;
         _options._bEscapeStrings = true;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
@@ -1848,7 +1849,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
     Boolean quotedInfNaN = _options._fmt.QuotedNameInfNaN();
 
-    if (isnan(value)) {
+    if (::isnan(value)) {
         if (!suppressInfNaN) {
             pBuff = _options._fmt.LongNameInfNaN() ?  "\"NaN\"" : "\"nan\"";
             len = 3;
@@ -1858,7 +1859,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
                 pBuff++; // skip quotes
         } else
             _error = true;
-    } else if (isinf(value)) {
+    } else if (::isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {

@@ -247,7 +247,7 @@ void TypeManager::DeleteTypes(Boolean finalTime)
 //------------------------------------------------------------
 TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic)
 {
-    TypeRef type = FindType(objectName);
+    TypeRef type = FindType(objectName, true);
     if (type) {
         void* pData = type->Begin(kPARead);
         return type->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
@@ -582,6 +582,8 @@ const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeBoolean = SubString(tsBooleanType);
 const SubString TypeCommon::TypeString = SubString(tsStringType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
+const SubString TypeCommon::TypeComplexSingle = SubString("ComplexSingle");
+const SubString TypeCommon::TypeComplexDouble = SubString("ComplexDouble");
 const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
 
 TypeCommon::TypeCommon(TypeManagerRef typeManager)
@@ -874,7 +876,18 @@ Boolean TypeCommon::IsTimestamp()
     }
     return false;
 }
-
+//------------------------------------------------------------
+Boolean TypeCommon::IsComplex()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeComplexDouble) || t->Name().Compare(&TypeComplexSingle)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
 //------------------------------------------------------------
 //! Parse an element path by name. Base class only knows
 //! about structural attributes.

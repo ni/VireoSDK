@@ -382,8 +382,8 @@ static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se)
 }
 
 
-//Int32 MatchPattern(StringRef pat, Int32 len, ConstCStr str, Int32 idx,
-//                   ConstCStr bef, ConstCStr mat, ConstCStr aft, Int32 *odx)
+//Int32 MatchPattern(StringRef regexPattern, ConstCStr str, Int32 offset,
+//                   ConstCStr before, ConstCStr match, ConstCStr after, Int32 *offsetPastMatch)
 
 VIREO_FUNCTION_SIGNATURE7(MatchPattern, StringRef, StringRef, Int32, StringRef, StringRef, StringRef, Int32)
 {

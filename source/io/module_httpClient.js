@@ -44,8 +44,7 @@
 
         // WebVI Specific
         WEBVI_UNSUPPORTED_INPUT: 363798,
-        INVALID_HEADER: 363798,
-        FORBIDDEN_HEADER_WARNING: 363798
+        INVALID_HEADER: 363798
     };
 
     var DEFAULT_TIMEOUT_MS = 10000;
@@ -71,45 +70,7 @@
         // None
 
         // Static Public Functions
-        // https://fetch.spec.whatwg.org/#forbidden-header-name
-        var forbiddenHeaderNames = [
-            'Accept-Charset',
-            'Accept-Encoding',
-            'Access-Control-Request-Headers',
-            'Access-Control-Request-Method',
-            'Connection',
-            'Content-Length',
-            'Cookie',
-            'Cookie2',
-            'Date',
-            'DNT',
-            'Expect',
-            'Host',
-            'Keep-Alive',
-            'Origin',
-            'Referer',
-            'TE',
-            'Trailer',
-            'Transfer-Encoding',
-            'Upgrade',
-            'Via'
-        ];
-
-        var forbiddenHeadersLookupTable = forbiddenHeaderNames.reduce(function (lookupTable, headerName) {
-            lookupTable[headerName.toLowerCase()] = true;
-            return lookupTable;
-        }, {});
-
-        HttpClient.isForbiddenHeaderName = function (headerName) {
-            var lowerCaseHeaderName = headerName.toLowerCase();
-            if (forbiddenHeadersLookupTable[lowerCaseHeaderName] === true) {
-                return true;
-            }
-            if (lowerCaseHeaderName.indexOf('proxy-') === 0 || lowerCaseHeaderName.indexOf('sec-') === 0) {
-                return true;
-            }
-            return false;
-        };
+        // None
 
         // Prototype creation
         var child = HttpClient;
@@ -472,14 +433,6 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = Module.eggShell.dataReadString(valuePointer);
             httpClient.addHeader(header, value);
-
-            var newWarningSource;
-            if (HttpClient.isForbiddenHeaderName(header)) {
-                newWarningSource = 'LabVIEWHTTPClient:AddHeader, Warning, adding the following header is forbidden in WebVIs: ' + header;
-
-                // A status of false with a non-zero error code is a warning
-                Module.httpClient.mergeErrors(false, CODES.FORBIDDEN_HEADER_WARNING, newWarningSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-            }
         };
 
         Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {

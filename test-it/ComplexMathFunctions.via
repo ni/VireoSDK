@@ -1,21 +1,153 @@
 
-
 define(HelloComplex dv(.VirtualInstrument (
     Locals: c(
         //-------------------
         e(dv(.Double 2.0) dMagnitude)
         e(dv(.Double 0.5) dPhase)
+        e(dv(.Double 0.0) dReal)
+        e(dv(.Double 0.0) dImag)
         e(.ComplexDouble dCmplx)
+        e(a(.ComplexDouble *) aCmplx)
+        e(a(.ComplexDouble *) aResult)
+        e(dv(a(.Double *) ()) aEmpty)
+        e(dv(a(.Double *) (2.0 3.0)) aMagnitude)
+        e(dv(a(.Double *) (0.5 1.0)) aPhase)
+        e(dv(a(.Double *) (10.0 20.0)) aReal)
+        e(dv(a(.Double *) (5.0 10.0)) aImag)
+        e(dv(c(e(.ComplexDouble cd) e(.ComplexDouble cd2)) ((2.0 2.0) (1.5 3.0))) cCmplx)
+        e(dv(c(e(.Double d)e(.Double d2)) (2.0 3.0)) cMagnitude)
+        e(dv(c(e(.Double d)e(.Double d2)) (0.5 1.0)) cPhase)
+        e(dv(c(e(.Double d)e(.Double d2)) (20.0 40.0)) cReal)
+        e(dv(c(e(.Double d)e(.Double d2)) (10.0 20.0)) cImag)
         //-------------------
         e(dv(.Single 2.0) sMagnitude)
         e(dv(.Single -0.5) sPhase)
         e(.ComplexSingle sCmplx)
+        e(dv(.ComplexSingle (0.0 99.0)) s)
+        e(dv(c(e(.ComplexSingle cd)) ((0.0 3.1415265))) c1)
+        e(c(e(.ComplexSingle cd)) cd)
+        e(dv(.ComplexSingle (0.0 0.0)) s2)
+        e(dv(.ComplexSingle (1.0 1.0)) s3)
+        e(dv(.ComplexSingle (0.0 0.0)) s4)
+        e(.Int32 i)
+        e(.Boolean b)
     )
     clump(
+        ReOrImToComplex(dMagnitude dPhase dCmplx)
+	Printf("ReOrImToComplex %f %f => %z\n" dMagnitude dPhase dCmplx)
+
+        ReOrImToComplex(aMagnitude dPhase aCmplx)
+	Printf("ReOrImToComplex a %z %z => %z\n" aMagnitude dPhase aCmplx)
+
+        ReOrImToComplex(aMagnitude aPhase aCmplx)
+	Printf("ReOrImToComplex a %z %z => %z\n" aMagnitude aPhase aCmplx)
+
+        ComplexToReOrIm(dCmplx dMagnitude dPhase)
+	Printf("ComplexToReOrIm %z => %f %f\n" dCmplx dMagnitude dPhase)
+
+        ComplexToReOrIm(aCmplx aMagnitude aPhase)
+	Printf("ComplexToReOrIm a %z => %z %z\n" aCmplx aMagnitude aPhase)
+
+	Copy(dMagnitude dCmplx.real)
         Polar(dMagnitude dPhase dCmplx)
-        Printf("Double: Polar(%.1f %.1f) => %z\n" dMagnitude dPhase dCmplx)
+        Printf("Double: Polar(%f %f) => %z\n" dMagnitude dPhase dCmplx)
+
+        PolarToReOrIm(dMagnitude dPhase dReal dImag)
+        Printf("Double: PolarToReOrIm(%f %f) => %f %f\n" dMagnitude dPhase dReal dImag)
+
+        PolarToReOrIm(aMagnitude dPhase aReal aImag)
+        Printf("Double: PolarToReOrIm(%z %f) => %z %z\n" aMagnitude dPhase aReal aImag)
+
+        PolarToReOrIm(dMagnitude aPhase aReal aImag)
+        Printf("Double: PolarToReOrIm(%f %z) => %z %z\n" dMagnitude aPhase aReal aImag)
+
+        Polar(aMagnitude aPhase aCmplx)
+        Printf("Double: Polar a %z %z => %z\n" aMagnitude aPhase aCmplx)
+
+        PolarToReOrIm(aMagnitude aPhase aReal aImag)
+        Printf("Double: PolarToReOrIm a %z %z => %z %z\n" aMagnitude aPhase  aReal aImag)
+
+        PolarToReOrIm(cMagnitude cPhase cReal cImag)
+        Printf("Double: PolarToReOrIm c %z %z => %z %z\n" cMagnitude cPhase  cReal cImag)
+
+        Absolute(dCmplx dMagnitude)
+        Phase(dCmplx dPhase)
+        Printf("Double %z => Abs %f Phase %f\n" dCmplx dMagnitude dPhase)
+
+        ComplexToPolar(dCmplx dMagnitude dPhase)
+	Printf("ComplexToPolar %z => %f %f\n" dCmplx dMagnitude dPhase)
+
+	Copy(aEmpty aMagnitude)
+	Copy(aEmpty aPhase)
+        ComplexToPolar(aCmplx aMagnitude aPhase)
+	Printf("ComplexToPolar a %z => %z %z\n" aCmplx aMagnitude aPhase)
+
+        ComplexToPolar(cCmplx cMagnitude cPhase)
+	Printf("ComplexToPolar c %z => %z %z\n" cCmplx cMagnitude cPhase)
+
+        ReOrImToPolar(dCmplx.real dCmplx.imaginary dMagnitude dPhase)
+	Printf("ReOrImToPolar %f %f => %f %f \n" dCmplx.real dCmplx.imaginary dMagnitude dPhase)
+
+        ReOrImToPolar(aReal aImag aMagnitude aPhase )
+	Printf("ReOrImToPolar a %z %z => %z %z \n" aReal aImag aMagnitude aPhase )
+
+        ReOrImToPolar(cReal cImag cMagnitude cPhase )
+	Printf("ReOrImToPolar c %z %z => %z %z \n" cReal cImag cMagnitude cPhase )
+
         Polar(sMagnitude sPhase sCmplx)
-        Printf("Single: Polar(%.1f %.1f) => %z\n" sMagnitude sPhase sCmplx)
+        Printf("Single: Polar(%f %f) => %z\n" sMagnitude sPhase sCmplx)
+
+        IsEQ0(s b)
+        Printf("IsEQ0 %z => %z\n" s b)
+        IsEQ0(s2 b)
+        Printf("IsEQ0 %z => %z\n" s2 b)
+        IsNE0(s b)
+        Printf("IsNE0 %z => %z\n" s b)
+        IsNE0(s2 b)
+        Printf("IsNE0 %z => %z\n" s2 b)
+
+        Add(s s3 s4)
+        Printf("Add %z + %z  => %z\n" s s3 s4)
+        Add(aCmplx aCmplx aResult)
+        Printf("Add %z + %z => %z\n" aCmplx aCmplx aResult)
+        Mul(s s3 s4)
+        Printf("Mul %z * %z => %z\n" s s3 s4)
+        Div(s s3 s4)
+        Printf("Div %z / %z => %z\n" s s3 s4)
+        SquareRoot(s s4)
+        Printf("SquareRoot %z => %z\n" s s4)
+
+        Sine(s3 s4)
+        Printf("Sine %z => %z\n" s3 s4)
+        Sine(aCmplx aResult)
+        Printf("Sine %z => %z\n" aCmplx aResult)
+        Sine(c1 cd)
+        Printf("Sine %z => %z\n" c1 cd)
+        Cosine(s3 s4)
+        Printf("Cosine %z => %z\n" s3 s4)
+        Tangent(s3 s4)
+        Printf("Tan %z => %z\n" s3 s4)
+        Secant(s3 s4)
+        Printf("Secant %z => %z\n" s3 s4)
+        Cosecant(s3 s4)
+        Printf("Cosecant %z => %z\n" s3 s4)
+
+        Exp(s s4)
+        Printf("Exp %z => %z\n" s s4)
+        Pow(s s3 s4)
+        Printf("Pow %z %z => %z\n" s s3 s4)
+
+        Log(s s4)
+        Printf("Log %z => %z\n" s s4)
+        Log2(s s4)
+        Printf("Log2 %z => %z\n" s s4)
+        Log10(s s4)
+        Printf("Log10 %z => %z\n" s s4)
+        Log10(aCmplx aResult)
+        Printf("Log10 %z => %z\n" aCmplx aResult)
+
+
     )
  ) ) )
 enqueue(HelloComplex)
+

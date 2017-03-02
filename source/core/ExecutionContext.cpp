@@ -24,6 +24,7 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     extern void jsExecutionContextFPSync(StringRef);
+    extern Double jsCurrentBrowserFPS(void);
 }
 #endif
 
@@ -136,6 +137,26 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
     jsExecutionContextFPSync(_Param(0));
+#endif
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+// CurrentBrowserFPS - Returns the framerate of the browser in frames per second 
+// First call starts the monitor and returns an FPS of zero
+// Subsequent calls return the most recent calculated FPS value
+// TODO verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
+VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
+{
+    ErrorCluster *errPtr = _ParamPointer(1);
+    if (errPtr && errPtr->status) {
+        return _NextInstruction();
+    }
+
+#if kVireoOS_emscripten
+    *_ParamPointer(0) = jsCurrentBrowserFPS();
+#else
+    *_ParamPointer(0) = 0.0;
+    errPtr->SetError(true, kLVError_NotSupported, "CurrentBrowserFPS not supported on platform");
 #endif
     return _NextInstruction();
 }
@@ -393,6 +414,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
+    DEFINE_VIREO_FUNCTION(CurrentBrowserFPS, "p(o(Double) io(" ERROR_CLUST_TYPE_STRING "))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

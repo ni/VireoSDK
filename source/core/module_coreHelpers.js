@@ -36,6 +36,10 @@
 
         var bufferPtr, bufferSize;
 
+        var trackingFPS = false;
+        var lastTime = 0;
+        var currentFPS = 0;
+
         // Exported functions
         Module.coreHelpers.jsExecutionContextFPSync = function (fpStringPointer) {
             var fpString = Module.eggShell.dataReadString(fpStringPointer);
@@ -115,22 +119,20 @@
             return bufferPtr;
         };
 
-        Module.coreHelpers.jsTimestampGetTimeZoneAbbr = function () {
-            // Looks like it was taken from here http://stackoverflow.com/a/12496442/338923
-            // TODO mraj this seems shady, needs more test coverage. Might fail across browsers.
-            // We should probably switch to something like the following: new Intl.DateTimeFormat('en-US', {year:'numeric', timeZoneName:'short'}).format(new Date())
-            // Using the Intl api: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
-            // http://stackoverflow.com/a/37798868/338923
-            var now = new Date().toString();
-            var TZ = now.indexOf('(') > -1 ? now.match(/\([^)]+\)/)[0].match(/[A-Z]/g).join('') : now.match(/[A-Z]{3,4}/)[0];
-            if (TZ === 'GMT' && (/(GMT\W*\d{4})/).test(now)) {
-                TZ = RegExp.$1;
-            }
-            return Module.coreHelpers.writeJSStringToSharedBuffer(TZ);
-        };
+        Module.coreHelpers.jsCurrentBrowserFPS = function () {
+            if (trackingFPS === false) {
+                trackingFPS = true;
+                lastTime = performance.now();
 
-        Module.coreHelpers.jsTimestampGetTimeZoneOffset = function () {
-            return Module.coreHelpers.writeJSStringToSharedBuffer(new Date().getTimezoneOffset().toString());
+                requestAnimationFrame(function vireoFPSTracker (currentTime) {
+                    var timeBetweenFrames = currentTime - lastTime;
+                    currentFPS = 1000 / timeBetweenFrames;
+                    lastTime = currentTime;
+                    requestAnimationFrame(vireoFPSTracker);
+                });
+            }
+
+            return currentFPS;
         };
     };
 

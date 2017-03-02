@@ -817,11 +817,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 't':
                     case 'T':
                     {
-                        Int32 tz = Date::getLocaletimeZone();
-                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
-                             tz = 0;
-                        }
+                        Int32 tz = 0;
                         TypeRef argType = arguments[argumentIndex]._paramType;
+                        if (fOptions.FormatChar == 'T' && argType->IsTimestamp() && !fOptions.EngineerNotation) {
+                            // (Engineer notation here means ^ flag, which in Time context means UTC)
+                            Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+                            tz = Date::getLocaletimeZone(time.Integer());
+                        }
                         if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
                         {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
@@ -1307,7 +1309,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 }
 
 //----------------------------------------------------------------------------------------------------
-void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer)
+void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
     double doubleValue;
     IntMax intValue = 0;
@@ -1347,7 +1349,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
             }
             break;
     }
-    WriteDoubleToMemory(argumentType, argument->_pData, doubleValue);
+    WriteDoubleToMemory(argumentType, (AQBlock1*)argument->_pData + offset, doubleValue);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1383,6 +1385,33 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
     }
 
     return found;
+}
+
+void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer) {
+    bool clusterFormat = false;
+    if (*beginPointer == '(') {
+        ++beginPointer;
+        clusterFormat = true;
+    }
+    DoubleScanString(argument, argumentType->GetSubElement(0), truncateInput, formatChar, beginPointer, endPointer);
+    beginPointer = *endPointer;
+    while (isspace(*beginPointer))
+        ++beginPointer;
+    if (*beginPointer == '+')
+        ++beginPointer;
+    while (isspace(*beginPointer))
+        ++beginPointer;
+    DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar, beginPointer, endPointer, argumentType->GetSubElement(1)->ElementOffset());
+    beginPointer = *endPointer;
+    if (!clusterFormat && *beginPointer == 'i')
+        ++beginPointer;
+    else {
+        while (isspace(*beginPointer))
+            ++beginPointer;
+        if (*beginPointer == ')')
+            ++beginPointer;
+    }
+    *endPointer = beginPointer;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1535,7 +1564,13 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 return false;
             }
         }
-        break;
+            break;
+        case kEncoding_Cluster:
+        {
+            if (argumentType->IsComplex())
+                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, inpBegin, &endPointer);
+        }
+            break;
         default:
             // doesn't support this kind of data type yet.
             return false;
@@ -2305,7 +2340,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
 {
     //  Int64 wholeSeconds = _Param(2).Integer();
     Boolean isUTC = _Param(3);
-    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone();
+    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone(_Param(2).Integer());
     SubString format = _Param(1)->MakeSubStringAlias();
     Date date(_Param(2), timeZoneOffset);
     StringRef output = _Param(0);
