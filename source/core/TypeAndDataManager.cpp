@@ -247,7 +247,7 @@ void TypeManager::DeleteTypes(Boolean finalTime)
 //------------------------------------------------------------
 TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic)
 {
-    TypeRef type = FindType(objectName);
+    TypeRef type = FindType(objectName, true);
     if (type) {
         void* pData = type->Begin(kPARead);
         return type->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
