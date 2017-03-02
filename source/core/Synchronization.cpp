@@ -608,7 +608,7 @@ RefNum QueueRefNumManager::LookupAlias(RefNum refnum) {
     }
     return refnum;
 }
-// If refnum is an alias, delete its refcount and if it reaches 1, dispose it. Otionally return its name.
+// If refnum is an alias, delete its refcount and if it reaches 1, dispose it. Optionally return its name.
 // Return false if refnum was not an alias
 bool QueueRefNumManager::DisposeAlias(RefNum refnum, StringRef *rQueueName)
 {
@@ -742,7 +742,7 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boo
                         *createdPtr = true;
                     if (name) {
                         // Make a copy of the given name by detaching from a stack variable, so we own it
-                        // It will be freed by DisposeAlias when the refnum is released or cleaned up.
+                        // It will be freed by DisposeAlias/GetQueueRefName when the refnum is released or cleaned up.
                         STACK_VAR(String, tempReturn);
                         StringRef nameCopy = tempReturn.DetachValue();
                         nameCopy->Append(name->Length(), name->Begin());
