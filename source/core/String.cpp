@@ -787,7 +787,10 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGEString, InstructionCore, StringRef, StringRe
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef)
 {
-   SubString initString = _Param(0)->MakeSubStringAlias();
+   SubString initString;
+   if (_ParamPointer(0)) {
+      initString = _Param(0)->MakeSubStringAlias();
+   }
    SubString multiLineInputStr = _Param(1)->MakeSubStringAlias();
    Int32 lineIndex = _Param(2);
    _Param(3)->CopyFromSubString(&initString);
