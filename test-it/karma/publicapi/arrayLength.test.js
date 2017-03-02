@@ -17,14 +17,19 @@ describe('Arrays in Vireo', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(vireo.eggShell.get1DArrayLength(viName, 'variableArray1d')).toBe(0);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray1d')).toBe(5);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'boundedArray1d')).toBe(0);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'variableArray1dwithDefaults')).toBe(4);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray1dwithDefaults')).toBe(5);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'boundedArray1dwithDefaults')).toBe(4);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray2d')).toBe(-1);
-            expect(vireo.eggShell.get1DArrayLength(viName, 'fixedArray3d')).toBe(-1);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'variableArray1d', 0)).toBe(0);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray1d', 0)).toBe(5);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'boundedArray1d', 0)).toBe(0);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'variableArray1dwithDefaults', 0)).toBe(4);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray1dwithDefaults', 0)).toBe(5);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'boundedArray1dwithDefaults', 0)).toBe(4);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray2d', 0)).toBe(2);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray2d', 1)).toBe(3);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray2d', 2)).toBe(-1);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 0)).toBe(1);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 1)).toBe(2);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 2)).toBe(3);
+            expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', -1)).toBe(-1);
             done();
         });
     });

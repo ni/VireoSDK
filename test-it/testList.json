@@ -232,6 +232,7 @@
                 "StringFormatTimeRelative.via",
                 "StringFunctions.via",
                 "StringLength.via",
+                "StringPickLine.via",
                 "StringReverse.via",
                 "StringRotate.via",
                 "Strings.via",
