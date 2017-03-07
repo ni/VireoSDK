@@ -194,6 +194,25 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     return "";
 }
 //------------------------------------------------------------
+//! Get the pointer to the first element in the Array Symbol. Returns 0 if the Symbol is not found, not an Array, or the Array is of length zero.
+VIREO_EXPORT void* EggShell_GetArrayBegin(TypeManagerRef tm, const char* viName, const char* eltName)
+{
+    TypeManagerScope scope(tm);
+    void *pData = null;
+
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (actualType == null || !actualType->IsArray() || actualType->Rank() <= 0)
+        return null;
+
+    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+    if (actualArray->GetLength(0) <= 0)
+        return null;
+
+    return actualArray->BeginAt(0);
+}
+//------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim) 
 {
