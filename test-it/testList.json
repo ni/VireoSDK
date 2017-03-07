@@ -75,6 +75,7 @@
                 "ClusterVectorOp.via",
                 "Coercion.via",
                 "ComplexMathFunctions.via",
+                "Conjugate.via",
                 "ConvertStringNumber.via",
                 "CopyingVIs.via",
                 "CopyOp.via",
