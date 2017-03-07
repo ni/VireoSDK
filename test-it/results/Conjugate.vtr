@@ -1,0 +1,5 @@
+001 All tests pass: 'true'.
+002     Scalar test pass: 'true'.
+003         Expected value is '(1 -2)', got '(1 -2)'.
+004     Array test pass: 'true'.
+005     Cluster test pass: 'true'.
