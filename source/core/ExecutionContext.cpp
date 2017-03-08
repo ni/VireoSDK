@@ -144,6 +144,7 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 // CurrentBrowserFPS - Returns the framerate of the browser in frames per second 
 // First call starts the monitor and returns an FPS of zero
 // Subsequent calls return the most recent calculated FPS value
+// TODO verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
 VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
 {
 #if kVireoOS_emscripten
