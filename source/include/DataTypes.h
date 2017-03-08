@@ -134,6 +134,11 @@ typedef enum {
     kNIError_ValueTruncated = 7,
 } NIError ;
 
+typedef enum {
+    kLVError_NoError = 0,
+    kLVError_NotSupported = 53, // Not supported on this platform
+} LVError ;
+
 // Types used for structs and pointers when the semantics of the underlying bits may vary
 typedef UInt8   AQBlock1;
 typedef Int16   AQBlock2;
