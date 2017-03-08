@@ -147,8 +147,16 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 // TODO verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
 VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
 {
+    ErrorCluster *errPtr = _ParamPointer(1);
+    if (errPtr && errPtr->status) {
+        return _NextInstruction();
+    }
+
 #if kVireoOS_emscripten
     *_ParamPointer(0) = jsCurrentBrowserFPS();
+#else
+    *_ParamPointer(0) = 0.0;
+    errPtr->SetError(true, kLVError_NotSupported, 'CurrentBrowserFPS not supported on platform');
 #endif
     return _NextInstruction();
 }
