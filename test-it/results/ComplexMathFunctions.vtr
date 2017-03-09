@@ -1,9 +1,12 @@
 ReOrImToComplex 2.000000 0.500000 => (2 0.5)
+ReOrImToComplex a (2 3) 0.5 => ((2 0.5) (3 0.5))
 ReOrImToComplex a (2 3) (0.5 1) => ((2 0.5) (3 1))
 ComplexToReOrIm (2 0.5) => 2.000000 0.500000
 ComplexToReOrIm a ((2 0.5) (3 1)) => (2 3) (0.5 1)
 Double: Polar(2.000000 0.500000) => (1.75517 0.958851)
 Double: PolarToReOrIm(2.000000 0.500000) => 1.755165 0.958851
+Double: PolarToReOrIm((2 3) 0.500000) => (1.75517 2.63275) (0.958851 1.43828)
+Double: PolarToReOrIm(2.000000 (0.5 1)) => (1.75517 1.0806) (0.958851 1.68294)
 Double: Polar a (2 3) (0.5 1) => ((1.75517 0.958851) (1.62091 2.52441))
 Double: PolarToReOrIm a (2 3) (0.5 1) => (1.75517 1.62091) (0.958851 2.52441)
 Double: PolarToReOrIm c (2 3) (0.5 1) => (1.75517 1.62091) (0.958851 2.52441)
