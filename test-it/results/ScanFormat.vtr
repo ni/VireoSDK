@@ -1,3 +1,8 @@
+---test scan complex------ ((345.5 89)) 
+offset_past:<10>, remaining:()
+:<(345.5 89)>
+offset_past:<11>, remaining:()
+:<(678.5 78)>
 ---test scan float------ ( 123.5 89 ) 
 offset_past:<9>, remaining:( )
 :<123.500000> <89.000000> 

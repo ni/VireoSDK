@@ -1307,7 +1307,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 }
 
 //----------------------------------------------------------------------------------------------------
-void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer)
+void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
     double doubleValue;
     IntMax intValue = 0;
@@ -1347,7 +1347,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
             }
             break;
     }
-    WriteDoubleToMemory(argumentType, argument->_pData, doubleValue);
+    WriteDoubleToMemory(argumentType, (AQBlock1*)argument->_pData + offset, doubleValue);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1383,6 +1383,33 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
     }
 
     return found;
+}
+
+void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput, char formatChar, char* beginPointer, char** endPointer) {
+    bool clusterFormat = false;
+    if (*beginPointer == '(') {
+        ++beginPointer;
+        clusterFormat = true;
+    }
+    DoubleScanString(argument, argumentType->GetSubElement(0), truncateInput, formatChar, beginPointer, endPointer);
+    beginPointer = *endPointer;
+    while (isspace(*beginPointer))
+        ++beginPointer;
+    if (*beginPointer == '+')
+        ++beginPointer;
+    while (isspace(*beginPointer))
+        ++beginPointer;
+    DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar, beginPointer, endPointer, argumentType->GetSubElement(1)->ElementOffset());
+    beginPointer = *endPointer;
+    if (!clusterFormat && *beginPointer == 'i')
+        ++beginPointer;
+    else {
+        while (isspace(*beginPointer))
+            ++beginPointer;
+        if (*beginPointer == ')')
+            ++beginPointer;
+    }
+    *endPointer = beginPointer;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1535,7 +1562,13 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 return false;
             }
         }
-        break;
+            break;
+        case kEncoding_Cluster:
+        {
+            if (argumentType->Name().CompareCStr("ComplexDouble") || argumentType->Name().CompareCStr("ComplexSingle"))
+                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, inpBegin, &endPointer);
+        }
+            break;
         default:
             // doesn't support this kind of data type yet.
             return false;
