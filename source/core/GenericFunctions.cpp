@@ -2042,10 +2042,11 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 {
-    Instruction3<void, AQBlock1, AQBlock1>* snippet = (Instruction3<void, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
-    
     TypedArrayCoreRef srcArray1 = _Param(VY);
     TypedArrayCoreRef destArray = _Param(VDest);
+    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : null;
+    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-null
+    Instruction4<void, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<void, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
     IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
@@ -2055,6 +2056,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     destArray->Resize1D(count);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
+    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
 	if (snippet->_p1) { // we need to call a conversion snippet for one of the args
 		VectorOpConvertArgs((Instruction3<AQBlock1, AQBlock1, AQBlock1>*)snippet, (AQBlock1*)_ParamPointer(SX), begin1, beginDest, endDest, 0, elementSize1, elementSizeDest);
@@ -2063,11 +2065,15 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     snippet->_p0 = _ParamPointer(SX);
     snippet->_p1 = begin1;
     snippet->_p2 = beginDest;
+    if (beginDest2)
+        snippet->_p3 = beginDest2;
     while (snippet->_p2 < endDest)
     {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p1 += elementSize1;
         snippet->_p2 += elementSizeDest;
+        if (beginDest2)
+            snippet->_p3 += elementSizeDest;
     }
     
     return _NextInstruction();
@@ -2075,9 +2081,11 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
 {
-    Instruction3<AQBlock1, void, AQBlock1>* snippet = (Instruction3<AQBlock1, void, AQBlock1>*)_ParamMethod(Snippet());
     TypedArrayCoreRef srcArray1 = _Param(VX);
     TypedArrayCoreRef destArray = _Param(VDest);
+    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : null;
+    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-null
+    Instruction4<AQBlock1, void, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, void, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
     IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
@@ -2087,6 +2095,7 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     destArray->Resize1D(count);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
+    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
 	if (snippet->_p1) { // we need to call a conversion snippet for one of the args
 		VectorOpConvertArgs((Instruction3<AQBlock1, AQBlock1, AQBlock1>*)snippet, begin1, (AQBlock1*)_ParamPointer(SY), beginDest, endDest, elementSize1, 0, elementSizeDest);
@@ -2095,11 +2104,15 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     snippet->_p0 = begin1;
     snippet->_p1 = _ParamPointer(SY);
     snippet->_p2 = beginDest;
+    if (beginDest2)
+        snippet->_p3 = beginDest2;
     while (snippet->_p2 < endDest)
     {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSize1;
         snippet->_p2 += elementSizeDest;
+        if (beginDest2)
+            snippet->_p3 += elementSizeDest;
     }
     
     return _NextInstruction();

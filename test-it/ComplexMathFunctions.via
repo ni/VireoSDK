@@ -35,6 +35,9 @@ define(HelloComplex dv(.VirtualInstrument (
         ReOrImToComplex(dMagnitude dPhase dCmplx)
 	Printf("ReOrImToComplex %f %f => %z\n" dMagnitude dPhase dCmplx)
 
+        ReOrImToComplex(aMagnitude dPhase aCmplx)
+	Printf("ReOrImToComplex a %z %z => %z\n" aMagnitude dPhase aCmplx)
+
         ReOrImToComplex(aMagnitude aPhase aCmplx)
 	Printf("ReOrImToComplex a %z %z => %z\n" aMagnitude aPhase aCmplx)
 
@@ -50,6 +53,12 @@ define(HelloComplex dv(.VirtualInstrument (
 
         PolarToReOrIm(dMagnitude dPhase dReal dImag)
         Printf("Double: PolarToReOrIm(%f %f) => %f %f\n" dMagnitude dPhase dReal dImag)
+
+        PolarToReOrIm(aMagnitude dPhase aReal aImag)
+        Printf("Double: PolarToReOrIm(%z %f) => %z %z\n" aMagnitude dPhase aReal aImag)
+
+        PolarToReOrIm(dMagnitude aPhase aReal aImag)
+        Printf("Double: PolarToReOrIm(%f %z) => %z %z\n" dMagnitude aPhase aReal aImag)
 
         Polar(aMagnitude aPhase aCmplx)
         Printf("Double: Polar a %z %z => %z\n" aMagnitude aPhase aCmplx)
