@@ -156,7 +156,7 @@ VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
     *_ParamPointer(0) = jsCurrentBrowserFPS();
 #else
     *_ParamPointer(0) = 0.0;
-    errPtr->SetError(true, kLVError_NotSupported, 'CurrentBrowserFPS not supported on platform');
+    errPtr->SetError(true, kLVError_NotSupported, "CurrentBrowserFPS not supported on platform");
 #endif
     return _NextInstruction();
 }
