@@ -221,10 +221,10 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
 
     // Check for accumulator style binops where the dest type is simpler. (eg. compareAggregates.. others?)
-    if (sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
+    if (argCount == 3 && sourceXType->BitEncoding() == kEncoding_Array && sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
         goalType = sourceXType;
         isAccumulator = true;
-    } else if (sourceXType->BitEncoding() == kEncoding_Cluster && sourceYType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
+    } else if (argCount == 3 && sourceXType->BitEncoding() == kEncoding_Cluster && sourceYType->BitEncoding() == kEncoding_Cluster && destType->BitEncoding() != kEncoding_Cluster) {
         goalType = sourceXType;
         isAccumulator = true;
     } else if (destType->BitEncoding() == kEncoding_Boolean) { //some kind of comparison
@@ -233,9 +233,10 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     if (savedOperation.CompareCStr("Split") || savedOperation.CompareCStr("Join")) {  // Split and Join are uniquely identified by source type rather than dest type
         goalType = sourceXType;
     }
-    if (argCount == 4 &&
-        (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() ||
-         pInstructionBuilder->_argTypes[2]->BitLength()!=destType->BitLength()))
+    // two-output binops all must have identical output types
+    if (argCount > 4 || (argCount == 4 &&
+        (pInstructionBuilder->_argTypes[3]->BitEncoding()!=destType->BitEncoding() ||
+         pInstructionBuilder->_argTypes[3]->BitLength()!=destType->BitLength())))
         return null;
 
     switch (goalType->BitEncoding()) {
@@ -304,6 +305,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             SubString vectorBinOpToken(pVectorBinOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false); //build a vector op
             // This would be easier if the vector bin op was at the end...
+
+            // If a 4th argument is passed, it overlaps the accumulator slot
             Int32 accumulatorOpArgId = argCount < 4 ? pInstructionBuilder->AddSubSnippet() : 0;
             Int32 binOpArgId = pInstructionBuilder->AddSubSnippet();
 
@@ -349,6 +352,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             SubString clusterBinOpToken(pClusterBinOpName);
 
             pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
+
+            // If a 4th argument is passed, it overlaps the accumulator slot
             Int32 accumulatorOpArgId = argCount < 4 || isAccumulator ? pInstructionBuilder->AddSubSnippet() : 0;
             Int32 binOpArgId = pInstructionBuilder->AddSubSnippet(); // Add param slots to hold the snippets
 
