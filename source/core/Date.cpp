@@ -183,13 +183,12 @@ namespace Vireo {
 
         // Get timezone abbrevation
         char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
-#if (kVireoOS_linuxU || kVireoOS_macosxU)
-        time_t rawtime;
+#if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
+        time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
         struct tm* timeinfo;
-        time(&rawtime);
         timeinfo = localtime(&rawtime);
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo->tm_zone);
-#elif kVireoOS_emscripten
+#elif 0 // kVireoOS_emscripten
         TempStackCString result;
         result.AppendCStr(jsTimestampGetTimeZoneAbbr());
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", result.BeginCStr());
@@ -309,10 +308,11 @@ namespace Vireo {
         }
     }
 
+
     //------------------------------------------------------------
-    Int32 Date::getLocaletimeZone()
+    Int32 Date::getLocaletimeZone(Int64 utcTime)
     {
-#if kVireoOS_emscripten
+#if 0 // kVireoOS_emscripten
         TempStackCString result;
         result.AppendCStr(jsTimestampGetTimeZoneOffset());
         EventLog log(EventLog::DevNull);
@@ -326,9 +326,13 @@ namespace Vireo {
         // for being behind UTC and negative for being ahead. ctime assumes
         // negative for behind and postive for ahead. We attempt to match the ctime result.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+#elif (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
-        time_t now = time(NULL);
+        time_t now;
+        if (utcTime)
+            now = utcTime - kStdDT1970re1904;
+        else
+            now = time(NULL);
         localtime_r(&now, &tm);
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
