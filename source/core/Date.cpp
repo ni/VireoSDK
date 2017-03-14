@@ -190,6 +190,8 @@ namespace Vireo {
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
 // #elif kVireoOS_emscripten variant deleted; localtime_r works correctly
 #elif kVireoOS_windows
+        // Issue #218 TODO - FIXME: return time zone info/dst based on timestamp.Integer(), not current time.
+        // Possibly use SystemTimeToTzSpecificLocalTime
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformation(&timeZoneInfo);
         wchar_t *timeZoneName = L"TimeZoneUnknown";
@@ -320,8 +322,11 @@ namespace Vireo {
         localtime_r(&now, &tm);
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
+        // Issue #218 TODO -  FIXME: if utcTime is non-zero, time zone bias should be based on utcTime passed in
+        // (in GMT secs since epoch), not current time.
+        // Possibly use SystemTimeToTzSpecificLocalTime
+        
         // flipping the sign of the time zone
-        // FIXME -- if utcTime is non-zero, this should return timeZone bias based on that time (in GMT secs since epoch)
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);
         _systemLocaleTimeZone = -int((timeZoneInfo.Bias) * kSecondsPerMinute);
