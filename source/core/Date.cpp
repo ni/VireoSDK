@@ -176,7 +176,7 @@ namespace Vireo {
             seconds += kSecondsPerDay * dayOfMonth[i];
             if (seconds > secondsOfYear) {
                 currentMonth = i;
-                secondsOfMonth = secondsOfYear - secondsOfMonth;
+                secondsOfMonth = Int32(secondsOfYear - secondsOfMonth);
                 break;
             }
         }
