@@ -2338,7 +2338,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
 {
     //  Int64 wholeSeconds = _Param(2).Integer();
     Boolean isUTC = _Param(3);
-    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone();
+    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone(_Param(2).Integer());
     SubString format = _Param(1)->MakeSubStringAlias();
     Date date(_Param(2), timeZoneOffset);
     StringRef output = _Param(0);
