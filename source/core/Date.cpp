@@ -185,13 +185,10 @@ namespace Vireo {
         char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
-        struct tm* timeinfo;
-        timeinfo = localtime(&rawtime);
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo->tm_zone);
-#elif 0 // kVireoOS_emscripten
-        TempStackCString result;
-        result.AppendCStr(jsTimestampGetTimeZoneAbbr());
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", result.BeginCStr());
+        struct tm timeinfo;
+        localtime_r(&rawtime, &timeinfo);
+        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
+// #elif kVireoOS_emscripten variant deleted; localtime_r works correctly
 #elif kVireoOS_windows
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformation(&timeZoneInfo);
@@ -289,7 +286,7 @@ namespace Vireo {
         } else
             _timeZoneString = NULL;
 #else
-        _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
+        _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
         _timeZoneString = NULL;
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
@@ -312,21 +309,8 @@ namespace Vireo {
     //------------------------------------------------------------
     Int32 Date::getLocaletimeZone(Int64 utcTime)
     {
-#if 0 // kVireoOS_emscripten
-        TempStackCString result;
-        result.AppendCStr(jsTimestampGetTimeZoneOffset());
-        EventLog log(EventLog::DevNull);
-        SubString valueString(result.Begin(), result.End());
-        TDViaParser parser(THREAD_TADM(), &valueString, &log, 1);
-        TypeRef parseType = THREAD_TADM()->FindType(tsInt32Type);
-        Int32 minutes;
-        parser.ParseData(parseType, &minutes);
-        _systemLocaleTimeZone = -(minutes * kSecondsPerMinute);
-        // flipping the sign of the time zone since JS runtime will be positive
-        // for being behind UTC and negative for being ahead. ctime assumes
-        // negative for behind and postive for ahead. We attempt to match the ctime result.
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset
-#elif (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
+// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted; the localtime_r emulation works correctly
+#if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
         time_t now;
         if (utcTime)
@@ -337,6 +321,7 @@ namespace Vireo {
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
         // flipping the sign of the time zone
+        // FIXME -- if utcTime is non-zero, this should return timeZone bias based on that time (in GMT secs since epoch)
         TIME_ZONE_INFORMATION timeZoneInfo;
         GetTimeZoneInformation(&timeZoneInfo);
         _systemLocaleTimeZone = -int((timeZoneInfo.Bias) * kSecondsPerMinute);
