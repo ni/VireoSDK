@@ -48,13 +48,6 @@ SDG
     #include <emscripten.h>
 #endif
 
-#if kVireoOS_emscripten
-extern "C" {
-    extern char * jsTimestampGetTimeZoneAbbr();
-    extern char * jsTimestampGetTimeZoneOffset();
-}
-#endif
-
 namespace Vireo {
 #if defined(VIREO_TYPE_Timestamp)
 
