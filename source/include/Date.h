@@ -54,7 +54,7 @@ class Date {
         Date(Timestamp timestamp, Int32 timeZoneOffset); // this API is conceptually wrong; tzo should be computed from UTC date
         Date(Timestamp timestamp, bool isUTC = false);
         ~Date();
-        static Int32 getLocaletimeZone(Int64 utcTime = 0);
+        static Int32 getLocaletimeZone(Int64 utcTime);
         Int32 Year() const { return _year; };
         Int32 Month() const { return _month; };
         Int32 Day() const { return _day; };

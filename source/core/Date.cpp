@@ -314,12 +314,8 @@ namespace Vireo {
 // #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted; the localtime_r emulation works correctly
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
-        time_t now;
-        if (utcTime)
-            now = utcTime - kStdDT1970re1904;
-        else
-            now = time(NULL);
-        localtime_r(&now, &tm);
+        time_t timeVal = utcTime - kStdDT1970re1904;
+        localtime_r(&timeVal, &tm);
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
         // Issue #218 TODO -  FIXME: if utcTime is non-zero, time zone bias should be based on utcTime passed in

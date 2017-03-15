@@ -817,9 +817,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 't':
                     case 'T':
                     {
-                        Int32 tz = Date::getLocaletimeZone();
-                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
-                             tz = 0;
+                        Int32 tz = 0;
+                        if (fOptions.FormatChar == 'T' && !fOptions.EngineerNotation) {
+                            // (Engineer notation here means ^ flag, which in Time context means UTC)
+                            Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+                            tz = Date::getLocaletimeZone(time.Integer());
                         }
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
