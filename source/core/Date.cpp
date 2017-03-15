@@ -188,7 +188,7 @@ namespace Vireo {
         struct tm timeinfo;
         localtime_r(&rawtime, &timeinfo);
         snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
-// #elif kVireoOS_emscripten variant deleted; localtime_r works correctly
+// #elif kVireoOS_emscripten variant deleted (03/2017); localtime_r works correctly
 #elif kVireoOS_windows
         // Issue #218 TODO - FIXME: return time zone info/dst based on timestamp.Integer(), not current time.
         // Possibly use SystemTimeToTzSpecificLocalTime
@@ -311,7 +311,7 @@ namespace Vireo {
     //------------------------------------------------------------
     Int32 Date::getLocaletimeZone(Int64 utcTime)
     {
-// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted; the localtime_r emulation works correctly
+// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted (03/2017); the localtime_r emulation works correctly
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
         time_t timeVal = utcTime - kStdDT1970re1904;
