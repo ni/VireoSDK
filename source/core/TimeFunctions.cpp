@@ -183,8 +183,7 @@ namespace Vireo {
         Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
         LVDateTimeRec *dt = _ParamPointer(2);
 
-        //Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
-        Date date(timestamp, toUTC ? true : false); // timeZoneOffset);
+        Date date(timestamp, toUTC ? true : false);
         dt->year = date.Year();
         dt->month = date.Month();
         dt->day_of_month = date.Day();
