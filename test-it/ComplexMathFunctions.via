@@ -9,6 +9,7 @@ define(HelloComplex dv(.VirtualInstrument (
         e(.ComplexDouble dCmplx)
         e(a(.ComplexDouble *) aCmplx)
         e(a(.ComplexDouble *) aResult)
+        e(dv(a(.Double *) ()) aEmpty)
         e(dv(a(.Double *) (2.0 3.0)) aMagnitude)
         e(dv(a(.Double *) (0.5 1.0)) aPhase)
         e(dv(a(.Double *) (10.0 20.0)) aReal)
@@ -76,6 +77,8 @@ define(HelloComplex dv(.VirtualInstrument (
         ComplexToPolar(dCmplx dMagnitude dPhase)
 	Printf("ComplexToPolar %z => %f %f\n" dCmplx dMagnitude dPhase)
 
+	Copy(aEmpty aMagnitude)
+	Copy(aEmpty aPhase)
         ComplexToPolar(aCmplx aMagnitude aPhase)
 	Printf("ComplexToPolar a %z => %z %z\n" aCmplx aMagnitude aPhase)
 
