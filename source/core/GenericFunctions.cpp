@@ -433,6 +433,24 @@ struct AggregateUnOpInstruction : public InstructionCore
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()          { return this->_piNext; }
 };
+struct AggregateUnOp2OutputInstruction : public InstructionCore
+{
+    union {
+        _ParamDef(TypedArrayCoreRef, VSource);
+        _ParamDef(AQBlock1*, SSource);
+    };
+    union {
+        _ParamDef(TypedArrayCoreRef, VDest);
+        _ParamDef(AQBlock1*, SDest);
+    };
+    union {
+        _ParamDef(TypedArrayCoreRef, VDest2);
+        _ParamDef(AQBlock1*, SDest2);
+    };
+    _ParamImmediateDef(InstructionCore*, Next);
+    inline InstructionCore* Snippet()   { return this + 1; }
+    inline InstructionCore* Next()          { return this->_piNext; }
+};
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -440,7 +458,14 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-
+    Int32 argCount = pInstructionBuilder->_argCount;
+    Boolean isTwoOutput = false;
+    if ((savedOperation.CompareCStr("ComplexToPolar") || savedOperation.CompareCStr("ComplexToReOrIm"))) {
+        isTwoOutput = true;
+        if (argCount == 3 && (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() |
+                                                    pInstructionBuilder->_argTypes[2]->BitLength()!=destType->BitLength()))
+            return null;
+    }
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficent copy
         SubString destTypeName = destType->Name();
@@ -455,27 +480,30 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     switch(destType->BitEncoding()) {
         case kEncoding_Array:
         {
-            ConstCStr pVectorUnOpName = "VectorUnaryOp";
+            ConstCStr pVectorUnOpName = isTwoOutput ? "VectorUnary2OutputOp" : "VectorUnaryOp";
             SubString vectorUnOpToken(pVectorUnOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false); //build a vector op
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
-            AggregateUnOpInstruction* unaryOp = (AggregateUnOpInstruction*) pInstructionBuilder->EmitInstruction(); //emit the vector op
+            InstructionCore* unaryOp = pInstructionBuilder->EmitInstruction(); //emit the vector op
             pInstruction = unaryOp;
 
             // Recurse on the element
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
             
-            if (!snippetBuilder.EmitInstruction(&savedOperation, 2, sourceXType->GetSubElement(0), (void*)null, destType->GetSubElement(0), (void*)null))
+            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceXType->GetSubElement(0), (void*)null, destType->GetSubElement(0), (void*)null, destType->GetSubElement(0), (void*)null))
                pInstruction = null;
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-            pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
+            if (isTwoOutput)
+                pInstructionBuilder->RecordNextHere(&((AggregateUnOp2OutputInstruction*)unaryOp)->_piNext);
+            else
+                pInstructionBuilder->RecordNextHere(&((AggregateUnOpInstruction*)unaryOp)->_piNext);
             break;
         }
         case kEncoding_Cluster:
         {
-            ConstCStr pClusterUnOpName = "ClusterUnaryOp";
+            ConstCStr pClusterUnOpName = isTwoOutput ? "ClusterUnary2OutputOp" : "ClusterUnaryOp";
             SubString clusterUnOpToken(pClusterUnOpName);
 
             pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken, false);
@@ -495,12 +523,15 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
                     sourceSub = sourceXType->GetSubElement(i);
                     sourceData =  (void*)(size_t)sourceSub->ElementOffset();
                 }
-                if (!snippetBuilder.EmitInstruction(&savedOperation, 2, sourceSub, sourceData, destSub, (void*)(size_t)destSub->ElementOffset()))
+                if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceSub, sourceData, destSub, (void*)(size_t)destSub->ElementOffset(), destSub, (void*)(size_t)destSub->ElementOffset()))
                     pInstruction = null;
             }
             
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
-            pInstructionBuilder->RecordNextHere(&unaryOp->_piNext);
+            if (isTwoOutput)
+                pInstructionBuilder->RecordNextHere(&((AggregateUnOp2OutputInstruction*)unaryOp)->_piNext);
+            else
+                pInstructionBuilder->RecordNextHere(&((AggregateUnOpInstruction*)unaryOp)->_piNext);
             break;
         }
         default:
@@ -1625,6 +1656,22 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnaryOp, AggregateUnOpInstruction)
     }
     return _NextInstruction();
 }
+VIREO_FUNCTION_SIGNATURET(ClusterUnary2OutputOp, AggregateUnOp2OutputInstruction)
+{
+    Instruction3<AQBlock1, AQBlock1, AQBlock1>* pInstruction = (Instruction3<AQBlock1, AQBlock1, AQBlock1>* )_ParamMethod(Snippet());
+
+    while(ExecutionContext::IsNotCulDeSac(pInstruction)) {
+        pInstruction->_p0 += (size_t)_ParamPointer(SSource);
+        pInstruction->_p1 += (size_t)_ParamPointer(SDest);
+        pInstruction->_p2 += (size_t)_ParamPointer(SDest2);
+        InstructionCore* next = _PROGMEM_PTR(pInstruction,_function)(pInstruction); //execute inline for now. TODO yield to the scheduler
+        pInstruction->_p0 -= (size_t)_ParamPointer(SSource);
+        pInstruction->_p1 -= (size_t)_ParamPointer(SDest);
+        pInstruction->_p2 -= (size_t)_ParamPointer(SDest2);
+        pInstruction = (Instruction3<AQBlock1, AQBlock1, AQBlock1>* )next;
+    }
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 typedef Instruction3<AQBlock1, AQBlock1, Boolean> BinaryCompareInstruction;
 //------------------------------------------------------------
@@ -2146,18 +2193,17 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
     TypedArrayCoreRef srcArray1 = _Param(VSource);
     TypedArrayCoreRef destArray = _Param(VDest);
     Instruction2<AQBlock1, AQBlock1>* snippet = ( Instruction2<AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
-    
+
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
     IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
     IntIndex count = srcArray1->Length();
-    
+
     // Resize output to size of input arrays
     destArray->Resize1D(count);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
-    
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
-    
+
     snippet->_p0 = begin1;
     snippet->_p1 = beginDest;
     while (snippet->_p1 < endDest)
@@ -2166,7 +2212,39 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
         snippet->_p0 += elementSize1;
         snippet->_p1 += elementSizeDest;
     }
-    
+
+    return _NextInstruction();
+}
+VIREO_FUNCTION_SIGNATURET(VectorUnary2OutputOp, AggregateUnOp2OutputInstruction)
+{
+    TypedArrayCoreRef srcArray1 = _Param(VSource);
+    TypedArrayCoreRef destArray = _Param(VDest);
+    TypedArrayCoreRef destArray2 = _Param(VDest2);
+    Instruction3<AQBlock1, AQBlock1, AQBlock1>* snippet = ( Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
+
+    IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
+    IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
+    IntIndex elementSizeDest2 = destArray2->ElementType()->TopAQSize();
+    IntIndex count = srcArray1->Length();
+
+    // Resize output to size of input arrays
+    destArray->Resize1D(count);
+    destArray2->Resize1D(count);
+    AQBlock1 *begin1 = srcArray1->RawBegin();
+    AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
+    AQBlock1 *beginDest2 = destArray2->RawBegin();  // might be in-place to one of the input arrays.
+    AQBlock1 *endDest = beginDest + (count * elementSizeDest);
+
+    snippet->_p0 = begin1;
+    snippet->_p1 = beginDest;
+    snippet->_p2 = beginDest2;
+    while (snippet->_p1 < endDest)
+    {
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        snippet->_p0 += elementSize1;
+        snippet->_p1 += elementSizeDest;
+        snippet->_p2 += elementSizeDest2;
+    }
     return _NextInstruction();
 }
 VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
@@ -2299,10 +2377,10 @@ DEFINE_VIREO_BEGIN(Generics)
 	DEFINE_VIREO_GENERIC(RoundToNearest, "GenericUnOp", EmitGenericUnOpInstruction);
 
     DEFINE_VIREO_GENERIC(Polar, "GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(ComplexToPolar, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(ComplexToPolar, "p(i(*) o(*) o(*))", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(PolarToReOrIm, "p(i(*) i(*) o(*) o(*))", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(ReOrImToPolar, "p(i(*) i(*) o(*) o(*))", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(ComplexToReOrIm, "GenericBinOp", EmitGenericBinOpInstruction);
+    DEFINE_VIREO_GENERIC(ComplexToReOrIm, "p(i(*) o(*) o(*))", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(ReOrImToComplex, "GenericBinOp", EmitGenericBinOpInstruction);
 
     DEFINE_VIREO_GENERIC(Convert, "GenericUnOp", EmitGenericUnOpInstruction);
@@ -2351,6 +2429,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(ClusterAggBinaryOp, "p(i(*) i(*) o(*) s(Instruction) s(Instruction))")
     DEFINE_VIREO_FUNCTION(ClusterBinaryOp, "p(i(*) i(*) o(*) o(*) s(Instruction))")
     DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(*) o(*) s(Instruction))")
+    DEFINE_VIREO_FUNCTION(ClusterUnary2OutputOp, "p(i(*) o(*) o(*) s(Instruction))")
     DEFINE_VIREO_FUNCTION(IsEQAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsNEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLTAccumulator, "p(i(GenericBinOp))");
@@ -2367,6 +2446,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(VectorScalarBinaryOp, "p(i(Array) i(*) o(Array) s(Instruction))" )
     DEFINE_VIREO_FUNCTION(ScalarScalarConvertBinaryOp, "p(i(*) i(*) o(*) s(Instruction))" )
     DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(Array) o(Array) s(Instruction))" )
+    DEFINE_VIREO_FUNCTION(VectorUnary2OutputOp, "p(i(Array) o(Array) o(Array) s(Instruction))" )
 
 DEFINE_VIREO_END()
 } // namespace Vireo
