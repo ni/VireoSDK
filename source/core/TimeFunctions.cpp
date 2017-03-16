@@ -170,8 +170,8 @@ namespace Vireo {
     {
         LVDateTimeRec *dt = _ParamPointer(0);
         Boolean isUTC = _ParamPointer(1) ? _Param(1) : false;
-        Int32 timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone();
         Timestamp timestamp(dt->fractional_secs, dt->second, dt->minute, dt->hour, dt->day_of_month, dt->month, dt->year);
+        Int32 timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
         Timestamp local = timestamp - timeZoneOffset;
         _Param(2) = local;
         return _NextInstruction();
@@ -183,8 +183,7 @@ namespace Vireo {
         Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
         LVDateTimeRec *dt = _ParamPointer(2);
 
-        //Int32 timeZoneOffset = toUTC ? 0 : Date::getLocaletimeZone();
-        Date date(timestamp, toUTC ? true : false); // timeZoneOffset);
+        Date date(timestamp, toUTC ? true : false);
         dt->year = date.Year();
         dt->month = date.Month();
         dt->day_of_month = date.Day();
@@ -211,7 +210,7 @@ namespace Vireo {
         Int32 format = _ParamPointer(1) ? _Param(1) : 0;
         StringRef *dateStr = _ParamPointer(4);
         StringRef *timeStr = _ParamPointer(5);
-        Int32 tz = useUTC ? 0 :  Date::getLocaletimeZone();
+        Int32 tz = useUTC ? 0 :  Date::getLocaletimeZone(timestamp.Integer());
         Date date(timestamp, tz);
         TempStackCString formatString;
         SubString tempFormat;

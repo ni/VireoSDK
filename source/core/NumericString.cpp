@@ -817,9 +817,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 't':
                     case 'T':
                     {
-                        Int32 tz = Date::getLocaletimeZone();
-                        if (fOptions.EngineerNotation || fOptions.FormatChar == 't') {
-                             tz = 0;
+                        Int32 tz = 0;
+                        if (fOptions.FormatChar == 'T' && !fOptions.EngineerNotation) {
+                            // (Engineer notation here means ^ flag, which in Time context means UTC)
+                            Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+                            tz = Date::getLocaletimeZone(time.Integer());
                         }
                         TypeRef argType = arguments[argumentIndex]._paramType;
                         if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
@@ -2338,7 +2340,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
 {
     //  Int64 wholeSeconds = _Param(2).Integer();
     Boolean isUTC = _Param(3);
-    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone();
+    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone(_Param(2).Integer());
     SubString format = _Param(1)->MakeSubStringAlias();
     Date date(_Param(2), timeZoneOffset);
     StringRef output = _Param(0);
