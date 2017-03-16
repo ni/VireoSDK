@@ -462,7 +462,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     Boolean isTwoOutput = false;
     if ((savedOperation.CompareCStr("ComplexToPolar") || savedOperation.CompareCStr("ComplexToReOrIm"))) {
         isTwoOutput = true;
-        if (argCount == 3 && (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() |
+        if (argCount != 3 || (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() |
                                                     pInstructionBuilder->_argTypes[2]->BitLength()!=destType->BitLength()))
             return null;
     }
