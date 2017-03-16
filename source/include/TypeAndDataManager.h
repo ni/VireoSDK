@@ -454,6 +454,8 @@ public:
     static const SubString TypeBoolean;
     static const SubString TypeString;
     static const SubString TypeTimestamp;
+    static const SubString TypeComplexSingle;
+    static const SubString TypeComplexDouble;
     static const SubString TypeStaticTypeAndData;
 
     TypeCommon(TypeManagerRef typeManager);
@@ -594,6 +596,7 @@ public:
     Boolean IsBoolean();
     Boolean IsString();
     Boolean IsTimestamp();
+    Boolean IsComplex();
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {return _topAQSize * _typeManager->AQBitLength(); }  // TODO defer to type manager for scale factor;
 };

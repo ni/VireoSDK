@@ -1848,7 +1848,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
     Boolean quotedInfNaN = _options._fmt.QuotedNameInfNaN();
 
-    if (isnan(value)) {
+    if (::isnan(value)) {
         if (!suppressInfNaN) {
             pBuff = _options._fmt.LongNameInfNaN() ?  "\"NaN\"" : "\"nan\"";
             len = 3;
@@ -1858,7 +1858,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
                 pBuff++; // skip quotes
         } else
             _error = true;
-    } else if (isinf(value)) {
+    } else if (::isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {
