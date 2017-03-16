@@ -1323,7 +1323,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
         }
         case kEncoding_Cluster:
             if (array->ElementType()->IsComplex()) {
-                if (elementSize == 8) {
+                if (elementSize == sizeof(Single)*2) {
                     ((Single *)scalarOpSnippet->_p2)[0] = isIdentityOne;
                     ((Single *)scalarOpSnippet->_p2)[1] = 0;
                 } else {
