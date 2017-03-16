@@ -1290,6 +1290,17 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
                 *(Double *)scalarOpSnippet->_p2 = isIdentityOne;
             break;
         }
+        case kEncoding_Cluster:
+            if (array->ElementType()->IsComplex()) {
+                if (elementSize == 8) {
+                    ((Single *)scalarOpSnippet->_p2)[0] = isIdentityOne;
+                    ((Single *)scalarOpSnippet->_p2)[1] = 0;
+                } else {
+                    ((Double *)scalarOpSnippet->_p2)[0] = isIdentityOne;
+                    ((Double *)scalarOpSnippet->_p2)[1] = 0;
+                }
+                break;
+            } // else fall through
         default:
         {
             switch(elementSize) {

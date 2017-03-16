@@ -122,7 +122,7 @@ define(HelloComplex dv(.VirtualInstrument (
         Printf("Sine %z => %z\n" c1 cd)
         Cosine(s3 s4)
         Printf("Cosine %z => %z\n" s3 s4)
-        Tan(s3 s4)
+        Tangent(s3 s4)
         Printf("Tan %z => %z\n" s3 s4)
         Secant(s3 s4)
         Printf("Secant %z => %z\n" s3 s4)
