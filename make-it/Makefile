@@ -63,8 +63,14 @@ else
                 CFLAGS+= $(CCOPT)  -DkVireoOS_XuBlaze -fmessage-length=0 -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections
                 LDFLAGS+= -Wl,-T -Wl,../source/XuBlaze/lscript.ld -L ../source/XuBlaze/standalone_bsp_0/microblaze_0/lib  -mlittle-endian -mcpu=v9.2 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
             else
-                CC=g++
-                CFLAGS+= -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
+                # g++ requires c++11 for std::complex asin/acos/atan support
+                # Prefer clang++ if installed which does not have this requirement
+                # (but only in standard path, becasue we don't want emscripten's clang++)
+                # or g++-4.9 (Travis Precise environment default g++ doesn't have
+		# std=c++11 option, but g++-4.9 is installed in Travis as an option and also
+		# needed to build emscripten, so use that if in path).
+                CC=$(shell which /usr/bin/clang++ || which g++-4.9 || which g++)
+                CFLAGS+= -std=c++11 -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
                 LDFLAGS+= -s -Wl,--gc-sections
                 # LDSTATIC+= -static
             endif
