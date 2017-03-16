@@ -153,26 +153,26 @@ using namespace std;
 #endif
 #define DECLARE_SCALE2X_REALN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##TYPE(TYPE x, TYPE n) { \
-        if (isnan(x) || isnan(n)) \
+        if (::isnan(x) || ::isnan(n)) \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
         else if (x == 0.0) \
-            return (n > 0 && isinf(n)) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
-        else if (n < 0 && isinf(n)) \
-            return isinf(x) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
-        else if (n > 0 && isinf(n)) \
+            return (n > 0 && ::isinf(n)) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
+        else if (n < 0 && ::isinf(n)) \
+            return ::isinf(x) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
+        else if (n > 0 && ::isinf(n)) \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
-        else if (n < 0 && isinf(x)) \
+        else if (n < 0 && ::isinf(x)) \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
         else \
             return x * pow(2.0, ScaleRoundToInt_##TYPE(n));  \
     }
 #define DECLARE_SCALE2X_INTN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##Int32(TYPE x, Int32 n) { \
-        if (isnan(x)) \
+        if (::isnan(x)) \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
         else if (x == 0.0) \
             return 0.0; \
-        else if (n < 0 && isinf(x)) \
+        else if (n < 0 && ::isinf(x)) \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
         else \
             return x * pow(2.0, ScaleRoundToInt_##TYPE(n));  \
@@ -283,7 +283,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE2( IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = isnan((double)_Param(0))) ) \
+    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
 		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
@@ -346,9 +346,9 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
     { \
         SOURCE src = _Param(0); \
-        if (isnan(src)) \
+        if (::isnan(src)) \
             _Param(1) = numeric_limits<DEST>::max(); \
-        else if (isinf(src)) \
+        else if (::isinf(src)) \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         else \
             _Param(1) = (DEST) RoundToEven(src); \
