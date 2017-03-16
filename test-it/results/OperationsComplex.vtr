@@ -1,0 +1,24 @@
+000 All tests pass: 'true'.
+010     Arithmetic pass: 'true'.
+020         Addition pass: 'true'.
+030         Subtraction pass: 'true'.
+040         Multiplication pass: 'true'.
+050         Division pass: 'true'.
+060     IncDec pass: 'true'.
+070         Increment pass: 'true'.
+080         Decrement pass: 'true'.
+090     Round pass: 'true'.
+100         Round towards negative infinity pass: 'true'.
+110         Round towards possitive infinity pass: 'true'.
+120         Round nearest pass: 'true'.
+130     Other pass: 'true'.
+140         Absolute pass: 'true'.
+150         Negate pass: 'true'.
+160         Sign pass: 'true'.
+170         Square pass: 'true'.
+180         Square root pass: 'true'.
+190         Reciprocal pass: 'true'.
+200         Scale by power of 2 pass: 'true'.
+210     Array pass: 'true'.
+220         Add array elements pass: 'true'.
+230         Multiply array elements pass: 'true'.

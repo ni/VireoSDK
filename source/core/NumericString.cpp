@@ -1567,7 +1567,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             break;
         case kEncoding_Cluster:
         {
-            if (argumentType->Name().CompareCStr("ComplexDouble") || argumentType->Name().CompareCStr("ComplexSingle"))
+            if (argumentType->IsComplex())
                 ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, inpBegin, &endPointer);
         }
             break;

@@ -1,0 +1,18 @@
+(0.271753 -1.08392)
+(0.271753 -1.08392)
+000 All tests pass: 'true'.
+010     Sine pass: 'true'.
+020     Cos pass: 'true'.
+030     Sin2 pass: 'true'.
+040     Cos2 pass: 'true'.
+050     Tan pass: 'true'.
+060     Csc pass: 'true'.
+070     Sec pass: 'true'.
+080     Cot pass: 'true'.
+090     Atan pass: 'true'.
+100     ACos pass: 'true'.
+110     ASin pass: 'true'.
+120     ACot pass: 'true'.
+130     ACsc pass: 'true'.
+140     ATan2 pass: 'true'.
+150     Sinc pass: 'true'.
