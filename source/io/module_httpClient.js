@@ -44,7 +44,7 @@
 
         // WebVI Specific
         WEBVI_UNSUPPORTED_INPUT: 363798,
-        INVALID_HEADER: 363798,
+        INVALID_HEADER: 363798
     };
 
     var DEFAULT_TIMEOUT_MS = 10000;
@@ -71,7 +71,7 @@
 
         // Static Public Functions
         // None
-        
+
         // Prototype creation
         var child = HttpClient;
         var proto = child.prototype;
@@ -433,7 +433,6 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = Module.eggShell.dataReadString(valuePointer);
             httpClient.addHeader(header, value);
-
         };
 
         Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
