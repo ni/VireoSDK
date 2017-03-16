@@ -1,4 +1,4 @@
-Scale2X.Double 1.500000*2^rnd(1.500000)=6.000000
+Scale2X.Double 1.500000*2^rnd(1.500000)=3.000000
 Scale2X.Double 1.500000*2^rnd(2.500000)=6.000000
 Scale2X.Double 0.300000*2^rnd(2.500000)=1.200000
 Scale2X.Double 3.000000*2^rnd(inf)=inf
@@ -12,7 +12,7 @@ Scale2X.Double nan*2^rnd(3.000000)=nan
 Scale2X.Double inf*2^rnd(3.000000)=inf
 Scale2X.Double -inf*2^rnd(3.000000)=-inf
 Scale2X.Double -inf*2^rnd(-inf)=nan
-Scale2X.Single 1.500000*2^rnd(1.500000)=6.000000
+Scale2X.Single 1.500000*2^rnd(1.500000)=3.000000
 Scale2X.Single 1.500000*2^rnd(2.500000)=6.000000
 Scale2X.Single 3.000000*2^rnd(inf)=inf
 Scale2X.Single 3.000000*2^rnd(-inf)=0.000000
