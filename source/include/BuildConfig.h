@@ -14,7 +14,7 @@ SDG
 #ifndef BuildConfig_h
 #define BuildConfig_h
 
-#if (linux == 1)
+#if (__linux__ == 1)
 	#define kVireoOS_linuxU 1
 #endif
 
