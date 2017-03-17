@@ -176,6 +176,7 @@
                 "Pi_EthanOpts.via",
                 "Pi_NonReentrant.via",
                 "Pi.via",
+                "PolarToComplex2.via",
                 "PredicateFunctions.via",
                 "PrintFormatting_Numeric.via",
                 "PrintFormattingNums.via",

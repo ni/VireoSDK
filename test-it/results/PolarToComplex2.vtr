@@ -1,0 +1,8 @@
+000 All tests pass: 'true'.
+010     ArrayScalar pass: 'true'.
+020     ClusterScalar pass: 'true'.
+030     Scalar pass: 'true'.
+040     Array pass: 'true'.
+050     ClusterCluster pass: 'true'.
+060     Constant pass: 'true'.
+070     InfNaN pass: 'true'.
