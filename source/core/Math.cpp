@@ -899,7 +899,7 @@ DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt8, ComplexSingle, Int8, Complex
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = polar(_Param(0), _Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = _Param(1) == 0.0 ? ComplexSingle(_Param(0),0.0) : _Param(0) >= 0.0 ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+Single(M_PI))) )
 DECLARE_VIREO_PRIMITIVE2( IsEQ0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) == 0.0f ) )
 DECLARE_VIREO_PRIMITIVE2( IsNE0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) != 0.0f ) )
 // The following are redundant but match LV prims and are needed so they can be polymorphic over arrays/clusters of complex
@@ -908,6 +908,7 @@ DECLARE_VIREO_PRIMITIVE4( PolarToReOrImSingle, Single, Single, Single, Single, C
 DECLARE_VIREO_PRIMITIVE4( ReOrImToPolarSingle, Single, Single, Single, Single, ComplexSingle z = ComplexSingle(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
 DECLARE_VIREO_PRIMITIVE3( ComplexToReOrImComplexSingle, ComplexSingle, Single, Single, _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
 DECLARE_VIREO_PRIMITIVE3( ReOrImToComplexSingle, Single, Single, ComplexSingle, _Param(2) = ComplexSingle(_Param(0), _Param(1)); )
+DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnumComplexSingle, ComplexSingle, Boolean, (_Param(1) = ::isnan((Single)_Param(0).real()) || ::isnan((Single)_Param(0).imag())) )
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
     DEFINE_VIREO_TYPE(ComplexSingle, "c(e(Single real) e(Single imaginary))");
@@ -963,6 +964,7 @@ DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
     DEFINE_VIREO_FUNCTION_TYPED(ReOrImToPolar, Single, "p(i(Single) i(Single) o(Single) o(Single))")
     DEFINE_VIREO_FUNCTION_TYPED(ComplexToReOrIm, ComplexSingle, "p(i(ComplexSingle) o(Single) o(Single))")
     DEFINE_VIREO_FUNCTION_TYPED(ReOrImToComplex, Single, "p(i(Single) i(Single) o(ComplexSingle))")
+    DEFINE_VIREO_FUNCTION_TYPED(IsNotANumPathRefnum, ComplexSingle, "p(i(ComplexSingle) o(Boolean))")
 
 DEFINE_VIREO_END()
 #endif
@@ -1028,7 +1030,7 @@ DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleInt8, ComplexDouble, Int8, Complex
     _Param(2).real(Scale2X_DoubleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_DoubleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = polar(_Param(0), _Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = _Param(1) == 0.0 ? ComplexDouble(_Param(0),0.0) : _Param(0) >= 0.0 ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+M_PI)) )
 DECLARE_VIREO_PRIMITIVE2( IsEQ0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) == 0.0 ) )
 DECLARE_VIREO_PRIMITIVE2( IsNE0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) != 0.0 ) )
 // The following are redundant but match LV prims and are needed so they can be polymorphic over arrays/clusters of complex
@@ -1037,6 +1039,7 @@ DECLARE_VIREO_PRIMITIVE4( PolarToReOrImDouble, Double, Double, Double, Double, C
 DECLARE_VIREO_PRIMITIVE4( ReOrImToPolarDouble, Double, Double, Double, Double, ComplexDouble z = ComplexDouble(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
 DECLARE_VIREO_PRIMITIVE3( ComplexToReOrImComplexDouble, ComplexDouble, Double, Double, _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
 DECLARE_VIREO_PRIMITIVE3( ReOrImToComplexDouble, Double, Double, ComplexDouble, _Param(2) = ComplexDouble(_Param(0), _Param(1)); )
+DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = ::isnan(_Param(0).real()) || ::isnan(_Param(0).imag())) )
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
     DEFINE_VIREO_TYPE(ComplexDouble, "c(e(Double real) e(Double imaginary))");
@@ -1092,6 +1095,7 @@ DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
     DEFINE_VIREO_FUNCTION_TYPED(ReOrImToPolar, Double, "p(i(Double) i(Double) o(Double) o(Double))")
     DEFINE_VIREO_FUNCTION_TYPED(ComplexToReOrIm, ComplexDouble, "p(i(ComplexDouble) o(Double) o(Double))")
     DEFINE_VIREO_FUNCTION_TYPED(ReOrImToComplex, Double, "p(i(Double) i(Double) o(ComplexDouble))")
+    DEFINE_VIREO_FUNCTION_TYPED(IsNotANumPathRefnum, ComplexDouble, "p(i(ComplexDouble) o(Boolean))")
 
 DEFINE_VIREO_END()
 
