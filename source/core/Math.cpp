@@ -12,6 +12,10 @@ SDG
  */
 
 #include <cstdlib>
+
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES   // needed for cmath for constants such as M_PI
+#endif
 #include <cmath>
 #include <limits>
 
