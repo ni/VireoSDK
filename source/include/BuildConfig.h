@@ -211,8 +211,11 @@ SDG
     #define VIREO_DATE_TIME_STDLIB
 
 #elif (kVireoOS_windows)
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES   // needed for cmath for constants such as M_PI
 #if (_MSC_VER < 1900)
     #define snprintf _snprintf
+#endif
 #endif
 
     #undef VIREO_MAIN
