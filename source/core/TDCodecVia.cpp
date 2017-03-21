@@ -1770,6 +1770,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
         _options._bEscapeStrings = false;
         _options._fmt = formatVIA;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
+        _options._precision = 17;
         _options._bEscapeStrings = true;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
