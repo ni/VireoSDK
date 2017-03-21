@@ -11,6 +11,7 @@ SDG
     \brief Native Vireo maths functions for core types.
  */
 
+#include "BuildConfig.h"
 #include <cstdlib>
 #include <cmath>
 #include <limits>
