@@ -1,10 +1,19 @@
-
-Expected [Infinity,NaN]; got '[Infinity,NaN]'
-
-
-
-When extensions are disabled we expect empty string; got ''
-true
-true
-
-Test pass: 'true'
+000 All tests pass: 'true'.
+010     Array tests pass: 'true'.
+020         Array of booleans pass: 'true'.
+030             Value is '[false,true]'.
+040         Array of strings pass: 'true'.
+050             Value is '["a","b"]'.
+060         Array of ints pass: 'true'.
+070             Value is '[1,2]'.
+080         Array of doubles pass: 'true'.
+090             Value is '[1.8,2.7999999999999998]'.
+100         Array of clusters pass: 'true'.
+110             Value is '[{"fieldB":"b","fieldA":true,"fieldC":3,"fieldD":3.1000000000000001}]'.
+120     Cluster tests pass: 'true'.
+130         Value is '{"fieldA":false,"fieldB":"a","fieldC":2,"fieldD":2.7999999999999998}'.
+140     Extension tests pass: 'true'.
+150         Extensions enabled pass 'true'.
+160             Value is '[Infinity,NaN]'.
+170         Extensions disabled pass 'true'.
+180             Value is ''.

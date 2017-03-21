@@ -14,11 +14,11 @@ VIA : 404
 JSON: 404
 C   : 404
 VIA : 6.28
-JSON: 6.28
+JSON: 6.2800000000000002
 C   : 6.28
 VIA : (-1 6.28)
-JSON: {"real":-1,"imaginary":6.28}
+JSON: {"real":-1,"imaginary":6.2800000000000002}
 C   : {-1,6.28}
 VIA : ((1.2 2.3) (4 5))
-JSON: [{"real":1.2,"imaginary":2.3},{"real":4,"imaginary":5}]
+JSON: [{"real":1.2,"imaginary":2.2999999999999998},{"real":4,"imaginary":5}]
 C   : {{1.2,2.3},{4,5}}
