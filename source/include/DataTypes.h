@@ -30,7 +30,7 @@ SDG
 
 //! Basic integer types.
 typedef int8_t          Int8;
-typedef uint8_t         UInt8, Utf8Char;
+typedef uint8_t         UInt8, Utf8Char, *Utf8Ptr;
 typedef int16_t         Int16;
 typedef uint16_t        UInt16, Utf16Char;
 typedef int32_t         Int32;

@@ -1,0 +1,55 @@
+Testing .ComplexSingle
+45.678902 +432.100006 i
+45.7 +432.1 i
+45.678902 +432.100006 i
+45.7 +432.1 i
+46 +432 i
+     +4.57E+1 +4.32E+2 i
+Testing .ComplexSingle (Negative)
+-123.456787 -inf i
+-123.5 -inf i
+-123.456787 -inf i
+-123.5 -inf i
+-123 -inf i
+         +1.23E+2 -inf i
+Testing .ComplexSingle (Decimal Cutoff)
+203.685471 +12345.123047 i
+203.7 +12345.1 i
+203.685471 +12345.123047 i
+203.7 +12345.1 i
+204 +12345 i
+     +2.04E+2 +1.23E+4 i
+Testing .ComplexSingle (Inf/NaN)
+-inf +nan i
+-inf +nan i
+-inf +nan i
+-inf +nan i
+-inf +nan i
+             -inf +nan i
+Testing .ComplexDouble
+12345.678900 +987.654320 i
+12345.7 +987.7 i
+12345.678900 +987.654320 i
+12345.7 +987.7 i
+12346 +988 i
+     +1.23E+4 +9.88E+2 i
+Testing .ComplexDouble (Negative)
+-123.456000 -inf i
+-123.5 -inf i
+-123.456000 -inf i
+-123.5 -inf i
+-123 -inf i
+         +1.23E+2 -inf i
+Testing .ComplexDouble (Decimal Cutoff)
+922337203.685478 +22292982.130000 i
+922337203.7 +22292982.1 i
+922337203.685478 +22292982.130000 i
+922337203.7 +22292982.1 i
+922337204 +22292982 i
+     +9.22E+8 +2.23E+7 i
+Testing .ComplexDouble (Inf/NaN)
+nan +inf i
+nan +inf i
+nan +inf i
+nan +inf i
+             +nan +inf i

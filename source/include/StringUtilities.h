@@ -243,8 +243,10 @@ public:
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
+    Boolean ComparePrefixIgnoreCase(const Utf8Char* begin, Int32 length) const ;
     Boolean ComparePrefix(char asciiChar) const { return (_begin != _end) && (*_begin == asciiChar); }
-    Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix ((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+    Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+    Boolean ComparePrefixCStrIgnoreCase(ConstCStr begin) const { return ComparePrefixIgnoreCase((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
 
     //! Compare with the encoded string
     Boolean CompareViaEncodedString(SubString* string);

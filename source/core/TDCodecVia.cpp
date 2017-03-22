@@ -1092,18 +1092,52 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.EatChar(',');
                     }
                 } else {
-                    _string.ReadToken(&token);
-                    if (token.CompareCStr("(")) {
+                    Boolean isComplex = type->IsComplex(); // complex is a special case of cluster
+                    Boolean matchOpenParen = _string.EatChar('(');
+                    if (isComplex || matchOpenParen) { // Vireo will allow either a+bi or (a b) complex initializer
                         // List of values (a b c)
                         AQBlock1* baseOffset = (AQBlock1*)pData;
                         IntIndex i = 0;
-                        while (!_string.EatChar(')') && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                        while ((!matchOpenParen || !_string.EatChar(')')) && (_string.Length() > 0) && (i < type->SubElementCount())) {
+                            // This code is shared by parsing clusters and complex numbers
                             TypeRef elementType = type->GetSubElement(i);
                             void* elementData = baseOffset;
                             if (elementData != null)
                                 elementData = baseOffset + elementType->ElementOffset();
-                            ParseData(elementType, elementData);
+                            if (isComplex && !matchOpenParen) { // complex a+bi format
+                                if (i == 1) // complex part
+                                    _string.EatChar('+');
+                                const Utf8Char* initialBegin = _string.Begin();
+                                Boolean suppressInfNaN = Fmt().SuppressInfNaN();
+                                _string.ReadToken(&token, suppressInfNaN);
+                                Double value = 0.0;
+                                if (token.ParseDouble(&value, suppressInfNaN)) {
+                                    WriteDoubleToMemory(elementType, elementData, value);
+                                    _string.AliasAssign(token.Begin(), _string.End()); // put back any trailing chars, complex a+bi may not have embedded whitespace
+                                    if (!matchOpenParen && i == 0 && (_string.EatChar('i') || _string.EatChar('I'))) {
+                                        // allow complex component only (real part missing, parsed number ends with 'i'.)
+                                        // copy value to complex part and terminate
+                                        if (elementData) {
+                                            type->GetSubElement(1)->CopyData(elementData, baseOffset+type->GetSubElement(1)->ElementOffset());
+                                            elementType->InitData(elementData);
+                                            break;
+                                        }
+                                    }
+                                } else { // value missing
+                                    _string.AliasAssign(initialBegin, _string.End()); // rewind
+                                    if (i == 1) { // have real part only, complex part missing, ok
+                                        elementType->InitData(elementData); // zero complex part
+                                        break;
+                                    }
+                                }
+                            } else // cluster, or complex in cluster format
+                                ParseData(elementType, elementData);
                             i++;
+                        }
+                        if (isComplex) {
+                            // if we parsed both parts and it's not cluster initializer format, make sure 'i' terminator is found
+                            if (!matchOpenParen && i == 2 && !_string.EatChar('i') && !_string.EatChar('I'))
+                                LOG_EVENT(kHardDataError, "bad complex literal");
                         }
                     }
                 }
@@ -2516,7 +2550,10 @@ void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, In
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
-    snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
+    if (type->IsComplex())
+        snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.0f", minWidth);
+    else
+        snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
     format.AliasAssignCStr(formatBuffer);
     Format(&format, 1, arguments, string);
 }
@@ -2578,7 +2615,13 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
         }
         case kEncoding_Cluster: {
             IntIndex count = type->SubElementCount();
-            if (destEncoding != kEncoding_Cluster || count != destType->SubElementCount()) {
+            if (type->IsComplex()) {
+                count = 1;
+                if (formatCallback == NumberToDecimalStringInternal) {
+                    (*formatCallback)(type, pData, minWidth, precision, *(StringRef*)pDestData);
+                    return true;
+                }
+            } else if (destEncoding != kEncoding_Cluster || count != destType->SubElementCount()) {
                 THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Type mismatch in NumberToString");
                 return false;
             }
