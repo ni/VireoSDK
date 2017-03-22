@@ -8,6 +8,7 @@ define(ArrayDemo dv(.VirtualInstrument (
     e(dv(a(.Int32 5) (1 2 3 4))     fixedArray1dwithDefaults)
     e(dv(a(.Int32 -5) (1 2 3 4))    boundedArray1dwithDefaults)
 
+    e(a(.Int32 * *)   variableArray2d)
     e(a(.Int32 2 3)   fixedArray2d)
     e(a(.Int32 1 2 3) fixedArray3d)
   )
