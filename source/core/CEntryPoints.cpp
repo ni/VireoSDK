@@ -222,12 +222,12 @@ VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, c
 
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null || !actualType->IsArray()) {
-        return -1;
+        return kLVError_ArgError;
     }
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
     if(!actualArray->ResizeDimensions(rank, newLengths, true, false)) {
-        return -2;
+        return kLVError_MemFull;
     }
 
     return 0;
