@@ -899,7 +899,7 @@ DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt8, ComplexSingle, Int8, Complex
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = _Param(1) == 0.0 ? ComplexSingle(_Param(0),0.0) : _Param(0) >= 0.0 ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+Single(M_PI))) )
+DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = _Param(1) == 0.0f ? ComplexSingle(_Param(0),0.0) : _Param(0) >= 0.0f ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+Single(M_PI))) )
 DECLARE_VIREO_PRIMITIVE2( IsEQ0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) == 0.0f ) )
 DECLARE_VIREO_PRIMITIVE2( IsNE0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) != 0.0f ) )
 // The following are redundant but match LV prims and are needed so they can be polymorphic over arrays/clusters of complex
