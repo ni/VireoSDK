@@ -1,0 +1,5 @@
+000 All tests pass: 'true'.
+010     Complex Format Pass: 'true'.
+020     Number to Hexadecimal Pass: 'true'.
+030     Number to Decimal Pass: 'true'.
+040     Number to Octal Pass: 'true'.

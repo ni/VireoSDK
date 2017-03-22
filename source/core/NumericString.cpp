@@ -206,7 +206,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 }
 //---------------------------------------------------------------------------------------------
 void GenerateFinalNumeric (const FormatOptions* , char* , Int32* , TempStackCString* , Boolean );
-void RefactorLabviewNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32 );
+void RefactorLVNumeric(const FormatOptions* , char* , Int32* , Int32 , Int32, Boolean );
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output);
 
 void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
@@ -498,6 +498,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 ErrFormatMissingNumArgs(format, count, arguments, buffer, tempString);
             }
 
+            char replacementString[2*kTempCStringLength]; // temp used for modifying string to support opts for sigDigits, engineering notation, etc.
+            Int32 complexArg = 0; // when formatting complex data, 0==real, 1==imag, 2==finished
+            Int32 truncateSignificant = 0;
+            Int32 intDigits = 0;
+            Int32 sizeOfNumericString = -1, skipPrev = 0;
+
+            replacementString[0] = '\0';
             while (!parseFinished) {
                 parseFinished = true;
                 switch (fOptions.FormatChar)
@@ -536,11 +543,27 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'f': case 'F':
                     {
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
+                        void *pData = arguments[argumentIndex]._pData;
+                        if (argType->IsComplex()) {
+                            if (complexArg > 1) {
+                                ++argumentIndex;
+                                continue; // will terminate loop because parseFinished is true
+                            }
+                            parseFinished = false;
+                            --argumentIndex;
+                            argType = argType->GetSubElement(complexArg++);
+                            pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
+                        }
+                        Double tempDouble = ReadDoubleFromMemory(argType, pData);
                         Int32 leadingZero = 0;
                         Int32 exponent = 0;
                         Int32 precision = fOptions.Precision;
-                        Int32 truncateSignificant = 0;
+                        if (complexArg == 2) {
+                            if (!(tempDouble < 0.0)) // negation intentional; '>= 0.0' wouldn't match NaN
+                                strncat(replacementString, " +", sizeof(replacementString) - strlen(replacementString) - 1);
+                            else
+                                strncat(replacementString, " ", sizeof(replacementString) - strlen(replacementString) - 1);
+                        }
                         // calculate the exponent of the number, it also tell us whether should truncate the integer part.
                         if (fOptions.Significant >= 0) {
                             if (fOptions.Significant == 0) {
@@ -559,33 +582,49 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (precision < 0) {
                                 precision = 0;
                                 truncateSignificant = exponent + 1 - fOptions.Significant;
-                                // need truncate the integer part of the float because the sprintf doesnt do this for us.
+                                // need truncate the inxteger part of the float because the sprintf doesnt do this for us.
                             }
                         }
-                        char asciiReplacementString[2*kTempCStringLength];
-                        Int32 sizeOfNumericString = -1;
                         char formatCode[10];
+                        skipPrev = Int32(strlen(replacementString));
                         if (precision >= 0) {
                             sprintf(formatCode, "%%.*%sf", fOptions.NumericLength);
                             // formatCode : %.*hf
-                            sizeOfNumericString = snprintf(asciiReplacementString, sizeof(asciiReplacementString), formatCode, precision,tempDouble);
+                            sizeOfNumericString = snprintf(replacementString+skipPrev, sizeof(replacementString)-skipPrev, formatCode, precision,tempDouble);
                         } else {
                             sprintf(formatCode, "%%%sf", fOptions.NumericLength);
                             // formatCode: %hf
-                            sizeOfNumericString = snprintf(asciiReplacementString, sizeof(asciiReplacementString), formatCode, tempDouble);
+                            sizeOfNumericString = snprintf(replacementString+skipPrev, sizeof(replacementString)-skipPrev, formatCode, tempDouble);
                         }
-                        Int32 intDigits = (exponent >= 0)? (exponent): 0 ;
-                        RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, intDigits, truncateSignificant);
-                        UpdateNumericStringWithDecimalSeparator(fOptions, asciiReplacementString, sizeOfNumericString);
-                        buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                        sizeOfNumericString += skipPrev;
+                        if (exponent > 0)
+                            intDigits = exponent;
+                        // further processing done by shared code which calls RefactorLVNumeric below switch
                         argumentIndex++;
                     }
                     break;
                     case 'e': case 'E':
                     {
                         TypeRef argType = arguments[argumentIndex]._paramType;
-                        Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
+                        void *pData = arguments[argumentIndex]._pData;
+                        if (argType->IsComplex()) {
+                            if (complexArg > 1) {
+                                ++argumentIndex;
+                                continue; // will terminate loop because parseFinished is true
+                            }
+                            parseFinished = false;
+                            --argumentIndex;
+                            argType = argType->GetSubElement(complexArg++);
+                            pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
+                        }
+                        Double tempDouble = ReadDoubleFromMemory(argType, pData);
                         Int32 precision = fOptions.Precision;
+                        if (complexArg == 2) {
+                            if (!(tempDouble < 0.0)) // negation intentional; '>= 0.0' wouldn't match NaN
+                                strncat(replacementString, " +", sizeof(replacementString) - strlen(replacementString) - 1);
+                            else
+                                strncat(replacementString, " ", sizeof(replacementString) - strlen(replacementString) - 1);
+                        }
                         if (precision>=0 && fOptions.EngineerNotation) {
                             Int32 exponent = 0;
                             if (tempDouble != 0) {
@@ -602,21 +641,22 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         if (fOptions.Significant >= 0) {
                             precision =  fOptions.Significant - 1;
                         }
-                        char asciiReplacementString[2*kTempCStringLength];
-                        Int32 sizeOfNumericString = 0;
+                        sizeOfNumericString = 0;
                         char formatCode[10];
+                        skipPrev = Int32(strlen(replacementString));
                         if (precision >= 0) {
                             sprintf(formatCode, "%%.*%se", fOptions.NumericLength);
                             // formatCode : %.*he
-                            sizeOfNumericString = snprintf(asciiReplacementString, kTempCStringLength, "%.*e", (int)precision, tempDouble);
+                            sizeOfNumericString = snprintf(replacementString+skipPrev, kTempCStringLength-skipPrev, formatCode, (int)precision, tempDouble);
                         } else {
                             sprintf(formatCode, "%%%se", fOptions.NumericLength);
                             // formatCode : %he
-                            sizeOfNumericString = snprintf(asciiReplacementString, kTempCStringLength, "%e", tempDouble);
+                            sizeOfNumericString = snprintf(replacementString+skipPrev, kTempCStringLength-skipPrev, formatCode, tempDouble);
                         }
-                        RefactorLabviewNumeric(&fOptions, asciiReplacementString, &sizeOfNumericString, 0, 0);
-
-                        buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                        sizeOfNumericString += skipPrev;
+                        intDigits = 0;
+                        truncateSignificant = 0;
+                        // further processing done by shared code which calls RefactorLVNumeric below switch
                         argumentIndex++;
                     }
                     break;
@@ -636,8 +676,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         char asciiReplacementString[kTempCStringLength];
                         //Get the numeric string that will replace the format string
                         Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
-                        Int32 sizeOfNumericString = snprintf(asciiReplacementString, kTempCStringLength, tempFormat.BeginCStr(), tempDouble);
-                        buffer->Append(sizeOfNumericString, (Utf8Char*)asciiReplacementString);
+                        Int32 sizeOfNumericString2 = snprintf(asciiReplacementString, kTempCStringLength, tempFormat.BeginCStr(), tempDouble);
+                        buffer->Append(sizeOfNumericString2, (Utf8Char*)asciiReplacementString);
                         argumentIndex++;
                     }
                     break;
@@ -681,7 +721,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         Int32 binaryStringLength = length;
 
-                        RefactorLabviewNumeric(&fOptions, binaryindex, &binaryStringLength, 0, 0);
+                        RefactorLVNumeric(&fOptions, binaryindex, &binaryStringLength, 0, 0, false);
                         buffer->Append(binaryStringLength, (Utf8Char*)binaryindex);
                         argumentIndex++;
                     }
@@ -744,7 +784,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-strlen(fOptions.NumericLength));
                                 tempFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
                                 length = snprintf(formattedNumber, kTempCStringLength, "%lld", (long long)intValue);
-                                RefactorLabviewNumeric(&fOptions, formattedNumber, &length, 0, 0);
+                                RefactorLVNumeric(&fOptions, formattedNumber, &length, 0, 0, false);
                             }
                         }
                         buffer->Append(length, (Utf8Char*)formattedNumber);
@@ -897,6 +937,27 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         // This is just part of the format specifier, let it become part of the percent format
                     break;
                 }
+                if (sizeOfNumericString > 0) { // shared code, set by %e and %f above
+                    sizeOfNumericString -= skipPrev;
+                    RefactorLVNumeric(&fOptions, replacementString + skipPrev, &sizeOfNumericString, intDigits, truncateSignificant, complexArg > 0);
+                    UpdateNumericStringWithDecimalSeparator(fOptions, replacementString + skipPrev, sizeOfNumericString);
+                    sizeOfNumericString = Int32(strlen(replacementString));
+                    if (complexArg == 2) {
+                        strncat(replacementString, " i", sizeof(replacementString) - sizeOfNumericString - 1);
+                        Boolean negative = replacementString[0] == '-';
+                        Utf8Char *tempNum = (Utf8Char*)replacementString;
+                        if (negative) {
+                            ++tempNum; // skip '-', account for 'i'
+                            ++sizeOfNumericString;
+                        } else
+                            sizeOfNumericString += 2; // account for 'i'
+                        TempStackCString numberPart((Utf8Char*)tempNum, sizeOfNumericString);
+                        GenerateFinalNumeric(&fOptions, replacementString, &sizeOfNumericString, &numberPart, negative);
+                    }
+                    if (complexArg != 1)
+                        buffer->Append(sizeOfNumericString, (Utf8Char*)replacementString);
+
+                }
             }
         } else {
             buffer->Append(c);
@@ -920,9 +981,10 @@ static char gSIPrefixesTable[] = {'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k
  * 4. Remove the trailing zero if necessary. %#3f 1.0000
  * 5. Replace the C decimal pointer with the local decimal separator
  * Input of this function is like "-12.4" "7.450E+043"
- * This function will not process the sign and padding and the width. It only process the pure number.
+ * If skipFinal is true, the function will not process the sign and padding and the width. It only process the pure number.
+ * (This is used for complex numbers which need to be padded as one entity).
  * */
-void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, Int32 IntDigits, Int32 truncateSignificant)
+void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, Int32 IntDigits, Int32 truncateSignificant, Boolean skipFinal)
 {
     Boolean negative = false;
     char* buffer = bufferBegin;
@@ -934,6 +996,7 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
     Int32 exponentPos = -1;
     Int32 index = 0;
     Int32 size = *pSize;
+    Boolean isInfNaN = false;
     if (strchr ("DdoXxbB", formatOptions->FormatChar)) {
         decimalPoint = 0;
         exponentPos = 0;
@@ -951,14 +1014,15 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
             decimalPoint = index;
         } else if (digit == 'E' || digit == 'e') {
              exponentPos = index;
-         }
+         } else if (digit == 'i' || digit == 'n') // can only be inf/nan
+             isInfNaN = true;
         index++;
     }
     if (decimalPoint < 0) {
         decimalPoint = 0;
     }
 
-    if (formatOptions->FormatChar == 'f' || formatOptions->FormatChar == 'F') {
+    if (isInfNaN || formatOptions->FormatChar == 'f' || formatOptions->FormatChar == 'F') {
         if (truncateSignificant>0) {
             // .0 in sprintf. no decimal point,
             // but still truncate the integer part which is not handled in sprintf
@@ -1015,8 +1079,11 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 numberEnd--;
             }
         }
-        TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
-        GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+        buffer[1+numberEnd] = 0;
+        if (!skipFinal) {
+            TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
+            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+        }
     } else if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
         Int32 numberIndex = numberStart;
         Int32 baseIndex = 0;
@@ -1082,9 +1149,12 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
-            TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
-            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-
+            tempNumber[baseIndex] = 0;
+            if (!skipFinal) {
+                TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+            } else
+                memcpy(bufferBegin, tempNumber, baseIndex+1);
         } else {
             char tempNumber[kTempCStringLength];
             baseIndex = 0;
@@ -1109,13 +1179,20 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                 Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
-            TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
-            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+            tempNumber[baseIndex] = 0;
+            if (!skipFinal) {
+                TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+            } else
+                memcpy(bufferBegin, tempNumber, baseIndex+1);
         }
     } else if (formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'b') {
         Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
-        TempStackCString numberPart(tempNumber, *pSize);
-        GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
+        bufferBegin[*pSize] = 0;
+        if (!skipFinal) {
+            TempStackCString numberPart(tempNumber, *pSize - numberStart);
+            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
+        }
     } else if (formatOptions->FormatChar == 'd') {
         Boolean extend = false;
         buffer = bufferBegin;
@@ -1143,22 +1220,18 @@ void RefactorLabviewNumeric(const FormatOptions* formatOptions, char* bufferBegi
                     }
                 }
             }
-            Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
             if (extend) {
                 numberEnd++;
                 for (Int32 i = numberEnd; i > numberStart; i--) {
                     *(buffer+i) = *(buffer+i-1);
                 }
                 *(buffer+ numberStart) =  '1';
-                TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
-                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-            } else {
-                TempStackCString numberPart(tempNumber, *pSize - numberStart);
-                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
             }
-        } else {
+        }
+        buffer[1+numberEnd] = 0;
+        if (!skipFinal) {
             Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
-            TempStackCString numberPart(tempNumber, 1+numberEnd-numberStart);
+            TempStackCString numberPart(tempNumber, 1 + numberEnd - numberStart);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
     }
@@ -1403,11 +1476,11 @@ void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSt
         ++beginPointer;
     DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar, beginPointer, endPointer, argumentType->GetSubElement(1)->ElementOffset());
     beginPointer = *endPointer;
-    if (!clusterFormat && *beginPointer == 'i')
+    while (isspace(*beginPointer))
+        ++beginPointer;
+    if (!clusterFormat && (*beginPointer == 'i' || *beginPointer == 'I'))
         ++beginPointer;
     else {
-        while (isspace(*beginPointer))
-            ++beginPointer;
         if (*beginPointer == ')')
             ++beginPointer;
     }

@@ -17,9 +17,7 @@ SDG
 #endif
 #include <stdlib.h>
 #include <math.h>
-#if kVireoOS_windows
 #include <limits>
-#endif
 
 namespace Vireo
 {
@@ -94,17 +92,20 @@ Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ign
     }
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _begin+length2;
+    if (!ignoreCase) { // separate tighter loop for performance (use memcmp?)
+        while(sCompare < sEnd) {
+            if (*sCompare++ != *begin2++)
+                return false;
+        }
+        return true;
+    }
     while(sCompare < sEnd) {
         Utf8Char c1 = *sCompare++;
         Utf8Char c2 = *begin2++;
-        if (c1 != c2) {
-            if (ignoreCase && ('A' <= c1) && (c1 <= 'Z') && (c1 + 'a' - 'A' == c2))
-                continue;
-            else if (ignoreCase && ('a' <= c1) && (c1 <= 'z') && (c1 + 'A' - 'a' == c2))
-                continue;
-            else
+        if (c1 != c2
+            && ('A' > c1 || c1 > 'Z' || c1 + 'a' - 'A' != c2)
+            && ('a' > c1 || c1 > 'z' || c1 + 'A' - 'a' != c2))
                 return false;
-        }
     }
     return true;
 }
@@ -118,9 +119,8 @@ Boolean SubString::CompareCStr(ConstCStr begin2) const
     // The source string cannot have a null before it hit end
     // So if a null is found in the supplied string first the test bails out false.
     while(sCompare < sEnd) {
-        if (*sCompare++ != *pBegin2++) {
+        if (*sCompare++ != *pBegin2++)
             return false;
-        }
     }
     // Comparison is true if supplied string is the same length.
     return (*pBegin2 == 0);
@@ -128,15 +128,32 @@ Boolean SubString::CompareCStr(ConstCStr begin2) const
 //------------------------------------------------------------
 Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
 {
-    if (length2 > Length()) {
+    if (length2 > Length())
         return false;
-    }
+
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _begin + length2;
     while(sCompare < sEnd) {
-        if (*sCompare++ != *begin2++) {
+        if (*sCompare++ != *begin2++)
             return false;
-        }
+    }
+    return true;
+}
+//------------------------------------------------------------
+Boolean SubString::ComparePrefixIgnoreCase(const Utf8Char* begin2, Int32 length2) const
+{
+    if (length2 > Length())
+        return false;
+
+    const Utf8Char* sCompare = _begin;
+    const Utf8Char* sEnd = _begin + length2;
+    while(sCompare < sEnd) {
+        Utf8Char c1 = *sCompare++;
+        Utf8Char c2 = *begin2++;
+        if (c1 != c2
+            && ('A' > c1 || c1 > 'Z' || c1 + 'a' - 'A' != c2)
+            && ('a' > c1 || c1 > 'z' || c1 + 'A' - 'a' != c2))
+            return false;
     }
     return true;
 }
@@ -493,7 +510,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
     TokenTraits tokenTraits = TokenTraits_Unrecognized;
 
     EatLeadingSpaces();
-    
+
     const Utf8Char* initialBegin = _begin;
     if (!(_begin < _end))
         return tokenTraits;
@@ -554,13 +571,28 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
         }
         SubString idToken(initialBegin, _begin);
 
-        if (!suppressInfNaN && (idToken.CompareCStr("Infinity") || idToken.CompareCStr("-Infinity") || idToken.CompareCStr("NaN"))) {
-            tokenTraits = TokenTraits_IEEE754;
+        if (!suppressInfNaN) {
+            ConstCStr specialIEEEVals[] =  {"infinity", "-infinity", "inf", "-inf", "nan", NULL };
+            ConstCStr *specValPtr = specialIEEEVals;
+            while (*specValPtr) {
+                if (idToken.ComparePrefixCStrIgnoreCase(*specValPtr)) {
+                    IntIndex len = IntIndex(strlen(*specValPtr));
+                    IntIndex tokenLen = idToken.Length();
+                    // allow an exact token match or one followed by +/-/i to allow complex literals
+                    if (tokenLen == len
+                        || (tokenLen == len+1 && (initialBegin[len]=='i'  || initialBegin[len]=='I'))
+                        || (tokenLen >= len+1 && (initialBegin[len]=='+'  || initialBegin[len]=='-'))) {
+                        tokenTraits = TokenTraits_IEEE754;
+                        _begin = initialBegin + len;
+                    }
+                    break;
+                }
+                ++specValPtr;
+            }
         }
-        else if (!suppressInfNaN && (idToken.CompareCStr("inf") || idToken.CompareCStr("-inf") || idToken.CompareCStr("nan"))) {
-            // Look for special IEE754 numeric tokens.
-            tokenTraits = TokenTraits_IEEE754;
-        } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
+        if (tokenTraits != TokenTraits_Unrecognized) // set above
+            ;
+        else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for Boolean(ish) tokens.
             tokenTraits = TokenTraits_Boolean;
         } else if (idToken.ComparePrefixCStr("0x")) {
@@ -855,25 +887,29 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     }
     Boolean bParsed = current != end;
     _begin += end - current;
-    
-#if (kVireoOS_windows )
+
+    // although strtod above (at least on non-Windows) can parse inf/nan, it only works if followed by
+    // whitespace or EOS, and not the long forms so we have to check explicitly.
     if (!bParsed && !suppressInfNaN) {
         Int32 length = Length();
-        if (length >= 3 && strncmp("inf", (ConstCStr)_begin, 3) == 0) {
+        if (length >= 3 && ComparePrefixIgnoreCase(Utf8Ptr("inf"), 3)) {
             value = std::numeric_limits<double>::infinity();
             bParsed = true;
             _begin += 3;
-        } else if (length >= 3 && strncmp("nan", (ConstCStr)_begin, 3) == 0) {
+            if (length >= 8 && ComparePrefixIgnoreCase(Utf8Ptr("inity"), 5))
+                _begin += 5;
+        } else if (length >= 3 && ComparePrefixIgnoreCase(Utf8Ptr("nan"), 3)) {
             value = std::numeric_limits<double>::quiet_NaN();
             bParsed = true;
             _begin += 3;
-        } else if (length >= 4 && strncmp("-inf", (ConstCStr)_begin, 4) == 0) {
+        } else if (length >= 4 && ComparePrefixIgnoreCase(Utf8Ptr("-inf"), 4)) {
             value = -std::numeric_limits<double>::infinity();
             bParsed = true;
             _begin += 4;
+            if (length >= 9 && ComparePrefixIgnoreCase(Utf8Ptr("inity"), 5))
+                _begin += 5;
         }
     }
-#endif
 
     if (!bParsed) {
         value = 0.0;
