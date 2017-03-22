@@ -194,27 +194,43 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     return "";
 }
 //------------------------------------------------------------
-//! Get the pointer to the first element in the Array Symbol. Returns 0 if the Symbol is not found, not an Array, or the Array is of length zero.
-VIREO_EXPORT void* EggShell_GetArrayBegin(TypeManagerRef tm, const char* viName, const char* eltName)
+//! Get information about an Array such as the type of its subtype, the array rank, and the memory location of the first element (or null if there are zero elements)
+VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
+        const char* viName, const char* eltName, char** arrayTypeNameBegin, Int32* arrayTypeNameLength, Int32* arrayRank, Int32* arrayBegin)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
 
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray() || actualType->Rank() <= 0)
-        return null;
+    TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (pathType == null)
+        return kEggShellResult_ObjectNotFoundAtPath;
+    
+    if (!pathType->IsArray() || pathType->Rank() <= 0)
+        return kEggShellResult_UnexpectedObjectType;
+
+    if (arrayTypeNameBegin == null || arrayTypeNameLength == null || arrayRank == null || arrayBegin == null)
+        return kEggShellResult_InvalidResultPointer;
+
+    SubString arrayTypeName = pathType->GetSubElement(0)->Name();
+    *arrayTypeNameBegin = (char*)arrayTypeName.Begin();
+    *arrayTypeNameLength = arrayTypeName.Length();
+
+    *arrayRank = pathType->Rank();
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if (actualArray->GetLength(0) <= 0)
-        return null;
+    if (actualArray->GetLength(0) <= 0) {
+        *arrayBegin = null;
+    } else {
+        *arrayBegin = (Int32) actualArray->BeginAt(0);
+    }
 
-    return actualArray->BeginAt(0);
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not an Array or dimension requested is out of the bounds of the rank.
-VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim) 
+VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
@@ -272,11 +288,13 @@ VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, co
     stringObject->CopyFrom(length, buffer);
 }
 //------------------------------------------------------------
-VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer) {
+VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer)
+{
     return *booleanPointer;
 }
 //------------------------------------------------------------
-VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value) {
+VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
+{
     *destination = value;
 }
 //------------------------------------------------------------
