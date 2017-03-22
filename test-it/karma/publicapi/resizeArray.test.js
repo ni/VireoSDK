@@ -27,7 +27,7 @@ describe('Arrays in Vireo', function () {
         });
     });
 
-    it('resizes initialized variable 1d array with defaults', function (done) {
+    it('can be resized when they are 1d array with defaults', function (done) {
         var variableName = 'variableArray1dwithDefaults';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
@@ -42,7 +42,19 @@ describe('Arrays in Vireo', function () {
         });
     });
 
-    it('cannot resize fixed 2d arrays', function (done) {
+    it('returns error code 1 if the array does not exist', function (done) {
+        var variableName = 'imaginaryArrayThatDoesNotExist';
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeNonEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            var resized = vireo.eggShell.resizeArray(viName, variableName, [6]);
+            expect(resized).toBe(1);
+            done();
+        });
+    });
+
+    it('cannot be resized if they are fixed 2d arrays', function (done) {
         var variableName = 'fixedArray2d';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
@@ -50,7 +62,7 @@ describe('Arrays in Vireo', function () {
 
             var resized = vireo.eggShell.resizeArray(viName, variableName, [3, 4]);
 
-            expect(resized).toBe(-2);
+            expect(resized).toBe(2);
             expect(vireo.eggShell.getArrayDimLength(viName, variableName, 0)).toBe(2);
             expect(vireo.eggShell.getArrayDimLength(viName, variableName, 1)).toBe(3);
 
@@ -58,7 +70,7 @@ describe('Arrays in Vireo', function () {
         });
     });
 
-    it('resizes a variable 2d array', function (done) {
+    it('can be resized when they are variable 2d array', function (done) {
         var variableName = 'variableArray2d';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();

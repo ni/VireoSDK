@@ -132,16 +132,16 @@
 
         Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (vi, path, newDimensionSizes) {
             var int32Byte = 4;
-            var length = newDimensionSizes.length;
-            var buffer = Module._malloc(length * int32Byte);
+            var rank = newDimensionSizes.length;
+            var newLengths = Module._malloc(rank * int32Byte);
 
-            for (var i = 0; i < length; i += 1) {
-                Module.setValue(buffer + (i * int32Byte), newDimensionSizes[i], 'i32');
+            for (var i = 0; i < rank; i += 1) {
+                Module.setValue(newLengths + (i * int32Byte), newDimensionSizes[i], 'i32');
             }
 
-            var success = EggShell_ResizeArray(v_userShell, vi, path, length, buffer);
+            var success = EggShell_ResizeArray(v_userShell, vi, path, rank, newLengths);
 
-            Module._free(buffer);
+            Module._free(newLengths);
 
             return success;
         };
