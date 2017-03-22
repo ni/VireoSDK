@@ -36,7 +36,7 @@
             'EggShell_ReadValueString',
             'EggShell_WriteValueString',
             'EggShell_GetArrayDimLength',
-            'EggShell_ResizeArrayDimensions',
+            'EggShell_ResizeArray',
             'Data_GetStringBegin',
             'Data_GetStringLength',
             'Data_ReadBoolean',
@@ -62,7 +62,7 @@
         var EggShell_ReadValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
-        var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number'])
+        var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
@@ -135,9 +135,9 @@
             var length = newDimensionSizes.length;
             var buffer = Module._malloc(length * int32Byte);
 
-            newDimensionSizes.map(function (dimSize, index) {
-                Module.setValue(buffer + index * int32Byte, dimSize, 'i32');
-            });
+            for (var i = 0; i < length; i += 1) {
+                Module.setValue(buffer + (i * int32Byte), newDimensionSizes[i], 'i32');
+            }
 
             var success = EggShell_ResizeArray(v_userShell, vi, path, length, buffer);
 
