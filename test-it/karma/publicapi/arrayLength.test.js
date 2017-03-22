@@ -31,16 +31,32 @@ describe('Arrays in Vireo', function () {
             expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', 2)).toBe(3);
             expect(vireo.eggShell.getArrayDimLength(viName, 'fixedArray3d', -1)).toBe(-1);
 
-            var heap32 = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.HEAP32;
-            var begin = vireo.eggShell.getArrayBegin(viName, 'fixedArray1dwithDefaults') / 4;
-            var length = vireo.eggShell.getArrayDimLength(viName, 'fixedArray1dwithDefaults', 0);
-            var i, currentPointer;
-            var results = [];
-            for (i = 0; i < length; i += 1) {
-                currentPointer = begin + i;
-                results[i] = heap32[currentPointer];
-            }
-            expect(results).toEqual([1, 2, 3, 4, 0]);
+            done();
+        });
+    });
+
+    it('can read arrays using the optimized functions', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
+        var viName = 'ArrayTypesOptimized';
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeNonEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayInt8')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, -128, 127]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayInt16')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, -32768, 32767]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayInt32')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, -2147483648, 2147483647]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayUInt8')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, 255]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayUInt16')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, 65535]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayUInt32')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, 4294967295]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arraySingle')).toEqual([Math.fround(1.1), Math.fround(2.2), Infinity, NaN, -Infinity, -16777216, 16777216]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayDouble')).toEqual([1.1, 2.2, Infinity, NaN, -Infinity, -9007199254740992, 9007199254740992]);
+
+            expect(function () {
+                vireo.eggShell.getNumericArray(viName, 'variableArrayString');
+            }).toThrow();
             done();
         });
     });
