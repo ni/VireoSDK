@@ -196,7 +196,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank, and the memory location of the first element (or null if there are zero elements)
 VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
-        const char* viName, const char* eltName, char** arrayTypeNameBegin, Int32* arrayTypeNameLength, Int32* arrayRank, Int32* arrayBegin)
+        const char* viName, const char* eltName, char** arrayTypeNameBegin, Int32* arrayTypeNameLength, Int32* arrayRank, unsigned char** arrayBegin)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
@@ -223,7 +223,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     if (actualArray->GetLength(0) <= 0) {
         *arrayBegin = null;
     } else {
-        *arrayBegin = (Int32) actualArray->BeginAt(0);
+        *arrayBegin = actualArray->BeginAt(0);
     }
 
     return kEggShellResult_Success;
