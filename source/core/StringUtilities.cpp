@@ -69,20 +69,21 @@ Int32 SubString::DigitValue(Utf32Char codePoint, Int32 base)
     
     return value;
 }
-//------------------------------------------------------------
-Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2) const
-{
-    if (length2 != Length()) {
-        return false;
-    }
-    const Utf8Char* sCompare = _begin;
-    const Utf8Char* sEnd = _begin+length2;
+
+inline Boolean CompareString(const Utf8Char* sCompare, const Utf8Char* sEnd, const Utf8Char* begin2) {
     while(sCompare < sEnd) {
         if (*sCompare++ != *begin2++) {
             return false;
         }
     }
     return true;
+}
+//------------------------------------------------------------
+Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2) const
+{
+    if (length2 != Length())
+        return false;
+    return CompareString(_begin, _begin+length2, begin2);
 }
 //------------------------------------------------------------
 Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ignoreCase) const
@@ -92,12 +93,8 @@ Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ign
     }
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _begin+length2;
-    if (!ignoreCase) { // separate tighter loop for performance (use memcmp?)
-        while(sCompare < sEnd) {
-            if (*sCompare++ != *begin2++)
-                return false;
-        }
-        return true;
+    if (!ignoreCase) { // separate tighter loop for performance
+        return CompareString(sCompare, sEnd, begin2); // inlined
     }
     while(sCompare < sEnd) {
         Utf8Char c1 = *sCompare++;
@@ -131,13 +128,7 @@ Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
     if (length2 > Length())
         return false;
 
-    const Utf8Char* sCompare = _begin;
-    const Utf8Char* sEnd = _begin + length2;
-    while(sCompare < sEnd) {
-        if (*sCompare++ != *begin2++)
-            return false;
-    }
-    return true;
+    return CompareString(_begin, _begin + length2, begin2); // inlined
 }
 //------------------------------------------------------------
 Boolean SubString::ComparePrefixIgnoreCase(const Utf8Char* begin2, Int32 length2) const
