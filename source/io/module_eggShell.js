@@ -149,13 +149,12 @@
             4: 'UnableToCreateReturnBuffer'
         };
 
-        var arrayTypeNameBeginDoublePointer = Module._malloc(4);
-        var arrayTypeNameLengthPointer = Module._malloc(4);
+        var arrayTypeNameDoublePointer = Module._malloc(4);
         var arrayBeginPointer = Module._malloc(4);
         var arrayRankPointer = Module._malloc(4);
 
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
-            var eggShellResult = EggShell_GetArrayMetadata(v_userShell, vi, path, arrayTypeNameBeginDoublePointer, arrayTypeNameLengthPointer, arrayRankPointer, arrayBeginPointer);
+            var eggShellResult = EggShell_GetArrayMetadata(v_userShell, vi, path, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -164,9 +163,8 @@
                     ' (path: ' + path + ')');
             }
 
-            var arrayTypeNameBeginPointer = Module.getValue(arrayTypeNameBeginDoublePointer, 'i32');
-            var arrayTypeNameLength = Module.getValue(arrayTypeNameLengthPointer, 'i32');
-            var arrayTypeName = Module.Pointer_stringify(arrayTypeNameBeginPointer, arrayTypeNameLength);
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
             var arrayRank = Module.getValue(arrayRankPointer, 'i32');
             var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
 
