@@ -1885,7 +1885,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
 
     if (::isnan(value)) {
         if (!suppressInfNaN) {
-            pBuff = _options._fmt.LongNameInfNaN() ?  "\"NaN\"" : "\"nan\"";
+            pBuff = "\"NaN\"";
             len = 3;
             if (quotedInfNaN)
                 len += 2; // include quotes
@@ -1897,10 +1897,10 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {
-                pBuff = longForm ? "\"-Infinity\"" : "\"-inf\"";
+                pBuff = longForm ? "\"-Infinity\"" : "\"-Inf\"";
                 len = longForm ? 9 : 4;
             } else {
-                pBuff = longForm ? "\"Infinity\"" : "\"inf\"";
+                pBuff = longForm ? "\"Infinity\"" : "\"Inf\"";
                 len = longForm ? 8 : 3;
             }
             if (quotedInfNaN)
