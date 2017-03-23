@@ -1286,7 +1286,6 @@ Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
                 Utf8Char rangeChar = *(begin + i)+j;
                 if (candidate == rangeChar) {
                     return true;
-                } else {
                 }
             }
             i= i+3;
