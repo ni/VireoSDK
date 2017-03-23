@@ -55,7 +55,7 @@ namespace Vireo {
 
 #if kVireoOS_windows
     // UnixTimeToFileTime and UnixTimeToSystemTime are from https ://support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime
-    void UnixTimeToFileTime(time_t t, LPFILETIME pft)
+    static void UnixTimeToFileTime(time_t t, LPFILETIME pft)
     {
        // Note that LONGLONG is a 64-bit value
        LONGLONG ll;
@@ -65,7 +65,7 @@ namespace Vireo {
        pft->dwHighDateTime = ll >> 32;
     }
 
-    void UnixTimeToSystemTime(time_t t, LPSYSTEMTIME pst)
+    static void UnixTimeToSystemTime(time_t t, LPSYSTEMTIME pst)
     {
        FILETIME ft;
 
@@ -73,14 +73,14 @@ namespace Vireo {
        FileTimeToSystemTime(&ft, pst);
     }
 
-    void UtcTimeToSystemTime(Int64 utcTime, LPSYSTEMTIME pst)
+    static void UtcTimeToSystemTime(Int64 utcTime, LPSYSTEMTIME pst)
     {
        FILETIME ft;
        UnixTimeToFileTime(utcTime, &ft);
        FileTimeToSystemTime(&ft, pst);
     }
 
-    Int64 FileTimeToTimeInSeconds(FILETIME fileTimeLocal)
+    static Int64 FileTimeToTimeInSeconds(FILETIME fileTimeLocal)
     {
        const Int32 k100_ns_in_1_second = 10000000;
        ULARGE_INTEGER l;
@@ -89,7 +89,7 @@ namespace Vireo {
        return l.QuadPart / k100_ns_in_1_second;
     }
 
-    Int32 GetTimeZoneOffsetSeconds(Int64 utcTime)
+    static Int32 GetTimeZoneOffsetSeconds(Int64 utcTime)
     {
        TIME_ZONE_INFORMATION timeZoneInfo;
        GetTimeZoneInformation(&timeZoneInfo);
@@ -167,7 +167,7 @@ namespace Vireo {
         return currentYear;
     }
 
-    void abbreviateTimeZone(const char * input, char output[kTempCStringLength])
+    static void abbreviateTimeZone(const char * input, char output[kTempCStringLength])
     {
         char prev = ' ';
         int j = 0;
@@ -228,7 +228,7 @@ namespace Vireo {
         }
 
         // Get timezone abbrevation
-        char timeZoneAbbr[kTempCStringLength] = "TODO-TimeZone";
+        char timeZoneAbbr[kTempCStringLength] = "UnknownTimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
         struct tm timeinfo;
@@ -245,7 +245,7 @@ namespace Vireo {
 #elif kVireoOS_windows
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformationForYear(year, NULL, &timeZoneInfo);
-        char timeZoneName[kTempCStringLength] = "TODO-TimeZone";
+        char timeZoneName[kTempCStringLength] = "UnknownTimeZone";
         if (rc != 0)
         {
            Int32 timeZoneOffsetMinsStandard = timeZoneInfo.Bias;
