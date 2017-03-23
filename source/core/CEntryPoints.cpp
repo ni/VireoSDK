@@ -196,7 +196,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank, and the memory location of the first element (or null if there are zero elements)
 VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
-        const char* viName, const char* eltName, char** arrayTypeNameBegin, Int32* arrayTypeNameLength, Int32* arrayRank, unsigned char** arrayBegin)
+        const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
     TypeManagerScope scope(tm);
     void *pData = null;
@@ -210,12 +210,27 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     if (!pathType->IsArray() || pathType->Rank() <= 0)
         return kEggShellResult_UnexpectedObjectType;
 
-    if (arrayTypeNameBegin == null || arrayTypeNameLength == null || arrayRank == null || arrayBegin == null)
+    if (arrayTypeName == null || arrayRank == null || arrayBegin == null)
         return kEggShellResult_InvalidResultPointer;
 
-    SubString arrayTypeName = pathType->GetSubElement(0)->Name();
-    *arrayTypeNameBegin = (char*)arrayTypeName.Begin();
-    *arrayTypeNameLength = arrayTypeName.Length();
+    static StringRef arrayTypeNameBuffer = null;
+    if (arrayTypeNameBuffer == null) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        arrayTypeNameBuffer = tempReturn.DetachValue();
+    } else {
+        arrayTypeNameBuffer->Resize1D(0);
+    }
+
+    if (arrayTypeNameBuffer == null) {
+        return kEggShellResult_UnableToCreateReturnBuffer;
+    }
+
+    SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
+    arrayTypeNameBuffer->Append(arrayTypeNameSubString.Length(), (Utf8Char*)arrayTypeNameSubString.Begin());
+    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+    *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
     *arrayRank = pathType->Rank();
 
