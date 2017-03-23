@@ -70,9 +70,10 @@ Int32 SubString::DigitValue(Utf32Char codePoint, Int32 base)
     return value;
 }
 
-inline Boolean CompareString(const Utf8Char* sCompare, const Utf8Char* sEnd, const Utf8Char* begin2) {
-    while(sCompare < sEnd) {
-        if (*sCompare++ != *begin2++) {
+// Helper function for comparing string.  Lengths are pre-tested by callers; sCompare2 string is at least as long as sCompare1
+static inline Boolean CompareString(const Utf8Char* sCompare1, const Utf8Char* sEnd1, const Utf8Char* sCompare2) {
+    while(sCompare1 < sEnd1) {
+        if (*sCompare1++ != *sCompare2++) {
             return false;
         }
     }
