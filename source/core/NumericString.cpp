@@ -280,10 +280,12 @@ void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arg
  * Error reporting for when there is a format specifier provided but
  * not enough arguments provided with the Format.
  * */
-void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
+    char formatSpecifierBuf[3];
+    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
     buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Missing args provided for format string: '");
-    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("Error: Missing args provided for format string: '%");
+    buffer->AppendCStr(formatSpecifierBuf);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
     Utf8Char* formatUnEscaped = new Utf8Char[length];
@@ -298,10 +300,12 @@ void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData a
  * This will clear the current buffer string and return on what format
  * specifier it failed on.
  * */
-void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
+    char formatSpecifierBuf[3];
+    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
     buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Invalid format string provided: '");
-    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("Error: Invalid format string provided: '%");
+    buffer->AppendCStr(formatSpecifierBuf);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
     Utf8Char* formatUnEscaped = new Utf8Char[length];
@@ -317,10 +321,12 @@ void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndD
  * This will clear the current buffer string and return on what format
  * specifier it failed on.
  * */
-void ErrMismatchedFormatSpecifier(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, Utf8Char* formatSpecifier) {
+void ErrMismatchedFormatSpecifier(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
+    char formatSpecifierBuf[3];
+    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
     buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Invalid format specifier type mismatch: '");
-    buffer->AppendUtf8Str(formatSpecifier, 3);
+    buffer->AppendCStr("Error: Invalid format specifier type mismatch: '%");
+    buffer->AppendCStr(formatSpecifierBuf);
     buffer->AppendCStr("' in '");
     IntIndex length = format->Length()*2;
     Utf8Char* formatUnEscaped = new Utf8Char[length];
@@ -395,11 +401,7 @@ void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, Static
 {
     *parseFinished = true;
     *validFormatString = false;
-    Utf8Char tempString[3];
-    tempString[0] = '%';
-    tempString[1] = fOptions.FormatChar;
-    tempString[2] = '\0';
-    ErrMismatchedFormatSpecifier(format, count, arguments, buffer, tempString);
+    ErrMismatchedFormatSpecifier(format, count, arguments, buffer, fOptions.FormatChar);
     buffer->Resize1D(0);
 }
 
@@ -453,7 +455,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
         }
         else if (c == '%') {
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(format, count, arguments, buffer, f, &validFormatString, &fOptions, &parseFinished)) continue;
+            if (ReadLocalizedDecimalSeparator(format, count, arguments, buffer, f, &validFormatString, &fOptions, &parseFinished))
+                continue;
             ReadPercentFormatOptions(&f, &fOptions);
             totalArgument++;
             usedArguments++;
@@ -482,20 +485,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
-                Utf8Char tempString[3];
-                tempString[0] = '%';
-                tempString[1] = fOptions.FormatChar;
-                tempString[2] = '\0';
-                ErrFormatInvalidFormatString(format, count, arguments, buffer, tempString);
+                ErrFormatInvalidFormatString(format, count, arguments, buffer, fOptions.FormatChar);
+                break;
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 // Incorrect number of arguments provided for format string
                 parseFinished = true;
                 validFormatString = false;
-                Utf8Char tempString[3];
-                tempString[0] = '%';
-                tempString[1] = fOptions.FormatChar;
-                tempString[2] = '\0';
-                ErrFormatMissingNumArgs(format, count, arguments, buffer, tempString);
+                ErrFormatMissingNumArgs(format, count, arguments, buffer, fOptions.FormatChar);
+                break;
             }
 
             char replacementString[2*kTempCStringLength]; // temp used for modifying string to support opts for sigDigits, engineering notation, etc.
@@ -506,7 +503,26 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
             replacementString[0] = '\0';
             while (!parseFinished) {
+                TypeRef argType = null;
+                void *pData = null;
                 parseFinished = true;
+                if (fOptions.ConsumeArgument) {
+                    if (argumentIndex >= count)
+                        ;
+                    argType = arguments[argumentIndex]._paramType;
+                    pData = arguments[argumentIndex]._pData;
+                    if (argType->IsComplex() &&
+                        (fOptions.FormatChar=='f' || fOptions.FormatChar=='F' || fOptions.FormatChar=='e' || fOptions.FormatChar=='E')) {
+                        if (complexArg >= 2) {
+                            ++argumentIndex;
+                            break;
+                        }
+                        parseFinished = false;
+                        --argumentIndex; // will be incremented at end of loop, but we want to stay here to process both complex parts
+                        argType = argType->GetSubElement(complexArg++);
+                        pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
+                    }
+                }
                 switch (fOptions.FormatChar)
                 {
                     case 'g': case 'G':
@@ -542,18 +558,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     break;
                     case 'f': case 'F':
                     {
-                        TypeRef argType = arguments[argumentIndex]._paramType;
-                        void *pData = arguments[argumentIndex]._pData;
-                        if (argType->IsComplex()) {
-                            if (complexArg > 1) {
-                                ++argumentIndex;
-                                continue; // will terminate loop because parseFinished is true
-                            }
-                            parseFinished = false;
-                            --argumentIndex;
-                            argType = argType->GetSubElement(complexArg++);
-                            pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
-                        }
                         Double tempDouble = ReadDoubleFromMemory(argType, pData);
                         Int32 leadingZero = 0;
                         Int32 exponent = 0;
@@ -605,18 +609,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     break;
                     case 'e': case 'E':
                     {
-                        TypeRef argType = arguments[argumentIndex]._paramType;
-                        void *pData = arguments[argumentIndex]._pData;
-                        if (argType->IsComplex()) {
-                            if (complexArg > 1) {
-                                ++argumentIndex;
-                                continue; // will terminate loop because parseFinished is true
-                            }
-                            parseFinished = false;
-                            --argumentIndex;
-                            argType = argType->GetSubElement(complexArg++);
-                            pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
-                        }
                         Double tempDouble = ReadDoubleFromMemory(argType, pData);
                         Int32 precision = fOptions.Precision;
                         if (complexArg == 2) {
@@ -673,11 +665,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         // TODO don't assume data type. This just becomes the default format for real numbers, then use formatter
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString tempFormat(&percentFormat);
-                        char asciiReplacementString[kTempCStringLength];
                         //Get the numeric string that will replace the format string
                         Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
-                        Int32 sizeOfNumericString2 = snprintf(asciiReplacementString, kTempCStringLength, tempFormat.BeginCStr(), tempDouble);
-                        buffer->Append(sizeOfNumericString2, (Utf8Char*)asciiReplacementString);
+                        Int32 sizeOfNumericString2 = snprintf(replacementString, kTempCStringLength, tempFormat.BeginCStr(), tempDouble);
+                        buffer->Append(sizeOfNumericString2, (Utf8Char*)replacementString);
                         argumentIndex++;
                     }
                     break;
@@ -686,7 +677,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         fOptions.FormatChar = 'B';
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString formattedNumber;
-                        TypeRef argType = arguments[argumentIndex]._paramType;
                         Int32 intSize = 8*argType->TopAQSize();
                         IntMax intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         char BinaryString[2*kTempCStringLength];
@@ -750,7 +740,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         tempFormat.AppendCStr(specifier);
 
                         char formattedNumber[2*kTempCStringLength];
-                        TypeRef argType = arguments[argumentIndex]._paramType;
                         if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
                         {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
@@ -799,7 +788,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'z':      //%z
                     case 's':      //%s
                     {
-                        TypeRef argType = arguments[argumentIndex]._paramType;
+                        argType = arguments[argumentIndex]._paramType;
                         if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean() && !argType->IsEnum())
                         {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
@@ -858,7 +847,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 'T':
                     {
                         Int32 tz = 0;
-                        TypeRef argType = arguments[argumentIndex]._paramType;
+                        argType = arguments[argumentIndex]._paramType;
                         if (fOptions.FormatChar == 'T' && argType->IsTimestamp() && !fOptions.EngineerNotation) {
                             // (Engineer notation here means ^ flag, which in Time context means UTC)
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
@@ -942,7 +931,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     RefactorLVNumeric(&fOptions, replacementString + skipPrev, &sizeOfNumericString, intDigits, truncateSignificant, complexArg > 0);
                     UpdateNumericStringWithDecimalSeparator(fOptions, replacementString + skipPrev, sizeOfNumericString);
                     sizeOfNumericString = Int32(strlen(replacementString));
-                    if (complexArg == 2) {
+                    if (complexArg == 2) { // done with both parts of complex number
                         strncat(replacementString, " i", sizeof(replacementString) - sizeOfNumericString - 1);
                         Boolean negative = replacementString[0] == '-';
                         Utf8Char *tempNum = (Utf8Char*)replacementString;
@@ -954,7 +943,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         TempStackCString numberPart((Utf8Char*)tempNum, sizeOfNumericString);
                         GenerateFinalNumeric(&fOptions, replacementString, &sizeOfNumericString, &numberPart, negative);
                     }
-                    if (complexArg != 1)
+                    if (complexArg != 1) // arg not complex, or complex but we're done with both parts
                         buffer->Append(sizeOfNumericString, (Utf8Char*)replacementString);
 
                 }
