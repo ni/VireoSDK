@@ -53,6 +53,60 @@ namespace Vireo {
 
     Int32 Date::_systemLocaleTimeZone = 0;
 
+#if kVireoOS_windows
+    // UnixTimeToFileTime and UnixTimeToSystemTime are from https ://support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime
+    void UnixTimeToFileTime(time_t t, LPFILETIME pft)
+    {
+       // Note that LONGLONG is a 64-bit value
+       LONGLONG ll;
+
+       ll = Int32x32To64(t, 10000000) + 116444736000000000;
+       pft->dwLowDateTime = (DWORD)ll;
+       pft->dwHighDateTime = ll >> 32;
+    }
+
+    void UnixTimeToSystemTime(time_t t, LPSYSTEMTIME pst)
+    {
+       FILETIME ft;
+
+       UnixTimeToFileTime(t, &ft);
+       FileTimeToSystemTime(&ft, pst);
+    }
+
+    void UtcTimeToSystemTime(Int64 utcTime, LPSYSTEMTIME pst)
+    {
+       FILETIME ft;
+       UnixTimeToFileTime(utcTime, &ft);
+       FileTimeToSystemTime(&ft, pst);
+    }
+
+    Int64 FileTimeToTimeInSeconds(FILETIME fileTimeLocal)
+    {
+       const Int32 k100_ns_in_1_second = 10000000;
+       ULARGE_INTEGER l;
+       l.HighPart = fileTimeLocal.dwHighDateTime;
+       l.LowPart = fileTimeLocal.dwLowDateTime;
+       return l.QuadPart / k100_ns_in_1_second;
+    }
+
+    Int32 GetTimeZoneOffsetSeconds(Int64 utcTime)
+    {
+       TIME_ZONE_INFORMATION timeZoneInfo;
+       GetTimeZoneInformation(&timeZoneInfo);
+
+       SYSTEMTIME sysTimeUtc, sysTimeLocal;
+       UtcTimeToSystemTime(utcTime, &sysTimeUtc);
+       SystemTimeToTzSpecificLocalTime(&timeZoneInfo, &sysTimeUtc, &sysTimeLocal);
+
+       FILETIME fileTimeLocal, fileTimeUtc;
+       SystemTimeToFileTime(&sysTimeLocal, &fileTimeLocal);
+       SystemTimeToFileTime(&sysTimeUtc, &fileTimeUtc);
+       Int64 localFileTime = FileTimeToTimeInSeconds(fileTimeLocal);
+       Int64 utcFileTime = FileTimeToTimeInSeconds(fileTimeUtc);
+       return (Int32)(localFileTime - utcFileTime);
+    }
+#endif
+
     //------------------------------------------------------------
     Int32 numberOfLeapYears(Int32 year, Int32 baseYear)
     {
@@ -113,22 +167,21 @@ namespace Vireo {
         return currentYear;
     }
 
-#if kVireoOS_windows
-    std::string abbreviateTimeZoneName(std::string input)
+    void abbreviateTimeZone(const char * input, char output[kTempCStringLength])
     {
         char prev = ' ';
-        std::string output;
-        for (int i = 0; i < input.length(); i++)
+        int j = 0;
+        for (int i = 0; i < strlen(input); i++)
         {
             if (prev == ' ' && input[i] != ' ')
             {
-                output += input[i];
+                output[j] = input[i];
+                ++j;
             }
             prev = input[i];
         }
-        return output;
+        output[j] = 0;
     }
-#endif
 
     //------------------------------------------------------------
     Boolean isLeapYear(Int32 year)
@@ -180,27 +233,35 @@ namespace Vireo {
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
         struct tm timeinfo;
         localtime_r(&rawtime, &timeinfo);
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
+       if (strchr(timeinfo.tm_zone, ' ') == NULL) {
+          // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
+          snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
+       }
+       else {
+          // if timezone name is unabbreviated (True on Windows (both node.js and browser), then abbreviate it
+          abbreviateTimeZone(timeinfo.tm_zone, timeZoneAbbr);
+       }
 // #elif kVireoOS_emscripten variant deleted (03/2017); localtime_r works correctly
 #elif kVireoOS_windows
-        // Issue #218 TODO - FIXME: return time zone info/dst based on timestamp.Integer(), not current time.
-        // Possibly use SystemTimeToTzSpecificLocalTime
         TIME_ZONE_INFORMATION timeZoneInfo;
-        int rc = GetTimeZoneInformation(&timeZoneInfo);
-        wchar_t *timeZoneName = L"TimeZoneUnknown";
-        if (rc == TIME_ZONE_ID_STANDARD)
+        int rc = GetTimeZoneInformationForYear(year, NULL, &timeZoneInfo);
+        char timeZoneName[kTempCStringLength] = "TODO-TimeZone";
+        if (rc != 0)
         {
-            timeZoneName = timeZoneInfo.StandardName;
+           Int32 timeZoneOffsetMinsStandard = timeZoneInfo.Bias;
+           Int32 timeZoneOffsetMinsDaylight = timeZoneInfo.Bias + timeZoneInfo.DaylightBias;
+           Int32 timeZoneOffsetMins = -(GetTimeZoneOffsetSeconds(timestamp.Integer()) / 60);
+           if (timeZoneOffsetMins == timeZoneOffsetMinsStandard)
+           {
+               wcstombs(timeZoneName, timeZoneInfo.StandardName, sizeof(timeZoneName));
+           }
+           else if (timeZoneOffsetMins == timeZoneOffsetMinsDaylight)
+           {
+              wcstombs(timeZoneName, timeZoneInfo.DaylightName, sizeof(timeZoneName));
+           }
         }
-        else if (rc == TIME_ZONE_ID_DAYLIGHT)
-        {
-            timeZoneName = timeZoneInfo.DaylightName;
-        }
-        //int timeZoneStringSize = wcslen(timeZoneName) + 1;
-        //wcstombs(timeZoneAbbr, timeZoneName, timeZoneStringSize - 1);
-        wcstombs(timeZoneAbbr, timeZoneName, sizeof(timeZoneAbbr));
-        std::string timeZone = abbreviateTimeZoneName(timeZoneAbbr);
-        snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeZone.c_str());
+        // timezone name is unabbreviated (on native Windows). abbreviate it
+        abbreviateTimeZone(timeZoneName, timeZoneAbbr);
 #endif
         Int32 days = secondsOfMonth / kSecondsPerDay;
         Int32 secondsOfHour = secondsOfMonth % kSecondsPerDay;
@@ -311,14 +372,7 @@ namespace Vireo {
         localtime_r(&timeVal, &tm);
         _systemLocaleTimeZone = int(tm.tm_gmtoff);
 #else
-        // Issue #218 TODO -  FIXME: if utcTime is non-zero, time zone bias should be based on utcTime passed in
-        // (in GMT secs since epoch), not current time.
-        // Possibly use SystemTimeToTzSpecificLocalTime
-        
-        // flipping the sign of the time zone
-        TIME_ZONE_INFORMATION timeZoneInfo;
-        GetTimeZoneInformation(&timeZoneInfo);
-        _systemLocaleTimeZone = -int((timeZoneInfo.Bias) * kSecondsPerMinute);
+        _systemLocaleTimeZone = GetTimeZoneOffsetSeconds(utcTime);
 #endif
         return _systemLocaleTimeZone;
     };
