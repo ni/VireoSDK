@@ -149,6 +149,71 @@
             4: 'UnableToCreateReturnBuffer'
         };
 
+        var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
+            var i, retArr, currArr, currArrIndex;
+
+            if (arrLength % dimensionLength !== 0) {
+                throw new Error('Cannot evenly split array into groups');
+            }
+
+            retArr = [];
+            currArr = [];
+            currArrIndex = 0;
+            for (i = 0; i < arrLength; i += 1) {
+                currArr[currArrIndex] = arr[startIndex + i];
+                currArrIndex += 1;
+
+                // After an increment currArrIndex is equivalent to the currArray length
+                if (currArrIndex === dimensionLength) {
+                    retArr.push(currArr);
+                    currArr = [];
+                    currArrIndex = 0;
+                }
+            }
+
+            return retArr;
+        };
+
+        var convertFlatArraytoNArray = function (arr, startIndex, arrLength, dimensionLengths) {
+            var i;
+            var rank = dimensionLengths.length;
+            var checkSize = 1;
+
+            for (i = 0; i < rank; i += 1) {
+                checkSize *= dimensionLengths[i];
+            }
+
+            if (checkSize !== arrLength) {
+                throw new Error('Cannot fold flat array of length ' + arrLength + ' into n dimensional array of capacity ' + checkSize);
+            }
+
+            // Perform a copy of array rank 1
+            var currArr;
+            if (rank === 1) {
+                currArr = [];
+                for (i = 0; i < arrLength; i += 1) {
+                    currArr[i] = arr[startIndex + i];
+                }
+                return currArr;
+            }
+
+            // Perform nd array creation for rank > 1
+            currArr = arr;
+            var currStartIndex = startIndex;
+            var currArrLength = arrLength;
+            var currDimensionLength;
+
+            for (i = 0; i < rank - 1; i += 1) {
+                currDimensionLength = dimensionLengths[i];
+                currArr = groupByDimensionLength(currArr, currStartIndex, currArrLength, currDimensionLength);
+
+                currStartIndex = 0;
+                currArrLength = currArr.length;
+            }
+
+            return currArr;
+        };
+
         var arrayTypeNameDoublePointer = Module._malloc(4);
         var arrayBeginPointer = Module._malloc(4);
         var arrayRankPointer = Module._malloc(4);
@@ -188,10 +253,7 @@
             var arrayStartIndex = arrayBegin / arrayTypeConfig.BYTES_PER_ELEMENT;
             var arrayLength = Module.eggShell.getArrayDimLength(vi, path, 0);
 
-            returnArray = [];
-            for (i = 0; i < arrayLength; i += 1) {
-                returnArray[i] = arrayTypeConfig[arrayStartIndex + i];
-            }
+            returnArray = convertFlatArraytoNArray(arrayTypeConfig, arrayStartIndex, arrayLength, [arrayLength]);
             return returnArray;
         };
 
