@@ -1,5 +1,5 @@
 
-When LV extensions are off and there is an error the default value is returned. Expected value is '(nan inf)'; got '(nan inf)'.
+When LV extensions are off and there is an error the default value is returned. Expected value is '(NaN Inf)'; got '(NaN Inf)'.
 
 In this case an error is correctly returned: 'true'.
 
