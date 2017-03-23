@@ -1092,12 +1092,12 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         IntMax exponent;
         ScientificFloat.ReadInt(&exponent);
         Int32 paddingBase = exponent%3;
+        char tempNumber[kTempCStringLength];
         if (formatOptions->EngineerNotation &&  (paddingBase%3 != 0)) {
 
             if (paddingBase < 0) {
                 paddingBase += 3;
             }
-            char tempNumber[kTempCStringLength];
             exponent = exponent - paddingBase;
 
             // we are lucky, this case will never generate extra significant digit at MSB.
@@ -1149,14 +1149,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
                 Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
-            tempNumber[baseIndex] = 0;
-            if (!skipFinal) {
-                TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
-                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-            } else
-                memcpy(bufferBegin, tempNumber, baseIndex+1);
         } else {
-            char tempNumber[kTempCStringLength];
             baseIndex = 0;
             for (Int32 i = numberStart; i<exponentPos; i++) {
                 tempNumber[baseIndex] = *(buffer+i);
@@ -1179,13 +1172,13 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
                 Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
                 baseIndex += sizeOfExpoent;
             }
-            tempNumber[baseIndex] = 0;
-            if (!skipFinal) {
-                TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
-                GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
-            } else
-                memcpy(bufferBegin, tempNumber, baseIndex+1);
         }
+        tempNumber[baseIndex] = 0;
+        if (!skipFinal) {
+            TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+            GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
+        } else
+            memcpy(bufferBegin, tempNumber, baseIndex+1);
     } else if (formatOptions->FormatChar == 'B' || formatOptions->FormatChar == 'b') {
         Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
         bufferBegin[*pSize] = 0;
