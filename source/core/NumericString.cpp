@@ -582,7 +582,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (precision < 0) {
                                 precision = 0;
                                 truncateSignificant = exponent + 1 - fOptions.Significant;
-                                // need truncate the inxteger part of the float because the sprintf doesnt do this for us.
+                                // need to truncate the integer part of the float because the sprintf doesn't do this for us.
                             }
                         }
                         char formatCode[10];
