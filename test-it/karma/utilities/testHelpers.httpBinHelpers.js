@@ -9,6 +9,7 @@
     };
 
     var serverOnline;
+    var alreadyWarned = false;
     var queryHttpBinStatus = function (done) {
         var loadFailed = function () {
             serverOnline = false;
@@ -50,7 +51,10 @@
             throw new Error('queryHttpBinStatus must be called before makeTestPendingIfHttpBinOffline');
         }
         if (serverOnline === false) {
-            console.warn('HTTPBin Server offline, skipping HTTP tests');
+            if (alreadyWarned === false) {
+                console.warn('HTTPBin Server offline, skipping HTTP tests');
+            }
+            alreadyWarned = true;
             pending();
         }
     };
