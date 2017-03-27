@@ -49,9 +49,9 @@ It has the same data type structure as r and theta inputs, with complex represen
 It is the radial coordinate (r). It is polymorphic. It can be a scalar number, an array or cluster of numbers, an array of cluster of  numbers, and so on.
 ### Param 1 (input) 
 It is the angular coordinate (theta). It is polymorphic. It can be a scalar number, an array or cluster of numbers, an array of cluster of  numbers, and so on.
-### Param 1 (output) 
-It is the real part. It has the same data type structure as r and theta inputs.
 ### Param 2 (output) 
+It is the real part. It has the same data type structure as r and theta inputs.
+### Param 3 (output) 
 It is the imaginary part. It has the same data type structure as r and theta inputs.
 \ingroup VIAA_PI
 
@@ -69,13 +69,13 @@ It is the complex result. It has the same data type structure as the input, with
 \defgroup VIA_API_Real_Imaginary_to_Polar ReOrImToPolar
 # Real/Imaginary to Polar
 ## Converts the rectangular components of a complex number into its polar components
-### Param 1 (input) 
+### Param 0 (input) 
 It is the real part. It is polymorphic. It can be a scalar number, an array or cluster of numbers, an array of cluster of  numbers, and so on.
-### Param 2 (input) 
+### Param 1 (input) 
 It is the imaginary part. It is polymorphic. It can be a scalar number, an array or cluster of numbers, an array of cluster of  numbers, and so on.
-### Param 0 (output) 
+### Param 2 (output) 
 It is the radial coordinate (r). It has the same data type structure as real and imaginary inputs.
-### Param 1 (output) 
+### Param 3 (output) 
 It is the angular coordinate (theta). It has the same data type structure as real and imaginary inputs.
 \ingroup VIAA_PI
 
