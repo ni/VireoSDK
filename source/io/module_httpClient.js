@@ -216,8 +216,8 @@
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
             // Setting to false so communication to servers with Access-Control-Allow-Origin: *
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
-            // TODO mraj: We need a way to expose this configuration to users
-            request.withCredentials = false;
+            // if the jsHttpClientSetCredentials was already called by the user, use that value. Otherwise, default is "false"
+            request.withCredentials = (requestData.withCredentials || false);
 
             // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
             request.responseType = 'text';
@@ -573,7 +573,8 @@
                 method: method,
                 url: url,
                 xhrTimeout: xhrTimeout,
-                buffer: buffer
+                buffer: buffer,
+                withCredentials: httpClient.withCredentials
             };
 
             httpClient.createRequest(requestData, function (responseData) {
@@ -590,6 +591,19 @@
                 Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
+        };
+
+        Module.httpClient.jsHttpClientSetCredentials = function (handle, isWithCredentials, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+            if (errorStatus) {
+                return;
+            }
+
+            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:Credentials', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            if (httpClient === undefined) {
+                return;
+            }
+            httpClient.withCredentials = (isWithCredentials !== 0);
         };
     };
 

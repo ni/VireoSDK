@@ -32,6 +32,10 @@
 
         jsHttpClientMethod: function () {
             Module.httpClient.jsHttpClientMethod.apply(undefined, arguments);
+        },
+
+        jsHttpClientSetCredentials: function () {
+            Module.httpClient.jsHttpClientSetCredentials.apply(undefined, arguments);
         }
     };
 
