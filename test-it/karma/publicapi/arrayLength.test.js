@@ -42,7 +42,7 @@ describe('Arrays in Vireo', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeNonEmptyString();
+            expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
 
             expect(vireo.eggShell.getNumericArray(viName, 'arrayInt8')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, -128, 127]);
@@ -53,6 +53,8 @@ describe('Arrays in Vireo', function () {
             expect(vireo.eggShell.getNumericArray(viName, 'arrayUInt32')).toEqual([8, 6, 7, 5, 3, 0, 9, 0, 4294967295]);
             expect(vireo.eggShell.getNumericArray(viName, 'arraySingle')).toEqual([Math.fround(1.1), Math.fround(2.2), Infinity, NaN, -Infinity, -16777216, 16777216]);
             expect(vireo.eggShell.getNumericArray(viName, 'arrayDouble')).toEqual([1.1, 2.2, Infinity, NaN, -Infinity, -9007199254740992, 9007199254740992]);
+            expect(vireo.eggShell.getNumericArray(viName, 'array2DInt32')).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+            expect(vireo.eggShell.getNumericArray(viName, 'array3DInt32')).toEqual([[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]]]);
 
             expect(function () {
                 vireo.eggShell.getNumericArray(viName, 'variableArrayString');
