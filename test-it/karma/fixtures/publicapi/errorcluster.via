@@ -1,6 +1,5 @@
 define(MyVI dv(VirtualInstrument (
     Locals: c(
-        
         e(c(
             e(.Boolean status)
             e(.Int32 code)
@@ -12,12 +11,7 @@ define(MyVI dv(VirtualInstrument (
             e(.Int32 code)
             e(.String source)
         ) (true -43 'shut up about moon men')) errorClusterDefault)
-
-        e(.UInt32 handle)
     )
     clump (
-        HttpClientOpen('' '' '' 1 handle errorClusterDefault)
     )
 ) ) )
-
-enqueue(MyVI)

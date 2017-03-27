@@ -174,17 +174,13 @@
             return retArr;
         };
 
-        var convertFlatArraytoNArray = function (arr, startIndex, arrLength, dimensionLengths) {
+        var convertFlatArraytoNArray = function (arr, startIndex, dimensionLengths) {
             var i;
             var rank = dimensionLengths.length;
-            var checkSize = 1;
+            var arrLength = 1;
 
             for (i = 0; i < rank; i += 1) {
-                checkSize *= dimensionLengths[i];
-            }
-
-            if (checkSize !== arrLength) {
-                throw new Error('Cannot fold flat array of length ' + arrLength + ' into n dimensional array of capacity ' + checkSize);
+                arrLength *= dimensionLengths[i];
             }
 
             // Perform a copy of array rank 1
@@ -198,6 +194,7 @@
             }
 
             // Perform nd array creation for rank > 1
+            // TODO mraj this is O((m-1)n) for rank m. So rank 2 is O(n) and can be improved for rank > 2
             currArr = arr;
             var currStartIndex = startIndex;
             var currArrLength = arrLength;
@@ -251,9 +248,12 @@
             }
 
             var arrayStartIndex = arrayBegin / arrayTypeConfig.BYTES_PER_ELEMENT;
-            var arrayLength = Module.eggShell.getArrayDimLength(vi, path, 0);
+            var dimensionLengths = [];
+            for (i = 0; i < arrayRank; i += 1) {
+                dimensionLengths[i] = Module.eggShell.getArrayDimLength(vi, path, i);
+            }
 
-            returnArray = convertFlatArraytoNArray(arrayTypeConfig, arrayStartIndex, arrayLength, [arrayLength]);
+            returnArray = convertFlatArraytoNArray(arrayTypeConfig, arrayStartIndex, dimensionLengths);
             return returnArray;
         };
 
