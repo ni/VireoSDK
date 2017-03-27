@@ -123,6 +123,21 @@ This will add a test suite `rpi` that will include the test `RpiTest.via` and al
 $ ./test.js -n -t rpi
 ```
 
+# Updating Vireo Documentation
+We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version 1.8.13.
+
+Installers can be found [here](http://www.stack.nl/~dimitri/doxygen/download.html). Use the 64 Windows version, when downloading the version for windows, most recent version is [here](http://ftp.stack.nl/pub/users/dimitri/doxygen-1.8.13-setup.exe).
+
+Once Doxygen is installed just run the following command in the source directory
+
+*`doxygen`*
+
+It will find and use the Doxyfile file already present in the directory and will generate the documentation files in the following directory
+
+*`\Documents\gh-pages`*
+	
+The main html file in the previous directory is called: index.html
+
 # Legal
 Features beyond that core set, that can be accessed directly from VIA source written by hand, should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt
 
