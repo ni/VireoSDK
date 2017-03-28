@@ -5,8 +5,10 @@ describe('Arrays in Vireo', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    // Sharing Vireo instances across tests make them run soooo much faster
-    var vireo = new Vireo();
+    var vireo;
+    beforeEach(function () {
+        vireo = new Vireo();
+    });
 
     it('expose their length in the public api', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromTestItDir('ArrayDemo.via');
@@ -55,10 +57,40 @@ describe('Arrays in Vireo', function () {
             expect(vireo.eggShell.getNumericArray(viName, 'arrayDouble')).toEqual([1.1, 2.2, Infinity, NaN, -Infinity, -9007199254740992, 9007199254740992]);
             expect(vireo.eggShell.getNumericArray(viName, 'array2DInt32')).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
             expect(vireo.eggShell.getNumericArray(viName, 'array3DInt32')).toEqual([[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]]]);
+            expect(vireo.eggShell.getNumericArray(viName, 'arrayInt8Empty')).toEqual([]);
+            expect(vireo.eggShell.getNumericArray(viName, 'array2DInt8Empty')).toEqual([[]]);
+            expect(vireo.eggShell.getNumericArray(viName, 'array3DInt8Empty')).toEqual([[[]]]);
+
+            done();
+        });
+    });
+
+    it('error with unsupported types in the optimized functions', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
+        var viName = 'ArrayTypesOptimized';
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
 
             expect(function () {
-                vireo.eggShell.getNumericArray(viName, 'variableArrayString');
-            }).toThrow();
+                vireo.eggShell.getNumericArray(viName, 'arrayString');
+            }).toThrowError(/Unsupported type/);
+
+            expect(function () {
+                vireo.eggShell.getNumericArray(viName, 'arrayBoolean');
+            }).toThrowError(/Unsupported type/);
+
+            expect(function () {
+                vireo.eggShell.getNumericArray(viName, 'nonExistantPath');
+            }).toThrowError(/ObjectNotFoundAtPath/);
+
+            expect(function () {
+                vireo.eggShell.getNumericArray(viName, 'scalarNumber');
+            }).toThrowError(/UnexpectedObjectType/);
+
             done();
         });
     });
