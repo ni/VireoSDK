@@ -35,8 +35,9 @@ VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, co
 VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName);
 VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format, const char* value);
 VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format);
-// array meta
+VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm, const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
+VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length);
@@ -55,11 +56,12 @@ VIREO_EXPORT Boolean TypeRef_HasCustomDefault(TypeRef typeRef);
 VIREO_EXPORT EncodingEnum TypeRef_BitEncoding(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef);
 VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer);
-VIREO_EXPORT void TypeRef_ElementName(TypeRef typeRef, Int32* bufferSize, char* buffer);
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Rank(TypeRef typeRef);
+VIREO_EXPORT PointerTypeEnum TypeRef_PointerType(TypeRef typeRef);
+VIREO_EXPORT TypeRef TypeRef_Next(TypeRef typeRef);
+VIREO_EXPORT UsageTypeEnum TypeRef_ElementUsageType(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef);
-VIREO_EXPORT TypeRef TypeRef_GetSubElementByPath(TypeRef typeRef, char* buffer, Int32 *offset);
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index);
 //------------------------------------------------------------
 //! TypedBlock functions
