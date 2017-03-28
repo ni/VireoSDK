@@ -12,6 +12,10 @@ define(ArrayTypesOptimized dv(.VirtualInstrument (
     e(dv(a(.Int32 * * *) (((1 2 3 )(4 5 6 )(7 8 9 ))((10 11 12 )(13 14 15 )(16 17 18 )))) array3DInt32)
     e(dv(a(.String *) ('aaa' 'bbb' 'ccc')) arrayString)
     e(dv(a(.Boolean *) (true false true false)) arrayBoolean)
+    e(dv(.UInt32 10) scalarNumber)
+    e(dv(a(.Int8 *) ()) arrayInt8Empty)
+    e(dv(a(.Int8 * *) ()) array2DInt8Empty)
+    e(dv(a(.Int8 * * *) ()) array3DInt8Empty)
   )
   clump(
   )
