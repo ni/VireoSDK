@@ -159,6 +159,7 @@
             retArr = [];
             currArr = [];
             currArrIndex = 0;
+            // TODO mraj should benchmark and see if difference between slice and iteration
             for (i = 0; i < arrLength; i += 1) {
                 currArr[currArrIndex] = arr[startIndex + i];
                 currArrIndex += 1;

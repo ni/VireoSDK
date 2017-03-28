@@ -35,7 +35,7 @@ describe('Arrays in Vireo', function () {
         });
     });
 
-    it('can read arrays using the optimized functions', function (done) {
+    it('can be read using optimized eggshell functions', function (done) {
         var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
         var viName = 'ArrayTypesOptimized';
 
