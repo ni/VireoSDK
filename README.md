@@ -123,6 +123,29 @@ This will add a test suite `rpi` that will include the test `RpiTest.via` and al
 $ ./test.js -n -t rpi
 ```
 
+## Running the HTTP test server
+
+### Overview
+Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client functionality. The tests rely on a locally running instance of the httpbin server to perform the tests. The test suite will skip tests (without failing) that rely on the httpbin server running locally if the server is not running. However, if you would like to run the HTTP client tests locally these instructions will help you get configured.
+
+### Requirements
+- Python 2.7.9 or later (primarily for pip availability)
+- Pip package manager
+
+### Setup
+1. Ensure that python (correct version) and pip are available on the path
+2. From a command line do `pip install virtualenv`
+3. From a command line in the VireoSDK directory do `virtualenv env`. This will create a directory named `env` in the VireoSDK directory
+4. Depending on your platform activate the virtualenv environment in the `env` directory. For Windows this means running the script located in `VireoSDK\env\Scripts\activate` in the command line
+5. With the env configured you can now install httpbin using the command `npm run httpbin-install`
+
+### Starting the Server
+1. Open a command prompt in the VireoSDK directory
+2. On Windows you can execute `npm run httpbin` to start the httpbin server in a new window. The command will start a virtualenv for you based on the `env` directory on the windows platform.
+3. With the server running in a new window now you can run the tests that rely on the HTTP client
+
+If you used a different name for the virtualenv directory or are running on a different platform you can reference the `httpbin` script in package.json to see how the httpbin server is launched (port configuration, etc) 
+
 # Updating Vireo Documentation
 We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version 1.8.13.
 
