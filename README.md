@@ -134,15 +134,15 @@ Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client funct
 
 ### Setup
 1. Ensure that python (correct version) and pip are available on the path
-2. From a command line do `pip install virtualenv`
-3. From a command line in the VireoSDK directory do `virtualenv env`. This will create a directory named `env` in the VireoSDK directory
-4. Depending on your platform activate the virtualenv environment in the `env` directory. For Windows this means running the script located in `VireoSDK\env\Scripts\activate` in the command line
-5. With the env configured you can now install httpbin using the command `npm run httpbin-install`
+2. From a command line in the VireoSDK directory or elsewhere do `pip install virtualenv` to globally install the [virtualenv](https://virtualenv.pypa.io/en/stable/) tool
+3. From a command line in the VireoSDK directory run `virtualenv env`. This will create a directory named `env` in the VireoSDK directory
+4. Depending on your platform activate the virtualenv `env` that was created. For Windows this means running the command `.\env\Scripts\activate` from the VireoSDK directory.
+5. With the env activated you can now install httpbin using the command `npm run httpbin-install` for the VireoSDK directory
 
 ### Starting the Server
 1. Open a command prompt in the VireoSDK directory
-2. On Windows you can execute `npm run httpbin` to start the httpbin server in a new window. The command will start a virtualenv for you based on the `env` directory on the windows platform.
-3. With the server running in a new window now you can run the tests that rely on the HTTP client
+2. On Windows you can execute `npm run httpbin-win` to start the httpbin server in a new window. The command will start a virtualenv for you based on the `env` directory on the windows platform.
+3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run karma`)
 
 If you used a different name for the virtualenv directory or are running on a different platform you can reference the `httpbin` script in package.json to see how the httpbin server is launched (port configuration, etc) 
 
