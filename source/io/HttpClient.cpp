@@ -39,6 +39,16 @@ extern "C" {
 }
 #endif
 
+/* 
+	The call chain will be prepended to errorCluster source string.
+	For example:
+	
+	If existing source is empty string then output is
+		Primitive in MyVI->SubVI
+
+	If existing source contains contents such as <APPEND>\nCustom Error Information then output is
+		Primitive in MyVI->SubVI<APPEND>\nCustom Error Information
+*/
 void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName)
 {
     if (errorCluster && errorCluster->status) {
