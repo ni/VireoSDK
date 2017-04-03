@@ -144,6 +144,8 @@ public:
     #define THREAD_EXEC() (THREAD_TADM()->TheExecutionContext())
     #define THREAD_CLUMP() (THREAD_EXEC()->CurrentClump())
 #endif
+
+void AppendCallChainString(StringRef stringRef);
     
 } // namespace Vireo
 

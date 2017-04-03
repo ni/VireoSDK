@@ -5,7 +5,7 @@ describe('Running an Open Handle call', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var WEBVI_UNSUPPORTED_INPUT = 363798;
+    var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
     beforeEach(function () {
@@ -53,6 +53,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
             expect(viPathParser('error.source')).toBeNonEmptyString();
+            expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
     });
@@ -76,6 +77,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
             expect(viPathParser('error.source')).toBeNonEmptyString();
+            expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
     });
@@ -153,6 +155,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
             expect(viPathParser('error.source')).toBeNonEmptyString();
+            expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
     });
