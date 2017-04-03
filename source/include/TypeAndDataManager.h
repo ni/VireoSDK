@@ -1177,6 +1177,7 @@ public:
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }
     void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
+    void AppendStringRef(StringRef stringRef)           { Append((IntIndex)stringRef->Length(), (Utf8Char*)stringRef->Begin()); }
     void InsertCStr(IntIndex position, ConstCStr cstr)
                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendViaDecoded(SubString *string);

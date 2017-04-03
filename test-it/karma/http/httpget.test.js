@@ -8,7 +8,7 @@ describe('Performing a GET request', function () {
     var httpParser = window.testHelpers.httpParser;
     var textFormat = window.testHelpers.textFormat;
 
-    var WEBVI_UNSUPPORTED_INPUT = 363798;
+    var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
     beforeEach(function (done) {
@@ -67,6 +67,7 @@ describe('Performing a GET request', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
             expect(viPathParser('error.source')).toBeNonEmptyString();
+            expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
             done();
         });
     });

@@ -7,7 +7,7 @@ describe('Performing a PUT request', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    var WEBVI_UNSUPPORTED_INPUT = 363798;
+    var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
     beforeEach(function (done) {
@@ -66,6 +66,7 @@ describe('Performing a PUT request', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
             expect(viPathParser('error.source')).toBeNonEmptyString();
+            expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
             done();
         });
     });

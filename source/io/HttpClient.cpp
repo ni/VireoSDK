@@ -39,21 +39,49 @@ extern "C" {
 }
 #endif
 
+void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName)
+{
+    if (errorCluster && errorCluster->status) {
+        TempStackCStringFromString currentErrorString(errorCluster->source);
+        errorCluster->source->Resize1D(0);
+        errorCluster->source->AppendCStr(methodName);
+        errorCluster->source->AppendCStr(" in ");
+        AppendCallChainString(errorCluster->source);
+        errorCluster->source->AppendCStr(currentErrorString.BeginCStr());
+    }
+}
+
+void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, ConstCStr methodName)
+{
+    if (errorCluster && !errorCluster->status) {
+        errorCluster->status = true;
+        errorCluster->code = kLVError_NotSupported;
+        errorCluster->source->Resize1D(0);
+        AddCallChainToSourceIfErrorPresent(errorCluster, methodName);
+    }
+}
+ 
 //------------------------------------------------------------
 // Cookie file(0), username(1), password(2), verify Server(3), handle(4), error cluster(5)
 VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientOpen(
-        _Param(0),
-        _Param(1),
-        _Param(2),
-        _Param(3),
-        _ParamPointer(4),
-        &_Param(5).status,
-        &_Param(5).code,
-        _Param(5).source);
+    if (!_Param(5).status) {
+        jsHttpClientOpen(
+            _Param(0),
+            _Param(1),
+            _Param(2),
+            _Param(3),
+            _ParamPointer(4),
+            &_Param(5).status,
+            &_Param(5).code,
+            _Param(5).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(5), "HttpClientOpen");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(5), "HttpClientOpen");
 #endif
+
     return _NextInstruction();
 }
 
@@ -62,11 +90,16 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientClose(
-        _Param(0),
-        &_Param(1).status,
-        &_Param(1).code,
-        _Param(1).source);
+    if (!_Param(1).status) {
+        jsHttpClientClose(
+            _Param(0),
+            &_Param(1).status,
+            &_Param(1).code,
+            _Param(1).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(1), "HttpClientClose");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(1), "HttpClientClose");
 #endif
     return _NextInstruction();
 }
@@ -76,13 +109,18 @@ VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientAddHeader(
-        _Param(0),
-        _Param(1),
-        _Param(2),
-        &_Param(3).status,
-        &_Param(3).code,
-        _Param(3).source);
+    if (!_Param(3).status) {
+        jsHttpClientAddHeader(
+            _Param(0),
+            _Param(1),
+            _Param(2),
+            &_Param(3).status,
+            &_Param(3).code,
+            _Param(3).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(3), "HttpClientAddHeader");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(3), "HttpClientAddHeader");
 #endif
     return _NextInstruction();
 }
@@ -92,12 +130,17 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientRemoveHeader(
-        _Param(0),
-        _Param(1),
-        &_Param(2).status,
-        &_Param(2).code,
-        _Param(2).source);
+    if (!_Param(2).status) {
+        jsHttpClientRemoveHeader(
+            _Param(0),
+            _Param(1),
+            &_Param(2).status,
+            &_Param(2).code,
+            _Param(2).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientRemoveHeader");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientRemoveHeader");
 #endif
     return _NextInstruction();
 }
@@ -107,13 +150,18 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluste
 VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientGetHeader(
-        _Param(0),
-        _Param(1),
-        _Param(2),
-        &_Param(3).status,
-        &_Param(3).code,
-        _Param(3).source);
+    if (!_Param(3).status) {
+        jsHttpClientGetHeader(
+            _Param(0),
+            _Param(1),
+            _Param(2),
+            &_Param(3).status,
+            &_Param(3).code,
+            _Param(3).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(3), "HttpClientGetHeader");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(3), "HttpClientGetHeader");
 #endif
     return _NextInstruction();
 }
@@ -123,14 +171,19 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientHeaderExists(
-        _Param(0),
-        _Param(1),
-        _ParamPointer(2),
-        _Param(3),
-        &_Param(4).status,
-        &_Param(4).code,
-        _Param(4).source);
+    if (!_Param(4).status) {
+        jsHttpClientHeaderExists(
+            _Param(0),
+            _Param(1),
+            _ParamPointer(2),
+            _Param(3),
+            &_Param(4).status,
+            &_Param(4).code,
+            _Param(4).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(4), "HttpClientHeaderExists");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(4), "HttpClientHeaderExists");
 #endif
     return _NextInstruction();
 }
@@ -140,12 +193,17 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, Str
 VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    jsHttpClientListHeaders(
-        _Param(0),
-        _Param(1),
-        &_Param(2).status,
-        &_Param(2).code,
-        _Param(2).source);
+    if (!_Param(2).status) {
+        jsHttpClientListHeaders(
+            _Param(0),
+            _Param(1),
+            &_Param(2).status,
+            &_Param(2).code,
+            _Param(2).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientListHeaders");
+    }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientListHeaders");
 #endif
     return _NextInstruction();
 }
@@ -160,30 +218,39 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kGet,
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            null,
-            _ParamPointer(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            &_Param(7).status,
-            &_Param(7).code,
-            _Param(7).source,
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
-    } else {
+        if (!_Param(7).status) {
+            // This is the initial call, call the js function
+            jsHttpClientMethod(
+                kGet,
+                _Param(0),
+                _Param(1),
+                _Param(2),
+                null,
+                _ParamPointer(3),
+                _Param(4),
+                _Param(5),
+                _ParamPointer(6),
+                &_Param(7).status,
+                &_Param(7).code,
+                _Param(7).source,
+                _Param(8));
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return clump->WaitOnObservableObject(_this);
+        }
+        else {
+            return _NextInstruction();
+        }
+    }
+    else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(7), "HttpClientGet");
         clump->ClearObservationStates();
         return _NextInstruction();
     }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(7), "HttpClientGet");
 #endif
     return _NextInstruction();
 }
@@ -197,31 +264,38 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kHead,
-            _Param(0),
-            _Param(1),
-            null,
-            null,
-            _ParamPointer(2),
-            _Param(3),
-            null,
-            _ParamPointer(4),
-            &_Param(5).status,
-            &_Param(5).code,
-            _Param(5).source,
-            _Param(6));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
+        if (!_Param(5).status) {
+            // This is the initial call, call the js function
+            jsHttpClientMethod(
+                kHead,
+                _Param(0),
+                _Param(1),
+                null,
+                null,
+                _ParamPointer(2),
+                _Param(3),
+                null,
+                _ParamPointer(4),
+                &_Param(5).status,
+                &_Param(5).code,
+                _Param(5).source,
+                _Param(6));
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return clump->WaitOnObservableObject(_this);
+        }
+        else {
+            return _NextInstruction();
+        }
     } else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(5), "HttpClientHead");
         clump->ClearObservationStates();
         return _NextInstruction();
     }
-
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(5), "HttpClientHead");
 #endif
     return _NextInstruction();
 }
@@ -235,30 +309,38 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kPut,
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            _Param(3),
-            _ParamPointer(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            &_Param(8).status,
-            &_Param(8).code,
-            _Param(8).source,
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
+        if (!_Param(8).status) {
+            // This is the initial call, call the js function
+            jsHttpClientMethod(
+                kPut,
+                _Param(0),
+                _Param(1),
+                _Param(2),
+                _Param(3),
+                _ParamPointer(4),
+                _Param(5),
+                _Param(6),
+                _ParamPointer(7),
+                &_Param(8).status,
+                &_Param(8).code,
+                _Param(8).source,
+                _Param(9));
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return clump->WaitOnObservableObject(_this);
+        }
+        else {
+            return _NextInstruction();
+        }
     } else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(8), "HttpClientPut");
         clump->ClearObservationStates();
         return _NextInstruction();
     }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(8), "HttpClientPut");
 #endif
     return _NextInstruction();
 }
@@ -272,30 +354,38 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kDelete,
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            null,
-            _ParamPointer(3),
-            _Param(4),
-            _Param(5),
-            _ParamPointer(6),
-            &_Param(7).status,
-            &_Param(7).code,
-            _Param(7).source,
-            _Param(8));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
+        if (!_Param(7).status) {
+            // This is the initial call, call the js function
+            jsHttpClientMethod(
+                kDelete,
+                _Param(0),
+                _Param(1),
+                _Param(2),
+                null,
+                _ParamPointer(3),
+                _Param(4),
+                _Param(5),
+                _ParamPointer(6),
+                &_Param(7).status,
+                &_Param(7).code,
+                _Param(7).source,
+                _Param(8));
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return clump->WaitOnObservableObject(_this);
+        }
+        else {
+            return _NextInstruction();
+        }
     } else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(7), "HttpClientDelete");
         clump->ClearObservationStates();
         return _NextInstruction();
     }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(7), "HttpClientDelete");
 #endif
     return _NextInstruction();
 }
@@ -309,30 +399,38 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        // This is the initial call, call the js function
-        jsHttpClientMethod(
-            kPost,
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            _Param(3),
-            _ParamPointer(4),
-            _Param(5),
-            _Param(6),
-            _ParamPointer(7),
-            &_Param(8).status,
-            &_Param(8).code,
-            _Param(8).source,
-            _Param(9));
-        pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-        pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-        return clump->WaitOnObservableObject(_this);
+        if (!_Param(8).status) {
+            // This is the initial call, call the js function
+            jsHttpClientMethod(
+                kPost,
+                _Param(0),
+                _Param(1),
+                _Param(2),
+                _Param(3),
+                _ParamPointer(4),
+                _Param(5),
+                _Param(6),
+                _ParamPointer(7),
+                &_Param(8).status,
+                &_Param(8).code,
+                _Param(8).source,
+                _Param(9));
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return clump->WaitOnObservableObject(_this);
+        }
+        else {
+            return _NextInstruction();
+        }
     } else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(8), "HttpClientPost");
         clump->ClearObservationStates();
         return _NextInstruction();
     }
+#else
+    GenerateNotSupportedOnPlatformError(_ParamPointer(8), "HttpClientPost");
 #endif
     return _NextInstruction();
 }

@@ -219,7 +219,7 @@ VIREO_FUNCTION_SIGNATURE1(Branch, InstructionCore)
     return _ParamPointer(0);
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
+void GetCallChainArray(StringRefArray1D* callChain)
 {
     ExecutionContextRef exec = THREAD_EXEC();
 
@@ -228,7 +228,7 @@ VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
     VIClump *caller = runningQueueElt;
     Int32 count = 0;
 
-    if (_ParamPointer(0)) {
+    if (callChain) {
         do { // preflight caller chain to count subVI depth
             caller = vi->Clumps()->Begin()->_caller; // caller only set on entry clump
             if (caller)
@@ -236,23 +236,46 @@ VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
             ++count;
         } while (caller);
 
-        _Param(0)->Resize1D(count);
+        callChain->Resize1D(count);
 
         count = 0;
         vi = runningQueueElt->OwningVI();
         do { // ! This loop must match the preflight in terms of assigning and testing caller
             SubString s = vi->VIName();
-            _Param(0)->At(count)->CopyFromSubString(&s);
+            callChain->At(count)->CopyFromSubString(&s);
             caller = vi->Clumps()->Begin()->_caller;
             if (caller)
                 vi = caller->OwningVI();
             ++count;
         } while (caller);
-
     }
+}
+//------------------------------------------------------------
+void AppendCallChainString(StringRef stringRef)
+{
+    ExecutionContextRef exec = THREAD_EXEC();
+    VIClump* runningQueueElt = exec->_runningQueueElt;
+    VirtualInstrument* vi = runningQueueElt->OwningVI();
+    TypeManagerRef typeManager = vi->TheTypeManager();
+    TypeRef itemType = typeManager->FindType(tsStringArrayType);
+    StringRefArray1D* callChain = (StringRefArray1D*)StringRefArray1D::New(itemType);
+    GetCallChainArray(callChain);
+    for (int i = 0; i < callChain->Length() - 1; i++) {        
+        stringRef->AppendStringRef(*callChain->BeginAt(i));
+        stringRef->AppendCStr("->");
+    }
+    if (callChain->Length() > 0) {
+        stringRef->AppendStringRef(*callChain->BeginAt(callChain->Length() - 1));
+    }
+    stringRef->AppendCStr("\r\n");
+    itemType->ClearData(&callChain);
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
+{
+    GetCallChainArray(_Param(0));
     return _NextInstruction();
 }
-
 //------------------------------------------------------------
 ExecutionContext::ExecutionContext()
 {
