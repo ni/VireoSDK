@@ -1,4 +1,4 @@
-describe('Performing a GET request', function () {
+describe('Performing a PUT request', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -6,7 +6,6 @@ describe('Performing a GET request', function () {
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
-    var textFormat = window.testHelpers.textFormat;
 
     var WEBVI_UNSUPPORTED_INPUT = 363798;
     var vireo;
@@ -22,13 +21,13 @@ describe('Performing a GET request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -46,13 +45,13 @@ describe('Performing a GET request', function () {
     });
 
     it('errors with an output file parameter', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         var invalidOutputFile = 'C:\\any\\path';
         viPathWriter('url', url);
         viPathWriter('outputFile', invalidOutputFile);
@@ -71,14 +70,14 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('validating a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+    it('validating a simple 200 response with empty buffer', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -100,7 +99,8 @@ describe('Performing a GET request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(requestUrl.pathname).toBe('/get');
+            expect(httpBinBody.data).toBeEmptyString();
+            expect(requestUrl.pathname).toBe('/put');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
@@ -114,10 +114,107 @@ describe('Performing a GET request', function () {
         });
     });
 
-    // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
+    it('validating a simple 200 response with simple buffer', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
+        viPathWriter('url', url);
+        var buffer = JSON.stringify({
+            rick: 'sanchez',
+            morty: 'smith',
+            beth: 'smith',
+            jerry: 'smith',
+            summer: 'smith',
+            mr: 'pbh'
+        });
+        viPathWriter('buffer', buffer);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.data).toBe(buffer);
+            expect(requestUrl.pathname).toBe('/put');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a simple 200 response with non-ascii buffer', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
+        viPathWriter('url', url);
+        var buffer = 'Iñtërnâtiônàlizætiøn☃💩';
+        viPathWriter('buffer', buffer);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.data).toBe(buffer);
+            expect(requestUrl.pathname).toBe('/put');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
 
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -155,56 +252,14 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('validating a response with UTF8 data', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-        var bodyTextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8.txt');
-        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(bodyTextUrl));
+    it('with open, put, close and a simple 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('encoding/utf8');
-        viPathWriter('url', url);
-
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-
-            // handle
-            expect(viPathParser('handle')).toBe(0);
-
-            // header
-            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
-            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
-            expect(responseHeader.statusCode).toBe(200);
-            expect(responseHeader.reasonPhrase).toBe('OK');
-            expect(responseHeader.headers).toBeNonEmptyObject();
-
-            // body
-            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
-            expect(responseBody).toBe(bodyText);
-
-            // status code
-            expect(viPathParser('statusCode')).toBe(200);
-
-            // error
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-
-            done();
-        });
-    });
-
-    it('with open, get, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
-        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
-
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -221,14 +276,14 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('with open, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
+    it('with open, put, close and validates a 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         viPathWriter('url', url);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -250,7 +305,8 @@ describe('Performing a GET request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(requestUrl.pathname).toBe('/get');
+            expect(httpBinBody.data).toBeEmptyString();
+            expect(requestUrl.pathname).toBe('/put');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
@@ -263,14 +319,14 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('with open, add header, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
+    it('with open, add header, put, close and validates a 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenAddMethodClose.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
         var header = 'birdperson';
         var value = 'in bird culture this is considered a dick move';
         viPathWriter('url', url);
@@ -297,7 +353,8 @@ describe('Performing a GET request', function () {
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(httpBinBody.headersLowerCase[header]).toBe(value);
-            expect(requestUrl.pathname).toBe('/get');
+            expect(httpBinBody.data).toBeEmptyString();
+            expect(requestUrl.pathname).toBe('/put');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
@@ -311,20 +368,20 @@ describe('Performing a GET request', function () {
     });
 
     it('in parallel and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetParallel.via');
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutParallel.via');
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url1 = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url1 = httpBinHelpers.convertToAbsoluteUrl('put');
         var header1 = 'birdperson';
         var value1 = 'in bird culture this is considered a dick move';
         viPathWriter('url1', url1);
         viPathWriter('header1', header1);
         viPathWriter('value1', value1);
 
-        var url2 = httpBinHelpers.convertToAbsoluteUrl('get');
+        var url2 = httpBinHelpers.convertToAbsoluteUrl('put');
         var header2 = 'mrmeeseeks';
         var value2 = 'look at me';
         viPathWriter('url2', url2);
@@ -353,7 +410,8 @@ describe('Performing a GET request', function () {
             expect(httpBinBody1.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody1.headersLowerCase).not.toHaveMember(header2);
             expect(httpBinBody1.headersLowerCase[header1]).toBe(value1);
-            expect(requestUrl1.pathname).toBe('/get');
+            expect(httpBinBody1.data).toBeEmptyString();
+            expect(requestUrl1.pathname).toBe('/put');
 
             // status code 1
             expect(viPathParser('statusCode1')).toBe(200);
@@ -381,7 +439,8 @@ describe('Performing a GET request', function () {
             expect(httpBinBody2.headersLowerCase).not.toHaveMember(header1);
             expect(httpBinBody2.headersLowerCase).toHaveMember(header2);
             expect(httpBinBody2.headersLowerCase[header2]).toBe(value2);
-            expect(requestUrl2.pathname).toBe('/get');
+            expect(httpBinBody2.data).toBeEmptyString();
+            expect(requestUrl2.pathname).toBe('/put');
 
             // status code 2
             expect(viPathParser('statusCode2')).toBe(200);
