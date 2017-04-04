@@ -417,7 +417,10 @@
         }
 
         // Filter the test list just in case
-        testFiles = Array.from(testSet).filter(isViaFile);
+        testFiles = Array.from(testSet).filter(isViaFile).map(function (filePath) {
+            var testFileName = path.basename(filePath);
+            return testFileName;
+        });
         testFiles.sort();
 
         if (printOutTests) {
