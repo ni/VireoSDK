@@ -26,11 +26,11 @@
             // test assets
             'test-it/karma/utilities/testHelpers.*.js',
             {
-                pattern: 'test-it/*.via',
+                pattern: 'test-it/ViaTests/*.via',
                 included: false
             },
             {
-                pattern: 'test-it/results/*.vtr',
+                pattern: 'test-it/ExpectedResults/*.vtr',
                 included: false
             },
             {
