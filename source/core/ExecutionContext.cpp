@@ -268,7 +268,6 @@ void AppendCallChainString(StringRef stringRef)
         stringRef->AppendStringRef(*callChain->BeginAt(callChain->Length() - 1));
     }
     itemType->ClearData(&callChain);
-    free(callChain);
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(CallChain, StringRefArray1D*)
