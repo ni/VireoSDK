@@ -8,10 +8,10 @@ module.exports = function (config) {
 
     sharedConfig.files = sharedConfig.files.concat([
         // test assets
-        'test-it/karma/utilities/extendJasmineTimeout.longrun.js',
+        'test-it/karma/utilities/ExtendJasmineTimeout.LongRun.js',
 
         // test specs
-        'test-it/karma/longrun/*.test.js'
+        'test-it/karma/longrun/*.Test.js'
     ]);
 
     // level of logging
