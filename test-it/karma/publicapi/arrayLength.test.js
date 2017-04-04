@@ -11,7 +11,7 @@ describe('Arrays in Vireo', function () {
     });
 
     it('expose their length in the public api', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromTestItDir('ArrayDemo.via');
+        var viaPath = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
         var viName = 'ArrayDemo';
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);

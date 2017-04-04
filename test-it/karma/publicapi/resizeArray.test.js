@@ -7,7 +7,7 @@ describe('Arrays in Vireo', function () {
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
-    var viaPath = fixtures.convertToAbsoluteFromTestItDir('ArrayDemo.via');
+    var viaPath = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
     var viName = 'ArrayDemo';
     var runSlicesAsync;
 
