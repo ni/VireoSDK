@@ -9,8 +9,8 @@ describe('can run test suite file', function () {
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
-    var viaFiles = fixtures.matchNamesFromPaths(/test-it\/(\w*)\.via$/);
-    var vtrFiles = fixtures.matchNamesFromPaths(/test-it\/results\/(\w*)\.vtr$/);
+    var viaFiles = fixtures.matchNamesFromPaths(/test-it\/ViaTests\/(\w*)\.via$/);
+    var vtrFiles = fixtures.matchNamesFromPaths(/test-it\/ExpectedResults\/(\w*)\.vtr$/);
 
     var stringArrayToObjectMap = function (arr) {
         return arr.reduce(function (obj, testName) {
