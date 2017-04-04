@@ -3,7 +3,7 @@
     window.testHelpers = window.testHelpers || {};
 
     var cache = {};
-    var basePathTestIt = '/base/test-it/';
+    var basePathViaTests = '/base/test-it/ViaTests/';
     var basePathFixture = '/base/test-it/karma/fixtures/';
 
     var makeRequest = function (absoluteUrl) {
@@ -24,8 +24,8 @@
         return cache[absoluteUrl];
     };
 
-    var convertToAbsoluteFromTestItDir = function (relativePath) {
-        return basePathTestIt + relativePath;
+    var convertToAbsoluteFromViaTestsDir = function (relativePath) {
+        return basePathViaTests + relativePath;
     };
 
     var convertToAbsoluteFromFixturesDir = function (relativePath) {
@@ -48,7 +48,7 @@
     };
 
     window.testHelpers.fixtures = {
-        convertToAbsoluteFromTestItDir: convertToAbsoluteFromTestItDir,
+        convertToAbsoluteFromViaTestsDir: convertToAbsoluteFromViaTestsDir,
         convertToAbsoluteFromFixturesDir: convertToAbsoluteFromFixturesDir,
         loadAbsoluteUrl: loadAbsoluteUrl,
         matchNamesFromPaths: matchNamesFromPaths
