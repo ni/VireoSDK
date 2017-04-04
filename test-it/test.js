@@ -182,7 +182,7 @@
     // Process the via files for the provided tester function and compare with
     // the results file of the same name but with a '.vtr' extension
     var runTestCore = function (testName, tester, execOnly) {
-        var resultsFileName = 'results/' + path.basename(testName, '.via') + '.vtr';
+        var resultsFileName = 'vtr/' + path.basename(testName, '.via') + '.vtr';
         var oldResults = '';
         var noOldResults = false;
 
@@ -214,9 +214,10 @@
     // Process a provided test and return the stdout from the vireo.js runtime
     var RunVJSTest = function (testName) {
         var viaCode;
+        var viaPath = 'via/' + testName;
         vireo.reboot();
         try {
-            viaCode = fs.readFileSync(testName).toString();
+            viaCode = fs.readFileSync(viaPath).toString();
         } catch (e) {
             if (e.code === 'ENOENT') {
                 viaCode = '';
@@ -238,13 +239,14 @@
     var RunNativeTest = function (testName) {
         var newResults = '';
         var exec = '../dist/esh';
+        var viaPath = 'via/' + testName;
         // Look for Windows exec or Linux/Unix
         if (process.platform === 'win32') {
             exec = '../dist/Debug/esh';
         }
 
         try {
-            newResults = cp.execFileSync(exec, [testName]).toString();
+            newResults = cp.execFileSync(exec, [viaPath]).toString();
         } catch (e) {
             // If Vireo detects an error it will return non zero
             // and exec will throw an exception, so catch the results.
