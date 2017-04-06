@@ -52,7 +52,6 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).toBeNonEmptyString();
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
@@ -76,7 +75,6 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).toBeNonEmptyString();
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
@@ -154,7 +152,6 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).toBeNonEmptyString();
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });

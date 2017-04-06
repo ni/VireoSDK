@@ -33,7 +33,7 @@ describe('Performing a HEAD request', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('headers')).toMatch(/200/);
             expect(viPathParser('statusCode')).toBe(200);
             expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
@@ -166,7 +166,7 @@ describe('Performing a HEAD request', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBeGreaterThan(0);
-            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('headers')).toMatch(/200/);
             expect(viPathParser('statusCode')).toBe(200);
             expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);

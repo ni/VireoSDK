@@ -48,7 +48,8 @@ describe('Timeout test suite', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
-            expect(viPathParser('error.source')).toBe('HttpClientGet in MyVILabVIEWHTTPClient:GET, Timeout');
+            expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
+            expect(viPathParser('error.source')).toMatch(/Timeout/);
             done();
         });
     });
@@ -82,7 +83,8 @@ describe('Timeout test suite', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
-            expect(viPathParser('error.source')).toBe('HttpClientGet in MyVILabVIEWHTTPClient:GET, Timeout');
+            expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
+            expect(viPathParser('error.source')).toMatch(/Timeout/);
             done();
         });
     });
