@@ -34,8 +34,6 @@
             // Dummy noop function user can replace by using eggShell.setFPSyncFunction
         };
 
-        var bufferPtr, bufferSize;
-
         var trackingFPS = false;
         var lastTime = 0;
         var currentFPS = 0;
@@ -98,25 +96,6 @@
                     str += String.fromCharCode(0xD800 | (ch >> 10), 0xDC00 | (ch & 0x3FF));
                 }
             }
-        };
-
-        // Creating a shared string buffer in memory for passing strings into Vireo
-        // WARNING: Functions in Vireo should not expect memory to live beyond stack frame
-        // Based on emscripten_run_script_string: https://github.com/kripken/emscripten/blob/fdc57b6f7c76b7e8589a41ad2db867e6878f0f3a/src/library.js#L3831
-        Module.coreHelpers.writeJSStringToSharedBuffer = function (str) {
-            if (typeof str !== 'string') {
-                throw new Error('writeJSStringToSharedBuffer() expects a string input');
-            }
-            var len = Module.lengthBytesUTF8(str);
-            if (!bufferSize || bufferSize < len + 1) {
-                if (bufferSize) {
-                    Module._free(bufferPtr);
-                }
-                bufferSize = len + 1;
-                bufferPtr = Module._malloc(bufferSize);
-            }
-            Module.writeStringToMemory(str, bufferPtr);
-            return bufferPtr;
         };
 
         Module.coreHelpers.jsCurrentBrowserFPS = function () {
