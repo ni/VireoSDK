@@ -114,6 +114,7 @@
         };
 
         proto.createRequest = function (requestData, cb) {
+            var errorMessage;
             var request = new XMLHttpRequest();
 
             // Create event listeners
@@ -152,7 +153,7 @@
                     text: '',
                     status: 0,
                     labviewCode: CODES.NETWORK_ERROR,
-                    errorMessage: 'Network Error'
+                    errorMessage: 'Network Error: Check Output or Console for more information'
                 });
             };
 
@@ -188,28 +189,39 @@
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
+                errorMessage = 'Invalid URL';
+                if (typeof ex.message === 'string' && ex.message !== '') {
+                    errorMessage += ', Additional information: ' + ex.message;
+                }
                 completeRequest({
                     header: '',
                     text: '',
                     status: 0,
                     labviewCode: CODES.INVALID_URL,
-                    errorMessage: ex.message ? ex.message : 'Invalid URL'
+                    errorMessage: errorMessage
                 });
                 return;
             }
 
             // Add request headers
+            var currentHeaderName, currentHeaderValue;
             try {
                 this._headers.forEach(function (value, header) {
+                    currentHeaderName = header;
+                    currentHeaderValue = value;
                     request.setRequestHeader(header, value);
                 });
             } catch (ex) {
+                errorMessage = 'Invalid Header: The provided header "' + currentHeaderName + '" with value "' + currentHeaderValue + '" is invalid';
+                if (typeof ex.message === 'string' && ex.message !== '') {
+                    errorMessage += ', Additional information: ' + ex.message;
+                }
                 completeRequest({
                     header: '',
                     text: '',
                     status: 0,
                     labviewCode: CODES.INVALID_HEADER,
-                    errorMessage: ex.message ? ex.message : 'Invalid Header'
+                    errorMessage: errorMessage
                 });
             }
 
@@ -321,11 +333,23 @@
 
         var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
 
-        var findhttpClientOrWriteError = function (handle, errorSourceIfError, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        var formatForSource = function (additionalInformation) {
+            if (typeof additionalInformation !== 'string') {
+                throw new Error('Expected a string to format');
+            }
+
+            if (additionalInformation === '') {
+                return additionalInformation;
+            }
+
+            return '<APPEND>\n' + additionalInformation;
+        };
+
+        var findhttpClientOrWriteError = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var httpClient = httpClientManager.get(handle);
 
             if (httpClient === undefined) {
-                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, errorSourceIfError + ', Handle Not Found', errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, formatForSource('Handle Not Found'), errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
@@ -344,12 +368,8 @@
             // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
 
             var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
-            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
-
             var existingError = existingErrorStatus;
             var newError = newErrorStatus;
-            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
-            var newWarning = newErrorCode !== CODES.NO_ERROR;
 
             if (existingError) {
                 return;
@@ -362,6 +382,9 @@
                 return;
             }
 
+            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
+            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
+            var newWarning = newErrorCode !== CODES.NO_ERROR;
             if (existingWarning) {
                 return;
             }
@@ -378,23 +401,20 @@
             return;
         };
 
+        // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
+        // unless otherwise stated in the function below
         Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Cookie File unsupported in WebVIs (please leave as default of empty string)';
+                newErrorSource = formatForSource('Cookie File unsupported in WebVIs (please leave as default of empty string)');
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = 'LabVIEWHTTPClient:OpenHandle, Verify Server unsupported in WebVIs (please leave as default of true)';
+                newErrorSource = formatForSource('Verify Server unsupported in WebVIs (please leave as default of true)');
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -406,13 +426,14 @@
         };
 
         Module.httpClient.jsHttpClientClose = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            // This function should be called irregardless of an existing error to clean-up resources
             var newErrorSource;
             var handleExists = httpClientManager.get(handle) !== undefined;
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
 
-            if (handleExists === false && errorStatus === false) {
-                newErrorSource = 'LabVIEWHTTPClient:CloseHandle, Attempted to close an invalid or non-existant handle';
+            if (handleExists === false) {
+                newErrorSource = formatForSource('Attempted to close an invalid or non-existant handle');
                 Module.httpClient.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                // Do not return if an error is written, need to still destroy any existing handles
             }
 
             // Always destroy the handle
@@ -420,12 +441,7 @@
         };
 
         Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:AddHeader', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
@@ -436,12 +452,7 @@
         };
 
         Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:RemoveHeader', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
@@ -451,12 +462,7 @@
         };
 
         Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:GetHeader', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
@@ -465,7 +471,7 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = 'LabVIEWHTTPClient:GetHeader, The header ' + header + ' does not exist';
+                newErrorSource = formatForSource('The header ' + header + ' does not exist');
                 Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -474,12 +480,7 @@
         };
 
         Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistsPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:HeaderExists', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
@@ -495,12 +496,7 @@
         };
 
         Module.httpClient.jsHttpClientListHeaders = function (handle, listPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:ListHeaders', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
@@ -510,12 +506,6 @@
         };
 
         Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                Module.eggShell.setOccurrenceAsync(occurrencePointer);
-                return;
-            }
-
             var newErrorSource;
             var method = METHOD_NAMES[methodId];
 
@@ -527,7 +517,7 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = 'LabVIEWHTTPClient:' + method + ', Output File unsupported in WebVIs (please leave as default of empty string)';
+                    newErrorSource = formatForSource('Output File unsupported in WebVIs (please leave as default of empty string)');
                     Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
@@ -543,7 +533,7 @@
             if (handle === NULL) {
                 httpClient = new HttpClient('', '');
             } else {
-                httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:' + method, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 if (httpClient === undefined) {
                     Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
@@ -586,7 +576,7 @@
 
                 var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;
                 var newErrorCode = responseData.labviewCode;
-                var newErrorSource = 'LabVIEWHTTPClient:' + method + ', ' + responseData.errorMessage;
+                var newErrorSource = formatForSource(responseData.errorMessage);
                 Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });

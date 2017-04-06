@@ -34,7 +34,7 @@ describe('Performing a PUT request', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('headers')).toMatch(/200/);
             expect(viPathParser('body')).toBeNonEmptyString();
             expect(viPathParser('statusCode')).toBe(200);
             expect(viPathParser('error.status')).toBeFalse();
@@ -65,7 +65,6 @@ describe('Performing a PUT request', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
-            expect(viPathParser('error.source')).toBeNonEmptyString();
             expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
             done();
         });
@@ -267,7 +266,7 @@ describe('Performing a PUT request', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('handle')).toBeGreaterThan(0);
-            expect(viPathParser('headers')).toBeNonEmptyString();
+            expect(viPathParser('headers')).toMatch(/200/);
             expect(viPathParser('body')).toBeNonEmptyString();
             expect(viPathParser('statusCode')).toBe(200);
             expect(viPathParser('error.status')).toBeFalse();

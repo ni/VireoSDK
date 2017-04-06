@@ -100,12 +100,14 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    if (!_Param(1).status) {
-        jsHttpClientClose(
-            _Param(0),
-            &_Param(1).status,
-            &_Param(1).code,
-            _Param(1).source);
+    // Run close regardless of an existing error to clean-up resources
+    Boolean existingStatus = _Param(1).status;
+    jsHttpClientClose(
+        _Param(0),
+        &_Param(1).status,
+        &_Param(1).code,
+        _Param(1).source);
+    if (!existingStatus) {
         AddCallChainToSourceIfErrorPresent(_ParamPointer(1), "HttpClientClose");
     }
 #else
