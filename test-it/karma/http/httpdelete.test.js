@@ -159,7 +159,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('with open, delete, close and a simple 200 response', function (done) {
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
