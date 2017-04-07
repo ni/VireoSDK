@@ -10,7 +10,21 @@ describe('Performing a DELETE request', function () {
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
-    beforeEach(function (done) {
+    var httpDeleteMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
+    var httpDeleteOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteOpenMethodClose.via');
+    var httpDeleteOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteOpenAddMethodClose.via');
+    var httpDeleteParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteParallel.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpDeleteMethodViaUrl,
+            httpDeleteOpenMethodCloseViaUrl,
+            httpDeleteOpenAddMethodCloseViaUrl,
+            httpDeleteParallelViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -21,9 +35,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -45,9 +57,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('errors with an output file parameter', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -71,9 +81,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('validating a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -113,12 +121,8 @@ describe('Performing a DELETE request', function () {
         });
     });
 
-    // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
-
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -155,9 +159,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('with open, delete, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -179,9 +181,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('with open, delete, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -221,9 +221,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('with open, add header, delete, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteOpenAddMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteOpenAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -268,9 +266,7 @@ describe('Performing a DELETE request', function () {
     });
 
     it('in parallel and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteParallel.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteParallelViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

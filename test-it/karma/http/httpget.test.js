@@ -11,7 +11,23 @@ describe('Performing a GET request', function () {
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
-    beforeEach(function (done) {
+    var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+    var httpUtf8TextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/utf8.txt');
+    var httpGetOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
+    var httpGetOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
+    var httpGetParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetParallel.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpGetMethodViaUrl,
+            httpUtf8TextUrl,
+            httpGetOpenMethodCloseViaUrl,
+            httpGetOpenAddMethodCloseViaUrl,
+            httpGetParallelViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -22,9 +38,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -46,9 +60,7 @@ describe('Performing a GET request', function () {
     });
 
     it('errors with an output file parameter', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -72,9 +84,7 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -114,12 +124,8 @@ describe('Performing a GET request', function () {
         });
     });
 
-    // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
-
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -156,11 +162,9 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a response with UTF8 data', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-        var bodyTextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/utf8.txt');
-        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(bodyTextUrl));
+        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(httpUtf8TextUrl));
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -198,9 +202,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, get, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -222,9 +224,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -264,9 +264,7 @@ describe('Performing a GET request', function () {
     });
 
     it('with open, add header, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetOpenAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -311,9 +309,7 @@ describe('Performing a GET request', function () {
     });
 
     it('in parallel and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetParallel.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetParallelViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
