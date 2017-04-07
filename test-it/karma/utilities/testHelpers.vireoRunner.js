@@ -67,9 +67,30 @@
         };
     };
 
+    var vireoMatchers = {
+        toMatchVtrText: function () {
+            return {
+                compare: function (actual, expected) {
+                    // TODO mraj maybe we can implement the diff here for cleaner results
+
+                    var result = {};
+                    var actualNormalized = window.testHelpers.textFormat.normalizeLineEndings(actual);
+                    var actualNoComments = window.testHelpers.textFormat.removeInlineComments(actualNormalized);
+
+                    var expectedNormalized = window.testHelpers.textFormat.normalizeLineEndings(expected);
+                    var expectedNoComments = window.testHelpers.textFormat.removeInlineComments(expectedNormalized);
+
+                    result.pass = actualNoComments === expectedNoComments;
+                    return result;
+                }
+            };
+        }
+    };
+
     window.testHelpers.vireoRunner = {
         rebootAndLoadVia: rebootAndLoadVia,
         createVIPathParser: createVIPathParser,
-        createVIPathWriter: createVIPathWriter
+        createVIPathWriter: createVIPathWriter,
+        vireoMatchers: vireoMatchers
     };
 }());

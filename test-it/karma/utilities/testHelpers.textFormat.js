@@ -6,7 +6,12 @@
         return multiLineString.replace(/\r\n/gm, '\n');
     };
 
+    var removeInlineComments = function (multiLineString) {
+        return multiLineString.replace(/^\/\/.*\n/gm, '');
+    };
+
     window.testHelpers.textFormat = {
-        normalizeLineEndings: normalizeLineEndings
+        normalizeLineEndings: normalizeLineEndings,
+        removeInlineComments: removeInlineComments
     };
 }());

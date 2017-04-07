@@ -4,10 +4,15 @@
 
     var cache = {};
     var basePathViaTests = '/base/test-it/ViaTests/';
+    var basePathExpectedResults = '/base/test-it/ExpectedResults/';
     var basePathFixture = '/base/test-it/karma/fixtures/';
 
     var convertToAbsoluteFromViaTestsDir = function (relativePath) {
         return basePathViaTests + relativePath;
+    };
+
+    var convertToAbsoluteFromExpectedResultsDir = function (relativePath) {
+        return basePathExpectedResults + relativePath;
     };
 
     var convertToAbsoluteFromFixturesDir = function (relativePath) {
@@ -45,22 +50,11 @@
         return cache[absoluteUrl];
     };
 
-    var matchNamesFromPaths = function (regexMatchName) {
-        var files = {};
-        Object.keys(window.__karma__.files).forEach(function (file) {
-            var fileParts = file.match(regexMatchName);
-            if (fileParts !== null) {
-                files[fileParts[1]] = file;
-            }
-        });
-        return files;
-    };
-
     window.testHelpers.fixtures = {
         convertToAbsoluteFromViaTestsDir: convertToAbsoluteFromViaTestsDir,
+        convertToAbsoluteFromExpectedResultsDir: convertToAbsoluteFromExpectedResultsDir,
         convertToAbsoluteFromFixturesDir: convertToAbsoluteFromFixturesDir,
         loadAbsoluteUrl: loadAbsoluteUrl,
-        preloadAbsoluteUrls: preloadAbsoluteUrls,
-        matchNamesFromPaths: matchNamesFromPaths
+        preloadAbsoluteUrls: preloadAbsoluteUrls
     };
 }());
