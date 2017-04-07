@@ -9,7 +9,21 @@ describe('Performing a HEAD request', function () {
 
     var vireo;
 
-    beforeEach(function (done) {
+    var httpHeadMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
+    var httpHeadOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenMethodClose.via');
+    var httpHeadOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenAddMethodClose.via');
+    var httpHeadParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadParallel.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpHeadMethodViaUrl,
+            httpHeadOpenMethodCloseViaUrl,
+            httpHeadOpenAddMethodCloseViaUrl,
+            httpHeadParallelViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -20,9 +34,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -43,9 +55,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('validating a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -81,9 +91,7 @@ describe('Performing a HEAD request', function () {
     // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
 
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -117,9 +125,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('validating a response with UTF8 data', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -153,9 +159,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('with open, head, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -176,9 +180,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('with open, head, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -211,9 +213,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('with open, add header, head, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadOpenAddMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadOpenAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -250,9 +250,7 @@ describe('Performing a HEAD request', function () {
     });
 
     it('in parallel and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/HeadParallel.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadParallelViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

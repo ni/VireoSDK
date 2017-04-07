@@ -10,7 +10,17 @@ describe('Timeout test suite', function () {
     var TIMEOUT_CODE = 56;
     var vireo;
 
-    beforeEach(function (done) {
+    var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+    var httpDefaultTimeoutViaUrl = fixtures.convertToAbsoluteFromFixturesDir('longrun/DefaultTimeout.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpGetMethodViaUrl,
+            httpDefaultTimeoutViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -23,9 +33,7 @@ describe('Timeout test suite', function () {
     it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
         var timeout = 1000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -57,9 +65,7 @@ describe('Timeout test suite', function () {
     it('GET method with default timeout of 10 seconds times out with httpbin delay of 30s', function (done) {
         var timeout = 10000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('longrun/DefaultTimeout.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDefaultTimeoutViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -93,9 +99,7 @@ describe('Timeout test suite', function () {
         var timeout = -1;
         var httpBinDelay = 20000;
 
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

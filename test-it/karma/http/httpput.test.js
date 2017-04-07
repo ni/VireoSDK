@@ -10,7 +10,21 @@ describe('Performing a PUT request', function () {
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
-    beforeEach(function (done) {
+    var httpPutMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
+    var httpPutOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenMethodClose.via');
+    var httpPutOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenAddMethodClose.via');
+    var httpPutParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutParallel.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpPutMethodViaUrl,
+            httpPutOpenMethodCloseViaUrl,
+            httpPutOpenAddMethodCloseViaUrl,
+            httpPutParallelViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -21,9 +35,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('with a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -45,9 +57,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('errors with an output file parameter', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -71,9 +81,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('validating a simple 200 response with empty buffer', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -115,9 +123,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('validating a simple 200 response with simple buffer', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -168,9 +174,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('validating a simple 200 response with non-ascii buffer', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -214,9 +218,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('validating an unusual 4XX response code', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -253,9 +255,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('with open, put, close and a simple 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -277,9 +277,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('with open, put, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -320,9 +318,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('with open, add header, put, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutOpenAddMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutOpenAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -368,9 +364,7 @@ describe('Performing a PUT request', function () {
     });
 
     it('in parallel and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/PutParallel.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutParallelViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

@@ -7,11 +7,18 @@ describe('Peek/Poke different datatypes', function () {
 
     var vireo = new Vireo();
 
+    var publicApiWaveformSimpleViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/WaveformSimple.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            publicApiWaveformSimpleViaUrl
+        ], done);
+    });
+
     it('peeks and pokes on analog waveform type', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/WaveformSimple.via');
         var viName = 'MyVI';
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiWaveformSimpleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
 
