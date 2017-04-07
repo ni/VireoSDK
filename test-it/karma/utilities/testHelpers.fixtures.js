@@ -6,24 +6,6 @@
     var basePathViaTests = '/base/test-it/ViaTests/';
     var basePathFixture = '/base/test-it/karma/fixtures/';
 
-    var makeRequest = function (absoluteUrl) {
-        var request = new XMLHttpRequest();
-        var urlCacheAvoid = absoluteUrl + '?' + new Date().getTime();
-        request.open('GET', urlCacheAvoid, false);
-        request.send();
-        if (request.status !== 200) {
-            throw new Error('cannot find fixture at path: ' + absoluteUrl);
-        }
-        return request.responseText;
-    };
-
-    var checkCache = function (absoluteUrl) {
-        if (cache.hasOwnProperty(absoluteUrl) === false) {
-            cache[absoluteUrl] = makeRequest(absoluteUrl);
-        }
-        return cache[absoluteUrl];
-    };
-
     var convertToAbsoluteFromViaTestsDir = function (relativePath) {
         return basePathViaTests + relativePath;
     };
@@ -32,8 +14,35 @@
         return basePathFixture + relativePath;
     };
 
+    var fileNotLoaded = function (absoluteUrl) {
+        return cache.hasOwnProperty(absoluteUrl) === false;
+    };
+
+    var preloadAbsoluteUrls = function (absoluteUrls, done) {
+        var filesToLoad = absoluteUrls.filter(fileNotLoaded).map(function (absoluteUrl) {
+            var urlCacheAvoid = absoluteUrl + '?' + new Date().getTime();
+            return fetch(urlCacheAvoid).then(function (response) {
+                if (response.status === 200) {
+                    return response.text();
+                }
+
+                return window.Promise.reject('Could not find file: ' + absoluteUrl);
+            }).then(function (text) {
+                cache[absoluteUrl] = text;
+            });
+        });
+
+        window.Promise.all(filesToLoad).then(done).catch(function (message) {
+            done.fail('Failed because of the following reason: ' + message);
+        });
+    };
+
     var loadAbsoluteUrl = function (absoluteUrl) {
-        return checkCache(absoluteUrl);
+        if (fileNotLoaded(absoluteUrl)) {
+            throw new Error('Make sure to preload fixture files before attempting to load them, cannot find: ' + absoluteUrl);
+        }
+
+        return cache[absoluteUrl];
     };
 
     var matchNamesFromPaths = function (regexMatchName) {
@@ -51,6 +60,7 @@
         convertToAbsoluteFromViaTestsDir: convertToAbsoluteFromViaTestsDir,
         convertToAbsoluteFromFixturesDir: convertToAbsoluteFromFixturesDir,
         loadAbsoluteUrl: loadAbsoluteUrl,
+        preloadAbsoluteUrls: preloadAbsoluteUrls,
         matchNamesFromPaths: matchNamesFromPaths
     };
 }());

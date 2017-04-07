@@ -19,7 +19,8 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-verbose-reporter": "0.0.5",
     "requirejs": "^2.3.2",
-    "setimmediate": "^1.0.5"
+    "setimmediate": "^1.0.5",
+    "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "test": "npm run lint && npm run karma && npm run karma-longrun",
