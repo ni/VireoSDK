@@ -1,4 +1,3 @@
-
 describe('Tests that perform multiple serial requests', function () {
     'use strict';
     // Reference aliases
@@ -10,7 +9,15 @@ describe('Tests that perform multiple serial requests', function () {
 
     var vireo;
 
-    beforeEach(function (done) {
+    var httpGetOpenAddMethodAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodAddMethodClose.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpGetOpenAddMethodAddMethodCloseViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -22,9 +29,7 @@ describe('Tests that perform multiple serial requests', function () {
 
     // Tests with serial connections to the same endpoint run slowly sometimes, not sure what conditions
     it('with open, add header, get, add header, get, close and validates a 200 response', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodAddMethodClose.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetOpenAddMethodAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

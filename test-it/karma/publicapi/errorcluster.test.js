@@ -8,11 +8,18 @@ describe('Cluster test suite', function () {
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
 
+    var publicApiErrorClusterViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/errorcluster.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            publicApiErrorClusterViaUrl
+        ], done);
+    });
+
     it('verifies default values in a cluster', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/errorcluster.via');
         var viName = 'MyVI';
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiErrorClusterViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
 

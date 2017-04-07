@@ -8,15 +8,21 @@ describe('Running an Open Handle call', function () {
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var vireo;
 
+    var httpOpenHandleViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpOpenHandleViaUrl
+        ], done);
+    });
+
     beforeEach(function () {
         // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = new Vireo();
     });
 
     it('with simple inputs', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -35,9 +41,7 @@ describe('Running an Open Handle call', function () {
     });
 
     it('with invalid cookieFile', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -58,9 +62,7 @@ describe('Running an Open Handle call', function () {
     });
 
     it('with invalid verifyServer', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -81,9 +83,7 @@ describe('Running an Open Handle call', function () {
     });
 
     it('with existing error does not create handle', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -106,9 +106,7 @@ describe('Running an Open Handle call', function () {
     });
 
     it('with existing error does not override error', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
@@ -132,9 +130,7 @@ describe('Running an Open Handle call', function () {
     });
 
     it('with existing error does override warning', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpOpenHandleViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

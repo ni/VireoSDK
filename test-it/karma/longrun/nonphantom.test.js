@@ -9,7 +9,15 @@ describe('Tests that fail to run on PhantomJS', function () {
 
     var vireo;
 
-    beforeEach(function (done) {
+    var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            httpGetMethodViaUrl
+        ], done);
+    });
+
+    beforeAll(function (done) {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
@@ -20,9 +28,7 @@ describe('Tests that fail to run on PhantomJS', function () {
     });
 
     it('validating a 404 response with empty response body', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 

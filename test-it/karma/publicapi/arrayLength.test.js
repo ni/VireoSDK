@@ -6,15 +6,25 @@ describe('Arrays in Vireo', function () {
     var fixtures = window.testHelpers.fixtures;
 
     var vireo;
+
+    var testsArrayDemoViaUrl = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
+    var publicApiArrayTypesOptimizedViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            testsArrayDemoViaUrl,
+            publicApiArrayTypesOptimizedViaUrl
+        ], done);
+    });
+
     beforeEach(function () {
         vireo = new Vireo();
     });
 
     it('expose their length in the public api', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
         var viName = 'ArrayDemo';
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, testsArrayDemoViaUrl);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
@@ -38,10 +48,9 @@ describe('Arrays in Vireo', function () {
     });
 
     it('can be read using optimized eggshell functions', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
         var viName = 'ArrayTypesOptimized';
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -66,10 +75,9 @@ describe('Arrays in Vireo', function () {
     });
 
     it('error with unsupported types in the optimized functions', function (done) {
-        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
         var viName = 'ArrayTypesOptimized';
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
