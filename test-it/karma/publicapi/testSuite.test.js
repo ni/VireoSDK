@@ -5,32 +5,48 @@ describe('can run test suite file', function () {
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
-    var textFormat = window.testHelpers.textFormat;
+    var testListLoader = window.testHelpers.testListLoader;
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
-    var viaFiles = fixtures.matchNamesFromPaths(/test-it\/ViaTests\/(\w*)\.via$/);
-    var vtrFiles = fixtures.matchNamesFromPaths(/test-it\/ExpectedResults\/(\w*)\.vtr$/);
+    var viaTestNames = testListLoader.getTestNamesForEnvironment('js');
 
-    var stringArrayToObjectMap = function (arr) {
-        return arr.reduce(function (obj, testName) {
-            obj[testName] = true;
+    var stringArrayToObjectMap = function (arr, cb) {
+        return arr.reduce(function (obj, currentString) {
+            obj[currentString] = cb(currentString);
             return obj;
         }, {});
     };
 
+    var createViaPath = function (testName) {
+        return fixtures.convertToAbsoluteFromViaTestsDir(testName + '.via');
+    };
+
+    var createVtrPath = function (testName) {
+        return fixtures.convertToAbsoluteFromExpectedResultsDir(testName + '.vtr');
+    };
+
+    var viaFiles = stringArrayToObjectMap(viaTestNames, createViaPath);
+    var vtrFiles = stringArrayToObjectMap(viaTestNames, createVtrPath);
+
+    beforeAll(function (done) {
+        var allUrls = Object.values(viaFiles).concat(Object.values(vtrFiles));
+        fixtures.preloadAbsoluteUrls(allUrls, done);
+    });
+
+    beforeEach(function () {
+        window.jasmine.addMatchers(vireoRunner.vireoMatchers);
+    });
+
+    var setToTrue = function () {
+        return true;
+    };
+
     var focusTests = stringArrayToObjectMap([
-    ]);
+    ], setToTrue);
 
     var disabledTests = stringArrayToObjectMap([
-        'HelloRequire', // native only
-        'ListDirectory', // native only
-        'StringFormatTime' // manual
-    ]);
-
-    var removeInlineComments = function (multiLineString) {
-        return multiLineString.replace(/^\/\/.*\n/gm, '');
-    };
+    ], setToTrue);
 
     Object.keys(viaFiles).forEach(function (testName) {
         /* eslint no-restricted-globals: 'off' */
@@ -39,16 +55,11 @@ describe('can run test suite file', function () {
 
         var test = function (done) {
             var vtrText = fixtures.loadAbsoluteUrl(vtrAbsolutePath);
-            var vtrTextNormalized = textFormat.normalizeLineEndings(vtrText);
-            var vtrTextNoComments = removeInlineComments(vtrTextNormalized);
             var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaAbsolutePath);
 
             runSlicesAsync(function (results, errorText) {
                 expect(errorText).toBeEmptyString();
-
-                var resultsNormalized = textFormat.normalizeLineEndings(results);
-                var resultsNoComments = removeInlineComments(resultsNormalized);
-                expect(resultsNoComments).toBe(vtrTextNoComments);
+                expect(results).toMatchVtrText(vtrText);
                 done();
             });
         };

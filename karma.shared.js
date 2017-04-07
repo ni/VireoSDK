@@ -37,6 +37,10 @@
             {
                 pattern: 'test-it/karma/fixtures/**/*.*',
                 included: false
+            },
+            {
+                pattern: 'test-it/testList.json',
+                included: false
             }
         ],
 
