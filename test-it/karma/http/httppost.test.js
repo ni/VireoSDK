@@ -14,7 +14,7 @@ describe('Performing a POST request', function () {
     var httpPostOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PostOpenMethodClose.via');
     var httpPostOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PostOpenAddMethodClose.via');
     var httpPostParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PostParallel.via');
-    
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             httpPostMethodViaUrl,
