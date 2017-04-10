@@ -294,10 +294,6 @@
             return handle;
         };
 
-        proto.handleExists = function (handle) {
-            return this._httpClients.has(handle);
-        };
-
         proto.destroy = function (handle) {
             var httpClient = this._httpClients.get(handle);
             if (httpClient === undefined) {
@@ -325,12 +321,8 @@
         var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
 
         var formatForSource = function (additionalInformation) {
-            if (typeof additionalInformation !== 'string') {
-                throw new Error('Expected a string to format');
-            }
-
-            if (additionalInformation === '') {
-                return additionalInformation;
+            if (typeof additionalInformation !== 'string' || additionalInformation.length === 0) {
+                return '';
             }
 
             return '<APPEND>\n' + additionalInformation;
