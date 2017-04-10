@@ -2288,7 +2288,9 @@ NIError TypedArrayCore::Replace1D(IntIndex position, IntIndex count, const void*
     if (position == -1) {
         position = Length();
     }
-    if (count <= 0) {
+
+    // Allow resizes for count >= 0
+    if (count < 0) {
         return kNIError_Success;
     }
     
