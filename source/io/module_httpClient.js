@@ -471,6 +471,7 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
+                Module.eggShell.dataWriteString(valuePointer, '');
                 newErrorSource = formatForSource('The header ' + header + ' does not exist');
                 Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
@@ -489,10 +490,7 @@
             var valueOrUndefined = httpClient.getHeaderValue(header);
             var headerExists = valueOrUndefined !== undefined;
             Module.eggShell.dataWriteUInt32(headerExistsPointer, headerExists ? TRUE : FALSE);
-
-            if (headerExists) {
-                Module.eggShell.dataWriteString(valuePointer, valueOrUndefined);
-            }
+            Module.eggShell.dataWriteString(valuePointer, headerExists ? valueOrUndefined : '');
         };
 
         Module.httpClient.jsHttpClientListHeaders = function (handle, listPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {

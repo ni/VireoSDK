@@ -1,0 +1,54 @@
+010
+(false 0 '')
+020
+
+(false 0 '')
+030
+
+(true 363528 'HttpClientGetHeader in HttpHeadersTest<APPEND>
+The header nonexistant does not exist')
+040
+0
+
+(false 0 '')
+050
+(false 0 '')
+060
+Rick: Sanchez
+(false 0 '')
+070
+Sanchez
+(false 0 '')
+080
+1
+Sanchez
+(false 0 '')
+090
+(false 0 '')
+100
+Rick: Sanchez
+Mor ty: Smith
+(false 0 '')
+110
+Smith
+(false 0 '')
+120
+1
+Smith
+(false 0 '')
+130
+(false 0 '')
+140
+Rick: Sanchez
+(false 0 '')
+150
+
+(true 363528 'HttpClientGetHeader in HttpHeadersTest<APPEND>
+The header 	Mor ty	 does not exist')
+160
+0
+
+(false 0 '')
+170
+(false 0 '')
+end

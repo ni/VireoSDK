@@ -1,0 +1,120 @@
+define(HttpHeadersTest dv(VirtualInstrument (
+    Locals: c(
+        // Shared
+        e(dv(.UInt32 0) handle)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) noerror)
+        e('' result)
+        e(dv(.UInt32 1) resultNumber)
+        // OpenHandle parameters
+        e('' cookieFile)
+        e('' username)
+        e('' password)
+        e(dv(.UInt32 1) verifyServer)
+    )
+    clump (
+        // Create handle
+        Println('010')
+        HttpClientOpen(cookieFile username password verifyServer handle error)
+        Println(error)
+
+        // No headers
+        Println('020')
+        HttpClientListHeaders(handle result error)
+        Println(result)
+        Println(error)
+
+        Println('030')
+        HttpClientGetHeader(handle 'nonexistant' result error)
+        Println(result)
+        Println(error)
+        Copy(noerror error)
+
+        Println('040')
+        HttpClientHeaderExists(handle 'nonexistant' resultNumber result error)
+        Println(resultNumber)
+        Println(result)
+        Println(error)
+
+        // Add header Rick
+        Println('050')
+        HttpClientAddHeader(handle 'Rick' 'Sanchez' error)
+        Println(error)
+
+        Println('060')
+        HttpClientListHeaders(handle result error)
+        Println(result)
+        Println(error)
+
+        Println('070')
+        HttpClientGetHeader(handle 'Rick' result error)
+        Println(result)
+        Println(error)
+
+        Println('080')
+        HttpClientHeaderExists(handle 'Rick' resultNumber result error)
+        Println(resultNumber)
+        Println(result)
+        Println(error)
+
+        // Add header \tMor ty\t
+        Println('090')
+        HttpClientAddHeader(handle '\tMor ty\t' 'Smith' error)
+        Println(error)
+
+        Println('100')
+        HttpClientListHeaders(handle result error)
+        Println(result)
+        Println(error)
+
+        Println('110')
+        HttpClientGetHeader(handle '\tMor ty\t' result error)
+        Println(result)
+        Println(error)
+
+        Println('120')
+        HttpClientHeaderExists(handle '\tMor ty\t' resultNumber result error)
+        Println(resultNumber)
+        Println(result)
+        Println(error)
+
+        // Remove header \tMor ty\t
+        Println('130')
+        HttpClientRemoveHeader(handle '\tMor ty\t' error)
+        Println(error)
+
+        Println('140')
+        HttpClientListHeaders(handle result error)
+        Println(result)
+        Println(error)
+
+        Println('150')
+        HttpClientGetHeader(handle '\tMor ty\t' result error)
+        Println(result)
+        Println(error)
+        Copy(noerror error)
+
+        Println('160')
+        HttpClientHeaderExists(handle '\tMor ty\t' resultNumber result error)
+        Println(resultNumber)
+        Println(result)
+        Println(error)
+
+        // Close handle
+        Println('170')
+        HttpClientClose(handle error)
+        Println(error)
+
+        Println('end')
+    )
+) ) )
+
+enqueue(HttpHeadersTest)

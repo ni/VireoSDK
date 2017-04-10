@@ -9,7 +9,7 @@ describe('can run test suite file', function () {
 
     // Sharing Vireo instances across tests make them run soooo much faster
     var vireo = new Vireo();
-    var viaTestNames = testListLoader.getTestNamesForEnvironment('js');
+    var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
     var stringArrayToObjectMap = function (arr, cb) {
         return arr.reduce(function (obj, currentString) {
