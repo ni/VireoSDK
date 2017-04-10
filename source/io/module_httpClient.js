@@ -249,9 +249,7 @@
     var HttpClientManager;
     (function () {
         // Static private reference aliases
-        var noop = function () {
-            // Intentionally left blank
-        };
+        // None
 
         // Constructor Function
         HttpClientManager = function () {
@@ -260,7 +258,6 @@
 
             // Private Instance Properties
             this._httpClients = new Map();
-            this._log = noop;
         };
 
         // Static Public Variables
@@ -289,16 +286,11 @@
         }());
 
         // Public Prototype Methods
-        proto.enableHttpDebugging = function (enable) {
-            this._log = enable ? console.info.bind(console) : noop;
-        };
-
         proto.create = function (username, password) {
             var httpClient = new HttpClient(username, password);
             var handle = createHandle();
 
             this._httpClients.set(handle, httpClient);
-            this._log('[HTTPClient] Created handle:', handle);
             return handle;
         };
 
@@ -315,7 +307,6 @@
             // We do not abort any existing requests with this handle
 
             this._httpClients.delete(handle);
-            this._log('[HTTPClient] Deleted handle:', handle);
         };
 
         proto.get = function (handle) {
@@ -356,14 +347,6 @@
         };
 
         // Exported functions
-        publicAPI.httpClient.enableHttpDebugging = function (enable) {
-            if (typeof enable !== 'boolean') {
-                throw new Error('Must set HTTP debugging flag to either true or false');
-            }
-
-            httpClientManager.enableHttpDebugging(enable);
-        };
-
         Module.httpClient.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
             // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
 
