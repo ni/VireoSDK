@@ -227,6 +227,7 @@
 
         vireo.stdout = '';
         if (viaCode !== '' && vireo.loadVia(viaCode) === 0) {
+            // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
             while (vireo.executeSlices(1000000)) {
                 // Nothing here
             }

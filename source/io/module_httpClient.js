@@ -30,6 +30,8 @@
 
     var NULL = 0;
 
+    var DEFAULT_INVALID_HANDLE = 0;
+
     var CODES = {
         // Shared
         NO_ERROR: 0,
@@ -330,9 +332,11 @@
 
         var findhttpClientOrWriteError = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var httpClient = httpClientManager.get(handle);
+            var newErrorSource;
 
             if (httpClient === undefined) {
-                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, formatForSource('Handle Not Found'), errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = formatForSource('Handle Not Found, Make sure to use HttpClientOpen to create a handle first');
+                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
@@ -379,11 +383,16 @@
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
         // unless otherwise stated in the function below
         Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var setDefaultOutputs = function () {
+                Module.eggShell.dataWriteUInt32(handlePointer, DEFAULT_INVALID_HANDLE);
+            };
+
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
                 newErrorSource = formatForSource('Cookie File unsupported in WebVIs (please leave as default of empty string)');
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                setDefaultOutputs();
                 return;
             }
 
@@ -391,6 +400,7 @@
             if (verifyServer !== true) {
                 newErrorSource = formatForSource('Verify Server unsupported in WebVIs (please leave as default of true)');
                 Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                setDefaultOutputs();
                 return;
             }
 
@@ -437,8 +447,13 @@
         };
 
         Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var setDefaultOutputs = function () {
+                Module.eggShell.dataWriteString(valuePointer, '');
+            };
+
             var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
+                setDefaultOutputs();
                 return;
             }
 
@@ -446,9 +461,9 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                Module.eggShell.dataWriteString(valuePointer, '');
                 newErrorSource = formatForSource('The header ' + header + ' does not exist');
                 Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                setDefaultOutputs();
                 return;
             }
 
@@ -456,21 +471,37 @@
         };
 
         Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistsPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var setDefaultOutputs = function () {
+                Module.eggShell.dataWriteUInt32(headerExistsPointer, FALSE);
+                Module.eggShell.dataWriteString(valuePointer, '');
+            };
+
             var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
+                setDefaultOutputs();
                 return;
             }
 
             var header = Module.eggShell.dataReadString(headerPointer);
             var valueOrUndefined = httpClient.getHeaderValue(header);
             var headerExists = valueOrUndefined !== undefined;
-            Module.eggShell.dataWriteUInt32(headerExistsPointer, headerExists ? TRUE : FALSE);
-            Module.eggShell.dataWriteString(valuePointer, headerExists ? valueOrUndefined : '');
+            if (headerExists === false) {
+                setDefaultOutputs();
+                return;
+            }
+
+            Module.eggShell.dataWriteUInt32(headerExistsPointer, TRUE);
+            Module.eggShell.dataWriteString(valuePointer, valueOrUndefined);
         };
 
         Module.httpClient.jsHttpClientListHeaders = function (handle, listPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var setDefaultOutputs = function () {
+                Module.eggShell.dataWriteString(listPointer, '');
+            };
+
             var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
+                setDefaultOutputs();
                 return;
             }
 
@@ -479,6 +510,17 @@
         };
 
         Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+            var setDefaultOutputs = function () {
+                Module.eggShell.dataWriteString(headersPointer, '');
+                Module.eggShell.dataWriteUInt32(statusCodePointer, 0);
+
+                if (bodyPointer !== NULL) {
+                    Module.eggShell.dataWriteString(bodyPointer, '');
+                }
+
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+            };
+
             var newErrorSource;
             var method = METHOD_NAMES[methodId];
 
@@ -492,7 +534,7 @@
                 if (outputFile !== '') {
                     newErrorSource = formatForSource('Output File unsupported in WebVIs (please leave as default of empty string)');
                     Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                    setDefaultOutputs();
                     return;
                 }
             }
@@ -508,7 +550,7 @@
             } else {
                 httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 if (httpClient === undefined) {
-                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                    setDefaultOutputs();
                     return;
                 }
             }
