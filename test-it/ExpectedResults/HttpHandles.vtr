@@ -1,0 +1,23 @@
+010
+(true -1967362020 'HttpClientClose in HttpHandles<APPEND>
+Attempted to close an invalid or non-existant handle')
+020
+(true 1 'HttpClientAddHeader in HttpHandles<APPEND>
+Handle Not Found')
+030
+(true 1 'HttpClientRemoveHeader in HttpHandles<APPEND>
+Handle Not Found')
+040
+Should be overwritten
+(true 1 'HttpClientGetHeader in HttpHandles<APPEND>
+Handle Not Found')
+050
+1337
+Should be overwritten
+(true 1 'HttpClientHeaderExists in HttpHandles<APPEND>
+Handle Not Found')
+060
+Should be overwritten
+(true 1 'HttpClientListHeaders in HttpHandles<APPEND>
+Handle Not Found')
+end

@@ -1,0 +1,66 @@
+define(HttpHandles dv(VirtualInstrument (
+    Locals: c(
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) noerror)
+
+        e(dv(.UInt32 0) handle)
+        e(dv(.UInt32 13371337) badHandle)
+        
+        e('Should be overwritten' result)
+        e('Should be overwritten' defaultResult)
+
+        e(dv(.UInt32 1337) resultNumber)
+        e(dv(.UInt32 1337) defaultResultNumber)
+    )
+    clump (
+        Println('010')
+        HttpClientClose(badHandle error)
+        Println(error)
+        Copy(noerror error)
+
+        Println('020')
+        HttpClientAddHeader(badHandle 'rick' 'sanchez' error)
+        Println(error)
+        Copy(noerror error)
+
+        Println('030')
+        HttpClientRemoveHeader(badHandle 'rick' error)
+        Println(error)
+        Copy(noerror error)
+
+        Println('040')
+        HttpClientGetHeader(badHandle 'rick' result error)
+        Println(result) // TODO mraj wrong
+        Println(error)
+        Copy(noerror error)
+        Copy(defaultResult result)
+
+        Println('050')
+        HttpClientHeaderExists(badHandle 'rick' resultNumber result error)
+        Println(resultNumber) // TODO mraj wrong
+        Println(result) // TODO mraj wrong
+        Println(error)
+        Copy(noerror error)
+        Copy(defaultResult result)
+        Copy(defaultResultNumber resultNumber)
+
+        Println('060')
+        HttpClientListHeaders(badHandle result error)
+        Println(result) // TODO mraj wrong
+        Println(error)
+        Copy(noerror error)
+        Copy(defaultResult result)
+
+        Println('end')
+    )
+) ) )
+
+enqueue(HttpHandles)

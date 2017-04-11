@@ -14,7 +14,8 @@
         "browser": {
             "include": ["common"],
             "tests": [
-                "HttpHeadersTest.via"
+                "HttpHeadersTest.via",
+				"HttpHandles.via"
             ]
         },
         "manual": {
