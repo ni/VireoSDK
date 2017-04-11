@@ -38,6 +38,10 @@
         var lastTime = 0;
         var currentFPS = 0;
 
+        var CODES = {
+            NO_ERROR: 0
+        };
+
         // Exported functions
         Module.coreHelpers.jsExecutionContextFPSync = function (fpStringPointer) {
             var fpString = Module.eggShell.dataReadString(fpStringPointer);
@@ -112,6 +116,43 @@
             }
 
             return currentFPS;
+        };
+
+        Module.coreHelpers.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
+            // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
+
+            var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
+            var existingError = existingErrorStatus;
+            var newError = newErrorStatus;
+
+            if (existingError) {
+                return;
+            }
+
+            if (newError) {
+                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
+                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
+                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+                return;
+            }
+
+            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
+            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
+            var newWarning = newErrorCode !== CODES.NO_ERROR;
+            if (existingWarning) {
+                return;
+            }
+
+            if (newWarning) {
+                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
+                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
+                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+                return;
+            }
+
+            // If no error or warning then pass through
+            // Note: merge errors function ignores newErrorSource if no newError or newWarning so replicated here
+            return;
         };
     };
 
