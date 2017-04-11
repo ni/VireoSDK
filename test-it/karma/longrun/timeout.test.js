@@ -30,6 +30,39 @@ describe('Timeout test suite', function () {
         vireo = new Vireo();
     });
 
+    it('GET method with timeout 0s times out with httpbin delay of 30s', function (done) {
+        var timeout = 0;
+        var timeoutEpsilon = 1000;
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        viPathWriter('url', url);
+        viPathWriter('timeout', timeout);
+
+        var startTime = performance.now();
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            var endTime = performance.now();
+            var runTime = endTime - startTime;
+
+            expect(runTime).toBeNear(timeout, timeoutEpsilon);
+
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
+            expect(viPathParser('error.source')).toMatch(/Timeout/);
+            done();
+        });
+    });
+
     it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
         var timeout = 1000;
 
