@@ -3,21 +3,21 @@
 Attempted to close an invalid or non-existant handle')
 020
 (true 1 'HttpClientAddHeader in HttpHandles<APPEND>
-Handle Not Found')
+Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
 030
 (true 1 'HttpClientRemoveHeader in HttpHandles<APPEND>
-Handle Not Found')
+Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
 040
-Should be overwritten
+
 (true 1 'HttpClientGetHeader in HttpHandles<APPEND>
-Handle Not Found')
+Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
 050
-1337
-Should be overwritten
+0
+
 (true 1 'HttpClientHeaderExists in HttpHandles<APPEND>
-Handle Not Found')
+Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
 060
-Should be overwritten
+
 (true 1 'HttpClientListHeaders in HttpHandles<APPEND>
-Handle Not Found')
+Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
 end

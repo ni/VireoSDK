@@ -8,6 +8,7 @@ describe('Performing a PUT request', function () {
     var httpParser = window.testHelpers.httpParser;
 
     var WEBVI_UNSUPPORTED_INPUT = 363650;
+    var WEBVI_RECEIVE_INVALID_HANDLE = 1;
     var vireo;
 
     var httpPutMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
@@ -56,6 +57,32 @@ describe('Performing a PUT request', function () {
         });
     });
 
+    it('errors with a bad handle', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
+        viPathWriter('url', url);
+        viPathWriter('handle', 13371337);
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(13371337);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_RECEIVE_INVALID_HANDLE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
+            done();
+        });
+    });
+
     it('errors with an output file parameter', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -65,6 +92,9 @@ describe('Performing a PUT request', function () {
         var invalidOutputFile = 'C:\\any\\path';
         viPathWriter('url', url);
         viPathWriter('outputFile', invalidOutputFile);
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();

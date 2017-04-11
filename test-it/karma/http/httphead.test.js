@@ -7,6 +7,7 @@ describe('Performing a HEAD request', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
+    var WEBVI_RECEIVE_INVALID_HANDLE = 1;
     var vireo;
 
     var httpHeadMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
@@ -54,6 +55,30 @@ describe('Performing a HEAD request', function () {
         });
     });
 
+    it('errors with a bad handle', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        viPathWriter('url', url);
+        viPathWriter('handle', 13371337);
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(13371337);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_RECEIVE_INVALID_HANDLE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientHead in MyVI/);
+            done();
+        });
+    });
+
     it('validating a simple 200 response', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -87,8 +112,6 @@ describe('Performing a HEAD request', function () {
             done();
         });
     });
-
-    // NOTE: Validation of a 404 response code was moved to a non-PhantomJS test
 
     it('validating an unusual 4XX response code', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);

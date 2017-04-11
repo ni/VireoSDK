@@ -38,15 +38,15 @@ define(HttpHandles dv(VirtualInstrument (
 
         Println('040')
         HttpClientGetHeader(badHandle 'rick' result error)
-        Println(result) // TODO mraj wrong
+        Println(result)
         Println(error)
         Copy(noerror error)
         Copy(defaultResult result)
 
         Println('050')
         HttpClientHeaderExists(badHandle 'rick' resultNumber result error)
-        Println(resultNumber) // TODO mraj wrong
-        Println(result) // TODO mraj wrong
+        Println(resultNumber)
+        Println(result)
         Println(error)
         Copy(noerror error)
         Copy(defaultResult result)
@@ -54,7 +54,7 @@ define(HttpHandles dv(VirtualInstrument (
 
         Println('060')
         HttpClientListHeaders(badHandle result error)
-        Println(result) // TODO mraj wrong
+        Println(result)
         Println(error)
         Copy(noerror error)
         Copy(defaultResult result)
