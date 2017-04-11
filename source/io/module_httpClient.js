@@ -72,7 +72,16 @@
         // None
 
         // Static Public Functions
-        // None
+        var runningRequests = [];
+
+        HttpClient.abortAllRunningRequests = function () {
+            // Abort event handlers seem to run synchronously
+            // So run on a copy to prevent mutating while aborting
+            var runningRequestsCopy = runningRequests.slice();
+            runningRequestsCopy.forEach(function (request) {
+                request.abort();
+            });
+        };
 
         // Prototype creation
         var child = HttpClient;
@@ -127,6 +136,12 @@
                 Object.keys(eventListeners).forEach(function (eventName) {
                     request.removeEventListener(eventName, eventListeners[eventName]);
                 });
+
+                // Remove reference to complete request
+                var index = runningRequests.indexOf(request);
+                if (index > -1) {
+                    runningRequests.splice(index, 1);
+                }
 
                 cb(responseData);
             };
@@ -245,6 +260,9 @@
             } else {
                 request.send(requestData.buffer);
             }
+
+            // Save a reference to the running request
+            runningRequests.push(request);
         };
     }());
 
@@ -343,6 +361,10 @@
         };
 
         // Exported functions
+        publicAPI.httpClient.abortAllRunningRequests = function () {
+            HttpClient.abortAllRunningRequests();
+        };
+
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
         // unless otherwise stated in the function below
         Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {

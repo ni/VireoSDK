@@ -8,6 +8,7 @@ describe('Timeout test suite', function () {
     var httpParser = window.testHelpers.httpParser;
 
     var TIMEOUT_CODE = 56;
+    var ABORT_CODE = 363508;
     var vireo;
 
     var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
@@ -124,6 +125,43 @@ describe('Timeout test suite', function () {
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
             expect(viPathParser('error.source')).toMatch(/Timeout/);
+            done();
+        });
+    });
+
+    it('GET method with default timeout of 10 seconds times and httpbin delay of 30s is aborted after 5s', function (done) {
+        var abortTimeout = 5000;
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDefaultTimeoutViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        viPathWriter('url', url);
+        // Do not write timeout, default of 10s should be used
+
+        var startTime = performance.now();
+
+        setTimeout(function () {
+            vireo.httpClient.abortAllRunningRequests();
+        }, abortTimeout);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            var endTime = performance.now();
+            var runTime = endTime - startTime;
+
+            expect(runTime).toBeNear(abortTimeout, abortTimeout * 0.5);
+
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(ABORT_CODE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
+            expect(viPathParser('error.source')).toMatch(/Abort/);
             done();
         });
     });
