@@ -336,50 +336,13 @@
 
             if (httpClient === undefined) {
                 newErrorSource = formatForSource('Handle Not Found, Make sure to use HttpClientOpen to create a handle first');
-                Module.httpClient.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
         };
 
         // Exported functions
-        Module.httpClient.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
-            // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
-
-            var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
-            var existingError = existingErrorStatus;
-            var newError = newErrorStatus;
-
-            if (existingError) {
-                return;
-            }
-
-            if (newError) {
-                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
-                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
-                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
-                return;
-            }
-
-            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
-            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
-            var newWarning = newErrorCode !== CODES.NO_ERROR;
-            if (existingWarning) {
-                return;
-            }
-
-            if (newWarning) {
-                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
-                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
-                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
-                return;
-            }
-
-            // If no error or warning then pass through
-            // Note: merge errors function ignores newErrorSource if no newError or newWarning so replicated here
-            return;
-        };
-
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
         // unless otherwise stated in the function below
         Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
@@ -391,7 +354,7 @@
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
                 newErrorSource = formatForSource('Cookie File unsupported in WebVIs (please leave as default of empty string)');
-                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -399,7 +362,7 @@
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
                 newErrorSource = formatForSource('Verify Server unsupported in WebVIs (please leave as default of true)');
-                Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -417,7 +380,7 @@
 
             if (handleExists === false) {
                 newErrorSource = formatForSource('Attempted to close an invalid or non-existant handle');
-                Module.httpClient.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
 
@@ -462,7 +425,7 @@
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
                 newErrorSource = formatForSource('The header ' + header + ' does not exist');
-                Module.httpClient.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -533,7 +496,7 @@
 
                 if (outputFile !== '') {
                     newErrorSource = formatForSource('Output File unsupported in WebVIs (please leave as default of empty string)');
-                    Module.httpClient.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     setDefaultOutputs();
                     return;
                 }
@@ -592,7 +555,7 @@
                 var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;
                 var newErrorCode = responseData.labviewCode;
                 var newErrorSource = formatForSource(responseData.errorMessage);
-                Module.httpClient.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
         };
