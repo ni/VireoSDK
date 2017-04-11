@@ -9,6 +9,9 @@ describe('Performing a PUT request', function () {
 
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var WEBVI_RECEIVE_INVALID_HANDLE = 1;
+    var WEBVI_INVALID_URL = 363500;
+    var WEBVI_INVALID_HEADER = 363651;
+    var WEBVI_NETWORK_ERROR = -1967370240;
     var vireo;
 
     var httpPutMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PutMethod.via');
@@ -78,6 +81,55 @@ describe('Performing a PUT request', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_RECEIVE_INVALID_HANDLE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
+            done();
+        });
+    });
+
+    it('errors with a bad url', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        viPathWriter('url', 'http://bad:-90');
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_INVALID_URL);
+            expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
+            done();
+        });
+    });
+
+    it('errors connecting to a secure context form an insecure context to test network errors', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        // This test assumes that we are serving from http so a connection to https will fail
+        viPathWriter('url', 'https://nonexistant');
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_NETWORK_ERROR);
             expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
             done();
         });
@@ -343,6 +395,37 @@ describe('Performing a PUT request', function () {
             expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
             expect(viPathParser('error.source')).toBeEmptyString();
+            done();
+        });
+    });
+
+    it('with open, add invalid header, put, close results in an error', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutOpenAddMethodCloseViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('put');
+        var header = 'headers cannot have spaces';
+        var value = 'in bird culture this is considered a dick move';
+        viPathWriter('url', url);
+        viPathWriter('header', header);
+        viPathWriter('value', value);
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBeGreaterThan(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(WEBVI_INVALID_HEADER);
+            expect(viPathParser('error.source')).toMatch(/HttpClientPut in MyVI/);
             done();
         });
     });
