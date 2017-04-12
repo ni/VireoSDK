@@ -27,6 +27,8 @@ enum HttpClientMethodId {
     kDelete = 4
 };
 
+#define HTTP_REQUIRED_INPUTS_MESSAGE "All inputs and outputs must be provided for HTTP functions"
+
 extern "C" {
     extern void jsHttpClientOpen(StringRef, StringRef, StringRef, UInt32, UInt32 *, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientClose(UInt32, Boolean *, Int32 *, StringRef);
@@ -76,6 +78,11 @@ void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, ConstCStr m
 VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(4) || !_ParamPointer(5)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(5).status) {
         jsHttpClientOpen(
             _Param(0),
@@ -100,6 +107,11 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     // Run close regardless of an existing error to clean-up resources
     Boolean existingStatus = _Param(1).status;
     jsHttpClientClose(
@@ -121,6 +133,11 @@ VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(3).status) {
         jsHttpClientAddHeader(
             _Param(0),
@@ -142,6 +159,11 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(2).status) {
         jsHttpClientRemoveHeader(
             _Param(0),
@@ -162,6 +184,11 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluste
 VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(3).status) {
         jsHttpClientGetHeader(
             _Param(0),
@@ -183,6 +210,11 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(4)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(4).status) {
         jsHttpClientHeaderExists(
             _Param(0),
@@ -205,6 +237,11 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, Str
 VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     if (!_Param(2).status) {
         jsHttpClientListHeaders(
             _Param(0),
@@ -226,6 +263,12 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster
 VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
+    // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     OccurrenceCore *pOcc = _Param(8)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -272,6 +315,12 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
+    // Timeout(2) null value is handled by js and occurrence(6) handled by vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1)|| !_ParamPointer(3) || !_ParamPointer(4) || !_ParamPointer(5)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     OccurrenceCore *pOcc = _Param(6)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -317,6 +366,12 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
 VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
+    // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     OccurrenceCore *pOcc = _Param(9)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -362,6 +417,12 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
+    // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     OccurrenceCore *pOcc = _Param(8)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -407,6 +468,12 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
+    // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
+
     OccurrenceCore *pOcc = _Param(9)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
