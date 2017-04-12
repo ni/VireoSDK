@@ -25,6 +25,11 @@ describe('Timeout test suite', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
+    beforeEach(function (done) {
+        // The timeout tests sometimes need a recovery period so perform a full get request and wait for it before continuing
+        httpBinHelpers.forceHttpBinQuery(done);
+    });
+
     beforeEach(function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
         // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
