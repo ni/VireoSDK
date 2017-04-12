@@ -15,7 +15,7 @@
             "include": ["common"],
             "tests": [
                 "HttpHeadersTest.via",
-				"HttpHandles.via"
+                "HttpHandles.via"
             ]
         },
         "manual": {
