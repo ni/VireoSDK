@@ -52,6 +52,22 @@
     var DEFAULT_TIMEOUT_MS = 10000;
     var TIMEOUT_IMMEDIATELY_MS = 1;
 
+    var createSourceFromMessage = function (additionalInformation) {
+        if (typeof additionalInformation === 'string' && additionalInformation.length !== 0) {
+            return '<APPEND>\n' + additionalInformation;
+        }
+
+        return '';
+    };
+
+    var formatMessageWithException = function (messageText, exception) {
+        if (typeof exception.message === 'string' && exception.message.length !== 0) {
+            return messageText + ', Additional information: ' + exception.message;
+        }
+
+        return messageText;
+    };
+
     var HttpClient;
     (function () {
         // Static private reference aliases
@@ -143,11 +159,10 @@
             var requestCompleted = false;
 
             var completeRequest = function (responseData) {
+                // Make sure completeRequest is not called twice
                 if (requestCompleted === true) {
                     return;
                 }
-
-                // Make sure completeRequest is not called twice
                 requestCompleted = true;
 
                 // Unregister event listeners
@@ -167,6 +182,19 @@
             // load, error, timeout, and abort are mutually exclusive and one will fire after send
             // See https://xhr.spec.whatwg.org/#suggested-names-for-events-using-the-progressevent-interface
             eventListeners.load = function () {
+                // A status code of 0 is an invalid status code and indicative of a failure
+                // So far the only browser returning status codes of 0 is PhantomJS
+                if (request.status === 0) {
+                    completeRequest({
+                        header: '',
+                        text: '',
+                        status: 0,
+                        labviewCode: CODES.NETWORK_ERROR,
+                        errorMessage: 'Network Error: Check Output or Console for more information'
+                    });
+                    return;
+                }
+
                 // TODO mraj is there a way to get the HTTP version from the request?
                 var httpVersion = 'HTTP/1.1';
                 var statusLine = httpVersion + ' ' + request.status + ' ' + request.statusText + '\r\n';
@@ -224,10 +252,7 @@
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
-                errorMessage = 'Invalid URL';
-                if (typeof ex.message === 'string' && ex.message !== '') {
-                    errorMessage += ', Additional information: ' + ex.message;
-                }
+                errorMessage = formatMessageWithException('Invalid URL', ex);
                 completeRequest({
                     header: '',
                     text: '',
@@ -247,10 +272,7 @@
                     request.setRequestHeader(header, value);
                 });
             } catch (ex) {
-                errorMessage = 'Invalid Header: The provided header "' + currentHeaderName + '" with value "' + currentHeaderValue + '" is invalid';
-                if (typeof ex.message === 'string' && ex.message !== '') {
-                    errorMessage += ', Additional information: ' + ex.message;
-                }
+                errorMessage = formatMessageWithException('Invalid Header: The provided header "' + currentHeaderName + '" with value "' + currentHeaderValue + '" is invalid', ex);
                 completeRequest({
                     header: '',
                     text: '',
@@ -274,6 +296,8 @@
             request.timeout = requestData.xhrTimeout;
 
             // Send request
+            // IE11 and PhatomJS will both throw on send() if an invalid url is provided. Spec compliant browsers throw on open() for invalid urls.
+            // Not sure if this is the only reason for send to throw in IE11, so using more generic network error
             try {
                 if (requestData.buffer === undefined) {
                     request.send();
@@ -281,10 +305,7 @@
                     request.send(requestData.buffer);
                 }
             } catch (ex) {
-                errorMessage = 'Network Error: Check Output or Console for more information';
-                if (typeof ex.message === 'string' && ex.message !== '') {
-                    errorMessage += ', Additional information: ' + ex.message;
-                }
+                errorMessage = formatMessageWithException('Network Error: Check Output or Console for more information', ex);
                 completeRequest({
                     header: '',
                     text: '',
@@ -371,20 +392,12 @@
 
         var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
 
-        var formatForSource = function (additionalInformation) {
-            if (typeof additionalInformation !== 'string' || additionalInformation.length === 0) {
-                return '';
-            }
-
-            return '<APPEND>\n' + additionalInformation;
-        };
-
         var findhttpClientOrWriteError = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var httpClient = httpClientManager.get(handle);
             var newErrorSource;
 
             if (httpClient === undefined) {
-                newErrorSource = formatForSource('Handle Not Found, Make sure to use HttpClientOpen to create a handle first');
+                newErrorSource = createSourceFromMessage('Handle Not Found, Make sure to use HttpClientOpen to create a handle first');
                 Module.coreHelpers.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
@@ -406,7 +419,7 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = formatForSource('Cookie File unsupported in WebVIs (please leave as default of empty string)');
+                newErrorSource = createSourceFromMessage('Cookie File unsupported in WebVIs (please leave as default of empty string)');
                 Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -414,7 +427,7 @@
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = formatForSource('Verify Server unsupported in WebVIs (please leave as default of true)');
+                newErrorSource = createSourceFromMessage('Verify Server unsupported in WebVIs (please leave as default of true)');
                 Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -432,7 +445,7 @@
             var handleExists = httpClientManager.get(handle) !== undefined;
 
             if (handleExists === false) {
-                newErrorSource = formatForSource('Attempted to close an invalid or non-existant handle');
+                newErrorSource = createSourceFromMessage('Attempted to close an invalid or non-existant handle');
                 Module.coreHelpers.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
@@ -477,7 +490,7 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = formatForSource('The header ' + header + ' does not exist');
+                newErrorSource = createSourceFromMessage('The header ' + header + ' does not exist');
                 Module.coreHelpers.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -548,7 +561,7 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = formatForSource('Output File unsupported in WebVIs (please leave as default of empty string)');
+                    newErrorSource = createSourceFromMessage('Output File unsupported in WebVIs (please leave as default of empty string)');
                     Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     setDefaultOutputs();
                     return;
@@ -607,7 +620,7 @@
 
                 var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;
                 var newErrorCode = responseData.labviewCode;
-                var newErrorSource = formatForSource(responseData.errorMessage);
+                var newErrorSource = createSourceFromMessage(responseData.errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
