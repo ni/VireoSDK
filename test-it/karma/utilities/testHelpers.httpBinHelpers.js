@@ -45,6 +45,30 @@
         request.send();
     };
 
+    var forceHttpBinQuery = function (done) {
+        var loadPassed = function () {
+            done();
+        };
+        var loadFailed = function () {
+            done.fail('Could not communicate with httpbin');
+        };
+
+        var url = convertToAbsoluteUrl('get?show_env=1');
+        var request = new XMLHttpRequest();
+        request.addEventListener('load', function () {
+            if (request.status === 200) {
+                loadPassed();
+            } else {
+                loadFailed();
+            }
+        });
+        request.addEventListener('error', loadFailed);
+        request.addEventListener('timeout', loadFailed);
+        request.addEventListener('abort', loadFailed);
+        request.open('GET', url);
+        request.send();
+    };
+
     // Calling pending was not working right for async functions, probably related to https://github.com/jasmine/jasmine/issues/937
     var makeTestPendingIfHttpBinOffline = function () {
         if (typeof serverOnline !== 'boolean') {
@@ -75,6 +99,7 @@
         convertToAbsoluteUrl: convertToAbsoluteUrl,
         makeTestPendingIfHttpBinOffline: makeTestPendingIfHttpBinOffline,
         queryHttpBinStatus: queryHttpBinStatus,
-        parseBody: parseBody
+        parseBody: parseBody,
+        forceHttpBinQuery: forceHttpBinQuery
     };
 }());
