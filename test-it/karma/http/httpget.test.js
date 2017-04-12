@@ -107,7 +107,7 @@ describe('Performing a GET request', function () {
             expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_INVALID_URL);
+            expect([WEBVI_INVALID_URL, WEBVI_NETWORK_ERROR]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
             done();
         });
