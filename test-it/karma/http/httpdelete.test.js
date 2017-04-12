@@ -9,7 +9,6 @@ describe('Performing a DELETE request', function () {
 
     var WEBVI_UNSUPPORTED_INPUT = 363650;
     var WEBVI_RECEIVE_INVALID_HANDLE = 1;
-    var WEBVI_INVALID_URL = 363500;
     var WEBVI_INVALID_HEADER = 363651;
     var WEBVI_NETWORK_ERROR = -1967370240;
     var vireo;
@@ -81,30 +80,6 @@ describe('Performing a DELETE request', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_RECEIVE_INVALID_HANDLE);
-            expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
-            done();
-        });
-    });
-
-    xit('errors with a bad url', function (done) {
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
-        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
-
-        viPathWriter('url', 'http://bad:-90');
-        viPathWriter('headers', 'Bad Value');
-        viPathWriter('body', 'Bad Value');
-        viPathWriter('statusCode', 1337);
-
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('handle')).toBe(0);
-            expect(viPathParser('headers')).toBeEmptyString();
-            expect(viPathParser('body')).toBeEmptyString();
-            expect(viPathParser('statusCode')).toBe(0);
-            expect(viPathParser('error.status')).toBeTrue();
-            expect([WEBVI_INVALID_URL, WEBVI_NETWORK_ERROR]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
             done();
         });
