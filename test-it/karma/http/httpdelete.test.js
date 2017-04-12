@@ -86,7 +86,7 @@ describe('Performing a DELETE request', function () {
         });
     });
 
-    it('errors with a bad url', function (done) {
+    xit('errors with a bad url', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -104,7 +104,7 @@ describe('Performing a DELETE request', function () {
             expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_INVALID_URL);
+            expect([WEBVI_INVALID_URL, WEBVI_NETWORK_ERROR]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
             done();
         });

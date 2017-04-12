@@ -128,10 +128,28 @@
             var errorMessage;
             var request = new XMLHttpRequest();
 
+            // Save a reference to the request
+            runningRequests.push(request);
+
             // Create event listeners
             var eventListeners = {};
 
+            // Even though we are rigorous with removing event listeners there is at least one case where completeRequest will be run twice
+            // In PhantomJS 2.0.1 if a bad url is provided the send() function will throw an error triggering a catch statement in addition to the error event handler
+            // However, only in PhantomJS will the error event handler run before the catch statement
+            // So while most browsers will completeRequest in the catch statement and remove the event handlers to prevent further triggers,
+            // PhantomJS will run the error event handler first to completeRequest and then attempt to completeRequest again in the catch statement
+            // So begrudgingly a requestCompleted flag is added to prevent multiple calls of completeRequest.
+            var requestCompleted = false;
+
             var completeRequest = function (responseData) {
+                if (requestCompleted === true) {
+                    return;
+                }
+
+                // Make sure completeRequest is not called twice
+                requestCompleted = true;
+
                 // Unregister event listeners
                 Object.keys(eventListeners).forEach(function (eventName) {
                     request.removeEventListener(eventName, eventListeners[eventName]);
@@ -240,6 +258,7 @@
                     labviewCode: CODES.INVALID_HEADER,
                     errorMessage: errorMessage
                 });
+                return;
             }
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
@@ -255,14 +274,26 @@
             request.timeout = requestData.xhrTimeout;
 
             // Send request
-            if (requestData.buffer === undefined) {
-                request.send();
-            } else {
-                request.send(requestData.buffer);
+            try {
+                if (requestData.buffer === undefined) {
+                    request.send();
+                } else {
+                    request.send(requestData.buffer);
+                }
+            } catch (ex) {
+                errorMessage = 'Network Error: Check Output or Console for more information';
+                if (typeof ex.message === 'string' && ex.message !== '') {
+                    errorMessage += ', Additional information: ' + ex.message;
+                }
+                completeRequest({
+                    header: '',
+                    text: '',
+                    status: 0,
+                    labviewCode: CODES.NETWORK_ERROR,
+                    errorMessage: errorMessage
+                });
+                return;
             }
-
-            // Save a reference to the running request
-            runningRequests.push(request);
         };
     }());
 
