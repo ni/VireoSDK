@@ -166,15 +166,15 @@ describe('Timeout test suite', function () {
         });
     });
 
-    it('GET method with timeout -1 succeeds with httpbin delay of 20s', function (done) {
+    it('GET method with timeout -1 succeeds with httpbin delay of 10s', function (done) {
         var timeout = -1;
-        var httpBinDelay = 20000;
+        var httpBinDelay = 10000;
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('delay/20');
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/10');
         viPathWriter('url', url);
         viPathWriter('timeout', timeout);
 
@@ -183,7 +183,7 @@ describe('Timeout test suite', function () {
             var endTime = performance.now();
             var runTime = endTime - startTime;
 
-            expect(runTime).toBeNear(httpBinDelay, httpBinDelay * 0.5);
+            expect(runTime).toBeNear(httpBinDelay, httpBinDelay * 2);
 
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
@@ -203,7 +203,7 @@ describe('Timeout test suite', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(requestUrl.pathname).toBe('/delay/20');
+            expect(requestUrl.pathname).toBe('/delay/10');
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
