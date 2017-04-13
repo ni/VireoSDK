@@ -118,35 +118,37 @@
             return currentFPS;
         };
 
+        var writeNewError = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
+            Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
+            Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
+            Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+        };
+
         Module.coreHelpers.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
             // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
 
             var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
-            var existingError = existingErrorStatus;
-            var newError = newErrorStatus;
+            var isExistingError = existingErrorStatus;
+            var isNewError = newErrorStatus;
 
-            if (existingError) {
+            if (isExistingError) {
                 return;
             }
 
-            if (newError) {
-                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
-                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
-                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+            if (isNewError) {
+                writeNewError(newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer);
                 return;
             }
 
             var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
-            var existingWarning = existingErrorCode !== CODES.NO_ERROR;
-            var newWarning = newErrorCode !== CODES.NO_ERROR;
-            if (existingWarning) {
+            var isExistingWarning = existingErrorCode !== CODES.NO_ERROR;
+            var isNewWarning = newErrorCode !== CODES.NO_ERROR;
+            if (isExistingWarning) {
                 return;
             }
 
-            if (newWarning) {
-                Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
-                Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
-                Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+            if (isNewWarning) {
+                writeNewError(newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer);
                 return;
             }
 
