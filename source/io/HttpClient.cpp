@@ -451,12 +451,17 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 VIREO_FUNCTION_SIGNATURE3(HttpClientSetCredentials, UInt32, Boolean, ErrorCluster)
 {
 #if kVireoOS_emscripten
-   jsHttpClientSetCredentials(
-      _Param(0),
-      _Param(1),
-      &_Param(2).status,
-      &_Param(2).code,
-      _Param(2).source);
+   if (!_Param(2).status) {
+      jsHttpClientSetCredentials(
+         _Param(0),
+         _Param(1),
+         &_Param(2).status,
+         &_Param(2).code,
+         _Param(2).source);
+      AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientSetCredentials");
+   }
+#else
+   GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientSetCredentials");
 #endif
    return _NextInstruction();
 }

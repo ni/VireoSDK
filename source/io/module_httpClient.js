@@ -64,6 +64,7 @@
             this._username = username;
             this._password = password;
             this._headers = new Map();
+            this._withCredentials = false;
         };
 
         // Static Public Variables
@@ -217,7 +218,7 @@
             // Setting to false so communication to servers with Access-Control-Allow-Origin: *
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
             // if the jsHttpClientSetCredentials was already called by the user, use that value. Otherwise, default is "false"
-            request.withCredentials = (requestData.withCredentials || false);
+            request.withCredentials = this._withCredentials;
 
             // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
             request.responseType = 'text';
@@ -231,6 +232,10 @@
             } else {
                 request.send(requestData.buffer);
             }
+        };
+
+        proto.setCredentials = function (withCredentials) {
+            this._withCredentials = withCredentials;
         };
     }());
 
@@ -573,8 +578,7 @@
                 method: method,
                 url: url,
                 xhrTimeout: xhrTimeout,
-                buffer: buffer,
-                withCredentials: httpClient.withCredentials
+                buffer: buffer
             };
 
             httpClient.createRequest(requestData, function (responseData) {
@@ -603,7 +607,7 @@
             if (httpClient === undefined) {
                 return;
             }
-            httpClient.withCredentials = (isWithCredentials !== 0);
+            httpClient.setCredentials(isWithCredentials !== 0);
         };
     };
 
