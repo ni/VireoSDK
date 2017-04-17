@@ -421,6 +421,55 @@ describe('Performing a GET request', function () {
         });
     });
 
+
+    xit('with open, add header, get, close and validates a 200 response', function (done) {
+        var viaPath = fixtures.convertToAbsoluteFromFixturesDir('http/Credentials.via');
+
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        var header = 'birdperson';
+        var value = 'in bird culture this is considered a dick move';
+        viPathWriter('url', url);
+        viPathWriter('header', header);
+        viPathWriter('value', value);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBeGreaterThan(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.headersLowerCase[header]).toBe(value);
+            expect(requestUrl.pathname).toBe('/get');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            done();
+        });
+    });
+
+
     it('in parallel and validates a 200 response', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetParallelViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');

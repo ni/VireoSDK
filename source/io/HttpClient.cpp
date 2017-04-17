@@ -38,6 +38,7 @@ extern "C" {
     extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
+    extern void jsHttpClientSetCredentials(UInt32, Boolean, Boolean *, Int32 *, StringRef);
 }
 #endif
 
@@ -527,6 +528,26 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 }
 
 //------------------------------------------------------------
+// handle(0), supply credentials(1), error cluster(2)
+VIREO_FUNCTION_SIGNATURE3(HttpClientSetCredentials, UInt32, Boolean, ErrorCluster)
+{
+#if kVireoOS_emscripten
+   if (!_Param(2).status) {
+      jsHttpClientSetCredentials(
+         _Param(0),
+         _Param(1),
+         &_Param(2).status,
+         &_Param(2).code,
+         _Param(2).source);
+      AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientSetCredentials");
+   }
+#else
+   GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientSetCredentials");
+#endif
+   return _NextInstruction();
+}
+
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_REQUIRE(Synchronization)
     DEFINE_VIREO_FUNCTION(HttpClientOpen, "p(i(.String) i(.String) i(.String) i(.UInt32) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING "))")
@@ -541,5 +562,6 @@ DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientSetCredentials, "p(io(.UInt32) i(.Boolean) io(" ERROR_CLUST_TYPE_STRING "))")
 DEFINE_VIREO_END()
 #endif

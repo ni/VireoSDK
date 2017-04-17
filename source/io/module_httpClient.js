@@ -82,6 +82,7 @@
             this._username = username;
             this._password = password;
             this._headers = new Map();
+            this._withCredentials = false;
         };
 
         // Static Public Variables
@@ -286,8 +287,8 @@
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
             // Setting to false so communication to servers with Access-Control-Allow-Origin: *
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
-            // TODO mraj: We need a way to expose this configuration to users
-            request.withCredentials = false;
+            // if the jsHttpClientSetCredentials was already called by the user, use that value. Otherwise, default is "false"
+            request.withCredentials = this._withCredentials;
 
             // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
             request.responseType = 'text';
@@ -315,6 +316,10 @@
                 });
                 return;
             }
+        };
+
+        proto.setCredentials = function (withCredentials) {
+            this._withCredentials = withCredentials;
         };
     }());
 
@@ -624,6 +629,19 @@
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
+        };
+
+        Module.httpClient.jsHttpClientSetCredentials = function (handle, isWithCredentials, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+            if (errorStatus) {
+                return;
+            }
+
+            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:Credentials', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            if (httpClient === undefined) {
+                return;
+            }
+            httpClient.setCredentials(isWithCredentials !== 0);
         };
     };
 
