@@ -38,7 +38,7 @@ extern "C" {
     extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientConfigCORS(UInt32, Boolean, Boolean *, Int32 *, StringRef);
+    extern void jsHttpClientConfigCORS(UInt32, UInt32, Boolean *, Int32 *, StringRef);
 }
 #endif
 
@@ -529,7 +529,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 
 //------------------------------------------------------------
 // handle(0), includeCredentialsDuringCORS(1), error cluster(2)
-VIREO_FUNCTION_SIGNATURE3(HttpClientConfigCORS, UInt32, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE3(HttpClientConfigCORS, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
@@ -569,6 +569,6 @@ DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientConfigCORS, "p(io(.UInt32) i(.Boolean) io(" ERROR_CLUST_TYPE_STRING "))")
+    DEFINE_VIREO_FUNCTION(HttpClientConfigCORS, "p(io(.UInt32) i(.UInt32) io(" ERROR_CLUST_TYPE_STRING "))")
 DEFINE_VIREO_END()
 #endif
