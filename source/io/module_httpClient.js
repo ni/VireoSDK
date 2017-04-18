@@ -630,17 +630,12 @@
             });
         };
 
-        Module.httpClient.jsHttpClientSetCredentials = function (handle, isWithCredentials, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-            if (errorStatus) {
-                return;
-            }
-
+        Module.httpClient.jsHttpClientConfigCORS = function (handle, includeCredentialsDuringCORS, errorStatusPointer, errorCodePointer, errorSourcePointer) {
             var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:Credentials', errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
-            httpClient.setCredentials(isWithCredentials !== 0);
+            httpClient.setCredentials(includeCredentialsDuringCORS !== FALSE);
         };
     };
 
