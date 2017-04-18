@@ -25,7 +25,7 @@
             'source/io/module_*.js',
             'source/core/vireo.loader.js',
             // test assets
-            'test-it/karma/utilities/testHelpers.*.js',
+            'test-it/karma/utilities/TestHelpers.*.js',
             {
                 pattern: 'test-it/ViaTests/*.via',
                 included: false
