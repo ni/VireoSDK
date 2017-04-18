@@ -8,11 +8,11 @@ module.exports = function (config) {
 
     sharedConfig.files = sharedConfig.files.concat([
         // test assets
-        'test-it/karma/utilities/extendJasmineTimeout.js',
+        'test-it/karma/utilities/ExtendJasmineTimeout.js',
 
         // test specs
-        'test-it/karma/publicapi/*.test.js',
-        'test-it/karma/http/*.test.js'
+        'test-it/karma/publicapi/*.Test.js',
+        'test-it/karma/http/*.Test.js'
     ]);
 
     // level of logging
