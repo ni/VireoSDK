@@ -533,7 +533,6 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientConfigCORS, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-   // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
       THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
       return THREAD_EXEC()->Stop();
