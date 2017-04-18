@@ -82,7 +82,7 @@
             this._username = username;
             this._password = password;
             this._headers = new Map();
-            this._withCredentials = false;
+            this._includeCredentialsDuringCORS = false;
         };
 
         // Static Public Variables
@@ -287,7 +287,7 @@
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
             // Setting to false so communication to servers with Access-Control-Allow-Origin: *
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
-            request.withCredentials = this._withCredentials;
+            request.withCredentials = this._includeCredentialsDuringCORS;
 
             // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
             request.responseType = 'text';
@@ -317,8 +317,8 @@
             }
         };
 
-        proto.setCredentials = function (withCredentials) {
-            this._withCredentials = withCredentials;
+        proto.setIncludeCredentialsDuringCORS = function (includeCredentialsDuringCORS) {
+            this._includeCredentialsDuringCORS = includeCredentialsDuringCORS;
         };
     }());
 
@@ -635,7 +635,7 @@
             if (httpClient === undefined) {
                 return;
             }
-            httpClient.setCredentials(includeCredentialsDuringCORS !== FALSE);
+            httpClient.setIncludeCredentialsDuringCORS(includeCredentialsDuringCORS !== FALSE);
         };
     };
 
