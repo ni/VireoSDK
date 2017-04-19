@@ -3,10 +3,14 @@
     window.testHelpers = window.testHelpers || {};
 
     var rebootAndLoadVia = function (vireo, viaAbsolutePath) {
-        expect(viaAbsolutePath).toBeNonEmptyString();
+        // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
+        expect(typeof viaAbsolutePath).toBe('string');
+        expect(viaAbsolutePath).not.toBe('');
 
         var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaAbsolutePath);
-        expect(viaText).toBeNonEmptyString();
+        // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
+        expect(typeof viaText).toBe('string');
+        expect(viaText).not.toBe('');
 
         vireo.eggShell.reboot();
 
@@ -23,7 +27,8 @@
         var niError = vireo.eggShell.loadVia(viaText);
 
         var runSlicesAsync = function (cb) {
-            expect(cb).toBeFunction();
+            // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
+            expect(typeof cb).toBe('function');
 
             if (niError !== 0) {
                 cb(rawPrint, rawPrintError);
