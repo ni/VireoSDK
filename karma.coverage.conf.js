@@ -11,9 +11,11 @@ module.exports = function (config) {
         'test-it/karma/utilities/ExtendJasmineTimeout.LongRun.js',
 
         // test specs
-        'test-it/karma/publicapi/*.Test.js',
+        'test-it/karma/helloworld/*.Test.js',
         'test-it/karma/http/*.Test.js',
-        'test-it/karma/longrun/*.Test.js'
+        'test-it/karma/longrun/*.Test.js',
+        'test-it/karma/publicapi/*.Test.js',
+        'test-it/karma/vtrsuite/*.Test.js'
     ]);
 
     // level of logging
