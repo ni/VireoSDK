@@ -89,13 +89,25 @@
                     return result;
                 }
             };
+        },
+        toMatchIEEE754Number: function () {
+            return {
+                compare: function (actual, expected) {
+                    var result = {};
+                    result.pass = typeof actual === 'number' && typeof expected === 'number' && Object.is(actual, expected);
+                    return result;
+                }
+            };
         }
     };
+
+    beforeAll(function () {
+        window.jasmine.addMatchers(vireoMatchers);
+    });
 
     window.testHelpers.vireoRunner = {
         rebootAndLoadVia: rebootAndLoadVia,
         createVIPathParser: createVIPathParser,
-        createVIPathWriter: createVIPathWriter,
-        vireoMatchers: vireoMatchers
+        createVIPathWriter: createVIPathWriter
     };
 }());

@@ -34,10 +34,6 @@ describe('can run test suite file', function () {
         fixtures.preloadAbsoluteUrls(allUrls, done);
     });
 
-    beforeEach(function () {
-        window.jasmine.addMatchers(vireoRunner.vireoMatchers);
-    });
-
     var setToTrue = function () {
         return true;
     };

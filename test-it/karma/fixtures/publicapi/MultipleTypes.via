@@ -70,6 +70,11 @@ define (MyVI dv(.VirtualInstrument (
 
         e(dv(.String 'Hello')dataItem_String)
         e(dv(.Double 123.456)dataItem_NumericDouble)
+        e(dv(.Double nan)dataItem_NumericDoubleNaN)
+        e(dv(.Double inf)dataItem_NumericDoublePositiveInfinity)
+        e(dv(.Double -inf)dataItem_NumericDoubleNegativeInfinity)
+        e(dv(.Double +0)dataItem_NumericDoublePositiveZero)
+        e(dv(.Double -0)dataItem_NumericDoubleNegativeZero)
         e(dv(.Int32 -1073741824)dataItem_Numeric32)
         e(dv(.Int64 -1152921504606846976)dataItem_Numeric64)
         e(dv(.UInt64 18446744073709551615) dataItem_NumericU64)
