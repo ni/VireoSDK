@@ -11,7 +11,9 @@ module.exports = function (config) {
         'test-it/karma/utilities/ExtendJasmineTimeout.js',
 
         // test specs
+        'test-it/karma/helloworld/*.Test.js',
         'test-it/karma/publicapi/*.Test.js',
+        'test-it/karma/vtrsuite/*.Test.js',
         'test-it/karma/http/*.Test.js'
     ]);
 
