@@ -84,34 +84,32 @@ describe('The Vireo EggShell readJSON api can read', function () {
             expect(actual).toBe(-1073741824);
         });
 
-        // TODO mraj 64-bit numeric representation should be returned as JSON strings to prevent loss of precision
-        xit('Int64', function () {
+        it('Int64', function () {
             var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_Numeric64');
             var actual = JSON.parse(actualJSON);
-            expect(actual).toBe('-1152921504606846976');
+
+            // TODO mraj 64-bit numeric representation should be returned as JSON strings to prevent loss of precision
+            expect(actual).toBe(-1152921504606847000); // -1152921504606846976
+
+            // TODO mraj when 64-bit values are returned with the correct type the following should be enabled
+            expect(actual).not.toBe('-1152921504606846976');
+
+            // TODO mraj can currently workaround by not parsing as json
+            expect(vireo.eggShell.readJSON(viName, 'dataItem_Numeric64')).toBe('-1152921504606846976');
         });
 
-        // 64-bit numeric representation should be returned as JSON strings to prevent loss of precision
-        it('Int64 workaround', function () {
-            var numberInvalid = vireo.eggShell.readJSON(viName, 'dataItem_Numeric64');
-            var actualJSON = '"' + numberInvalid + '"';
-            var actual = JSON.parse(actualJSON);
-            expect(actual).toBe('-1152921504606846976');
-        });
-
-        // TODO mraj 64-bit numeric representation should be returned as JSON strings to prevent loss of precision
-        xit('UInt64', function () {
+        it('UInt64', function () {
             var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_NumericU64');
             var actual = JSON.parse(actualJSON);
-            expect(actual).toBe('18446744073709551615');
-        });
 
-        // Workaround that is used until readJSON returns the right value
-        it('UInt64 workaround', function () {
-            var numberInvalid = vireo.eggShell.readJSON(viName, 'dataItem_NumericU64');
-            var actualJSON = '"' + numberInvalid + '"';
-            var actual = JSON.parse(actualJSON);
-            expect(actual).toBe('18446744073709551615');
+            // TODO mraj 64-bit numeric representation should be returned as JSON strings to prevent loss of precision
+            expect(actual).toBe(18446744073709552000); // 18446744073709551615
+
+            // TODO mraj when 64-bit values are returned with the correct type the following should be enabled
+            expect(actual).not.toBe('18446744073709551615');
+
+            // TODO mraj can currently workaround by not parsing as json
+            expect(vireo.eggShell.readJSON(viName, 'dataItem_NumericU64')).toBe('18446744073709551615');
         });
 
         it('ComplexDouble', function () {
@@ -123,28 +121,25 @@ describe('The Vireo EggShell readJSON api can read', function () {
             });
         });
 
-        // TODO mraj The timestamp components that are 64-bit numeric representation should be returned as JSON strings
-        xit('Timestamp', function () {
+        it('Timestamp', function () {
             var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_Timestamp');
             var actual = JSON.parse(actualJSON);
-            expect(actual).toEqual({
-                seconds: '3564057536',
-                fraction: '7811758927381448193'
-            });
-        });
 
-        // Workaround that is used until readJSON returns the right value
-        it('Timestamp workaround', function () {
-            var secondsInvalid = vireo.eggShell.readJSON(viName, 'dataItem_Timestamp.seconds');
-            var fractionInvalid = vireo.eggShell.readJSON(viName, 'dataItem_Timestamp.fraction');
-            var secondsInvalidJSON = '"' + secondsInvalid + '"';
-            var fractionInvalidJSON = '"' + fractionInvalid + '"';
-            var actualJSON = '{"seconds":' + secondsInvalidJSON + ', "fraction":' + fractionInvalidJSON + '}';
-            var actual = JSON.parse(actualJSON);
+            // TODO mraj The timestamp components that are 64-bit numeric representation should be returned as JSON strings
             expect(actual).toEqual({
+                seconds: 3564057536,
+                fraction: 7811758927381449000 // 7811758927381448193
+            });
+
+            // TODO mraj when 64-bit values are returned with the correct type the following should be enabled
+            expect(actual).not.toEqual({
                 seconds: '3564057536',
                 fraction: '7811758927381448193'
             });
+
+            // TODO mraj can currently workaround by going to each component and not parsing as json
+            expect(vireo.eggShell.readJSON(viName, 'dataItem_Timestamp.seconds')).toBe('3564057536');
+            expect(vireo.eggShell.readJSON(viName, 'dataItem_Timestamp.fraction')).toBe('7811758927381448193');
         });
     });
 
@@ -178,10 +173,20 @@ describe('The Vireo EggShell readJSON api can read', function () {
             var actual = JSON.parse(actualJSON);
 
             // TODO mraj the following test has loss of precision. When the scalar tests are fixed it can be deleted.
-            expect(actual).toEqual([-8989, 9090, 36028797018963970, -72057594037927940]);
+            expect(actual).toEqual([
+                -8989,
+                9090,
+                36028797018963970, // 36028797018963968
+                -72057594037927940 // -72057594037927936
+            ]);
 
             // TODO mraj when the scalar test are fixed the following should be enabled
-            expect(actual).not.toEqual(['-8989', '9090', '36028797018963968', '-72057594037927936']);
+            expect(actual).not.toEqual([
+                '-8989',
+                '9090',
+                '36028797018963968',
+                '-72057594037927936'
+            ]);
         });
 
         it('ComplexDouble', function () {
@@ -210,10 +215,10 @@ describe('The Vireo EggShell readJSON api can read', function () {
             expect(actual).toEqual([
                 {
                     seconds: 3564057536,
-                    fraction: 7811758927381449000
+                    fraction: 7811758927381449000 // 7811758927381448193
                 }, {
                     seconds: 3564057542,
-                    fraction: 16691056759750170000
+                    fraction: 16691056759750170000 // 16691056759750171331
                 }
             ]);
 
@@ -282,6 +287,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 }
             ]);
 
+            // TODO mraj when the scalar test are fixed the following should be enabled
             expect(actual).not.toEqual([
                 {
                     bool: true,
