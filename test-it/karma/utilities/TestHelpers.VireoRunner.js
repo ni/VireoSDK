@@ -90,11 +90,15 @@
                 }
             };
         },
-        toMatchIEEE754Number: function () {
+        toMatchIEEE754Number: function (util, customEqualityTesters) {
             return {
                 compare: function (actual, expected) {
                     var result = {};
-                    result.pass = typeof actual === 'number' && typeof expected === 'number' && Object.is(actual, expected);
+                    if (typeof actual === 'number' && typeof expected === 'number') {
+                        result.pass = Object.is(actual, expected);
+                    } else {
+                        result.pass = util.equals(actual, expected, customEqualityTesters);
+                    }
                     return result;
                 }
             };

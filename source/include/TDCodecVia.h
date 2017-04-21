@@ -103,7 +103,7 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false, Boolean quoteInfNaN = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = null);
     TypeRef ParseLiteral(TypeRef patternType);
