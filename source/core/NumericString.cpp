@@ -2390,13 +2390,19 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     return validFormatString;
 }
 
+//------------------------------------------------------------
+// DateTimeString(0), FormatString(1), Timestamp(2), isUTC(3)
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {
-    //  Int64 wholeSeconds = _Param(2).Integer();
-    Boolean isUTC = _Param(3);
-    Int32 timeZoneOffset = isUTC? 0 : Date::getLocaletimeZone(_Param(2).Integer());
     SubString format = _Param(1)->MakeSubStringAlias();
-    Date date(_Param(2), timeZoneOffset);
+    Timestamp timestamp;
+    if (_ParamPointer(2))
+        timestamp = _Param(2);
+    else
+        Timestamp::GetCurrentTimestamp(&timestamp);
+    Boolean isUTC = _ParamPointer(3) ? _Param(3) : false;
+    Int32 timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
+    Date date(timestamp, timeZoneOffset);
     StringRef output = _Param(0);
     // clear the buffer
     output->Resize1D(0);
