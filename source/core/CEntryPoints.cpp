@@ -156,7 +156,7 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
 
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
-    TDViaParser parser(tm, &valueString, &log, 1, &formatss);
+    TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
     parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------

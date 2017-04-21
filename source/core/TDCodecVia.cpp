@@ -35,7 +35,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/)
+TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/, Boolean quoteInfNaN/*= false*/)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -49,7 +49,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
        _options._fmt = TDViaFormatter::formatVIA;
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
        _options._bEscapeStrings = true;
-       _options._fmt = jsonLVExt ? TDViaFormatter::formatJSONLVExt : TDViaFormatter::formatJSON;
+       _options._fmt = jsonLVExt ? (quoteInfNaN ? TDViaFormatter::formatJSONEggShell : TDViaFormatter::formatJSONLVExt) : TDViaFormatter::formatJSON;
        if (strictJSON)
            _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
    } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
@@ -1027,7 +1027,8 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_IEEE754Binary:
             {
                 Boolean suppressInfNaN = Fmt().SuppressInfNaN();
-                _string.ReadToken(&token, suppressInfNaN);
+                TokenTraits tt = _string.ReadToken(&token, suppressInfNaN);
+                token.TrimQuotedString(tt);
                 Double value = 0.0;
                 Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN);
                 if (!readSuccess)

@@ -83,6 +83,14 @@
         var userPrintFunction;
 
         // Exported functions
+        Module.print = function (text) {
+            console.debug(text);
+        };
+
+        Module.printErr = function (text) {
+            console.error(text);
+        };
+
         publicAPI.eggShell.setPrintFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error('Print must be a callable function');
