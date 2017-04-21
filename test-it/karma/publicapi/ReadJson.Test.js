@@ -206,7 +206,6 @@ describe('The Vireo EggShell readJSON api can read', function () {
             ]);
         });
 
-        // Same as above, when running through a JSON parser this results in loss of precision
         it('Timestamp', function () {
             var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ArrayOfTimestamp');
             var actual = JSON.parse(actualJSON);
@@ -338,7 +337,304 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
     });
 
-    // describe('2D arrays of type', function () {
+    describe('2D arrays of type', function () {
+        it('Boolean', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfBoolean');
+            var actual = JSON.parse(actualJSON);
+            expect(actual).toEqual([
+                [true, false],
+                [false, false],
+                [true, true]
+            ]);
+        });
 
-    // });
+        it('String', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfString');
+            var actual = JSON.parse(actualJSON);
+            expect(actual).toEqual([
+                ['hello', 'world'],
+                ['abcde', 'fg'],
+                ['xyzzy', '']
+            ]);
+        });
+
+        it('Double', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfDouble');
+            var actual = JSON.parse(actualJSON);
+            expect(actual).toEqual([
+                [1.234, 2.345, 3.456],
+                [-4.567, -5.678, -6.789]
+            ]);
+        });
+
+        it('Int64', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfInt64');
+            var actual = JSON.parse(actualJSON);
+
+            // TODO mraj the following test has loss of precision. When the scalar tests are fixed it can be deleted.
+            expect(actual).toEqual([
+                [9090],
+                [36028797018963970], // 36028797018963968
+                [-72057594037927940] // -72057594037927936
+            ]);
+
+            // TODO mraj when the scalar test are fixed the following should be enabled
+            expect(actual).not.toEqual([
+                ['9090'],
+                ['36028797018963968'],
+                ['-72057594037927936']
+            ]);
+        });
+
+        it('ComplexDouble', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfComplex');
+            var actual = JSON.parse(actualJSON);
+            expect(actual).toEqual([
+                [
+                    {
+                        real: 1.4142,
+                        imaginary: 0.7071
+                    }, {
+                        real: 10,
+                        imaginary: -10
+                    }
+                ],
+                [
+                    {
+                        real: 5.045,
+                        imaginary: -5.67
+                    }, {
+                        real: 7.89,
+                        imaginary: 1234.5678
+                    }
+                ]
+            ]);
+        });
+
+        it('Timestamp', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfTimestamp');
+            var actual = JSON.parse(actualJSON);
+
+            // TODO mraj the following test has loss of precision. When the scalar tests are fixed it can be deleted.
+            expect(actual).toEqual([
+                [
+                    {
+                        seconds: 3564057536,
+                        fraction: 7811758927381449000 // 7811758927381448193
+                    }, {
+                        seconds: 3564057542,
+                        fraction: 16691056759750170000 // 16691056759750171331
+                    }
+                ],
+                [
+                    {
+                        seconds: 3564059871,
+                        fraction: 7811758927381449000 // 7811758927381448217
+                    }, {
+                        seconds: 3564057536,
+                        fraction: 7811758927381449000 // 7811758927381448193
+                    }
+                ],
+                [
+                    {
+                        seconds: 3566659871,
+                        fraction: 7811758927381447000 // 7811758927381446667
+                    }, {
+                        seconds: 3566659871,
+                        fraction: 7811758927381447000 // 7811758927381446667
+                    }
+                ]
+            ]);
+
+            // TODO mraj when the scalar test are fixed the following should be enabled
+            expect(actual).not.toEqual([
+                [
+                    {
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
+                    }, {
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
+                    }
+                ],
+                [
+                    {
+                        seconds: '3564059871',
+                        fraction: '7811758927381448217'
+                    }, {
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
+                    }
+                ],
+                [
+                    {
+                        seconds: '3566659871',
+                        fraction: '7811758927381446667'
+                    }, {
+                        seconds: '3566659871',
+                        fraction: '7811758927381446667'
+                    }
+                ]
+            ]);
+        });
+    });
+
+    describe('3D arrays of', function () {
+        it('Int32', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_3DArrayOfInt32');
+            var actual = JSON.parse(actualJSON);
+            expect(actual).toEqual([
+                [
+                    [111, 112, 113],
+                    [121, 122, 123]
+                ],
+                [
+                    [211, 212, 213],
+                    [221, 222, 223]
+                ]
+            ]);
+        });
+    });
+
+    describe('composite types of', function () {
+        it('clusters with scalars', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ClusterOfScalars');
+            var actual = JSON.parse(actualJSON);
+
+            // TODO mraj the following test has loss of precision. When the scalar tests are fixed it can be deleted.
+            expect(actual).toEqual({
+                bool: true,
+                string: 'first',
+                double: 3.14159,
+                int32: 42,
+                int64: -72057594037927940, // -72057594037927936
+                uint64: 9223372041149743000, // 9223372041149743104
+                complex: {
+                    real: 3.4,
+                    imaginary: -5.9
+                },
+                time: {
+                    seconds: 3564057536,
+                    fraction: 7811758927381449000 // 7811758927381448193
+                }
+            });
+
+            // TODO mraj when the scalar test are fixed the following should be enabled
+            expect(actual).not.toEqual({
+                bool: true,
+                string: 'first',
+                double: 3.14159,
+                int32: 42,
+                int64: '-72057594037927936',
+                uint64: '9223372041149743104',
+                complex: {
+                    real: 3.4,
+                    imaginary: -5.9
+                },
+                time: {
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
+                }
+            });
+        });
+
+        it('clusters with 1D arrays', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ClusterOfArrays');
+            var actual = JSON.parse(actualJSON);
+
+            // TODO mraj the following test has loss of precision. When the scalar tests are fixed it can be deleted.
+            expect(actual).toEqual({
+                booleans: [true, false, true],
+                strings: ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'],
+                doubles: [1.2, 3.4, 5.6, 7.89, 1234.5678],
+                int32s: [-1000, -10, 42, 9876543, 123],
+                int64s: [
+                    -8989,
+                    9090,
+                    36028797018963970, // 36028797018963968
+                    -72057594037927940 // -72057594037927936
+                ],
+                uint64s: [
+                    9223372041149743000, // 9223372041149743104
+                    0,
+                    9223376434901287000 // 9223376434901286912
+                ],
+                complexes: [
+                    {
+                        real: 0,
+                        imaginary: 0
+                    }, {
+                        real: 10,
+                        imaginary: -10
+                    }, {
+                        real: 5.045,
+                        imaginary: -5.67
+                    }
+                ],
+                times: [
+                    {
+                        seconds: 3564057536,
+                        fraction: 7811758927381449000 // 7811758927381448193
+                    }, {
+                        seconds: 3564057542,
+                        fraction: 16691056759750170000 // 16691056759750171331
+                    }
+                ]
+            });
+
+            // TODO mraj when the scalar test are fixed the following should be enabled
+            expect(actual).not.toEqual({
+                booleans: [true, false, true],
+                strings: ['Lorem', 'ipsum', 'dolor', 'sit', 'amet'],
+                doubles: [1.2, 3.4, 5.6, 7.89, 1234.5678],
+                int32s: [-1000, -10, 42, 9876543, 123],
+                int64s: [
+                    '-8989',
+                    '9090',
+                    '36028797018963968',
+                    '-72057594037927936'
+                ],
+                uint64s: [
+                    '9223372041149743104',
+                    '0',
+                    '9223376434901286912'
+                ],
+                complexes: [
+                    {
+                        real: 0,
+                        imaginary: 0
+                    }, {
+                        real: 10,
+                        imaginary: -10
+                    }, {
+                        real: 5.045,
+                        imaginary: -5.67
+                    }
+                ],
+                times: [
+                    {
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
+                    }, {
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
+                    }
+                ]
+            });
+        });
+
+        it('analog waveform of double', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'wave_Double');
+            var actual = JSON.parse(actualJSON);
+
+            expect(actual).toEqual({
+                t0: {
+                    seconds: 300,
+                    fraction: 123
+                },
+                dt: 8.8,
+                Y: [5.5, 6.6, 7.7, 8.8] // eslint-disable-line id-length
+            });
+        });
+    });
 });
