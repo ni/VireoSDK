@@ -61,9 +61,62 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             writeTest('dataItem_NumericDouble', (NaN).toString(), (Infinity).toString());
             writeTest('dataItem_NumericDouble', (Infinity).toString(), (-Infinity).toString());
             writeTest('dataItem_NumericDouble', (-Infinity).toString(), +0);
+            writeTest('dataItem_NumericDouble', +0, 123.456);
+        });
+
+        it('awesome but first some interesting JS tests', function () {
             // Apparantly JSON.stringify(-0) results in "0" but JSON.parse('-0') results in -0
-            // writeTest('dataItem_NumericDouble', +0, (-0).toString());
-            // writeTest('dataItem_NumericDouble', -0, 123.456);
+            expect(JSON.parse(JSON.stringify(0))).toMatchIEEE754Number(0);
+            expect(JSON.parse(JSON.stringify(+0))).toMatchIEEE754Number(0);
+            expect(JSON.parse(JSON.stringify(-0))).toMatchIEEE754Number(0); // should be -0
+
+            // Apparantly '+0' is not valid JSON
+            expect(JSON.parse('0')).toMatchIEEE754Number(0);
+            expect(JSON.parse('-0')).toMatchIEEE754Number(-0);
+
+            // Several other approaches that don't preserve negative zero
+            expect((-0).toString()).toBe('0');
+            expect(String(-0)).toBe('0');
+        });
+
+        it('Double Negative Zero as JSON string', function () {
+            // Summary of this test is that if you pass the JSON string '-0' or '"-0"' to vireo for a numeric
+            // it will be handled correctly. The problem is that most of the JavaScript serializtion
+            // approaches to not correctly serialize negative zero
+
+            var oldVal = JSON.parse(vireo.eggShell.readJSON(viName, 'dataItem_NumericDouble'));
+            expect(oldVal).toBe(123.456);
+
+            // To properly handle this case the string serialization of -0 effectively has to be hard coded
+            // since we cannot rely on toString or JSON.stringify
+            var negativeZeroString = '-0';
+            vireo.eggShell.writeJSON(viName, 'dataItem_NumericDouble', JSON.stringify(negativeZeroString));
+
+            var newVal = JSON.parse(vireo.eggShell.readJSON(viName, 'dataItem_NumericDouble'));
+            expect(newVal).toMatchIEEE754Number(-0);
+
+            // Reset double value
+            vireo.eggShell.writeJSON(viName, 'dataItem_NumericDouble', JSON.stringify(123.456));
+        });
+
+        it('Double Negative Zero as JSON number', function () {
+            // Summary of this test is that if you pass the JSON string '-0' or '"-0"' to vireo for a numeric
+            // it will be handled correctly. The problem is that most of the JavaScript serializtion
+            // approaches to not correctly serialize negative zero
+
+            var oldVal = JSON.parse(vireo.eggShell.readJSON(viName, 'dataItem_NumericDouble'));
+            expect(oldVal).toBe(123.456);
+
+            // To properly handle this case the string serialization of -0 effectively has to be hard coded
+            // since we cannot rely on toString or JSON.stringify
+            var negativeZeroString = '-0';
+            vireo.eggShell.writeJSON(viName, 'dataItem_NumericDouble', negativeZeroString);
+
+            var newVal = JSON.parse(vireo.eggShell.readJSON(viName, 'dataItem_NumericDouble'));
+            expect(newVal).toMatchIEEE754Number(-0);
+
+            // Reset double value
+            vireo.eggShell.writeJSON(viName, 'dataItem_NumericDouble', JSON.stringify(123.456));
         });
 
         it('Int32', function () {
