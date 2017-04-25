@@ -925,6 +925,40 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
         ParseData(arrayElementType, pArrayData);
     }
 }
+
+//------------------------------------------------------------
+//! Skip over a JSON item.  TODO merge with ReadSubexpression
+Boolean EatJSONItem(SubString* input)
+{
+    SubString token;
+
+    if (input->EatChar('{')) {
+        input->EatWhiteSpaces();
+        while (input->Length()>0 && !input->EatChar('}')) {
+            input->ReadToken(&token);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(*tsNameSuffix)) {
+                return false;
+            }
+            EatJSONItem(input);
+            input->EatChar(',');
+        }
+    }
+    else if (input->EatChar('[')) {
+        while (input->Length()>0 && !input->EatChar(']')) {
+            EatJSONItem(input);
+            input->EatWhiteSpaces();
+            if (!input->EatChar(',')) {
+                return false;
+            }
+        }
+    }
+    else {
+        input->ReadToken(&token);
+    }
+    return true;
+}
+
 //------------------------------------------------------------
 // ParseData - parse a value from the string based on the type
 // If the text makes sense then kNIError_Success is returned.
@@ -1078,16 +1112,21 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                             elementData = baseOffset + elementType->ElementOffset();
                             found = fieldName.CompareViaEncodedString(&name);
                         }
-                        if (!found) {
+                        if (found)
+                        {
+                            if (baseOffset == null) {
+                                elementData = baseOffset;
+                                return;
+                            }
+                            ParseData(elementType, elementData);
+                        }
+                        else
+                        {
                             if (Fmt().JSONStrictValidation())
                                 LOG_EVENT(kWarning, "JSON field not found in cluster");
-                            return;
+                            _string.EatWhiteSpaces();
+                            EatJSONItem(&_string);
                         }
-                        if (baseOffset == null) {
-                            elementData = baseOffset ;
-                            return;
-                        }
-                        ParseData(elementType, elementData);
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
                     }
@@ -1149,36 +1188,6 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
     }
 }
 
-//------------------------------------------------------------
-//! Skip over a JSON item.  TODO merge with ReadSubexpression
-Boolean EatJSONItem(SubString* input)
-{
-    SubString token;
-
-    if (input->EatChar('{')) {
-        input->EatWhiteSpaces();
-        while (input->Length()>0 && !input->EatChar('}')) {
-            input->ReadToken(&token);
-            input->EatWhiteSpaces();
-            if (!input->EatChar(*tsNameSuffix)) {
-                return false;
-            }
-            EatJSONItem(input);
-            input->EatChar(',');
-        }
-    } else if (input->EatChar('[')) {
-        while (input->Length()>0 && !input->EatChar(']')) {
-            EatJSONItem(input);
-            input->EatWhiteSpaces();
-            if (!input->EatChar(',')) {
-                return false;
-            }
-        }
-    } else {
-        input->ReadToken(&token);
-    }
-    return true;
-}
 //------------------------------------------------------------
 //! Find the location in JSON string based on an indexing path.
 Boolean TDViaParser::EatJSONPath(SubString* path)
