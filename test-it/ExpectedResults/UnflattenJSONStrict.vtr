@@ -1,0 +1,5 @@
+000 All tests pass: 'true'.
+010     Not strict pass: 'true'.
+020         Expected value is '(1 (300))', got '(1 (300))'.
+030     Strict pass: 'true'.
+040         Expected value is '(1 (300))', got '(1 (300))'.
