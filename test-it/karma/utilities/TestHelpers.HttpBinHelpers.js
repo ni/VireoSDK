@@ -45,7 +45,7 @@
         request.send();
     };
 
-    var forceHttpBinQuery = function (done) {
+    var forceHttpBinQuery = function (done, relativePath) {
         var loadPassed = function () {
             done();
         };
@@ -53,7 +53,7 @@
             done.fail('Could not communicate with httpbin');
         };
 
-        var url = convertToAbsoluteUrl('get?show_env=1');
+        var url = convertToAbsoluteUrl(relativePath);
         var request = new XMLHttpRequest();
         request.addEventListener('load', function () {
             if (request.status === 200) {
@@ -66,6 +66,7 @@
         request.addEventListener('timeout', loadFailed);
         request.addEventListener('abort', loadFailed);
         request.open('GET', url);
+        request.withCredentials = true; // httpCORS.Test.js relies on this being set
         request.send();
     };
 
