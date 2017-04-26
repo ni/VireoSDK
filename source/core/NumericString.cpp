@@ -265,13 +265,13 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
         char argBuf[8];
         snprintf(argBuf, sizeof(argBuf), "%d", argNum+1);
         if (!errPtr->status)
-            errPtr->SetError(true, errCode, "Format Into String");
+            errPtr->SetError(true, errCode, errCode == kFormatScanFailed ? "Scan From String" : "Format Into String");
         if (errCode != kFormatTooManyFormatSpecs && errCode != kFormatTooFewFormatSpecs) {
             errPtr->source->AppendCStr(" (arg ");
             errPtr->source->AppendCStr(argBuf);
             errPtr->source->AppendCStr(")");
         }
-        if (errCode == kFormatCodeUnknown || errCode == kFormatTypeMismatch) {
+        if (formatCode && (errCode == kFormatCodeUnknown || errCode == kFormatTypeMismatch)) {
             errPtr->source->AppendCStr("\n<APPEND>\n");
             if (errCode == kFormatCodeUnknown) {
                 errPtr->source->AppendCStr("Invalid format specifier: ");
@@ -1594,7 +1594,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
  * The return value is the offset of the input string after the scan.
  * Several Special Scan rules:
  * */
-Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticTypeAndData arguments[])
+Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticTypeAndData arguments[], ErrorCluster *errPtr)
 {
     // the rules for ScanString in LabVIEW is a subset of the sscanf.
     // p will be treated as f;
@@ -1657,6 +1657,8 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
+                    } else {
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
                     }
                     argumentIndex++;
                 }
@@ -1670,6 +1672,8 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
+                    } else {
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
                     }
                     argumentIndex++;
                 }
@@ -1681,6 +1685,8 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         filledItems++;
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
+                    } else {
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
                     }
                     argumentIndex++;
                 }
@@ -1696,6 +1702,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 break;
                 default: {
                     canScan = false;
+                    SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
                 }
                 break;
                 }
@@ -1710,6 +1717,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 }
             } else {
                 canScan = false;
+                SetFormatError(kFormatScanFailed, argumentIndex, 0, errPtr);
             }
         }
     }
@@ -1876,7 +1884,7 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value=  {_ParamPointer(3), _ParamPointer(4)};
     SubString input= inputString->MakeSubStringAlias();
-    FormatScan(&input, &format, 1, &Value);
+    FormatScan(&input, &format, 1, &Value, null);
     if (remainingString!= NULL) {
         remainingString->Resize1D(input.Length());
         TypeRef elementType = remainingString->ElementType();
@@ -1901,7 +1909,7 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
     for (Int32 i = 0; i < argCount; i++)
     {
         TypeRef argType = arguments[i]._paramType;
-        if (argType->IsString() || argType->IsBoolean()) // TODO: Add IsEnum()
+        if (argType->IsString() || argType->IsBoolean() || argType->IsEnum())
         {
             format->AppendCStr("%s ");
         }
@@ -1953,7 +1961,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     ErrorCluster errorCluster;
 
-    memset(&errorCluster, 0, sizeof(errorCluster)); // TODO Delete this after adding errorCluster parameter
+    memset(&errorCluster, 0, sizeof(errorCluster));
     // Calculate number of parameters.
     // Each scan parameters has both type and data.
     Int32 argCount = (_ParamVarArgCount() - 5) / 2;
@@ -1963,15 +1971,55 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
         MakeFormatString(tempFormat.Value, &errorCluster, argCount, arguments);
         format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
     }
-    newOffset += FormatScan(&input, &format, argCount, arguments);
-    
+    newOffset += FormatScan(&input, &format, argCount, arguments, null);
+
     _Param(OffsetPast) = newOffset;
     _Param(StringRemaining)->Resize1D(input.Length());
     TypeRef elementType = _Param(StringRemaining)->ElementType();
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
     return _NextInstruction();
 }
+//------------------------------------------------------------
+struct StringScanStructWithErr : public VarArgInstruction
+{
+    _ParamDef(StringRef, StringInput);
+    _ParamDef(StringRef, StringRemaining);
+    _ParamDef(StringRef, StringFormat);
+    _ParamDef(UInt32, InitialPos);
+    _ParamDef(UInt32, OffsetPast);
+    _ParamDef(ErrorCluster, ErrClust);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATUREV(StringScanWithErr, StringScanStructWithErr)
+{
+    SubString input = _Param(StringInput)->MakeSubStringAlias();
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
+    UInt32 newOffset = _Param(InitialPos);
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    ErrorCluster *errPtr = _ParamPointer(ErrClust);
 
+    // Calculate number of parameters.
+    // Each scan parameters has both type and data.
+    Int32 argCount = (_ParamVarArgCount() - 6) / 2;
+    STACK_VAR(String, tempFormat);
+    if (!errPtr || !errPtr->status) {
+        if (format.Length() == 0)
+        {
+            MakeFormatString(tempFormat.Value, errPtr, argCount, arguments);
+            format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
+        }
+        newOffset += FormatScan(&input, &format, argCount, arguments, errPtr);
+    }
+    _Param(OffsetPast) = newOffset;
+    _Param(StringRemaining)->Resize1D(input.Length());
+    TypeRef elementType = _Param(StringRemaining)->ElementType();
+    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
+    return _NextInstruction();
+}
+//------------------------------------------------------------
 #if defined(VIREO_TIME_FORMATTING)
 //------------------------------------------------------------
 struct TimeFormatOptions {
@@ -2559,7 +2607,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         while ((next = input.FindFirstMatch(&delimiter, split, false))>-1) {
             elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
             Value._pData = array->BeginAtND(rank, elemIndex);
-            FormatScan(&elemString, &format, 1, &Value);
+            FormatScan(&elemString, &format, 1, &Value, null);
             split=next+delimiter.Length();
             elemIndex[0]++;
         }
@@ -2567,7 +2615,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             elemString.AliasAssign(input.Begin()+split, input.End());
             if (elemString.Length()>0) {
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, 1, &Value);
+                FormatScan(&elemString, &format, 1, &Value, null);
             }
         }
     } else if (rank == 2) {
@@ -2585,7 +2633,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                 elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, 1, &Value);
+                FormatScan(&elemString, &format, 1, &Value, null);
                 split=next+delimiter.Length();
                 elemIndex[0]++;
             }
@@ -2593,7 +2641,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 line.AliasAssign(line.Begin()+split, line.End());
                 if (line.Length()>0) {
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&line, &format, 1, &Value);
+                    FormatScan(&line, &format, 1, &Value, null);
                 }
             }
             lineIndex++;
@@ -2629,7 +2677,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 while ((next = line.FindFirstMatch(&delimiter, split, false))>-1) {
                     elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&elemString, &format, 1, &Value);
+                    FormatScan(&elemString, &format, 1, &Value, null);
                     split=next+delimiter.Length();
                     elemIndex[0]++;
                 }
@@ -2637,7 +2685,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                     line.AliasAssign(line.Begin()+split, line.End());
                     if (line.Length()>0) {
                         Value._pData = array->BeginAtND(rank, elemIndex);
-                        FormatScan(&line, &format, 1, &Value);
+                        FormatScan(&line, &format, 1, &Value, null);
                     }
                 }
             }
@@ -2667,6 +2715,7 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr, "p(i(VarArgCount) o(String)   i(String) io(ErrorClust err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String) i(String) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringScan, StringScanWithErr, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorClust err) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) o(StaticTypeAndData))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
