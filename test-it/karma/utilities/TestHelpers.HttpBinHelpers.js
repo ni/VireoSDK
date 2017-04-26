@@ -45,7 +45,7 @@
         request.send();
     };
 
-    var forceHttpBinQuery = function (done, relativePath) {
+    var forceHttpBinQuery = function (relativePath, done) {
         var loadPassed = function () {
             done();
         };

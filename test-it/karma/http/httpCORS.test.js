@@ -26,7 +26,7 @@ describe('Performing a CORS request', function () {
     });
 
     beforeEach(function (done) {
-        httpBinHelpers.forceHttpBinQuery(done, 'cookies/set?FastestLandAnimal=cheetah');
+        httpBinHelpers.forceHttpBinQuery('cookies/set?FastestLandAnimal=cheetah', done);
     });
 
     it('with open, set credentials to true, get, close and validates a 200 response', function (done) {
