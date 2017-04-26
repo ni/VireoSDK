@@ -433,6 +433,7 @@ TypeRef ClumpParseState::StartNextOverload()
     _formalParameterIndex = 0;
     _formalParameterType = null;
     _instructionPointerType = null;
+    _pVarArgCount = null;
     _argCount = 0;
     if (_argPatchCount > 0) {
         _patchInfoCount -= _argPatchCount;
