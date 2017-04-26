@@ -8,12 +8,10 @@ describe('The Vireo EggShell getArrayDimLength api', function () {
     var vireo;
 
     var testsArrayDemoViaUrl = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
-    var publicApiArrayTypesOptimizedViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ArrayTypesOptimized.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            testsArrayDemoViaUrl,
-            publicApiArrayTypesOptimizedViaUrl
+            testsArrayDemoViaUrl
         ], done);
     });
 
