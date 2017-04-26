@@ -189,7 +189,7 @@ public:
     static ViaFormatChars formatC;
 };
 
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer);
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr);
 #endif
 
 #define tsBoolean         "Boolean"

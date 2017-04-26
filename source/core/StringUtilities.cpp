@@ -492,7 +492,8 @@ IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
         dest++;
         total++;
     }
-	*dest = '\0';
+    if (dest != b)
+        *dest = '\0';
     return total;
 }
 //------------------------------------------------------------

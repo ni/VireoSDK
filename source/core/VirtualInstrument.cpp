@@ -645,7 +645,12 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType
         // the '*' is not the generic type in this case.
 	} else {
         if (!ActualArgumentType()->IsA(FormalParameterType())) {
-            _argumentState = kArgumentTypeMismatch;
+            // IsA uses type name comparison.  If this fails, allow unnamed types to match based on structure
+            // (We don't allow two named types with different names to match based on structure only
+            // because, for example, TimeStamp and ComplexDouble have the same structure and this causes issues.)
+            bool structTypeSame = ActualArgumentType()->Name().Length() == 0 && ActualArgumentType()->IsA(FormalParameterType(), true);
+            if (!structTypeSame)
+                _argumentState = kArgumentTypeMismatch;
         }
     }
     

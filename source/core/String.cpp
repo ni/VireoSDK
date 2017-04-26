@@ -645,21 +645,6 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
     return _NextInstruction();
 }
 
-#if 0
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(StringFormat, StringRef, StringRef, Int32, void*)
-{
-    StringRef buffer = _Param(0);
-    StringRef format = _Param(1);
-    SubString formatString(format->Begin(), format->End());
-
-    Int32 count = _ParamVarArgCount();
-    StaticTypeAndData* pArguments = (StaticTypeAndData*) &_ParamPointer(3);
-
-    Format(&formatString, count, pArguments, buffer);
-    return _NextInstruction();
-}
-#endif
 //------------------------------------------------------------
 struct StringConcatenateParamBlock : public VarArgInstruction
 {
