@@ -16,20 +16,25 @@ String Format (%%) Testing
 %%%
 
 > Invalid format specifier
-Error: Invalid format string provided: '% ' in '% miss'
 
+ErrorOut: (true 82 'Format Into String (arg 1)
+<APPEND>
+Invalid format specifier: "% "')
 > Invalid format specifier
-Error: Invalid format string provided: '%(' in '%(\n'
 
+ErrorOut: (true 82 'Format Into String (arg 1)
+<APPEND>
+Invalid format specifier: "%("')
 > Not enough args
-Error: Missing args provided for format string: '%s' in '%s\n'
 
+ErrorOut: (true 83 'Format Into String')
 > Too many args
-Error: Extra number of args provided: 1 in '%s\n'
 
+ErrorOut: (true 84 'Format Into String')
 > %% Escaping twice
 HelloWorldThisIsAString HelloWorldThisIsAString
 
+ErrorOut: (false 0 '')
 > Localized Decimal Separator
 9.960000 9,960000 9.960000 9.960000 9.960000
 

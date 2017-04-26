@@ -257,83 +257,33 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
     }
 }
 
-/**
- * Error reporting for when there is a format specifier provided but
- * too many arguments are provided.
- * */
-void ErrFormatExtraNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer) {
-    buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Extra number of args provided: ");
-    char str[15];
-    sprintf(str, "%u", count);
-    buffer->AppendCStr(str);
-    buffer->AppendCStr(" in '");
-    IntIndex length = format->Length()*2;
-    Utf8Char* formatUnEscaped = new Utf8Char[length];
-    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, newLength);
-    buffer->AppendCStr("'\n");
-    delete[] formatUnEscaped;
-}
+// Format Into String/Scan From String (StringFormat/StringCan) error codes
+enum { kFormatArgErr=1, kFormatTypeMismatch = 81, kFormatCodeUnknown, kFormatTooManyFormatSpecs, kFormatTooFewFormatSpecs, kFormatScanFailed };
 
-/**
- * Error reporting for when there is a format specifier provided but
- * not enough arguments provided with the Format.
- * */
-void ErrFormatMissingNumArgs(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
-    char formatSpecifierBuf[3];
-    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
-    buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Missing args provided for format string: '%");
-    buffer->AppendCStr(formatSpecifierBuf);
-    buffer->AppendCStr("' in '");
-    IntIndex length = format->Length()*2;
-    Utf8Char* formatUnEscaped = new Utf8Char[length];
-    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, newLength);
-    buffer->AppendCStr("'\n");
-    delete[] formatUnEscaped;
-}
-
-/**
- * Error reporting function for when the Format String is invalid
- * This will clear the current buffer string and return on what format
- * specifier it failed on.
- * */
-void ErrFormatInvalidFormatString(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
-    char formatSpecifierBuf[3];
-    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
-    buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Invalid format string provided: '%");
-    buffer->AppendCStr(formatSpecifierBuf);
-    buffer->AppendCStr("' in '");
-    IntIndex length = format->Length()*2;
-    Utf8Char* formatUnEscaped = new Utf8Char[length];
-    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, newLength);
-    buffer->AppendCStr("'\n");
-    delete[] formatUnEscaped;
-}
-
-/**
- * Error reporting function for when there is a type mismatch between 
- * arguments and the format specifiers.
- * This will clear the current buffer string and return on what format
- * specifier it failed on.
- * */
-void ErrMismatchedFormatSpecifier(SubString* format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, char formatCode) {
-    char formatSpecifierBuf[3];
-    snprintf(formatSpecifierBuf, 3, "%c", formatCode);
-    buffer->Resize1D(0);
-    buffer->AppendCStr("Error: Invalid format specifier type mismatch: '%");
-    buffer->AppendCStr(formatSpecifierBuf);
-    buffer->AppendCStr("' in '");
-    IntIndex length = format->Length()*2;
-    Utf8Char* formatUnEscaped = new Utf8Char[length];
-    IntIndex newLength = format->UnEscape(formatUnEscaped, length);
-    buffer->AppendUtf8Str(formatUnEscaped, newLength);
-    buffer->AppendCStr("'\n");
-    delete[] formatUnEscaped;
+static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, ErrorCluster *errPtr) {
+    if (errPtr) {
+        char argBuf[8];
+        snprintf(argBuf, sizeof(argBuf), "%d", argNum+1);
+        if (!errPtr->status)
+            errPtr->SetError(true, errCode, "Format Into String");
+        if (errCode != kFormatTooManyFormatSpecs && errCode != kFormatTooFewFormatSpecs) {
+            errPtr->source->AppendCStr(" (arg ");
+            errPtr->source->AppendCStr(argBuf);
+            errPtr->source->AppendCStr(")");
+        }
+        if (errCode == kFormatCodeUnknown || errCode == kFormatTypeMismatch) {
+            errPtr->source->AppendCStr("\n<APPEND>\n");
+            if (errCode == kFormatCodeUnknown) {
+                errPtr->source->AppendCStr("Invalid format specifier: ");
+            } else if (errCode == kFormatTypeMismatch) {
+                errPtr->source->AppendCStr("Format specifier type mismatch: ");
+            }
+            snprintf(argBuf, sizeof(argBuf), "\"%%%c\"", formatCode);
+            errPtr->source->AppendCStr(argBuf);
+        }
+        return true;
+    }
+    return false;
 }
 
 bool ReadLocalizedDecimalSeparator(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, SubString& f, Boolean *validFormatString, FormatOptions *fOptions, Boolean *parseFinished) {
@@ -397,18 +347,18 @@ void TruncateLeadingZerosFromTimeString(StringRef buffer)
     }
 }
 
-void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, FormatOptions fOptions, Boolean* validFormatString, Boolean* parseFinished)
+void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, StaticTypeAndData* arguments, StringRef buffer, FormatOptions fOptions, Boolean* validFormatString, Boolean* parseFinished, ErrorCluster *errPtr)
 {
     *parseFinished = true;
     *validFormatString = false;
-    ErrMismatchedFormatSpecifier(format, count, arguments, buffer, fOptions.FormatChar);
+    SetFormatError(kFormatTypeMismatch, count, fOptions.FormatChar, errPtr);
     buffer->Resize1D(0);
 }
 
 /**
  * main format function, all the %format functionality is done through this one
  * */
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer)
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr)
 {
     IntIndex argumentIndex = 0;
     Boolean lastArgumentSpecified = false;
@@ -485,13 +435,15 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
-                ErrFormatInvalidFormatString(format, count, arguments, buffer, fOptions.FormatChar);
+                SetFormatError(kFormatCodeUnknown, count, fOptions.FormatChar, errPtr);
+                buffer->Resize1D(0);
                 break;
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 // Incorrect number of arguments provided for format string
                 parseFinished = true;
                 validFormatString = false;
-                ErrFormatMissingNumArgs(format, count, arguments, buffer, fOptions.FormatChar);
+                SetFormatError(kFormatTooManyFormatSpecs, count, fOptions.FormatChar, errPtr);
+                buffer->Resize1D(0);
                 break;
             }
 
@@ -742,7 +694,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         char formattedNumber[2*kTempCStringLength];
                         if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
                         {
-                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
                         IntMax intValue;
@@ -791,7 +743,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         argType = arguments[argumentIndex]._paramType;
                         if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean() && !argType->IsEnum())
                         {
-                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
                         STACK_VAR(String, tempString);
@@ -855,7 +807,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
                         if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
                         {
-                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished);
+                            CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
 
@@ -956,7 +908,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     if (argumentIndex < count) {
         // make sure at least all of the args are used (even if out of order)
         if (usedArguments != count) {
-            ErrFormatExtraNumArgs(format, count - argumentIndex, arguments, buffer);
+            SetFormatError(kFormatTooFewFormatSpecs, count - argumentIndex, fOptions.FormatChar, errPtr);
+            buffer->Resize1D(0);
         }
     }
 }
@@ -1835,7 +1788,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
         }
     }
     format.AliasAssign(tempformat.Begin(), tempformat.End());
-    Format(&format, 1, &Value, output);
+    Format(&format, 1, &Value, output, null);
     output->AppendSubString(&remainingFormat);
 }
 //------------------------------------------------------------
@@ -1868,7 +1821,31 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
         format.AliasAssign(tempformat.Begin(), tempformat.End());
     }
     StringRef buffer = _Param(StringOut);
-    Format(&format, count, arguments, buffer);
+    Format(&format, count, arguments, buffer, null);
+    return _NextInstruction();
+}
+struct StringFormatWithErrStruct : public VarArgInstruction
+{
+    _ParamDef(StringRef, StringOut);
+    _ParamDef(StringRef, StringFormat);
+    _ParamDef(ErrorCluster, ErrClust);
+    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+VIREO_FUNCTION_SIGNATUREV(StringFormatWithErr, StringFormatWithErrStruct) {
+    Int32 count = (_ParamVarArgCount() -3)/2;
+    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
+    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    TempStackCString tempformat;
+    if(format.Length() == 0) {
+        DefaultFormatCode(count,arguments, &tempformat);
+        format.AliasAssign(tempformat.Begin(), tempformat.End());
+    }
+    StringRef buffer = _Param(StringOut);
+    ErrorCluster *errPtr = _ParamPointer(ErrClust);
+    if (!errPtr || !errPtr->status)
+        Format(&format, count, arguments, buffer, errPtr);
     return _NextInstruction();
 }
 
@@ -2687,6 +2664,7 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
 DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(String) i(String) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr, "p(i(VarArgCount) o(String)   i(String) io(ErrorClust err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String) i(String) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) o(StaticTypeAndData))")
