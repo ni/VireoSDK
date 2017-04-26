@@ -270,6 +270,8 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
             errPtr->source->AppendCStr(argBuf);
             errPtr->source->AppendCStr(")");
         }
+        errPtr->source->AppendCStr(" in ");
+        AppendCallChainString(errPtr->source);
         if (formatCode && (errCode == kFormatCodeUnknown || errCode == kFormatTypeMismatch)) {
             errPtr->source->AppendCStr("\n<APPEND>\n");
             if (errCode == kFormatCodeUnknown) {

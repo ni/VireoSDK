@@ -46,7 +46,7 @@ offset_past:<6>, remaining:(9088)
 :<123> <8> err:<(false 0 '')>
 ---test scan Int base8------ (-106 -809)
 offset_past:<5>, remaining:(-809)
-:<-70> <0> err:<(true 85 'Scan From String (arg 2)')>
+:<-70> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
 ---test scan Intwidth------ (12345845QQTAvasd )
 offset_past:<5>, remaining:(845QQTAvasd )
 :<123> <45> err:<(false 0 '')>
@@ -61,13 +61,13 @@ offset_past:<9>, remaining:(45)
 :<15> <8> err:<(false 0 '')>
 ---test scan FloatWidth------ (31.4e6123)
 offset_past:<4>, remaining:(e6123)
-:<31.400000> <0> err:<(true 85 'Scan From String (arg 2)')>
+:<31.400000> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
 ---test scan FloatWidth------ (31.4e+6123)
 offset_past:<4>, remaining:(e+6123)
-:<31.400000> <0> err:<(true 85 'Scan From String (arg 2)')>
+:<31.400000> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
 ---test scan String------ (abcdefg ABCDEFG 1234567 *&*^^&^@!~  )
 offset_past:<23>, remaining:( *&*^^&^@!~  )
-:<abcdefg> <ABCDEFG> <1234567> err:<(true 85 'Scan From String (arg 4)')>
+:<abcdefg> <ABCDEFG> <1234567> err:<(true 85 'Scan From String (arg 4) in HelloWorld')>
 ---test scan String------ (abcdefg~)
 offset_past:<8>, remaining:()
 :<abcdefg~> <ABCDEFG> <1234567> err:<(false 0 '')>
