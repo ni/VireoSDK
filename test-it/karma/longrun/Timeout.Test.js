@@ -27,7 +27,7 @@ describe('Timeout test suite', function () {
 
     beforeEach(function (done) {
         // The timeout tests sometimes need a recovery period so perform a full get request and wait for it before continuing
-        httpBinHelpers.forceHttpBinQuery(done, 'get?show_env=1');
+        httpBinHelpers.forceHttpBinQuery('get?show_env=1', done);
     });
 
     beforeEach(function () {
