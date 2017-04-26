@@ -28,6 +28,10 @@ SDG
 	#define kVireoOS_windows 1
 #endif
 
+#ifdef _MSC_VER
+#define _USE_MATH_DEFINES   // needed for cmath for constants such as M_PI
+#endif
+
 // Definitions common for most platforms
 // Platform specific overrides are found in the sections below
 #define VIVM_UNROLL_EXEC
