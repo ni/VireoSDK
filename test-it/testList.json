@@ -223,6 +223,7 @@
                 "Scale2X.via",
                 "ScanEnum.via",
                 "ScanFormat.via",
+                "ScanFormatErr.via",
                 "ScanFormat2.via",
                 "SearchSplitString.via",
                 "ShabangHelloWorld.via",
