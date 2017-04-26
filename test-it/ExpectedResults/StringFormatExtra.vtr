@@ -17,20 +17,20 @@ String Format (%%) Testing
 
 > Invalid format specifier
 
-ErrorOut: (true 82 'Format Into String (arg 1)
+ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld
 <APPEND>
 Invalid format specifier: "% "')
 > Invalid format specifier
 
-ErrorOut: (true 82 'Format Into String (arg 1)
+ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld
 <APPEND>
 Invalid format specifier: "%("')
 > Not enough args
 
-ErrorOut: (true 83 'Format Into String')
+ErrorOut: (true 83 'Format Into String in HelloWorld')
 > Too many args
 
-ErrorOut: (true 84 'Format Into String')
+ErrorOut: (true 84 'Format Into String in HelloWorld')
 > %% Escaping twice
 HelloWorldThisIsAString HelloWorldThisIsAString
 
