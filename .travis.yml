@@ -19,6 +19,7 @@ before_install:
 - python -V
 - pip -V
 - firefox -v
+- doxygen --version
 install:
 - npm install
 - pip install --user -r requirements.txt
