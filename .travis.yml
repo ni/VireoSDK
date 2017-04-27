@@ -1,20 +1,9 @@
 dist: trusty
 sudo: false
-language: cpp
-compiler: gcc
-addons:
-  firefox: latest
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.9
 before_install:
 - export DISPLAY=:99.0
 - export TZ=CST6CDT
 - sh -e /etc/init.d/xvfb start
-- nvm install 6
-- nvm use 6
 - node -v
 - npm -v
 - python -V
