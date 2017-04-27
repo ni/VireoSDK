@@ -23,7 +23,7 @@ install:
 - npm install
 - pip install --user -r requirements.txt
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-- git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git
+- if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then git pull; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
 - source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
