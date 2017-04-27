@@ -863,7 +863,7 @@ VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumValType*, TypedArrayCoreRef
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumValType*, Boolean,Int32,StringRef,Int32,Int32,Int32,TypedArrayCoreRef, ErrorCluster) {
-    // p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(numElems)o(Array elements) io(ErrorClust err))
+    // p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(numElems)o(Array elements) io(ErrorCluster err))
     Boolean returnElems = _ParamPointer(1) ? _Param(1) : false;
     RefNumValType* refnumPtr = _ParamPointer(0) ? _Param(0) : NULL;
     ErrorCluster *errPtr = _ParamPointer(8);
@@ -1146,15 +1146,15 @@ DEFINE_VIREO_BEGIN(Synchronization)
 
     // Dynamic, refnum-based queues
     DEFINE_VIREO_TYPE(QueueRefNum, "refnum(Queue)")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ObtainQueue, QueueRef_Obtain, "p(o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Enqueue, QueueRef_Enqueue, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueFront, QueueRef_EnqueueFront, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(LossyEnqueue, QueueRef_LossyEnqueue, "p(io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems)io(ErrorClust err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements)io(ErrorClust err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ObtainQueue, QueueRef_Obtain, "p(o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Enqueue, QueueRef_Enqueue, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueFront, QueueRef_EnqueueFront, "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(LossyEnqueue, QueueRef_LossyEnqueue, "p(io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotARefnum, "p(i(QueueRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQQueueRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNEQueueRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")

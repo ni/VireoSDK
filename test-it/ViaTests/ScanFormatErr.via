@@ -50,8 +50,8 @@ define(HelloWorld dv(.VirtualInstrument (
 	e(dv(.String "  -2240483647") intmin)
 	e(dv(.String "  2140483647") int32max)
 	e(dv(.String "  4290967295") uint32max)
-	e(ErrorClust noErr)
-	e(ErrorClust err)
+	e(ErrorCluster noErr)
+	e(ErrorCluster err)
     )
     clump (
 	Printf ("---test scan complex------ (%s)\n" inputcmplx1)
