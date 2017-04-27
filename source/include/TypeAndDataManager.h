@@ -1206,6 +1206,8 @@ struct ErrorCluster {
             source->AppendCStr(str);
         }
     }
+    void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
+    void AddAppendixPostamble() { } // no postamble
 };
 
 #define ERROR_CLUST_TYPE_STRING "c(e(Boolean status) e(Int32 code) e(String source))"

@@ -273,7 +273,7 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
         errPtr->source->AppendCStr(" in ");
         AppendCallChainString(errPtr->source);
         if (formatCode && (errCode == kFormatCodeUnknown || errCode == kFormatTypeMismatch)) {
-            errPtr->source->AppendCStr("\n<APPEND>\n");
+            errPtr->AddAppendixPreamble();
             if (errCode == kFormatCodeUnknown) {
                 errPtr->source->AppendCStr("Invalid format specifier: ");
             } else if (errCode == kFormatTypeMismatch) {
@@ -281,6 +281,7 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
             }
             snprintf(argBuf, sizeof(argBuf), "\"%%%c\"", formatCode);
             errPtr->source->AppendCStr(argBuf);
+            errPtr->AddAppendixPostamble();
         }
         return true;
     }
