@@ -1,5 +1,15 @@
 dist: trusty
 sudo: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.9
+cache:
+  directories:
+    - node_modules
+    - emscripten-sdk
 before_install:
 - export DISPLAY=:99.0
 - export TZ=CST6CDT
@@ -8,6 +18,7 @@ before_install:
 - npm -v
 - python -V
 - pip -V
+- firefox -v
 install:
 - npm install
 - pip install --user -r requirements.txt
