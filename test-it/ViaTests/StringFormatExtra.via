@@ -22,8 +22,8 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%%s %s") format13)
 		e(dv(.String "%;%f %,;%f %.;%f %f %;%f\n") format14)
 		e(dv(.String "\\61\\\\62\\\\\\63\\\\\\\\64%d\n") format15)
-        e(.ErrorClust noErr)
-        e(.ErrorClust err)
+        e(.ErrorCluster noErr)
+        e(.ErrorCluster err)
     )
     clump (1
         Println("StringFormat (%s) Testing")

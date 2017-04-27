@@ -8,7 +8,7 @@ define(TestProgram dv(.VirtualInstrument (
         e(.Boolean timedOut)
         e(.Boolean overflowed)
         e(a(.Double *) remainingElts)
-        e(.ErrorClust err)
+        e(.ErrorCluster err)
     )
 
     clump (

@@ -2714,10 +2714,10 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
 DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(String) i(String) i(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr, "p(i(VarArgCount) o(String)   i(String) io(ErrorClust err) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr, "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String) i(String) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(StringScan, StringScanWithErr, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorClust err) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(StringScan, StringScanWithErr, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) o(StaticTypeAndData))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
