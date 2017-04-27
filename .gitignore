@@ -112,3 +112,5 @@ make-it/make.exe
 env/
 *.tgz
 coverage/
+emscripten-sdk/
+nohup.out

@@ -6,6 +6,7 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
+    - doxygen
 cache:
   directories:
     - node_modules
@@ -40,6 +41,7 @@ script:
 - make testnative
 - npm run test
 deploy:
+  skip_cleanup: true
   provider: npm
   email: mark.black@ni.com
   api_key:
