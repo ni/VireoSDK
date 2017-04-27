@@ -17,13 +17,11 @@ String Format (%%) Testing
 
 > Invalid format specifier
 
-ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld
-<APPEND>
+ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld<APPEND>
 Invalid format specifier: "% "')
 > Invalid format specifier
 
-ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld
-<APPEND>
+ErrorOut: (true 82 'Format Into String (arg 1) in HelloWorld<APPEND>
 Invalid format specifier: "%("')
 > Not enough args
 
