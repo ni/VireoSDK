@@ -1819,7 +1819,7 @@ struct StringFormatStruct : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct)
+VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct) // TODO (spathiwa) remove in favor of error I/O version
 {
     Int32 count = (_ParamVarArgCount() -2)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
@@ -1953,7 +1953,7 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
+VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct) // TODO (spathiwa) remove in favor of error I/O version
 {
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
