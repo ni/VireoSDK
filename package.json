@@ -20,6 +20,7 @@
     "karma-verbose-reporter": "0.0.5",
     "requirejs": "^2.3.2",
     "setimmediate": "^1.0.5",
+    "shx": "^0.2.2",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
@@ -37,7 +38,9 @@
     "prehttpbin-install": "python -V && pip -V && virtualenv --version",
     "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
     "httpbin": "python -m httpbin.core --port 64526",
-    "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\""
+    "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"",
+    "doxygen": "cd source && doxygen",
+    "postdoxygen": "shx cp Documents/DocumentsRoot/.* gh-pages && shx cp Documents/DocumentsRoot/* gh-pages"
   },
   "repository": {
     "type": "git",

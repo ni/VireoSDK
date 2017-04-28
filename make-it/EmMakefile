@@ -5,8 +5,6 @@ VIREO_SDK_DIR=..
 OBJS=$(VIREO_SDK_DIR)/make-it/objs
 INCDIR=$(VIREO_SDK_DIR)/source/include
 BIN=$(VIREO_SDK_DIR)/bin
-SITESOURCEDIR=$(VIREO_SDK_DIR)/source/dox/playground
-SITEDIR=$(VIREO_SDK_DIR)/Documents/gh-pages/playground
 TARGETDIR=$(VIREO_SDK_DIR)/dist
 CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
 IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
@@ -18,14 +16,6 @@ UTSOURCEDIR=$(VIREO_SDK_DIR)/source/unittest
 clean:
 	rm -f $(OBJS)/*
 	rm -f $(TARGETDIR)/vireo.js*
-
-install:
-	mkdir -p $(SITEDIR)
-	cp $(TARGETDIR)/vireo.js $(SITEDIR)/
-	cp $(SITESOURCEDIR)/*.html $(SITEDIR)/
-	cp $(SITESOURCEDIR)/*.via $(SITEDIR)/
-	cp $(SITESOURCEDIR)/*.json $(SITEDIR)/
-	@echo '==> website files copied to  $(SITEDIR)'
 
 help:
 	@echo 'Execute "make vjs"     to build vireo.js'

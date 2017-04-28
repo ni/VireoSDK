@@ -40,15 +40,25 @@ script:
 - make testjs
 - make testnative
 - npm run test
+before_deploy:
+- npm run doxygen
 deploy:
-  skip_cleanup: true
-  provider: npm
-  email: mark.black@ni.com
-  api_key:
-    secure: bAvSpGaOGQAF+Owt4skNu/8WxD8JolOiODZxoSO5oNp2awyQC3LMvVgtCmPgCTOJkTJz2Fh0Dlwhdyc2iPragdn2ivxUvlJpiQLSSCpqW3SipcRRN8UupVe0C8tV72sSZs85cgBnD3a6Ib1+d3RW5sxrOuvVyb56C2jwiKWOzjM9CqJqRop4dqC6b1ArwYtjp1AH7WarxfYIZDOv6aJbv6t1yY+7EfHBQFCBNYZcSJ+WgsyITtdntnrhziYyXaJ3K0sCrb1STj9gLiqhSolU9v7l61IojKYH1H7mEA3pYxDXN+g1Lmxb63Ex5sMfPYjYxhd12wnw3c2rwomuNkGcoHiaslQrcV6K9FaAO5Ln7ARnQedAULRP+voHLsPnbah50L6lSPeiO+Rgsaip7hLeNTLcEZk+rwob/YqARaSfRfZzUTqqScPyFLX3iLRPn0CwCJdTHrBwNueirvV6U+e3Ghg22Qpeue3bmUZTkl7q+h1kZ+1WWjIw5b1tYFpjBXSZTiWv01lQxY7/seNKKk+GRXpSl527CkjxjfuBf4kA4yDNLvaZvcd33jw1DgSypIt+y2Jh02TSswTrjpXPFS3iXjmHvEjMu81/VBooCDy4b4zmho6YGpJuGVrRJNoDsmJzHirD0jMoC2jn5OT9XhC87zmEu2DoDhfysx2Q8LS3MOc=
-  on:
-    tags: true
-    repo: ni/VireoSDK
+  - provider: npm
+    skip_cleanup: true
+    email: mark.black@ni.com
+    api_key:
+      secure: bAvSpGaOGQAF+Owt4skNu/8WxD8JolOiODZxoSO5oNp2awyQC3LMvVgtCmPgCTOJkTJz2Fh0Dlwhdyc2iPragdn2ivxUvlJpiQLSSCpqW3SipcRRN8UupVe0C8tV72sSZs85cgBnD3a6Ib1+d3RW5sxrOuvVyb56C2jwiKWOzjM9CqJqRop4dqC6b1ArwYtjp1AH7WarxfYIZDOv6aJbv6t1yY+7EfHBQFCBNYZcSJ+WgsyITtdntnrhziYyXaJ3K0sCrb1STj9gLiqhSolU9v7l61IojKYH1H7mEA3pYxDXN+g1Lmxb63Ex5sMfPYjYxhd12wnw3c2rwomuNkGcoHiaslQrcV6K9FaAO5Ln7ARnQedAULRP+voHLsPnbah50L6lSPeiO+Rgsaip7hLeNTLcEZk+rwob/YqARaSfRfZzUTqqScPyFLX3iLRPn0CwCJdTHrBwNueirvV6U+e3Ghg22Qpeue3bmUZTkl7q+h1kZ+1WWjIw5b1tYFpjBXSZTiWv01lQxY7/seNKKk+GRXpSl527CkjxjfuBf4kA4yDNLvaZvcd33jw1DgSypIt+y2Jh02TSswTrjpXPFS3iXjmHvEjMu81/VBooCDy4b4zmho6YGpJuGVrRJNoDsmJzHirD0jMoC2jn5OT9XhC87zmEu2DoDhfysx2Q8LS3MOc=
+    on:
+      tags: true
+      repo: ni/VireoSDK
+  - provider: pages
+    skip_cleanup: true
+    local_dir: gh-pages/
+    github_token:
+      secure: LEBy6pQAmIT259LGtSWmButCYFy3xhf3WfruSVfLRfBvIgA9bI3BskEuH3EbahxQik1BUKSa97DS1kXNTcBT8SoqtlY3PeH7zB2t85B8C3P7Oyr+J+XL1iYj7ZJYFFC5vyLuOMJHW6zRVduzbfOyAWstag2Z5ZFwwVwyvyNnPQaLBMjDIulPaMICUpdS8OfkXKItV5Mizy7dMldpT4TMfLO0FH/XOSsOPManJ2VlJnVJJR0Emq2sYU0AFYKNVBL1W913C2crScqhUb7ZgSJuiEHbPRiZnJJpYZwANzoItSvIAPQVAzsO03jn1Xm/p2OBVKJe12EZt521fHo75a1jSrqyv9DU6e+zO9uvqk9eZ1NzM6rXQV+/k2NBytpsvKjc1P+3xtsJNWuWWrLQRBhhqy0XWO5H1/DiFzNmD2PV3f85mgqSUtB1AesvodUgGn+srp8rANnO7aGJ09/hSGfKdtYjs3n6RngFHWGv0NbrhCFL5Rc9JG8y5lu78/fKJPzGaTsXAUvjNwa1U1Im37ZO7FrCpt2ZPEzVhsjxTikIwMbrLa1TtzCQzw5sg2nUPR//sWgV+K7EhlZk5rxutyEruIjHJWfXs8uLbZ+Z/mRxUSfWcgBaUjgDZbDm2oBdYTTbDdR6KiPIbYbXO1xmxRgSGudQQ/sU34VATCvqLp0L+Dg=
+    on: 
+      tags: true
+      repo: rajsite/VireoSDK
 after_script:
 - jobs -l
 - kill $!
