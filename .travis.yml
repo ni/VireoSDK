@@ -41,7 +41,7 @@ script:
 - make testnative
 - npm run test
 before_deploy:
-- npm run doxygen || true
+- npm run doxygen
 deploy:
   - provider: npm
     skip_cleanup: true
