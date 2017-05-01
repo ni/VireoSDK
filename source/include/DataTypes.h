@@ -142,20 +142,20 @@ typedef enum {
 } LVError;
 
 typedef enum {
-    KJSONLV_OutOfRange = -375012,
-    KJSONLV_BadInf = -375011,
-    KJSONLV_BadNaN = -375010,
-    KJSONLV_InvalidArray = -375009,
-    KJSONLV_InvalidArrayDims = -375008,
-    kJSONLV_StrictFieldNotFound = -375007,
-    kJSONLV_ClusterElemNotFound = -375006,
-    kJSONLV_TypeMismatch = -375005,
-    kJSONLV_InvalidPath = -375004,
-    kJSONLV_InvalidString = -375003,
+    kLVError_JSONOutOfRange = -375012,
+    kLVError_JSONBadInf = -375011,
+    kLVError_JSONBadNaN = -375010,
+    kLVError_JSONInvalidArray = -375009,
+    kLVError_JSONInvalidArrayDims = -375008,
+    kLVError_JSONStrictFieldNotFound = -375007,
+    kLVError_JSONClusterElemNotFound = -375006,
+    kLVError_JSONTypeMismatch = -375005,
+    kLVError_JSONInvalidPath = -375004,
+    kLVError_JSONInvalidString = -375003,
     // The rest are semantic analysis errors so can never be seen in LV-generated code: TODO (spathiwa) Implement for benefit of hand-written Vireo
-    kJSONLV_InvalidElementNameError = -375002,
-    kJSONLV_InvalidRootContainerError = -375001,
-    kJSONLV_UnsupportedTypeError = -375000
+    kLVError_JSONInvalidElementNameError = -375002,
+    kLVError_JSONInvalidRootContainerError = -375001,
+    kLVError_JSONUnsupportedTypeError = -375000
 } JSONLVError;
 
 // Types used for structs and pointers when the semantics of the underlying bits may vary

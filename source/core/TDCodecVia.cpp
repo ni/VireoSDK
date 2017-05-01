@@ -866,10 +866,10 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 Boolean inconsistentDimLens = PreParseElements(rank, initializerDimensionLengths);
                 if (Fmt().UseFieldNames()) { // JSON
                     if (inconsistentDimLens)
-                        return KJSONLV_InvalidArray;
+                        return kLVError_JSONInvalidArray;
                     for (IntIndex dimIndex = 0; dimIndex < rank; ++dimIndex)
                         if (initializerDimensionLengths[dimIndex] == 0)
-                            return KJSONLV_InvalidArrayDims;
+                            return kLVError_JSONInvalidArrayDims;
                 }
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact
@@ -929,10 +929,10 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             return errCode;
         } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
             LOG_EVENT(kSoftDataError, "null encountered");
-            return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
+            return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
         } else {
             LOG_EVENT(kHardDataError, "'(' missing");
-            return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
+            return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
         }
     } else if (rank == 0) {
         // For Zero-D arrays there are no parens, just parse the element
@@ -1011,27 +1011,27 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 if (Fmt().UseFieldNames()) { // JSON
                     if (readSuccess) {
                         if (overflow) // this checks for only UInt64 overflow
-                            error = KJSONLV_OutOfRange;
+                            error = kLVError_JSONOutOfRange;
                         else if (aqSize < 8) { // check for overflow for smaller size ints
                             if (encoding == kEncoding_S2CInt) {
                                 // Signed; overflowed if + and any non-zero bits in top part
                                 // (past bits valid for aqSized-int) uor - and any non-one bits in top part
                                 if ((value >= 0 && (value & ~((1ULL << (aqSize*8))-1)))
                                     || (value < 0 && (value >> (aqSize*8-1)) != -1))
-                                    error = KJSONLV_OutOfRange;
+                                    error = kLVError_JSONOutOfRange;
                             } else { // unsigned, overflow if any bits set in top part
                                 if (value & ~((1ULL << (aqSize*8))-1))
-                                    error = KJSONLV_OutOfRange;
+                                    error = kLVError_JSONOutOfRange;
                             }
                         } else if (encoding == kEncoding_S2CInt) {
                             // Signed Int64, overflow if sign doesn't match value
                             // (or if overflow returned above)
                             if ((sign=='-') != (value < 0))
-                                error = KJSONLV_OutOfRange;
+                                error = kLVError_JSONOutOfRange;
                         }
                         if (error) return error;
                     } else
-                        return kJSONLV_InvalidString;
+                        return kLVError_JSONInvalidString;
                 }
                 if (!readSuccess) {
                     // The token didn't look like a number, so consume it anyway and
@@ -1039,7 +1039,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     SubString tempToken;
                     if (_string.ReadSubexpressionToken(&tempToken) == TokenTraits_SymbolName && tempToken.CompareCStr("null")) {
                         LOG_EVENT(kSoftDataError, "null encountered");
-                        return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
+                        return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
@@ -1094,7 +1094,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 if (Fmt().UseFieldNames()) { // JSON
                     // Check if number was so large it mapped to infinity, but it wasn't really 'inf'.
                     if (isMundane && (isinf(value) || (aqSize==4 && isinf(Single(value))))) // overflowed
-                        return KJSONLV_OutOfRange;
+                        return kLVError_JSONOutOfRange;
                 }
                 if (!pData)
                     return kLVError_NoError; // If no where to put the parsed data, then all is done.
@@ -1204,18 +1204,18 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         {
                             if (Fmt().JSONStrictValidation()) {
                                 LOG_EVENT(kWarning, "JSON field not found in cluster");
-                                error = kJSONLV_StrictFieldNotFound;
+                                error = kLVError_JSONStrictFieldNotFound;
                             }
                             _string.EatWhiteSpaces();
                             if (!EatJSONItem(&_string))
-                                error = kJSONLV_InvalidString;
+                                error = kLVError_JSONInvalidString;
                         }
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
                     }
                     for (elmIndex = 0; !error && elmIndex < elemCount; elmIndex++) {
                         if (!handledElems[elmIndex])
-                            error = kJSONLV_ClusterElemNotFound;
+                            error = kLVError_JSONClusterElemNotFound;
                     }
                 } else {
                     Boolean isComplex = type->IsComplex(); // complex is a special case of cluster
@@ -1995,7 +1995,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             else
                 pBuff++; // skip quotes
         } else
-            _errorCode = KJSONLV_BadNaN;
+            _errorCode = kLVError_JSONBadNaN;
     } else if (::isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
@@ -2011,7 +2011,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             else
                 pBuff++; // skip quotes
         } else
-            _errorCode = KJSONLV_BadInf;
+            _errorCode = kLVError_JSONBadInf;
     } else {
         char formatBuffer[32];
         if (_options._precision >= 0)
@@ -2349,7 +2349,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
         for (IntIndex i=0; !error && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
             if(!parser.EatJSONPath(&p)) {
-                error = kJSONLV_InvalidPath;
+                error = kLVError_JSONInvalidPath;
             }
         }
     }
@@ -2364,7 +2364,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
             arg[0]._paramType->InitData(buffer);
             arg[0]._paramType->CopyData(arg[0]._pData, buffer);
             error = parser.ParseData(arg[0]._paramType, arg[0]._pData);
-            if ((error && error != kJSONLV_StrictFieldNotFound)) {
+            if ((error && error != kLVError_JSONStrictFieldNotFound)) {
                 arg[0]._paramType->CopyData(buffer, arg[0]._pData);
             }
             arg[0]._paramType->ClearData(buffer);
@@ -2374,7 +2374,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
     if (_ParamVarArgCount() > 7) { // error I/O wired
         ErrorCluster *errPtr = _ParamPointer(errClust);
         if (error || log.HardErrorCount() > 0) {
-            errPtr->SetError(true,  error && error != kLVError_ArgError ? error : kJSONLV_InvalidString, "Unflatten From JSON");
+            errPtr->SetError(true,  error && error != kLVError_ArgError ? error : kLVError_JSONInvalidString, "Unflatten From JSON");
         }
     }
     return _NextInstruction();
