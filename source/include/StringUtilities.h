@@ -271,13 +271,13 @@ public:
     Boolean ReadLine(SubString* line);
 
     //! Read the next sequence of digits and parse them as an integer.
-    Boolean ReadInt(IntMax* value);
+    Boolean ReadInt(IntMax* value, Boolean *overflow = null);
     
     //! Read the next sequence of digits and parse them as an IntDim. Like Int but adds '*' and '$n'
     Boolean ReadIntDim(IntIndex* value);
     
     //! Read the next sequence of digits and parse them as a Double.
-    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false);
+    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false, Int32 *errCodePtr = null);
     
     //! Read a simple token name, value, punctuation, etc.
     TokenTraits ReadToken(SubString* token, Boolean suppressInfNaN = false);

@@ -152,6 +152,7 @@
                 "IsPrintableFail.via",
                 "IsWhiteSpaceFail.via",
                 "JSONArray.via",
+                "JSONErrorCodes.via",
                 "KeyValuePairDefinitions.via",
                 "Literals.via",
                 "LotsOStrings.via",

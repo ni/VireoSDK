@@ -132,14 +132,31 @@ typedef enum {
     kNIError_kCantEncode = 5,           // Data type not supported by encoder
     kNIError_kLogicFailure = 6,
     kNIError_ValueTruncated = 7,
-} NIError ;
+} NIError;
 
 typedef enum {
     kLVError_NoError = 0,
     kLVError_ArgError = 1,
     kLVError_MemFull = 2,
     kLVError_NotSupported = 53, // Not supported on this platform
-} LVError ;
+} LVError;
+
+typedef enum {
+    KJSONLV_OutOfRange = -375012,
+    KJSONLV_BadInf = -375011,
+    KJSONLV_BadNaN = -375010,
+    KJSONLV_InvalidArray = -375009,
+    KJSONLV_InvalidArrayDims = -375008,
+    kJSONLV_StrictFieldNotFound = -375007,
+    kJSONLV_ClusterElemNotFound = -375006,
+    kJSONLV_TypeMismatch = -375005,
+    kJSONLV_InvalidPath = -375004,
+    kJSONLV_InvalidString = -375003,
+    // The rest are semantic analysis errors so can never be seen in LV-generated code: TODO (spathiwa) Implement for benefit of hand-written Vireo
+    kJSONLV_InvalidElementNameError = -375002,
+    kJSONLV_InvalidRootContainerError = -375001,
+    kJSONLV_UnsupportedTypeError = -375000
+} JSONLVError;
 
 // Types used for structs and pointers when the semantics of the underlying bits may vary
 typedef UInt8   AQBlock1;

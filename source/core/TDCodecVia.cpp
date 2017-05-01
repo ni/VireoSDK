@@ -737,11 +737,11 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     return cdt;
 }
 //------------------------------------------------------------
-void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths)
+Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths)
 {
     SubString  token;
     SubString  tempString(_string);
-    
+    Boolean inconsistentDimSizes = false;
     // Figure out how many initializers there are. The rank parameter
     // indicates how many levels are realated to the type being parsed
     // nesting deeper than that is assumed to be part of a deeper type
@@ -775,6 +775,8 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
         } else if (token.EatChar(Fmt()._arrayPost)) {
             // When popping out, store the max size for the current level.
             if (dimIndex >= 0) {
+                if (dimensionLengths[dimIndex] && tempDimensionLengths[dimIndex] != dimensionLengths[dimIndex])
+                    inconsistentDimSizes = true;
                 // If the inner dimension is larger than processed before record the larger number
                 if (tempDimensionLengths[dimIndex] > dimensionLengths[dimIndex])
                     dimensionLengths[dimIndex] = tempDimensionLengths[dimIndex];
@@ -788,6 +790,7 @@ void TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLen
                 tempDimensionLengths[dimIndex]++;
         }
     }
+    return inconsistentDimSizes;
 }
 
 TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN /*=false*/)
@@ -811,7 +814,7 @@ TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boole
 }
 
 //------------------------------------------------------------
-void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
+Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
     VIREO_ASSERT(pArray != null);
     TypeRef type = pArray->Type();
@@ -859,8 +862,14 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                         
             if (level == 0) {
                 ArrayDimensionVector initializerDimensionLengths;
-                PreParseElements(rank, initializerDimensionLengths);
-
+                Boolean inconsistentDimLens = PreParseElements(rank, initializerDimensionLengths);
+                if (Fmt().UseFieldNames()) { // JSON
+                    if (inconsistentDimLens)
+                        return KJSONLV_InvalidArray;
+                    for (IntIndex dimIndex = 0; dimIndex < rank; ++dimIndex)
+                        if (initializerDimensionLengths[dimIndex] == 0)
+                            return KJSONLV_InvalidArrayDims;
+                }
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact
                 // any changes, but logical dims can change.
@@ -883,6 +892,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             IntIndex elementCount = 0;
             Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
+            Int32 errCode = kLVError_NoError;
 
             while ((_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
                 // Only read as many elements as there was room allocated for,
@@ -890,6 +900,7 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
                 _string.EatLeadingSpaces();
                 _string.EatChar(Fmt()._itemSeperator);
                 void* pElement = elementCount < length ? pEltData : null;
+                Int32 subErr;
                 if (pElement == null) {
                     bExtraInitializersFound = true;
                 }
@@ -898,12 +909,13 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
 
                     // will be replaced with the genericParseData in the future.
 
-                    ParseData(arrayElementType, pElement);
+                    subErr = ParseData(arrayElementType, pElement);
                 } else {
                     // For nested dimensions just parse the next inner dimension using the array type.
-                    ParseArrayData(pArray, pElement, level + 1);
+                    subErr = ParseArrayData(pArray, pElement, level + 1);
                 }
-                
+                if (subErr && !errCode)
+                    errCode = subErr;
                 if (pFirstEltInSlice) {
                     pEltData += step;
                 }
@@ -913,17 +925,20 @@ void TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlic
             if (bExtraInitializersFound) {
                 LOG_EVENT(kWarning, "Ignoring extra array initializer elements");
             }
+            return errCode;
         } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
-            return LOG_EVENT(kSoftDataError, "null encountered");
-            // only allow in JSON context?
+            LOG_EVENT(kSoftDataError, "null encountered");
+            return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
         } else {
-            return LOG_EVENT(kHardDataError, "'(' missing");
+            LOG_EVENT(kHardDataError, "'(' missing");
+            return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
         }
     } else if (rank == 0) {
         // For Zero-D arrays there are no parens, just parse the element
         AQBlock1* pArrayData = (AQBlock1*) pArray->RawBegin();
-        ParseData(arrayElementType, pArrayData);
+        return ParseData(arrayElementType, pArrayData);
     }
+    return kLVError_NoError;
 }
 
 //------------------------------------------------------------
@@ -954,7 +969,8 @@ Boolean EatJSONItem(SubString* input)
         }
     }
     else {
-        input->ReadToken(&token);
+        if (input->ReadToken(&token) == TokenTraits_Unrecognized)
+            return false;
     }
     return true;
 }
@@ -963,12 +979,13 @@ Boolean EatJSONItem(SubString* input)
 // ParseData - parse a value from the string based on the type
 // If the text makes sense then kNIError_Success is returned.
 // If pData is Null then only the syntax check is done.
-void TDViaParser::ParseData(TypeRef type, void* pData)
+Int32 TDViaParser::ParseData(TypeRef type, void* pData)
 {
     static const SubString strVI(VI_TypeName);
-
+    Int32 error = kLVError_NoError;
     if (type->IsA(&strVI)) {
-        return ParseVirtualInstrument(type, pData);
+        ParseVirtualInstrument(type, pData);
+        return kLVError_NoError;
     }
                                
     Int32 aqSize = type->TopAQSize();
@@ -977,7 +994,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
     switch (encoding) {
         case kEncoding_Array:
             if (!pData)
-                return;
+                return kLVError_NoError;
             return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
             break;
         case kEncoding_Enum:
@@ -985,22 +1002,55 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_S2CInt:
             {
                 IntMax value = 0;
-                Boolean readSuccess = _string.ReadInt(&value);
+                Boolean overflow = false;
+                Utf8Char sign = 0;
+                _string.EatWhiteSpaces();
+                _string.PeekRawChar(&sign);
+                Boolean readSuccess = _string.ReadInt(&value, &overflow);
+                if (Fmt().UseFieldNames()) { // JSON
+                    if (readSuccess) {
+                        if (overflow) // this checks for only UInt64 overflow
+                            error = KJSONLV_OutOfRange;
+                        else if (aqSize < 8) { // check for overflow for smaller size ints
+                            if (encoding == kEncoding_S2CInt) {
+                                // Signed; overflowed if + and any non-zero bits in top part
+                                // (past bits valid for aqSized-int) or - and any non-one bits in top part
+                                if ((value >= 0 && (value & ~((1ULL << (aqSize*8))-1)))
+                                    || (value < 0 && (value >> (aqSize*8-1)) != -1))
+                                    error = KJSONLV_OutOfRange;
+                            } else { // unsigned, overflow if any bits set in top part
+                                if (value & ~((1ULL << (aqSize*8))-1))
+                                    error = KJSONLV_OutOfRange;
+                            }
+                        } else if (encoding == kEncoding_S2CInt) {
+                            // Signed Int64, overflow if sign doesn't match value
+                            // (or if overflow returned above)
+                            if ((sign=='-') != (value < 0))
+                                error = KJSONLV_OutOfRange;
+                        }
+                        if (error) return error;
+                    } else
+                        return kJSONLV_InvalidString;
+                }
                 if (!readSuccess) {
                     // The token didn't look like a number, so consume it anyway and
                     // Log an error.
                     SubString tempToken;
                     if (_string.ReadSubexpressionToken(&tempToken) == TokenTraits_SymbolName && tempToken.CompareCStr("null")) {
-                        return LOG_EVENT(kSoftDataError, "null encountered");
-                    } else
-                        return LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
+                        LOG_EVENT(kSoftDataError, "null encountered");
+                        return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
+                    } else {
+                        LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
+                    }
+                    return kLVError_ArgError;
                 }
 
                 if (!pData)
-                    return; // If no where to put the parsed data, then all is done.
-                if (WriteIntToMemory(type, pData, value) != kNIError_Success)
+                    return kLVError_NoError; // If no where to put the parsed data, then all is done.
+                if (WriteIntToMemory(type, pData, value) != kNIError_Success) {
                     LOG_EVENT(kSoftDataError, "Data int size not supported");
-
+                    return kLVError_ArgError;
+                }
             }
             break;
         case kEncoding_Boolean:
@@ -1012,32 +1062,46 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                 } else if (token.CompareCStr("f") || token.CompareCStr("false")) {
                     value = false;
                 } else {
-                    return LOG_EVENT(kSoftDataError, "Data boolean value syntax error");
+                    LOG_EVENT(kSoftDataError, "Data boolean value syntax error");
+                    return kLVError_ArgError;
                 }
                 if (!pData)
-                    return;
+                    return kLVError_NoError;
                 
                 if (aqSize==1) {
                     *(AQBlock1*)pData = value;
                 } else {
-                    return LOG_EVENT(kSoftDataError, "Data boolean size greater than 1");
+                    LOG_EVENT(kSoftDataError, "Data boolean size greater than 1");
+                    return kLVError_ArgError;
                 }
             }
             break;
         case kEncoding_IEEE754Binary:
             {
                 Boolean suppressInfNaN = Fmt().SuppressInfNaN();
+                Int32 errCode = kLVError_NoError;
                 TokenTraits tt = _string.ReadToken(&token, suppressInfNaN);
                 token.TrimQuotedString(tt);
                 Double value = 0.0;
-                Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN);
-                if (!readSuccess)
-                    return LOG_EVENT(kSoftDataError, "Data IEEE754 syntax error");
+                Utf8Char leadingChar = token.StringLength() > 0 ? token.Begin()[0] : 0;
+                Boolean isMundane = (tt==TokenTraits_IEEE754 || tt==TokenTraits_Integer) && (leadingChar=='.' || leadingChar=='-' || isdigit(leadingChar)); // not inf, nan
+                Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN, &errCode);
+                if (!readSuccess) {
+                    LOG_EVENT(kSoftDataError, "Data IEEE754 syntax error");
+                    return errCode;
+                }
+                if (Fmt().UseFieldNames()) { // JSON
+                    // Check if number was so large it mapped to infinity, but it wasn't really 'inf'.
+                    if (isMundane && (isinf(value) || (aqSize==4 && isinf(Single(value))))) // overflowed
+                        return KJSONLV_OutOfRange;
+                }
                 if (!pData)
-                    return; // If no where to put the parsed data, then all is done.
+                    return kLVError_NoError; // If no where to put the parsed data, then all is done.
                 
-                if (WriteDoubleToMemory(type, pData, value) != kNIError_Success)
+                if (WriteDoubleToMemory(type, pData, value) != kNIError_Success) {
                     LOG_EVENT(kSoftDataError, "Data IEEE754 size not supported");
+                    return kLVError_ArgError;
+                }
                 
                 // TODO support 16 bit reals? 128 bit reals? those are defined by IEEE754
             }
@@ -1045,15 +1109,16 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_Ascii:
         case kEncoding_Unicode:
             {
-            TokenTraits tt = _string.ReadToken(&token);
-            token.TrimQuotedString(tt);
-            if (aqSize == 1 && token.Length() >= 1) {
-                if (pData)
-                    *(Utf8Char*)pData = *token.Begin();
-            } else {
-                LOG_EVENT(kSoftDataError, "Scalar that is unicode");
-                // TODO support escaped chars, more error checking
-            }
+                TokenTraits tt = _string.ReadToken(&token);
+                token.TrimQuotedString(tt);
+                if (aqSize == 1 && token.Length() >= 1) {
+                    if (pData)
+                        *(Utf8Char*)pData = *token.Begin();
+                } else {
+                    LOG_EVENT(kSoftDataError, "Scalar that is unicode");
+                    return kLVError_ArgError;
+                    // TODO support escaped chars, more error checking
+                }
             }
             break;
         case kEncoding_None:
@@ -1070,7 +1135,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     } else {
                         this->ParseType(); // TODO if preflight its read and lost
                     }
-                    return;
+                    return kLVError_NoError;
                 } else if (type->IsA(&strExecutionContextType)) {
                     _string.ReadToken(&token);
                     if (token.CompareCStr(tsWildCard)) {
@@ -1079,7 +1144,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         // TODO this is at too low a level, it could be done at
                         // a higher level.
                         *(ExecutionContextRef*)pData = THREAD_EXEC();
-                        return;
+                        return kLVError_NoError;
                     }
                 }
                 SubString typeName = type->Name();
@@ -1094,12 +1159,16 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                     // JSON does not provide or allow any sort of comment syntax
                     _string.EatWhiteSpaces();
                     if(!_string.EatChar('{')) {
-                        return ;
+                        return kLVError_ArgError;
                     }
                     IntIndex elmIndex =0;
                     AQBlock1* baseOffset = (AQBlock1*)pData;
+                    Int32 elemCount = type->SubElementCount();
                     void* elementData = baseOffset;
-                    while ((_string.Length() > 0) && !_string.EatChar('}')  ) {
+                    std::unique_ptr<Boolean[]> handledElems = std::unique_ptr<Boolean[]>(new Boolean[type->SubElementCount()]);
+                    for (elmIndex = 0; elmIndex < elemCount; elmIndex++)
+                        handledElems[elmIndex] = false;
+                    while ((_string.Length() > 0) && !_string.EatChar('}')) {
                         SubString fieldName;
                         _string.ReadToken(&fieldName);
                         fieldName.AliasAssign(fieldName.Begin()+1, fieldName.End()-1);
@@ -1107,7 +1176,7 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.EatChar(*tsNameSuffix);
                         Boolean found = false;
                         TypeRef elementType = null;
-                        for (elmIndex = 0;!found && elmIndex<type->SubElementCount(); elmIndex++) {
+                        for (elmIndex = 0;!found && elmIndex < elemCount; elmIndex++) {
                             elementType= type->GetSubElement(elmIndex);
                             SubString name = elementType->ElementName();
                             elementData = baseOffset + elementType->ElementOffset();
@@ -1115,21 +1184,37 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                         }
                         if (found)
                         {
+                            Int32 subErr;
+                            --elmIndex;
                             if (baseOffset == null) {
                                 elementData = baseOffset;
-                                return;
+                                return kLVError_NoError;
                             }
-                            ParseData(elementType, elementData);
+                            if (handledElems[elmIndex]) { // already seen, ignore
+                                subErr = ParseData(elementType, null);
+                            } else {
+                                handledElems[elmIndex] = found;
+                                subErr = ParseData(elementType, elementData);
+                            }
+                            if (subErr && !error)
+                                error = subErr;
                         }
                         else
                         {
-                            if (Fmt().JSONStrictValidation())
+                            if (Fmt().JSONStrictValidation()) {
                                 LOG_EVENT(kWarning, "JSON field not found in cluster");
+                                error = kJSONLV_StrictFieldNotFound;
+                            }
                             _string.EatWhiteSpaces();
-                            EatJSONItem(&_string);
+                            if (!EatJSONItem(&_string))
+                                error = kJSONLV_InvalidString;
                         }
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
+                    }
+                    for (elmIndex = 0; !error && elmIndex < elemCount; elmIndex++) {
+                        if (!handledElems[elmIndex])
+                            error = kJSONLV_ClusterElemNotFound;
                     }
                 } else {
                     Boolean isComplex = type->IsComplex(); // complex is a special case of cluster
@@ -1170,14 +1255,19 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
                                         break;
                                     }
                                 }
-                            } else // cluster, or complex in cluster format
-                                ParseData(elementType, elementData);
+                            } else { // cluster, or complex in cluster format
+                                Int32 subErr = ParseData(elementType, elementData);
+                                if (subErr && !error)
+                                    error = subErr;
+                            }
                             i++;
                         }
                         if (isComplex) {
                             // if we parsed both parts and it's not cluster initializer format, make sure 'i' terminator is found
-                            if (!matchOpenParen && i == 2 && !_string.EatChar('i') && !_string.EatChar('I'))
+                            if (!matchOpenParen && i == 2 && !_string.EatChar('i') && !_string.EatChar('I')) {
                                 LOG_EVENT(kHardDataError, "bad complex literal");
+                                error = kLVError_ArgError;
+                            }
                         }
                     }
                 }
@@ -1185,8 +1275,10 @@ void TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         default:
             LOG_EVENT(kHardDataError, "No parser for data type's encoding");
+            return kLVError_ArgError;
             break;
     }
+    return error;
 }
 
 //------------------------------------------------------------
@@ -1810,7 +1902,7 @@ TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
     _options._exponentialNotation = false;
-    _error = false;
+    _errorCode = kLVError_NoError;
 
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._bEscapeStrings = false;
@@ -1902,7 +1994,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             else
                 pBuff++; // skip quotes
         } else
-            _error = true;
+            _errorCode = KJSONLV_BadNaN;
     } else if (::isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
@@ -1918,7 +2010,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
             else
                 pBuff++; // skip quotes
         } else
-            _error = true;
+            _errorCode = KJSONLV_BadInf;
     } else {
         char formatBuffer[32];
         if (_options._precision >= 0)
@@ -2188,9 +2280,6 @@ struct FlattenToJSONParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-enum JSONLVErrors { KJSONLV_BadInfNaN = -375011, kJSONLV_StrictFieldNotFound = -375007, kJSONLV_TypeMismatch = -375005,  kJSONLV_InvalidPath = -375004, kJSONLV_InvalidString = -375003 };
-// TO-DO: Other possible errors not detected/handles: -375006 clust elem not found
-
 VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
 {
     StaticTypeAndData *arg =  _ParamImmediate(arg1);
@@ -2206,10 +2295,11 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
     } else {
         formatter.FormatData(arg[0]._paramType, arg[0]._pData);
     }
-    if (formatter.HasError()) {
+    Int32 errCode = formatter.GetError();
+    if (errCode) {
         if (_ParamVarArgCount() > 4) {
             _Param(errClust).status = true;
-            _Param(errClust).code = KJSONLV_BadInfNaN;
+            _Param(errClust).code = errCode;
             _Param(errClust).source->Resize1D(0);
             _Param(errClust).source->AppendCStr("Flatten To JSON");
         }
@@ -2241,28 +2331,28 @@ struct UnflattenFromJSONParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // StringRef, StaticType, void, TypedArray1D<StringRef>*, Boolean, Boolean, Boolean)
+VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
 {
     if (_ParamVarArgCount() > 7 && _Param(errClust).status)
         return _NextInstruction();
 
     SubString jsonString = _Param(jsonString)->MakeSubStringAlias();
     StaticTypeAndData *arg =  _ParamImmediate(arg1);
+    Int32 error = kLVError_NoError;
 
     TypedArray1D<StringRef> *itemPath = _Param(itemPath);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat(kJSONEncoding);
     TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation));
-    Boolean badPath = false, badNulls = false;;
     if (itemPath->Length()>0) {
-        for (IntIndex i=0; !badPath && i< itemPath->Length();i++) {
+        for (IntIndex i=0; !error && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
             if(!parser.EatJSONPath(&p)) {
-                badPath = true;
+                error = kJSONLV_InvalidPath;
             }
         }
     }
-    if (!badPath) {
+    if (!error) {
         if (_Param(defaultNullElements))
             parser.ParseData(arg[0]._paramType, arg[0]._pData);
         else {
@@ -2272,28 +2362,20 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock) // Str
             memset(buffer, 0, topSize);
             arg[0]._paramType->InitData(buffer);
             arg[0]._paramType->CopyData(arg[0]._pData, buffer);
-            parser.ParseData(arg[0]._paramType, arg[0]._pData);
-            if (log.TotalErrorCount() > 0) {
+            error = parser.ParseData(arg[0]._paramType, arg[0]._pData);
+            if ((error && error != kJSONLV_StrictFieldNotFound)) {
                 arg[0]._paramType->CopyData(buffer, arg[0]._pData);
-                if (log.HardErrorCount() == 0)
-                    badNulls = true;
             }
             arg[0]._paramType->ClearData(buffer);
             delete[] buffer;
         }
     }
-    if (_ParamVarArgCount() > 7) {
-        Int32 code = badPath ? kJSONLV_InvalidPath : badNulls ? kJSONLV_TypeMismatch :  kJSONLV_InvalidString;
-        if (badPath || badNulls || log.HardErrorCount() > 0) {
+    if (_ParamVarArgCount() > 7) { // error I/O wired
+        if (error || log.HardErrorCount() > 0) {
                 _Param(errClust).status = true;
-                _Param(errClust).code = code; // invalid string.  -375007 strict, -375005 type mismatch,-375006 clust elem not found
+                _Param(errClust).code = error && error != kLVError_ArgError ? error : kJSONLV_InvalidString;
                 _Param(errClust).source->Resize1D(0);
                 _Param(errClust).source->AppendCStr("Unflatten From JSON");
-        } else if (log.WarningCount() > 0) {
-            _Param(errClust).status = true;
-            _Param(errClust).code = kJSONLV_StrictFieldNotFound;
-            _Param(errClust).source->Resize1D(0);
-            _Param(errClust).source->AppendCStr("Unflatten From JSON");
         } else {
             _Param(errClust).status = false;
             _Param(errClust).code = 0;

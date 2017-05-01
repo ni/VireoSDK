@@ -107,13 +107,13 @@ public:
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = null);
     TypeRef ParseLiteral(TypeRef patternType);
-    void    ParseData(TypeRef type, void* pData);
+    Int32   ParseData(TypeRef type, void* pData);
     Boolean EatJSONPath(SubString* path);
     NIError ParseREPL();
     TypeRef ParseEnqueue();
-    void    PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
+    Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN = false);
-    void    ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
+    Int32   ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
@@ -156,7 +156,7 @@ private:
     StringRef       _string;
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt() { return _options._fmt; }
-    Boolean _error;
+    Int32 _errorCode;
     
     static const Int32 kTempFormattingBufferSize = 100;
 public:
@@ -179,7 +179,7 @@ public:
     void    FormatElementUsageType(UsageTypeEnum value);
     void    FormatInt(EncodingEnum encoding, IntMax value);
     void    FormatIEEE754(TypeRef type, void* pData);
-    Boolean HasError() { return _error; }
+    Int32   GetError() const { return _errorCode; }
     
     static char LocaleDefaultDecimalSeperator;
     static ViaFormatChars formatVIA;
