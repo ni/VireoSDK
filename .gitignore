@@ -85,7 +85,7 @@ sample-vis/SampleLVNativeMethod/Canvas2D/DerivedData
 sample-vis/SampleLVNativeMethod/Canvas2D/Canvas2D.xcodeproj/project.xcworkspace/xcuserdata
 sample-vis/SampleLVNativeMethod/Canvas2D/Canvas2D.xcodeproj/xcuserdata
 Vireo_Web/emsdk_portable
-Documents/gh-pages
+gh-pages
 test-it/node_modules
 test-it/temp
 make-it/emsdk_portable
@@ -112,3 +112,5 @@ make-it/make.exe
 env/
 *.tgz
 coverage/
+emscripten-sdk/
+nohup.out

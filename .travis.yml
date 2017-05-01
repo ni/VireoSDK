@@ -1,28 +1,31 @@
+dist: trusty
 sudo: false
-language: cpp
-compiler: gcc
 addons:
-  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
+    - doxygen
+cache:
+  directories:
+    - node_modules
+    - emscripten-sdk
 before_install:
 - export DISPLAY=:99.0
 - export TZ=CST6CDT
 - sh -e /etc/init.d/xvfb start
-- nvm install 6
-- nvm use 6
 - node -v
 - npm -v
 - python -V
 - pip -V
+- firefox -v
+- doxygen --version
 install:
 - npm install
 - pip install --user -r requirements.txt
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-- git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git
+- if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then git pull; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
 - source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
@@ -37,14 +40,27 @@ script:
 - make testjs
 - make testnative
 - npm run test
+before_deploy:
+- npm run doxygen
 deploy:
-  provider: npm
-  email: mark.black@ni.com
-  api_key:
-    secure: bAvSpGaOGQAF+Owt4skNu/8WxD8JolOiODZxoSO5oNp2awyQC3LMvVgtCmPgCTOJkTJz2Fh0Dlwhdyc2iPragdn2ivxUvlJpiQLSSCpqW3SipcRRN8UupVe0C8tV72sSZs85cgBnD3a6Ib1+d3RW5sxrOuvVyb56C2jwiKWOzjM9CqJqRop4dqC6b1ArwYtjp1AH7WarxfYIZDOv6aJbv6t1yY+7EfHBQFCBNYZcSJ+WgsyITtdntnrhziYyXaJ3K0sCrb1STj9gLiqhSolU9v7l61IojKYH1H7mEA3pYxDXN+g1Lmxb63Ex5sMfPYjYxhd12wnw3c2rwomuNkGcoHiaslQrcV6K9FaAO5Ln7ARnQedAULRP+voHLsPnbah50L6lSPeiO+Rgsaip7hLeNTLcEZk+rwob/YqARaSfRfZzUTqqScPyFLX3iLRPn0CwCJdTHrBwNueirvV6U+e3Ghg22Qpeue3bmUZTkl7q+h1kZ+1WWjIw5b1tYFpjBXSZTiWv01lQxY7/seNKKk+GRXpSl527CkjxjfuBf4kA4yDNLvaZvcd33jw1DgSypIt+y2Jh02TSswTrjpXPFS3iXjmHvEjMu81/VBooCDy4b4zmho6YGpJuGVrRJNoDsmJzHirD0jMoC2jn5OT9XhC87zmEu2DoDhfysx2Q8LS3MOc=
-  on:
-    tags: true
-    repo: ni/VireoSDK
+  - provider: npm
+    skip_cleanup: true
+    email: webapps.ops@ni.com
+    api_key:
+        secure: I68ZjWDNHfycyjfItlPZLotfXc4R4wRmSxl/jXJ3D29SsW0E7tr7QYVwrDRwbGbRdG9OGmWoLHzw7b27He04qtS8Vaw4OhmoYqibNRDnWOhvdrcWa5L/2Hcaw1LxMclOepsGxzMktOp2pJR22L7od1iPi7KocPV5NgsHtp/fcC6K2Mqnh63Hiq5jgZvXVTF0JHanLpu3W52Yl5iEpQ9UomKS/8ZLdWW5Z/QzQvWNqS3V/54Q5rJBMIQOv4yDeF57HtYkXqI3IJIErdbIQyldq4r6LbwQ2gOhu7DvNi/yZ2ZB0n5eo1nA8bDgTlRvFBi1tWr4qAvc/8O0kOEBkwwQjnJFcR6acWixskKbLpy3djodUkdXVq7AcWo4gVhKO+hRiUZc5P4F6xfGJSXuzmog+xHhVdaCjgYRli8Lp3m4lK2nUo3BW0pSbqvKcUVZZ03kVy0Ikr0rK1fFC3JYF+clB6jmeTb5vWTg6vks9sXPzRFf1fr5GxUjig+dEmV72R1RYvmdqII11+7sVJyuJHynUIa8MvEiR72t83KY2IHggbjw+hh+Nk+kOM31jZTrh9TUCTQ48HCCbjoOAey46vZ5yTaIqG3PM1R0jska8GqyW8H2xDQHWm6IIROcteY2AD53hMRBWvhDz1sNY87X2Y6kvua16BCtluJcS/+fYxvOlaY=
+    on:
+      tags: true
+      repo: ni/VireoSDK
+  - provider: pages
+    skip_cleanup: true
+    local_dir: gh-pages/
+    email: vireobot@users.noreply.github.com
+    name: Vireo Bot
+    github_token:
+      secure: PJD/9XrPDUATO1O5SZXSosi0maiSFh4YblSOGhbcNacJmuWGYTpRSdXS+uEGI7vtegFrfl7Yo2AoyVZ4shKArjwbVSjUOyBPphXJfRV/8nV7I90d+mvJ8xR4F/2CED1ddHAbnsHVzluXCus8L1Mr6CVrO2qURlZ6SG6BR0jn6hfOR93VzEotmHbF32Pm+MpQWMcDOch1lUkEy4+u96LcfhA6qlQEVH6/MJs3o+sDqe4LlAY6SGKAq6rzwG3w5ZmGQENN+1cXYy7fQz2gNzro3UW59RoWzYECl7DApkM00LbhHu/i0xtDhrZpJV8sdCb2dgbe2HreT2egKdwT02uhotg9Z/mgEf2Com5B8hZlXSf8RbiGmaRHm/s1xv7jmjbDbrStnoPwH7zH8W9DTq2l8EpeueWyNhbx0q6inmi2ZgWgHpo9bk2Cb7gPXKV50WWjzq8ldzCbbBvKP11jKZhsADu0tDuakZpLLiNeDQN0a1/qkOl9AFSrqYe5imaVxAdM6andvH94sume5X5taBppDG9Apu0sfiM6fqrsph1fJM+cjIuwOXDI2OlQIZeQtHSEH7uj1B0FraZ/rLBY28tmlLQw9IbulmlhBrhwyehVZNP/3F0pDvy2FQrkLG30kkBu9fenREZI4w2Hy6l1HmblMhcSzABRJG3LhJKBjR9FzPQ=
+    on: 
+      tags: true
+      repo: ni/VireoSDK
 after_script:
 - jobs -l
 - kill $!
