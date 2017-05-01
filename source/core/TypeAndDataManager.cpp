@@ -492,7 +492,11 @@ Int32  TypeManager::AQAlignment(Int32 size)
     if (size<8)
         return 4;
     else
+#if VIREO_32_BIT_LONGLONGWORD_ALIGNMENT
+        return 4;
+#else
         return 8;
+#endif
 }
 //------------------------------------------------------------
 Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)
