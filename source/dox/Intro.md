@@ -54,7 +54,6 @@ sys	0m0.002s
 ~~~
 
 ## Next Steps
-* [Web based Vireo playground](playground/Editor.html)
 * [Some more simple type examples](md_dox__intro_type_examples.html)
 * [Some array type examples](md_dox__intro_array_examples.html)
 * [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)

@@ -157,7 +157,7 @@ Once Doxygen is installed just run the following command from any directory in t
 
 It will find and use the Doxyfile file in the source directory and will generate the documentation files in the following directory
 
-*`\gh-pages`*
+*`gh-pages`*
 	
 The main html file in the `gh-pages` is called: index.html
 
