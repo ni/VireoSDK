@@ -54,11 +54,13 @@ deploy:
   - provider: pages
     skip_cleanup: true
     local_dir: gh-pages/
+    email: vireobot@users.noreply.github.com
+    name: Vireo Bot
     github_token:
-      secure: LEBy6pQAmIT259LGtSWmButCYFy3xhf3WfruSVfLRfBvIgA9bI3BskEuH3EbahxQik1BUKSa97DS1kXNTcBT8SoqtlY3PeH7zB2t85B8C3P7Oyr+J+XL1iYj7ZJYFFC5vyLuOMJHW6zRVduzbfOyAWstag2Z5ZFwwVwyvyNnPQaLBMjDIulPaMICUpdS8OfkXKItV5Mizy7dMldpT4TMfLO0FH/XOSsOPManJ2VlJnVJJR0Emq2sYU0AFYKNVBL1W913C2crScqhUb7ZgSJuiEHbPRiZnJJpYZwANzoItSvIAPQVAzsO03jn1Xm/p2OBVKJe12EZt521fHo75a1jSrqyv9DU6e+zO9uvqk9eZ1NzM6rXQV+/k2NBytpsvKjc1P+3xtsJNWuWWrLQRBhhqy0XWO5H1/DiFzNmD2PV3f85mgqSUtB1AesvodUgGn+srp8rANnO7aGJ09/hSGfKdtYjs3n6RngFHWGv0NbrhCFL5Rc9JG8y5lu78/fKJPzGaTsXAUvjNwa1U1Im37ZO7FrCpt2ZPEzVhsjxTikIwMbrLa1TtzCQzw5sg2nUPR//sWgV+K7EhlZk5rxutyEruIjHJWfXs8uLbZ+Z/mRxUSfWcgBaUjgDZbDm2oBdYTTbDdR6KiPIbYbXO1xmxRgSGudQQ/sU34VATCvqLp0L+Dg=
+      secure: PJD/9XrPDUATO1O5SZXSosi0maiSFh4YblSOGhbcNacJmuWGYTpRSdXS+uEGI7vtegFrfl7Yo2AoyVZ4shKArjwbVSjUOyBPphXJfRV/8nV7I90d+mvJ8xR4F/2CED1ddHAbnsHVzluXCus8L1Mr6CVrO2qURlZ6SG6BR0jn6hfOR93VzEotmHbF32Pm+MpQWMcDOch1lUkEy4+u96LcfhA6qlQEVH6/MJs3o+sDqe4LlAY6SGKAq6rzwG3w5ZmGQENN+1cXYy7fQz2gNzro3UW59RoWzYECl7DApkM00LbhHu/i0xtDhrZpJV8sdCb2dgbe2HreT2egKdwT02uhotg9Z/mgEf2Com5B8hZlXSf8RbiGmaRHm/s1xv7jmjbDbrStnoPwH7zH8W9DTq2l8EpeueWyNhbx0q6inmi2ZgWgHpo9bk2Cb7gPXKV50WWjzq8ldzCbbBvKP11jKZhsADu0tDuakZpLLiNeDQN0a1/qkOl9AFSrqYe5imaVxAdM6andvH94sume5X5taBppDG9Apu0sfiM6fqrsph1fJM+cjIuwOXDI2OlQIZeQtHSEH7uj1B0FraZ/rLBY28tmlLQw9IbulmlhBrhwyehVZNP/3F0pDvy2FQrkLG30kkBu9fenREZI4w2Hy6l1HmblMhcSzABRJG3LhJKBjR9FzPQ=
     on: 
       tags: true
-      repo: rajsite/VireoSDK
+      repo: ni/VireoSDK
 after_script:
 - jobs -l
 - kill $!
