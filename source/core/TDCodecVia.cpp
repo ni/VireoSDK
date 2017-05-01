@@ -2299,16 +2299,11 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
     Int32 errCode = formatter.GetError();
     if (errCode) {
         if (_ParamVarArgCount() > 4) {
-            _Param(errClust).status = true;
-            _Param(errClust).code = errCode;
-            _Param(errClust).source->Resize1D(0);
-            _Param(errClust).source->AppendCStr("Flatten To JSON");
+            _ParamPointer(errClust)->SetError(true, errCode, "Flatten To JSON");
         }
         _Param(stringOut)->Resize1D(0);
     } else if (_ParamVarArgCount() > 4) {
-        _Param(errClust).status = false;
-        _Param(errClust).code = 0;
-        _Param(errClust).source->Resize1D(0);
+        _ParamPointer(errClust)->SetError(false, 0, "");
     }
     return _NextInstruction();
 }
