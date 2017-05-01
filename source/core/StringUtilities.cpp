@@ -823,7 +823,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
     return false;
 }
 //------------------------------------------------------------
-Boolean SubString::ReadInt(IntMax *pValue)
+Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
 {
     IntMax value = 0;
     IntMax sign = 1;
@@ -849,7 +849,14 @@ Boolean SubString::ReadInt(IntMax *pValue)
 
         if (cValue >= 0) {
             _begin++;
-            value = (value * base) + cValue;
+            if (overflow) {
+                UIntMax newValue = (UIntMax(value) * base) + cValue;
+                if (newValue < value) {
+                    *overflow = true;
+                }
+                value = newValue;
+            } else
+                value = (value * base) + cValue;
             bNumberFound = true;
         } else {
             break;
@@ -863,7 +870,7 @@ Boolean SubString::ReadInt(IntMax *pValue)
     return bNumberFound;
 }
 //------------------------------------------------------------
-Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/)
+Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= null*/)
 {
     // TODO not so pleased with the standard functions for parsing  numbers
     // many are not thread safe, none seem to be bound on how many characters they will read
@@ -872,18 +879,25 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     TempStackCString tempCStr(this);
     ConstCStr current = tempCStr.BeginCStr();
     char* end = null;
+    Int32 errCode = kLVError_NoError;
     
     value = strtod(current, (char**)&end);
     if (suppressInfNaN) {
-        if (isinf(value) || isnan(value))
+        if (isinf(value)) {
             end = (char*)current;
+            errCode= KJSONLV_BadInf;
+        }
+        if (isnan(value)) {
+            end = (char*)current;
+            errCode= KJSONLV_BadNaN;
+        }
     }
     Boolean bParsed = current != end;
     _begin += end - current;
 
     // although strtod above (at least on non-Windows) can parse inf/nan, it only works if followed by
     // whitespace or EOS, and not the long forms so we have to check explicitly.
-    if (!bParsed && !suppressInfNaN) {
+    if (!bParsed) {
         Int32 length = Length();
         if (length >= 3 && ComparePrefixIgnoreCase(Utf8Ptr("inf"), 3)) {
             value = std::numeric_limits<double>::infinity();
@@ -902,13 +916,22 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
             if (length >= 9 && ComparePrefixIgnoreCase(Utf8Ptr("inity"), 5))
                 _begin += 5;
         }
+        if (bParsed && suppressInfNaN) {
+            bParsed = false;
+            errCode = isnan(value) ? KJSONLV_BadNaN : KJSONLV_BadInf;
+        }
     }
 
     if (!bParsed) {
         value = 0.0;
+        if (!errCode)
+            errCode = kLVError_ArgError;
     }
     if (pValue) {
         *pValue = value;
+    }
+    if (errCodePtr) {
+        *errCodePtr = errCode;
     }
     return bParsed;
 }

@@ -16,8 +16,6 @@
 
 using namespace Vireo;
 
-enum { kMatchArgErr=1, kMatchMemFullErr=2 };
-
 static const UInt8 *AMatch(const UInt8 *, const Utf8Char*, const Utf8Char *);
 static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se);
 static Int32 MakePat(Int32, const Utf8Char *str, StringRef &pat);
@@ -115,10 +113,10 @@ static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
         if (type)
             type->InitData(&pat);
         if (!pat)
-            return kMatchMemFullErr;
+            return kLVError_MemFull;
 	}
     if (!pat->Resize1D(2*n + 10))
-        return kMatchMemFullErr;
+        return kLVError_MemFull;
 	s = str;
 	se = s + n;
     p = pat->Begin();

@@ -1,0 +1,46 @@
+000 All tests pass: 'true'.
+010     (-375012) Out of range errors pass: 'true'.
+020         uInt8 Out of range error pass: 'true'.
+030             uInt8 Out of range value: '(8)', expected value is '(8)'.
+040         uInt16 Out of range error pass: 'true'.
+050             uInt16 Out of range value: '(8)', expected value is '(8)'.
+060         uInt32 Out of range error pass: 'true'.
+070             uInt32 Out of range value: '(8)', expected value is '(8)'.
+080         uInt64 Out of range error pass: 'true'.
+090             uInt64 Out of range value: '(8)', expected value is '(8)'.
+100         Int8 Out of range error pass: 'true'.
+110             Int8 Out of range value: '(8)', expected value is '(8)'.
+120         Int16 Out of range error pass: 'true'.
+130             Int16 Out of range value: '(8)', expected value is '(8)'.
+140         Int32 Out of range error pass: 'true'.
+150             Int32 Out of range value: '(8)', expected value is '(8)'.
+160         Int64 Out of range error pass: 'true'.
+170             Int64 Out of range value: '(8)', expected value is '(8)'.
+180         Single Out of range error pass: 'true'.
+190             Single Out of range value: '(8)', expected value is '(8)'.
+200         Double Out of range error pass: 'true'.
+210             Double Out of range value: '(8)', expected value is '(8)'.
+220     (-375011) Infinity errors pass: 'true'.
+230         Unflatten infinity error pass: 'true'.
+240             Unflatten infinity value: '(20)', expected value is '(20)'.
+250         Flatten infinity error pass: 'true'.
+260             Flatten infinity value: '', expected value is ''.
+270     (-375010) NaN errors pass: 'true'.
+280         Unflatten NaN error pass: 'true'.
+290             Unflatten NaN value: '(20)', expected value is '(20)'.
+300         Flatten NaN error pass: 'true'.
+310             Flatten NaN value: '', expected value is ''.
+320     (-375009) Invalid array error pass: 'true'.
+330         Invalid array value: '(((10 20) (30 40)))', expected value is '(((10 20) (30 40)))'.
+340     (-375008) Invalid dimensions error pass: 'true'.
+350         Invalid dimensions value: '(((1 2) (3 4)))', expected value is '(((1 2) (3 4)))'.
+360     (-375007) Invalid elements error pass: 'true'.
+370         Invalid elements value: '('Jhon')', expected value is '('Jhon')'.
+380     (-375006) Element value error pass: 'true'.
+390         Element value: '('nohj')', expected value is '('nohj')'.
+400     (-375005) Type mismatch error pass: 'true'.
+410         Type mismatch value: '('nohj')', expected value is '('nohj')'.
+420     (-375004) Path error pass: 'true'.
+430         Path value: '('nohj')', expected value is '('nohj')'.
+440     (-375003) JSON invalid error pass: 'true'.
+450         JSON Invalid value: '('nohj')', expected value is '('nohj')'.
