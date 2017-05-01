@@ -170,8 +170,8 @@ namespace Vireo {
     static void abbreviateTimeZone(const char * input, char output[kTempCStringLength])
     {
         char prev = ' ';
-        int j = 0;
-        for (int i = 0; i < strlen(input); i++)
+        size_t j = 0;
+        for (size_t i = 0; i < strlen(input); i++)
         {
             if (prev == ' ' && input[i] != ' ')
             {
