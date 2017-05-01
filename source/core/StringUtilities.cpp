@@ -885,11 +885,11 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     if (suppressInfNaN) {
         if (isinf(value)) {
             end = (char*)current;
-            errCode= KJSONLV_BadInf;
+            errCode= kLVError_JSONBadInf;
         }
         if (isnan(value)) {
             end = (char*)current;
-            errCode= KJSONLV_BadNaN;
+            errCode= kLVError_JSONBadNaN;
         }
     }
     Boolean bParsed = current != end;
@@ -918,7 +918,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
         }
         if (bParsed && suppressInfNaN) {
             bParsed = false;
-            errCode = isnan(value) ? KJSONLV_BadNaN : KJSONLV_BadInf;
+            errCode = isnan(value) ? kLVError_JSONBadNaN : kLVError_JSONBadInf;
         }
     }
 
