@@ -147,11 +147,11 @@ Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client funct
 If you used a different name for the virtualenv directory or are running on a different platform you can reference the `httpbin` script in package.json to see how the httpbin server is launched (port configuration, etc) 
 
 # Updating Vireo Documentation
-We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version 1.8.13.
+We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version *1.8.6*.
 
 Installers can be found [here](http://www.stack.nl/~dimitri/doxygen/download.html). On Windows use the 64-bit version.
 
-Once Doxygen is installed just run the following command from any directory
+Once Doxygen is installed just run the following command from any directory in the repo
 
 *`npm run doxygen`*
 
