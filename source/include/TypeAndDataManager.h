@@ -1198,14 +1198,7 @@ struct ErrorCluster {
     Int32 code;
     StringRef source;
 
-    void SetError(Boolean s, Int32 c, ConstCStr str) {
-        status = s;
-        code = c;
-        if (source) {
-            source->Resize1D(0);
-            source->AppendCStr(str);
-        }
-    }
+    void SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain = false);
     void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
     void AddAppendixPostamble() { } // no postamble
 };

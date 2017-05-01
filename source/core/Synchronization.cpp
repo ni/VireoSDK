@@ -765,7 +765,7 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumValType*, Int32, StringRef, Boo
         if (createdPtr)
             *createdPtr = false;
         if (errPtr)
-            errPtr->SetError(true, errCode, "ObtainQueue");
+            errPtr->SetError(true, errCode, "ObtainQueue", true);
     }
     return _NextInstruction();
 }
@@ -823,12 +823,12 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, TypedArra
         }
         else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
             if (errPtr && !errPtr->status)
-                errPtr->SetError(true, kQueueArgErr, "ReleaseQueue");
+                errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
         }
         else
             type->ClearData(&queueRef);
     } else if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kQueueArgErr, "ReleaseQueue");
+        errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -840,7 +840,7 @@ VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumValType*, TypedArrayCoreRef
     if ((errPtr && errPtr->status)
         || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kQueueArgErr, "FlushQueue");
+            errPtr->SetError(true, kQueueArgErr, "FlushQueue", true);
         if (remainingElts)
             remainingElts->Resize1D(0);
         return _NextInstruction();
@@ -874,7 +874,7 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumValType*, Boolean,Int32
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kQueueArgErr, "GetQueueStatus");
+            errPtr->SetError(true, kQueueArgErr, "GetQueueStatus", true);
     } else {
         pQV = queueRef->ObjBegin();
         maxSize = refnumPtr->GetMaxSize();
@@ -950,7 +950,7 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumValType*, void, 
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr)
-            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, primName);
+            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, primName, true);
         if (boolOut)
             *boolOut = false;
         if (overflowElem) {
@@ -1007,7 +1007,7 @@ static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumValType*, void, 
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr)
-            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue");
+            errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue", true);
         if (_ParamPointer(3))
             _Param(3) = false;
         if (_ParamPointer(1)) {

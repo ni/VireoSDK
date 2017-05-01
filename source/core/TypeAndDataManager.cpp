@@ -22,6 +22,19 @@ SDG
 namespace Vireo
 {
 
+void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain/*= false*/) {
+    status = s;
+    code = c;
+    if (source) {
+        source->Resize1D(0);
+        source->AppendCStr(str);
+        if (appendCallChain) {
+            source->AppendCStr(" in ");
+            AppendCallChainString(source);
+        }
+    }
+}
+
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
 // Optional header added to blocks allocated from the system
 struct MallocInfo {
