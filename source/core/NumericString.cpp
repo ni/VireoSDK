@@ -1341,13 +1341,13 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
                 if (formatChar == 'p' && *endPointer != NULL && *endPointer < ConstCStr(truncateInput->End())) {
                     char siPrefixesTable[] = { 'y', 'z', 'a', 'f', 'p', 'n','u', 'm', '0', 'k', 'M','G', 'T', 'P','E', 'Z', 'Y' };
                     char prefix = **endPointer;
-                    int i = 0;
+                    size_t i = 0;
                     for (; i < sizeof(siPrefixesTable); ++i)
                         if (siPrefixesTable[i] == prefix)
                             break;
                     if (i < sizeof(siPrefixesTable)) {
                         ++beginPointer;
-                        doubleValue *= pow(10.0, (i - 8) * 3);
+                        doubleValue *= pow(10.0, (i - 8) * 3.0);
                     }
                 }
             }

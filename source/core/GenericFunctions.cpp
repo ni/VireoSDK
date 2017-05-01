@@ -462,7 +462,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     Boolean isTwoOutput = false;
     if ((savedOperation.CompareCStr("ComplexToPolar") || savedOperation.CompareCStr("ComplexToReOrIm"))) {
         isTwoOutput = true;
-        if (argCount != 3 || (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() |
+        if (argCount != 3 || (pInstructionBuilder->_argTypes[2]->BitEncoding()!=destType->BitEncoding() ||
                                                     pInstructionBuilder->_argTypes[2]->BitLength()!=destType->BitLength()))
             return null;
     }
@@ -2262,7 +2262,7 @@ VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
 {
     Int32 sourceSize = _ParamPointer(0)->TopAQSize();
     Int32 destSize = _ParamPointer(2)->TopAQSize();
-    IntIndex numElems = _ParamPointer(2)->GetEnumItemCount();
+    UInt32 numElems = UInt32(_ParamPointer(2)->GetEnumItemCount());
     UInt32 val = 0;
     switch (sourceSize) {
         case 1: val = *(UInt8*)_ParamPointer(1); break;

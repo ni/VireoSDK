@@ -1512,8 +1512,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
         _Param(0) = NAN;
     }
     TypeRef elementType = arrayIn->ElementType();
-    Double left, right;
-    Double leftValue, rightValue;
+    Double left = 0, right = 0;
+    Double leftValue = 0, rightValue = 0;
     Boolean isCluster = elementType->IsCluster();
     if(isCluster) {
         TypeRef elementXType = elementType->GetSubElement(0);

@@ -27,7 +27,7 @@ using namespace Vireo;
 
 #define MagicMask(mn) (UInt32(mn) & kMaxMagicNumber)                   // retrieves the magic number portion of the refnum
 #define MagicFromRefNum(mc) (MagicMask(UInt32(mc)>>kMagicNumberShift)) // retrieves magic number portion of the refnum, but shifted back to being a number
-#define MakeRefNum(index, magicNum) (RefNum((index & kMaxIndex)|(MagicMask(magicNum)<<kMagicNumberShift)))
+#define MakeRefNum(index, magicNum) (RefNum(((index) & kMaxIndex)|(MagicMask(magicNum)<<kMagicNumberShift)))
 #define MakePackedMagicNum(refCount, magicNum) MakeRefNum(refCount,magicNum)
 #define CountFromMagicNum(mn) IndexFromRefNum(mn) // retrieves the refCount portion of the magicNumber field
 

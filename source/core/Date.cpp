@@ -39,6 +39,7 @@ SDG
     #include <time.h>
     #include <mach/mach_time.h>
 #elif (kVireoOS_linuxU)
+    #undef _BSD_SOURCE
     #define _BSD_SOURCE
     #include <pthread.h>
     #include <time.h>

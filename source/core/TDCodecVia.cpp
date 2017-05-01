@@ -929,10 +929,10 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             return errCode;
         } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
             LOG_EVENT(kSoftDataError, "null encountered");
-            return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
+            return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
         } else {
             LOG_EVENT(kHardDataError, "'(' missing");
-            return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
+            return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
         }
     } else if (rank == 0) {
         // For Zero-D arrays there are no parens, just parse the element
@@ -1039,7 +1039,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     SubString tempToken;
                     if (_string.ReadSubexpressionToken(&tempToken) == TokenTraits_SymbolName && tempToken.CompareCStr("null")) {
                         LOG_EVENT(kSoftDataError, "null encountered");
-                        return Fmt().UseFieldNames() ? kJSONLV_TypeMismatch :  kLVError_ArgError;
+                        return Fmt().UseFieldNames() ? Int32(kJSONLV_TypeMismatch) : Int32(kLVError_ArgError);
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
