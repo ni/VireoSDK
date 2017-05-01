@@ -1819,21 +1819,6 @@ struct StringFormatStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct) // TODO (spathiwa) remove in favor of error I/O version
-{
-    Int32 count = (_ParamVarArgCount() -2)/2;
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    TempStackCString tempformat;
-    if(format.Length() == 0) {
-        DefaultFormatCode(count,arguments, &tempformat);
-        format.AliasAssign(tempformat.Begin(), tempformat.End());
-    }
-    StringRef buffer = _Param(StringOut);
-    Format(&format, count, arguments, buffer, null);
-    return _NextInstruction();
-}
 struct StringFormatWithErrStruct : public VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
@@ -1953,34 +1938,6 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
     }
 }
 
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct) // TODO (spathiwa) remove in favor of error I/O version
-{
-    SubString input = _Param(StringInput)->MakeSubStringAlias();
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
-    input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
-    UInt32 newOffset = _Param(InitialPos);
-    StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    ErrorCluster errorCluster;
-
-    memset(&errorCluster, 0, sizeof(errorCluster));
-    // Calculate number of parameters.
-    // Each scan parameters has both type and data.
-    Int32 argCount = (_ParamVarArgCount() - 5) / 2;
-    STACK_VAR(String, tempFormat);
-	if (format.Length() == 0)
-    {
-        MakeFormatString(tempFormat.Value, &errorCluster, argCount, arguments);
-        format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
-    }
-    newOffset += FormatScan(&input, &format, argCount, arguments, null);
-
-    _Param(OffsetPast) = newOffset;
-    _Param(StringRemaining)->Resize1D(input.Length());
-    TypeRef elementType = _Param(StringRemaining)->ElementType();
-    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
-    return _NextInstruction();
-}
 //------------------------------------------------------------
 struct StringScanStructWithErr : public VarArgInstruction
 {
@@ -2715,10 +2672,8 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(String) i(String) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr, "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String) i(String) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION_CUSTOM(StringScan, StringScanWithErr, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) o(StaticTypeAndData))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
