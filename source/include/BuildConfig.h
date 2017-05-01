@@ -243,6 +243,8 @@ SDG
 
 #endif
 
+#define VIREO_32_BIT_LONGLONGWORD_ALIGNMENT  (!__amd64__ && !_WIN64 && !kVireoOS_emscripten)
+
 #ifndef VIVM_ENABLE_TRACE
     #define VIVM_TRACE(message)
     #define VIVM_TRACE_FUNCTION(name)
