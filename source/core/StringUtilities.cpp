@@ -851,7 +851,7 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
             _begin++;
             if (overflow) {
                 UIntMax newValue = (UIntMax(value) * base) + cValue;
-                if (newValue < value) {
+                if (newValue < UIntMax(value)) {
                     *overflow = true;
                 }
                 value = newValue;
