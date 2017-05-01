@@ -28,40 +28,40 @@ define(HelloWorld dv(.VirtualInstrument (
     clump (1
         Println("StringFormat (%s) Testing")
 
-        StringFormat(output format1 input)
+        StringFormat(output format1 * input)
         Printf(output)
 
-        StringFormat(output format2 input inputNum)
+        StringFormat(output format2 * input inputNum)
         Printf(output)
 
-        StringFormat(output format2 input input)
+        StringFormat(output format2 * input input)
         Printf(output)
 
-        StringFormat(output format3 input)
+        StringFormat(output format3 * input)
         Printf(output)
 
-        StringFormat(output format4 input)
+        StringFormat(output format4 * input)
         Printf(output)
 
-        StringFormat(output format5 input)
+        StringFormat(output format5 * input)
         Printf(output) 
-        StringFormat(output format6 input)
+        StringFormat(output format6 * input)
         Printf(output)
 
-        StringFormat(output format7 input)
+        StringFormat(output format7 * input)
         Printf(output)
 
-        StringFormat(output format8 input)
+        StringFormat(output format8 * input)
         Printf(output)
 
         Println("String Format (%%) Testing")
 
         Println("> Valid %% escaping")
-        StringFormat(output format9 input)
+        StringFormat(output format9 * input)
         Println(output)
 
         Println("> Valid %% escaping")
-        StringFormat(output format10)
+        StringFormat(output format10 *)
         Println(output)
 
         Println("> Invalid format specifier")
@@ -89,18 +89,18 @@ define(HelloWorld dv(.VirtualInstrument (
         Copy(noErr err)
 
         Println("> %% Escaping twice")
-        StringFormat(output2 format13 format1)
+        StringFormat(output2 format13 * format1)
         StringFormat(output output2 err input input)
         Println(output)
         Printf("ErrorOut: %z\n" err)
         Copy(noErr err)
 
 	Println("> Localized Decimal Separator")
-	StringFormat(output format14 inputDouble inputDouble inputDouble inputDouble inputDouble)
+	StringFormat(output format14 * inputDouble inputDouble inputDouble inputDouble inputDouble)
 	Println(output)
 
 	Println("> ASCII Escape codes(Hex)")
-	StringFormat(output format15 inputInt)
+	StringFormat(output format15 * inputInt)
 	Println(output)
     )
 ) ) )

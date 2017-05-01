@@ -14,23 +14,23 @@ define(HelloWorld dv(.VirtualInstrument (
     clump (1
         Println("Testing Time Format")
 
-        StringFormat(output format_T1 vTime1)
+        StringFormat(output format_T1 * vTime1)
         Printf(output)
         Printf("\n")
 
-        StringFormat(output format_T1 vTime2)
+        StringFormat(output format_T1 * vTime2)
         Printf(output)
         Printf("\n")
 
-        StringFormat(output format_T1 vTime3)
+        StringFormat(output format_T1 * vTime3)
         Printf(output)
         Printf("\n")
 
-        StringFormat(output format_T2 vTime4)
+        StringFormat(output format_T2 * vTime4)
         Printf(output)
         Printf("\n")
 
-        StringFormat(output format_T2 vTime5)
+        StringFormat(output format_T2 * vTime5)
         Printf(output)
         Printf("\n")
     )
