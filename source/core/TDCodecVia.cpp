@@ -14,6 +14,7 @@ SDG
 #include <stdarg.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <memory>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
@@ -1014,7 +1015,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         else if (aqSize < 8) { // check for overflow for smaller size ints
                             if (encoding == kEncoding_S2CInt) {
                                 // Signed; overflowed if + and any non-zero bits in top part
-                                // (past bits valid for aqSized-int) or - and any non-one bits in top part
+                                // (past bits valid for aqSized-int) uor - and any non-one bits in top part
                                 if ((value >= 0 && (value & ~((1ULL << (aqSize*8))-1)))
                                     || (value < 0 && (value >> (aqSize*8-1)) != -1))
                                     error = KJSONLV_OutOfRange;

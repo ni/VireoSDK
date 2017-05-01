@@ -296,7 +296,7 @@ typedef Itr<IntIndex>   IntIndexItr;
 
 //------------------------------------------------------------
 //! A Fixed C array that has and API that looks a bit like Vireo arrays
-template <class T, size_t COUNT>
+template <class T, IntIndex COUNT>
     class FixedCArray : public SubVector<T>
 {
 protected:
