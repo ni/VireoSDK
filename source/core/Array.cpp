@@ -1458,10 +1458,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
         TypeRef elementYType = clusterType->GetSubElement(1);
         IntIndex fieldOffsetX = elementXType->ElementOffset();
         IntIndex fieldOffsetY = elementYType->ElementOffset();
-        Double leftX;
-        Double rightX;
-        Double leftY;
-        Double rightY;
+        Double leftX = 0, rightX = 0, leftY = 0, rightY = 0;
         for (IntIndex i = 0; i < arrayIn->Length(); i++) {
             void* xPtr = arrayIn->BeginAt(i) + fieldOffsetX;
             void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;

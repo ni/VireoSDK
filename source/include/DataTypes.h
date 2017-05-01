@@ -365,7 +365,7 @@ public:
     //! Append a block of elements to the array if there is room.
     Boolean Append(const T* begin, size_t length)
     {
-        if (length + this->Length() > Capacity()) {
+        if (IntIndex(length + this->Length()) > Capacity()) {
             return false;
         }
         memcpy(NonConstEnd(), begin, length);
