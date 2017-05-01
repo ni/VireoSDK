@@ -2372,15 +2372,9 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
         }
     }
     if (_ParamVarArgCount() > 7) { // error I/O wired
+        ErrorCluster *errPtr = _ParamPointer(errClust);
         if (error || log.HardErrorCount() > 0) {
-                _Param(errClust).status = true;
-                _Param(errClust).code = error && error != kLVError_ArgError ? error : kJSONLV_InvalidString;
-                _Param(errClust).source->Resize1D(0);
-                _Param(errClust).source->AppendCStr("Unflatten From JSON");
-        } else {
-            _Param(errClust).status = false;
-            _Param(errClust).code = 0;
-            _Param(errClust).source->Resize1D(0);
+            errPtr->SetError(true,  error && error != kLVError_ArgError ? error : kJSONLV_InvalidString, "Unflatten From JSON");
         }
     }
     return _NextInstruction();
