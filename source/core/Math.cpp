@@ -292,6 +292,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
 		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
+         /* Args:  x loLimit hiLimit includeLo includeHi coercedOut  inRangeOut */\
 		VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
 		_Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
 		_Param(6) = (_Param(0) > _Param(1) || (_Param(3) && _Param(0)==_Param(1)))	\
