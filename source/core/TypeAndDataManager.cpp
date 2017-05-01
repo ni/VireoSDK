@@ -22,7 +22,7 @@ SDG
 namespace Vireo
 {
 
-void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain/*= false*/) {
+void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain/*= true*/) {
     status = s;
     code = c;
     if (source) {

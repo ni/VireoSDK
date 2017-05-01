@@ -264,7 +264,7 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
     if (errPtr) {
         char argBuf[8];
         snprintf(argBuf, sizeof(argBuf), "%d", argNum+1);
-        errPtr->SetError(true, errCode, errCode == kFormatScanFailed ? "Scan From String" : "Format Into String");
+        errPtr->SetError(true, errCode, errCode == kFormatScanFailed ? "Scan From String" : "Format Into String", false);
         if (errCode != kFormatTooManyFormatSpecs && errCode != kFormatTooFewFormatSpecs) {
             errPtr->source->AppendCStr(" (arg ");
             errPtr->source->AppendCStr(argBuf);
