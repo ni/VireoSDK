@@ -1598,57 +1598,59 @@ VIREO_FUNCTION_SIGNATURET(ClusterAggBinaryOp, AggregateBinOpInstruction)
 }
 VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
 {
-    Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet()); //pointer to snippet.
-
-        if (intptr_t(snippet->_p1) < 0) { // we need to call a conversion snippet for one of the args
-            UInt8 convertBuffer[16];
-            while(ExecutionContext::IsNotCulDeSac(snippet)) {
-                // Argument snippet is conversion function, real op follows
-                Instruction2<AQBlock1, AQBlock1>* convertSnippet = (Instruction2<AQBlock1, AQBlock1>*)snippet;
-                int whichConvertArg = -int(intptr_t(convertSnippet->_p1));
-                snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1,AQBlock1>*)convertSnippet->Next();
-                if (whichConvertArg == 1) {
-                    convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SX);
-                    snippet->_p0 = convertBuffer;
-                    snippet->_p1 += (size_t)_ParamPointer(SY);
-                } else {
-                    convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SY);
-                    snippet->_p0 += (size_t)_ParamPointer(SX);
-                    snippet->_p1 = convertBuffer;
-                }
-                convertSnippet->_p1 = convertBuffer;
-                snippet->_p2 += (size_t)_ParamPointer(SDest);
-                _PROGMEM_PTR(convertSnippet, _function)(convertSnippet);
-                InstructionCore *next = _PROGMEM_PTR(snippet, _function)(snippet);
-                if (whichConvertArg == 1) {
-                    snippet->_p0 = convertSnippet->_p0 - (size_t)_ParamPointer(SX);
-                    snippet->_p1 -= (size_t)_ParamPointer(SY);
-                }
-                else {
-                    snippet->_p0 -= (size_t)_ParamPointer(SX);
-                    snippet->_p1 = convertSnippet->_p0 - (size_t)_ParamPointer(SY);
-                }
-                snippet->_p2 -= (size_t)_ParamPointer(SDest);
-                convertSnippet->_p0 = null;
-                convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
-                snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
-            }
-            return _NextInstruction();
-        }
+    Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet()), *origSnippet = snippet; //pointer to snippet.
+    AQBlock1 *saveArg = origSnippet->_p1;
+    if (intptr_t(snippet->_p1) < 0) { // we need to call a conversion snippet for one of the args
+        UInt8 convertBuffer[16];
         while(ExecutionContext::IsNotCulDeSac(snippet)) {
-            snippet->_p0 += (size_t)_ParamPointer(SX);
-            snippet->_p1 += (size_t)_ParamPointer(SY);
+            // Argument snippet is conversion function, real op follows
+            Instruction2<AQBlock1, AQBlock1>* convertSnippet = (Instruction2<AQBlock1, AQBlock1>*)snippet;
+            int whichConvertArg = -int(intptr_t(convertSnippet->_p1));
+            snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1,AQBlock1>*)convertSnippet->Next();
+            if (whichConvertArg == 1) {
+                convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SX);
+                snippet->_p0 = convertBuffer;
+                snippet->_p1 += (size_t)_ParamPointer(SY);
+            } else {
+                convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SY);
+                snippet->_p0 += (size_t)_ParamPointer(SX);
+                snippet->_p1 = convertBuffer;
+            }
+            convertSnippet->_p1 = convertBuffer;
             snippet->_p2 += (size_t)_ParamPointer(SDest);
-            if (_ParamPointer(SDest2))
-                snippet->_p3 += (size_t)_ParamPointer(SDest2);
+            _PROGMEM_PTR(convertSnippet, _function)(convertSnippet);
             InstructionCore *next = _PROGMEM_PTR(snippet, _function)(snippet);
-            snippet->_p0 -= (size_t)_ParamPointer(SX);
-            snippet->_p1 -= (size_t)_ParamPointer(SY);
+            if (whichConvertArg == 1) {
+                snippet->_p0 = convertSnippet->_p0 - (size_t)_ParamPointer(SX);
+                snippet->_p1 -= (size_t)_ParamPointer(SY);
+            }
+            else {
+                snippet->_p0 -= (size_t)_ParamPointer(SX);
+                snippet->_p1 = convertSnippet->_p0 - (size_t)_ParamPointer(SY);
+            }
             snippet->_p2 -= (size_t)_ParamPointer(SDest);
-            if (_ParamPointer(SDest2))
-                snippet->_p3 -= (size_t)_ParamPointer(SDest2);
+            convertSnippet->_p0 = null;
+            convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
         }
+        origSnippet->_p1 = saveArg;
+        return _NextInstruction();
+    }
+    while(ExecutionContext::IsNotCulDeSac(snippet)) {
+        snippet->_p0 += (size_t)_ParamPointer(SX);
+        snippet->_p1 += (size_t)_ParamPointer(SY);
+        snippet->_p2 += (size_t)_ParamPointer(SDest);
+        if (_ParamPointer(SDest2))
+            snippet->_p3 += (size_t)_ParamPointer(SDest2);
+        InstructionCore *next = _PROGMEM_PTR(snippet, _function)(snippet);
+        snippet->_p0 -= (size_t)_ParamPointer(SX);
+        snippet->_p1 -= (size_t)_ParamPointer(SY);
+        snippet->_p2 -= (size_t)_ParamPointer(SDest);
+        if (_ParamPointer(SDest2))
+            snippet->_p3 -= (size_t)_ParamPointer(SDest2);
+        snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
+    }
+    origSnippet->_p1 = saveArg;
     return _NextInstruction();
 }
 
@@ -1918,7 +1920,9 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : NULL;
 	if (snippet->_p1) { // we need to call a conversion snippet for one of the args
+        AQBlock1 *saveArg = snippet->_p1;
 		VectorOpConvertArgs(snippet, begin1, begin2, beginDest, endDest, elementSize1, elementSize2, elementSizeDest);
+        snippet->_p1 = saveArg;
 		return _NextInstruction();
 	}
     snippet->_p0 = begin1;
@@ -1935,6 +1939,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
         if (destArray2)
             snippet->_p3 += elementSizeDest;
     }
+    snippet->_p1 = null;
     return _NextInstruction();
 }
 
@@ -2122,7 +2127,9 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
 	if (snippet->_p1) { // we need to call a conversion snippet for one of the args
+        AQBlock1 *saveArg = snippet->_p1;
 		VectorOpConvertArgs((Instruction3<AQBlock1, AQBlock1, AQBlock1>*)snippet, (AQBlock1*)_ParamPointer(SX), begin1, beginDest, endDest, 0, elementSize1, elementSizeDest);
+        snippet->_p1 = saveArg;
 		return _NextInstruction();
 	}
     snippet->_p0 = _ParamPointer(SX);
@@ -2138,7 +2145,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
         if (beginDest2)
             snippet->_p3 += elementSizeDest;
     }
-    
+    snippet->_p1 = null;
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2161,7 +2168,9 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
 	if (snippet->_p1) { // we need to call a conversion snippet for one of the args
+        void *saveArg = snippet->_p1;
 		VectorOpConvertArgs((Instruction3<AQBlock1, AQBlock1, AQBlock1>*)snippet, begin1, (AQBlock1*)_ParamPointer(SY), beginDest, endDest, elementSize1, 0, elementSizeDest);
+        snippet->_p1 = saveArg;
 		return _NextInstruction();
 	}
     snippet->_p0 = begin1;
@@ -2177,7 +2186,7 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
         if (beginDest2)
             snippet->_p3 += elementSizeDest;
     }
-    
+    snippet->_p1 = null;
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2188,14 +2197,16 @@ VIREO_FUNCTION_SIGNATURET(ScalarScalarConvertBinaryOp, AggregateBinOpInstruction
     AQBlock1 *beginDest = (AQBlock1*)_ParamPointer(SDest);  // might be in-place to one of the inputs.
     AQBlock1 *endDest = beginDest + 1;
     if (snippet->_p1) { // we need to call a conversion snippet for one of the args
+        void *saveArg = snippet->_p1;
         VectorOpConvertArgs((Instruction3<AQBlock1, AQBlock1, AQBlock1>*)snippet, (AQBlock1*)_ParamPointer(SX), (AQBlock1*)_ParamPointer(SY), beginDest, endDest, 0, 0, 1);
+        snippet->_p1 = saveArg;
         return _NextInstruction();
     }
     snippet->_p0 = _ParamPointer(SX);
     snippet->_p1 = _ParamPointer(SY);
     snippet->_p2 = beginDest;
     _PROGMEM_PTR(snippet, _function)(snippet);
-    
+    snippet->_p1 = null;
     return _NextInstruction();
 }
 //------------------------------------------------------------
