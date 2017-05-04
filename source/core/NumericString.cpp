@@ -258,13 +258,13 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
 }
 
 // Format Into String/Scan From String (StringFormat/StringCan) error codes
-enum { kFormatArgErr=1, kFormatTypeMismatch = 81, kFormatCodeUnknown, kFormatTooManyFormatSpecs, kFormatTooFewFormatSpecs, kFormatScanFailed };
+enum { kFormatArgErr=1, kFormatTypeMismatch = 81, kFormatCodeUnknown, kFormatTooFewFormatSpecs, kFormatTooManyFormatSpecs, kFormatScanFailed };
 
-static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, ErrorCluster *errPtr) {
+static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, ErrorCluster *errPtr, Boolean isScan) {
     if (errPtr) {
         char argBuf[8];
         snprintf(argBuf, sizeof(argBuf), "%d", argNum+1);
-        errPtr->SetError(true, errCode, errCode == kFormatScanFailed ? "Scan From String" : "Format Into String", false);
+        errPtr->SetError(true, errCode, isScan ? "Scan From String" : "Format Into String", false);
         if (errCode != kFormatTooManyFormatSpecs && errCode != kFormatTooFewFormatSpecs) {
             errPtr->source->AppendCStr(" (arg ");
             errPtr->source->AppendCStr(argBuf);
@@ -353,7 +353,7 @@ void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, Static
 {
     *parseFinished = true;
     *validFormatString = false;
-    SetFormatError(kFormatTypeMismatch, count, fOptions.FormatChar, errPtr);
+    SetFormatError(kFormatTypeMismatch, count, fOptions.FormatChar, errPtr, false);
     buffer->Resize1D(0);
 }
 
@@ -437,14 +437,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
-                SetFormatError(kFormatCodeUnknown, count, fOptions.FormatChar, errPtr);
+                SetFormatError(kFormatCodeUnknown, count, fOptions.FormatChar, errPtr, false);
                 buffer->Resize1D(0);
                 break;
             } else if (argumentIndex > count-1 && fOptions.ConsumeArgument) {
                 // Incorrect number of arguments provided for format string
                 parseFinished = true;
                 validFormatString = false;
-                SetFormatError(kFormatTooManyFormatSpecs, count, fOptions.FormatChar, errPtr);
+                SetFormatError(kFormatTooManyFormatSpecs, count, fOptions.FormatChar, errPtr, false);
                 buffer->Resize1D(0);
                 break;
             }
@@ -910,7 +910,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     if (argumentIndex < count) {
         // make sure at least all of the args are used (even if out of order)
         if (usedArguments != count) {
-            SetFormatError(kFormatTooFewFormatSpecs, count - argumentIndex, fOptions.FormatChar, errPtr);
+            SetFormatError(kFormatTooFewFormatSpecs, count - argumentIndex, fOptions.FormatChar, errPtr, false);
             buffer->Resize1D(0);
         }
     }
@@ -1610,8 +1610,9 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
     Utf8Char inputChar = 0;
     Boolean canScan = true;
     SubString f(format);
+    const Utf8Char* origBegin = input->Begin();
     UInt32 offsetPastScan = 0;
-    while (canScan && input->Length()>0 && f.ReadRawChar(&c)) {
+    while (canScan && f.ReadRawChar(&c)) {
         if (isspace(c)) {
             // eat all spaces
             const Utf8Char* begin = input->Begin();
@@ -1630,9 +1631,16 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
              // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
             Boolean parseFinished = false;
-            if (!fOptions.Valid || input->Length() <= 0) {
+            if (!fOptions.Valid) {
                 parseFinished = true;
                 canScan = false;
+                SetFormatError(kFormatCodeUnknown, argumentIndex, fOptions.FormatChar, errPtr, true);
+            } else if ((argumentIndex >= argCount && fOptions.ConsumeArgument) || input->Length() <= 0) {
+                // Incorrect number of arguments provided for format string
+                parseFinished = true;
+                SetFormatError(kFormatTooManyFormatSpecs, argCount, fOptions.FormatChar, errPtr, true);
+                input->AliasAssign(origBegin, input->End());
+                offsetPastScan = 0;
             }
             IntIndex endPointer;
             while (!parseFinished) {
@@ -1660,7 +1668,11 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
                     } else {
-                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
+                        TypeRef argType = pArg->_paramType;
+                        if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
+                            SetFormatError(kFormatTypeMismatch, argumentIndex, fOptions.FormatChar, errPtr, true);
+                        else
+                            SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
                     }
                     argumentIndex++;
                 }
@@ -1675,7 +1687,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
                     } else {
-                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
                     }
                     argumentIndex++;
                 }
@@ -1688,7 +1700,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         input->AliasAssign(input->Begin()+endPointer, input->End());
                         offsetPastScan += endPointer;
                     } else {
-                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
                     }
                     argumentIndex++;
                 }
@@ -1704,7 +1716,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 break;
                 default: {
                     canScan = false;
-                    SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr);
+                    SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
                 }
                 break;
                 }
@@ -1719,9 +1731,15 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 }
             } else {
                 canScan = false;
-                SetFormatError(kFormatScanFailed, argumentIndex, 0, errPtr);
+                SetFormatError(kFormatScanFailed, argumentIndex, 0, errPtr, true);
             }
         }
+    }
+    if (canScan && argumentIndex < argCount) {
+        // make sure at least all of the args are used (even if out of order)
+        SetFormatError(kFormatTooFewFormatSpecs, argCount - argumentIndex, 0, errPtr, true);
+        input->AliasAssign(origBegin, input->End());
+        offsetPastScan = 0;
     }
     return offsetPastScan;
 }
