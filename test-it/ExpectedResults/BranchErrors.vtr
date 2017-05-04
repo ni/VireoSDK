@@ -1,8 +1,5 @@
 (Line 33 Error "Argument not resolved 'cat'.")
 (Line 33 Error "Instruction not generated 'Branch'.")
 (Line 33 Error "Perch label syntax error 'cat'.")
-(Line 26 Error "Argument not resolved '200'.")
-(Line 26 Error "Instruction not generated 'Branch'.")
-(Line 26 Error "Perch '200' exceeds limits.")
 (Error "Double Perch '2' not supported.")
 (Error "Double Perch '1' not supported.")

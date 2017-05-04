@@ -1663,7 +1663,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         }
                     }
                 }
-                if (state._pVarArgCount && argCount < state._instructionType->SubElementCount()-2) // var args but didn't read all the required args
+                if (state._varArgCount >= 0 && argCount < state._instructionType->SubElementCount()-2) // var args but didn't read all the required args
                     keepTrying = false;
                 if (keepTrying) {
                     // If there were no arg mismatches then one was found.
