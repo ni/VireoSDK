@@ -154,6 +154,8 @@ void* PlatformMemory::Realloc(void* pBuffer, size_t countAQ)
         std::set<void*>::iterator it = gAllocSet.find(pBuffer);
         if (it != gAllocSet.end())
             gAllocSet.erase(it);
+        else
+            gPlatform.IO.Printf("invalid realloc\n");
     }
 #endif
     pBuffer = realloc(pBuffer, countAQ);
@@ -184,7 +186,11 @@ void PlatformMemory::Free(void* pBuffer)
 #if VIREO_JOURNAL_ALLOCS
     if (pBuffer) {
         std::set<void*>::iterator it = gAllocSet.find(pBuffer);
-        gAllocSet.erase(it);
+        if (it != gAllocSet.end())
+            gAllocSet.erase(it);
+        else
+            gPlatform.IO.Printf("invalid free\n");
+
     }
 #endif
     free(pBuffer);
