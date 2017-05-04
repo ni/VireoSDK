@@ -21,7 +21,7 @@ define (c24 dv(c(
     e(.Boolean %46ieldC)   // Boolean
     e(.Boolean %46ieldD)   // Boolean
 ) (true false true false )))
-define (c29 .NIPath)
+define (c29 dv(.NIPath))
 //---------------------------------------------------
 //VI Definition: TestVI_EmptyStringPath.gvi
 define (_%54estVI_EmptyStringPath%2Egvi dv(.VirtualInstrument (
