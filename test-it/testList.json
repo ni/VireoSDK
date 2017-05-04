@@ -186,6 +186,7 @@
                 "Pi_NonReentrant.via",
                 "Pi.via",
                 "PolarToComplex2.via",
+                "PolymorphicLoopBug.via",
                 "PredicateFunctions.via",
                 "PrintFormatting_Numeric.via",
                 "PrintFormattingNums.via",
