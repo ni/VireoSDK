@@ -291,11 +291,17 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
 
     _totalInstructionCount = 0;
     _totalInstructionPointerCount = 0;
-    
+
+    _argPointers.reserve(kClumpStatencrementSize);
+    _argTypes.reserve(kClumpStatencrementSize);
+    _argPatches.reserve(kClumpStatencrementSize);
+    _patchInfos.reserve(kClumpStatencrementSize);
+    _perches.reserve(kClumpStatencrementSize*4);
+
     _argCount = 0;
     _argPatchCount = 0;
     _patchInfoCount = 0;
-    _pVarArgCount = null;
+    _varArgCount = -1;
     _clump = clump;
     _vi = clump->OwningVI();
     _pLog = pLog;
@@ -304,15 +310,10 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
     _bIsVI = false;
         
     _perchCount = 0;
-    _recordNextInstructionAddress = -1;
-    for (Int32 i = 0; i < kMaxPerches; i ++) {
-        _perches[i] = kPerchUndefined;
-    }
+    _perchIndexToRecordNextInstrAddr = -1;
     
     _baseViType = _clump->TheTypeManager()->FindType(VI_TypeName);
-    _baseReentrantViType = _clump->TheTypeManager()->FindType(ReentrantVI_TypeName);
-    
-    memset(&_patchInfos, 0, sizeof (_patchInfos));
+    _baseReentrantViType = _clump->TheTypeManager()->FindType(ReentrantVI_TypeName);    
 }
 //------------------------------------------------------------
 void ClumpParseState::StartSnippet(InstructionCore** pWhereToPatch)
@@ -386,7 +387,7 @@ TypeRef ClumpParseState::ReadFormalParameterType()
     
     if (type) {
         _formalParameterType = type;
-    } else if (_pVarArgCount) {
+    } else if (_varArgCount >= 0) {
         // Reading past the end is OK for VarArg functions, the last parameter type will be re-used.
     } else {
         // read past end, and no var arg
@@ -433,8 +434,11 @@ TypeRef ClumpParseState::StartNextOverload()
     _formalParameterIndex = 0;
     _formalParameterType = null;
     _instructionPointerType = null;
-    _pVarArgCount = null;
+    _varArgCount = -1;
     _argCount = 0;
+    _argPointers.clear();
+    _argTypes.clear();
+    _argPatches.clear();
     if (_argPatchCount > 0) {
         _patchInfoCount -= _argPatchCount;
         _argPatchCount = 0;
@@ -662,28 +666,30 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType
 //------------------------------------------------------------
 void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
 {
-    _argTypes[_argCount] = actualType;
-    _argPointers[_argCount++] = address;
+    _argTypes.push_back(actualType);
+    _argPointers.push_back(address);
+    ++_argCount;
     
-    if (_pVarArgCount) {
-        *_pVarArgCount += 1;
+    if (_varArgCount >= 0) {
+        ++_varArgCount;
+        _argPointers[0] = (void*)intptr_t(_varArgCount); // VargArgCount is always first argument; update
     }
 }
 //------------------------------------------------------------
-void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek)
+void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek)
 {
     // Note which argument needs patching.
     // WhereToPeek is the location that will have the resolved value later.
     // it should point to null when checked if not yet resolved.
-    _argPatches[_argPatchCount++] = _argCount;
-    if (_patchInfoCount < kMaxPatchInfos) {
-        PatchInfo *pPatch = &_patchInfos[_patchInfoCount++];
-        pPatch->_patchType = patchType;
-        pPatch->_whereToPeek = whereToPeek;
-        InternalAddArg(null, pPatch);
-    } else {
-        LogEvent(EventLog::kSoftDataError, 0, "(Error \"Too many forward patches\")\n");
-    }
+    _argPatches.push_back(_argCount);
+    ++_argPatchCount;
+    if (_patchInfos.size() <= _patchInfoCount)
+        _patchInfos.resize(_patchInfoCount+kClumpStatencrementSize);
+    PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
+    pPatch->_patchType = patchType;
+    pPatch->_whereToPeek = whereToPeek;
+    InternalAddArg(null, (void*)intptr_t(_patchInfoCount));
+    ++_patchInfoCount;
 }
 //------------------------------------------------------------
 void ClumpParseState::AddVarArgCount()
@@ -691,8 +697,12 @@ void ClumpParseState::AddVarArgCount()
     // The VarArg count is a constant passed by value to the instruction.
     // It indicates how many pointers arguments are passed after the VarArg
     // normal Parameter token.
-    _pVarArgCount = (size_t*) &_argPointers[_argCount++];
-    *_pVarArgCount = 0;
+    VIREO_ASSERT(_argCount == 0 && _argPointers.size() == 0);
+
+    _argPointers.push_back(null);
+    _argTypes.resize(1); // placeholder, not used
+    ++_argCount;
+    _varArgCount = 0;
 }
 //------------------------------------------------------------
 void ClumpParseState::MarkPerch(SubString* perchToken)
@@ -706,20 +716,18 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
 
     IntMax perchIndex;
     if (perchToken->ReadInt(&perchIndex)) {
-        if (perchIndex<kMaxPerches) {
-            if (_perches[perchIndex]<0) {
-                LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
-            }
-            if (_recordNextInstructionAddress<0) {
-                // Reserve the perch till the next instruction is emitted
-                // null will never be a valid instruction address.
-                _perches[perchIndex] = kPerchBeingAlocated;
-                _recordNextInstructionAddress = (Int32)perchIndex;
-            } else {
-                LogEvent(EventLog::kSoftDataError, 0, "Double Perch '%d' not supported", perchIndex);
-            }
+        if (perchIndex >= _perches.size())
+            _perches.resize(perchIndex+kClumpStatencrementSize);
+        if (_perches[perchIndex]<0) {
+            LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
+        }
+        if (_perchIndexToRecordNextInstrAddr<0) {
+            // Reserve the perch till the next instruction is emitted
+            // null will never be a valid instruction address.
+            _perches[perchIndex] = kPerchBeingAlocated;
+            _perchIndexToRecordNextInstrAddr = (Int32)perchIndex;
         } else {
-            LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' exceeds limits", perchIndex);
+            LogEvent(EventLog::kSoftDataError, 0, "Double Perch '%d' not supported", perchIndex);
         }
     } else {
         LogEvent(EventLog::kSoftDataError, 0, "Perch label syntax error '%.*s'", FMT_LEN_BEGIN(perchToken));
@@ -730,19 +738,18 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
 {
     IntMax perchIndex;
     if (branchTargetToken->ReadInt(&perchIndex)) {
-        if (perchIndex<kMaxPerches) {
-            if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAlocated)) {
-                // The perch address is already known, use it.
-                _argumentState = kArgumentResolvedToPerch;
-                InternalAddArg(null, _perches[perchIndex]);
-            } else {
-                // Remember the address of this perch as place to patch
-                // once the clump is finished.
-                _argumentState = kArgumentResolvedToPerch;
-                InternalAddArgNeedingPatch(PatchInfo::Perch, (void**)&_perches[perchIndex]);
-            }
+        if (perchIndex >= _perches.size())
+            _perches.resize(perchIndex+kClumpStatencrementSize);
+        if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAlocated)) {
+            // The perch address is already known, use it.
+            _argumentState = kArgumentResolvedToPerch;
+            InternalAddArg(null, _perches[perchIndex]);
         } else {
-           // TODO instruction too complex
+            // Remember the address of this perch as place to patch
+            // once the clump is finished.
+            _argumentState = kArgumentResolvedToPerch;
+            InternalAddArgNeedingPatch(PatchInfo::Perch, //(void**)&_perches[
+                                       perchIndex);
         }
     } else {
         _argumentState = kArgumentNotResolved;
@@ -894,7 +901,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     TypeRef         viArgTypes[kMaxArguments];
     IntIndex        viArgCount = _argCount-1;
     
-    if ( viArgCount >=kMaxArguments)
+    if (viArgCount >= kMaxArguments)
         return null;
     
     VIClump* targetVIClump = (VIClump*)_argPointers[0];
@@ -1050,7 +1057,7 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
 InstructionCore* ClumpParseState::EmitInstruction()
 {
     if (!_instructionType) {
-        _pVarArgCount = null;
+        _varArgCount = -1;
         return null;
         }
     
@@ -1083,7 +1090,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
             }
         }
 #if 0
-        if (foundMissing && (_pVarArgCount == null)) {
+        if (foundMissing && (_varArgCount < 0)) {
             _argumentState = kArgumentTooFew;
             SubString instructionName = _instructionPointerType->Name();
             _parserFocus.AliasAssign(&instructionName);
@@ -1091,19 +1098,19 @@ InstructionCore* ClumpParseState::EmitInstruction()
 #endif
     }
     
-    _pVarArgCount = null;
+    _varArgCount = -1;
     _totalInstructionCount++;
     _totalInstructionPointerCount += (sizeof(InstructionCore) / sizeof(void*)) + _argCount;
     
-    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, _argPointers);
+    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, &*_argPointers.begin());
     if (_cia->IsCalculatePass())
         return instruction;
     
-    if (_recordNextInstructionAddress>=0) {
+    if (_perchIndexToRecordNextInstrAddr>=0) {
         // TODO support multiple perch patching
-        VIREO_ASSERT( _perches[_recordNextInstructionAddress] == kPerchBeingAlocated);
-        _perches[_recordNextInstructionAddress] = instruction;
-        _recordNextInstructionAddress = -1;
+        VIREO_ASSERT(_perches[_perchIndexToRecordNextInstrAddr] == kPerchBeingAlocated);
+        _perches[_perchIndexToRecordNextInstrAddr] = instruction;
+        _perchIndexToRecordNextInstrAddr = -1;
     }
     if (_argPatchCount > 0) {
         // Now that the instruction is built, if some of the arguments
@@ -1111,14 +1118,16 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // add the _whereToPatch field.
         GenericInstruction *generic = (GenericInstruction*) instruction;
         for (Int32 i = 0; i < _argPatchCount; i++) {
-            // Pointer to PatchInfo object was stashed in arg, look it up.
-            PatchInfo *pPatch = (PatchInfo*)generic->_args[_argPatches[i]];
+            Int32 argNumToPatch = _argPatches[i];
+            // PatchInfo object index was stashed in arg, look it up.
+            intptr_t patchInfoIndex = intptr_t(generic->_args[argNumToPatch]);
+            PatchInfo *pPatch = &_patchInfos[patchInfoIndex];
             
             // Now erase that pointer.
-            generic->_args[_argPatches[i]] = null;
+            generic->_args[argNumToPatch] = null;
             
             VIREO_ASSERT(pPatch->_whereToPatch == null)
-            pPatch->_whereToPatch = &generic->_args[_argPatches[i]];
+            pPatch->_whereToPatch = &generic->_args[argNumToPatch];
         }
     }
     _argPatchCount = 0;
@@ -1153,7 +1162,8 @@ void ClumpParseState::CommitClump()
         return;
         
     for (Int32 i = 0; i < _patchInfoCount; i++) {
-        *_patchInfos[i]._whereToPatch = *_patchInfos[i]._whereToPeek;
+        VIREO_ASSERT(_patchInfos[i]._patchType == PatchInfo::Perch);
+        *_patchInfos[i]._whereToPatch = _perches[_patchInfos[i]._whereToPeek];
     }
 }
 //------------------------------------------------------------

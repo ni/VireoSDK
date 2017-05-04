@@ -17,6 +17,8 @@ SDG
 #include "DataTypes.h"
 #include "EventLog.h"
 
+#include <vector>
+
 namespace Vireo
 {
 
@@ -204,8 +206,9 @@ struct PatchInfo
     };
     
     PatchType   _patchType;
-    void**      _whereToPeek;
+    intptr_t     _whereToPeek;
     void**      _whereToPatch;
+    PatchInfo() : _patchType(Perch), _whereToPeek(null), _whereToPatch(null) { }
 };
 //------------------------------------------------------------
 //! Utility class used by decoders that can decode VIs and Clumps
@@ -215,9 +218,8 @@ class ClumpParseState
 #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
 #define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
 public:
-    static const Int32 kMaxPerches = 200;       // TODO dynamic
-    static const Int32 kMaxArguments = 100;     // TODO dynamic
-    static const Int32 kMaxPatchInfos = 100;    // TODO allow more
+    static const Int32 kMaxArguments = 100;  // This is now only used for args to VIs and type templates, a static limit may be reasonable
+    static const Int32 kClumpStatencrementSize = 32;
 public:
     enum ArgumentState {
         // Initial state, not where it should end in either.
@@ -246,17 +248,17 @@ public:
     InstructionAllocator* _cia;
     
     Int32           _argCount;
-    void*           _argPointers[kMaxArguments];
-    TypeRef         _argTypes[kMaxArguments];
-    
-    Int32           _argPatches[kMaxArguments];     // Arguments that need patching
+    std::vector<void*> _argPointers;
+    std::vector<TypeRef> _argTypes;
+
     Int32           _argPatchCount;
-    
-    PatchInfo       _patchInfos[kMaxPatchInfos];
+    std::vector<Int32> _argPatches;    // Arguments that need patching
+
     Int32           _patchInfoCount;
+    std::vector<PatchInfo> _patchInfos; // Perch references that need patching
     
     Int32           _perchCount;
-    InstructionCore* _perches[kMaxPerches];
+    std::vector<InstructionCore*> _perches;
     
     VirtualInstrument *_vi;
     VIClump*        _clump;
@@ -303,10 +305,10 @@ public:
     TypeRef         _instructionType;
     
     // When a Perch instruction is found the target address will be the next instruction
-    // _recordNextInstructionAddress  lets the state know when that patch-up is needed.
-    Int32           _recordNextInstructionAddress;
+    // _perchIndexToRecordNextInstrAddr  lets the state know when that patch-up is needed.
+    Int32           _perchIndexToRecordNextInstrAddr;
     
-    size_t*         _pVarArgCount;
+    Int32           _varArgCount;
     Boolean         _bIsVI;
     
     //------------------------------------------------------------
@@ -326,8 +328,8 @@ public:
     void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
     void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
     void            InternalAddArg(TypeRef actualType, void* address);
-    void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, void** whereToPeek);
-    Boolean         VarArgParameterDetected()   { return _pVarArgCount != null; }
+    void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek);
+    Boolean         VarArgParameterDetected()   { return _varArgCount >= 0; }
     void            AddVarArgCount();
     void            MarkPerch(SubString* perchToken);
     void            AddBranchTargetArgument(SubString* branchTargetToken);
