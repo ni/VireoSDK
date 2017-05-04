@@ -1,118 +1,14 @@
----test scan complex------ ((345.5 89))
-offset_past:<10>, remaining:()
-:<(345.5 89)> err:<(false 0 '')>
-offset_past:<11>, remaining:()
-:<(678.5 78)> err:<(false 0 '')>
----test scan float------ ( 123.5 89 )
-offset_past:<9>, remaining:( )
-:<123.500000> <89.000000> err:<(false 0 '')>
-offset_past:<9>, remaining:( )
-:<123.000000> <89> err:<(false 0 '')>
----test scan float------ ( +127.5 .23 )
-offset_past:<11>, remaining:( )
-:<127.500000> <0.230000> err:<(false 0 '')>
----test scan float------ ( -923 -0077 )
-offset_past:<11>, remaining:( )
-:<-923.000000> <-77.000000> err:<(false 0 '')>
----test scan float------ (123-56)
-offset_past:<6>, remaining:()
-:<123.000000> <-56.000000> err:<(false 0 '')>
----test scan float------ ( 12E3.5)
-offset_past:<7>, remaining:()
-:<12000.000000> <0.500000> err:<(false 0 '')>
----test scan float------ ( 123.5+8E9)
-offset_past:<10>, remaining:()
-:<123.500000> <8000000000.000000> err:<(false 0 '')>
----test scan float------ (12.3E5+8E9 )
-offset_past:<10>, remaining:( )
-:<1230000.000000> <8000000000.000000> err:<(false 0 '')>
----test scan Int base10------ ( 067.3E5 )
-offset_past:<8>, remaining:( )
-:<67> <30000.000000> err:<(false 0 '')>
----test scan Int base10------ (  67+235 )
-offset_past:<8>, remaining:( )
-:<67> <235> err:<(false 0 '')>
----test scan Int base10------ (-67 +235ABCD)
-offset_past:<8>, remaining:(ABCD)
-:<-67> <235> err:<(false 0 '')>
----test scan Int base16------ (-67 +235ABCD)
-offset_past:<12>, remaining:()
-:<-67> <37071821> err:<(false 0 '')>
----test scan Int base16------ (-67 -10)
-offset_past:<7>, remaining:()
-:<-103> <-16> err:<(false 0 '')>
----test scan Int base8------ (173 109088)
-offset_past:<6>, remaining:(9088)
-:<123> <8> err:<(false 0 '')>
----test scan Int base8------ (-106 -809)
-offset_past:<5>, remaining:(-809)
-:<-70> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
----test scan Intwidth------ (12345845QQTAvasd )
-offset_past:<5>, remaining:(845QQTAvasd )
-:<123> <45> err:<(false 0 '')>
----test scan Intwidth------ (123,  7200)
-offset_past:<10>, remaining:()
-:<123> <7200> err:<(false 0 '')>
----test scan IntBinary------ (1110100011)
-offset_past:<2>, remaining:(10100011)
-:<3> <7200> err:<(false 0 '')>
----test scan IntBinary------ (11113100045)
-offset_past:<9>, remaining:(45)
-:<15> <8> err:<(false 0 '')>
----test scan FloatWidth------ (31.4e6123)
-offset_past:<4>, remaining:(e6123)
-:<31.400000> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
----test scan FloatWidth------ (31.4e+6123)
-offset_past:<4>, remaining:(e+6123)
-:<31.400000> <0> err:<(true 85 'Scan From String (arg 2) in HelloWorld')>
----test scan String------ (abcdefg ABCDEFG 1234567 *&*^^&^@!~  )
-offset_past:<23>, remaining:( *&*^^&^@!~  )
-:<abcdefg> <ABCDEFG> <1234567> err:<(true 85 'Scan From String (arg 4) in HelloWorld')>
----test scan String------ (abcdefg~)
-offset_past:<8>, remaining:()
-:<abcdefg~> <ABCDEFG> <1234567> err:<(false 0 '')>
----test scan String------ (     abcdefg   ABCDEFG1234567)
-offset_past:<29>, remaining:()
-:< > <abcdefg> <ABCDEFG1234567> err:<(false 0 '')>
----test scan String charset------ ( 1245644 abcdefg   ABCDEFG1234567)
-offset_past:<33>, remaining:()
-:< 12456> <44> <abcdefg> <ABCDEFG1234567> err:<(false 0 '')>
----test scan String------ ( hello worldMy name is :)
-offset_past:<19>, remaining:( is :)
-:<hel> <lo> <worldMy> <name> err:<(false 0 '')>
----test scan overflow signed max------ (  2140483647)
-offset_past:<12>, remaining:()
-:<127> err:<(false 0 '')>
----test scan overflow unsigned max------ (  4290967295)
-offset_past:<12>, remaining:()
-:<255> err:<(false 0 '')>
----test scan overflow min------ (  -2240483647)
-offset_past:<13>, remaining:()
-:<-128> err:<(false 0 '')>
----test scan overflow neg------ (  -12453)
-offset_past:<8>, remaining:()
-:<0> err:<(false 0 '')>
----test scan overflow signed max------ (  2140483647)
-offset_past:<12>, remaining:()
-:<32767> err:<(false 0 '')>
----test scan overflow unsigned max------ (  4290967295)
-offset_past:<12>, remaining:()
-:<65535> err:<(false 0 '')>
----test scan overflow min------ (  -2240483647)
-offset_past:<13>, remaining:()
-:<-32768> err:<(false 0 '')>
----test scan overflow neg------ (  -12453)
-offset_past:<8>, remaining:()
-:<0> err:<(false 0 '')>
----test scan overflow signed max------ (  4290967295)
-offset_past:<12>, remaining:()
-:<2147483647> err:<(false 0 '')>
----test scan overflow unsigned max------ (  4290967295)
-offset_past:<12>, remaining:()
-:<4290967295> err:<(false 0 '')>
----test scan overflow min------ (  -2240483647)
-offset_past:<13>, remaining:()
-:<-2147483648> err:<(false 0 '')>
----test scan overflow  neg------ (  -12453)
-offset_past:<8>, remaining:()
-:<0> err:<(false 0 '')>
+000 All tests pass: 'true'.
+010     (81) Format specifier type mismatch pass: 'true'.
+020          Format to string pass: 'true'.
+030          Scan from string pass: 'true'.
+040     (82) Unknown format specifier pass: 'true'.
+050          Format to string pass: 'true'.
+060          Scan from string pass: 'true'.
+070     (83) Too few format specifiers pass: 'true'.
+080          Format to string pass: 'true'.
+090          Scan from string pass: 'true'.
+100     (84) Too many format specifiers pass: 'true'.
+110          Format to string pass: 'true'.
+120          Scan from string pass: 'true'.
+130     (85) Scan failed pass: 'true'.
