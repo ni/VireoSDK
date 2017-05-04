@@ -171,6 +171,7 @@
                 "NegativeNumbers.via",
                 "NestedConstant.via",
                 "NestedContexts.via",
+                "NestedStructuresBug.via",
                 "NumberToString.via",
                 "NumberToBooleanArray.via",
                 "NumericArrayConcat.via",
