@@ -224,9 +224,12 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
         }
         switch (argType->BitEncoding()) {
 
-        case kEncoding_UInt:
-        case kEncoding_Enum: {
+        case kEncoding_UInt: {
             buffer->AppendCStr("%u");
+        }
+        break;
+            case kEncoding_Enum: {
+                buffer->AppendCStr("%s");
         }
         break;
         case kEncoding_S2CInt:
