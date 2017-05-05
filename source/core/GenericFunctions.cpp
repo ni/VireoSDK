@@ -2273,14 +2273,33 @@ VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
 {
     Int32 sourceSize = _ParamPointer(0)->TopAQSize();
     Int32 destSize = _ParamPointer(2)->TopAQSize();
+    EncodingEnum encoding = _ParamPointer(0)->BitEncoding();
     UInt32 numElems = UInt32(_ParamPointer(2)->GetEnumItemCount());
     UInt32 val = 0;
-    switch (sourceSize) {
-        case 1: val = *(UInt8*)_ParamPointer(1); break;
-        case 2: val = *(UInt16*)_ParamPointer(1); break;
-        case 4: val = *(UInt32*)_ParamPointer(1); break;
-        case 8: val = UInt32(*(UInt64*)_ParamPointer(1)); break;
-        default: break;
+    Int32 ival = 0;
+    if (encoding == kEncoding_IEEE754Binary) {
+        if (sourceSize == 8)
+            ival = Int32(*(Double*)_ParamPointer(1));
+        else
+            ival = Int32(*(Single*)_ParamPointer(1));
+        val = ival >= 0 ? ival : 0;
+    } else if (encoding == kEncoding_UInt) {
+        switch (sourceSize) {
+            case 1: val = *(Int8*)_ParamPointer(1); break;
+            case 2: val = *(Int16*)_ParamPointer(1); break;
+            case 4: val = *(Int32*)_ParamPointer(1); break;
+            case 8: val = Int32(*(Int64*)_ParamPointer(1)); break;
+            default: break;
+        }
+    } else {
+        switch (sourceSize) {
+            case 1: ival = *(UInt8*)_ParamPointer(1); break;
+            case 2: ival = *(UInt16*)_ParamPointer(1); break;
+            case 4: ival = *(UInt32*)_ParamPointer(1); break;
+            case 8: ival = UInt32(*(UInt64*)_ParamPointer(1)); break;
+            default: break;
+        }
+        val = ival >= 0 ? ival : 0;
     }
     if (val >= numElems)
         val = numElems-1;
