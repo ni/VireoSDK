@@ -49,6 +49,7 @@ define (c41 dv(.Boolean false))
 define (g42 dv(.String '[Infinity,NaN]'))
 define (c43 dv(.Boolean true))
 define (g44 dv(a(.Double *) (nan inf )))
+define (g44e dv(a(.Double *) (0 0 )))
 define (g45 dv(.String '[Infinity,NaN]'))
 define (c46 dv(.Boolean false))
 define (c47 dv(.Int32 2))
@@ -162,8 +163,6 @@ define (_%54estVI_UnFlattenFromJSON%2Egvi dv(.VirtualInstrument (
             e(.Int32 %63ode)   // Int32
             e(.String %73ource)   // String
         ) local140)   // Cluster
-        e (dv(.Double 0.0) g44a)
-        e (dv(.Double 0.0) g44b)
         e(c(
             e(.Boolean %73tatus)   // Boolean
             e(.Int32 %63ode)   // Int32
@@ -644,14 +643,9 @@ define (_%54estVI_UnFlattenFromJSON%2Egvi dv(.VirtualInstrument (
         Copy(local270.%73ource local273 )
         Copy(local271 di_ExtensionsOffError3993 )
         Copy(local262 di_ExrtensionsOffValue4096 )
-		Printf ("\nWhen LV extensions are off and there is an error the default value is returned. Expected value is '%z'; got '%z'.\n" g44 local262)
+		Printf ("\Expected value is '%z'; got '%z'.\n" g44e local262)
 		Printf ("\nIn this case an error is correctly returned: '%z'.\n" di_ExtensionsOffError3993)
-//        IsEQ(local262 g44 local276) // nan comparison doesn't ever return true
-ArrayIndexElt(local262 0 g44a)
-IsNotANumPathRefnum(g44a local276)
-ArrayIndexElt(local262 1 g44b)
-IsEQ(g44b inf local277)
-And(local277 local276 local276)
+        IsEQ(local262 g44e local276) // nan comparison doesn't ever return true
         And(local276 local271 local277)
         Copy(local277 di_ExtensionsOff3965 )
         IsEQ(local261 c47 local279)

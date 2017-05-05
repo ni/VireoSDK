@@ -544,6 +544,10 @@ define (_%54estVI_UnFlattenToJSON%2Egvi dv(.VirtualInstrument (
     )
         clump(1
 
+//Println(local263)
+        //UnflattenFromJSON(g45 local263 local454 c46 local455 local456 local267)
+     //Printf("%z %z %z %z %z %z %z\n" g45 local263 local454 c46 local455 local456 local267)
+
         Copy(c0 di_Expected146 )
         UnflattenFromJSON(g3 local120 local418 local419 local420 local421 local124 )
         Copy(local124 local128 )
@@ -638,7 +642,7 @@ define (_%54estVI_UnFlattenToJSON%2Egvi dv(.VirtualInstrument (
         IsEQ(local263 g47 local277)
         And(local277 local272 local278)
         Copy(local278 di_ExtensionsOff3965 )
-		Printf ("\nWhen LabVIEW extensions are off an error is expected. Error is '%z'; expected value is 'true'. Value is '%z'; expected value is '()'\n" di_ExtensionsOffError3993 di_ExtensionOffValue3979)
+		Printf ("\nWhen LabVIEW extensions are off an error is expected. Error is '%z'; expected value is 'true'. Value is '%z'; expected value is '(0 0)'\n" di_ExtensionsOffError3993 di_ExtensionOffValue3979)
         IsEQ(local262 c48 local280)
         ArrayIndexElt(local249 c49 local281 )
         IsEQ(local281 c50 local282)
@@ -728,6 +732,7 @@ define (_%54estVI_UnFlattenToJSON%2Egvi dv(.VirtualInstrument (
         Copy(local415 di_Actual17 )
         Copy(local414 di_StrictValidation4063 )
 		Printf ("\nDid tests for strict validation pass? '%z'\n" di_StrictValidation4063)
+		Printf ("\nAll tests pass? '%z'\n" di_Actual17)
 /* Clump Ended. */    )
 )))
 enqueue (_%54estVI_UnFlattenToJSON%2Egvi)

@@ -1,0 +1,9 @@
+'[3,xx Infinity,NaN]' (1 NaN Inf) (1 NaN Inf) (true -375003 'Unflatten From JSON in UnflattenJSONArrayAndNull.gviweb')
+'{"fieldB":"b","fieldA":xxxtrue,"fieldC":null,"fieldD":3.1000000000000000}' ('a' false 4 8) ('a' false 4 8) (true -375003 'Unflatten From JSON in UnflattenJSONArrayAndNull.gviweb')
+000 All tests pass: 'true'.
+010     Array values pass: 'true'.
+020         Expected value is '(3 0 0)', got '(3 0 0)'.
+030         Expected error code is '-375011', got '-375011'.
+010     Cluster values pass: 'true'.
+020         Expected value is '('b' true 4 8)', got '('b' true 4 8)'.
+030         Expected error code is '-375005', got '-375005'.

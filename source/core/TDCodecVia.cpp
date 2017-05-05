@@ -36,7 +36,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/, Boolean quoteInfNaN/*= false*/)
+TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/, Boolean quoteInfNaN /*= false*/, Boolean allowJSONNulls /*= false*/)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -44,6 +44,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _originalStart = typeString->Begin();
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediatly = false;
+    _options._allowNulls = allowJSONNulls;
 
    if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
        _options._bEscapeStrings = false;
@@ -929,7 +930,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             return errCode;
         } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
             LOG_EVENT(kSoftDataError, "null encountered");
-            return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
+            return Fmt().UseFieldNames() ? _options._allowNulls ? Int32(kLVError_NoError) : Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
         } else {
             LOG_EVENT(kHardDataError, "'(' missing");
             return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
@@ -1030,8 +1031,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                                 error = kLVError_JSONOutOfRange;
                         }
                         if (error) return error;
-                    } else
-                        return kLVError_JSONInvalidString;
+                    }
                 }
                 if (!readSuccess) {
                     // The token didn't look like a number, so consume it anyway and
@@ -1039,11 +1039,11 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     SubString tempToken;
                     if (_string.ReadSubexpressionToken(&tempToken) == TokenTraits_SymbolName && tempToken.CompareCStr("null")) {
                         LOG_EVENT(kSoftDataError, "null encountered");
-                        return Fmt().UseFieldNames() ? Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
+                        return Fmt().UseFieldNames() ? _options._allowNulls ? Int32(kLVError_NoError) : Int32(kLVError_JSONTypeMismatch) : Int32(kLVError_ArgError);
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
-                    return kLVError_ArgError;
+                    return Fmt().UseFieldNames() ? kLVError_JSONInvalidString : kLVError_ArgError;
                 }
 
                 if (!pData)
@@ -1199,6 +1199,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             }
                             if (subErr && !error)
                                 error = subErr;
+                            if (error)
+                                break;
                         }
                         else
                         {
@@ -2339,7 +2341,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
     TypedArray1D<StringRef> *itemPath = _Param(itemPath);
     EventLog log(EventLog::DevNull);
     SubString jsonFormat(kJSONEncoding);
-    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation));
+    TDViaParser parser(THREAD_TADM(), &jsonString, &log, 1, &jsonFormat, _Param(lvExtensions), _Param(strictValidation), false, _Param(defaultNullElements));
     if (itemPath->Length()>0) {
         for (IntIndex i=0; !error && i< itemPath->Length();i++) {
             SubString p = itemPath->At(i)->MakeSubStringAlias();
@@ -2349,26 +2351,22 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
         }
     }
     if (!error) {
-        if (_Param(defaultNullElements))
-            parser.ParseData(arg[0]._paramType, arg[0]._pData);
-        else {
-            Int32 topSize = arg[0]._paramType->TopAQSize();
-            char *buffer = new char[topSize]; // passed in default data is overwritten since it's also the output.  Save a copy.
-            // ??? Refactor to make default and output different args?
-            memset(buffer, 0, topSize);
-            arg[0]._paramType->InitData(buffer);
-            arg[0]._paramType->CopyData(arg[0]._pData, buffer);
-            error = parser.ParseData(arg[0]._paramType, arg[0]._pData);
-            if ((error && error != kLVError_JSONStrictFieldNotFound)) {
-                arg[0]._paramType->CopyData(buffer, arg[0]._pData);
-            }
-            arg[0]._paramType->ClearData(buffer);
-            delete[] buffer;
+        Int32 topSize = arg[0]._paramType->TopAQSize();
+        char *buffer = new char[topSize]; // passed in default data is overwritten since it's also the output.  Save a copy.
+        // TODO Consider refactor to make default and output different args?
+        memset(buffer, 0, topSize);
+        arg[0]._paramType->InitData(buffer);
+        arg[0]._paramType->CopyData(arg[0]._pData, buffer);
+        error = parser.ParseData(arg[0]._paramType, arg[0]._pData);
+        if (error == kLVError_JSONInvalidString || error == kLVError_ArgError) {
+            arg[0]._paramType->CopyData(buffer, arg[0]._pData);
         }
+        arg[0]._paramType->ClearData(buffer);
+        delete[] buffer;
     }
     if (_ParamVarArgCount() > 7) { // error I/O wired
         ErrorCluster *errPtr = _ParamPointer(errClust);
-        if (error || log.HardErrorCount() > 0) {
+        if (error) {
             errPtr->SetError(true,  error && error != kLVError_ArgError ? error : kLVError_JSONInvalidString, "Unflatten From JSON");
         }
     }
