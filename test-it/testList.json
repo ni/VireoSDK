@@ -285,6 +285,7 @@
                 "TypeValues.via",
                 "UnflattenFromJSON.via",
                 "UnflattenFromJSONFail2.via",
+                "UnflattenJSONArrayAndNull.via",
                 "UnflattenJSONStrict.via",
                 "UnOpFunctions.via",
                 "UsageType.via",

@@ -897,7 +897,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
 
     // although strtod above (at least on non-Windows) can parse inf/nan, it only works if followed by
     // whitespace or EOS, and not the long forms so we have to check explicitly.
-    if (!bParsed) {
+    if (!bParsed && !errCode) {
         Int32 length = Length();
         if (length >= 3 && ComparePrefixIgnoreCase(Utf8Ptr("inf"), 3)) {
             value = std::numeric_limits<double>::infinity();

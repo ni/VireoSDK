@@ -67,6 +67,7 @@ struct ViaFormatOptions
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
     Boolean         _exponentialNotation;
+    Boolean         _allowNulls;
     Int32           _fieldWidth;
     Int32           _precision;
     ViaFormatChars  _fmt;
@@ -103,7 +104,7 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false, Boolean quoteInfNaN = false);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false, Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = null);
     TypeRef ParseLiteral(TypeRef patternType);
