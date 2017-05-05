@@ -38,7 +38,7 @@ define(TestProgram dv(.VirtualInstrument (
         ObtainQueue(q * * * * err)
         ObtainQueue(lq 1 * * * err)
 
-        WaitMilliseconds(50)
+        WaitMilliseconds(60)
         GetQueueStatus(lq true ms * * pendingE * remainingElts err)
         Printf("GQS LQ pendingInsert %d %z\n" pendingE remainingElts)
         WaitMilliseconds(100)
@@ -72,7 +72,7 @@ define(TestProgram dv(.VirtualInstrument (
     )
     clump (
         Printf("Clump2\n")
-        WaitMilliseconds(20)
+        WaitMilliseconds(30)
         Enqueue(lq 2.0 100 timedOut err3)
         WaitMilliseconds(10)
         Printf("Starting Dequeue2\n")
