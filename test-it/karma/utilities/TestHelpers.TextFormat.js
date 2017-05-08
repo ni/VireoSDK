@@ -3,7 +3,7 @@
     window.testHelpers = window.testHelpers || {};
 
     var normalizeLineEndings = function (multiLineString) {
-        return multiLineString.replace(/\r\n/gm, '\n');
+        return multiLineString.replace(/\r+\n/gm, '\n');
     };
 
     var removeInlineComments = function (multiLineString) {
