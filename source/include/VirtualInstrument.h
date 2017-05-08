@@ -216,7 +216,7 @@ class ClumpParseState
 {
     // The compiler (clang) really did not want to allow static const pointers so they are #defines
 #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
-#define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
+#define kPerchBeingAllocated ((InstructionCore*)1)   // Perches awaiting the next instruction address see this
 public:
     static const Int32 kMaxArguments = 100;  // This is now only used for args to VIs and type templates, a static limit may be reasonable
     static const Int32 kClumpStateIncrementSize = 32;

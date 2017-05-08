@@ -724,7 +724,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
         if (_perchIndexToRecordNextInstrAddr<0) {
             // Reserve the perch till the next instruction is emitted
             // null will never be a valid instruction address.
-            _perches[perchIndex] = kPerchBeingAlocated;
+            _perches[perchIndex] = kPerchBeingAllocated;
             _perchIndexToRecordNextInstrAddr = (Int32)perchIndex;
         } else {
             LogEvent(EventLog::kSoftDataError, 0, "Double Perch '%d' not supported", perchIndex);
@@ -740,7 +740,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
     if (branchTargetToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
             _perches.resize(perchIndex+kClumpStateIncrementSize);
-        if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAlocated)) {
+        if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAllocated)) {
             // The perch address is already known, use it.
             _argumentState = kArgumentResolvedToPerch;
             InternalAddArg(null, _perches[perchIndex]);
@@ -1108,7 +1108,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
 
     if (_perchIndexToRecordNextInstrAddr>=0) {
         // TODO support multiple perch patching
-        VIREO_ASSERT(_perches[_perchIndexToRecordNextInstrAddr] == kPerchBeingAlocated);
+        VIREO_ASSERT(_perches[_perchIndexToRecordNextInstrAddr] == kPerchBeingAllocated);
         _perches[_perchIndexToRecordNextInstrAddr] = instruction;
         _perchIndexToRecordNextInstrAddr = -1;
     }
