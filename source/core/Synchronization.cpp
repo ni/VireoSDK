@@ -787,7 +787,7 @@ static void GetQueueRefName(RefNum refnum, StringRef *stringRef, bool deleting) 
         if (deleting && it != ite) {
             StringRef key = it->first;
             QueueRefNumManager::QueueRefManager().NamedRefNumMap().erase(it);
-            it->first->Type()->ClearData(&key);
+            key->Type()->ClearData(&key);
         }
     } else if (stringRef && *stringRef)
         (*stringRef)->Resize1D(0);
