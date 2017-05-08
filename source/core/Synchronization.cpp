@@ -181,7 +181,7 @@ bool SetTimerValueWithResolution(void *timerValue, TimerValueResolutionEnum time
             case kTimerValueResolution_UInt8:
                 *(UInt8*)timerValue = (UInt8)value;
                 break;
-            default: 
+            default:
                 success = false;
         }
     }
@@ -553,7 +553,7 @@ class QueueRefNumManager : public RefNumManager {
 private:
     typedef TypedRefNum<QueueRef, true> QueueRefNumType;
     QueueRefNumType _QueueRefNumTypeStorage; // manages refnum storage
-    
+
     struct StringRefCmp {
         bool operator()(const StringRef& a, const StringRef &b) const {
             Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));

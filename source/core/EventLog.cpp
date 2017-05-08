@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -32,7 +32,7 @@ EventLog::EventLog(StringRef string)
 void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args)
 {
     char buffer[200];
-    
+
     vsnprintf (buffer, sizeof(buffer), message, args);
     LogEventCore( severity, lineNumber, buffer);
 }
@@ -40,12 +40,12 @@ void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr mes
 void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...)
 {
     char buffer[200];
-    
+
     va_list args;
     va_start (args, message);
     vsnprintf (buffer, sizeof(buffer), message, args);
     va_end (args);
-    
+
     LogEventCore( severity, lineNumber, buffer);
 }
 //------------------------------------------------------------
@@ -53,7 +53,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
 {
     char buffer[200];
     ConstCStr preamble;
-    
+
     switch (severity) {
         case kWarning:
             preamble = "Warning";
@@ -72,17 +72,17 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
             preamble = "Trace";
             break;
     }
-    
+
     if (_errorLog == DevNull)
         return;
-    
+
     Int32 length;
     if (lineNumber > 0) {
         length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", (int)lineNumber, preamble, message);
     } else {
         length = snprintf(buffer, sizeof(buffer), "(%s \"%s.\")\n", preamble, message);
     }
-    
+
     if (_errorLog == StdOut) {
         gPlatform.IO.Print(buffer);
     } else if (_errorLog) {

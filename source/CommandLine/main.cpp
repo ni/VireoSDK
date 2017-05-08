@@ -33,16 +33,16 @@ int VIREO_MAIN(int argc, const char * argv[])
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
 
-	SubString fileName;
+    SubString fileName;
     bool pass;
     if (VireoUnitTest::RunTests(pass)) { // runs tests and returns true if in unit test build; else does nothing and returns false
         gPlatform.IO.Printf("Unit Tests %s\n", pass ? "Passed" : "Failed");
         return pass ? 0 : 1;
     }
 
-	if (argc >= 2) {
-		for (Int32 arg = 1; arg < argc; ++arg) {
-			gShells._pRootShell = TypeManager::New(null);
+    if (argc >= 2) {
+        for (Int32 arg = 1; arg < argc; ++arg) {
+            gShells._pRootShell = TypeManager::New(null);
             if (strcmp(argv[arg], "-d") == 0)
                 gShells._pRootShell->DumpPrimitiveDictionary();
 
@@ -78,7 +78,7 @@ int VIREO_MAIN(int argc, const char * argv[])
             gShells._pUserShell->Delete();
             gShells._pRootShell->Delete();
             LOG_PLATFORM_MEM("Mem after cleanup")
-		}
+        }
     } else {
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program

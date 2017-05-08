@@ -141,7 +141,7 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-// CurrentBrowserFPS - Returns the framerate of the browser in frames per second 
+// CurrentBrowserFPS - Returns the framerate of the browser in frames per second
 // First call starts the monitor and returns an FPS of zero
 // Subsequent calls return the most recent calculated FPS value
 // TODO verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
@@ -260,7 +260,7 @@ void AppendCallChainString(StringRef stringRef)
     TypeRef itemType = typeManager->FindType(tsStringArrayType);
     StringRefArray1D* callChain = (StringRefArray1D*)StringRefArray1D::New(itemType);
     GetCallChainArray(callChain);
-    for (int i = 0; i < callChain->Length() - 1; i++) {        
+    for (int i = 0; i < callChain->Length() - 1; i++) {
         stringRef->AppendStringRef(*callChain->BeginAt(i));
         stringRef->AppendCStr("->");
     }

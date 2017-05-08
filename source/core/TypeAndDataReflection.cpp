@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -32,19 +32,19 @@ public:
     void Accept(TypeRef tHaystack, DataPointer pHaystack);
     void Accept(TypeManagerRef tm);
     Boolean Found() {return _found;}
-    
+
 private:
     // What is being seached through
     void*           _pHayStack;
-    
+
     // What is being looked for
     TypeRef         _tNeedle;
     void*           _pNeedle;
-    
+
     // Used as frames are unwound
     Boolean         _found;
     StringRef       _path;
-    
+
 private:
     virtual void VisitBad(TypeRef type);
     virtual void VisitBitBlock(BitBlockType* type);
@@ -66,13 +66,13 @@ private:
 TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
 {
     // TODO needs scope output (local, global, type constant)
-    
+
     path->Resize1D(0);
     DataReflectionVisitor drv(tNeedle, pNeedle, path);
     for (TypeManager *tm = this; tm && !drv.Found(); tm = tm->BaseTypeManager()) {
         drv.Accept(tm);
     }
-    
+
     if (!drv.Found()) {
         path->AppendCStr("*pointer-not-found*");
     }
@@ -120,7 +120,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
             break;
         type = type->Next();
     }
- 
+
     SubString rootName;
     Boolean isTypeRefConstant = false;
     if (_found) {
@@ -129,7 +129,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
         _found = tm->PointerToTypeConstRefName((TypeRef*)_pNeedle, &rootName);
         isTypeRefConstant = _found;
     }
-    
+
     if (_found) {
         _path->InsertSubString(0, &rootName);
         if (isTypeRefConstant) {
@@ -177,7 +177,7 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
 {
     if (_pHayStack == null)
         return;
-    
+
     IntIndex count = type->SubElementCount();
     for (IntIndex j = 0; j < count; j++)
     {
@@ -207,28 +207,28 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
 {
     if (_pHayStack == null)
         return;
-    
+
     TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)_pHayStack;
     TypeRef elementType = pArray->ElementType();
-    
+
     if (type->IsZDA()) {
         // ZDA's have one element.
         Accept(elementType, pArray->RawBegin());
     } else {
-        
+
     }
 #if 0
     // still in work
     TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)_pHayStack;
-    TypeRef eltType = pArray->ElementType();            
+    TypeRef eltType = pArray->ElementType();
     BlockItr itr = pArray->RawItr();
-    
+
     if (itr.PointerInRange(_pNeedle)) {
         // May be in cluster, still need to drill down
         _found = true;
         return;
     }
-    
+
     if (!eltType->IsFlat()) {
         IntIndex count = type->SubElementCount();
         for (IntIndex j = 0; j < count; j++)

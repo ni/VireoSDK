@@ -41,7 +41,7 @@ VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, 
     }
     SubString  input(commands, commands + length);
     NIError err = TDViaParser::StaticRepl(tm, &input);
-	return err;
+    return err;
 }
 //------------------------------------------------------------
 //! Run the vireo execution system for a few slices.
@@ -206,7 +206,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (pathType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
-    
+
     if (!pathType->IsArray() || pathType->Rank() <= 0)
         return kEggShellResult_UnexpectedObjectType;
 
@@ -255,7 +255,7 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null || !actualType->IsArray() || dim >= actualType->Rank() || dim < 0)
         return -1;
-    
+
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
     return actualArray->GetLength(dim);
 }

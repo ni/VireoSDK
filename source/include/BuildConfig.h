@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -15,17 +15,17 @@ SDG
 #define BuildConfig_h
 
 #if (__linux__ == 1)
-	#define kVireoOS_linuxU 1
+    #define kVireoOS_linuxU 1
 #endif
 
 #if defined(WIN32)
-	#define kVireoOS_win32U 1
-	#define kVireoOS_windows 1
+    #define kVireoOS_win32U 1
+    #define kVireoOS_windows 1
 #endif
 
 #if defined(WIN64)
-	#define kVireoOS_win64U 1
-	#define kVireoOS_windows 1
+    #define kVireoOS_win64U 1
+    #define kVireoOS_windows 1
 #endif
 
 // Definitions common for most platforms

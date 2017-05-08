@@ -31,7 +31,7 @@ TypeDefiner* TypeDefiner::_gpTypeDefinerList = null;
 TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version)
 {
     VIREO_ASSERT(version == kVireoABIVersion)
-    
+
     _pNext = null;
     _pCallback = callback;
     _pModuleName = pModuleName;
@@ -52,13 +52,13 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
     while (*ppNext) {
         TypeDefiner *pCurrent = *ppNext;
         ConstCStr missingModule = (pCurrent)->_pCallback(pCurrent, tm);
-        
+
         // The function returns a pointer to what it was missing, null if nothing.
         if (missingModule != null) {
             // 1. Pull the current item out of the list.
             *ppNext = pCurrent->_pNext;
             pCurrent->_pNext = null;
-            
+
             // 2. Find the right place to insert it.
             InsertPastRequirement(ppNext, pCurrent, missingModule);
         } else {
@@ -100,7 +100,7 @@ Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
 TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
 {
     TypeManagerScope scope(tm);
-    
+
     EventLog log(EventLog::StdOut);
     TDViaParser parser(tm, typeString, &log, 1);
     return parser.ParseType();
@@ -181,7 +181,7 @@ void TypeDefiner::ParseData(TypeManagerRef tm, DefaultValueType* defaultValueTyp
 TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
-    // ParseType supports value literals and type literals (that also have a value)  
+    // ParseType supports value literals and type literals (that also have a value)
     return parser.ParseType(patternType);
 }
 //------------------------------------------------------------
@@ -194,7 +194,7 @@ void TypeDefiner::ResolvePackage(SubString* packageName, StringRef packageConten
     fileName.Value->AppendSubString(packageName);
     fileName.Value->AppendCStr(".via");
     SubString ssFileName = fileName.Value->MakeSubStringAlias();
-    
+
     gPlatform.IO.ReadFile(&ssFileName, packageContents);
 }
 //------------------------------------------------------------
@@ -257,14 +257,14 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
 
     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
     Define(tm, "StaticType", "DataPointer");
-    
+
     // StaticTypeAndData - Used in prototypes for polymorphic functions.
     // Static type paired with a pointer to runtime data.
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(StaticType) e(DataPointer))");
     Define(tm, "EnumTypeAndData", "StaticTypeAndData"); // same but only matches enums, not overriding other matches
- 
+
     Define(tm, "SubString", "c(e(DataPointer begin)e(DataPointer end))");
 }
 

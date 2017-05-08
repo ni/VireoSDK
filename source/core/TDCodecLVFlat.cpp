@@ -1,13 +1,13 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
-/*! \file 
+/*! \file
     \brief Native Verio functions for LV flat data format.
  */
 
@@ -31,7 +31,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
             TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;
             IntIndex* dimLengths = pArray->DimensionLengths();
             Int32 rank = pArray->Rank();
-            
+
             if (pArray == null)
                 return kNIError_kResourceNotFound;
 

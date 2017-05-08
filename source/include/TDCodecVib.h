@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -16,7 +16,7 @@ SDG
 
 namespace Vireo
 {
- 
+
 //------------------------------------------------------------
 class SubVibBuffer : SubBinaryBuffer
 {
@@ -32,14 +32,14 @@ class TDVibDecoder
 private:
     TypeManagerRef  _typeManager;
     SubBuffer       _buffer;
-    
+
 public:
     TDVibDecoder(TypeManagerRef typeManager, SubBuffer* buffer);
 
     TypeRef DecodeType();
     void DecodeData(TypeRef type, void* pData, Int32 rank);
     void DecodeArrayData(TypeRef type, void* pData, Int32 rank);
-    
+
     void DecodeVirtualInstrument(TypeRef viType, void* pData);
     void DecodeClump(VIClump* clump, Boolean delayedLoad);
 
@@ -72,17 +72,17 @@ public:
     TDVibEncoder(BinaryBufferRef bufferRef);
 
     void EncodeData();
-    
+
     void EncodeType(TypeRef type);
     void EncodeClusterType(TypeRef clusterType);
     void EncodeArrayType(TypeRef arrayType);
-    
+
     // Data formatters
     void EncodeData(TypeRef type, void* pData);
     void EncodeArrayData(TypeRef arrayType, TypedArrayCoreRef pData, Int32 rank);
     void EncodeArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                                    IntIndex *pDimLengths, IntIndex *pSlabLengths);
-    
+
     void EncodeClusterData(TypeRef clusterType, void* pData);
     void EncodePointerData(TypeRef pointerType, void* pData);
     void EncodeSInt(Int32 aqSize, void* pData);
@@ -90,13 +90,13 @@ public:
     void EncodeVBWSInt(IntMax value);
     void EncodeVBWUInt(UIntMax value);
     void EncodeIEEE754(EncodingEnum encoding, Int32 aqSize, void* pData);
-    
+
     // The maximum for a size field arbitrarily large since the format
     // uses a variable-width encoding for all sizes. The reader for different size targets
     // may be hard coded to only support a limits size typically UInt8, UIn16, UInt32, or UInt64.
     // the reader should be able to safely report an error when reading sizes larger than supported
     // on the target.
 };
-    
+
 }
 #endif //TypeAndDataCodecBin8_H

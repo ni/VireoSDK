@@ -1,7 +1,7 @@
 /**
 
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
 
 SDG
@@ -22,7 +22,7 @@ SDG
  |   |/   /   /   /  /  /     /  /____   /  /_/  /
  |_______/   /___/  /__/     /_______/  /_______/SDG
  */
- 
+
 #ifndef TypeAndDataManager_h
 #define TypeAndDataManager_h
 
@@ -68,7 +68,7 @@ class TypeManager;
 class ExecutionContext;
 class IDataProcs;
 class String;
-    
+
 typedef NamedType *NamedTypeRef;
 typedef ElementType *ElementTypeRef;
 typedef ExecutionContext* ExecutionContextRef;
@@ -110,20 +110,20 @@ class TypedArray1D;
 
 #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
-    
+
 // EncodingEnum defines the base set of encodings that describe the symantics
 // of bits in bitblock. Some good background information icludes:
 // * Integer encodings: https://en.wikipedia.org/wiki/Signed_number_representations
 enum EncodingEnum {
     kEncoding_None = 0,
-    
+
     // Aggregates and References
     kEncoding_Cluster,          // Inlined aggregate of other strucures
     kEncoding_ParameterBlock,   // Like cluster except each element is a poionter to the sub type
     kEncoding_Array,            // Inline or reference to array of a sub stype
     kEncoding_Generic,          // Open, place-holder definition used for genetic types
     kEncoding_Stream,           // TBD Like array but can't assume random acess
-    
+
     //Bitblock encodings
     kEncoding_Boolean,
     kEncoding_Enum,             // TBD
@@ -140,7 +140,7 @@ enum EncodingEnum {
     kEncoding_ZigZagInt,        // Protocol buffers
     kEncoding_S1CInt,           // In case we ever run on a CDC 170 Cyber mainframe ;)
     kEncoding_RefNum,           // LV-style refnum, holds type and Int value
-    
+
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
 
@@ -217,7 +217,7 @@ inline IntIndex Max(IntIndex a, IntIndex b) { return a > b ? a : b; }
 class TypeManager
 {
 public:
-    
+
     //! Create a Execution and Typemanager pair.
     static TypeManagerRef New(TypeManagerRef tm);
     void Delete();
@@ -246,7 +246,7 @@ private:
     MUTEX_CLASS_MEMBER
     TypeRef _badType;
     TypeRef _typeList;                  // List of all Types allocated by this TypeManager
-    
+
 friend class TDViaParser;
     // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
@@ -265,7 +265,7 @@ public:
     void    GetTypes(TypedArray1D<TypeRef>*);
     TypeRef TypeList() { return _typeList; }
     void    PrintMemoryStat(ConstCStr, Boolean last);
-    
+
     TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
     TypeRef Define(const SubString* name, TypeRef type);
 
@@ -279,12 +279,12 @@ public:
     Int32   BitLengthToAQSize(IntIndex length);
     Int32   HostPointerToAQSize() { return sizeof(void*); }
     Int32   AQBitLength() { return _aqBitLength; }
-    
+
 public:
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData, Boolean allowDynamic);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-	TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
+    TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path);
     Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
@@ -292,7 +292,7 @@ public:
 #else
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
-	TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
+    TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
 
 public:
     // Low level allocation functions
@@ -300,7 +300,7 @@ public:
     void* Malloc(size_t countAQ);
     void* Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ);
     void Free(void* pBuffer);
-    
+
     Boolean AllocationPermitted(size_t countAQ);
     void TrackAllocation(void* id, size_t countAQ, Boolean bAlloc);
 
@@ -360,7 +360,7 @@ class TypeManagerScope
 private:
     TypeManagerRef _saveTypeManager;
     VIVM_THREAD_LOCAL static TypeManagerRef ThreadsTypeManager;
-    
+
 public:
     TypeManagerScope(TypeManagerRef typeManager)
     {
@@ -468,11 +468,11 @@ public:
 protected:
     /// @name Storage for core property
     /// Members use a common type (UInt16) to maximize packing.
-    
+
     Int32   _topAQSize;
     UInt16  _rank:8;            // (0-7) 0 for scalar, 0 or greater for arrays room for rank up to 16 (for now
     UInt16  _aqAlignment:8;     // (8-15)
-   
+
     UInt16  _encoding:kEncodingBitFieldSize; // aggirgate or single format
     UInt16  _isFlat:1;          // ( 0) All data is contained in TopAQ elements ( e.g. no pointers)
     UInt16  _isValid:1;         // ( 1) Contains no invalid types
@@ -482,13 +482,13 @@ protected:
     UInt16  _isMutableValue:1;  // ( 4) "default" value can be changed after creation.
     UInt16  _isTemplate:1;      // ( 5) The type contians some generic types
     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
-    
+
     //  properties unique to prototype elements. they are never merged up
     UInt16  _elementUsageType:3;// (7-9) ElementType::UsageType
     //  properties unique to DefaultPointerType objects
     UInt16  _pointerType:3;     // (10-12)
     UInt16  _ownsDefDefData:1;  // (13) Owns DefaultDefault data (clusters and arrays)
-    
+
 public:
     /// @name Core Property Methods
     /// Core type properties are stored in each object so they can be directly accessed.
@@ -552,20 +552,20 @@ public:
     virtual TypeRef GetSubElement(Int32 index)          { return null; }
     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
-    
+
     //! Set the SubString to the name if the type is not anonymous.
     virtual SubString Name()                            { return SubString(null, null); }
     //! Set the SubString to the aggregates elements field name.
     virtual SubString ElementName()                     { return SubString(null, null); }
     //! Return a pointer to the raw vector of dimension lengths.
     virtual IntIndex* DimensionLengths()                { return null; }
-    
+
     //! Offset in AQs in the containing aggregate
     virtual IntIndex ElementOffset()                    { return 0; }
 
     // Methods for working with individual elements
     virtual void*    Begin(PointerAccessEnum mode)      { return null; }
-    
+
     //! Zero out a buffer that will hold a value of the type without consideration for the existing bits.
     void ZeroOutTop(void* pData);
     //! Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed.
@@ -576,7 +576,7 @@ public:
     virtual NIError ClearData(void* pData);
     virtual StringRef GetEnumItemName(IntIndex index) { return NULL; }
     virtual IntIndex GetEnumItemCount()              { return 0; }
-    
+
     //! Initialize a linear block to the deault value for the type.
     NIError InitData(void* pData, IntIndex count);
     //! Deep copy a linear block of values from one locatio to another.
@@ -585,7 +585,7 @@ public:
     NIError ClearData(void* pData, IntIndex count);
     //! Make multiple copies of a single instance to a linear block.
     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
-    
+
     Boolean CompareType(TypeRef otherType);
     Boolean IsA(const SubString* otherTypeName);
     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
@@ -660,7 +660,7 @@ public:
     static size_t   StructSize(const SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
-    
+
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitNamed(this); }
     virtual SubString Name()                        { return SubString(_name.Begin(), _name.End()); }
@@ -680,7 +680,7 @@ public:
 public:
     static size_t   StructSize(SubString* name) { return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
-    
+
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitElement(this); }
     virtual SubString ElementName()                 { return SubString(_elementName.Begin(), _elementName.End()); }
     virtual IntIndex ElementOffset()                { return _offset; }
@@ -705,7 +705,7 @@ protected:
     /// Since this class is variable size, classes that derive from it can not
     /// have member variables  as they would be stompped on.
     IntIndex _blockLength;  // only used by BitCluster
-    
+
 protected:
     // The default value for the type, may be used
     // At this point only used by the ClusterType class but it needs to come
@@ -857,18 +857,18 @@ private:
     static size_t   StructSize(Int32 rank) { return sizeof(ArrayType) + ((rank-1) * sizeof(IntIndex)); }
 
 public:
-    
+
     static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths, Boolean inhibitUniq = false);
-   
+
     // _pDefault is a singleton for each instance of an ArrayType used as the default
     // value, allocated one demand
     void*   _pDefault;
-    
+
     // In the type dimension is described as follows:
     // negative=bounded, positive=fixed, zero=fix with no elements
     // negative VariableDimensionSentinel means variable, and will not be prealocated.
     IntDim    _dimensionLengths[1];
-    
+
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
     virtual TypeRef BaseType()                          { return null; } // arrays are a more advanced wrapping of a type.
     virtual Int32   SubElementCount()                   { return 1; }
@@ -974,7 +974,7 @@ public:
     void*           _defaultPointerValue;
 public:
     static DefaultPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
-    
+
     virtual NIError InitData(void* pData, TypeRef pattern = null)
     {
         *(void**)pData = _defaultPointerValue;
@@ -1019,8 +1019,8 @@ class TypedArrayCore
 protected:
     //! Pointer to the array's first element.
     AQBlock1*               _pRawBufferBegin;
-    
-    //! Array's type. 
+
+    //! Array's type.
     TypeRef                 _typeRef;
 
     //! Specific type an instance is an array of.
@@ -1040,7 +1040,7 @@ public:
     IntIndex  Rank()                { return _typeRef->Rank(); }
     IntIndex* DimensionLengths()    { return _dimensionAndSlabLengths; }
     IntIndex* SlabLengths()         { return &_dimensionAndSlabLengths[0] + Rank(); }
-    
+
 protected:
     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     TypedArrayCore(TypeRef type);
@@ -1068,25 +1068,25 @@ public:
 public:
     //! Array's type.
     TypeRef Type()                  { return _typeRef; }
-    
+
     //! The element type of this array instance. This type may be more specific than the element in Array's Type.
     TypeRef ElementType()           { return _eltTypeRef; }
     Boolean SetElementType(TypeRef, Boolean preserveElements);
-    
+
 protected:
     Boolean AQAlloc(IntIndex countBytes);
     Boolean AQRealloc(IntIndex countBytes, IntIndex preserveBytes);
     void AQFree();
-    
+
 public:
     //! A minimal sanity check, it could do more.
     static Boolean ValidateHandle(TypedArrayCoreRef block)
     {
         return (block != null);
     }
-    
+
     IntIndex GetLength(IntIndex i);
-    
+
     // Total Length  (product of all dimension lengths)
     // For actual arrays (not types) this will always be regular whole number.
     // Types may be variable, fixed, or bounded.
@@ -1095,39 +1095,39 @@ public:
 
     //! Returns the maximum number of elements the current underlying storage could hold.
     IntIndex Capacity()     { return abs(_capacity); }
-    
+
     //! Attempt to grow the capacity of the array so that resizing the dimensions will not need
     // to realloc the underlying storage. This is a soft request and underlying system may reclaim the memory.
     // This method has no effect on fixed or bounded arrays. Returns true if the array capacity
     // is greater than or equal to the amount requested.
     Boolean Reserve(IntIndex length)        { return length <= Capacity(); }
-    
+
     //! Calculate the length of a contigious chunk of elements
     IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
-    
+
     //! Resize for multi dim arrays
     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean noInit = false);
-    
+
     //! Make this array match the shape of the reference type.
     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
-    
+
     //! Resize for 1d arrays, if not enough memory leave as is.
     Boolean Resize1D(IntIndex length)       { return ResizeDimensions(1, &length, true); }
 
     //! Resize for 1d arrays, if not enough memory leave as is. Leave new memory uninit (for insert to copy over).
     Boolean Resize1DNoInit(IntIndex length) { return ResizeDimensions(1, &length, true, true); }
-    
+
     //! Resize, if not enough memory, then size to zero
     Boolean Resize1DOrEmpty(IntIndex length);
 
 private:
     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
     Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean reserveExists);
-    
+
 public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);
     NIError Insert1D(IntIndex position, IntIndex count, const void* pSource = null);
-    NIError Remove1D(IntIndex position, IntIndex count);    
+    NIError Remove1D(IntIndex position, IntIndex count);
 };
 
 //------------------------------------------------------------
@@ -1143,7 +1143,7 @@ public:
     T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) { return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes); }
 
     template <class T2> T2 AtAQ(IntIndex index)         { return *BeginAtAQ<T2*>(index); }
-    
+
     NIError Append(T element)                           { return Insert1D(Length(), 1, &element); }
     NIError Append(IntIndex count, const T* pElements)  { return Insert1D(Length(), count, pElements); }
     NIError Insert(IntIndex position, IntIndex count, const T* pElements)  { return Insert1D(position, count, pElements); }
@@ -1161,7 +1161,7 @@ public:
 };
 
 AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths, AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank, bool preinit = false);
-    
+
 //------------------------------------------------------------
 //! Vireo string type. Must be allocated by TypeManager not raw C++
 class String : public TypedArray1D< Utf8Char >
@@ -1232,7 +1232,7 @@ class StackVar
 {
 public:
     T *Value;
-    
+
     //! Construct and instance of the type using the name passed by the macro.
     StackVar(ConstCStr name)
     {
@@ -1258,7 +1258,7 @@ public:
         }
     }
 };
-    
+
 //! Declare a variable using a Vireo type.
 #define STACK_VAR(_t_, _v_) StackVar<_t_> _v_(#_t_)
 

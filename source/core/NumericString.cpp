@@ -1,7 +1,7 @@
 /**
 
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
 
 SDG
@@ -80,7 +80,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     Utf8Char c;
     const Utf8Char* pBegin = format->Begin();
     Boolean validChar = format->ReadRawChar(&c);
-    
+
 
     while (bValid && validChar) {
 
@@ -199,7 +199,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             // the char previously read
             pOptions->FormatChar = c;
         }
-    } 
+    }
     pOptions->ConsumeArgument = (pOptions->FormatChar != '%') && (pOptions->FormatChar != ';');
     pOptions->OriginalFormatChar = pOptions->FormatChar;
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
@@ -436,7 +436,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                 fmtSubString->AliasAssign(fmtSubString->Begin()+ dollarFlag + 1, fmtSubString->End());
             }
             lastArgumentIndex = argumentIndex;
-            if (!fOptions.Valid) { 
+            if (!fOptions.Valid) {
                 // Format String is invalid
                 parseFinished = true;
                 validFormatString = false;
@@ -656,7 +656,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (intValue == 0) {
                                 BinaryString[0] = bits[intValue];
                                 length = 1;
-							} else {
+                            } else {
                                 while (intValue >= 1) {
                                     BinaryString[intSize - 1 - length] = bits[intValue % 2];
                                     intValue = intValue / 2;
@@ -754,7 +754,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         STACK_VAR(String, tempString);
                         TDViaFormatter formatter(tempString.Value, false);
                         formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
-                        
+
                         Int32 lengthTotal = -1;
                         Int32 lengthString = -1;
                         if (fOptions.MinimumFieldWidth >= 0) {
@@ -779,7 +779,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
                         // partition the string depending on the provided lengthString (subIndex)
                         SubString partial(tempString.Value->Begin(), tempString.Value->Begin()+subIndex);
-                        
+
                         // Calculate how much to pad
                         Int32 extraPadding = 0;
                         if (lengthTotal > lengthString) {
@@ -1336,9 +1336,9 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
                 doubleValue = intValue;
             }
             break;
-        case 'f': 
-        case 'e': 
-        case 'g': 
+        case 'f':
+        case 'e':
+        case 'g':
         case 'p': {
                 doubleValue = strtold(beginPointer, endPointer);
                 if (formatChar == 'p' && *endPointer != NULL && *endPointer < ConstCStr(truncateInput->End())) {
@@ -1433,7 +1433,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         return false;
 
     TypeRef argumentType = argument->_paramType;
-    
+
     SubString in(inputString);
     TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
@@ -1450,9 +1450,9 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     truncateInput.Append(&in);
     char* inpBegin = truncateInput.BeginCStr();
     char* endPointer = null;
-    
+
     switch (argumentType->BitEncoding()) {
-        case kEncoding_UInt: 
+        case kEncoding_UInt:
             IntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
         case kEncoding_Enum:
@@ -1460,7 +1460,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 return false;
             break;
         case kEncoding_S2CInt:
-        case kEncoding_DimInt: 
+        case kEncoding_DimInt:
             S2CIntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
         case kEncoding_IEEE754Binary:
@@ -2024,9 +2024,9 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     Boolean bValid = true;
     Utf8Char c;
     const Utf8Char* pBegin = format->Begin();
-    
+
     while (bValid && format->ReadRawChar(&c)) {
-        
+
         if (strchr("aAbBcdHIjmMpSuUwWxXyYzZ%", c)) {
             pOption->FormatChar = c;
             break;
@@ -2284,7 +2284,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                     case 'x':
                     {
                         TempStackCString localeFormatString;
-                        
+
                         if (fOption.Precision == 1) {
                             localeFormatString.AppendCStr("%A, %B %d, %Y");
                         } else if (fOption.Precision == 2) {
@@ -2385,7 +2385,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         break;
                     default:
                         break;
-                        
+
                 }
             }
         } else {
@@ -2700,7 +2700,7 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
     DEFINE_VIREO_FUNCTION(SpreadsheetStringtoArray, "p(i(String) i(String) i(String) o(Array))")
 #endif
-    
+
 #if defined(VIREO_TIME_FORMATTING)
     DEFINE_VIREO_FUNCTION(FormatDateTimeString, "p(o(String) i(String) i(Timestamp) i(Boolean))")
 #endif

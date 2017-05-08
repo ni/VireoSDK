@@ -266,9 +266,9 @@ void PlatformIO::ReadFile(SubString *name, StringRef buffer)
 
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
 char sampleProgram[] =
-	"start( VI<( clump( "
-	"    Println('Hello, M4. I can fly to the store.') "
-	") ) > ) ";
+    "start( VI<( clump( "
+    "    Println('Hello, M4. I can fly to the store.') "
+    ") ) > ) ";
 #endif
 
 void PlatformIO::ReadStdin(StringRef buffer)
@@ -370,7 +370,7 @@ PlatformTickType PlatformTimer::TickCount()
 
 #elif (kVireoOS_emscripten)
 
-    // On modern browsers emscripten_get_now(), uses performance.now, 
+    // On modern browsers emscripten_get_now(), uses performance.now,
     // which returns sub milliseconds on the fractional part of the double that is returned.
     // Multiplying by a 1000 to get microseconds accuracy, before casting to PlatformTickType
     return (PlatformTickType) (emscripten_get_now() * 1000);

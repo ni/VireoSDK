@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -54,18 +54,18 @@ using namespace std;
     DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) ) \
-	DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)) )			\
-	DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )	\
-	DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )	\
+    DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)) )			\
+    DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )	\
+    DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )	\
 
 #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Sub, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Mul, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Sign, TYPE, "UnOp"#TYPE) \
-	DEFINE_VIREO_FUNCTION_TYPED(Negate, TYPE, "UnOp"#TYPE) \
-	DEFINE_VIREO_FUNCTION_TYPED(Increment, TYPE, "UnOp"#TYPE) \
-	DEFINE_VIREO_FUNCTION_TYPED(Decrement, TYPE, "UnOp"#TYPE)
+    DEFINE_VIREO_FUNCTION_TYPED(Negate, TYPE, "UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Increment, TYPE, "UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Decrement, TYPE, "UnOp"#TYPE)
 
 //------------------------------------------------------------
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
@@ -135,7 +135,7 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Split, SOURCE, "p(i("#SOURCE") i("#DEST") o("#DEST"))")
 #define DEFINE_VIREO_INTEGER_JOIN(DEST, SOURCE) \
     DEFINE_VIREO_FUNCTION_TYPED(Join, SOURCE, "p(i("#SOURCE") i("#SOURCE") o("#DEST"))")
-    
+
 //------------------------------------------------------------
 //Signed Integer Math
 #define DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(TYPE) \
@@ -146,11 +146,11 @@ using namespace std;
 //------------------------------------------------------------
 //Floating-point Math
 #if kVireoOS_emscripten
-	inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
+    inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
     inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); } // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined
 #else
-	inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
-	inline int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); }
+    inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
+    inline int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); }
 #endif
 #define DECLARE_SCALE2X_REALN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##TYPE(TYPE x, TYPE n) { \
@@ -213,10 +213,10 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE2( Ceil##TYPE, TYPE, TYPE, (_Param(1) = ceil(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = abs(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE2( Floor##TYPE, TYPE, TYPE, (_Param(1) = floor(_Param(0)) ) ) \
-	DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
+    DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)) ) ) \
     DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
-	DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
+    DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
 
 #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, "BinOp"#TYPE) \
@@ -244,10 +244,10 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i("#TYPE") o("#TYPE"))") \
-	DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
-	DEFINE_VIREO_FUNCTION_TYPED(Reciprocal, TYPE, "UnOp"#TYPE) \
+    DEFINE_VIREO_FUNCTION_TYPED(Reciprocal, TYPE, "UnOp"#TYPE) \
 
 //------------------------------------------------------------
 // Bitwise
@@ -258,7 +258,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE3( Implies##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~_Param(0) | _Param(1)) ) \
     DECLARE_VIREO_PRIMITIVE3( Nand##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) & _Param(1))) ) \
     DECLARE_VIREO_PRIMITIVE3( Nor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) | _Param(1))) ) \
-	DECLARE_VIREO_PRIMITIVE3( Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1))) ) \
+    DECLARE_VIREO_PRIMITIVE3( Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1))) ) \
     DECLARE_VIREO_PRIMITIVE2( Not##TYPE, TYPE, TYPE, (_Param(1) = ~_Param(0)) )
 
 #define DEFINE_VIREO_BITWISE_FUNCTIONS(TYPE) \
@@ -270,7 +270,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DEFINE_VIREO_FUNCTION_TYPED(Nor, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Nxor, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Not, TYPE, "BinOp"#TYPE)
-    
+
 //------------------------------------------------------------
 // Comparison
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE) \
@@ -286,19 +286,19 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
     DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,				\
-		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
-		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
-	DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,				\
-		if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
-		else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
+        if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+        else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
+    DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,				\
+        if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }	\
+        else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )						\
     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
          /* Args:  x loLimit hiLimit includeLo includeHi coercedOut  inRangeOut */\
-		VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
-		_Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
-		_Param(6) = (_Param(0) > _Param(1) || (_Param(3) && _Param(0)==_Param(1)))	\
-			     && (_Param(0) < _Param(2) || (_Param(4) && _Param(0)==_Param(1)));	\
-		return _NextInstruction();													\
-		}
+        VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)	\
+        _Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
+        _Param(6) = (_Param(0) > _Param(1) || (_Param(3) && _Param(0)==_Param(1)))	\
+                 && (_Param(0) < _Param(2) || (_Param(4) && _Param(0)==_Param(1)));	\
+        return _NextInstruction();													\
+        }
 
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
     DECLARE_VIREO_PRIMITIVE2( IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0) ) \
@@ -324,8 +324,8 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DEFINE_VIREO_FUNCTION_TYPED(IsGT0, TYPE, "p(i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE0, TYPE, "p(i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsNotANumPathRefnum, TYPE, "p(i("#TYPE") o(Boolean))") \
-	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
-	DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(MaxAndMin, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(MaxAndMinElts, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(InRangeAndCoerce, TYPE, "p(i("#TYPE") i("#TYPE") i("#TYPE") i(Boolean) i(Boolean) o("#TYPE") o(Boolean))")
 
 
@@ -377,7 +377,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfLE, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfEQ, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfNE, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))");
-    
+
 //------------------------------------------------------------
 // Boolean
 DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN()
@@ -475,7 +475,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int8)
 #endif
 
 //------------------------------------------------------------
-// Int16 
+// Int16
 #if defined (VIREO_TYPE_Int16)
 DECLARE_VIREO_MATH_PRIMITIVES(Int16)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int16)
@@ -576,7 +576,7 @@ VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
     }
     return _NextInstruction();
 }
-    
+
 VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 {
     // TODO complete this function

@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -19,7 +19,7 @@ SDG
 //------------------------------------------------------------
 namespace Vireo {
 
-class EventLog;    
+class EventLog;
 class TypeDefiner;
 typedef ConstCStr (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef typeManager);
 
@@ -34,10 +34,10 @@ class TypeDefiner
   public:
     //! Add core primitive types to the specified TypeManager
     static void DefineStandardTypes(TypeManagerRef tm);
-    
+
     //! Add registered types to the specified TypeManager
     static void DefineTypes(TypeManagerRef tm);
-    
+
     //! Use the TypeDefiners parser to parse data according to specified type.
     static void ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
 
@@ -63,7 +63,7 @@ class TypeDefiner
   private:
     static TypeDefiner* _gpTypeDefinerList;
     //@}
-    
+
     //! Basic PackageResolver
   public:
     static void ResolvePackage( SubString* packageName, StringRef packageContents);

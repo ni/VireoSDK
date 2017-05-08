@@ -668,7 +668,7 @@ VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDStruct)
     }
     for (i = 0; i < rank; ++i) {
         IntIndex idx = (_ParamImmediate(arg[i].idx) != null) ? *_ParamImmediate(arg[i].idx) : 0;
-    
+
         // Coerce index to non-negative integer
         idx = Max(idx, 0);
         if (arrayOut == arrayIn && idx != 0) {
@@ -679,11 +679,11 @@ VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDStruct)
         // Calculate count from idx to end of array
         IntIndex maxLen = arrayIn->DimensionLengths()[rank-1-i] - idx;
         maxLen = Max(maxLen, 0);
-    
+
         IntIndex len = (_ParamImmediate(arg[i].len) != null) ? *_ParamImmediate(arg[i].len) : maxLen;
         len = Max(len, 0);
         len = Min(len, maxLen);
-    
+
         tempDimensionLengths[rank-1-i] = len;
         tempDimensionLengths[count+rank-1-i] = idx;
         if (len == 0)
@@ -873,7 +873,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
             arrayOut->Insert1D(idx, subArrayLength, subArray->BeginAt(0));
         } else {
             arrayOut->Resize1D(arrayInLength + subArrayLength);
-            
+
             // Copy the original array up to the insert point
             arrayOut->ElementType()->CopyData(arrayIn->BeginAt(0),
                                               arrayOut->BeginAt(0),

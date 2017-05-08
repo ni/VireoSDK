@@ -12,26 +12,26 @@ SDG
 #include "Instruction.h"
 #include "ExecutionContext.h"
 
-#if 0 
+#if 0
 // Data Queue
 /*
  Init
- 
- Configure size, if shrinking, it may lop off elements 
+
+ Configure size, if shrinking, it may lop off elements
  (oldest always?)
- 
+
  Enqueue
     - New take priority forever waiting (flush older)
     - Suspend until there might be enough room
     - enqueue one or more elements
- 
+
  Dequeue
     - Ask for n, Wait or return what you can get?
     -
- 
+
  For now it will only work with flat data.
 
- 
+
     |..................|..............|
  */
 
@@ -40,12 +40,12 @@ class VivmDataQueue
 public:
     VivmDataQueue(int size);
     ~VivmDataQueue();
-    
+
     void Configure(Int32 size);
     void EnqueueOrSuspend(Int32 n, Double* buffer, InstructionCore* current);
     void EnqueueOrSuspend(Double value, InstructionCore* current);
     void EnqueueFlushOldIfNecessary(Int32 n, Double* buffer);
-  
+
     void Peek(Int32 n, TypedBlock* buffer);
     void DequeueOrSuspend(Int32 n, TypedBlock* buffer);
     void DequeueWhatICanGet(Int32 n);
@@ -83,7 +83,7 @@ void VivmDataQueue::Configure(Int32 n)
 
 void Peek(Int32 n, TypedBlock* buffer)
 {
-    
+
 }
 
 void VivmDataQueue::EnqueueFlushOldIfNecessary(Int32 n, Double* buffer)
@@ -98,21 +98,21 @@ void VivmDataQueue::EnqueueOrSuspend(Double value, InstructionCore* current)
         *_insert++ = value;
         _freeSpace--;
     }
-    
+
     if (_insert >= _end)
     {
-        // wrap around. 
+        // wrap around.
         _insert = _begin;
     }
 }
 
-// Insert 0 or more elements into the queue. 
+// Insert 0 or more elements into the queue.
 void VivmDataQueue::EnqueueOrSuspend(Int32 n, Double* buffer, InstructionCore* current)
 {
     // get mutex
     if (n <= _freeSpace){
         _freeSpace -= n;
-        
+
         // wrap = amount-to-insert - room-at-end
         //   positive =>  amount to copy to front,
         //   zero     =>  exact fit
@@ -135,7 +135,7 @@ void VivmDataQueue::EnqueueOrSuspend(Int32 n, Double* buffer, InstructionCore* c
   //      QueueElt* currentQe = THREAD_EXEC()->_runningQueueElt;
 
    // TODO InstructionCore* next = THREAD_EXEC()->SuspendRunningQueueElt(current);
-                
+
   //      current->_wakeUpInfo = this->MicroSeconds() +  count;
   //      current->_next = this->_sleepingList;
   //      this->_waitingClumps = currentQe;

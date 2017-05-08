@@ -13,11 +13,11 @@
 #include "TDCodecVia.h"
 
 #ifdef kVireoOS_windows
-	#include <windows.h>
-	#include <codecvt>
+    #include <windows.h>
+    #include <codecvt>
     #include <io.h>
-	#include <regex>
-	#include <iostream> // REMOVE
+    #include <regex>
+    #include <iostream> // REMOVE
     #include <share.h>
     typedef size_t ssize_t;
     #define POSIX_NAME(_name_) _##_name_
@@ -261,55 +261,55 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
     TempStackCStringFromString    cString(_Param(0));
     TypedArray1D<StringRef>* fileNames = _Param(1);
 #if kVireoOS_windows
-	HANDLE dir_handle = INVALID_HANDLE_VALUE;
-	WIN32_FIND_DATA ffd;
-	std::string directory_path = std::string(cString.BeginCStr());
+    HANDLE dir_handle = INVALID_HANDLE_VALUE;
+    WIN32_FIND_DATA ffd;
+    std::string directory_path = std::string(cString.BeginCStr());
 
-	// Replace the '/' with '\' in the folder path
-	std::regex rx("/");
-	directory_path = std::regex_replace(directory_path, rx, "\\", std::regex_constants::match_any);
-	directory_path = directory_path + "\\*"; // append a wildcard to search for all files in folder
-	dir_handle = FindFirstFile(directory_path.c_str(), &ffd);
+    // Replace the '/' with '\' in the folder path
+    std::regex rx("/");
+    directory_path = std::regex_replace(directory_path, rx, "\\", std::regex_constants::match_any);
+    directory_path = directory_path + "\\*"; // append a wildcard to search for all files in folder
+    dir_handle = FindFirstFile(directory_path.c_str(), &ffd);
 
-	if (dir_handle == INVALID_HANDLE_VALUE) {
-		// No place to handle possible errors, just dump the output
-		printf("Error: %d\n", GetLastError());
-		FindClose(dir_handle); // close the HANDLE
-		fileNames->Resize1D(0);
-		return _NextInstruction();
-	}
+    if (dir_handle == INVALID_HANDLE_VALUE) {
+        // No place to handle possible errors, just dump the output
+        printf("Error: %d\n", GetLastError());
+        FindClose(dir_handle); // close the HANDLE
+        fileNames->Resize1D(0);
+        return _NextInstruction();
+    }
 
-	// Get the total count of filenames to resize the array
-	std::vector<WIN32_FIND_DATA> filenames;
-	do {
-		filenames.push_back(std::move(ffd));
-	} while (FindNextFile(dir_handle, &ffd) != 0);
+    // Get the total count of filenames to resize the array
+    std::vector<WIN32_FIND_DATA> filenames;
+    do {
+        filenames.push_back(std::move(ffd));
+    } while (FindNextFile(dir_handle, &ffd) != 0);
 
-	// Check for any errors
-	DWORD err = GetLastError();
-	if (err != ERROR_NO_MORE_FILES) {
-		// No place to handle possible errors, just dump the output
-		printf("Error: %d\n", err);
-		FindClose(dir_handle); // close the HANDLE
-		fileNames->Resize1D(0);
-		return _NextInstruction();
-	}
+    // Check for any errors
+    DWORD err = GetLastError();
+    if (err != ERROR_NO_MORE_FILES) {
+        // No place to handle possible errors, just dump the output
+        printf("Error: %d\n", err);
+        FindClose(dir_handle); // close the HANDLE
+        fileNames->Resize1D(0);
+        return _NextInstruction();
+    }
 
-	// Sort the vector alphabetically be filename
-	std::sort(filenames.begin(), filenames.end(), [](WIN32_FIND_DATA dataA, WIN32_FIND_DATA dataB) {
-		return std::string(dataA.cFileName) < std::string(dataB.cFileName);
-	});
+    // Sort the vector alphabetically be filename
+    std::sort(filenames.begin(), filenames.end(), [](WIN32_FIND_DATA dataA, WIN32_FIND_DATA dataB) {
+        return std::string(dataA.cFileName) < std::string(dataB.cFileName);
+    });
 
-	// Add filenames to array
-	Int32 file_count = filenames.size();
-	fileNames->Resize1DOrEmpty(file_count);
-	for (Int32 i = 0; i < file_count; i++) {
-		(*fileNames->BeginAt(i))->CopyFrom(
-			(IntIndex)strlen(filenames[i].cFileName),
-			reinterpret_cast<Utf8Char*>(filenames[i].cFileName));
-	}
+    // Add filenames to array
+    Int32 file_count = filenames.size();
+    fileNames->Resize1DOrEmpty(file_count);
+    for (Int32 i = 0; i < file_count; i++) {
+        (*fileNames->BeginAt(i))->CopyFrom(
+            (IntIndex)strlen(filenames[i].cFileName),
+            reinterpret_cast<Utf8Char*>(filenames[i].cFileName));
+    }
 
-	FindClose(dir_handle); // close the HANDLE
+    FindClose(dir_handle); // close the HANDLE
 #elif kVireoOS_linuxU || kVireoOS_macosxU
     struct dirent **dirInfos;
     Int32 count = scandir(cString.BeginCStr(), &dirInfos, 0, alphasort);

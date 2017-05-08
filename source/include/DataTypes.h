@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -88,10 +88,10 @@ typedef Int32        IntDim;
 enum {
     // IntDim encoded as "*"
     kArrayVariableLengthSentinel = INT32_MIN,
-    
+
     // IntDim encoded as template parameters $0 .. $255
     kArrayMaxTemplatedDimLengths = 256,
-    
+
     kArrayFirstTemplatedDimLength = kArrayVariableLengthSentinel + kArrayMaxTemplatedDimLengths,
     kArrayIndexMax = INT32_MAX,
     kArrayMaxRank = 15,
@@ -210,7 +210,7 @@ public:
         _begin = begin;
         _end = end;
     }
-    
+
     //! Construct a wrapper for a raw block of elements.
     IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer)
     {
@@ -229,16 +229,16 @@ public:
 
     //! Returns a pointer just past the last element in the vector.
     const T*  End()   const  { return _end; }
-    
+
     //! Returns the length of the vector.
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
-    
+
     //! Return true if the blocks are equivalent.
     Boolean Compare(const T* begin2, IntIndex length2)
     {
         return (length2 == Length() && (memcmp(_begin, begin2, Length()) == 0));
     }
-    
+
     //! Return true if the blocks are equivalent.
     Boolean Compare(const SubVector *subVector)
     {
@@ -277,7 +277,7 @@ class BlockItr : public Itr<AQBlock1>
 {
     IntIndex _blockLength;
 public:
-    //! Construct an iterator for an array of blocks 
+    //! Construct an iterator for an array of blocks
     BlockItr(void* begin, IntIndex blockLength, IntIndex count)
     : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count))
     {
@@ -320,7 +320,7 @@ public:
     {
         Clear();
     }
-    
+
     //! Construct the array and initialize it from a SubVector.
     FixedCArray(SubVector<T>* buffer)
     {
@@ -330,7 +330,7 @@ public:
         memcpy(_buffer, buffer->Begin(), length);
         *NonConstEnd() = (T) 0;
     }
-    
+
     //! Construct the array and initialize it from a block of data.
     FixedCArray(T* begin, IntIndex length)
     {
@@ -341,13 +341,13 @@ public:
         memcpy(_buffer, begin, length);
         *NonConstEnd() = (T) 0;
     }
-    
+
     //! Return the maximum capacity of the array.
     IntIndex Capacity() { return COUNT - 1; }
-    
+
     //! Return a reference to the indexed element in the vector (no range checking).
     const T&  operator[] (const int i)  { return _buffer[i]; }
-    
+
     //! Append an element to the array if there is room.
     Boolean Append(T element)
     {
@@ -361,7 +361,7 @@ public:
             return false;
         }
     }
-    
+
     //! Append a block of elements to the array if there is room.
     Boolean Append(const T* begin, size_t length)
     {
@@ -374,6 +374,6 @@ public:
         return true;
     }
 };
-    
+
 }
 #endif // DataTypes_h

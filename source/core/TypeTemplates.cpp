@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -120,7 +120,7 @@ void TypeTemplateVisitor::VisitBitBlock(BitBlockType* type)
         _newType = type;
         return;
     }
-    
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
@@ -131,7 +131,7 @@ void TypeTemplateVisitor::VisitBitCluster(BitClusterType* type)
         _newType = type;
         return;
     }
-    
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
@@ -146,15 +146,15 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     ClusterAlignmentCalculator calc(_typeManager);
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
-    
+
     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
-    
+
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
     _newType  = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
-    
+
     _alignmentCalculator = saveCalc;
 }
 //------------------------------------------------------------
@@ -164,7 +164,7 @@ void TypeTemplateVisitor::VisitParamBlock(ParamBlockType* type)
         _newType = type;
         return;
     }
-    
+
     _newType = _typeManager->BadType();
     VIREO_ASSERT(false);
 }
@@ -175,14 +175,14 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
         _newType = type;
         return;
     }
-    
+
     EquivalenceAlignmentCalculator calc(_typeManager);
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
 
     TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
-    
+
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
@@ -198,11 +198,11 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
         _newType = type;
         return;
     }
-    
+
     // Array  may be visited if the element type or a dimension is
     // templated. Simple having a dimension that is variable should
     // not tirgger template type substitution.
-    
+
     IntIndexItr iDim(type->DimensionLengths(), type->Rank());
     ArrayDimensionVector newDimensions;
     IntIndex* pNew  = newDimensions;
@@ -228,7 +228,7 @@ void TypeTemplateVisitor::VisitElement(ElementType* type)
         VIREO_ASSERT(type->ElementOffset() == offset);
         return;
     }
-    
+
     TypeRef   baseType = Accept(type->BaseType());
     SubString fieldName = type->ElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
@@ -271,14 +271,14 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
         _newType = type;
         return;
     }
-    
+
     // Case 3: It's a named type that contains some open types.
     // IF ther are parameters they are the set of parameters for this type
     // but not for nested named types. So build a Name based on the set of parameters
     // supplied then hide the parameters before recursing. If a named typed
     // is tempalted in the top typ it (may/will) have its own set of arguemnts
     // based on the outer scope.
-    
+
     //
     // base type is also generic. First ceaate the hyotheitcal new name
     // and see if the instance already exists. If not, make one.
@@ -318,7 +318,7 @@ void TypeTemplateVisitor::VisitPointer(PointerType* type)
         _newType = type;
         return;
     }
-    
+
     TypeRef newBaseType = Accept(type->BaseType());
     if (newBaseType != type->BaseType()) {
         _newType = PointerType::New(_typeManager, newBaseType);
