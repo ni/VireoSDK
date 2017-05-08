@@ -219,7 +219,7 @@ class ClumpParseState
 #define kPerchBeingAlocated ((InstructionCore*)1)    // Perches awaiting the next instruction address see this
 public:
     static const Int32 kMaxArguments = 100;  // This is now only used for args to VIs and type templates, a static limit may be reasonable
-    static const Int32 kClumpStatencrementSize = 32;
+    static const Int32 kClumpStateIncrementSize = 32;
 public:
     enum ArgumentState {
         // Initial state, not where it should end in either.
