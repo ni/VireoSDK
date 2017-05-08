@@ -292,11 +292,11 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
     _totalInstructionCount = 0;
     _totalInstructionPointerCount = 0;
 
-    _argPointers.reserve(kClumpStatencrementSize);
-    _argTypes.reserve(kClumpStatencrementSize);
-    _argPatches.reserve(kClumpStatencrementSize);
-    _patchInfos.reserve(kClumpStatencrementSize);
-    _perches.reserve(kClumpStatencrementSize*4);
+    _argPointers.reserve(kClumpStateIncrementSize);
+    _argTypes.reserve(kClumpStateIncrementSize);
+    _argPatches.reserve(kClumpStateIncrementSize);
+    _patchInfos.reserve(kClumpStateIncrementSize);
+    _perches.reserve(kClumpStateIncrementSize*4);
 
     _argCount = 0;
     _argPatchCount = 0;
@@ -684,7 +684,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     _argPatches.push_back(_argCount);
     ++_argPatchCount;
     if (_patchInfos.size() <= _patchInfoCount)
-        _patchInfos.resize(_patchInfoCount+kClumpStatencrementSize);
+        _patchInfos.resize(_patchInfoCount+kClumpStateIncrementSize);
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;
     pPatch->_whereToPeek = whereToPeek;
@@ -717,7 +717,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     IntMax perchIndex;
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
-            _perches.resize(perchIndex+kClumpStatencrementSize);
+            _perches.resize(perchIndex+kClumpStateIncrementSize);
         if (_perches[perchIndex]<0) {
             LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
         }
@@ -739,7 +739,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
     IntMax perchIndex;
     if (branchTargetToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
-            _perches.resize(perchIndex+kClumpStatencrementSize);
+            _perches.resize(perchIndex+kClumpStateIncrementSize);
         if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAlocated)) {
             // The perch address is already known, use it.
             _argumentState = kArgumentResolvedToPerch;
