@@ -142,7 +142,7 @@ VIREO_FUNCTION_SIGNATURE2(StreamClose, FileHandle, Int32)
 #ifdef VIREO_POSIX_FILEIO
     _Param(1) = POSIX_NAME(close)(_Param(0));
 #else
-    #error paltfrom not supported
+    #error platform not supported
 #endif
     return _NextInstruction();
 }
@@ -180,7 +180,7 @@ VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedArrayCoreRef, Int32, Int3
 #ifdef VIREO_POSIX_FILEIO
         ssize_t bytesRead = POSIX_NAME(read)(handle, array->RawBegin(), bytesToRead);
 #else
-        #error paltfrom not supported
+        #error platform not supported
 #endif
 
         if (bytesRead < 0) {
@@ -205,7 +205,7 @@ VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedArrayCoreRef, Int32)
 #ifdef VIREO_POSIX_FILEIO
     ssize_t result = POSIX_NAME(write)(handle, array->RawBegin(), bytesToWrite);
 #else
-    #error paltfrom not supported
+    #error platform not supported
 #endif
 
     _Param(2) = (Int32) result;  // TODO(fileio) process errors

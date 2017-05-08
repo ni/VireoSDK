@@ -162,9 +162,9 @@ namespace Vireo {
         }
         Int64 numberOfLeap = numberOfLeapYears(currentYear - 1, baseYear);
         Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (currentYear - baseYear - numberOfLeap)*kSecondsInYear;
-        Int32 weekdaysOfyear = (totalSeconds / kSecondsPerDay + baseWeek) % kDaysInWeek;
-        weekdaysOfyear = (weekdaysOfyear < 0) ? (weekdaysOfyear + kDaysInWeek) : weekdaysOfyear;
-        *weekDays = weekdaysOfyear;
+        Int32 weekdaysOfYear = (totalSeconds / kSecondsPerDay + baseWeek) % kDaysInWeek;
+        weekdaysOfYear = (weekdaysOfYear < 0) ? (weekdaysOfYear + kDaysInWeek) : weekdaysOfYear;
+        *weekDays = weekdaysOfYear;
         return currentYear;
     }
 
@@ -228,7 +228,7 @@ namespace Vireo {
             }
         }
 
-        // Get timezone abbrevation
+        // Get timezone abbreviation
         char timeZoneAbbr[kTempCStringLength] = "UnknownTimeZone";
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;

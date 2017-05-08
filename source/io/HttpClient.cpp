@@ -266,8 +266,8 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster
 }
 
 //------------------------------------------------------------
-// handle(0), url(1), output file(2), timeout(3), headers(4), body(5), status code(6), error cluster(7), ocurrence(8)
-// NOTE: ocurrence is inserted by the Vireo Compiler
+// handle(0), url(1), output file(2), timeout(3), headers(4), body(5), status code(6), error cluster(7), occurrence(8)
+// NOTE: occurrence is inserted by the Vireo Compiler
 VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten

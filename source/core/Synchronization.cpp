@@ -421,7 +421,7 @@ VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32
         pOcc->InsertObserver(pObserver+1, pOcc->Count()+1);
         return clump->WaitOnObservableObject(_this);
     } else {
-        // If it woke up because of timeout or occerrence..
+        // If it woke up because of timeout or occurrence..
         clump->ClearObservationStates();
         return _NextInstruction();
     }
@@ -479,7 +479,7 @@ Boolean QueueCore::Enqueue(void* pData)
 {
     /* ???
      This needs to be refactored.  If the Queue is not fixed/bounded, the array will continue to grow
-     in size to the maximum count of items ever enqueued, even if most or all of the items are dequeueed
+     in size to the maximum count of items ever enqueued, even if most or all of the items are dequeued
      as they are queued so the conceptual size of the queue is always small.
      (This was probably the idea behind the unimplemented Compress() method in the header.)  -CS */
 
@@ -1069,7 +1069,7 @@ VIREO_FUNCTION_SIGNATURE2(IsNotARefnum, RefNumValType*, Boolean)
 }
 
 //
-// Legacy Vireo static Queue implementaiton (remove?)
+// Legacy Vireo static Queue implementation (remove?)
 //
 
 //------------------------------------------------------------

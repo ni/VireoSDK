@@ -75,7 +75,7 @@ void ColorAlphaToJSColor(Int32 value, Double alpha, JSColorString pBuffer)
     if (alpha > 1.0)
         alpha = 1.0;
 
-    // Comentary, Java script has pretty complex way to set color with alpha.
+    // Commentary, Java script has pretty complex way to set color with alpha.
     // hard to believe it's necessary to format a string, but for now it works.
     snprintf(pBuffer, sizeof(JSColorString), "rgba(%u,%u,%u,%1.3f)",
             (unsigned int)((value & 0x00FF0000) >> 16),

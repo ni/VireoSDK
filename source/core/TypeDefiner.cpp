@@ -139,7 +139,7 @@ void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr 
 void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType)
 {
     SubString typeString(typeCStr);
-    TypeRef type = ParseAndBuidType(tm, &typeString);
+    TypeRef type = ParseAndBuildType(tm, &typeString);
 
     tm->DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType);
 }
@@ -177,7 +177,7 @@ void TypeDefiner::ParseData(TypeManagerRef tm, DefaultValueType* defaultValueTyp
     parser.ParseData(defaultValueType, defaultValueType->Begin(kPAInit));
 }
 //------------------------------------------------------------
-//! Parse a value to creaate a literal constant.
+//! Parse a value to create a literal constant.
 TypeRef TypeDefiner::ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString)
 {
     TDViaParser parser(tm, valueString, log, lineNumber);
@@ -228,7 +228,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Block256",      "c(e(bb(256 Boolean)))");
 
     // String and character types
-    Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continutation octet
+    Define(tm, "Utf8Char", "c(e(bb(8 Unicode)))");  // A single octet of UTF-8, may be lead or continuation octet
     Define(tm, "Utf32Char", "Int32");              // A single Unicode codepoint (no special encoding or escapes)
     Define(tm, "Utf8Array1D", "a(Utf8Char *)");    // Should be valid UTF-8 encoding. No partial or overlong elements
     Define(tm, tsStringType, "Utf8Array1D");

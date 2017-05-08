@@ -42,7 +42,7 @@ void String::AppendViaDecoded(SubString* string)
     if (Resize1D(decodedLength)) {
         // Pass two, copy over the characters and decode
         // valid %XX sequences. Warning, %XX values above
-        // 127 could easly result in invalid Utf8 sequences.
+        // 127 could easily result in invalid Utf8 sequences.
         ss = string;
         Utf8Char* pDest = BeginAt(originalLength);
         while(ss.ReadRawChar(&c)) {
@@ -57,7 +57,7 @@ void String::AppendViaDecoded(SubString* string)
 
 /**
  * This one will escape the input substring and then append it to current string
- * e.g. It is used for JSON formating.
+ * e.g. It is used for JSON formatting.
  * dest is the location in the string to append.
  * This function is well implemented so that it support in place operation
  * which means the input substring could point to the String object.

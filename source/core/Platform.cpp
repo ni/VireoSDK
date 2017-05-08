@@ -300,7 +300,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
         c = fgetc(stdin);
         if (c == '<') {
             //  <count>xxxxxxxx "<4>exit"
-            // comand starts with a size
+            // command starts with a size
             char packetHeader[lenlen];
             do {
                 c = fgetc(stdin);

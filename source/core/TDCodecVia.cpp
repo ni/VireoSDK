@@ -150,7 +150,7 @@ NIError TDViaParser::ParseREPL()
             // Move this to core parser.
             TokenTraits tt = _string.ReadToken(&command);
             if (command.CompareCStr("exit")) {
-                // This needs to change. Perhas end/exit method an set context variable.
+                // This needs to change. Perhaps end/exit method an set context variable.
                 _pLog->LogEvent(EventLog::kTrace, 0, "chirp chirp");
                 return kNIError_kResourceNotFound;
             } else if (tt == TokenTraits_SymbolName || tt == TokenTraits_String ) {
@@ -165,14 +165,14 @@ NIError TDViaParser::ParseREPL()
 
                     type = _typeManager->Define(&command, cdt);
                 } else if (_string.EatChar(*tsEqualSuffix)) {
-                    // For equal, taek the matematical immutable equvalence perspective.
+                    // For equal, take the mathematical immutable equivalence perspective.
                     TypeRef subType = ParseType();
                     type = _typeManager->Define(&command, subType);
                 }
             }
 
             if (!type) {
-                LOG_EVENT(kHardDataError, "Error in epxression");
+                LOG_EVENT(kHardDataError, "Error in expression");
                 break;
             }
         }
@@ -269,7 +269,7 @@ TypeRef TDViaParser::ParseContext()
     return type;
 }
 //------------------------------------------------------------
-//! Parse a general type expresssion.
+//! Parse a general type expression.
 TypeRef TDViaParser::ParseType(TypeRef patternType)
 {
     TypeManagerScope scope(_typeManager);
@@ -392,7 +392,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
             printf("compound value\n");
 
             // Sniff the expression to determin what type it is.
-            // 1. nda arry of a single type.
+            // 1. nda array of a single type.
             // 2. ndarray of mixed numeric type, use widest
             // 3. mixed type, cluster. some field may have named.
         }
@@ -745,7 +745,7 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
     SubString  tempString(_string);
     Boolean inconsistentDimSizes = false;
     // Figure out how many initializers there are. The rank parameter
-    // indicates how many levels are realated to the type being parsed
+    // indicates how many levels are related to the type being parsed
     // nesting deeper than that is assumed to be part of a deeper type
     // such as a cluster or nested array.
 
@@ -1156,7 +1156,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
             {
                 if (Fmt().UseFieldNames()) {
                     // the json cluster always contains the name
-                    // JSON generally igonre any white space around or between syntactic elements
+                    // JSON generally ignore any white space around or between syntactic elements
                     // JSON does not provide or allow any sort of comment syntax
                     _string.EatWhiteSpaces();
                     if(!_string.EatChar('{')) {
@@ -1477,7 +1477,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
                 parser.ParseClump(pClump, &cia);
             }
 #ifdef VIREO_USING_ASSERTS
-            // The frist pass should just calculate the size needed. If any allocations occured then
+            // The first pass should just calculate the size needed. If any allocations occurred then
             // there is a problem.
             // Int32 endingAllocations = vi->TheTypeManager()->_totalAllocations;
             // VIREO_ASSERT(startingAllocations == endingAllocations)
@@ -1614,7 +1614,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             }
 
             if (argCount > ClumpParseState::kMaxArguments) {
-                return LOG_EVENT(kHardDataError, "too many argumnets");
+                return LOG_EVENT(kHardDataError, "too many arguments");
             }
 
             while(keepTrying) {
@@ -1649,7 +1649,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         } else if (formalParameterTypeName.CompareCStr("EnumTypeAndData")) {
                             state.AddDataTargetArgument(&token, true, true);
                         } else if (formalType->IsStaticParam()) {
-                            LOG_EVENT(kSoftDataError, "unexpeced static parameter");
+                            LOG_EVENT(kSoftDataError, "unexpected static parameter");
                         } else {
                             // The most common case is a data value
                             state.AddDataTargetArgument(&token, false, true); // For starters
@@ -1725,7 +1725,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
     }
 }
 //------------------------------------------------------------
-//! Create a parser and process all the declaraions in the stream.
+//! Create a parser and process all the declarations in the stream.
 NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
 {
     TypeManagerScope scope(tm);
@@ -1885,7 +1885,7 @@ private:
 };
 
 //------------------------------------------------------------
-// If formatting options specify to use the locale's default seperator
+// If formatting options specify to use the locale's default separator
 // then this variable should be used.
 char TDViaFormatter::LocaleDefaultDecimalSeparator = '.';
 
@@ -1971,7 +1971,7 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
             format = "%*lld";
         }
     } else {
-        format = "**unsuported type**";
+        format = "**unsupported type**";
     }
 
     Int32 len = snprintf(buffer, sizeof(buffer), format, _options._fieldWidth, value);
