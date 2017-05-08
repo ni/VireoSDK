@@ -1102,7 +1102,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     _totalInstructionCount++;
     _totalInstructionPointerCount += (sizeof(InstructionCore) / sizeof(void*)) + _argCount;
 
-    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, &*_argPointers.begin());
+    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, _argPointers.size() > 0 ? &*_argPointers.begin() : null);
     if (_cia->IsCalculatePass())
         return instruction;
 
