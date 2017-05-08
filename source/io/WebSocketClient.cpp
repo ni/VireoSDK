@@ -79,8 +79,8 @@ VIREO_FUNCTION_SIGNATURE4(WebSocketClientSend, UInt32, StringRef, Int32, StringR
 }
 
 //------------------------------------------------------------
-// connection(0), timeout(1), data(2), errorCode(3), errorMessage(4), occurence(5)
-// NOTE: ocurrence is inserted by the Vireo Compiler
+// connection(0), timeout(1), data(2), errorCode(3), errorMessage(4), occurrence(5)
+// NOTE: occurrence is inserted by the Vireo Compiler
 VIREO_FUNCTION_SIGNATURE6(WebSocketClientRead, UInt32, Int32, StringRef, Int32, StringRef, OccurrenceRef)
 {
 #if kVireoOS_emscripten

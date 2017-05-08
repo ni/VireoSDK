@@ -261,7 +261,7 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-//! Retuns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
+//! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
 VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
 {
     TypeManagerScope scope(tm);

@@ -147,7 +147,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
                 pOptions->Significant = (Int32)value;
             }
         } else if (bPrecision && c == '*') {
-            // Labview doesn't variable precision, it will mess up with the argument index.
+            // LabVIEW doesn't support variable precision, it would mess up with the argument index.
             pOptions->VariablePrecision = true;
         } else if (c == '$') {
         } else if (strchr("hl", c)) {
@@ -191,7 +191,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     }
     pOptions->Valid = bValid;
     if (!pOptions->Valid) {
-        // if the format is invald: provide the format character for error handling
+        // if the format is invalid: provide the format character for error handling
         if (!validChar) {
             // the char could not be read
             pOptions->FormatChar = '0';
@@ -1093,8 +1093,8 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
 
             } else {
                 // we can use %d safely, because the exponent part is never long than Int32 in double
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
-                baseIndex += sizeOfExpoent;
+                Int32 sizeOfExponent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
+                baseIndex += sizeOfExponent;
             }
         } else {
             baseIndex = 0;
@@ -1116,8 +1116,8 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
                     baseIndex ++;
                 }
             } else {
-                Int32 sizeOfExpoent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
-                baseIndex += sizeOfExpoent;
+                Int32 sizeOfExponent = snprintf(tempNumber + baseIndex, kTempCStringLength-baseIndex, "E%+d", (int)exponent);
+                baseIndex += sizeOfExponent;
             }
         }
         tempNumber[baseIndex] = 0;
@@ -1219,7 +1219,7 @@ void GenerateFinalNumeric (const FormatOptions* formatOptions, char* bufferBegin
     }
 }
 //--------------------------------------------------------------------------------------------
-Boolean BelongtoCharSet(SubString* charSet, Utf8Char candidate) {
+Boolean BelongsToCharSet(SubString* charSet, Utf8Char candidate) {
     if (charSet->Length() == 0) {
         return false;
     }
@@ -1517,11 +1517,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                             IntIndex i = 0;
                             for ( i=0; i< in.Length();i++) {
                                 Utf8Char c = *(start + i);
-                                if (found && BelongtoCharSet(charSet, c)) {
+                                if (found && BelongsToCharSet(charSet, c)) {
                                     i--;
                                     break;
                                 }
-                                if (!found && !BelongtoCharSet(charSet, c)) {
+                                if (!found && !BelongsToCharSet(charSet, c)) {
                                     found = true;
                                     stringStart = i;
                                 }
@@ -1547,11 +1547,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                         IntIndex i = 0;
                         for ( i=0; i< in.Length();i++) {
                             Utf8Char c = *(start + i);
-                            if (found && !BelongtoCharSet(charSet, c)) {
+                            if (found && !BelongsToCharSet(charSet, c)) {
                                 i--;
                                 break;
                             }
-                            if (!found && BelongtoCharSet(charSet, c)) {
+                            if (!found && BelongsToCharSet(charSet, c)) {
                                 found = true;
                                 stringStart = i;
                             }
@@ -1744,7 +1744,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
  *         In Format into String function:
  *            print the value with the proper format code according to the data type.
  *                 %f for float, %d for int. etc.
- *case 2 The format contains only non-foramt code character. e.g. "  asvasd ":
+ *case 2 The format contains only non-format code character. e.g. "  asvasd ":
  *         In labview FormatValue function:
  *             append the format string to the output no value String is printed.
  *         In Format into String function:
@@ -1768,10 +1768,10 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
  *            If the  data type of the input value is complex, the print value should print both the real part and imaginary part.
  *        case 5.2 string as numeric %d , %f
  *            Will not accept this case, throw the error.
- *case 6 The length speicfier
- *        In lbivew Format Value function:
+ *case 6 The length specifier
+ *        In LV Format Value function:
  *            'h' 'l' is supported for %d and %f .. numeric type.
- *        In labview Format into String function:
+ *        In LV Format into String function:
  *            'h' is not supported.
  * */
 //---------------------------------------------------------------------

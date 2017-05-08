@@ -467,7 +467,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             return null;
     }
     if (savedOperation.CompareCStr("Convert")) {
-        // Special case for convert, if the types are the same go straight to the more efficent copy
+        // Special case for convert, if the types are the same go straight to the more efficient copy
         SubString destTypeName = destType->Name();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
             ConstCStr copyOpName = "Copy";
@@ -511,7 +511,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             AggregateUnOpInstruction* unaryOp = (AggregateUnOpInstruction*)pInstructionBuilder->EmitInstruction();
             pInstruction = unaryOp;
 
-            // Recurse on the sub elemets
+            // Recurse on the sub elements
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
             for (Int32 i = 0; i < destType->SubElementCount(); i++) {
@@ -610,7 +610,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             AggregateMaxAndMinInstruction* maxMinOp = (AggregateMaxAndMinInstruction*)pInstructionBuilder->EmitInstruction();
             pInstruction = maxMinOp;
 
-            // Recurse on the sub elemets
+            // Recurse on the sub elements
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
             for (Int32 i = 0; i < maxType->SubElementCount(); i++) {
@@ -773,8 +773,8 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
         isAccumulator = true;
     }
     if (isAccumulator) {
-        ConstCStr pInRangeOpAggregareName = "InRangeAccumulator";
-        SubString findInRangeOpAggregateToken(pInRangeOpAggregareName);
+        ConstCStr pInRangeOpAggregateName = "InRangeAccumulator";
+        SubString findInRangeOpAggregateToken(pInRangeOpAggregateName);
 
         pInstructionBuilder->ReresolveInstruction(&findInRangeOpAggregateToken, false);
         if(!sourceXType->CompareType(sourceLoType) || !sourceLoType->CompareType(sourceHiType)) {
@@ -1559,7 +1559,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterAggBinaryOp, AggregateBinOpInstruction)
 
     if (accumulator != null) {
         // If there is an accumulator call it instead.
-        // It will loop through the snippets settign the boolean result
+        // It will loop through the snippets setting the boolean result
         // In the third parameter. All boolean results point to the same location.
         while(ExecutionContext::IsNotCulDeSac(snippet)) {
             Boolean bNestedAccumulator =   (snippet->_function == (InstructionFunction)VectorVectorBinaryAccumulatorOp)
@@ -2322,7 +2322,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_TYPE(GenericUnOp, "p(i(*) o(*))")
 
     // Copy and CopyTop share the same generic emitter, it checks the name of the instruction
-    // to determine the correct behaviour.
+    // to determine the correct behavior.
     DEFINE_VIREO_GENERIC(Copy, "GenericUnOp", EmitGenericCopyInstruction);
     DEFINE_VIREO_GENERIC(CopyTop, "GenericUnOp", EmitGenericCopyInstruction);
 
@@ -2477,7 +2477,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(GenericBinOp))");
-    // EQ0. NE0, etc. do not have compare aggregartes mode; no accumulators needed
+    // EQ0. NE0, etc. do not have compare aggregates mode; no accumulators needed
 
     // Vector operations
     DEFINE_VIREO_FUNCTION(VectorVectorBinaryOp, "p(i(Array) i(Array) o(Array) s(Instruction))" )

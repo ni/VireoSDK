@@ -19,7 +19,7 @@ SDG
 #include "Timestamp.h"      // For seeding random numbers
 #include "TypeDefiner.h"
 
-// With non-unique names(AKA overlodaed) only the C entry points are appended.
+// With non-unique names(AKA overloaded) only the C entry points are appended.
 #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
 #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
 
@@ -44,7 +44,7 @@ inline Int64 IntAbs(Int64 value) { return llabs(value); }
 
 extern "C" {
 
-//For some platfroms isnan, isinf, abs are functions in std not macros
+//For some platforms isnan, isinf, abs are functions in std not macros
 using namespace std;
 
 
@@ -757,7 +757,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int32)
 
 #if 1
-    // TODO remove these once no tergets are no longer relying on current gen LV via emitter
+    // TODO remove these once no targets are no longer relying on current gen LV via emitter
     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
     // branch instructions. These support the ones needed.
 #if defined (VIREO_TYPE_Int32)
@@ -796,7 +796,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     //Single
 #if defined(VIREO_TYPE_Single)
 #if 0
-    // TODO, once type dpendecy sequencing works these definitions can be moved here.
+    // TODO, once type dependency sequencing works these definitions can be moved here.
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bc(e(bb(32 IEEE754B)))))")
     DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))")
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")

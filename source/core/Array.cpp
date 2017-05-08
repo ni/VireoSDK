@@ -188,9 +188,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
 
     _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);
 
-    IntIndex totalLenght = _Param(ArrayOut)->Length();
+    IntIndex totalLength = _Param(ArrayOut)->Length();
     TypeRef eltType = array->ElementType();
-    eltType->MultiCopyData(_ParamPointer(InitialValue), array->RawBegin(), totalLenght);
+    eltType->MultiCopyData(_ParamPointer(InitialValue), array->RawBegin(), totalLength);
 
     return _NextInstruction();
 }
@@ -1004,12 +1004,12 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     return pInstruction;
 }
 
-struct comparetor
+struct comparator
 {
 private:
     Instruction3<void, void, Boolean>* _snippet;
 public:
-    comparetor(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
+    comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
     bool operator()(AQBlock1* i, AQBlock1* j)
     {
         Boolean less = false;
@@ -1036,9 +1036,9 @@ VIREO_FUNCTION_SIGNATURET(Sort1DArrayInternal, Sort1DArrayInstruction)
         myVector.push_back(base);
         base += elementSize;
     }
-    comparetor myComparetor(snippet);
+    comparator myComparator(snippet);
     std::vector<AQBlock1*>::iterator it;
-    std::sort(myVector.begin(), myVector.end(), myComparetor);
+    std::sort(myVector.begin(), myVector.end(), myComparator);
     IntIndex i = 0;
     for (it = myVector.begin(); it != myVector.end(); it++) {
         AQBlock1* element = *it;

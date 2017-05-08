@@ -79,7 +79,7 @@ TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
         return _parameters->Begin()[i];
     } else {
         // unsupplied parameters become new named types?
-        // or permanetly left open.
+        // or permanently left open.
         return null;
     }
 }
@@ -201,7 +201,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
 
     // Array  may be visited if the element type or a dimension is
     // templated. Simple having a dimension that is variable should
-    // not tirgger template type substitution.
+    // not trigger template type substitution.
 
     IntIndexItr iDim(type->DimensionLengths(), type->Rank());
     ArrayDimensionVector newDimensions;
@@ -276,11 +276,11 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
     // IF ther are parameters they are the set of parameters for this type
     // but not for nested named types. So build a Name based on the set of parameters
     // supplied then hide the parameters before recursing. If a named typed
-    // is tempalted in the top typ it (may/will) have its own set of arguemnts
+    // is templated in the top typ it (may/will) have its own set of arguments
     // based on the outer scope.
 
     //
-    // base type is also generic. First ceaate the hyotheitcal new name
+    // base type is also generic. First create the hypothetical new name
     // and see if the instance already exists. If not, make one.
 
     // Create a new name, TODO should  really use TDCodecVIA to parse the type
@@ -298,7 +298,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
     tempString.Value->Append('>');
     name = tempString.Value->MakeSubStringAlias();
 
-    // Find an existing instantion, or make one.
+    // Find an existing instantiation, or make one.
     _newType = _typeManager->FindType(&name);
     if (!_newType) {
         TypeRef newBaseType = Accept(type->BaseType());

@@ -672,7 +672,7 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
     while (*_begin == '<') {
         EatChar('<');
         tt = TokenTraits_TemplateExpression;
-        // If the expression is folowed by template parameters.
+        // If the expression is followed by template parameters.
         // Then eat the arguments and closing brace
         while (true) {
             if (EatChar('>')) {
@@ -791,7 +791,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
 {
     // Three formats are supported
     // 1. nnn   Simple integers negative or positive
-    // 2. *     Which means variable or unspceified
+    // 2. *     Which means variable or unspecified
     // 3  #n    Which also means variable but is identifies as a template parameter
     // Meta ints can only be used where the reasonable range of value does not
     // include extreme negative numbers.
@@ -966,7 +966,7 @@ Int32 SubString::StringLength()
     const Utf8Char* pCharSequence  = _begin;
     const Utf8Char* pEnd = _end;
 
-    // If the string contains invalid UTF-8 encodings the logical lenght
+    // If the string contains invalid UTF-8 encodings the logical length
     // may be shorter than expected.
 
     Int32 i = 0;

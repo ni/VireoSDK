@@ -153,7 +153,7 @@ void VIClump::Trigger()
     // TODO Make sure there is a MT version of this (or all are MT safe)
     VIREO_ASSERT(_shortCount > 0)
 
-    // Strickly speaking, this assert can be relaxed, but It will be interesting
+    // Strictly speaking, this assert can be relaxed, but It will be interesting
     // to see when that change is needed.
     VIREO_ASSERT(THREAD_EXEC() == TheExecutionContext())
 
@@ -530,7 +530,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
         return;
     }
 
-    // See if actual argument is '*' meaning use the default/unwired behaviour.
+    // See if actual argument is '*' meaning use the default/unwired behavior.
     if (argument->CompareCStr(tsWildCard)) {
         _actualArgumentType = FormalParameterType();
         if (!_actualArgumentType->IsFlat()) {

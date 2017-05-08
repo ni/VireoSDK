@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Native Vireo exection methods
+    \brief Native Vireo execution methods
  */
 
 #include "TypeDefiner.h"
@@ -42,7 +42,7 @@ Int32           ExecutionContext::_breakoutCount;
 
 
 //------------------------------------------------------------
-// CulDeSac returns itself allowing an unriolled execution loop to complete.
+// CulDeSac returns itself allowing an unrolled execution loop to complete.
 InstructionCore* VIVM_FASTCALL CulDeSac(InstructionCore* _this _PROGMEM)
 {
     return _this;
@@ -132,7 +132,7 @@ VIREO_FUNCTION_SIGNATURE1(Trigger, VIClump)
 }
 //------------------------------------------------------------
 // FPSync - Synchronously triggers a function on the JS module called fpSync and passes a string as the first parameter.
-// Useful for perfoming an action and immediately notifying JS about it
+// Useful for performing an action and immediately notifying JS about it
 VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 {
 #if kVireoOS_emscripten
@@ -166,7 +166,7 @@ VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
 VIREO_FUNCTION_SIGNATURE1(Wait, VIClump)
 {
     // If the target is running or is waiting for additional triggers
-    // wait until it has completed. If shortcount == firecount it is considred done.
+    // wait until it has completed. If shortcount == firecount it is considered done.
     if (_ParamPointer(0)->_shortCount == _ParamPointer(0)->_fireCount) {
         // Target clump has finished and trigger count been reset.
         return _NextInstruction();

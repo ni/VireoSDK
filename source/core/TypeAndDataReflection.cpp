@@ -21,7 +21,7 @@ namespace Vireo
 * that describes what the needle is a pointer to. The visitor will visit
 * all types in the type manger and thus ultimate all values owned by that type manager
 * and if necessary parent type managers as well.
-* initiall the hay stack is null, but when a type is visited that owns a value ( constatn or var)
+* initiall the hay stack is null, but when a type is visited that owns a value ( constant or var)
 * it will establish a haystack then as the type is visited the stack is narrowed.
 */
 
@@ -34,7 +34,7 @@ public:
     Boolean Found() {return _found;}
 
 private:
-    // What is being seached through
+    // What is being searched through
     void*           _pHayStack;
 
     // What is being looked for

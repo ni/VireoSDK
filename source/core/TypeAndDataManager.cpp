@@ -39,7 +39,7 @@ void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCal
 // Optional header added to blocks allocated from the system
 struct MallocInfo {
     size_t          _length;        // how big the block is
-    TypeManagerRef  _manager;       // which TypeManaer was used to allocate it.
+    TypeManagerRef  _manager;       // which TypeManager was used to allocate it.
 #if VIREO_TRACK_MEMORY_ALLLOC_COUNTER
     size_t  _allocNum;
 #endif
@@ -349,7 +349,7 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
 
     IntIndex length = (IntIndex)_typeNameDictionary.size();
     pArray->Resize1DOrEmpty(length);
-    // If it gets emptied the follwing works fine
+    // If it gets emptied the following works fine
 
     if (pArray->Length() == length) {
         TypeRef* pBegin = pArray->Begin();
@@ -372,7 +372,7 @@ TypeRef TypeManager::Define(const SubString* typeName, TypeRef type)
     MUTEX_SCOPE()
 
     // Though overloads are allowed, it is still necessary to make a name wrapper for each unique type.
-    // This allows the resolved type to be passed with its name wrapper, and allows funtions to see the name
+    // This allows the resolved type to be passed with its name wrapper, and allows functions to see the name
     // of the resolved symbol.
 
     NamedTypeRef existingOverload = FindTypeCore(typeName);
@@ -497,7 +497,7 @@ TypeRef TypeManager::BadType()
 //------------------------------------------------------------
 Int32  TypeManager::AQAlignment(Int32 size)
 {
-    // subject to be conditional to archtechure
+    // subject to be conditional to architecture
     if (size<2)
         return 1;
     if (size<4)
@@ -911,7 +911,7 @@ Boolean TypeCommon::IsComplex()
 TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
     // TODO this is a bit experimental.
-    // Its important to note that drilling down structureal attributes
+    // Its important to note that drilling down structural attributes
     // is not generally useful. For example
     //
     // x.$BaseType.$TopAQSize
@@ -1142,7 +1142,7 @@ BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, Encoding
     _encoding = encoding;
 
     if (encoding == kEncoding_None && length > 0) {
-        // TODO revisit interms of bounded and template
+        // TODO revisit in terms of bounded and template
         _isValid = false;
     }
 }
@@ -2991,7 +2991,7 @@ private:
 };
 
 //------------------------------------------------------------
-//! Dump the primtiive dictionary (debugging)
+//! Dump the primitive dictionary (debugging)
 void TypeManager::DumpPrimitiveDictionary()
 {
     std::map<void*, CPrimtitiveInfo>::iterator iter = _cPrimitiveDictionary.begin();
