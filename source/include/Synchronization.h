@@ -36,7 +36,7 @@ public:
     //! Which clump owns this WS object.
     VIClump* _clump;
 
-    //! State the observed object is in. Iniitally only simple state
+    //! State the observed object is in. Initially only simple state
     //! changes can be observed.
     IntMax _info;
 };

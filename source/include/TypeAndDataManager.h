@@ -111,18 +111,18 @@ class TypedArray1D;
 #define TADM_NEW_PLACEMENT(_class_) new (THREAD_TADM()->Malloc(sizeof(_class_))) _class_
 #define TADM_NEW_PLACEMENT_DYNAMIC(_class_, _d_) new (TypeManagerScope::Current()->Malloc(_class_::StructSize(_d_))) _class_
 
-// EncodingEnum defines the base set of encodings that describe the symantics
-// of bits in bitblock. Some good background information icludes:
+// EncodingEnum defines the base set of encodings that describe the semantics
+// of bits in bitblock. Some good background information includes:
 // * Integer encodings: https://en.wikipedia.org/wiki/Signed_number_representations
 enum EncodingEnum {
     kEncoding_None = 0,
 
     // Aggregates and References
-    kEncoding_Cluster,          // Inlined aggregate of other strucures
-    kEncoding_ParameterBlock,   // Like cluster except each element is a poionter to the sub type
+    kEncoding_Cluster,          // Inlined aggregate of other structures
+    kEncoding_ParameterBlock,   // Like cluster except each element is a pointer to the sub type
     kEncoding_Array,            // Inline or reference to array of a sub stype
     kEncoding_Generic,          // Open, place-holder definition used for genetic types
-    kEncoding_Stream,           // TBD Like array but can't assume random acess
+    kEncoding_Stream,           // TBD Like array but can't assume random access
 
     //Bitblock encodings
     kEncoding_Boolean,
@@ -149,12 +149,12 @@ enum EncodingEnum {
 enum UsageTypeEnum {
     kUsageTypeSimple = 0,       // Default for clusters, code assumed to read and write at will, not allowed in ParamBlock
     kUsageTypeInput = 1,        // Caller copies in value, VI will not change it.
-    kUsageTypeOutput = 2,       // Caller provides storage(if array) VI sets value, ingores incomming value
+    kUsageTypeOutput = 2,       // Caller provides storage(if array) VI sets value, ignores incoming value
     kUsageTypeInputOutput = 3,  // Like output, but VI uses initial value.
     kUsageTypeAlias = 4,        // Non flat value that that is owned by by another element.
     kUsageTypeStatic = 5,       // Allocated value persists from call to call
     kUsageTypeTemp =  6,        // Storage typically carried from call to call but can be freed up.
-    kUsageTypeImmediate =  7,   // For native function value in instruction block is imediate value not a pointer
+    kUsageTypeImmediate =  7,   // For native function value in instruction block is immediate value not a pointer
 };
 
 //! PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.
@@ -462,7 +462,7 @@ public:
     TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypeRef Next()                      { return _next; }
 public:
-    // Internal to the TypeManager, but this is hard to secifiy in C++
+    // Internal to the TypeManager, but this is hard to specify in C++
     virtual ~TypeCommon() {};
 
 protected:
@@ -473,14 +473,14 @@ protected:
     UInt16  _rank:8;            // (0-7) 0 for scalar, 0 or greater for arrays room for rank up to 16 (for now
     UInt16  _aqAlignment:8;     // (8-15)
 
-    UInt16  _encoding:kEncodingBitFieldSize; // aggirgate or single format
+    UInt16  _encoding:kEncodingBitFieldSize; // aggregate or single format
     UInt16  _isFlat:1;          // ( 0) All data is contained in TopAQ elements ( e.g. no pointers)
     UInt16  _isValid:1;         // ( 1) Contains no invalid types
     UInt16  _isBitLevel:1;      // ( 2) Is a bitblock or bitcluster
 
     UInt16  _hasCustomDefault:1;// ( 3) A non 0 non null value
     UInt16  _isMutableValue:1;  // ( 4) "default" value can be changed after creation.
-    UInt16  _isTemplate:1;      // ( 5) The type contians some generic types
+    UInt16  _isTemplate:1;      // ( 5) The type contains some generic types
     UInt16  _hasPadding:1;      // ( 6) To satisfy alignment requirements for elements TopAQSize() includes some padding
 
     //  properties unique to prototype elements. they are never merged up
@@ -519,7 +519,7 @@ public:
     Boolean IsValid()               { return _isValid != 0; }
     //! True if the type a BitBlock or a BitClusters.
     Boolean IsBitLevel()            { return _isBitLevel != 0; }
-    //! True if TopAQSize includes internal or external padding necessary for proper aligmnet of multiple elements.
+    //! True if TopAQSize includes internal or external padding necessary for proper alignment of multiple elements.
     Boolean HasPadding()            { return _hasPadding != 0; }
     //! True if the type contains one or more template parameter types.
     Boolean IsTemplate()            { return _isTemplate != 0; }
@@ -529,7 +529,7 @@ public:
     Boolean IsOutputParam()         { return (_elementUsageType == kUsageTypeOutput) || (_elementUsageType == kUsageTypeInputOutput); }
     //! True if aggregate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
     Boolean IsAlias()               { return (_elementUsageType >= kUsageTypeInput) && (_elementUsageType <= kUsageTypeAlias); }
-    //! True if the parameer is only visible to the callee, and is preserved between calls.
+    //! True if the parameter is only visible to the callee, and is preserved between calls.
     Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }
     //! True is the parameter is only visible to the callee, but may be cleared between calls.
     Boolean IsTempParam()           { return _elementUsageType == kUsageTypeTemp; }
@@ -577,11 +577,11 @@ public:
     virtual StringRef GetEnumItemName(IntIndex index) { return NULL; }
     virtual IntIndex GetEnumItemCount()              { return 0; }
 
-    //! Initialize a linear block to the deault value for the type.
+    //! Initialize a linear block to the default value for the type.
     NIError InitData(void* pData, IntIndex count);
     //! Deep copy a linear block of values from one locatio to another.
     NIError CopyData(const void* pData, void* pDataCopy, IntIndex count);
-    //! Dealocate and null out a linear block of value of the type.
+    //! Deallocate and null out a linear block of value of the type.
     NIError ClearData(void* pData, IntIndex count);
     //! Make multiple copies of a single instance to a linear block.
     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
@@ -610,7 +610,7 @@ protected:
     // the class size will maintain proper alignment.
     union {
         TypeRef _wrapped;
-        MaxAlignedType _alignent;
+        MaxAlignedType _alignment;
     };
     WrappedType(TypeManagerRef typeManager, TypeRef type);
 public:
@@ -645,7 +645,7 @@ public:
 // the derive from it.
 // 2. for the Named Type node the value may be changed. This does not change the type, only the result of what
 // the type->InitValue method does. For a variant type this means the type of the value may change
-// but not notion that the value is a variant. A bit tenious perhaps.
+// but not notion that the value is a variant. A bit tenuous perhaps.
 
 
 //------------------------------------------------------------
@@ -674,7 +674,7 @@ private:
     ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset);
 
 public:
-    Int32                   _offset;  // Relative to the begining of the aggregate
+    Int32                   _offset;  // Relative to the beginning of the aggregate
     InlineArray<Utf8Char>   _elementName;
 
 public:
@@ -703,7 +703,7 @@ class AggregateType : public TypeCommon
 {
 protected:
     /// Since this class is variable size, classes that derive from it can not
-    /// have member variables  as they would be stompped on.
+    /// have member variables  as they would be stomped on.
     IntIndex _blockLength;  // only used by BitCluster
 
 protected:
@@ -784,7 +784,7 @@ class AggregateAlignmentCalculator
 {
     /// When aggregate types are parsed by a codec the decoder needs to calculate
     /// core properties as the elements are parsed and created. This class and
-    /// its decendents keep the details internal to the TypeManager.
+    /// its descendants keep the details internal to the TypeManager.
 protected:
     TypeManagerRef  _tm;
     Int32           _aqOffset;
@@ -866,7 +866,7 @@ public:
 
     // In the type dimension is described as follows:
     // negative=bounded, positive=fixed, zero=fix with no elements
-    // negative VariableDimensionSentinel means variable, and will not be prealocated.
+    // negative VariableDimensionSentinel means variable, and will not be preallocated.
     IntDim    _dimensionLengths[1];
 
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
@@ -1102,7 +1102,7 @@ public:
     // is greater than or equal to the amount requested.
     Boolean Reserve(IntIndex length)        { return length <= Capacity(); }
 
-    //! Calculate the length of a contigious chunk of elements
+    //! Calculate the length of a contiguous chunk of elements
     IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
 
     //! Resize for multi dim arrays

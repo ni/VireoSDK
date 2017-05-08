@@ -63,7 +63,7 @@ typedef union {
     // Looks like some of the recent C++ specs supply a type
     // like this (aligned_storage) but its too early to rely
     // on that being available. Oddest case seen so far was
-    // javascript via emscripten; pointer were 4 bytes, but alignement
+    // javascript via emscripten; pointer were 4 bytes, but alignment
     // was 8 due to doubles.
     IntMax  _align_IntMax;
     Double  _align_Double;
@@ -255,7 +255,7 @@ public:
     SubBinaryBuffer(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }
 };
 //------------------------------------------------------------
-//! A light weight iterator for sequential reads of staticly type values
+//! A light weight iterator for sequential reads of statically type values
 template <class T>
 class Itr {
 protected:

@@ -43,7 +43,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _string.AliasAssign(typeString);
     _originalStart = typeString->Begin();
     _lineNumberBase = lineNumberBase;
-    _loadVIsImmediatly = false;
+    _loadVIsImmediately = false;
     _options._allowNulls = allowJSONNulls;
 
    if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
@@ -765,7 +765,7 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
              // Avoid infinite loop for incorrect input.
              break;
         }
-        if (token.EatChar(Fmt()._itemSeperator)) {
+        if (token.EatChar(Fmt()._itemSeparator)) {
             // For JSON string, it has non-space separator.
             continue;
         }
@@ -836,7 +836,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
 
             if (tt == TokenTraits_String) {
                 // Adjust count for escapes
-                charCount = token.LengthAferProcessingEscapes();
+                charCount = token.LengthAfterProcessingEscapes();
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
                     // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
@@ -900,7 +900,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 _string.EatLeadingSpaces();
-                _string.EatChar(Fmt()._itemSeperator);
+                _string.EatChar(Fmt()._itemSeparator);
                 void* pElement = elementCount < length ? pEltData : null;
                 Int32 subErr;
                 if (pElement == null) {
@@ -1449,7 +1449,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
 
     vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
 
-    if (_loadVIsImmediatly) {
+    if (_loadVIsImmediately) {
         TDViaParser::FinalizeVILoad(vi, _pLog);
     }
     // The clumps code will be loaded once the module is finalized.
@@ -1887,7 +1887,7 @@ private:
 //------------------------------------------------------------
 // If formatting options specify to use the locale's default seperator
 // then this variable should be used.
-char TDViaFormatter::LocaleDefaultDecimalSeperator = '.';
+char TDViaFormatter::LocaleDefaultDecimalSeparator = '.';
 
 // the format const used in Formatter and Parser
 ViaFormatChars TDViaFormatter::formatVIA =       { kVIAEncoding,  '(',')','(',')',' ','\'', kViaFormat_NoFieldNames};
@@ -2119,7 +2119,7 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
         }
     }
     while (dimensionLength-- > 0) {
-        _string->Append(Fmt()._itemSeperator);
+        _string->Append(Fmt()._itemSeparator);
         if (rank == 0) {
             FormatData(elementType, pElement);
         } else {
@@ -2138,7 +2138,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
     _string->Append(Fmt()._clusterPre);
     while (i < count) {
         if (i > 0) {
-            _string->Append(Fmt()._itemSeperator);
+            _string->Append(Fmt()._itemSeparator);
         }
         TypeRef elementType = type->GetSubElement(i++);
         if (Fmt().UseFieldNames()) {
@@ -2384,7 +2384,7 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     EventLog log(_Param(3));
 
     TDViaParser parser(THREAD_TADM(), &string, &log, 1);
-    parser._loadVIsImmediatly = true;
+    parser._loadVIsImmediately = true;
 
     parser.ParseData(type, _ParamPointer(2));
     return _NextInstruction();

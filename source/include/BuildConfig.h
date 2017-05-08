@@ -53,7 +53,7 @@ SDG
 
 #ifdef VIREO_MICRO
     // For Vireo-micro there is a dispatch table statically linked at build time
-    // In this case the functions need to neeed to be linkable across obj files
+    // In this case the functions need to need to be linkable across obj files
     #define VIREO_SINGLE_GLOBAL_CONTEXT
     //#define VIREO_USING_ASSERTS
 
@@ -81,7 +81,7 @@ SDG
     //  #define VIREO_TYPE_Timestamp 1
 
     // Vireo can be configured to assume all strings are 7 bit ASCII
-    // This means String ArrayLength will alwasy equal StringLength
+    // This means String ArrayLength will always equal StringLength
     // Note that even when Utf8 is used StringLength may be longer that
     // The number of graphemes due to combining codepoints
     // #define VIREO_ASCII_ONLY 1
@@ -130,7 +130,7 @@ SDG
     #define VIREO_SPREADSHEET_FORMATTING 1
 
  // Vireo can be configured to assume all strings are 7 bit ASCII
- // This means String ArrayLength will alwasy equal StringLength
+ // This means String ArrayLength will always equal StringLength
  // Note that even when Utf8 is used StringLength may be longer that
  // The number of graphemes due to combining codepoints
  // #define VIREO_ASCII_ONLY 1

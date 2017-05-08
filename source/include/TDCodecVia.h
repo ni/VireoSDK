@@ -48,7 +48,7 @@ struct ViaFormatChars
     Utf8Char    _arrayPost;
     Utf8Char    _clusterPre;
     Utf8Char    _clusterPost;
-    Utf8Char    _itemSeperator;
+    Utf8Char    _itemSeparator;
     Utf8Char    _quote;
     ViaFormat   _fieldNameFormat;
 
@@ -96,7 +96,7 @@ public:
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt()  { return _options._fmt; }
 
-    Boolean         _loadVIsImmediatly;
+    Boolean         _loadVIsImmediately;
     EventLog*       _pLog;
 
     void    LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
@@ -182,7 +182,7 @@ public:
     void    FormatIEEE754(TypeRef type, void* pData);
     Int32   GetError() const { return _errorCode; }
 
-    static char LocaleDefaultDecimalSeperator;
+    static char LocaleDefaultDecimalSeparator;
     static ViaFormatChars formatVIA;
     static ViaFormatChars formatJSON;
     static ViaFormatChars formatJSONLVExt;

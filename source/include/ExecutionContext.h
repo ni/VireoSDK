@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Tools to imliment a ExecutionContext that can run/evaluate VIs
+    \brief Tools to implement a ExecutionContext that can run/evaluate VIs
  */
 
 #ifndef ExecutionContext_h
@@ -81,7 +81,7 @@ enum ExecutionState
 #endif
 
 //------------------------------------------------------------
-// CulDeSac prototype is visable ( e.g. not static) so the
+// CulDeSac prototype is visible ( e.g. not static) so the
 // IsNotCulDeSac method on ExecutionContext can inline it better.
 InstructionCore* VIVM_FASTCALL CulDeSac (InstructionCore* _this _PROGMEM);
 InstructionCore* VIVM_FASTCALL Done (InstructionCore* _this _PROGMEM);

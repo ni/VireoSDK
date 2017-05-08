@@ -97,7 +97,7 @@ Boolean TypeDefiner::HasRequiredModule(TypeDefiner* _this, ConstCStr name)
 }
 //------------------------------------------------------------
 //! Define an anonymous type.
-TypeRef TypeDefiner::ParseAndBuidType(TypeManagerRef tm, SubString* typeString)
+TypeRef TypeDefiner::ParseAndBuildType(TypeManagerRef tm, SubString* typeString)
 {
     TypeManagerScope scope(tm);
 
@@ -118,7 +118,7 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeStr
 TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* typeString)
 {
     TypeManagerScope scope(tm);
-    TypeRef type = ParseAndBuidType(tm, typeString);
+    TypeRef type = ParseAndBuildType(tm, typeString);
 
     if (typeName->Length()) {
         // Use the name if provided, else it an anonymous type.
@@ -131,7 +131,7 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
 void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
 {
     SubString typeString(typeCStr);
-    TypeRef type = ParseAndBuidType(tm, &typeString);
+    TypeRef type = ParseAndBuildType(tm, &typeString);
 
     tm->DefineCustomPointerTypeWithValue(name, (void*)pointer, type, pointerType, cname);
 }
@@ -148,7 +148,7 @@ void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr 
 void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeCStr)
 {
     SubString typeString(typeCStr);
-    TypeRef type = ParseAndBuidType(tm, &typeString);
+    TypeRef type = ParseAndBuildType(tm, &typeString);
 
     tm->DefineCustomDataProcs(name, pDataProcs, type);
 }

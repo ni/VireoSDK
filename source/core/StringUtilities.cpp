@@ -373,7 +373,7 @@ Boolean SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, ch
     return it < end;
 }
 //------------------------------------------------------------
-Int32 SubString::LengthAferProcessingEscapes()
+Int32 SubString::LengthAfterProcessingEscapes()
 {
     SubString temp(this);
     SubString escapeToken;

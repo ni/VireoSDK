@@ -109,8 +109,8 @@ public:
 
 // Initially all clump had the ability to wait on timers, now that has grown to
 // timers and objects such as the queue. Yet in many cases clumps never to need to
-// on anything. In the simple case of no waiting several pointes can be saved.
-// So The clump is gogin to migrate from one fixed, to a collection of ObserverState objects
+// on anything. In the simple case of no waiting several pointers can be saved.
+// So The clump is going to migrate from one fixed, to a collection of ObserverState objects
 // These are the step
 //
 // 1. move from one hardcoded time list to a fixed set of of WaitableSates that can be used for
@@ -118,7 +118,7 @@ public:
 //
 // 2. Move the fixed set of buffers to a set that can be dynamically allocated (and arrays)
 //
-// 3. Get Arrays to support null-measn empty, or shared empty instances
+// 3. Get Arrays to support null-means-empty, or shared empty instances
 //
 // 4. Can other users of the _next field use the same mechanism?
 
@@ -276,16 +276,16 @@ private:    // State for patching owner/next field once next instruction created
 public:
     void                RecordNextHere(InstructionCore** startLocation);
 
-private:    // State related to two pass parseing
+private:    // State related to two-pass parsing
     Int32           _totalInstructionCount;
     Int32           _totalInstructionPointerCount;
 
-private:    // state related to overloads
+private:    // State related to overloads
     Boolean         _hasMultipleDefinitions;
     NamedTypeRef    _nextFunctionDefinition;
     NamedTypeRef    _genericFunctionDefinition;  // Only one allowed
 
-private:    // state related to the the current argument
+private:    // State related to the the current argument
     Int32           _formalParameterIndex;
     TypeRef         _formalParameterType;
     TypeRef         _actualArgumentType;

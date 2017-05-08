@@ -28,7 +28,7 @@ namespace Vireo
         // gcc does not yet have full support for this function
         #define _PROGMEM_PTR(__this_ptr, _field) ((typeof(__this_ptr->_field))pgm_read_word(&(__this_ptr->_field)))
     #else
-        #error : Need defines to support harvard architechure
+        #error : Need defines to support harvard architecture
     #endif
 #else
     #define _PROGMEM
