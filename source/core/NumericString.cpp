@@ -1651,16 +1651,6 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 parseFinished = true;
                 switch (fOptions.FormatChar) {
                 case 'b': case 'B':
-                {
-                    canScan = TypedScanString(input, &endPointer, &fOptions, pArg);
-                    if (canScan) {
-                        filledItems++;
-                        input->AliasAssign(input->Begin()+endPointer, input->End());
-                        offsetPastScan += endPointer;
-                    }
-                    argumentIndex++;
-                }
-                break;
                 case 'd':
                 case 'o': case 'u':
                 case 'x': case 'X':
