@@ -30,7 +30,7 @@ class String;
 typedef String *StringRef;
 
 //------------------------------------------------------------
-//! Process level fucntions for memory allocation.
+//! Process level functions for memory allocation.
 class PlatformMemory {
   private:
     size_t _totalAllocated;
@@ -50,7 +50,7 @@ class PlatformMemory {
 #endif
 
 //------------------------------------------------------------
-//! Process level fucntions for stdio.
+//! Process level functions for stdio.
 class PlatformIO {
   public:
     void Print(Int32 len, ConstCStr string);
@@ -61,7 +61,7 @@ class PlatformIO {
 };
 
 //------------------------------------------------------------
-//! Process level fucntions for low level time information.
+//! Process level functions for low level time information.
 #if defined (__ARDUINO__)
     typedef UInt32 PlatformTickType;
 #elif kVireoOS_emscripten

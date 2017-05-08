@@ -41,15 +41,15 @@ class TypeDefiner
     //! Use the TypeDefiners parser to parse data according to specified type.
     static void ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
 
-    //! Use the TypeDefiners parser to parse a stand alone literal value with type infered from grammar.
+    //! Use the TypeDefiners parser to parse a stand alone literal value with type inferred from grammar.
     static TypeRef ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString);
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
-    TypeDefiner(TypeDefinerCallback pCallback, ConstCStr pNameSapce, Int32 version);
+    TypeDefiner(TypeDefinerCallback pCallback, ConstCStr pNameSpace, Int32 version);
     static TypeRef Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeCStr);
     static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
-    static TypeRef ParseAndBuidType(TypeManagerRef tm, SubString* typeString);
+    static TypeRef ParseAndBuildType(TypeManagerRef tm, SubString* typeString);
     static Boolean HasRequiredModule(TypeDefiner* _this, ConstCStr name);
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 
@@ -113,7 +113,7 @@ class TypeDefiner
 
     #define DEFINE_VIREO_END()  return null; }
 
-    // Used immediatly after the BEGIN
+    // Used immediately after the BEGIN
     #define DEFINE_VIREO_REQUIRE(_module_) \
       { ConstCStr moduleName = #_module_;   \
       if (!TypeDefiner::HasRequiredModule(_this, moduleName)) { return moduleName; } }

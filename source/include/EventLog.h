@@ -35,7 +35,7 @@ public:
         //! An unexpected input was detected and ignored.
         kWarning = 1,
 
-        //! An error in the input was detected but the operation can continue in order to dermine if other errors exist.
+        //! An error in the input was detected but the operation can continue in order to determine if other errors exist.
         kSoftDataError = 2,
 
         //! An error in the input was detected and the operation cannot continue.

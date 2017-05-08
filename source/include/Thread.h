@@ -21,7 +21,7 @@ namespace Vireo
 
 //------------------------------------------------------------
 // In pure single thread environments like bare-metal, or
-// single thread command line apps, no mutex infrastrucutre is
+// single thread command line apps, no mutex infrastructure is
 // needed. These macros help remove all overhead for those
 // simple cases.
 #ifdef  VIREO_MULTI_THREAD

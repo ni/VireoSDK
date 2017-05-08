@@ -222,7 +222,7 @@ public:
     //! Skip the next char if it matches the single character token specified
     Boolean EatChar(char token);
 
-    //! Skip the next sequence of chars that match a speciic trait (e.g. hexadecimal)
+    //! Skip the next sequence of chars that match a specific trait (e.g. hexadecimal)
     Int32 EatCharsByTrait(UInt8 trait);
 
     //! Skip white space and comments
@@ -234,7 +234,7 @@ public:
     //! Skip logical characters accounting for UTF-8 multibyte sequences
     void EatRawChars(Int32 count);
 
-    //! Creat two sub strings base on the first occurence of a separator
+    //! Creat two sub strings base on the first occurrence of a separator
     Boolean SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
 
     //! Compare the SubString with a reference string.
@@ -251,17 +251,17 @@ public:
     //! Compare with the encoded string
     Boolean CompareViaEncodedString(SubString* string);
 
-    //! Fucntions to work with backslash '\' escapes in strings
+    //! Functions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
     Boolean PeekRawChar(Utf8Char* token, IntIndex pos = 0);
-    Int32 LengthAferProcessingEscapes();
+    Int32 LengthAfterProcessingEscapes();
     void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
 
-    //! Process the escape charaters in the substring ('\t','\n', etc.) to ('\\t', '\\n', etc.)
+    //! Process the escape characters in the substring ('\t','\n', etc.) to ('\\t', '\\n', etc.)
     IntIndex UnEscape(Utf8Char* begin, IntIndex length);
 
-    //! Read the next UTF-8 sequnce and decode it into a regular UTF-32 code point.
+    //! Read the next UTF-8 sequence and decode it into a regular UTF-32 code point.
     Boolean ReadUtf32(Utf32Char* value);
 
     //! Read the next set of code points that make up a single grapheme.
