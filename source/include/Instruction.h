@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -44,13 +44,13 @@ typedef InstructionRef (VIVM_FASTCALL _PROGMEM *InstructionFunction) (Instructio
 
 struct InstructionCore
 {
-	InstructionFunction  _function;
+    InstructionFunction  _function;
 };
-   
+
 // A non-null faked allocation for two pass packed instruction
 // allocation. Used in pass 1.
 #define kFakedInstruction ((InstructionCore*) 1)
-    
+
 //------------------------------------------------------------
 // A struct used for accessing any number or arguments in a non type strict way.
 struct GenericInstruction : public InstructionCore
@@ -64,7 +64,7 @@ struct VarArgInstruction : public InstructionCore
 {
     size_t _count;   // may be zero or more arguments in addition to the count
 };
-    
+
 //------------------------------------------------------------
 // Each struct has a Next() method that can be used outside of the class to
 // determine what the 'next' instruction is. If the instruction is derived
@@ -125,22 +125,22 @@ struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, typ
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7>
 struct Instruction8 : public Instruction7<type0, type1, type2, type3, type4, type5, type6>
 {
-	type7* _p7;
-	NEXT_INSTRUCTION_METHOD()
+    type7* _p7;
+    NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8>
 struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, type5, type6, type7>
 {
-	type8* _p8;
-	NEXT_INSTRUCTION_METHOD()
+    type8* _p8;
+    NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7, class type8, class type9>
 struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, type5, type6, type7, type8>
 {
-	type9* _p9;
-	NEXT_INSTRUCTION_METHOD()
+    type9* _p9;
+    NEXT_INSTRUCTION_METHOD()
 };
 
 //------------------------------------------------------------
@@ -162,7 +162,7 @@ struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, ty
 // var-arg functions must derive from VarArgInstruction
 // so the count will be the first argument in the snippet
 #define _ParamVarArgCount()     ((Int32)_PROGMEM_PTR(_this, _count))
-    
+
 #ifdef _DEBUG
 #define VIVM_TAIL_CALLS_USE_JMP 0
 #else
@@ -213,15 +213,15 @@ struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, ty
     VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_ (Instruction7<t0, t1, t2, t3, t4, t5, t6>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE8(_name_, t0, t1, t2, t3, t4, t5, t6, t7) \
-	VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction8<t0, t1, t2, t3, t4, t5, t6, t7>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction8<t0, t1, t2, t3, t4, t5, t6, t7>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE9(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8) \
-	VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction9<t0, t1, t2, t3, t4, t5, t6, t7, t8>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction9<t0, t1, t2, t3, t4, t5, t6, t7, t8>* _this _PROGMEM)
 
 #define VIREO_FUNCTION_SIGNATURE10(_name_, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) \
-	VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction10<t0, t1, t2, t3, t4, t5, t6, t7, t8, t9>* _this _PROGMEM)
+    VIREO_INSTRUCTION_LINKAGE InstructionCore* VIVM_FASTCALL _name_(Instruction10<t0, t1, t2, t3, t4, t5, t6, t7, t8, t9>* _this _PROGMEM)
 
-// Macro used for static link projects where simple prototypes are needed. 
+// Macro used for static link projects where simple prototypes are needed.
 #define VIREO_FUNCTION_C_PROTO(_name_) VIREO_FUNCTION_SIGNATURE0(_name_)
 
 //------------------------------------------------------------

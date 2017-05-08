@@ -1,9 +1,9 @@
 /**
- *  
+ *
  *  Copyright (c) 2017 National Instruments Corp.
- *   
+ *
  *   This software is subject to the terms described in the LICENSE.TXT file
- *    
+ *
  *    SDG
  *    */
 
@@ -33,8 +33,8 @@ Int32 LexClass(Utf8Char c)
         6,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,
         5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	6,	6,	6,	6,	1
     };
-	c &= 0xFF;
-	return (c >= 128) ? 0 : gLexicalClass[c];
+    c &= 0xFF;
+    return (c >= 128) ? 0 : gLexicalClass[c];
 }
 
 char ScanForBackslash(const Utf8Char **sp, const Utf8Char *se)
@@ -78,17 +78,17 @@ Construct a pattern string by encoding the regular expression in str.
 if the expression contains nulls, then so does the pattern).
 
 Pattern syntax:
-	^	means anchor to start of line iff it's the first char
-	.	means any char
-	*	means indefinite repeat (0 or more) iff its preceded by an alternation or non-meta-char
-	+	means indefinite repeat (1 or more) iff its preceded by an alternation or non-meta-char
-	?	means conditional (0 or 1) iff it's preceded by an alternation or non-meta-char
-	$	means anchor to the end of the line iff it's the last char
-	\	escapes any special char including itself; \b,\f,\n,\015,\t,\xx for special characters
-	[]	enclose alternates:
-			if ^ is first it negates the set with reference to printable chars.
-			if ~ is first it negates the set with reference to all chars.
-			if - is between two alpha or numeric chars it means the inclusive set.
+    ^	means anchor to start of line iff it's the first char
+    .	means any char
+    *	means indefinite repeat (0 or more) iff its preceded by an alternation or non-meta-char
+    +	means indefinite repeat (1 or more) iff its preceded by an alternation or non-meta-char
+    ?	means conditional (0 or 1) iff it's preceded by an alternation or non-meta-char
+    $	means anchor to the end of the line iff it's the last char
+    \	escapes any special char including itself; \b,\f,\n,\015,\t,\xx for special characters
+    []	enclose alternates:
+            if ^ is first it negates the set with reference to printable chars.
+            if ~ is first it negates the set with reference to all chars.
+            if - is between two alpha or numeric chars it means the inclusive set.
 */
 #define mEOF	0
 #define mStar	1
@@ -102,98 +102,98 @@ Pattern syntax:
 
 static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
 {
-	const Utf8Char *s, *ssav, *se;
-	UInt8 *p, *lastP;
-	Int32 c, n;
+    const Utf8Char *s, *ssav, *se;
+    UInt8 *p, *lastP;
+    Int32 c, n;
     bool regChar= false;
 
-	n = len;
-	if(!pat) {
+    n = len;
+    if(!pat) {
         TypeRef type = TypeManagerScope::Current()->FindType("String");
         if (type)
             type->InitData(&pat);
         if (!pat)
             return kLVError_MemFull;
-	}
+    }
     if (!pat->Resize1D(2*n + 10))
         return kLVError_MemFull;
-	s = str;
-	se = s + n;
+    s = str;
+    se = s + n;
     p = pat->Begin();
     for (lastP = 0; s < se; regChar ? (*p++ = mChr, *p++ = c) : 0) {
         Int32 charLen = SubString::CharLength(s);
         regChar = false;
-		if (charLen > 1) {
-			while (charLen-- > 0 && s < se) {
-				*p++ = mChr;
-				*p++ = *s++;
-			}
-			continue;
-		}
+        if (charLen > 1) {
+            while (charLen-- > 0 && s < se) {
+                *p++ = mChr;
+                *p++ = *s++;
+            }
+            continue;
+        }
         c = *s++;
-		if (c != '*' && c != '+' && c != '?')
+        if (c != '*' && c != '+' && c != '?')
             lastP = p;
-		switch(c) {
-			case '^':
+        switch(c) {
+            case '^':
                 if (p != pat->Begin()) {
                     regChar = true; continue;
                 }
-				*p++ = mBOL;
-				break;
-			case '.':
-				*p++ = mAny;
-				break;
-			case '*':
+                *p++ = mBOL;
+                break;
+            case '.':
+                *p++ = mAny;
+                break;
+            case '*':
                 if (lastP == 0) {
                     regChar = true; continue;
                 }
                 *lastP |= mStar;
                 lastP = 0;
                 break;
-			case '+':
+            case '+':
                 if (lastP == 0) {
                     regChar = true; continue;
                 }
-				*lastP |= mPlus;
-				lastP = 0;
-				break;
-			case '?':
+                *lastP |= mPlus;
+                lastP = 0;
+                break;
+            case '?':
                 if (lastP == 0) {
                     regChar = true; continue;
                 }
-				*lastP |= mCond;
-				lastP = 0;
-				break;
-			case '$':
+                *lastP |= mCond;
+                lastP = 0;
+                break;
+            case '$':
                 if (s < se) {
                     regChar = true; continue;
                 }
-				*p++ = mEOS;
-				break;
-			case '\\':
-				ssav = s-1;
-				c = ScanForBackslash(&ssav, se);
-				s = ssav;
+                *p++ = mEOS;
+                break;
+            case '\\':
+                ssav = s-1;
+                c = ScanForBackslash(&ssav, se);
+                s = ssav;
                 // fall through...
-			default:
-				*p++ = mChr;
-				*p++ = c;
-				break;
-			case '[':
-				*p++ = mCCL;
-				for (p++; s < se && (c= *s++) != ']'; *p++ = c)
-					if(c == '\\') {
-						ssav= s-1;
-						c = ScanForBackslash(&ssav, se);
-						s = ssav;
-					}
-				lastP[1] = p - lastP - 1;
-				break;
-		}
-	}
-	*p = mEOF;
+            default:
+                *p++ = mChr;
+                *p++ = c;
+                break;
+            case '[':
+                *p++ = mCCL;
+                for (p++; s < se && (c= *s++) != ']'; *p++ = c)
+                    if(c == '\\') {
+                        ssav= s-1;
+                        c = ScanForBackslash(&ssav, se);
+                        s = ssav;
+                    }
+                lastP[1] = p - lastP - 1;
+                break;
+        }
+    }
+    *p = mEOF;
     pat->Resize1D(IntIndex(p + 1 - pat->Begin()));
-	return 0;
+    return 0;
 }
 
 /*
@@ -209,11 +209,11 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
 {
     const Utf8Char *s = null, *se;
     const UInt8 *p, *t = null;
-	Int32 ns, nt;
+    Int32 ns, nt;
 
-	if (offset < 0)
+    if (offset < 0)
         offset= 0;
-	if (pat) {
+    if (pat) {
         if (!str)
             str = (Utf8Char*)"";
         s = str + offset;
@@ -236,17 +236,17 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
             }
         }
     }
-	if (!t){ /* copy all of str to bef and set mat, aft to empty */
+    if (!t){ /* copy all of str to bef and set mat, aft to empty */
         if (bef)
             bef->AliasAssignLen(str, len);
         if (mat)
             mat->AliasAssignLen(null, 0);
         if (aft)
             aft->AliasAssignLen(null, 0);
-		if (offsetPastMatch)
-			*offsetPastMatch = -1;
-	}
-	else {	/* copy str up to s to bef, from s to t to mat, remainder of str from t to aft */
+        if (offsetPastMatch)
+            *offsetPastMatch = -1;
+    }
+    else {	/* copy str up to s to bef, from s to t to mat, remainder of str from t to aft */
         ns= Int32(s - str);
         nt= Int32(t - str);
         if (bef)
@@ -255,94 +255,94 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
             mat->AliasAssignLen(str + ns, nt - ns);
         if (aft)
             aft->AliasAssignLen(str + nt, len - nt);
-		if(offsetPastMatch)
-			*offsetPastMatch = nt;
-	}
+        if(offsetPastMatch)
+            *offsetPastMatch = nt;
+    }
 }
 
 static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char *se)
 {
-	const Utf8Char *sSave, *t;
+    const Utf8Char *sSave, *t;
 
-	for (;;) {
-		switch(*p++) {
-			case mEOF:
-				return s > se ? 0 : s;
-			case mChr:
-				if(s >= se || *s++ != *p++)
+    for (;;) {
+        switch(*p++) {
+            case mEOF:
+                return s > se ? 0 : s;
+            case mChr:
+                if(s >= se || *s++ != *p++)
                     return 0;
-				continue;
-			case mAny:
-				if(s >= se)
+                continue;
+            case mAny:
+                if(s >= se)
                     return 0;
-				s++;
-				continue;
-			case mEOS:
-				if(s != se)
+                s++;
+                continue;
+            case mEOS:
+                if(s != se)
                     return 0;
-				continue;
-			case mCCL:
-				if(s >= se || !InSet(*s++, p + 1, p + *p))
+                continue;
+            case mCCL:
+                if(s >= se || !InSet(*s++, p + 1, p + *p))
                     return 0;
-				p += *p;
-				continue;
-			case mAny | mStar:
-				sSave = s;
-				s = se;
-				break;
-			case mChr | mStar:
-				sSave = s;
-				while (s < se && *s == *p)
+                p += *p;
+                continue;
+            case mAny | mStar:
+                sSave = s;
+                s = se;
+                break;
+            case mChr | mStar:
+                sSave = s;
+                while (s < se && *s == *p)
                     s++;
-				p++;
-				break;
-			case mCCL | mStar:
-				sSave = s;
-				while (s < se && InSet(*s, p + 1, p + *p))
+                p++;
+                break;
+            case mCCL | mStar:
+                sSave = s;
+                while (s < se && InSet(*s, p + 1, p + *p))
                     s++;
-				p += *p;
-				break;
-			case mAny | mPlus:
-				sSave = s + 1;
-				s = se;
-				break;
-			case mChr | mPlus:
-				sSave = s;
-				while(s < se && *s == *p)
+                p += *p;
+                break;
+            case mAny | mPlus:
+                sSave = s + 1;
+                s = se;
+                break;
+            case mChr | mPlus:
+                sSave = s;
+                while(s < se && *s == *p)
                     s++;
-				if (s == sSave)
+                if (s == sSave)
                     return 0;
-				sSave++;
-				p++;
-				break;
-			case mCCL | mPlus:
-				sSave= s;
-				while (s < se && InSet(*s, p + 1, p + *p))
-					s++;
-				if (s == sSave)
-					return 0;
-				sSave++;
-				p += *p;
-				break;
-			case mAny | mCond:
-				sSave = s;
-				s = s + 1;
-				break;
-			case mChr | mCond:
-				sSave = s;
-				if (s < se && *s == *p)
-					s++;
-				p++;
-				break;
-			case mCCL | mCond:
-				sSave = s;
-				if (s < se && InSet(*s, p + 1, p + *p))
-					s++;
-				p += *p;
-				break;
-			default:
-				return 0;
-		}
+                sSave++;
+                p++;
+                break;
+            case mCCL | mPlus:
+                sSave= s;
+                while (s < se && InSet(*s, p + 1, p + *p))
+                    s++;
+                if (s == sSave)
+                    return 0;
+                sSave++;
+                p += *p;
+                break;
+            case mAny | mCond:
+                sSave = s;
+                s = s + 1;
+                break;
+            case mChr | mCond:
+                sSave = s;
+                if (s < se && *s == *p)
+                    s++;
+                p++;
+                break;
+            case mCCL | mCond:
+                sSave = s;
+                if (s < se && InSet(*s, p + 1, p + *p))
+                    s++;
+                p += *p;
+                break;
+            default:
+                return 0;
+        }
     //starloop:
         for( ; s >= sSave; s--) {
             t = AMatch(p, s, se);
@@ -350,7 +350,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 return t;
         }
         return 0;
-	}
+    }
 }
 
 static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se)
@@ -358,25 +358,25 @@ static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se)
     Int32 i;
     bool sense;
 
-	sense = false;
-	if (s < se && (*s == '^' || *s == '~')) {
-		if (c < ' ' && *s == '^')
+    sense = false;
+    if (s < se && (*s == '^' || *s == '~')) {
+        if (c < ' ' && *s == '^')
             return 0;
-		s++;
-		sense = true;
-	}
-    while (s < se) {
-		if (s < se-2 && s[1] == '-' && s[0] <= s[2] && (i=LexClass(s[0])) >= 3
-		   && i <= 5 && i == LexClass(s[2])) {
-			if (c >= s[0] && c <= s[2])
-                return !sense;
-			s += 3;
-		}
-		else if(c == *s)
-            return !sense;
-		else s++;
+        s++;
+        sense = true;
     }
-	return sense;
+    while (s < se) {
+        if (s < se-2 && s[1] == '-' && s[0] <= s[2] && (i=LexClass(s[0])) >= 3
+           && i <= 5 && i == LexClass(s[2])) {
+            if (c >= s[0] && c <= s[2])
+                return !sense;
+            s += 3;
+        }
+        else if(c == *s)
+            return !sense;
+        else s++;
+    }
+    return sense;
 }
 
 

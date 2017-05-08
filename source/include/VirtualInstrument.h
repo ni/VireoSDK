@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -86,7 +86,7 @@ typedef TypedObject<VirtualInstrument>  *VirtualInstrumentObjectRef;
 class FunctionClump
 {
 public:
-	InstructionCore* _codeStart;        // first instruction object in clump. may be shared  between multiple QEs
+    InstructionCore* _codeStart;        // first instruction object in clump. may be shared  between multiple QEs
 };
 
 //------------------------------------------------------------
@@ -131,19 +131,19 @@ public:
     VIClump*            _next;              //! Next clump if this one is in a list or queue, null other wise.
     PlatformTickType    _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
     VirtualInstrument*  _owningVI;          //! VI that this clump is part of.
-	VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
-	VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
-	InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
-	Int32               _fireCount;         //! What to reset _shortCount to when the clump is done.
-	Int32               _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
+    VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
+    VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
+    InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
+    Int32               _fireCount;         //! What to reset _shortCount to when the clump is done.
+    Int32               _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
     Int32               _observationCount;  //! How many waitSates are active?
     Observer            _observationStates[2]; //! Fixed set of waits states, maximum is 2.
-    
+
 public:
     void Trigger();
     Int32               FireCount()     { return _fireCount; }
     Int32               ShortCount()    { return _shortCount; }
-    
+
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
     void EnqueueRunQueue()  { TheExecutionContext()->EnqueueRunQueue(this); }
@@ -191,7 +191,7 @@ class InstructionAllocator {
 public:
     size_t      _size;
     AQBlock1*   _next;
-    
+
     InstructionAllocator() { _size = 0; _next = null; }
     Boolean IsCalculatePass() { return _next == null; }
     void AddRequest(size_t count);
@@ -204,7 +204,7 @@ struct PatchInfo
     enum PatchType {
         Perch = 0,
     };
-    
+
     PatchType   _patchType;
     intptr_t     _whereToPeek;
     void**      _whereToPatch;
@@ -244,9 +244,9 @@ public:
     ArgumentState   _argumentState;
     EventLog*       _pLog;
     Int32           _approximateLineNumber;
-    
+
     InstructionAllocator* _cia;
-    
+
     Int32           _argCount;
     std::vector<void*> _argPointers;
     std::vector<TypeRef> _argTypes;
@@ -256,10 +256,10 @@ public:
 
     Int32           _patchInfoCount;
     std::vector<PatchInfo> _patchInfos; // Perch references that need patching
-    
+
     Int32           _perchCount;
     std::vector<InstructionCore*> _perches;
-    
+
     VirtualInstrument *_vi;
     VIClump*        _clump;
 
@@ -284,7 +284,7 @@ private:    // state related to overloads
     Boolean         _hasMultipleDefinitions;
     NamedTypeRef    _nextFunctionDefinition;
     NamedTypeRef    _genericFunctionDefinition;  // Only one allowed
-    
+
 private:    // state related to the the current argument
     Int32           _formalParameterIndex;
     TypeRef         _formalParameterType;
@@ -300,17 +300,17 @@ public:
     // ---
     // The type that has the pointer to the specific target of the function.
     TypeRef         _instructionPointerType;
-    
+
     // The calling signature descriptor for the instruction's function. Its the BaseType Of the PointerType.
     TypeRef         _instructionType;
-    
+
     // When a Perch instruction is found the target address will be the next instruction
     // _perchIndexToRecordNextInstrAddr  lets the state know when that patch-up is needed.
     Int32           _perchIndexToRecordNextInstrAddr;
-    
+
     Int32           _varArgCount;
     Boolean         _bIsVI;
-    
+
     //------------------------------------------------------------
     ClumpParseState(ClumpParseState* cps);
     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);

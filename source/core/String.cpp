@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -27,10 +27,10 @@ void String::AppendViaDecoded(SubString* string)
     Int32 value = 0;
     Utf8Char c;
     SubString ss = string;
-    
+
     IntIndex originalLength = Length();
     Int32 decodedLength = originalLength + ss.Length();
-    
+
     // Pass one, see how many %XX sequences exist.
     // Utf8 multibyte sequences are copied over byte by byte.
     while(ss.ReadRawChar(&c)) {
@@ -806,17 +806,17 @@ VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef
 }
 
 DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,				\
-						 Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
-						 StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
-						 if (cmp < 0) { \
-							 max = _ParamPointer(1); min = _ParamPointer(0); \
-						 } \
-						 _Param(2)->Resize1D((*max)->Length()); \
-						 TypeRef elementType = (*max)->ElementType(); \
-						 elementType->CopyData((*max)->Begin(), _Param(2)->Begin(), (*max)->Length()); \
-						 _Param(3)->Resize1D((*min)->Length()); \
-						 elementType = (*min)->ElementType(); \
-						 elementType->CopyData((*min)->Begin(), _Param(3)->Begin(), (*min)->Length()); )
+                         Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
+                         StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
+                         if (cmp < 0) { \
+                             max = _ParamPointer(1); min = _ParamPointer(0); \
+                         } \
+                         _Param(2)->Resize1D((*max)->Length()); \
+                         TypeRef elementType = (*max)->ElementType(); \
+                         elementType->CopyData((*max)->Begin(), _Param(2)->Begin(), (*max)->Length()); \
+                         _Param(3)->Resize1D((*min)->Length()); \
+                         elementType = (*min)->ElementType(); \
+                         elementType->CopyData((*min)->Begin(), _Param(3)->Begin(), (*min)->Length()); )
 
 DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(ReplaceSubstring, "p(i(String) i(String) i(Int32) i(Int32) i(String) o(String))")
@@ -857,7 +857,7 @@ DEFINE_VIREO_BEGIN(String)
     DEFINE_VIREO_FUNCTION(IsNotANumPathRefnum, "p(i(String) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAPath, "p(i(NIPath) o(Boolean))")
 
-	DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
+    DEFINE_VIREO_FUNCTION_CUSTOM(MaxAndMinElts, MaxAndMinEltsString, "p(i(String) i(String) o(String) o(String)")
 
 
 DEFINE_VIREO_END()

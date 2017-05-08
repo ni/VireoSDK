@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -30,7 +30,7 @@ Int32 SubString::CharLength(const Utf8Char* begin)
 #else
     // For a UTF-8 reference
     // see:  http://tools.ietf.org/html/rfc3629
-    
+
     Utf8Char leadByte = *begin;
     if ((leadByte & 0x80) == 0x00) {
         return 1;
@@ -62,11 +62,11 @@ Int32 SubString::DigitValue(Utf32Char codePoint, Int32 base)
     } else {
         value = -1;
     }
-    
+
     if (value >= base) {
         value = -1;
     }
-    
+
     return value;
 }
 
@@ -154,9 +154,9 @@ TokenTraits SubString::ClassifyNextToken() const
 {
     SubString temp = *this;
     SubString token;
-    
+
     TokenTraits tt = temp.ReadToken(&token);
-    
+
     if (temp.ComparePrefix('<')) {
         tt = TokenTraits_TemplateExpression;
     }
@@ -267,7 +267,7 @@ Boolean SubString::ReadUtf32(Utf32Char* value)
     }
 #else
     static UInt32 LeadByteMasks[] = {0x0000007F, 0x0000001F, 0x0000000F, 0x00000007};
-    
+
     if (_begin < _end) {
         Int32 continuationOctets = CharLength(_begin) - 1;
         UInt32 octet = (*_begin++);
@@ -297,7 +297,7 @@ Boolean SubString::ReadUtf32(Utf32Char* value)
 Boolean SubString::EatChar(char token)
 {
     EatLeadingSpaces();
-    
+
     if ((_begin < _end) && (*_begin == token)) {
         _begin++;
         return true;
@@ -314,10 +314,10 @@ Int32 SubString::ReadEscapeToken(SubString* token)
     //
     // If sequence is recognized then the expanded size is the number of bytes
     // the sequence expands to.
-    
+
     const Utf8Char* newBegin = _begin;
     Int32 expandedSize = 0;
-    
+
     if (_begin < _end) {
         char c = *_begin;
         if (c == 'x') {
@@ -345,10 +345,10 @@ Int32 SubString::ReadEscapeToken(SubString* token)
     } else {
         // else the escape was the last character, ignore it.
     }
-    
+
     token->AliasAssign(_begin, newBegin);
     _begin = newBegin;
-    
+
     return expandedSize;
 }
 //------------------------------------------------------------
@@ -356,7 +356,7 @@ Boolean SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, ch
 {
     const Utf8Char* it = this->_begin;
     const Utf8Char* end = this->_end;
-    
+
     while(it < end && *it != separator)
         it++;
     if (beforeMatch)
@@ -378,7 +378,7 @@ Int32 SubString::LengthAferProcessingEscapes()
     SubString temp(this);
     SubString escapeToken;
     Int32 FinalLength = 0;
-    
+
     while(temp._begin < temp._end) {
         Utf8Char c = *temp._begin++;
         if (c == '\\') {
@@ -391,9 +391,9 @@ Int32 SubString::LengthAferProcessingEscapes()
 }
 //------------------------------------------------------------
 void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
-{    
+{
     SubString temp(this);
-    
+
     while(temp._begin < temp._end) {
         Utf8Char c = *temp._begin++;
         if (c == '\\') {
@@ -452,20 +452,20 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 //! in the source code.
 IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
     SubString temp(this);
-	Utf8Char* b = dest + length;
+    Utf8Char* b = dest + length;
     IntIndex total = 0;
     while(temp._begin < temp._end && b != dest) {
-		Utf8Char c = *temp._begin++;
+        Utf8Char c = *temp._begin++;
         // Check for the char and add the '\\'
         switch (c) {
-            case '\a': 
-            case '\b': 
-            case '\f': 
-            case '\n': 
-            case '\r': 
-            case '\t': 
-            case '\'': 
-            case '\"': 
+            case '\a':
+            case '\b':
+            case '\f':
+            case '\n':
+            case '\r':
+            case '\t':
+            case '\'':
+            case '\"':
             case '\\': *dest = '\\';
                        dest++;
                        total++;
@@ -474,7 +474,7 @@ IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
         }
         // Check the bounds of the buffer provided
         if (dest == b) {
-			break;
+            break;
         }
         // Then add the letter/character
         switch (c) {
@@ -507,10 +507,10 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
     const Utf8Char* initialBegin = _begin;
     if (!(_begin < _end))
         return tokenTraits;
-    
+
     Utf8Char c = *_begin++;
     Utf8Char cPeek = (_begin < _end) ? *_begin : 0;
-    
+
     if (IsPunctuationChar(c)) {
         tokenTraits = (c == '(') ? TokenTraits_NestedExpression : TokenTraits_Punctuation;
     } else if (('"' == c) || (('@' == c) && (cPeek == '"'))) {
@@ -538,7 +538,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
         //   'abc' or @'abc'
         if ((_begin < _end) && ('@' == c)) {
             _begin++;
-            allowEscapes = false; 
+            allowEscapes = false;
             tokenTraits = TokenTraits_VerbatimString;
         } else {
             tokenTraits = TokenTraits_String;
@@ -600,7 +600,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
                 // Skip the sign
                 idToken._begin++;
             }
-            
+
             do { // Block with short-cut breaks
                 Int32 leadingDigits = idToken.EatCharsByTrait(kACT_Decimal);
                 if (leadingDigits && idToken.Length() == 0) {
@@ -654,7 +654,7 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
     TokenTraits tt = TokenTraits_Unrecognized;
     const Utf8Char* begin = Begin();
     Int32 depth = 0;
-    
+
     do {
         tt = this->ReadToken(token);
         if (token->CompareCStr("(")) {
@@ -688,7 +688,7 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
     // The loop has reached an end state, go back and add
     // tokens that were skipped over to get to this point.
     token->AliasAssign(begin, this->Begin());
-    
+
     return tt;
 }
 //------------------------------------------------------------
@@ -795,7 +795,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
     // 3  #n    Which also means variable but is identifies as a template parameter
     // Meta ints can only be used where the reasonable range of value does not
     // include extreme negative numbers.
-    
+
     EatLeadingSpaces();
     if (_begin < _end) {
         if (*_begin == '*') {
@@ -829,9 +829,9 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
     IntMax sign = 1;
     Int32 base = 10;
     Boolean bNumberFound = false;
-    
+
     EatLeadingSpaces();
-    
+
     if (ComparePrefixCStr("0x")) {
         base = 16;
         _begin += 2;
@@ -843,7 +843,7 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
             EatChar('+');
         }
     } // Any need for octal?
-    
+
     while(_begin < _end) {
         Int32 cValue = DigitValue(*_begin, base);
 
@@ -862,11 +862,11 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
             break;
         }
     }
-    
+
     if (pValue) {
         *pValue = value * sign;
     }
-    
+
     return bNumberFound;
 }
 //------------------------------------------------------------
@@ -880,7 +880,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     ConstCStr current = tempCStr.BeginCStr();
     char* end = null;
     Int32 errCode = kLVError_NoError;
-    
+
     value = strtod(current, (char**)&end);
     if (suppressInfNaN) {
         if (isinf(value)) {
@@ -951,7 +951,7 @@ Int32 SubString::CountMatches(char value)
 {
     const Utf8Char* pChar = _begin;
     Int32 matchCount = 0;
-    
+
     while (pChar < _end) {
         if (*pChar == value)
             matchCount++;
@@ -1004,7 +1004,7 @@ void SubString::EatLeadingSpaces()
     // Eat white spaces and EOL chars.
     // If a '//' comment is found skip to an EOL char or end of string
     // If at '/*' Comment is found skip till closing or end of string
-    
+
     while (_begin < _end)
     {
         if (IsSpaceChar(*_begin)) {
@@ -1082,7 +1082,7 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
         offset = 0;
     }
     const Utf8Char* pStart = _begin + offset;
-    const Utf8Char* pEnd = _end - searchStringLength;    
+    const Utf8Char* pEnd = _end - searchStringLength;
     for (; pStart < pEnd; ) {
         if (searchString->Compare(pStart, searchStringLength, ignoreCase)) {
             return (IntIndex)(pStart - _begin);

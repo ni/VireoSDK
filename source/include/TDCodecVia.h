@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -90,7 +90,7 @@ private:
     SubString       _string;      // "Begin()" moves through string as it is parsed.
     const Utf8Char* _originalStart;
     Int32           _lineNumberBase;
-      
+
 public:
     // Format options also used in ViaFormatter
     ViaFormatOptions  _options;
@@ -120,12 +120,12 @@ public:
     void    PreParseClump(VIClump* viClump);
     void    ParseInstructionArguments(VIClump* clump);
     SubString* TheString() {return &_string;}
-    
+
 public:
     static NIError StaticRepl(TypeManagerRef typeManager, SubString *replStream);
     static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
     static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
-    
+
 private :
     TypeRef BadType()   {return _typeManager->BadType();}
     void    ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator);
@@ -158,7 +158,7 @@ private:
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt() { return _options._fmt; }
     Int32 _errorCode;
-    
+
     static const Int32 kTempFormattingBufferSize = 100;
 public:
     TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null, Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
@@ -181,7 +181,7 @@ public:
     void    FormatInt(EncodingEnum encoding, IntMax value);
     void    FormatIEEE754(TypeRef type, void* pData);
     Int32   GetError() const { return _errorCode; }
-    
+
     static char LocaleDefaultDecimalSeperator;
     static ViaFormatChars formatVIA;
     static ViaFormatChars formatJSON;
@@ -220,7 +220,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsDefineTypeToken       "define"
 #define tsEnqueueTypeToken      "enqueue"
 #define tsElementToken          "e"  // used for Cluster, BitCluster, and array aggregate types for simple elements
-#define tsAliasToken            "al" // alias to another element. 
+#define tsAliasToken            "al" // alias to another element.
 #define tsInputParamToken       "i"  // input parameter
 #define tsOutputParamToken      "o"  // output parameter
 #define tsInputOutputParamToken "io" // input-output parameter

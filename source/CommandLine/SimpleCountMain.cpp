@@ -73,10 +73,10 @@ int VIREO_MAIN(int argc, const char * argv[])
 {
     PlatformIO::Printf("Simple Counting Vireo Egg Shell built %s\n",__TIME__ );
     SubString  subString(VireoProgram);
-    
+
     gpShell = EggShell::Create(null);
     gpShell->REPL(&subString);
-    
+
 #if kVireoOS_emscripten
     // To learn more about event loops and emscripten
     // http://kripken.github.io/emscripten-site/docs/porting/emscripten-runtime-environment.html
@@ -92,7 +92,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 void RunExec() {
 
     gState = ((EggShell*)gpShell)->TheExecutionContext()->ExecuteSlices(400);
-    
+
 #if kVireoOS_emscripten
     if (gState == kExecutionState_None) {
         emscripten_cancel_main_loop();

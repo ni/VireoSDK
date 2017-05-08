@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -31,17 +31,17 @@ public:
     enum EventSeverity {
         //! Diagnostic trace notice, these are only recorded if tracing is turned on.
         kTrace = 0,
-        
+
         //! An unexpected input was detected and ignored.
         kWarning = 1,
-        
+
         //! An error in the input was detected but the operation can continue in order to dermine if other errors exist.
         kSoftDataError = 2,
-        
+
         //! An error in the input was detected and the operation cannot continue.
-        kHardDataError = 3,        
+        kHardDataError = 3,
     };
-    
+
     EventLog(StringRef stringRef);
     Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; };
     Int32 HardErrorCount()                  { return  _hardErrorCount; };
@@ -49,7 +49,7 @@ public:
     void LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args);
     void LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
     void LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message);
-    
+
     // TODO: change to use streams
     //! Special string instance for constructor to skip all messages (counts still tallied)
     static StringRef DevNull;

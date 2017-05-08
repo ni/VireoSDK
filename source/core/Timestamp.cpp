@@ -78,7 +78,7 @@ namespace Vireo
       */
     void Timestamp::GetCurrentTimestamp(Timestamp *t)
     {
-    #if kVireoOS_win32U 
+    #if kVireoOS_win32U
         struct timeval tv;
         Int32 retval;
         FILETIME ft;

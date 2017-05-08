@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -29,10 +29,10 @@ class Observer
 public:
     //! What object is the clump waiting on?
     ObservableCore* _object;
-    
+
     //! Pointer to the next WS describing a clump waiting on _object.
     Observer* _next;
-    
+
     //! Which clump owns this WS object.
     VIClump* _clump;
 
@@ -47,7 +47,7 @@ class ObservableCore
 {
 public:
     Observer* _observerList;
-    
+
 public:
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);

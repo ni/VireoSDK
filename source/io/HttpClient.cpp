@@ -42,15 +42,15 @@ extern "C" {
 }
 #endif
 
-/* 
-	The call chain will be prepended to errorCluster source string.
-	For example:
-	
-	If existing source is empty string then output is
-		Primitive in MyVI->SubVI
+/*
+    The call chain will be prepended to errorCluster source string.
+    For example:
 
-	If existing source contains contents such as <APPEND>\nCustom Error Information then output is
-		Primitive in MyVI->SubVI<APPEND>\nCustom Error Information
+    If existing source is empty string then output is
+        Primitive in MyVI->SubVI
+
+    If existing source contains contents such as <APPEND>\nCustom Error Information then output is
+        Primitive in MyVI->SubVI<APPEND>\nCustom Error Information
 */
 void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName)
 {
@@ -73,7 +73,7 @@ void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, ConstCStr m
         AddCallChainToSourceIfErrorPresent(errorCluster, methodName);
     }
 }
- 
+
 //------------------------------------------------------------
 // Cookie file(0), username(1), password(2), verify Server(3), handle(4), error cluster(5)
 VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)

@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -66,10 +66,10 @@ enum ExecutionState
     kExecutionState_ClumpsWaitingOnQueues = 0x04,
     kExecutionState_ClumpsWaitingOnISRs = 0x08,
 };
-    
+
 // Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work
 // cooperatively with other thread operations much like a message pump does. ECs
-// may be the only tasks a thread has. 
+// may be the only tasks a thread has.
 //
 // All access to the outside , graphics, time, IO
 // needs to be derived from an object connected to the context.
@@ -77,7 +77,7 @@ enum ExecutionState
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     #define ECONTEXT static
 #else
-    #define ECONTEXT 
+    #define ECONTEXT
 #endif
 
 //------------------------------------------------------------
@@ -105,12 +105,12 @@ public:
     ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
-	ECONTEXT    VIClump*        CurrentClump() { return _runningQueueElt; }
+    ECONTEXT    VIClump*        CurrentClump() { return _runningQueueElt; }
     ECONTEXT    void            CheckOccurrences(PlatformTickType t);		// Will put items on the run queue if it is time. or ready bit is set.
 
-    // Run a string of instructions to completion, no concurrency. 
+    // Run a string of instructions to completion, no concurrency.
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
-    
+
     // Run the concurrent execution system for a short period of time
     ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
@@ -119,7 +119,7 @@ public:
     ECONTEXT    ExecutionState  State() { return _state; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
-  
+
 public:
     // Method for runtime errors to be routed through.
     ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
@@ -127,7 +127,7 @@ public:
 private:
     static Boolean _classInited;
     static InstructionCore _culDeSac;
-    
+
 public:
     static inline Boolean IsNotCulDeSac(InstructionCore* pInstruction) {return pInstruction->_function != (InstructionFunction)CulDeSac;};
     static inline Boolean IsDone(InstructionCore* pInstruction) {return pInstruction->_function == (InstructionFunction)Done;};
@@ -146,7 +146,7 @@ public:
 #endif
 
 void AppendCallChainString(StringRef stringRef);
-    
+
 } // namespace Vireo
 
 #endif //ExecutionContext_h

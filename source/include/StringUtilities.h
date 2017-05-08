@@ -1,9 +1,9 @@
 /**
- 
+
 Copyright (c) 2014-2015 National Instruments Corp.
- 
+
 This software is subject to the terms described in the LICENSE.TXT file
- 
+
 SDG
 */
 
@@ -184,7 +184,7 @@ const UInt8 AsciiCharTraits[] =
     /* 7E ~  */   kACT_Punctuation,
     /* 7F del*/   0,
 };
-    
+
 //------------------------------------------------------------
 //! JSON style separator between field name and value.
 #define tsNameSuffix    ":"
@@ -206,7 +206,7 @@ public:
     static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
     static Int32   CharLength(const Utf8Char* begin);
     static Int32   DigitValue(Utf32Char codepoint, Int32 base);
-    
+
 public:
     SubString()                         {}
     SubString(ConstCStr begin)          { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
@@ -215,16 +215,16 @@ public:
     void AliasAssignCStrLen(ConstCStr begin, IntIndex n) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + n) : begin)); }
     void AliasAssignCStr(ConstCStr begin) { AliasAssignCStrLen(begin, IntIndex(strlen(begin))); }
     void AliasAssignLen(const Utf8Char *begin, IntIndex len) { AliasAssign(begin, begin + len); }
-    
+
     //! Skip all tokens and comments up to the next eol sequence
     void EatToEol();
-    
+
     //! Skip the next char if it matches the single character token specified
     Boolean EatChar(char token);
-    
+
     //! Skip the next sequence of chars that match a speciic trait (e.g. hexadecimal)
     Int32 EatCharsByTrait(UInt8 trait);
-    
+
     //! Skip white space and comments
     void EatLeadingSpaces();
 
@@ -236,7 +236,7 @@ public:
 
     //! Creat two sub strings base on the first occurence of a separator
     Boolean SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
-    
+
     //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
@@ -250,7 +250,7 @@ public:
 
     //! Compare with the encoded string
     Boolean CompareViaEncodedString(SubString* string);
-    
+
     //! Fucntions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
@@ -260,10 +260,10 @@ public:
 
     //! Process the escape charaters in the substring ('\t','\n', etc.) to ('\\t', '\\n', etc.)
     IntIndex UnEscape(Utf8Char* begin, IntIndex length);
-    
+
     //! Read the next UTF-8 sequnce and decode it into a regular UTF-32 code point.
     Boolean ReadUtf32(Utf32Char* value);
-    
+
     //! Read the next set of code points that make up a single grapheme.
     Boolean ReadGraphemeCluster(SubString* token);
 
@@ -272,13 +272,13 @@ public:
 
     //! Read the next sequence of digits and parse them as an integer.
     Boolean ReadInt(IntMax* value, Boolean *overflow = null);
-    
+
     //! Read the next sequence of digits and parse them as an IntDim. Like Int but adds '*' and '$n'
     Boolean ReadIntDim(IntIndex* value);
-    
+
     //! Read the next sequence of digits and parse them as a Double.
     Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false, Int32 *errCodePtr = null);
-    
+
     //! Read a simple token name, value, punctuation, etc.
     TokenTraits ReadToken(SubString* token, Boolean suppressInfNaN = false);
 
@@ -290,23 +290,23 @@ public:
 
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);
-    
+
     //! Read a token or parenthesized expression of arbitrary depth.
     TokenTraits ReadSubexpressionToken(SubString* token);
-    
+
     //! Peek at the next token and classify it.
     TokenTraits ClassifyNextToken() const;
- 
+
     //! Count occurrences of a specified Ascii character.
     Int32 CountMatches(char value);
-    
+
     //! Length of the string in logical UTF-8 encoded code points.
     Int32 StringLength();
-    
+
     //! Remove quotes (single or double) from the ends of a string
     //! based on previously determined token trait.
     void TrimQuotedString(TokenTraits tt);
-    
+
     IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
@@ -329,7 +329,7 @@ class CompareSubString
             const Utf8Char* ba = a.Begin();
             const Utf8Char* bb = b.Begin();
             const Utf8Char* ea = a.End();
-            
+
             while (ba < ea) {
                 if (*ba !=  *bb) {
                     return *ba < *bb;
@@ -346,7 +346,7 @@ class CompareSubString
 //------------------------------------------------------------
 //! A class for making temporary null terminated strings for calling OS APIs
 #define kTempCStringLength 255
- 
+
 class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 {
 public:
@@ -355,16 +355,16 @@ public:
 
     //! Construct a null terminated from an existing SubString.
     TempStackCString(SubString* string) : FixedCArray(string) {}
-    
+
     //! Construct a null terminated from rwa block of UTF-8 characters.
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) {}
-    
+
     //! Append a SubString.
     Boolean Append(SubString* string)
     {
         return FixedCArray::Append(string->Begin(), (size_t)string->Length());
     }
-    
+
     //! Append a null terminated String.
     Boolean AppendCStr(ConstCStr cstr) { return FixedCArray::Append((Utf8Char*)cstr, (IntIndex)strlen(cstr)); }
 
