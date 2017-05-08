@@ -137,8 +137,8 @@
     var compareResults = function (testName, oldResultsIn, newResultsIn, msec) {
         var diffs = [],
             results;
-        var oldResults = oldResultsIn.replace(/\r\n/gm, '\n');
-        var newResults = newResultsIn.replace(/\r\n/gm, '\n');
+        var oldResults = oldResultsIn.replace(/\r+\n/gm, '\n');
+        var newResults = newResultsIn.replace(/\r+\n/gm, '\n');
         var cleanNewResults = newResults.replace(/^\/\/.*\n/gm, ''); // use \n instead of $ so entire line is deleted; don't leave blank line
         var i = 0;
         var lineCount = 0;
