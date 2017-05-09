@@ -16,6 +16,7 @@ namespace Vireo
 
 NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prependArrayLength);
 
-IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, IntIndex stringIndex, void *pDefaultData, TypeRef type, void *pData);
+IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, IntIndex stringIndex,
+                       void *pDefaultData, TypeRef type, void *pData);
 
-} // namespace Vireo
+}  // namespace Vireo

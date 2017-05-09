@@ -18,12 +18,12 @@ Craig S.
 
 using namespace Vireo;
 
-#define kNumberOfIndexBits	20
-#define kNumberOfMagicBits	(32 - kNumberOfIndexBits)				// 12 bits of magic number 4K
-#define IndexFromRefNum(mc) (UInt32(mc) & kMaxIndex)             // retrieves the pouch index portion of the refnum
-#define kMagicNumberShift 	kNumberOfIndexBits					// bits magic number is shifted  2^20 possible refnums
-#define kMaxIndex 			((1U << kNumberOfIndexBits) - 1)	// 1M
-#define kMaxMagicNumber 	((1U << kNumberOfMagicBits) - 1)
+#define kNumberOfIndexBits  20
+#define kNumberOfMagicBits  (32 - kNumberOfIndexBits)    // 12 bits of magic number 4K
+#define IndexFromRefNum(mc) (UInt32(mc) & kMaxIndex)     // retrieves the pouch index portion of the refnum
+#define kMagicNumberShift   kNumberOfIndexBits           // bits magic number is shifted  2^20 possible refnums
+#define kMaxIndex           ((1U << kNumberOfIndexBits) - 1)  // 1M
+#define kMaxMagicNumber     ((1U << kNumberOfMagicBits) - 1)
 
 #define MagicMask(mn) (UInt32(mn) & kMaxMagicNumber)                   // retrieves the magic number portion of the refnum
 #define MagicFromRefNum(mc) (MagicMask(UInt32(mc)>>kMagicNumberShift)) // retrieves magic number portion of the refnum, but shifted back to being a number
@@ -69,7 +69,7 @@ RefNumStorageBase::RefNumHeaderAndData* RefNumStorageBase::CreateRefNumIndex(Ref
 {
     bool isNew;
     UInt32 index = static_cast<UInt32>(IndexFromRefNum(refnum));
-    RefNumHeaderAndData* rnp = CreateRefNumIndexT(index, isNew);
+    RefNumHeaderAndData* rnp = CreateRefNumIndexT(index, &isNew);
     if (isNew)
         ++_firstFree;
     else if (rnp->_refHeader.nextFree >= 0)
@@ -197,13 +197,13 @@ Int32 RefNumStorageBase::GetRefNumCount() {
     return Int32(_numUsed);
 }
 
-NIError RefNumStorageBase::GetRefNumList(RefNumList &list) {
-    list.clear();
-#if 0 // ??? finish
-    list.reserve(_refStorage.size());
+NIError RefNumStorageBase::GetRefNumList(RefNumList *list) {
+    list->clear();
+#if 0  // TODO finish
+    list->reserve(_refStorage.size());
     typename RefNumMap::iterator it = _refStorage.begin(), ite = _refStorage.end();
     while (it != ite) {
-        list.push_back(it->first);
+        list->push_back(it->first);
         ++it;
     }
 #endif
@@ -214,7 +214,7 @@ bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr 
     RefNumHeaderAndData* rnp = NULL;
     bool rightsWereAcquired = false;
 
-    if(_isRefCounted){
+    if(_isRefCounted) {
         rnp = ValidateRefNumIndex(refnum);
         if (rnp) {
             UInt32 refnumMagic = UInt32(MagicFromRefNum(refnum));
@@ -256,7 +256,7 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
     RefNumHeaderAndData* rnp = NULL;
     Int32 previousRefCount = 0;
 
-    if(_isRefCounted){
+    if(_isRefCounted) {
         rnp = ValidateRefNumIndex(refnum);
         if (rnp) {
             UInt32 refnumMagic = UInt32(MagicFromRefNum(refnum));
@@ -265,7 +265,7 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
                 Int32 refCount= UInt32(CountFromMagicNum(oldRefCount));
                 UInt32 internalMagic = UInt32(MagicFromRefNum(oldRefCount));
 
-                if(refCount > 0 && internalMagic == refnumMagic){
+                if(refCount > 0 && internalMagic == refnumMagic) {
                     Int32 newRefCount = MakePackedMagicNum(refCount-1, refnumMagic);
                     if (CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
                         if (1 == refCount) {

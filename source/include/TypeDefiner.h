@@ -27,11 +27,11 @@ typedef ConstCStr (*TypeDefinerCallback)(TypeDefiner* _this, TypeManagerRef type
 //! Facilitate the registration of Vireo types that are defined in C++ code.
 class TypeDefiner
 {
-  private:
+ private:
     TypeDefiner*            _pNext;
     TypeDefinerCallback     _pCallback;
     ConstCStr               _pModuleName;
-  public:
+ public:
     //! Add core primitive types to the specified TypeManager
     static void DefineStandardTypes(TypeManagerRef tm);
 
@@ -39,10 +39,12 @@ class TypeDefiner
     static void DefineTypes(TypeManagerRef tm);
 
     //! Use the TypeDefiners parser to parse data according to specified type.
-    static void ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log, Int32 lineNumber, SubString* valueString);
+    static void ParseData(TypeManagerRef tm, DefaultValueType* defaultValueType, EventLog* log,
+                          Int32 lineNumber, SubString* valueString);
 
     //! Use the TypeDefiners parser to parse a stand alone literal value with type inferred from grammar.
-    static TypeRef ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log, Int32 lineNumber, SubString* valueString);
+    static TypeRef ParseLiteral(TypeManagerRef tm, TypeRef patternType, EventLog* log,
+                                Int32 lineNumber, SubString* valueString);
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
@@ -54,22 +56,26 @@ class TypeDefiner
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString, PointerTypeEnum pointerType, ConstCStr cname);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer,
+                                                 ConstCStr typeString, PointerTypeEnum pointerType,
+                                                 ConstCStr cname);
 #else
-    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeString, PointerTypeEnum pointerType);
+    static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer,
+                                                 ConstCStr typeString, PointerTypeEnum pointerType);
 #endif
     static void DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString);
-    static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs, ConstCStr typeString);
-  private:
+    static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs,
+                                      ConstCStr typeString);
+ private:
     static TypeDefiner* _gpTypeDefinerList;
     //@}
 
     //! Basic PackageResolver
-  public:
-    static void ResolvePackage( SubString* packageName, StringRef packageContents);
+ public:
+    static void ResolvePackage(SubString* packageName, StringRef packageContents);
 };
 
-}
+}  // namespace Vireo
 
 #define TOKENPASTE(x, y, z)    x ## y ## z
 #define TOKENPASTE2(x, y, z)   TOKENPASTE(x, y, z)
@@ -103,14 +109,14 @@ class TypeDefiner
     #define DEFINE_VIREO_BEGIN_DYNAMIC_MODULE(_module_) \
     static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
     extern "C" RegisterDynamicVireoModule() {} \
-    static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) (TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
+    static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) ( \
+        TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
     static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
-
     #define DEFINE_VIREO_BEGIN(_module_) \
       static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm); \
-      static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) (TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
+      static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) ( \
+        TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
       static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
-
     #define DEFINE_VIREO_END()  return null; }
 
     // Used immediately after the BEGIN
@@ -123,25 +129,31 @@ class TypeDefiner
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction, #_name_));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, \
+        kPTInstructionFunction, #_name_));
 
     #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, kPTInstructionFunction, #_cfunction_));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, \
+        kPTInstructionFunction, #_cfunction_));
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen, #_name_));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, \
+        kPTGenericFunctionCodeGen, #_name_));
 
 #else
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, kPTInstructionFunction));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, \
+        kPTInstructionFunction));
 
     #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, kPTInstructionFunction));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, \
+        kPTInstructionFunction));
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, kPTGenericFunctionCodeGen));
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, \
+        kPTGenericFunctionCodeGen));
 
-#endif
+#endif  // defined(VIREO_INSTRUCTION_REFLECTION)
 
     #define DEFINE_VIREO_VALUE(_name_, value, _typeTypeString_) \
       (TypeDefiner::DefineCustomValue(tm, #_name_, value, _typeTypeString_));
@@ -149,7 +161,7 @@ class TypeDefiner
     #define DEFINE_VIREO_CUSTOM_DP(_name_, _type_, _dataProcs_) \
       (TypeDefiner::DefineCustomDataProcs(tm, #_name_, _dataProcs_, _type_));
 
-#endif
+#endif  // else VIREO_STATIC_LINK
 
-#endif // TypeDefiner_h
+#endif  // TypeDefiner_h
 

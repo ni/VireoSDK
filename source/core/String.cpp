@@ -26,7 +26,7 @@ void String::AppendViaDecoded(SubString* string)
 {
     Int32 value = 0;
     Utf8Char c;
-    SubString ss = string;
+    SubString ss(*string);
 
     IntIndex originalLength = Length();
     Int32 decodedLength = originalLength + ss.Length();
@@ -43,7 +43,7 @@ void String::AppendViaDecoded(SubString* string)
         // Pass two, copy over the characters and decode
         // valid %XX sequences. Warning, %XX values above
         // 127 could easily result in invalid Utf8 sequences.
-        ss = string;
+        ss = *string;
         Utf8Char* pDest = BeginAt(originalLength);
         while(ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value)) {
@@ -805,7 +805,7 @@ VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef
    return _NextInstruction();
 }
 
-DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,				\
+DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,    \
                          Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
                          StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
                          if (cmp < 0) { \

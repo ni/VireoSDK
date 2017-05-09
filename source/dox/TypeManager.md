@@ -40,7 +40,7 @@ All types ultimately describe values that are represented by a block of bits. Fo
 
 ~~~
      // Int32 is a cluster with one element that is a BitBlock of 32 bits
-     // in signed 2's compliment encoding (SInt).
+     // in signed 2's complement encoding (SInt).
      define (Int32 c(e(bb(32 SInt))) )
      
      // The UInt32 type only differs by its encoding.

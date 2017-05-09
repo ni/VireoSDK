@@ -17,8 +17,9 @@
 #include "DataTypes.h"
 
 #if kVireoOS_emscripten
-#define rintf RINTF_UNDEFINED // don't use rintf implementation on emscripten; it doesn't obey rounding modes correctly
-#define EMSCRIPTEN_NOOPT __attribute__((optnone)) // allow disabling optimizations that expose bugs in emscripten libs, such as those that cause Double casts to be elided and a rint call replaced with rintf
+#define rintf RINTF_UNDEFINED  // don't use rintf implementation on emscripten; it doesn't obey rounding modes correctly
+#define EMSCRIPTEN_NOOPT __attribute__((optnone))  // allow disabling optimizations that expose bugs in
+// emscripten libs, such as those that cause Double casts to be elided and a rint call replaced with rintf
 #else
 #define EMSCRIPTEN_NOOPT
 #endif
@@ -32,16 +33,16 @@ typedef String *StringRef;
 //------------------------------------------------------------
 //! Process level functions for memory allocation.
 class PlatformMemory {
-  private:
+ private:
     size_t _totalAllocated;
-  public:
+ public:
     void* Malloc(size_t countAQ);
     void* Realloc(void* pBuffer, size_t countAQ);
     void Free(void* pBuffer);
     size_t TotalAllocated() { return _totalAllocated; }
 };
 
-//#define VIREO_TRACK_MALLOC
+// #define VIREO_TRACK_MALLOC
 
 #if defined(VIREO_TRACK_MALLOC)
   #define LOG_PLATFORM_MEM(message)    gPlatform.IO.Printf(message " %d\n", (int)gPlatform.Mem.TotalAllocated());
@@ -52,7 +53,7 @@ class PlatformMemory {
 //------------------------------------------------------------
 //! Process level functions for stdio.
 class PlatformIO {
-  public:
+ public:
     void Print(Int32 len, ConstCStr string);
     void Print(ConstCStr string);
     void Printf(ConstCStr format, ...);
@@ -71,7 +72,7 @@ class PlatformIO {
 #endif
 
 class PlatformTimer {
-  public:
+ public:
     PlatformTickType TickCount();
     PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
     PlatformTickType SecondsToTickCount(Double seconds);
@@ -84,16 +85,16 @@ class PlatformTimer {
 //------------------------------------------------------------
 //! Single class to gather platform classes.
 class Platform {
-  public:
+ public:
     void Setup();
     void Shutdown();
-  public:
+ public:
     PlatformMemory  Mem;
     PlatformIO      IO;
     PlatformTimer   Timer;
 };
 extern Platform gPlatform;
 
-}
+}  // namespace Vireo
 
-#endif // Platform_h
+#endif  // Platform_h

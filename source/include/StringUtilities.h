@@ -25,17 +25,17 @@ enum TokenTraits
 {
     // in/out traits used to define what is being looked for and what was found
     TokenTraits_Unrecognized = 0,
-    TokenTraits_Boolean,        // true, false
-    TokenTraits_Integer,        // 123
-    TokenTraits_IEEE754,        // 123.0
-    TokenTraits_String,         // 'abc', "abc"
-    TokenTraits_VerbatimString, // @'abc', @"abc"
-    TokenTraits_Punctuation,    // ,  (Many 'punctuation' are reserved: * @ $ _)
-    TokenTraits_SymbolName,     // a123
-    TokenTraits_WildCard,       // *
-    TokenTraits_Nesting,        // ( ) [ ] { }
-    TokenTraits_NestedExpression,//( )
-    TokenTraits_TemplateExpression,// < >
+    TokenTraits_Boolean,         // true, false
+    TokenTraits_Integer,         // 123
+    TokenTraits_IEEE754,         // 123.0
+    TokenTraits_String,          // 'abc', "abc"
+    TokenTraits_VerbatimString,  // @'abc', @"abc"
+    TokenTraits_Punctuation,     // ,  (Many 'punctuation' are reserved: * @ $ _)
+    TokenTraits_SymbolName,      // a123
+    TokenTraits_WildCard,        // *
+    TokenTraits_Nesting,         // ( ) [ ] { }
+    TokenTraits_NestedExpression,    // ( )
+    TokenTraits_TemplateExpression,  // < >
 };
 
 //------------------------------------------------------------
@@ -55,7 +55,7 @@ enum AsciiCharTraitsEnum {
 
 const UInt8 AsciiCharTraits[] =
 {
-    /* 00   */  0,      //0
+    /* 00   */  0,
     /* 01   */  0,
     /* 02   */  0,
     /* 03   */  0,
@@ -71,7 +71,7 @@ const UInt8 AsciiCharTraits[] =
     /* 0D cr*/  kACT_Space,
     /* 0E   */  0,
     /* 0F   */  0,
-    /* 10   */  0,      //16
+    /* 10   */  0,      // 16
     /* 11   */  0,
     /* 12   */  0,
     /* 13   */  0,
@@ -87,7 +87,7 @@ const UInt8 AsciiCharTraits[] =
     /* 1D   */  0,
     /* 1E   */  0,
     /* 1F   */  0,
-    /* 20    */   kACT_Space,   //32
+    /* 20    */   kACT_Space,   // 32
     /* 21 !  */   kACT_Punctuation,
     /* 22 "  */   0,
     /* 23 #  */   kACT_Punctuation,
@@ -103,7 +103,7 @@ const UInt8 AsciiCharTraits[] =
     /* 2D -  */   kACT_Id,
     /* 2E .  */   kACT_Id,
     /* 2F /  */   kACT_Punctuation,
-    /* 30 0  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,      //48
+    /* 30 0  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,      // 48
     /* 31 1  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
     /* 32 2  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
     /* 33 3  */   kACT_Id | kACT_Decimal | kACT_Hex | kACT_Oct,
@@ -119,7 +119,7 @@ const UInt8 AsciiCharTraits[] =
     /* 3D =  */   0,
     /* 3E >  */   kACT_Punctuation | kACT_Nesting,
     /* 3F ?  */   0,
-    /* 40 @  */   0,      //64
+    /* 40 @  */   0,      // 64
     /* 41 A  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 42 B  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 43 C  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -135,7 +135,7 @@ const UInt8 AsciiCharTraits[] =
     /* 4D M  */   kACT_Id | kACT_Letter,
     /* 4E N  */   kACT_Id | kACT_Letter,
     /* 4F O  */   kACT_Id | kACT_Letter,
-    /* 50 P  */   kACT_Id | kACT_Letter,      //80
+    /* 50 P  */   kACT_Id | kACT_Letter,      // 80
     /* 51 Q  */   kACT_Id | kACT_Letter,
     /* 52 R  */   kACT_Id | kACT_Letter,
     /* 53 S  */   kACT_Id | kACT_Letter,
@@ -151,7 +151,7 @@ const UInt8 AsciiCharTraits[] =
     /* 5D ]  */   kACT_Punctuation | kACT_Nesting,
     /* 5E ^  */   kACT_Id,
     /* 5F _  */   kACT_Id,
-    /* 60 `  */   0,      //96
+    /* 60 `  */   0,      // 96
     /* 61 a  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 62 b  */   kACT_Id | kACT_Letter | kACT_Hex,
     /* 63 c  */   kACT_Id | kACT_Letter | kACT_Hex,
@@ -167,7 +167,7 @@ const UInt8 AsciiCharTraits[] =
     /* 6D m  */   kACT_Id | kACT_Letter,
     /* 6E n  */   kACT_Id | kACT_Letter,
     /* 6F o  */   kACT_Id | kACT_Letter,
-    /* 70 p  */   kACT_Id | kACT_Letter,
+    /* 70 p  */   kACT_Id | kACT_Letter,     //  112
     /* 71 q  */   kACT_Id | kACT_Letter,
     /* 72 r  */   kACT_Id | kACT_Letter,
     /* 73 s  */   kACT_Id | kACT_Letter,
@@ -196,23 +196,37 @@ const UInt8 AsciiCharTraits[] =
 //! The core class for working with strings. The SubString never owns the data it points to.
 class SubString : public SubVector<Utf8Char>
 {
-public:
+ public:
     static Boolean IsAscii(Utf8Char c)      { return !(c & 0x10); }
     static Boolean IsEolChar(Utf8Char c)    { return (c == '\r') || (c == '\n'); }
-    static Boolean IsSpaceChar(Utf8Char c)  { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space)); }
-    static Boolean IsNumberChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal)); }
-    static Boolean IsHexChar(Utf8Char c)    { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex)); }
-    static Boolean IsIdentifierChar(Utf8Char c) { return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id)) || (c & 0x80); }
-    static Boolean IsPunctuationChar(Utf8Char c) { return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation); }
+    static Boolean IsSpaceChar(Utf8Char c)  {
+        return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Space));
+    }
+    static Boolean IsNumberChar(Utf8Char c) {
+        return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal));
+    }
+    static Boolean IsHexChar(Utf8Char c)    {
+        return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex));
+    }
+    static Boolean IsIdentifierChar(Utf8Char c) {
+        return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id)) || (c & 0x80);
+    }
+    static Boolean IsPunctuationChar(Utf8Char c) {
+        return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation);
+    }
     static Int32   CharLength(const Utf8Char* begin);
     static Int32   DigitValue(Utf32Char codepoint, Int32 base);
 
-public:
-    SubString()                         {}
-    SubString(ConstCStr begin)          { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin)); }
+ public:
+    SubString()                          { }
+    explicit SubString(ConstCStr begin)   {
+        AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + strlen(begin)) : begin));
+    }
     SubString(const Utf8Char* begin, const Utf8Char* end) { AliasAssign(begin, end); }
-    SubString(SubString* original)      { AliasAssign(original->Begin(), original->End()); }
-    void AliasAssignCStrLen(ConstCStr begin, IntIndex n) { AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + n) : begin)); }
+    explicit SubString(SubString* original)  { AliasAssign(original->Begin(), original->End()); }
+    void AliasAssignCStrLen(ConstCStr begin, IntIndex n) {
+        AliasAssign((const Utf8Char*)begin, (const Utf8Char*)(begin ? (begin + n) : begin));
+    }
     void AliasAssignCStr(ConstCStr begin) { AliasAssignCStrLen(begin, IntIndex(strlen(begin))); }
     void AliasAssignLen(const Utf8Char *begin, IntIndex len) { AliasAssign(begin, begin + len); }
 
@@ -242,11 +256,15 @@ public:
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
-    Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const ;
-    Boolean ComparePrefixIgnoreCase(const Utf8Char* begin, Int32 length) const ;
+    Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const;
+    Boolean ComparePrefixIgnoreCase(const Utf8Char* begin, Int32 length) const;
     Boolean ComparePrefix(char asciiChar) const { return (_begin != _end) && (*_begin == asciiChar); }
-    Boolean ComparePrefixCStr(ConstCStr begin) const { return ComparePrefix((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
-    Boolean ComparePrefixCStrIgnoreCase(ConstCStr begin) const { return ComparePrefixIgnoreCase((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin)); }
+    Boolean ComparePrefixCStr(ConstCStr begin) const {
+        return ComparePrefix((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin));
+    }
+    Boolean ComparePrefixCStrIgnoreCase(ConstCStr begin) const {
+        return ComparePrefixIgnoreCase((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin));
+    }
 
     //! Compare with the encoded string
     Boolean CompareViaEncodedString(SubString* string);
@@ -318,9 +336,8 @@ public:
 //! A comparing class used with the std:map<> class
 class CompareSubString
 {
-    public:
-    Boolean operator()(const SubString &a, const SubString &b) const
-    {
+ public:
+    Boolean operator()(const SubString &a, const SubString &b) const {
         Int32 aSize = a.Length();
         Int32 bSize = b.Length();
         if (aSize != bSize) {
@@ -349,15 +366,15 @@ class CompareSubString
 
 class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 {
-public:
+ public:
     //! Construct a empty string.
-    TempStackCString() {}
+    TempStackCString() { }
 
     //! Construct a null terminated from an existing SubString.
-    TempStackCString(SubString* string) : FixedCArray(string) {}
+    explicit TempStackCString(SubString* string) : FixedCArray(string) { }
 
     //! Construct a null terminated from rwa block of UTF-8 characters.
-    TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) {}
+    TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) { }
 
     //! Append a SubString.
     Boolean Append(SubString* string)
@@ -379,9 +396,9 @@ public:
 //------------------------------------------------------------
 //! A class for making temporary %-code decoded SubStrings
 class DecodedSubString {
-public:
+ public:
     DecodedSubString() : _decodedStr(null) { }
-    DecodedSubString(const SubString &s, bool decode = true, bool alwaysAlloc = false);
+    explicit DecodedSubString(const SubString &s, bool decode = true, bool alwaysAlloc = false);
 
     void Init(const SubString &s, bool decode, bool alwaysAlloc = false);
     SubString GetSubString() {
@@ -401,13 +418,14 @@ public:
         if (_decodedStr && _decodedStr != _buffer)
             delete[] _decodedStr;
     }
-private:
+
+ private:
     enum { kMaxInlineDecodedSize = 1024 };
 
     Utf8Char _buffer[kMaxInlineDecodedSize];
     Utf8Char *_decodedStr;
 };
 
-} // namespace Vireo
+}  // namespace Vireo
 
-#endif //StringUtilities_h
+#endif  // StringUtilities_h

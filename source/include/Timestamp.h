@@ -20,22 +20,22 @@ namespace Vireo {
 //------------------------------------------------------------
 //! A 64.64 bit fixed point use to represent seconds since Jan 1, 1904 GMT
 class Timestamp {
-private:
+ private:
     Int64 _integer;
     UInt64 _fraction;
 
-public:
+ public:
     Timestamp()
         { _integer = 0; _fraction = 0;}
     Timestamp(Int64 integer, UInt64 fraction)
         { _integer = integer; _fraction = fraction;}
-    Timestamp(Double seconds);
+    explicit Timestamp(Double seconds);
     Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year);
 
     static void GetCurrentTimestamp(Timestamp *t);
 
-    Int64 Integer() const { return _integer; };
-    UInt64 Fraction() const { return _fraction; };
+    Int64 Integer() const { return _integer; }
+    UInt64 Fraction() const { return _fraction; }
 
     //! Add two timestamps, one operand should be relative.
     Timestamp const operator+(const Timestamp & value);
@@ -66,7 +66,8 @@ public:
     {
         return (*this < value) || (value == *this);
     }
-    Double ToDouble (void) const;
+    Double ToDouble(void) const;
 };
-}
-#endif // Timestamp_h
+
+}  // namespace Vireo
+#endif  // Timestamp_h

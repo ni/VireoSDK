@@ -26,7 +26,7 @@ class VIClump;
 class ObservableCore;
 class Observer
 {
-public:
+ public:
     //! What object is the clump waiting on?
     ObservableCore* _object;
 
@@ -45,10 +45,10 @@ public:
 //! Base class for objects that clump can 'observe/wait on'.
 class ObservableCore
 {
-public:
+ public:
     Observer* _observerList;
 
-public:
+ public:
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
     void ObserveStateChange(IntMax info, Boolean wakeAll);
@@ -60,9 +60,9 @@ typedef TypedObject<ObservableCore> ObservableObject, *ObservableRef;
 //! Occurrence object.
 class OccurrenceCore : public ObservableCore
 {
-private:
+ private:
     Int32 _setCount;
-public:
+ public:
     Int32 Count() {return _setCount;}
     void SetOccurrence();
     Boolean HasOccurred(Int32 count, Boolean ignorePrevious);
@@ -73,7 +73,7 @@ typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 //! Timer object that clumps can wait on.
 class Timer : public ObservableCore
 {
-public:
+ public:
     Boolean AnythingWaiting()                   { return _observerList != null; }
     void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
     void CheckTimers(PlatformTickType t);
@@ -85,7 +85,7 @@ public:
 //
 class QueueCore : public ObservableCore
 {
-private:
+ private:
     TypedArrayCoreRef _elements;
 
     //! Index where the next element will be stored (may be one past end if full)
@@ -95,7 +95,7 @@ private:
     IntIndex   _count;
 
     IntIndex RemoveIndex();
-public:
+ public:
     Boolean Compress();
     Boolean TryMakeRoom(IntIndex length, IntIndex insert);
     Boolean Enqueue(void* pData);
@@ -110,8 +110,9 @@ public:
 typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 
 // Queue prim LV error return codes
-enum { kQueueArgErr=1, kQueueMemFull=2, kQueueNameTypeMismatch = 1094, kQueueNoSuchName=1100, kQueueDestroyedWhileWaiting=1122, kQueueWrongContext=1491, kQueueZeroSize=1548 };
+enum { kQueueArgErr = 1, kQueueMemFull = 2, kQueueNameTypeMismatch = 1094, kQueueNoSuchName = 1100,
+    kQueueDestroyedWhileWaiting = 1122, kQueueWrongContext = 1491, kQueueZeroSize = 1548 };
 
-} // namespace Vireo
+}  // namespace Vireo
 
-#endif //Synchronization_h
+#endif  // Synchronization_h

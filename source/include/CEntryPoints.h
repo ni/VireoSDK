@@ -20,7 +20,7 @@ typedef enum {
     kEggShellResult_UnexpectedObjectType = 2,
     kEggShellResult_InvalidResultPointer = 3,
     kEggShellResult_UnableToCreateReturnBuffer = 4,
-} EggShellResult ;
+} EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
 VIREO_EXPORT Int32 Vireo_Version();
@@ -29,18 +29,25 @@ VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, 
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices);
 VIREO_EXPORT TypeRef EggShell_GetTypeList(TypeManagerRef tm);
 VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm);
-VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
-VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName, Int32 bufferSize, char* buffer);
+VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, const char* eltName,
+                                       Int32 bufferSize, char* buffer);
+VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName,
+                                       Int32 bufferSize, char* buffer);
 VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d);
 VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName);
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format, const char* value);
-VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName, const char* format);
-VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm, const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
+VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName,
+                                            const char* format, const char* value);
+VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName,
+                                                  const char* format);
+VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm, const char* viName, const char* eltName,
+    char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
-VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths);
+VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName,
+                                        Int32 rank, Int32* newLengths);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
-VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length);
+VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
+                                   Int32 length);
 VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer);
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value);
 VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value);

@@ -30,39 +30,41 @@ class VIClump;
 //------------------------------------------------------------
 //! The VIA definition for a VirtualInstrument. Must match the C++ definition.
 #define VI_TypeString               \
-"a(c(                               \
-    e(TypeManager TypeManager)     \
-    e(a(*) Params)                 \
-    e(a(*) Locals)                 \
-    e(a(Clump *) Clumps)           \
-    e(Int32 LineNumberBase)        \
-    e(DataPointer VIName)          \
-    e(SubString ClumpSource)       \
-))"
+"a(c(                               \n" \
+"    e(TypeManager TypeManager)     \n" \
+"    e(a(*) Params)                 \n" \
+"    e(a(*) Locals)                 \n" \
+"    e(a(Clump *) Clumps)           \n" \
+"    e(Int32 LineNumberBase)        \n" \
+"    e(DataPointer VIName)          \n" \
+"    e(SubString ClumpSource)       \n" \
+"))"
 
 //------------------------------------------------------------
 //!
 class VirtualInstrument
 {
     friend class VIDataProcsClass;
-private:
+ private:
     TypeManagerRef          _typeManager;
     TypedObjectRef          _params;        // All clumps in subVI share the same param block
     TypedObjectRef          _locals;        // All clumps in subVI share the same locals
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
     void ClearTopVIParamBlock();
-public:
+ public:
     Int32                   _lineNumberBase;
     Utf8Char*               _viName;
-    SubString               _clumpSource;         // For now, this is tied to the VIA codec. It has a Begin and End pointer
-public :
-    NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* source);
+    SubString               _clumpSource;  // For now, this is tied to the VIA codec.
+                                           // It has a Begin and End pointer
+ public:
+    NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType,
+                 Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
     TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
 
-public:
+ public:
     VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
     ~VirtualInstrument()               { if (_viName) delete[] _viName; }
     TypeManagerRef TheTypeManager()     { return _typeManager; }
@@ -85,27 +87,27 @@ typedef TypedObject<VirtualInstrument>  *VirtualInstrumentObjectRef;
 
 class FunctionClump
 {
-public:
+ public:
     InstructionCore* _codeStart;        // first instruction object in clump. may be shared  between multiple QEs
 };
 
 //------------------------------------------------------------
 //! The VIA definition for a Clump. Must match the C++ definition.
 #define Clump_TypeString              \
-"c(\
-    e(InstructionBlock CodeStart)\
-    e(DataPointer Next)\
-    e(Int64 WakeUpInfo)\
-    e(DataPointer Owner)\
-    e(DataPointer NextWaitingCaller)\
-    e(DataPointer Caller)\
-    e(Instruction SavePC)\
-    e(Int32 FireCount)\
-    e(Int32 ShortCount)\
-    e(Int32 WaitCount)\
-    e(Observer Observer)\
-    e(Observer Observer)\
-)"
+"c(\n" \
+"    e(InstructionBlock CodeStart)\n" \
+"    e(DataPointer Next)\n" \
+"    e(Int64 WakeUpInfo)\n" \
+"    e(DataPointer Owner)\n" \
+"    e(DataPointer NextWaitingCaller)\n" \
+"    e(DataPointer Caller)\n" \
+"    e(Instruction SavePC)\n" \
+"    e(Int32 FireCount)\n" \
+"    e(Int32 ShortCount)\n" \
+"    e(Int32 WaitCount)\n" \
+"    e(Observer Observer)\n" \
+"    e(Observer Observer)\n" \
+")"
 
 // Initially all clump had the ability to wait on timers, now that has grown to
 // timers and objects such as the queue. Yet in many cases clumps never to need to
@@ -127,19 +129,20 @@ public:
 //! A Clump owns an instruction list its execution state.
 class VIClump : public FunctionClump
 {
-public:
-    VIClump*            _next;              //! Next clump if this one is in a list or queue, null other wise.
-    PlatformTickType    _wakeUpInfo;		//! If clump is suspended, used to determine if wake up condition exists (e.g. time)
-    VirtualInstrument*  _owningVI;          //! VI that this clump is part of.
-    VIClump*            _waitingClumps;     //! If this clump is busy when called then callers are linked here.
-    VIClump*            _caller; 			//! Used for sub vi calls, clump to restart once done.
-    InstructionCore*    _savePc;            //! Save when paused either due to sub vi call, or time slicing
-    Int32               _fireCount;         //! What to reset _shortCount to when the clump is done.
-    Int32               _shortCount;		//! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
+ public:
+    VIClump*            _next;       //! Next clump if this one is in a list/queue, null otherwise.
+    PlatformTickType    _wakeUpInfo;  //! If clump is suspended, used to determine if wake up condition exists
+                                     //  (e.g. time)
+    VirtualInstrument*  _owningVI;        //! VI that this clump is part of.
+    VIClump*            _waitingClumps;  //! If this clump is busy when called then callers are linked here.
+    VIClump*            _caller;         //! Used for sub vi calls, clump to restart once done.
+    InstructionCore*    _savePc;          //! Save when paused either due to sub vi call, or time slicing
+    Int32               _fireCount;      //! What to reset _shortCount to when the clump is done.
+    Int32               _shortCount;     //! Greater than 0 is not in run queue, when it goes to zero it gets enqueued
     Int32               _observationCount;  //! How many waitSates are active?
-    Observer            _observationStates[2]; //! Fixed set of waits states, maximum is 2.
+    Observer            _observationStates[2];  //! Fixed set of waits states, maximum is 2.
 
-public:
+ public:
     void Trigger();
     Int32               FireCount()     { return _fireCount; }
     Int32               ShortCount()    { return _shortCount; }
@@ -159,12 +162,12 @@ public:
         } while (caller->_caller);
         return caller->_owningVI;
     }
-    Observer*           GetObservationStates(Int32) { return _observationCount ? _observationStates : null; };
-    Observer*           ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
+    Observer*          GetObservationStates(Int32) { return _observationCount ? _observationStates : null; }
+    Observer*          ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
     InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
-    void                ClearObservationStates();
-    InstructionCore*    WaitOnObservableObject(InstructionCore*);
-    TypeManagerRef      TheTypeManager()        { return OwningVI()->TheTypeManager(); }
+    void               ClearObservationStates();
+    InstructionCore*    WaitOnObservableObject(InstructionCore* nextInstruction);
+    TypeManagerRef      TheTypeManager()       { return OwningVI()->TheTypeManager(); }
     ExecutionContextRef TheExecutionContext()   { return TheTypeManager()->TheExecutionContext(); }
 };
 //------------------------------------------------------------
@@ -188,14 +191,14 @@ struct CallVIInstruction : public InstructionCore
 //------------------------------------------------------------
 //! Class used by the ClumpParseState to track memory needed for instructions.
 class InstructionAllocator {
-public:
+ public:
     size_t      _size;
     AQBlock1*   _next;
 
     InstructionAllocator() { _size = 0; _next = null; }
     Boolean IsCalculatePass() { return _next == null; }
     void AddRequest(size_t count);
-    void Allocate (TypeManagerRef tm);
+    void Allocate(TypeManagerRef tm);
     void* AllocateSlice(size_t count);
 };
 //------------------------------------------------------------
@@ -214,13 +217,14 @@ struct PatchInfo
 //! Utility class used by decoders that can decode VIs and Clumps
 class ClumpParseState
 {
-    // The compiler (clang) really did not want to allow static const pointers so they are #defines
+// The compiler (clang) really did not want to allow static const pointers so they are #defines
 #define kPerchUndefined     ((InstructionCore*)0)    // What a branch sees when it is used before a perch
 #define kPerchBeingAllocated ((InstructionCore*)1)   // Perches awaiting the next instruction address see this
-public:
-    static const Int32 kMaxArguments = 100;  // This is now only used for args to VIs and type templates, a static limit may be reasonable
+ public:
+    static const Int32 kMaxArguments = 100;  // This is now only used for args to VIs and type templates
+                                            // (a static limit may be reasonable)
     static const Int32 kClumpStateIncrementSize = 32;
-public:
+ public:
     enum ArgumentState {
         // Initial state, not where it should end in either.
         kArgumentNotResolved,
@@ -252,10 +256,10 @@ public:
     std::vector<TypeRef> _argTypes;
 
     Int32           _argPatchCount;
-    std::vector<Int32> _argPatches;    // Arguments that need patching
+    std::vector<Int32> _argPatches;     // Arguments that need patching
 
     Int32           _patchInfoCount;
-    std::vector<PatchInfo> _patchInfos; // Perch references that need patching
+    std::vector<PatchInfo> _patchInfos;  // Perch references that need patching
 
     Int32           _perchCount;
     std::vector<InstructionCore*> _perches;
@@ -263,7 +267,7 @@ public:
     VirtualInstrument *_vi;
     VIClump*        _clump;
 
-private:    // State for patching owner/next field once next instruction created
+ private:    // State for patching owner/next field once next instruction created
     // When an instruction is made remember where its 'next' field is so that it can be
     // when the next instruction is generated. When packed instructions are used
     // this is most often null since there are no next pointers. However roots
@@ -273,30 +277,30 @@ private:    // State for patching owner/next field once next instruction created
     void                StartBuilding(VIClump* clump, InstructionCore** startLocation, InstructionAllocator *);
     InstructionCore*    AllocInstructionCore(Int32 argumentCount);
     InstructionCore*    CreateInstruction(TypeRef instructionType, Int32 argCount, void* args[]);
-public:
+ public:
     void                RecordNextHere(InstructionCore** startLocation);
 
-private:    // State related to two-pass parsing
+ private:    // State related to two-pass parsing
     Int32           _totalInstructionCount;
     Int32           _totalInstructionPointerCount;
 
-private:    // State related to overloads
+ private:    // State related to overloads
     Boolean         _hasMultipleDefinitions;
     NamedTypeRef    _nextFunctionDefinition;
     NamedTypeRef    _genericFunctionDefinition;  // Only one allowed
 
-private:    // State related to the the current argument
+ private:    // State related to the the current argument
     Int32           _formalParameterIndex;
     TypeRef         _formalParameterType;
     TypeRef         _actualArgumentType;
 
-private:
+ private:
     TypeRef         _baseViType;
     TypeRef         _baseReentrantViType;
-public:
+ public:
     SubString       _parserFocus;
 
-public:
+ public:
     // ---
     // The type that has the pointer to the specific target of the function.
     TypeRef         _instructionPointerType;
@@ -312,7 +316,7 @@ public:
     Boolean         _bIsVI;
 
     //------------------------------------------------------------
-    ClumpParseState(ClumpParseState* cps);
+    explicit ClumpParseState(ClumpParseState* cps);
     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
     void            Construct(VIClump* clump, InstructionAllocator* cia, Int32 lineNumber, EventLog* pLog);
     void            StartSnippet(InstructionCore** startLocation);
@@ -346,7 +350,8 @@ public:
     void            EmitSimpleInstruction(ConstCStr opName);
     void            CommitSubSnippet();
     void            CommitClump();
-    void            BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction, Int32 argIndex);
+    void            BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction,
+                                        Int32 argIndex);
     void            EndEmitSubSnippet(ClumpParseState* subSnippet);
 };
 
@@ -354,6 +359,6 @@ typedef InstructionCore* (VIVM_FASTCALL _PROGMEM *GenericEmitFunction) (ClumpPar
 
 void RunCleanupProcs(VirtualInstrument *vi);
 
-}
-#endif //VirtualInstrument_h
+}  // namespace Vireo
+#endif  // VirtualInstrument_h
 

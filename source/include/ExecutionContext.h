@@ -38,7 +38,7 @@ class ObservableCore;
             -----------------------------------
     Queue:  |  head                     tail  |
             -----------------------------------
-                |						 |
+                |                        |
                 v                        v
             ----------              ------------
     Clumps  |   |  * |--->-->------>|     |null|
@@ -47,15 +47,15 @@ class ObservableCore;
 */
 class VIClumpQueue
 {
-public :
+ public:
     VIClump* _head;
     VIClump* _tail;
-public:
+ public:
     VIClumpQueue();
     //! True when the VIClumpQueue is empty.
     Boolean IsEmpty() { return (this->_head == null); }
     VIClump* Dequeue();
-    void Enqueue(VIClump*);
+    void Enqueue(VIClump* elt);
 };
 
 enum ExecutionState
@@ -83,30 +83,32 @@ enum ExecutionState
 //------------------------------------------------------------
 // CulDeSac prototype is visible ( e.g. not static) so the
 // IsNotCulDeSac method on ExecutionContext can inline it better.
-InstructionCore* VIVM_FASTCALL CulDeSac (InstructionCore* _this _PROGMEM);
-InstructionCore* VIVM_FASTCALL Done (InstructionCore* _this _PROGMEM);
+InstructionCore* VIVM_FASTCALL CulDeSac(InstructionCore* _this _PROGMEM);
+InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM);
 
 //------------------------------------------------------------
 //! System state necessary for executing VI Clumps.
 typedef ExecutionContext* ExecutionContextRef;
 class ExecutionContext
 {
-public:
+ public:
     ExecutionContext();
 
-private:
-    ECONTEXT    VIClumpQueue    _runQueue;			//! Clumps ready to run
-    ECONTEXT    Int32           _breakoutCount;     //! Inner execution loop "breaks out" when this gets to 0
+ private:
+    ECONTEXT    VIClumpQueue    _runQueue;         // Clumps ready to run
+    ECONTEXT    Int32           _breakoutCount;   // Inner execution loop "breaks out" when this gets to 0
     ECONTEXT    ExecutionState  _state;
-public:
-    ECONTEXT    Timer           _timer;             // TODO, can be moved out of the execcontext once instruction can take injected parameters.
+ public:
+    ECONTEXT    Timer           _timer;           // TODO can be moved out of the execcontext once
+                                                 // instruction can take injected parameters.
 
 #ifdef VIREO_SUPPORTS_ISR
-    ECONTEXT    VIClump*        _triggeredIsrList;               // Elts waiting for something external to wake them up
+    ECONTEXT    VIClump*        _triggeredIsrList;  // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
     ECONTEXT    VIClump*        CurrentClump() { return _runningQueueElt; }
-    ECONTEXT    void            CheckOccurrences(PlatformTickType t);		// Will put items on the run queue if it is time. or ready bit is set.
+    ECONTEXT    void            CheckOccurrences(PlatformTickType t);    // Will put items on the run queue
+                                                                       // if it is time. or ready bit is set.
 
     // Run a string of instructions to completion, no concurrency.
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
@@ -118,19 +120,23 @@ public:
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
     ECONTEXT    ExecutionState  State() { return _state; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
-    ECONTEXT    VIClump*        _runningQueueElt;		// Element actually running
+    ECONTEXT    VIClump*        _runningQueueElt;    // Element actually running
 
-public:
+ public:
     // Method for runtime errors to be routed through.
     ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
 
-private:
+ private:
     static Boolean _classInited;
     static InstructionCore _culDeSac;
 
-public:
-    static inline Boolean IsNotCulDeSac(InstructionCore* pInstruction) {return pInstruction->_function != (InstructionFunction)CulDeSac;};
-    static inline Boolean IsDone(InstructionCore* pInstruction) {return pInstruction->_function == (InstructionFunction)Done;};
+ public:
+    static inline Boolean IsNotCulDeSac(InstructionCore* pInstruction) {
+        return pInstruction->_function != (InstructionFunction)CulDeSac;
+    }
+    static inline Boolean IsDone(InstructionCore* pInstruction) {
+        return pInstruction->_function == (InstructionFunction)Done;
+    }
 };
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -138,7 +144,7 @@ public:
     // to resolve to a fixed global address. This avoids pointer+offset
     // instructions that are costly on small MCUs
     extern ExecutionContext gSingleExecutionContext;
-    #define THREAD_EXEC()	(&gSingleExecutionContext)
+    #define THREAD_EXEC()    (&gSingleExecutionContext)
     #define THREAD_CLUMP() gSingleExecutionContext.CurrentClump();
 #else
     #define THREAD_EXEC() (THREAD_TADM()->TheExecutionContext())
@@ -147,6 +153,6 @@ public:
 
 void AppendCallChainString(StringRef stringRef);
 
-} // namespace Vireo
+}  // namespace Vireo
 
-#endif //ExecutionContext_h
+#endif  // ExecutionContext_h

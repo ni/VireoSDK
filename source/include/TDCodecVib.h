@@ -20,7 +20,7 @@ namespace Vireo
 //------------------------------------------------------------
 class SubVibBuffer : SubBinaryBuffer
 {
-public:
+ public:
     IntMax ReadVBWSInt();
     IntMax ReadVBWUInt();
     NIError Error();
@@ -29,11 +29,11 @@ public:
 //------------------------------------------------------------
 class TDVibDecoder
 {
-private:
+ private:
     TypeManagerRef  _typeManager;
     SubBuffer       _buffer;
 
-public:
+ public:
     TDVibDecoder(TypeManagerRef typeManager, SubBuffer* buffer);
 
     TypeRef DecodeType();
@@ -46,7 +46,7 @@ public:
     void DelayDecodeClump(VIClump* viClump);
     void DecodeInstructionArguments(VIClump* clump);
 
-private :
+ private:
     void MarkError(ConstCStr message);
     TypeRef BadType()   {return _typeManager->BadType();}   // TODO could create error that encodes scan point
     NIError ParseAggregateElementList(TypeRef ElementTypes[], Int32* pElementCount);
@@ -59,17 +59,16 @@ private :
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     EncodingEnum ParseEncoding(SubString* string);
-
 };
 
 //------------------------------------------------------------
 class TDVibEncoder
 {
-private:
+ private:
     BinaryBufferRef     _buffer;
 
-public:
-    TDVibEncoder(BinaryBufferRef bufferRef);
+ public:
+    explicit TDVibEncoder(BinaryBufferRef bufferRef);
 
     void EncodeData();
 
@@ -98,5 +97,5 @@ public:
     // on the target.
 };
 
-}
-#endif //TypeAndDataCodecBin8_H
+}  // namespace Vireo
+#endif  // TypeAndDataCodecBin8_H

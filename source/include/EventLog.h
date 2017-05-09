@@ -22,12 +22,13 @@ namespace Vireo {
 //------------------------------------------------------------
 //! A Class to collect trace, warning and error events when processing a data set.
 class EventLog {
-private:
+ private:
     StringRef       _errorLog;
     Int32           _softErrorCount;
     Int32           _hardErrorCount;
     Int32           _warningCount;
-public:
+
+ public:
     enum EventSeverity {
         //! Diagnostic trace notice, these are only recorded if tracing is turned on.
         kTrace = 0,
@@ -35,17 +36,18 @@ public:
         //! An unexpected input was detected and ignored.
         kWarning = 1,
 
-        //! An error in the input was detected but the operation can continue in order to determine if other errors exist.
+        //! An error in the input was detected but the operation can continue in order to
+        // determine if other errors exist.
         kSoftDataError = 2,
 
         //! An error in the input was detected and the operation cannot continue.
         kHardDataError = 3,
     };
 
-    EventLog(StringRef stringRef);
-    Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; };
-    Int32 HardErrorCount()                  { return  _hardErrorCount; };
-    Int32 WarningCount()                    { return _warningCount; };
+    explicit EventLog(StringRef stringRef);
+    Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; }
+    Int32 HardErrorCount()                  { return  _hardErrorCount; }
+    Int32 WarningCount()                    { return _warningCount; }
     void LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args);
     void LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
     void LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message);
@@ -57,6 +59,6 @@ public:
     static StringRef StdOut;
 };
 
-} // namespace Vireo
+}  // namespace Vireo
 
-#endif //EventLog_h
+#endif  // EventLog_h

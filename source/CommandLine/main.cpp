@@ -35,7 +35,8 @@ int VIREO_MAIN(int argc, const char * argv[])
 
     SubString fileName;
     bool pass;
-    if (VireoUnitTest::RunTests(pass)) { // runs tests and returns true if in unit test build; else does nothing and returns false
+    if (VireoUnitTest::RunTests(&pass)) {
+        // runs tests and returns true if in unit test build; else does nothing and returns false
         gPlatform.IO.Printf("Unit Tests %s\n", pass ? "Passed" : "Failed");
         return pass ? 0 : 1;
     }
@@ -48,7 +49,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 
             gShells._pUserShell = TypeManager::New(gShells._pRootShell);
 
-            { // Braces scope STACK_VAR buffer so its destructor runs before the shells are deleted below.
+            {   // Braces scope STACK_VAR buffer so its destructor runs before the shells are deleted below.
                 TypeManagerScope scope(gShells._pUserShell);
                 STACK_VAR(String, buffer);
                 fileName.AliasAssignCStr(argv[arg]);
@@ -69,7 +70,7 @@ int VIREO_MAIN(int argc, const char * argv[])
                     emscripten_set_main_loop(RunExec, 40, null);
     #else
                     while (gShells._keepRunning) {
-                        RunExec(); // deletes TypeManagers on exit
+                        RunExec();  // deletes TypeManagers on exit
                     }
     #endif
                 }

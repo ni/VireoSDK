@@ -29,7 +29,7 @@ class RefNumTest : public VireoUnitTest {
         TypedArrayCoreRef elements;
     };
 
-public:
+ public:
     virtual bool Execute();
     virtual ~RefNumTest() { }
     virtual const char *Name() { return "RefNum"; }
@@ -63,7 +63,7 @@ bool RefNumTest::Execute() {
         pass = false;
 
     RefNumList list;
-    gIntRefNum.GetRefNumList(list);
+    gIntRefNum.GetRefNumList(&list);
 
     e = 0;
     if (gIntRefNum.AcquireRefNumRights(r1, &e)) {

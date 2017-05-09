@@ -765,7 +765,7 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
             return _NextInstruction();
         }
         IntIndex insertedPortionLength = subArray->Rank() == numberOfDimensions ? subArray->GetLength(numberOfDimensions-1-dimensionToInsert) : 1;
-        if (insertedPortionLength <= 0 || startIndex < 0){
+        if (insertedPortionLength <= 0 || startIndex < 0) {
             return _NextInstruction();
         }
 
@@ -1006,9 +1006,9 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
 
 struct comparator
 {
-private:
+ private:
     Instruction3<void, void, Boolean>* _snippet;
-public:
+ public:
     comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
     bool operator()(AQBlock1* i, AQBlock1* j)
     {
@@ -1205,7 +1205,7 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
             TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
             deletedArray->Resize1D(endIndex - startIndex);
             deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
-        } else if (endIndex - startIndex > 0 ){
+        } else if (endIndex - startIndex > 0 ) {
             arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
         } else
             arrayOut->ElementType()->InitData(_ParamPointer(2));
@@ -1234,7 +1234,7 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
             }
             totalNumberOfElements *= dimensionSize[i];
         }
-        if (deletedPortionLength <= 0 || startIndex < 0 || startIndex > dimensionSize[dimensionToDelete]){
+        if (deletedPortionLength <= 0 || startIndex < 0 || startIndex > dimensionSize[dimensionToDelete]) {
             startIndex = 0;
             deletedPortionLength = 0;
         }
@@ -1306,7 +1306,7 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
         TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
         deletedArray->Resize1D(endIndex - startIndex);
         deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
-    } else if (endIndex - startIndex > 0 ){
+    } else if (endIndex - startIndex > 0 ) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
     } else
         arrayOut->ElementType()->InitData(_ParamPointer(2));
@@ -1328,13 +1328,13 @@ struct ArrayReshapeStruct : public VarArgInstruction
 //Array Iterator
 class ArrayIterator
 {
-private:
+ private:
     ArrayDimensionVector  _indexStack;
     IntIndex _indexDim;
     IntIndex*  dimensions;
     IntIndex  _rank;
     TypedArrayCoreRef _array;
-public:
+ public:
     ArrayIterator(TypedArrayCoreRef array)
     {
         _array = array;
@@ -1386,7 +1386,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
     for (IntIndex i = 0; i < count; i++) {
         IntIndex* pDim = newDimensions[count - 1 -i];
         IntIndex size = pDim? *pDim : 0;
-        if (size <= 0){
+        if (size <= 0) {
             for (IntIndex j = 0; j < rank; j++) {
                 dimensions[j] = 0;
             }

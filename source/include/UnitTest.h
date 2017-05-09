@@ -25,19 +25,23 @@ class VireoUnitTest {
     struct TestList {
         VireoUnitTest *_test;
         TestList *_next;
-        TestList(VireoUnitTest *test = NULL) { _test = test; _next = NULL; }
+        explicit TestList(VireoUnitTest *test = NULL) { _test = test; _next = NULL; }
 
-        TestList *NewTest(VireoUnitTest *test) { TestList *testList = new TestList(test); testList->_next = this; return testList; }
+        TestList *NewTest(VireoUnitTest *test) {
+            TestList *testList = new TestList(test);
+            testList->_next = this;
+            return testList;
+        }
         TestList *Delete() { TestList *next = _next; delete this; return next; }
     };
     static TestList *_s_unitTests;
 
-public:
+ public:
     VireoUnitTest() { RegisterTest(this); }
     virtual ~VireoUnitTest() { }
     virtual const char *Name() = 0;
     virtual bool Execute() = 0;
     void RegisterTest(VireoUnitTest *test);
 
-    static bool RunTests(bool &passed);
+    static bool RunTests(bool *passed);
 };
