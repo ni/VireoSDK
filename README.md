@@ -35,7 +35,7 @@ The `esh` and `vireo.js` files will be put into the `./dist` directory.
 $ make native
 ```
 
-#### Build Javascript File
+#### Build JavaScript File
 ```shell
 $ make js
 ```
@@ -81,7 +81,7 @@ $ ./test.js -h
 Usage: ./test.js [options] [via test files]
 Options:
  -n                  Run the tests against the native vireo target (esh)
- -j                  Run the tests against the javascript target (vireo.js)
+ -j                  Run the tests against the JavaScript target (vireo.js)
  -t [test suite]     Run the tests in the given test suite
  -l [test suite]     List the tests that would be run in given test suite,
                         or list the test suite options if not provided
