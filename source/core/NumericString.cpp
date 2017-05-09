@@ -637,7 +637,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 intSize = 8*argType->TopAQSize();
                         IntMax intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         char BinaryString[2*kTempCStringLength];
-                        char bits [2];
+                        char bits[2];
                         bits[0] = '0';
                         bits[1] = '1';
                         Int32 length = 0;
@@ -1702,7 +1702,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                     input->ReadRawChar(&inputChar);
                     ++offsetPastScan;
                     if (inputChar == '%') {
-                        } else{
+                        } else {
                             canScan = false;
                         }
                 }
@@ -2451,7 +2451,7 @@ void SpreadsheetDimension(StringRef output, StringRef formatString, StringRef de
         for (IntIndex i = 0; i< array->DimensionLengths()[dimension-1]; i++) {
             index[dimension-1]=i;
             for (IntIndex j=0; j<dimension-1;j++) {
-                index [j] = 0;
+                index[j] = 0;
             }
             SpreadsheetDimension(output, formatString, delimiter, array, dimension-1, index);
         }

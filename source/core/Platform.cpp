@@ -383,9 +383,9 @@ PlatformTickType PlatformTimer::TickCount()
     static Int64 TickCount;
     XScuTimer_Config*   pConfig;
     volatile UInt64     scuTickCount;
-    static UInt64		lastScuTickCount = 0;
+    static UInt64    lastScuTickCount = 0;
     static XScuTimer    Timer;
-    static XScuTimer 	*pTimer = NULL;
+    static XScuTimer     *pTimer = NULL;
 
     if (!pTimer) {
         pTimer = &Timer;

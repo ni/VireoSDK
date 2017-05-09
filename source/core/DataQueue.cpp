@@ -37,7 +37,7 @@ SDG
 
 class VivmDataQueue
 {
-public:
+ public:
     VivmDataQueue(int size);
     ~VivmDataQueue();
 
@@ -51,8 +51,8 @@ public:
     void DequeueWhatICanGet(Int32 n);
     int  RoomAvailable() {return _freeSpace; }
     int  ElementsAvailable() {return (_end-_begin) - _freeSpace; }
-private:
-    QueueElt*       _waitingClumps;	// queue elts waiting for room, or more data
+ private:
+    QueueElt*       _waitingClumps;  // queue elts waiting for room, or more data
     TypedBlock*     _buffer;
     Double*         _begin;
     Double*         _end;
@@ -131,16 +131,16 @@ void VivmDataQueue::EnqueueOrSuspend(Int32 n, Double* buffer, InstructionCore* c
             }
         }
     } else {
-       // TODO
+  // TODO
   //      QueueElt* currentQe = THREAD_EXEC()->_runningQueueElt;
 
-   // TODO InstructionCore* next = THREAD_EXEC()->SuspendRunningQueueElt(current);
+  // TODO InstructionCore* next = THREAD_EXEC()->SuspendRunningQueueElt(current);
 
   //      current->_wakeUpInfo = this->MicroSeconds() +  count;
   //      current->_next = this->_sleepingList;
   //      this->_waitingClumps = currentQe;
 
-        // suspend this element, arrange to wake up when something is removed.
+  // suspend this element, arrange to wake up when something is removed.
     }
 }
 

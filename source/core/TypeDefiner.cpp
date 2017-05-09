@@ -205,7 +205,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, tsBooleanType,   "c(e(bb(1 Boolean)))");
     Define(tm, tsWildCard,      "c(e(bb(* Generic)))");
 
-    // Signed (2's compliment) integers
+    // Signed (2's complement) integers
     Define(tm, "Int8",          "c(e(bb(8 S2cInt)))");
     Define(tm, "Int16",         "c(e(bb(16 S2cInt)))");
     Define(tm, tsInt32Type,     "c(e(bb(32 S2cInt)))");

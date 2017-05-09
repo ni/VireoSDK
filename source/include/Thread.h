@@ -38,9 +38,9 @@ bool CompareAndSwapUInt32(volatile UInt32 *ptr, UInt32 new_value, UInt32 old_val
 //------------------------------------------------------------
 class Mutex
 {
-private:
+ private:
     void* _nativeMutex;
-public:
+ public:
     Mutex();
     ~Mutex();
     void Acquire();
@@ -50,16 +50,16 @@ public:
 //------------------------------------------------------------
 class MutexedScope
 {
-private:
+ private:
     Mutex *_mutex;
-public:
-    MutexedScope(Mutex* pMutex)
+ public:
+    explicit MutexedScope(Mutex* pMutex)
         { _mutex = pMutex; _mutex->Acquire(); }
     ~MutexedScope()
         { _mutex->Release(); }
 };
 #endif
 
-}
+}   // namespace Vireo
 
-#endif // Thread_h
+#endif  // Thread_h

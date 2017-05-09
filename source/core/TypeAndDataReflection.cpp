@@ -27,13 +27,13 @@ namespace Vireo
 
 class DataReflectionVisitor : public TypeVisitor
 {
-public:
+ public:
     DataReflectionVisitor(TypeRef tNeedle, DataPointer pHaystack, StringRef path);
     void Accept(TypeRef tHaystack, DataPointer pHaystack);
     void Accept(TypeManagerRef tm);
     Boolean Found() {return _found;}
 
-private:
+ private:
     // What is being searched through
     void*           _pHayStack;
 
@@ -45,7 +45,7 @@ private:
     Boolean         _found;
     StringRef       _path;
 
-private:
+ private:
     virtual void VisitBad(TypeRef type);
     virtual void VisitBitBlock(BitBlockType* type);
     virtual void VisitBitCluster(BitClusterType* type);

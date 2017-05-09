@@ -34,7 +34,7 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     _locals->SetElementType(localsType, false);
     _clumps->Resize1D(clumpCount);
     _lineNumberBase = lineNumberBase;
-    _clumpSource = clumpSource;
+    _clumpSource = *clumpSource;
 
     VIClump *pElt = _clumps->Begin();
     for (IntIndex i= 0; i < clumpCount; i++)

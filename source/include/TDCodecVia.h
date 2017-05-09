@@ -31,8 +31,8 @@ enum ViaFormat {
     kViaFormat_QuotedFieldNames =  kViaFormat_UseFieldNames | 2,
     kViaFormat_PercentEncodeFieldNames = kViaFormat_UseFieldNames | 4,
     kViaFormat_FieldNameMask = kViaFormat_QuotedFieldNames | kViaFormat_PercentEncodeFieldNames,
-    kViaFormat_UseLongNameInfNaN = 8, // mask,  clear == use inf,nan, set == use Infinity/NaN
-    kViaFormat_SuppressInfNaN = 16, // use neither,
+    kViaFormat_UseLongNameInfNaN = 8,  // mask,  clear == use inf,nan, set == use Infinity/NaN
+    kViaFormat_SuppressInfNaN = 16,    // use neither,
     kViaFormat_JSONStrictValidation = 32,
     kViaFormat_QuoteInfNanNames = 64
 };
@@ -53,7 +53,9 @@ struct ViaFormatChars
     ViaFormat   _fieldNameFormat;
 
     Boolean UseFieldNames()        { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
-    Boolean QuoteFieldNames()      { return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames; }
+    Boolean QuoteFieldNames()      {
+        return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames;
+    }
     Boolean SuppressInfNaN()       { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
     Boolean LongNameInfNaN()       { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
     Boolean QuotedNameInfNaN()     { return (_fieldNameFormat & kViaFormat_QuoteInfNanNames) ? true : false; }
@@ -63,7 +65,7 @@ struct ViaFormatChars
 
 struct ViaFormatOptions
 {
-    //Once formatter digs below top level this will be on. Constructor controls initial value
+    // Once formatter digs below top level this will be on. Constructor controls initial value
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
     Boolean         _exponentialNotation;
@@ -85,13 +87,13 @@ struct ViaFormatOptions
 //! The VIA decoder, also includes options for JSON and C style initializers.
 class TDViaParser
 {
-private:
+ private:
     TypeManagerRef  _typeManager;
     SubString       _string;      // "Begin()" moves through string as it is parsed.
     const Utf8Char* _originalStart;
     Int32           _lineNumberBase;
 
-public:
+ public:
     // Format options also used in ViaFormatter
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt()  { return _options._fmt; }
@@ -104,7 +106,9 @@ public:
     Int32   CalcCurrentLine();
     void    RepinLineNumberBase();
 
-    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase, SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false, Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
+    TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase,
+                SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false,
+                Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = null);
     TypeRef ParseLiteral(TypeRef patternType);
@@ -121,12 +125,12 @@ public:
     void    ParseInstructionArguments(VIClump* clump);
     SubString* TheString() {return &_string;}
 
-public:
+ public:
     static NIError StaticRepl(TypeManagerRef typeManager, SubString *replStream);
     static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
     static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
 
-private :
+ private:
     TypeRef BadType()   {return _typeManager->BadType();}
     void    ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator);
     TypeRef ParseArray();
@@ -153,15 +157,16 @@ class TDViaFormatterTypeVisitor;
 class TDViaFormatter
 {
     friend class TDViaFormatterTypeVisitor;
-private:
+ private:
     StringRef       _string;
     ViaFormatOptions  _options;
     ViaFormatChars& Fmt() { return _options._fmt; }
     Int32 _errorCode;
 
     static const Int32 kTempFormattingBufferSize = 100;
-public:
-    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null, Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
+ public:
+    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null,
+                   Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
     // Type formatters
     void    FormatType(TypeRef type);
     // Options
@@ -194,16 +199,17 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #endif
 
 #define tsBoolean         "Boolean"
-#define tsGeneric         "Generic"     //!< Generic template place holder
-#define tsEnum            "Enum"        //!< no numeric significance
-#define tsUInt            "UInt"        //!< unsigned integer 0 == 00000b, max = 1111b
-#define tsSInt            "S2cInt"      //!< signed integer two's compliment.  for 4 bits min=1000b(-8), 0 = 0000b, max = 0111b
-#define tsInt1sCompliment "S1cInt"      //!< signed integer ones's compliment. for 4 bits min=1000b(-7), 0 = 0000b or 1111b, max = 0111b
-#define tsFixedPoint      "Q"           //!< .xxxx fractional part of fixed point numbers   TODO fractional bits??? Q.n
-#define ts1plusFractional "Q1"          //!< 1.xxxx  used in floating-point formats
+#define tsGeneric         "Generic"  //!< Generic template place holder
+#define tsEnum            "Enum"     //!< no numeric significance
+#define tsUInt            "UInt"     //!< unsigned integer 0 == 00000b, max = 1111b
+#define tsSInt            "S2cInt"   //!< signed int two's complement. 4 bits min=1000b(-8), 0=0000b, max=0111bs
+#define tsInt1sCompliment "S1cInt"   //!< signed int ones's complement. 4 bits min=1000b(-7),
+                                   //   0=0000b or 1111b, max=0111b
+#define tsFixedPoint      "Q"        //!< .xxxx fractional part of fixed point numbers. TODO fractional bits? Q.n
+#define ts1plusFractional "Q1"       //!< 1.xxxx  used in floating-point formats
 #define tsUnusedBits      "XBits"
-#define tsAscii           "Ascii"       //!< always single byte  ISO-8859-1
-#define tsUnicode         "Unicode"     //!< Utf8, Utf16, Utf32    (Basic Multilingual Plane 0 only right now TODO support more?)
+#define tsAscii           "Ascii"    //!< always single byte  ISO-8859-1
+#define tsUnicode         "Unicode"  //!< Utf8, Utf16, Utf32    (Basic Multilingual Plane 0 only right now)
 #define tsBiasedInt       "BiasedInt"   //!< example, for 4 bits : -max=0000,  0 = 1xxx, max = 1111
 #define tsZigZagInt       "ZigZagInt"   //!< used in Google's protocol buffers.
 #define tsIEEE754Binary   "IEEE754B"    //!< Formats defined for 16,32,64 and 128 bit floating-point numbers
@@ -219,23 +225,23 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsContextTypeToken      "context"
 #define tsDefineTypeToken       "define"
 #define tsEnqueueTypeToken      "enqueue"
-#define tsElementToken          "e"  // used for Cluster, BitCluster, and array aggregate types for simple elements
-#define tsAliasToken            "al" // alias to another element.
-#define tsInputParamToken       "i"  // input parameter
-#define tsOutputParamToken      "o"  // output parameter
-#define tsInputOutputParamToken "io" // input-output parameter
-#define tsImmediateParamToken   "im" // Immediate mode parameter (not byref), only in paramblocks. size must be <= size_t
-#define tsStaticParamToken      "s"  // static parameter, not explicitly passed, allocated in param block and preserved between
-#define tsTempParamToken        "t"  // temp parameter, not explicitly passed, allocated in param block and can be thrown away
-#define tsVolatileToken         "x"  // volatile parameter, not explicitly passed or allocated in the param block
-#define tsEquivalenceTypeToken  "eq" // for alternate views on the same set of bits.
+#define tsElementToken          "e"   // used for Cluster, BitCluster, and array aggregate types for simple elements
+#define tsAliasToken            "al"  // alias to another element.
+#define tsInputParamToken       "i"   // input parameter
+#define tsOutputParamToken      "o"   // output parameter
+#define tsInputOutputParamToken "io"  // input-output parameter
+#define tsImmediateParamToken   "im"  // Immediate mode (not byref), only in paramblocks. size must be <= size_t
+#define tsStaticParamToken      "s"   // static not explicitly passed, allocated in param block and preserved between
+#define tsTempParamToken        "t"   // temp param, not passed, allocated in param block and can be thrown away
+#define tsVolatileToken         "x"   // volatile parameter, not explicitly passed or allocated in the param block
+#define tsEquivalenceTypeToken  "eq"  // for alternate views on the same set of bits.
 #define tsNamedTypeToken        "."
-#define tsParamBlockTypeToken   "p"  // Used for defining param blocks used by native functions.
+#define tsParamBlockTypeToken   "p"   // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
 #define tsRefNumTypeToken       "refnum"
 
 #define tsEnumTypeToken         "Enum"
-#define tsEnumTypeTokenLen      4 // strlen of above
+#define tsEnumTypeTokenLen      4     // strlen of above
 
 #define tsDefaultValueToken     "dv"
 #define tsVarValueToken         "var"
@@ -252,6 +258,6 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsTypeManagerType       "TypeManager"
 #define tsVIClumpType           "Clump"
 
-} // namespace Vireo
+}  // namespace Vireo
 
-#endif //TDCodecVia_h
+#endif  // TDCodecVia_h

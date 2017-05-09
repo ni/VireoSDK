@@ -125,11 +125,12 @@ inline IntIndex TemplateDimIndex(IntIndex dim)
 //------------------------------------------------------------
 typedef enum {
     kNIError_Success = 0,
-    kNIError_kInsufficientResources = 1,// Typically memory
+    kNIError_kInsufficientResources = 1,  // Typically memory
     kNIError_kResourceNotFound = 2,
-    kNIError_kArrayRankMismatch = 3,    // Array's rank do not fit function requirements (typically they must be the same)
-    kNIError_kCantDecode = 4,           // Data in stream does not fit grammar
-    kNIError_kCantEncode = 5,           // Data type not supported by encoder
+    kNIError_kArrayRankMismatch = 3,      // Array's rank do not fit function requirements
+                                          //  (typically they must be the same)
+    kNIError_kCantDecode = 4,             // Data in stream does not fit grammar
+    kNIError_kCantEncode = 5,             // Data type not supported by encoder
     kNIError_kLogicFailure = 6,
     kNIError_ValueTruncated = 7,
 } NIError;
@@ -138,7 +139,7 @@ typedef enum {
     kLVError_NoError = 0,
     kLVError_ArgError = 1,
     kLVError_MemFull = 2,
-    kLVError_NotSupported = 53, // Not supported on this platform
+    kLVError_NotSupported = 53,  // Not supported on this platform
 } LVError;
 
 typedef enum {
@@ -152,7 +153,8 @@ typedef enum {
     kLVError_JSONTypeMismatch = -375005,
     kLVError_JSONInvalidPath = -375004,
     kLVError_JSONInvalidString = -375003,
-    // The rest are semantic analysis errors so can never be seen in LV-generated code: TODO (spathiwa) Implement for benefit of hand-written Vireo
+    // The rest are semantic analysis errors so can never be seen in LV-generated code:
+    // TODO (spathiwa) Implement for benefit of hand-written Vireo
     kLVError_JSONInvalidElementNameError = -375002,
     kLVError_JSONInvalidRootContainerError = -375001,
     kLVError_JSONUnsupportedTypeError = -375000
@@ -174,7 +176,7 @@ typedef Int64   AQBlock8;
         void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int line);
     #endif
 #else
-    #define VIREO_ASSERT( _TEST_ )
+    #define VIREO_ASSERT(_TEST_)
 #endif
 
 //------------------------------------------------------------
@@ -182,10 +184,10 @@ typedef Int64   AQBlock8;
 template <class T>
 class SubVector
 {
-protected:
+ protected:
     const T*  _begin;
     const T*  _end;
-public:
+ public:
     //! Construct a wrapper from an existing wrapper.
     SubVector()
     {
@@ -250,7 +252,7 @@ public:
 //! A wrapper for an array of UInt8s (.e.g bytes). It does not own the data.
 class SubBinaryBuffer :  public SubVector<UInt8>  // Binary or byte buffer
 {
-public:
+ public:
     SubBinaryBuffer()   { }
     SubBinaryBuffer(const Utf8Char * begin, const Utf8Char *end) { AliasAssign(begin, end); }
 };
@@ -258,10 +260,10 @@ public:
 //! A light weight iterator for sequential reads of statically type values
 template <class T>
 class Itr {
-protected:
+ protected:
     T*   _current;
     T*   _end;
-public:
+ public:
     Itr(T* begin, T* end) {_current = begin; _end = end;}
     Itr(T* begin, IntIndex length) {_current = begin; _end = begin + length;}
     //! Read the iterator's next pointer
@@ -276,7 +278,7 @@ public:
 class BlockItr : public Itr<AQBlock1>
 {
     IntIndex _blockLength;
-public:
+ public:
     //! Construct an iterator for an array of blocks
     BlockItr(void* begin, IntIndex blockLength, IntIndex count)
     : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count))
@@ -297,17 +299,16 @@ typedef Itr<IntIndex>   IntIndexItr;
 //------------------------------------------------------------
 //! A Fixed C array that has and API that looks a bit like Vireo arrays
 template <class T, IntIndex COUNT>
-    class FixedCArray : public SubVector<T>
+class FixedCArray : public SubVector<T>
 {
-protected:
+ protected:
     // The buffer has a an extra element for cases where the C array
     // contains a null element at the end.
     T    _buffer[COUNT+1];
     // Since this class owns the buffer and it knows what is going on,
     // in certain cases it is OK to write and the end pointer.
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
-public:
-
+ public:
     //! Construct the array and initialize it as empty.
     void Clear()
     {
@@ -322,7 +323,7 @@ public:
     }
 
     //! Construct the array and initialize it from a SubVector.
-    FixedCArray(SubVector<T>* buffer)
+    explicit FixedCArray(SubVector<T>* buffer)
     {
         this->_begin = _buffer;
         size_t length = (buffer->Length() < COUNT) ? buffer->Length() : COUNT;
@@ -375,5 +376,5 @@ public:
     }
 };
 
-}
-#endif // DataTypes_h
+}  // namespace Vireo
+#endif  // DataTypes_h

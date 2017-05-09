@@ -1746,14 +1746,14 @@ NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
 #if defined (VIREO_VIA_FORMATTER)
 class TDViaFormatterTypeVisitor : public TypeVisitor
 {
-private:
+ private:
     TDViaFormatter *_pFormatter;
-public:
+ public:
     TDViaFormatterTypeVisitor(TDViaFormatter* pFormatter)
     {
         _pFormatter = pFormatter;
     }
-private:
+ private:
     //------------------------------------------------------------
     virtual void VisitBad(TypeRef type)
     {

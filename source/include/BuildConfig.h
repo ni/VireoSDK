@@ -11,8 +11,8 @@ SDG
     \brief Target specific defines.
  */
 
-#ifndef BuildConfig_h
-#define BuildConfig_h
+#ifndef BUILDCONFIG_H
+#define BUILDCONFIG_H
 
 #if (__linux__ == 1)
     #define kVireoOS_linuxU 1
@@ -55,7 +55,7 @@ SDG
     // For Vireo-micro there is a dispatch table statically linked at build time
     // In this case the functions need to need to be linkable across obj files
     #define VIREO_SINGLE_GLOBAL_CONTEXT
-    //#define VIREO_USING_ASSERTS
+    // #define VIREO_USING_ASSERTS
 
     #define VIREO_TYPE_Int8   1
 
@@ -129,11 +129,11 @@ SDG
     #define VIREO_TIME_FORMATTING 1
     #define VIREO_SPREADSHEET_FORMATTING 1
 
- // Vireo can be configured to assume all strings are 7 bit ASCII
- // This means String ArrayLength will always equal StringLength
- // Note that even when Utf8 is used StringLength may be longer that
- // The number of graphemes due to combining codepoints
- // #define VIREO_ASCII_ONLY 1
+    // Vireo can be configured to assume all strings are 7 bit ASCII
+    // This means String ArrayLength will always equal StringLength
+    // Note that even when Utf8 is used StringLength may be longer that
+    // The number of graphemes due to combining codepoints
+    // #define VIREO_ASCII_ONLY 1
 
     #define VIREO_TYPE_VARIANT 1
 
@@ -173,7 +173,7 @@ SDG
 
 //------------------------------------------------------------
 #if defined(__ARDUINO__)
-    //#define VIVM_HARVARD
+    // #define VIVM_HARVARD
     #include <avr/pgmspace.h>
 
     #define kVireoOS_wiring
@@ -250,4 +250,4 @@ SDG
     #define VIVM_TRACE_FUNCTION(name)
 #endif
 
-#endif // BuildConfig_h
+#endif  // BUILDCONFIG_H

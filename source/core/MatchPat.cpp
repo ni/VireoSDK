@@ -24,14 +24,14 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
 Int32 LexClass(Utf8Char c)
 {
     static char gLexicalClass[]= {
-        1,	1,	1,	1,	1,	1,	1,	1,	1,	2,	2,	2,	2,	2,	1,	1,
-        1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,	1,
-        2,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,	6,
-        3,	3,	3,	3,	3,	3,	3,	3,	3,	3,	6,	6,	6,	6,	6,	6,
-        6,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,
-        4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	4,	6,	6,	6,	6,	6,
-        6,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,
-        5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	5,	6,	6,	6,	6,	1
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6,
+        6, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6,
+        6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+        5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 1
     };
     c &= 0xFF;
     return (c >= 128) ? 0 : gLexicalClass[c];
@@ -78,27 +78,27 @@ Construct a pattern string by encoding the regular expression in str.
 if the expression contains nulls, then so does the pattern).
 
 Pattern syntax:
-    ^	means anchor to start of line iff it's the first char
-    .	means any char
-    *	means indefinite repeat (0 or more) iff its preceded by an alternation or non-meta-char
-    +	means indefinite repeat (1 or more) iff its preceded by an alternation or non-meta-char
-    ?	means conditional (0 or 1) iff it's preceded by an alternation or non-meta-char
-    $	means anchor to the end of the line iff it's the last char
-    \	escapes any special char including itself; \b,\f,\n,\015,\t,\xx for special characters
-    []	enclose alternates:
+    ^    means anchor to start of line iff it's the first char
+    .    means any char
+    *    means indefinite repeat (0 or more) iff its preceded by an alternation or non-meta-char
+    +    means indefinite repeat (1 or more) iff its preceded by an alternation or non-meta-char
+    ?    means conditional (0 or 1) iff it's preceded by an alternation or non-meta-char
+    $    means anchor to the end of the line iff it's the last char
+    \    escapes any special char including itself; \b,\f,\n,\015,\t,\xx for special characters
+    []    enclose alternates:
             if ^ is first it negates the set with reference to printable chars.
             if ~ is first it negates the set with reference to all chars.
             if - is between two alpha or numeric chars it means the inclusive set.
 */
-#define mEOF	0
-#define mStar	1
-#define mPlus	2
-#define mCond	4
-#define mBOL	0x58
-#define mAny	0x28
-#define mEOS	0x20
-#define mChr	0x60
-#define mCCL	0x30
+#define mEOF    0
+#define mStar   1
+#define mPlus   2
+#define mCond   4
+#define mBOL    0x58
+#define mAny    0x28
+#define mEOS    0x20
+#define mChr    0x60
+#define mCCL    0x30
 
 static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
 {
@@ -236,7 +236,7 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
             }
         }
     }
-    if (!t){ /* copy all of str to bef and set mat, aft to empty */
+    if (!t) { /* copy all of str to bef and set mat, aft to empty */
         if (bef)
             bef->AliasAssignLen(str, len);
         if (mat)
@@ -246,7 +246,7 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
         if (offsetPastMatch)
             *offsetPastMatch = -1;
     }
-    else {	/* copy str up to s to bef, from s to t to mat, remainder of str from t to aft */
+    else {    /* copy str up to s to bef, from s to t to mat, remainder of str from t to aft */
         ns= Int32(s - str);
         nt= Int32(t - str);
         if (bef)

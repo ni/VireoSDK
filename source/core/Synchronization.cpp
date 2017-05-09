@@ -550,7 +550,7 @@ Boolean QueueCore::Peek(void* pData, IntIndex skipCount)
 
 
 class QueueRefNumManager : public RefNumManager {
-private:
+ private:
     typedef TypedRefNum<QueueRef, true> QueueRefNumType;
     QueueRefNumType _QueueRefNumTypeStorage; // manages refnum storage
 
@@ -569,13 +569,13 @@ private:
         };
     };
     static QueueRefNumManager _s_singleton;
-public:
+ public:
     typedef std::map<StringRef, RefNum, StringRefCmp> NamedRefNumMapType;
-private:
+ private:
     typedef std::map<RefNum, RefNum> RefnumAliasMapType;
     NamedRefNumMapType _namedRefMap;
     RefnumAliasMapType _refAliasMap;
-public:
+ public:
     static QueueRefNumManager &QueueRefManager() { return _s_singleton; }
     static QueueRefNumType &RefNumStorage() { return _s_singleton.RefNumManager(); }
 
