@@ -16,10 +16,18 @@ SDG
 // TODO: Code review
 namespace Vireo
 {
-inline UInt32 ReadLittleEndianUInt32(UInt8 *aBuf, IntIndex i) { return aBuf[i] | (aBuf[i+1]<<8) | (aBuf[i+2]<<16)  | (aBuf[i+3]<<24); }
-inline UInt32 ReadBigEndianUInt32(UInt8 *aBuf, IntIndex i) { return (aBuf[i]<<24) | (aBuf[i+1]<<16) | (aBuf[i+2]<<8)  | aBuf[i]; }
-inline void WriteLittleEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) { aBuf[i] = v & 0xff; aBuf[i+1] = (v >> 8) & 0xff; aBuf[i+2] = (v >> 16) & 0xff; aBuf[i+3] = (v >> 24) & 0xff; }
-inline void WriteBigEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) {  aBuf[i] = (v >> 24) & 0xff; aBuf[i+1] = (v >> 16) & 0xff; aBuf[i+2] = (v >> 8) & 0xff; aBuf[i+3] = v & 0xff; }
+inline UInt32 ReadLittleEndianUInt32(UInt8 *aBuf, IntIndex i) {
+    return aBuf[i] | (aBuf[i+1] << 8) | (aBuf[i+2] << 16)  | (aBuf[i+3] << 24);
+}
+inline UInt32 ReadBigEndianUInt32(UInt8 *aBuf, IntIndex i) {
+    return (aBuf[i] << 24) | (aBuf[i+1] << 16) | (aBuf[i+2] << 8)  | aBuf[i];
+}
+inline void WriteLittleEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) {
+    aBuf[i] = v & 0xff; aBuf[i+1] = (v >> 8) & 0xff; aBuf[i+2] = (v >> 16) & 0xff; aBuf[i+3] = (v >> 24) & 0xff;
+}
+inline void WriteBigEndianUInt32(UInt8 *aBuf, IntIndex i, UInt32 v) {
+    aBuf[i] = (v >> 24) & 0xff; aBuf[i+1] = (v >> 16) & 0xff; aBuf[i+2] = (v >> 8) & 0xff; aBuf[i+3] = v & 0xff;
+}
 
 NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prependArrayLength)
 {
@@ -50,12 +58,9 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
                 }
             }
 
-            if (elementType->IsFlat())
-            {
+            if (elementType->IsFlat()) {
                 pString->Append(pArray->Length() * elementType->TopAQSize(), (Utf8Char*)pArray->BeginAt(0));
-            }
-            else
-            {
+            } else {
                 // Recursively call FlattenData on each element.
                 // Arrays contained in other data structures always include
                 // length information.
@@ -65,7 +70,6 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
 
                 for (; pElement < pEnd; pElement += elementLength)
                     FlattenData(elementType, pElement, pString, true);
-
             }
             break;
         }
@@ -121,46 +125,39 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
 
             // If length information precedes the array, read it.
             // Otherwise, infer it based on the size of the remaining string.
-            if (prependArrayLength)
-            {
+            if (prependArrayLength) {
                 // If the string is long enough, read the array length
-                if (stringIndex + (IntIndex)sizeof(arrayLength) <= pBuffer->Length())
-                {
+                if (stringIndex + (IntIndex)sizeof(arrayLength) <= pBuffer->Length()) {
                     UInt8 *aBuf = (UInt8*)pBuffer->Begin();
                     arrayLength = ReadBigEndianUInt32(aBuf, stringIndex);
                     stringIndex += sizeof(arrayLength);
-                }
-                else
+                } else {
                     return -1;
-            }
-            else
+                }
+            } else {
                 arrayLength = (pBuffer->Length() - stringIndex) / elementType->TopAQSize();
+            }
 
             // If the length is a sane value, resize the array.
-            if (arrayLength <= pBuffer->Length() - stringIndex)
-            {
+            if (arrayLength <= pBuffer->Length() - stringIndex) {
                 if (pArray)
                     pArray->Resize1D(arrayLength);
-            }
-            else
+            } else {
                 return -1;
+            }
 
-            if (elementType->IsFlat())
-            {
+            if (elementType->IsFlat()) {
                 Int32 copyLength = arrayLength * elementType->TopAQSize();
 
                 // If the string is long enough, copy data.
-                if (stringIndex + copyLength <= pBuffer->Length())
-                {
+                if (stringIndex + copyLength <= pBuffer->Length()) {
                     if (pArray)
                         memcpy(pArray->BeginAt(0), (pBuffer->Begin() + stringIndex), copyLength);
                     stringIndex += copyLength;
-                }
-                else
+                } else {
                     return -1;
-            }
-            else if (pData)
-            {
+                }
+            } else if (pData) {
                 // Recursively call UnflattenData for each element.
                 // Arrays contained in other data structures always include
                 // length information.
@@ -168,15 +165,12 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 AQBlock1 *pEnd = pArray->BeginAt(0) + (pArray->DimensionLengths()[0] * elementLength);
                 AQBlock1 *pElementData = pArray->BeginAt(0);
 
-                for (; pElementData < pEnd; pElementData += elementLength)
-                {
+                for (; pElementData < pEnd; pElementData += elementLength) {
                     stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);
                     if (stringIndex == -1)
                         return -1;
                 }
-            }
-            else
-            {
+            } else {
                 // pData is null, so call UnflattenData recursing on elements of pDefaultData.
                 // Arrays contained in other data structures always include
                 // length information.
@@ -217,14 +211,13 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
             Int32 copyLength = type->TopAQSize();
 
             // If the string is long enough, copy data.
-            if (stringIndex + copyLength <= pBuffer->Length())
-            {
+            if (stringIndex + copyLength <= pBuffer->Length()) {
                 if (pData)
                     memcpy(pData, (pBuffer->Begin() + stringIndex), copyLength);
                 stringIndex += copyLength;
-            }
-            else
+            } else {
                 return -1;
+            }
             break;
         }
     }
@@ -265,11 +258,12 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
     return _NextInstruction();
 }
 
-}
-
-using namespace Vireo;
-
 DEFINE_VIREO_BEGIN(TDCodecLVFlat)
-    DEFINE_VIREO_FUNCTION(FlattenToString, "p(i(StaticTypeAndData) i(Boolean) o(String))");
-    DEFINE_VIREO_FUNCTION(UnflattenFromString, "p(i(String) i(Boolean) i(StaticTypeAndData) o(String) o(*) o(Boolean))");
+DEFINE_VIREO_FUNCTION(FlattenToString, "p(i(StaticTypeAndData) i(Boolean) o(String))");
+DEFINE_VIREO_FUNCTION(UnflattenFromString, "p(i(String) i(Boolean) i(StaticTypeAndData) o(String) o(*) o(Boolean))");
 DEFINE_VIREO_END()
+
+}  // namespace Vireo
+
+
+

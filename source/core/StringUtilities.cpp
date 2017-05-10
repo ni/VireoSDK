@@ -72,7 +72,7 @@ Int32 SubString::DigitValue(Utf32Char codePoint, Int32 base)
 
 // Helper function for comparing string.  Lengths are pre-tested by callers; sCompare2 string is at least as long as sCompare1
 static inline Boolean CompareString(const Utf8Char* sCompare1, const Utf8Char* sEnd1, const Utf8Char* sCompare2) {
-    while(sCompare1 < sEnd1) {
+    while (sCompare1 < sEnd1) {
         if (*sCompare1++ != *sCompare2++) {
             return false;
         }
@@ -94,10 +94,10 @@ Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ign
     }
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _begin+length2;
-    if (!ignoreCase) { // separate tighter loop for performance
-        return CompareString(sCompare, sEnd, begin2); // inlined
+    if (!ignoreCase) {  // separate tighter loop for performance
+        return CompareString(sCompare, sEnd, begin2);  // inlined
     }
-    while(sCompare < sEnd) {
+    while (sCompare < sEnd) {
         Utf8Char c1 = *sCompare++;
         Utf8Char c2 = *begin2++;
         if (c1 != c2
@@ -116,7 +116,7 @@ Boolean SubString::CompareCStr(ConstCStr begin2) const
     const Utf8Char* pBegin2 = (const Utf8Char*) begin2;
     // The source string cannot have a null before it hit end
     // So if a null is found in the supplied string first the test bails out false.
-    while(sCompare < sEnd) {
+    while (sCompare < sEnd) {
         if (*sCompare++ != *pBegin2++)
             return false;
     }
@@ -129,7 +129,7 @@ Boolean SubString::ComparePrefix(const Utf8Char* begin2, Int32 length2) const
     if (length2 > Length())
         return false;
 
-    return CompareString(_begin, _begin + length2, begin2); // inlined
+    return CompareString(_begin, _begin + length2, begin2);  // inlined
 }
 //------------------------------------------------------------
 Boolean SubString::ComparePrefixIgnoreCase(const Utf8Char* begin2, Int32 length2) const
@@ -139,7 +139,7 @@ Boolean SubString::ComparePrefixIgnoreCase(const Utf8Char* begin2, Int32 length2
 
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _begin + length2;
-    while(sCompare < sEnd) {
+    while (sCompare < sEnd) {
         Utf8Char c1 = *sCompare++;
         Utf8Char c2 = *begin2++;
         if (c1 != c2
@@ -205,14 +205,14 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
                 }
             } else if (*_begin == 0x0A) {
                 characterEnd = true;
-            } else if ( CharLength(next)== 1) {
+            } else if (CharLength(next) == 1) {
                 characterEnd = true;
             } else {
                 Int32 firstByte = *next;
                 Int32 secondByte = *next + 1;
                 Int32 code = firstByte * 0x100 + secondByte;
                 // it only support cluster some extending LATIN character
-                if (code >= 0xCC80 && code <= 0xCDAF ) {
+                if (code >= 0xCC80 && code <= 0xCDAF) {
                     characterEnd = false;
                 } else {
                     characterEnd = true;
@@ -327,7 +327,7 @@ Int32 SubString::ReadEscapeToken(SubString* token)
         } else if (c == 'u') {
             //  "...\uhhhh..."
             newBegin = _begin + 5;
-            expandedSize = 1; //TODO size will be UTF8 translation of UTF codepoint
+            expandedSize = 1;  // TODO size will be UTF8 translation of UTF codepoint
         } else if (c >= '0' && c <= '7') {
             //  "...\ooo..."
             newBegin = _begin + 1;
@@ -357,7 +357,7 @@ Boolean SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, ch
     const Utf8Char* it = this->_begin;
     const Utf8Char* end = this->_end;
 
-    while(it < end && *it != separator)
+    while (it < end && *it != separator)
         it++;
     if (beforeMatch)
         beforeMatch->AliasAssign(this->_begin, it);
@@ -379,7 +379,7 @@ Int32 SubString::LengthAfterProcessingEscapes()
     SubString escapeToken;
     Int32 FinalLength = 0;
 
-    while(temp._begin < temp._end) {
+    while (temp._begin < temp._end) {
         Utf8Char c = *temp._begin++;
         if (c == '\\') {
             FinalLength += temp.ReadEscapeToken(&escapeToken);
@@ -394,7 +394,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
 {
     SubString temp(this);
 
-    while(temp._begin < temp._end) {
+    while (temp._begin < temp._end) {
         Utf8Char c = *temp._begin++;
         if (c == '\\') {
             SubString escapeToken;
@@ -419,9 +419,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 char* escapeCharPtr = escapeTokenCString.BeginCStr();
                 char* escapeCharEnd = null;
                 int base = 0;
-                if ((*escapeCharPtr >= '0' && *escapeCharPtr <= '3') || *escapeCharPtr == 'o')
+                if ((*escapeCharPtr >= '0' && *escapeCharPtr <= '3') || *escapeCharPtr == 'o') {
                     base = 8;
-                else {
+                } else {
                     if (*escapeCharPtr == 'x' || *escapeCharPtr == 'u')
                         base = 16;
                     else if (*escapeCharPtr == 'b')
@@ -434,8 +434,9 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 if (base) {
                     intValue = strtoull(escapeCharPtr, &escapeCharEnd, base);
                     *dest++ = (Utf8Char)intValue;
-                } else
+                } else {
                     *dest++ = (c & 255);
+                }
                 // TODO Unicode \u codepoints > \u00ff
             } else {
                 // Incorrectly formatted escape, ignore second char
@@ -454,7 +455,7 @@ IntIndex SubString::UnEscape(Utf8Char* dest, IntIndex length) {
     SubString temp(this);
     Utf8Char* b = dest + length;
     IntIndex total = 0;
-    while(temp._begin < temp._end && b != dest) {
+    while (temp._begin < temp._end && b != dest) {
         Utf8Char c = *temp._begin++;
         // Check for the char and add the '\\'
         switch (c) {
@@ -573,8 +574,8 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
                     IntIndex tokenLen = idToken.Length();
                     // allow an exact token match or one followed by +/-/i to allow complex literals
                     if (tokenLen == len
-                        || (tokenLen == len+1 && (initialBegin[len]=='i'  || initialBegin[len]=='I'))
-                        || (tokenLen >= len+1 && (initialBegin[len]=='+'  || initialBegin[len]=='-'))) {
+                        || (tokenLen == len+1 && (initialBegin[len] == 'i'  || initialBegin[len] == 'I'))
+                        || (tokenLen >= len+1 && (initialBegin[len] == '+'  || initialBegin[len] == '-'))) {
                         tokenTraits = TokenTraits_IEEE754;
                         _begin = initialBegin + len;
                     }
@@ -583,9 +584,8 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
                 ++specValPtr;
             }
         }
-        if (tokenTraits != TokenTraits_Unrecognized) // set above
-            ;
-        else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
+        if (tokenTraits != TokenTraits_Unrecognized) {  // set above
+        } else if (('t' == c || 'f' == c) && (idToken.CompareCStr("true") || idToken.CompareCStr("false"))) {
             // Look for Boolean(ish) tokens.
             tokenTraits = TokenTraits_Boolean;
         } else if (idToken.ComparePrefixCStr("0x")) {
@@ -601,7 +601,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
                 idToken._begin++;
             }
 
-            do { // Block with short-cut breaks
+            do {  // Block with short-cut breaks
                 Int32 leadingDigits = idToken.EatCharsByTrait(kACT_Decimal);
                 if (leadingDigits && idToken.Length() == 0) {
                     // Since it was all numbers and nothing's left
@@ -631,7 +631,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
                     break;
                 }
                 // If it falls throuh then the token is not a valid number.
-            } while(false);
+            } while (false);
             if (tokenTraits == TokenTraits_Unrecognized && idToken.Length() > 0)
                 _begin = idToken._begin;
         } else {
@@ -666,7 +666,7 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
             // will be TokenTraits_Unrecognized.
             tt = TokenTraits_NestedExpression;
         }
-    } while (tt && (depth>0));
+    } while (tt && (depth > 0));
 
     // Look for template parameters
     while (*_begin == '<') {
@@ -732,7 +732,7 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
 {
     Int64 value = 0, sign = 1;
     EatWhiteSpaces();
-    if (base == 10)// allow negative other bases?
+    if (base == 10)  // allow negative other bases?
     {
         if (EatChar('-')) {
             sign = -1;
@@ -743,9 +743,9 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
     const Utf8Char *origBegin = _begin;
     while (_begin < _end) {
         Int32 d = DigitValue(*_begin, base);
-        if (d >= 0) {
+        if (d >= 0)
             value = (value * base) + d;
-        } else
+        else
             break;
         ++_begin;
     }
@@ -757,12 +757,12 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
 {
     Utf8Char c;
     Utf8Char decodedC;
-    IntIndex length =0 ;
+    IntIndex length = 0;
     SubString ss(encodedString);
     while (ss.ReadRawChar(&c)) {
         if (c == '+') {
             decodedC = ' ';
-        } else if (c!= '%') {
+        } else if (c != '%') {
             decodedC = c;
         } else {
             Int32 value = 0;
@@ -773,7 +773,7 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
             }
         }
         length++;
-        if (length>this->Length()) {
+        if (length > this->Length()) {
             return false;
         }
         if (*(_begin+length-1) != decodedC) {
@@ -805,7 +805,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
         } else if (*_begin == *tsMetaIdPrefix) {
             IntMax templateIndex;
             SubString innerString(_begin+1, _end);
-            if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths ) {
+            if (innerString.ReadInt(&templateIndex) && templateIndex < kArrayMaxTemplatedDimLengths) {
                 _begin = innerString.Begin();
                 *pValue = kArrayVariableLengthSentinel + (IntIndex)templateIndex + 1;
                 return true;
@@ -842,9 +842,9 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
         } else {
             EatChar('+');
         }
-    } // Any need for octal?
+    }  // Any need for octal?
 
-    while(_begin < _end) {
+    while (_begin < _end) {
         Int32 cValue = DigitValue(*_begin, base);
 
         if (cValue >= 0) {
@@ -855,8 +855,9 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
                     *overflow = true;
                 }
                 value = newValue;
-            } else
+            } else {
                 value = (value * base) + cValue;
+            }
             bNumberFound = true;
         } else {
             break;
@@ -885,11 +886,11 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     if (suppressInfNaN) {
         if (isinf(value)) {
             end = (char*)current;
-            errCode= kLVError_JSONBadInf;
+            errCode = kLVError_JSONBadInf;
         }
         if (isnan(value)) {
             end = (char*)current;
-            errCode= kLVError_JSONBadNaN;
+            errCode = kLVError_JSONBadNaN;
         }
     }
     Boolean bParsed = current != end;
@@ -1010,7 +1011,7 @@ void SubString::EatLeadingSpaces()
         if (IsSpaceChar(*_begin)) {
             _begin++;
             continue;
-        } else if ( *_begin == '/') {
+        } else if (*_begin == '/') {
             if ((_begin+1) < _end && _begin[1] == '/') {
                 //    A '//' comment
                 // comment until EOL
@@ -1020,10 +1021,10 @@ void SubString::EatLeadingSpaces()
                 }
                 // Once any EOL character is found the loop goes
                 // back to white space skipping.
-            } else if ((_begin+1) < _end && _begin[1]=='*') {
-                //    A '/*' comment
+            } else if ((_begin+1) < _end && _begin[1] == '*') {
+                //  A '/*' comment
                 _begin += 2;
-                while ((_begin+1 < _end) && !(_begin[0]=='*' && _begin[1] =='/')) {
+                while ((_begin+1 < _end) && !(_begin[0] == '*' && _begin[1] == '/')) {
                     _begin++;
                 }
                 if (_begin+1 < _end) {
@@ -1043,7 +1044,7 @@ void SubString::EatLeadingSpaces()
 void SubString::EatWhiteSpaces()
 {
     while (_begin < _end) {
-        if(IsSpaceChar(*_begin)) {
+        if (IsSpaceChar(*_begin)) {
             _begin++;
         } else {
             break;
@@ -1101,7 +1102,7 @@ void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
         delete[] _decodedStr;
     if (decode) {
         while (cp != s.End()) {
-            if (*cp=='%' && cp+2 < s.End())
+            if (*cp == '%' && cp+2 < s.End())
                 len -= 2;
             ++cp;
         }
@@ -1115,7 +1116,7 @@ void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
         Utf8Char c;
         Int32 value;
         Utf8Char *pDest = _decodedStr;
-        while(ss.ReadRawChar(&c)) {
+        while (ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value))
                 *pDest++ = (Utf8Char)value;
             else if (c == '+')
@@ -1123,8 +1124,9 @@ void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
             else
                 *pDest++ = c;
         }
-    } else
+    } else {
         memcpy(_decodedStr, s.Begin(), len);
+    }
     _decodedStr[len] = 0;
 }
 
@@ -1149,5 +1151,5 @@ void PrintUTF8ArrayHex(const char* buffer, Int32 length)
     PlatformIO::Print("\n");
 }
 #endif
-} // namespace Vireo
+}  // namespace Vireo
 

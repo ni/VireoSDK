@@ -33,8 +33,8 @@ void EventLog::LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr mes
 {
     char buffer[200];
 
-    vsnprintf (buffer, sizeof(buffer), message, args);
-    LogEventCore( severity, lineNumber, buffer);
+    vsnprintf(buffer, sizeof(buffer), message, args);
+    LogEventCore(severity, lineNumber, buffer);
 }
 //------------------------------------------------------------
 void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...)
@@ -42,11 +42,11 @@ void EventLog::LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr mess
     char buffer[200];
 
     va_list args;
-    va_start (args, message);
-    vsnprintf (buffer, sizeof(buffer), message, args);
-    va_end (args);
+    va_start(args, message);
+    vsnprintf(buffer, sizeof(buffer), message, args);
+    va_end(args);
 
-    LogEventCore( severity, lineNumber, buffer);
+    LogEventCore(severity, lineNumber, buffer);
 }
 //------------------------------------------------------------
 void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message)

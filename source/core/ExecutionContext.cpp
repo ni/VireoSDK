@@ -229,8 +229,8 @@ void GetCallChainArray(StringRefArray1D* callChain)
     Int32 count = 0;
 
     if (callChain) {
-        do { // preflight caller chain to count subVI depth
-            caller = vi->Clumps()->Begin()->_caller; // caller only set on entry clump
+        do {  // preflight caller chain to count subVI depth
+            caller = vi->Clumps()->Begin()->_caller;  // caller only set on entry clump
             if (caller)
                 vi = caller->OwningVI();
             ++count;
@@ -240,7 +240,7 @@ void GetCallChainArray(StringRefArray1D* callChain)
 
         count = 0;
         vi = runningQueueElt->OwningVI();
-        do { // ! This loop must match the preflight in terms of assigning and testing caller
+        do {  // ! This loop must match the preflight in terms of assigning and testing caller
             SubString s = vi->VIName();
             callChain->At(count)->CopyFromSubString(&s);
             caller = vi->Clumps()->Begin()->_caller;

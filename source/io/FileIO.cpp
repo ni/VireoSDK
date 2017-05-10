@@ -14,11 +14,11 @@
 
 #ifdef kVireoOS_windows
     #include <windows.h>
-    #include <codecvt>
     #include <io.h>
-    #include <regex>
-    #include <iostream> // REMOVE
     #include <share.h>
+    #include <codecvt>
+    #include <regex>     // NOLINT(build/c++11)
+    #include <iostream>  // REMOVE
     typedef size_t ssize_t;
     #define POSIX_NAME(_name_) _##_name_
     #ifndef STDIN_FILENO
@@ -268,13 +268,13 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
     // Replace the '/' with '\' in the folder path
     std::regex rx("/");
     directory_path = std::regex_replace(directory_path, rx, "\\", std::regex_constants::match_any);
-    directory_path = directory_path + "\\*"; // append a wildcard to search for all files in folder
+    directory_path = directory_path + "\\*";  // append a wildcard to search for all files in folder
     dir_handle = FindFirstFile(directory_path.c_str(), &ffd);
 
     if (dir_handle == INVALID_HANDLE_VALUE) {
         // No place to handle possible errors, just dump the output
         printf("Error: %d\n", GetLastError());
-        FindClose(dir_handle); // close the HANDLE
+        FindClose(dir_handle);  // close the HANDLE
         fileNames->Resize1D(0);
         return _NextInstruction();
     }
@@ -290,7 +290,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
     if (err != ERROR_NO_MORE_FILES) {
         // No place to handle possible errors, just dump the output
         printf("Error: %d\n", err);
-        FindClose(dir_handle); // close the HANDLE
+        FindClose(dir_handle);  // close the HANDLE
         fileNames->Resize1D(0);
         return _NextInstruction();
     }
@@ -309,7 +309,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
             reinterpret_cast<Utf8Char*>(filenames[i].cFileName));
     }
 
-    FindClose(dir_handle); // close the HANDLE
+    FindClose(dir_handle);  // close the HANDLE
 #elif kVireoOS_linuxU || kVireoOS_macosxU
     struct dirent **dirInfos;
     Int32 count = scandir(cString.BeginCStr(), &dirInfos, 0, alphasort);

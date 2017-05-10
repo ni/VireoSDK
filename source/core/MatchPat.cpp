@@ -18,7 +18,7 @@ using namespace Vireo;
 
 static const UInt8 *AMatch(const UInt8 *, const Utf8Char*, const Utf8Char *);
 static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se);
-static Int32 MakePat(Int32, const Utf8Char *str, StringRef &pat);
+static Int32 MakePat(Int32, const Utf8Char *str, StringRef &pat);  // NOLINT(runtime/references)
 static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset, SubString *bef, SubString *mat, SubString *aft, Int32 *offsetPastMatch);
 
 Int32 LexClass(Utf8Char c)
@@ -44,24 +44,23 @@ char ScanForBackslash(const Utf8Char **sp, const Utf8Char *se)
 
     if (c == '\\') {
         if (s < se) {
-            c= *s++;
+            c = *s++;
             if (isdigit(c) || (c >= 'A' && c <= 'F')) {
                 c -= (c >= 'A' ? 'A' - 10 : '0');
                 if (s < se) {
                     if (isdigit(*s))
-                        c = (c<<4) + *s++ - '0';
+                        c = (c << 4) + *s++ - '0';
                     else if (*s >= 'A' && *s <= 'F')
-                        c = (c<<4) + *s++ - 'A' + 10;
+                        c = (c << 4) + *s++ - 'A' + 10;
                 }
-            }
-            else {
-                switch(c) {
-                    case 'b': c= '\b'; break;
-                    case 'f': c= '\f'; break;
-                    case 'n': c= '\n'; break;
-                    case 'r': c= '\r'; break;
-                    case 's': c= ' ';  break;
-                    case 't': c= '\t'; break;
+            } else {
+                switch (c) {
+                    case 'b': c = '\b'; break;
+                    case 'f': c = '\f'; break;
+                    case 'n': c = '\n'; break;
+                    case 'r': c = '\r'; break;
+                    case 's': c = ' ';  break;
+                    case 't': c = '\t'; break;
                     default:
                         break;
                 }
@@ -100,15 +99,15 @@ Pattern syntax:
 #define mChr    0x60
 #define mCCL    0x30
 
-static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
+static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)  // NOLINT(runtime/references)
 {
     const Utf8Char *s, *ssav, *se;
     UInt8 *p, *lastP;
     Int32 c, n;
-    bool regChar= false;
+    bool regChar = false;
 
     n = len;
-    if(!pat) {
+    if (!pat) {
         TypeRef type = TypeManagerScope::Current()->FindType("String");
         if (type)
             type->InitData(&pat);
@@ -133,7 +132,7 @@ static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
         c = *s++;
         if (c != '*' && c != '+' && c != '?')
             lastP = p;
-        switch(c) {
+        switch (c) {
             case '^':
                 if (p != pat->Begin()) {
                     regChar = true; continue;
@@ -182,8 +181,8 @@ static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)
             case '[':
                 *p++ = mCCL;
                 for (p++; s < se && (c= *s++) != ']'; *p++ = c)
-                    if(c == '\\') {
-                        ssav= s-1;
+                    if (c == '\\') {
+                        ssav = s-1;
                         c = ScanForBackslash(&ssav, se);
                         s = ssav;
                     }
@@ -212,26 +211,26 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
     Int32 ns, nt;
 
     if (offset < 0)
-        offset= 0;
+        offset = 0;
     if (pat) {
         if (!str)
             str = (Utf8Char*)"";
         s = str + offset;
         se = str + len;
         p = pat->Begin();
-        if (*p == mBOL)
+        if (*p == mBOL) {
             t = AMatch(p + 1, s, se);
-        else if (*p == mChr) {
-            for(; s < se; s++)
+        } else if (*p == mChr) {
+            for (; s < se; s++)
                 if (*s == p[1]) {
                     t = AMatch(p, s, se);
-                    if(t)
+                    if (t)
                         break;
                 }
         } else {
             for (; s < se; s++) {
                 t = AMatch(p, s, se);
-                if(t)
+                if (t)
                     break;
             }
         }
@@ -245,17 +244,16 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
             aft->AliasAssignLen(null, 0);
         if (offsetPastMatch)
             *offsetPastMatch = -1;
-    }
-    else {    /* copy str up to s to bef, from s to t to mat, remainder of str from t to aft */
-        ns= Int32(s - str);
-        nt= Int32(t - str);
+    } else {  // copy str up to s to bef, from s to t to mat, remainder of str from t to aft
+        ns = Int32(s - str);
+        nt = Int32(t - str);
         if (bef)
             bef->AliasAssignLen(str, ns);
         if (mat)
             mat->AliasAssignLen(str + ns, nt - ns);
         if (aft)
             aft->AliasAssignLen(str + nt, len - nt);
-        if(offsetPastMatch)
+        if (offsetPastMatch)
             *offsetPastMatch = nt;
     }
 }
@@ -265,24 +263,24 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
     const Utf8Char *sSave, *t;
 
     for (;;) {
-        switch(*p++) {
+        switch (*p++) {
             case mEOF:
                 return s > se ? 0 : s;
             case mChr:
-                if(s >= se || *s++ != *p++)
+                if (s >= se || *s++ != *p++)
                     return 0;
                 continue;
             case mAny:
-                if(s >= se)
+                if (s >= se)
                     return 0;
                 s++;
                 continue;
             case mEOS:
-                if(s != se)
+                if (s != se)
                     return 0;
                 continue;
             case mCCL:
-                if(s >= se || !InSet(*s++, p + 1, p + *p))
+                if (s >= se || !InSet(*s++, p + 1, p + *p))
                     return 0;
                 p += *p;
                 continue;
@@ -308,7 +306,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 break;
             case mChr | mPlus:
                 sSave = s;
-                while(s < se && *s == *p)
+                while (s < se && *s == *p)
                     s++;
                 if (s == sSave)
                     return 0;
@@ -316,7 +314,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 p++;
                 break;
             case mCCL | mPlus:
-                sSave= s;
+                sSave = s;
                 while (s < se && InSet(*s, p + 1, p + *p))
                     s++;
                 if (s == sSave)
@@ -343,10 +341,10 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
             default:
                 return 0;
         }
-    //starloop:
-        for( ; s >= sSave; s--) {
+    // starloop:
+        for (; s >= sSave; s--) {
             t = AMatch(p, s, se);
-            if(t)
+            if (t)
                 return t;
         }
         return 0;
@@ -371,16 +369,17 @@ static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se)
             if (c >= s[0] && c <= s[2])
                 return !sense;
             s += 3;
-        }
-        else if(c == *s)
+        } else if (c == *s) {
             return !sense;
-        else s++;
+        } else {
+            s++;
+        }
     }
     return sense;
 }
 
 
-//Int32 MatchPattern(StringRef regexPattern, ConstCStr str, Int32 offset,
+// Int32 MatchPattern(StringRef regexPattern, ConstCStr str, Int32 offset,
 //                   ConstCStr before, ConstCStr match, ConstCStr after, Int32 *offsetPastMatch)
 
 VIREO_FUNCTION_SIGNATURE7(MatchPattern, StringRef, StringRef, Int32, StringRef, StringRef, StringRef, Int32)

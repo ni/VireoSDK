@@ -55,7 +55,8 @@ namespace Vireo {
     Int32 Date::_systemLocaleTimeZone = 0;
 
 #if kVireoOS_windows
-    // UnixTimeToFileTime and UnixTimeToSystemTime are from https ://support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime
+    // UnixTimeToFileTime and UnixTimeToSystemTime are from
+    // https:support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime
     static void UnixTimeToFileTime(time_t t, LPFILETIME pft)
     {
        // Note that LONGLONG is a 64-bit value
@@ -120,7 +121,7 @@ namespace Vireo {
     {
         // Thursday, January 01, 1903
         Int32 baseYear = 1903;
-        Int32 baseWeek = 4; // 3;  3 was with 0=Monday, want 0=Sunday
+        Int32 baseWeek = 4;  // 3;  3 was with 0=Monday, want 0=Sunday
         Int32 currentYear = baseYear;
         Int32 yearMax = (Int32)(wholeSeconds / kSecondsInYear);
         Int32 yearMin = (Int32)(wholeSeconds / kSecondsInLeapYear);
@@ -139,8 +140,7 @@ namespace Vireo {
                     break;
                 }
             }
-        }
-        else if (wholeSeconds < 0) {
+        } else if (wholeSeconds < 0) {
             for (Int32 i = yearMax; i <= yearMin; i++) {
                 Int32 year = baseYear + i;
                 Int32 numberOfLeap = numberOfLeapYears(year, baseYear);
@@ -155,8 +155,7 @@ namespace Vireo {
                     break;
                 }
             }
-        }
-        else {
+        } else {
             *yearSeconds = 0;
             currentYear = 1904;
         }
@@ -200,7 +199,7 @@ namespace Vireo {
         Int32 firstweekDay = 0;
 
         Int32 year = getYear(timestamp.Integer(), &secondsOfYear, &firstweekDay);
-        if (yearPtr!= NULL) {
+        if (yearPtr != NULL) {
             *yearPtr = year;
         }
         if (weekOfFirstDay != NULL) {
@@ -237,8 +236,7 @@ namespace Vireo {
        if (strchr(timeinfo.tm_zone, ' ') == NULL) {
           // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
           snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
-       }
-       else {
+       } else {
           // if timezone name is unabbreviated (True on Windows (both node.js and browser), then abbreviate it
           abbreviateTimeZone(timeinfo.tm_zone, timeZoneAbbr);
        }
@@ -252,12 +250,9 @@ namespace Vireo {
            Int32 timeZoneOffsetMinsStandard = timeZoneInfo.Bias;
            Int32 timeZoneOffsetMinsDaylight = timeZoneInfo.Bias + timeZoneInfo.DaylightBias;
            Int32 timeZoneOffsetMins = -(GetTimeZoneOffsetSeconds(timestamp.Integer()) / 60);
-           if (timeZoneOffsetMins == timeZoneOffsetMinsStandard)
-           {
+           if (timeZoneOffsetMins == timeZoneOffsetMinsStandard) {
                wcstombs(timeZoneName, timeZoneInfo.StandardName, sizeof(timeZoneName));
-           }
-           else if (timeZoneOffsetMins == timeZoneOffsetMinsDaylight)
-           {
+           } else if (timeZoneOffsetMins == timeZoneOffsetMinsDaylight) {
               wcstombs(timeZoneName, timeZoneInfo.DaylightName, sizeof(timeZoneName));
            }
         }
@@ -340,8 +335,9 @@ namespace Vireo {
         if (tm.tm_zone) {
             _timeZoneString = (char *)malloc(strlen(tz)+1);
             strncpy(_timeZoneString, tm.tm_zone, strlen(tz)+1);
-        } else
+        } else {
             _timeZoneString = NULL;
+        }
 #else
         _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
         _timeZoneString = NULL;
@@ -366,7 +362,8 @@ namespace Vireo {
     //------------------------------------------------------------
     Int32 Date::getLocaletimeZone(Int64 utcTime)
     {
-// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted (03/2017); the localtime_r emulation works correctly
+// #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted (03/2017);
+// the localtime_r emulation works correctly
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
         struct tm tm;
         time_t timeVal = utcTime - kStdDT1970re1904;
@@ -384,4 +381,5 @@ namespace Vireo {
         return 0;
     }
 #endif
-}
+}  // namespace Vireo
+

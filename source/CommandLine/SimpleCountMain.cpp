@@ -84,7 +84,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 #else
     do {
         RunExec();
-    } while(gState != kExecutionState_None);
+    } while (gState != kExecutionState_None);
 #endif
     return 0;
 }

@@ -128,7 +128,8 @@ TypeRef TypeDefiner::Define(TypeManagerRef tm, SubString* typeName, SubString* t
 }
 //------------------------------------------------------------
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer, ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
+void TypeDefiner::DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer,
+    ConstCStr typeCStr, PointerTypeEnum pointerType, ConstCStr cname)
 {
     SubString typeString(typeCStr);
     TypeRef type = ParseAndBuildType(tm, &typeString);
@@ -263,7 +264,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // The Compiler/Assembler will pass both a TypeRef and a DataPointer
     // for each parameter of this type.
     Define(tm, "StaticTypeAndData", "c(e(StaticType) e(DataPointer))");
-    Define(tm, "EnumTypeAndData", "StaticTypeAndData"); // same but only matches enums, not overriding other matches
+    Define(tm, "EnumTypeAndData", "StaticTypeAndData");  // same but only matches enums, not overriding other matches
 
     Define(tm, "SubString", "c(e(DataPointer begin)e(DataPointer end))");
 }

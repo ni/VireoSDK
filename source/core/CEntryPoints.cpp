@@ -194,7 +194,8 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     return "";
 }
 //------------------------------------------------------------
-//! Get information about an Array such as the type of its subtype, the array rank, and the memory location of the first element (or null if there are zero elements)
+//! Get information about an Array such as the type of its subtype, the array rank,
+//! and the memory location of the first element (or null if there are zero elements)
 VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
         const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
@@ -244,7 +245,8 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not an Array or dimension requested is out of the bounds of the rank.
+//! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
+//! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
 {
     TypeManagerScope scope(tm);
@@ -276,7 +278,7 @@ VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, c
     }
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if(!actualArray->ResizeDimensions(rank, newLengths, true, false)) {
+    if (!actualArray->ResizeDimensions(rank, newLengths, true, false)) {
         return kLVError_MemFull;
     }
 

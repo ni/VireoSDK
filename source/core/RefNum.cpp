@@ -25,11 +25,11 @@ using namespace Vireo;
 #define kMaxIndex           ((1U << kNumberOfIndexBits) - 1)  // 1M
 #define kMaxMagicNumber     ((1U << kNumberOfMagicBits) - 1)
 
-#define MagicMask(mn) (UInt32(mn) & kMaxMagicNumber)                   // retrieves the magic number portion of the refnum
-#define MagicFromRefNum(mc) (MagicMask(UInt32(mc)>>kMagicNumberShift)) // retrieves magic number portion of the refnum, but shifted back to being a number
-#define MakeRefNum(index, magicNum) (RefNum(((index) & kMaxIndex)|(MagicMask(magicNum)<<kMagicNumberShift)))
-#define MakePackedMagicNum(refCount, magicNum) MakeRefNum(refCount,magicNum)
-#define CountFromMagicNum(mn) IndexFromRefNum(mn) // retrieves the refCount portion of the magicNumber field
+#define MagicMask(mn) (UInt32(mn) & kMaxMagicNumber)                      // retrieves the magic number portion of the refnum
+#define MagicFromRefNum(mc) (MagicMask(UInt32(mc) >> kMagicNumberShift))  // retrieves magic number portion of the refnum, but shifted back to being a number
+#define MakeRefNum(index, magicNum) (RefNum(((index) & kMaxIndex) | (MagicMask(magicNum) << kMagicNumberShift)))
+#define MakePackedMagicNum(refCount, magicNum) MakeRefNum(refCount, magicNum)
+#define CountFromMagicNum(mn) IndexFromRefNum(mn)  // retrieves the refCount portion of the magicNumber field
 
 NIError RefNumStorageBase::Init(Int32 size, Int32 totalSize, bool isRefCounted) {
     _nextMagicNum = MagicMask(gPlatform.Timer.TickCount());  // must be non-zero
@@ -101,7 +101,7 @@ RefNum RefNumStorageBase::NewRefNum(RefNumDataPtr info) {
 #endif
     RefNumHeaderAndData* rnp = NULL;
     UInt32 newIndex = _firstFree;
-    if (newIndex != IndexFromRefNum(newIndex)) // refnum overflow; max 1M refnums
+    if (newIndex != IndexFromRefNum(newIndex))  // refnum overflow; max 1M refnums
         return kNotARefNum;
     rnp = CreateRefNumIndex(newIndex);
     if (rnp == NULL)
@@ -116,9 +116,9 @@ RefNum RefNumStorageBase::NewRefNum(RefNumDataPtr info) {
     _numUsed++;
 
     UInt32 refCount = _isRefCounted ? 1 : 0;
-    UInt32 magicNum_refCount = MakePackedMagicNum(refCount,mn);
+    UInt32 magicNum_refCount = MakePackedMagicNum(refCount, mn);
     rnp->_refHeader.magicNum = magicNum_refCount;
-    if(_dataSize == sizeof(RefNumDataBase))
+    if (_dataSize == sizeof(RefNumDataBase))
         rnp->_refData = *info;
     else
         memmove(&rnp->_refData, info, _dataSize);
@@ -133,9 +133,9 @@ NIError RefNumStorageBase::DisposeRefNum(const RefNum &refnum, RefNumDataPtr inf
     MutexedScope mutexScope(&_mutex);
 #endif
     rnp = ValidateRefNumIndex(refnum);
-    if (!rnp)
+    if (!rnp) {
         err = kNIError_kResourceNotFound;
-    else {
+    } else {
         if (info)
             memmove(info, &rnp->_refData, _dataSize);
         rnp->_refHeader.magicNum = 0;
@@ -146,7 +146,6 @@ NIError RefNumStorageBase::DisposeRefNum(const RefNum &refnum, RefNumDataPtr inf
         _firstFree = IndexFromRefNum(refnum);
     }
     return err;
-
 }
 
 NIError RefNumStorageBase::GetRefNumData(const RefNum &refnum, RefNumDataPtr info) {
@@ -154,13 +153,11 @@ NIError RefNumStorageBase::GetRefNumData(const RefNum &refnum, RefNumDataPtr inf
     RefNumHeaderAndData* rnp = ValidateRefNumIndex(refnum);
     if (!rnp) {
         err = kNIError_kResourceNotFound;
-    }
-    else {
-        if (_isRefCounted && (CountFromMagicNum(rnp->_refHeader.magicNum)<=0)) {
+    } else {
+        if (_isRefCounted && (CountFromMagicNum(rnp->_refHeader.magicNum) <= 0)) {
             err = kNIError_kResourceNotFound;
-        }
-        else if (info) {
-            if(_dataSize == sizeof(RefNumDataBase))
+        } else if (info) {
+            if (_dataSize == sizeof(RefNumDataBase))
                 *info = rnp->_refData;
             else
                 memmove(info, &rnp->_refData, _dataSize);
@@ -174,13 +171,11 @@ NIError RefNumStorageBase::SetRefNumData(const RefNum &refnum, RefNumDataPtr inf
     RefNumHeaderAndData* rnp = ValidateRefNumIndex(refnum);
     if (!rnp) {
         err = kNIError_kResourceNotFound;
-    }
-    else {
-        if (_isRefCounted && (CountFromMagicNum(rnp->_refHeader.magicNum)<=0)) {
+    } else {
+        if (_isRefCounted && (CountFromMagicNum(rnp->_refHeader.magicNum) <= 0)) {
             err = kNIError_kResourceNotFound;
-        }
-        else if (info) {
-            if(_dataSize == sizeof(RefNumDataBase))
+        } else if (info) {
+            if (_dataSize == sizeof(RefNumDataBase))
                 rnp->_refData = *info;
             else
                 memmove(&rnp->_refData, info, _dataSize);
@@ -214,21 +209,21 @@ bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr 
     RefNumHeaderAndData* rnp = NULL;
     bool rightsWereAcquired = false;
 
-    if(_isRefCounted) {
+    if (_isRefCounted) {
         rnp = ValidateRefNumIndex(refnum);
         if (rnp) {
             UInt32 refnumMagic = UInt32(MagicFromRefNum(refnum));
             for (;;) {
-                UInt32 oldRefCount = rnp->_refHeader.magicNum; // magic and refCount combined
-                UInt32 refCount= UInt32(CountFromMagicNum(oldRefCount));
+                UInt32 oldRefCount = rnp->_refHeader.magicNum;  // magic and refCount combined
+                UInt32 refCount = UInt32(CountFromMagicNum(oldRefCount));
                 UInt32 internalMagic = UInt32(MagicFromRefNum(oldRefCount));
 
-                if(refCount > 0 && internalMagic == refnumMagic) {
+                if (refCount > 0 && internalMagic == refnumMagic) {
                     UInt32 newRefCount = MakePackedMagicNum(refCount+1, refnumMagic);
-                    if( CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
+                    if (CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
                         // Performance here is crucial; it runs for each read/write
                         if (info) {
-                            if(_dataSize == sizeof(RefNumDataBase))
+                            if (_dataSize == sizeof(RefNumDataBase))
                                 *info = rnp->_refData;
                             else
                                 memmove(info, &rnp->_refData, _dataSize);
@@ -236,14 +231,12 @@ bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr 
                         rightsWereAcquired = true;
                         break;
                     }
-                }
-                else {
+                } else {
                     memset(info, 0, _dataSize);
                     break;
                 }
             }
-        }
-        else {
+        } else {
             memset(info, 0, _dataSize);
         }
     } else {
@@ -256,16 +249,16 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
     RefNumHeaderAndData* rnp = NULL;
     Int32 previousRefCount = 0;
 
-    if(_isRefCounted) {
+    if (_isRefCounted) {
         rnp = ValidateRefNumIndex(refnum);
         if (rnp) {
             UInt32 refnumMagic = UInt32(MagicFromRefNum(refnum));
             for (;;) {
-                Int32 oldRefCount = rnp->_refHeader.magicNum; // magic and refCount combined
-                Int32 refCount= UInt32(CountFromMagicNum(oldRefCount));
+                Int32 oldRefCount = rnp->_refHeader.magicNum;  // magic and refCount combined
+                Int32 refCount = UInt32(CountFromMagicNum(oldRefCount));
                 UInt32 internalMagic = UInt32(MagicFromRefNum(oldRefCount));
 
-                if(refCount > 0 && internalMagic == refnumMagic) {
+                if (refCount > 0 && internalMagic == refnumMagic) {
                     Int32 newRefCount = MakePackedMagicNum(refCount-1, refnumMagic);
                     if (CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
                         if (1 == refCount) {
@@ -275,8 +268,7 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
                         previousRefCount = refCount;
                         break;
                     }
-                }
-                else {
+                } else {
                     previousRefCount = 0;
                     break;
                 }
@@ -286,7 +278,7 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
     return previousRefCount;
 }
 
-RefNumManager::CleanupMap RefNumManager::_s_CleanupMap; // Singleton for refnum cleanup procs
+RefNumManager::CleanupMap RefNumManager::_s_CleanupMap;  // Singleton for refnum cleanup procs
 
 void RefNumManager::AddCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg) {
     _s_CleanupMap[vi].push_back(CleanupRecord(proc, arg));

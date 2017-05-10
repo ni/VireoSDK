@@ -33,7 +33,7 @@ void String::AppendViaDecoded(SubString* string)
 
     // Pass one, see how many %XX sequences exist.
     // Utf8 multibyte sequences are copied over byte by byte.
-    while(ss.ReadRawChar(&c)) {
+    while (ss.ReadRawChar(&c)) {
         if (c == '%' && ss.ReadHex2(&value)) {
             decodedLength  -= 2;
         }
@@ -45,7 +45,7 @@ void String::AppendViaDecoded(SubString* string)
         // 127 could easily result in invalid Utf8 sequences.
         ss = *string;
         Utf8Char* pDest = BeginAt(originalLength);
-        while(ss.ReadRawChar(&c)) {
+        while (ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value)) {
                 *pDest++ = (Utf8Char)value;
             } else {
@@ -93,7 +93,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
         begin = this->BeginAt(inplaceIndex);
     }
     Utf8Char* ptr = this->End()-1;
-    for (IntIndex i= len -1; i >=0; i--) {
+    for (IntIndex i = len -1; i >= 0; i--) {
         Utf8Char c = *(begin + i);
         switch (c) {
         case '\n':
@@ -137,7 +137,7 @@ struct ReplaceSubstringStruct : public InstructionCore
     _ParamDef(StringRef, ReplacementString);
     _ParamDef(Int32, Offset);
     _ParamDef(Int32, Length);
-    _ParamDef(StringRef, ResultString); // TODO cannot be in-place , might need to allow for this
+    _ParamDef(StringRef, ResultString);  // TODO cannot be in-place , might need to allow for this
     _ParamDef(StringRef, ReplacedSubString);
     NEXT_INSTRUCTION_METHOD()
 };
@@ -305,7 +305,7 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
     offset = Max(0, Min(offset, stringInLength));
     matchOffset = stringInSubString.FindFirstMatch(&searchStringSubString, offset, false);
 
-    if (matchOffset != -1) { // A match is found
+    if (matchOffset != -1) {  // A match is found
         if (matchPlusRestString) {
             // Copy stringIn starting at the match to matchPlusRestString
             // This copy is done first since the other copy may modify stringIn (when stringIn == beforeMatchString)
@@ -416,7 +416,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToLowerInt, Int8, Int8)
 
 VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
 {
-    if (!_Param(0) || _Param(0)->Length()==0)
+    if (!_Param(0) || _Param(0)->Length() == 0)
         _Param(1) = true;
     else
         _Param(1) = false;
@@ -425,23 +425,23 @@ VIREO_FUNCTION_SIGNATURE2(IsEmptyString, StringRef, Boolean)
 
 VIREO_FUNCTION_SIGNATURE2(IsEmptyPath, NIPath, Boolean)
 {
-    if (!_ParamPointer(0) || _ParamPointer(0)->components->Length()==0) {
+    if (!_ParamPointer(0) || _ParamPointer(0)->components->Length() == 0) {
         if (_ParamPointer(0)->type->Length() > 0)
             _Param(1) = true;
         else
-            _Param(1) = false; // not-a-path is not considered empty
-    }
-    else
+            _Param(1) = false;  // not-a-path is not considered empty
+    } else {
         _Param(1) = false;
+    }
     return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURE2(IsDecimalDigit, StringRef, Boolean)
 {
     StringRef str = _Param(0);
-    if (str->Length()==0)
+    if (str->Length() == 0) {
         _Param(1) = false;
-    else {
+    } else {
         Utf8Char c = str->Begin()[0];
         _Param(1) = c >= '0' && c <= '9';
     }
@@ -456,9 +456,9 @@ VIREO_FUNCTION_SIGNATURE2(IsDecimalDigitInt, Int32, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsHexDigit, StringRef, Boolean)
 {
     StringRef str = _Param(0);
-    if (str->Length()==0)
+    if (str->Length() == 0) {
         _Param(1) = false;
-    else {
+    } else {
         Utf8Char c = str->Begin()[0];
         _Param(1) = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
     }
@@ -474,13 +474,13 @@ VIREO_FUNCTION_SIGNATURE2(IsHexDigitInt, Int32, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsOctalDigit, StringRef, Boolean)
 {
     StringRef str = _Param(0);
-    if (str->Length()==0)
+    if (str->Length() == 0) {
         _Param(1) = false;
-    else {
+    } else {
         Utf8Char c = str->Begin()[0];
         _Param(1) = c >= '0' && c <= '7';
     }
-   return _NextInstruction();
+    return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURE2(IsOctalDigitInt, Int32, Boolean)
@@ -493,9 +493,9 @@ VIREO_FUNCTION_SIGNATURE2(IsOctalDigitInt, Int32, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
 {
     StringRef str = _Param(0);
-    if (str->Length()==0)
+    if (str->Length() == 0) {
         _Param(1) = false;
-    else {
+    } else {
         Utf8Char c = str->Begin()[0];
         _Param(1) = isprint(c);
     }
@@ -512,11 +512,11 @@ VIREO_FUNCTION_SIGNATURE2(IsPrintableInt, Int32, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsWhiteSpace, StringRef, Boolean)
 {
     StringRef str = _Param(0);
-    if (str->Length()==0)
+    if (str->Length() == 0) {
         _Param(1) = false;
-    else {
+    } else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v';
+        _Param(1) = (c == ' ' || c == '\t' || c == '\f' || c == '\r' || c == '\n' || c == '\v');
     }
     return _NextInstruction();
 }
@@ -524,13 +524,13 @@ VIREO_FUNCTION_SIGNATURE2(IsWhiteSpace, StringRef, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsWhiteSpaceInt, Int32, Boolean)
 {
     Utf8Char c = _Param(0);
-    _Param(1) = c==' ' || c=='\t' || c=='\f' || c=='\r' || c=='\n' || c=='\v';
+    _Param(1) = (c == ' ' || c == '\t' || c == '\f' || c == '\r' || c == '\n' || c == '\v');
     return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
 {
-    if (!_Param(0) || _Param(0)->Length()==0)
+    if (!_Param(0) || _Param(0)->Length() == 0)
         _Param(1) = true;
     else
         _Param(1) = false;
@@ -539,7 +539,7 @@ VIREO_FUNCTION_SIGNATURE2(IsNotANumPathRefnum, StringRef, Boolean)
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAPath, NIPath, Boolean)
 {
-    if (!_ParamPointer(0) || (_Param(0).components->Length()==0 && _Param(0).type->Length()==0))
+    if (!_ParamPointer(0) || (_Param(0).components->Length() == 0 && _Param(0).type->Length() == 0))
         _Param(1) = true;
     else
         _Param(1) = false;
@@ -599,7 +599,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
         if (bytes == 1) {
             char c = *pSourceChar;
             if (!found && ss.IsSpaceChar(c)) {
-                leading ++;
+                leading++;
             } else {
                 found = true;
                 if (ss.IsSpaceChar(c)) {
@@ -772,21 +772,20 @@ VIREO_FUNCTION_SIGNATURE3(BranchIfGEString, InstructionCore, StringRef, StringRe
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef)
 {
-   SubString initString;
-   if (_ParamPointer(0)) {
+    SubString initString;
+    if (_ParamPointer(0)) {
       initString = _Param(0)->MakeSubStringAlias();
-   }
-   SubString multiLineInputStr = _Param(1)->MakeSubStringAlias();
-   Int32 lineIndex = _Param(2);
-   _Param(3)->CopyFromSubString(&initString);
+    }
+    SubString multiLineInputStr = _Param(1)->MakeSubStringAlias();
+    Int32 lineIndex = _Param(2);
+    _Param(3)->CopyFromSubString(&initString);
 
-   if (lineIndex >= 0) {
+    if (lineIndex >= 0) {
       const Utf8Char* ch = multiLineInputStr.Begin();
       while (ch < multiLineInputStr.End() && lineIndex > 0) {
          if (*ch == '\n') {
             --lineIndex;
-         }
-         else if (*ch == '\r') {
+         } else if (*ch == '\r') {
             if ((ch+1) < multiLineInputStr.End() && (*(ch+1) == '\n')) {
                ++ch;
             }
@@ -795,17 +794,18 @@ VIREO_FUNCTION_SIGNATURE4(StringPickLine, StringRef, StringRef, Int32, StringRef
          ++ch;
       }
       const Utf8Char *start = ch;
-      for (; ch < multiLineInputStr.End() && !(*ch == '\n' || *ch == '\r'); ++ch);
+      for (; ch < multiLineInputStr.End() && !(*ch == '\n' || *ch == '\r'); ++ch)
+          continue;
       const Utf8Char *end = ch;
       SubString nthLineString;
       nthLineString.AliasAssign(start, end);
       Int32 initStrLength = initString.Length();
       _Param(3)->InsertSubString(initStrLength, &nthLineString);
-   }
-   return _NextInstruction();
+    }
+    return _NextInstruction();
 }
 
-DECLARE_VIREO_PRIMITIVE4( MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,    \
+DECLARE_VIREO_PRIMITIVE4(MaxAndMinEltsString, StringRef, StringRef, StringRef, StringRef,    \
                          Int32 cmp = memcmp(_Param(0)->Begin(), _Param(1)->Begin(), Min(_Param(0)->Length(), _Param(1)->Length())); \
                          StringRef *max = _ParamPointer(0); StringRef *min = _ParamPointer(1); \
                          if (cmp < 0) { \

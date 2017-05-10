@@ -34,7 +34,7 @@ void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int lin
 }
 #endif
 
-}
+}  // namespace Vireo
 
 
 

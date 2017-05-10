@@ -49,8 +49,8 @@ std::set <void*> gAllocSet;
 
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
 
-#include <new>
 #include <malloc.h>
+#include <new>
 
 extern "C" void std_cpp_init();
 extern "C" void std_io_init();
@@ -190,17 +190,16 @@ void PlatformMemory::Free(void* pBuffer)
             gAllocSet.erase(it);
         else
             gPlatform.IO.Printf("invalid free\n");
-
     }
 #endif
     free(pBuffer);
 }
 #if VIREO_JOURNAL_ALLOCS
-void DumpPlatformMemoryLeaks() { // to be called from debugger
+void DumpPlatformMemoryLeaks() {  // to be called from debugger
     std::set<void*>::iterator it = gAllocSet.begin(), ite = gAllocSet.end();
     while (it != ite) {
         void *pBuffer = *it;
-        size_t s = ((size_t*)pBuffer)[2]; // hack, but this is just for debugging
+        size_t s = ((size_t*)pBuffer)[2];  // hack, but this is just for debugging
         gPlatform.IO.Printf("Leak %lx %ld\n", pBuffer, s);
         ++it;
     }
@@ -215,7 +214,7 @@ void PlatformIO::Print(ConstCStr string)
     fflush(stdout);
 #endif
 #if VIREO_JOURNAL_ALLOCS
-    if (*string == 256) // never true, hack to prevent dead code elim, only for debugging
+    if (*string == 256)  // never true, hack to prevent dead code elim, only for debugging
         DumpPlatformMemoryLeaks();
 #endif
 }
@@ -279,7 +278,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
 #else
     buffer->Reserve(5000);
     char c = fgetc(stdin);
-    while(true) {
+    while (true) {
         if ((c == (char)EOF) || (c == '\n')) {
             break;
         }
@@ -301,7 +300,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
         if (c == '<') {
             //  <count>xxxxxxxx "<4>exit"
             // command starts with a size
-            char packetHeader[lenlen];
+            char packetHeader[lenlen];  // NOLINT(runtime/arrays)
             do {
                 c = fgetc(stdin);
                 if (i < lenlen) {
@@ -328,7 +327,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
             return kNIError_Success;
         } else {
             const int MaxCommandLine = 20000;
-            while(true) {
+            while (true) {
                 if ((c == (char)EOF) || (c == '\n') || i >= MaxCommandLine) {
                     break;
                 }
@@ -417,7 +416,7 @@ PlatformTickType PlatformTimer::TickCount()
     return TickCount;
 
 #elif defined (VIREO_EMBEDDED_EXPERIMENT)
-    //#error MicroSecondCount not defined
+    // #error MicroSecondCount not defined
     return gTickCount;
 #else
     return 0;
@@ -450,7 +449,7 @@ PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
 #elif (kVireoOS_macosxU)
 
     // Scaling according to the kernel parameters.
-    static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
+    static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
     if (sTimebaseInfo.denom == 0) {
         (void) mach_timebase_info(&sTimebaseInfo);
     }
@@ -501,7 +500,7 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 #elif (kVireoOS_macosxU)
 
     // Get scale factor used to convert to nanoseconds
-    static mach_timebase_info_data_t    sTimebaseInfo = {0,0};
+    static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
     if (sTimebaseInfo.denom == 0) {
         (void) mach_timebase_info(&sTimebaseInfo);
     }
@@ -532,9 +531,9 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
     return ticks * 1000;
 
 #else
-    //#error MicroSecondCount not defined
+    // #error MicroSecondCount not defined
     return 0;
 #endif
 }
 
-} // namespace Vireo
+}  // namespace Vireo
