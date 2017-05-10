@@ -15,7 +15,7 @@ SDG
     #include <emscripten.h>
 #endif
 
-using namespace Vireo;
+namespace Vireo {
 
 static struct {
     TypeManagerRef _pRootShell;
@@ -25,10 +25,13 @@ static struct {
 
 void RunExec();
 
+}  // namespace Vireo
 
 //------------------------------------------------------------
 int VIREO_MAIN(int argc, const char * argv[])
 {
+    using namespace Vireo;  // NOLINT(build/namespaces)
+
     gPlatform.Setup();
     gShells._keepRunning = true;
     LOG_PLATFORM_MEM("Mem after init")
@@ -105,9 +108,10 @@ int VIREO_MAIN(int argc, const char * argv[])
     gPlatform.Shutdown();
     return 0;
 }
+
 //------------------------------------------------------------
 //! Execution pump.
-void RunExec() {
+void Vireo::RunExec() {
     TypeManagerRef tm = gShells._pUserShell;
     TypeManagerScope scope(tm);
     gShells._keepRunning = tm->TheExecutionContext()->ExecuteSlices(400, 10000000) != kExecutionState_None;
@@ -119,3 +123,4 @@ void RunExec() {
 #endif
     }
 }
+

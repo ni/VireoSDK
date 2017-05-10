@@ -13,7 +13,7 @@ SDG
 
 #include "TypeDefiner.h"
 
-// TODO: Code review
+// TODO(PaulAustin): Code review
 namespace Vireo
 {
 inline UInt32 ReadLittleEndianUInt32(UInt8 *aBuf, IntIndex i) {

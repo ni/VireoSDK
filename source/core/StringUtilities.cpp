@@ -327,7 +327,7 @@ Int32 SubString::ReadEscapeToken(SubString* token)
         } else if (c == 'u') {
             //  "...\uhhhh..."
             newBegin = _begin + 5;
-            expandedSize = 1;  // TODO size will be UTF8 translation of UTF codepoint
+            expandedSize = 1;  // TODO(PaulAustin): size will be UTF8 translation of UTF codepoint
         } else if (c >= '0' && c <= '7') {
             //  "...\ooo..."
             newBegin = _begin + 1;
@@ -437,7 +437,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 } else {
                     *dest++ = (c & 255);
                 }
-                // TODO Unicode \u codepoints > \u00ff
+                // TODO(spathiwa): Unicode \u codepoints > \u00ff
             } else {
                 // Incorrectly formatted escape, ignore second char
             }
@@ -873,7 +873,7 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
 //------------------------------------------------------------
 Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= null*/)
 {
-    // TODO not so pleased with the standard functions for parsing  numbers
+    // TODO(PaulAustin): not so pleased with the standard functions for parsing  numbers
     // many are not thread safe, none seem to be bound on how many characters they will read
     //
     Double value;

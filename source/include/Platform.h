@@ -54,8 +54,8 @@ class PlatformMemory {
 //! Process level functions for stdio.
 class PlatformIO {
  public:
-    void Print(Int32 len, ConstCStr string);
-    void Print(ConstCStr string);
+    void Print(Int32 len, ConstCStr str);
+    void Print(ConstCStr str);
     void Printf(ConstCStr format, ...);
     void ReadFile(SubString *name, StringRef buffer);
     void ReadStdin(StringRef buffer);

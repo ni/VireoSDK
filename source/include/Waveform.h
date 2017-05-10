@@ -23,7 +23,7 @@ struct AnalogWaveform {
     Timestamp _t0;
     Double _dt;
     TypedArrayCoreRef _Y;
-    // TODO Add attributes
+    // TODO(sanmut): Add attributes
 };
 
 }

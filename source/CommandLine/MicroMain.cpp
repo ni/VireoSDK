@@ -10,8 +10,6 @@
 #include "DataTypes.h"
 #include "ExecutionContext.h"
 
-using namespace Vireo;
-
 #ifndef VIREO_MICRO
 #error this main is for the single context micro vireo
 #endif

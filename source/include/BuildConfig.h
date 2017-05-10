@@ -143,7 +143,7 @@ SDG
 
     #define VIREO_TYPE_CONSTRUCTION 1
 
-    // TODO #define VIREO_MULTI_THREAD 1
+    // TODO(PaulAustin): #define VIREO_MULTI_THREAD 1
 
     // FILEIO covers read and write operation, perhaps only for stdio.
     #define VIREO_POSIX_FILEIO 1
@@ -158,7 +158,7 @@ SDG
 
 #endif
 
-// TODO allow for thread locals on linux/unix
+// TODO(PaulAustin): allow for thread locals on linux/unix
 #define VIVM_THREAD_LOCAL
 
 #ifdef VIREO_DEBUG

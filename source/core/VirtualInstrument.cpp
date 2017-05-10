@@ -145,12 +145,12 @@ void VirtualInstrument::SetVIName(const SubString &s, bool decode)   {
 //                         \      /
 // Clump4:                  B----H
 //
-// TODO Wait Many?, right way to wait till first, or allow for one that is a time out.
+// TODO(PaulAustin): Wait Many?  Right way to wait until first, or allow for one that is a time-out?
 // Easy enough to do as a var arg function.
 //
 void VIClump::Trigger()
 {
-    // TODO Make sure there is a MT version of this (or all are MT safe)
+    // TODO(PaulAustin): Make sure there is a MT version of this (or all are MT safe)
     VIREO_ASSERT(_shortCount > 0)
 
     // Strictly speaking, this assert can be relaxed, but It will be interesting
@@ -398,7 +398,7 @@ TypeRef ClumpParseState::ReadFormalParameterType()
 //------------------------------------------------------------
 void ClumpParseState::SetClumpFireCount(Int32 fireCount)
 {
-    // TODO some bootstrap that could be a bit cleaner.
+    // TODO(PaulAustin): some bootstrap that could be a bit cleaner.
     // If the short count is less than the fire count then the clump was enqueued
     // before it has been fully loaded. Don't stomp that
     // This should only be true for root clumps
@@ -590,7 +590,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
         UsageTypeEnum usageType = _formalParameterType->ElementUsageType();
         void* pData = null;
 
-        // TODO access-option based on parameter direction;
+        // TODO(PaulAustin): access-option based on parameter direction;
         if (usageType == kUsageTypeInput) {
             pData = _actualArgumentType->Begin(kPARead);
         } else if (usageType == kUsageTypeOutput) {
@@ -891,7 +891,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
 // the VI's parameter block.
 InstructionCore* ClumpParseState::EmitCallVIInstruction()
 {
-    VIREO_ASSERT(this->_argCount > 0);  // TODO arg[0] is subVI
+    VIREO_ASSERT(this->_argCount > 0);  // TODO(PaulAustin): arg[0] is subVI
 
     ClumpParseState snippetBuilder(this);
 
@@ -1104,7 +1104,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
         return instruction;
 
     if (_perchIndexToRecordNextInstrAddr >= 0) {
-        // TODO support multiple perch patching
+        // TODO(PaulAustin): support multiple perch patching
         VIREO_ASSERT(_perches[_perchIndexToRecordNextInstrAddr] == kPerchBeingAllocated);
         _perches[_perchIndexToRecordNextInstrAddr] = instruction;
         _perchIndexToRecordNextInstrAddr = -1;
@@ -1258,7 +1258,7 @@ InstructionBlockDataProcsClass gInstructionBlockDataProcs;
 DEFINE_VIREO_BEGIN(VirtualInstrument)
     DEFINE_VIREO_REQUIRE(TypeManager)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_TYPE(ExecutionContext, "DataPointer");  // TODO define as type string
+    DEFINE_VIREO_TYPE(ExecutionContext, "DataPointer");  // TODO(PaulAustin): define as type string
     DEFINE_VIREO_CUSTOM_DP(InstructionBlock, "Instruction", &gInstructionBlockDataProcs);
     DEFINE_VIREO_TYPE(Clump, Clump_TypeString);
     DEFINE_VIREO_TYPE(EmptyParameterList, "c()");

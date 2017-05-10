@@ -16,8 +16,6 @@ Craig S.
 
 #include <vector>
 
-using namespace Vireo;
-
 VireoUnitTest::TestList *VireoUnitTest::_s_unitTests;
 
 bool VireoUnitTest::RunTests(bool *pass) {
@@ -25,7 +23,7 @@ bool VireoUnitTest::RunTests(bool *pass) {
     bool ranTests = false;
     TestList *testList = _s_unitTests;
     while (testList) {
-        gPlatform.IO.Printf("Executing test: %s\n", testList->_test->Name());
+        Vireo::gPlatform.IO.Printf("Executing test: %s\n", testList->_test->Name());
         if (!testList->_test->Execute())
             *pass = false;
         ranTests = true;

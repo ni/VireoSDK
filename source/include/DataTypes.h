@@ -154,7 +154,7 @@ typedef enum {
     kLVError_JSONInvalidPath = -375004,
     kLVError_JSONInvalidString = -375003,
     // The rest are semantic analysis errors so can never be seen in LV-generated code:
-    // TODO (spathiwa) Implement for benefit of hand-written Vireo
+    // TODO(spathiwa): Implement for benefit of hand-written Vireo
     kLVError_JSONInvalidElementNameError = -375002,
     kLVError_JSONInvalidRootContainerError = -375001,
     kLVError_JSONUnsupportedTypeError = -375000

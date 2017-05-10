@@ -86,7 +86,7 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
     // Now that any caller that needs to hoist data from the clump has been
     // taken care of, see if there are other clumps that are waiting in line.
     // What they are waiting for is unimportant here, only that they have been added the
-    // waiting list for this clump.  (TODO allow prioritization)
+    // waiting list for this clump.  (TODO(PaulAustin): allow prioritization)
 
     // Disconnect the list
     VIClump* waitingClump = runningQueueElt->_waitingClumps;
@@ -144,7 +144,7 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 // CurrentBrowserFPS - Returns the framerate of the browser in frames per second
 // First call starts the monitor and returns an FPS of zero
 // Subsequent calls return the most recent calculated FPS value
-// TODO verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
+// TODO(rajsite): verify that SLI can have the error terminal removed safely and remove unused error terminal from CurrentBrowserFPS
 VIREO_FUNCTION_SIGNATURE2(CurrentBrowserFPS, Double, ErrorCluster)
 {
     ErrorCluster *errPtr = _ParamPointer(1);
@@ -180,7 +180,7 @@ VIREO_FUNCTION_SIGNATURE1(Wait, VIClump)
 VIREO_FUNCTION_SIGNATURET(CallVI, CallVIInstruction)
 {
     VIClump *qe = _ParamImmediate(viRootClump);
-    // TODO move this to an Execution Context method?
+    // TODO(PaulAustin): move this to an Execution Context method?
     if (qe->_shortCount > 0) {
         // If the callee clump has a positive short count
         // it is not running there fore it is ok to run.
@@ -391,7 +391,7 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         reply = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
     }
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
-    // TODO check global memory manager for allocation errors
+    // TODO(PaulAustin): check global memory manager for allocation errors
 #else
     if (THREAD_TADM()->_totalAllocationFailures > 0) {
         reply = kExecutionState_None;

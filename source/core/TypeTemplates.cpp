@@ -95,7 +95,7 @@ IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
             return (IntIndex) ReadIntFromMemory(type, type->Begin(kPARead));
         } else {
             // If no parameter is supplied then change it to simply being variable size
-            // TODO(templates) or shift its position?, thats not hard either.
+            // TODO(PaulAustin): templates - or shift its position?, that's not hard either.
             return kArrayVariableLengthSentinel;
         }
     } else {
@@ -147,7 +147,7 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
 
-    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
 
     for (Int32 i = 0; i < subElementCount; i++) {
@@ -180,7 +180,7 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
 
-    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
 
     for (Int32 i = 0; i < subElementCount; i++) {
@@ -283,7 +283,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
     // base type is also generic. First create the hypothetical new name
     // and see if the instance already exists. If not, make one.
 
-    // Create a new name, TODO should  really use TDCodecVIA to parse the type
+    // Create a new name, TODO(PaulAustin): should really use TDCodecVIA to parse the type
     STACK_VAR(String, tempString);
 
     tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());

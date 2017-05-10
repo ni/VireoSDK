@@ -14,7 +14,7 @@ SDG
     #include <emscripten.h>
 #endif
 
-using namespace Vireo;
+namespace Vireo {
 
 #if 1
 const char* VireoProgram = "\
@@ -68,9 +68,12 @@ enqueue (Loop)\
 
 void RunExec();
 TypeManagerRef  gpShell;
+}  // namespace Vireo
 
 int VIREO_MAIN(int argc, const char * argv[])
 {
+    using namespace Vireo;
+
     PlatformIO::Printf("Simple Counting Vireo Egg Shell built %s\n",__TIME__ );
     SubString  subString(VireoProgram);
 
@@ -89,8 +92,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     return 0;
 }
 
-void RunExec() {
-
+void Vireo::RunExec() {
     gState = ((EggShell*)gpShell)->TheExecutionContext()->ExecuteSlices(400);
 
 #if kVireoOS_emscripten

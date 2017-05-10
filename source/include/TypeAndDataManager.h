@@ -95,14 +95,14 @@ typedef TypeCommon StaticType;
 //------------------------------------------------------------
 class TypedArrayCore;
 typedef TypedArrayCore *TypedArrayCoreRef, *TypedObjectRef, TypedBlock;
-    // TODO get rid of TypedBlock   ->TypeBlock ObjectRef??
-typedef TypedBlock *TypedBlockRef;  // TODO => merge into ArrayCoreRef
+    // TODO(PaulAustin): get rid of TypedBlock   ->TypeBlock ObjectRef??
+typedef TypedBlock *TypedBlockRef;  // TODO(PaulAustin): merge into ArrayCoreRef
 
 template <class T>
 class TypedArray1D;
 
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
-    // TODO Type manager needs single instance global option like that used by execution context.
+    // TODO(PaulAustin): Type manager needs single instance global option like that used by execution context.
     #error
     #define THREAD_TADM()  // TBD
 #else
@@ -252,7 +252,7 @@ class TypeManager
 
     friend class TDViaParser;
 
-    // TODO The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
+    // TODO(PaulAustin): The manager needs to define the Addressable Quantum size (bit in an addressable item, often a octet
     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
     // also defines alignment rules. Each element in a cluster is addressable
  private:
@@ -302,7 +302,7 @@ class TypeManager
 
  public:
     // Low level allocation functions
-    // TODO pull out into its own class.
+    // TODO(PaulAustin): pull out into its own class.
     void* Malloc(size_t countAQ);
     void* Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ);
     void Free(void* pBuffer);
@@ -547,7 +547,7 @@ class TypeCommon
     //! True is the parameter is only visible to the callee, but may be cleared between calls.
     Boolean IsTempParam()           { return _elementUsageType == kUsageTypeTemp; }
     //! True if the parameter is not required. For non flat values null may be passed in.
-    Boolean IsOptionalParam()       { return true; }  // TODO {return _elementUsageType == kUsageTypeOptionalInput ;}
+    Boolean IsOptionalParam()       { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
     UsageTypeEnum ElementUsageType() { return (UsageTypeEnum)_elementUsageType; }
  private:
     //! True if the type owns data that needs to be freed when the TypeManager is cleared.
@@ -612,7 +612,7 @@ class TypeCommon
     Boolean IsComplex();
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {
-        return _topAQSize * _typeManager->AQBitLength(); }  // TODO defer to type manager for scale factor
+        return _topAQSize * _typeManager->AQBitLength(); }  // TODO(PaulAustin): defer to type manager for scale factor
 };
 
 //------------------------------------------------------------
@@ -647,7 +647,7 @@ class WrappedType : public TypeCommon
     virtual NIError ClearData(void* pData)              { return _wrapped->ClearData(pData); }
 };
 
-// TODO forward declarations (this covers asynchronous resolution of sub VIs as well)
+// TODO(PaulAustin): forward declarations (this covers asynchronous resolution of sub VIs as well)
 // for the most part types are not mutable.
 // here might be the exceptions
 // 1. if a name is not resolved it can be kept on a short list. when the name is introduced
@@ -859,7 +859,7 @@ class ParamBlockType : public AggregateType
         }
     virtual NIError CopyData(const void* pData, void* pDataCopy)
         {
-            VIREO_ASSERT(false);  // TODO
+            VIREO_ASSERT(false);  // TODO(PaulAustin): Is this needed? (spathiwa)
             return kNIError_kInsufficientResources;
         }
     virtual NIError ClearData(void* pData)
@@ -931,7 +931,7 @@ class PointerType : public WrappedType
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitPointer(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                   { return 1; }
-    // TODO Add GetSubElementAddressFromPath
+    // TODO(PaulAustin): Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
 //! A type describes a refnum to another type.
@@ -982,7 +982,7 @@ class EnumType : public WrappedType
     virtual IntIndex GetEnumItemCount();
     virtual ~EnumType();
 
-    // TODO Add GetSubElementAddressFromPath
+    // TODO(spathiwa): Add GetSubElementAddressFromPath
 };
 //------------------------------------------------------------
 //! A type describes a pointer with a predefined value. For example, the address to a C function.
@@ -1203,25 +1203,25 @@ class String : public TypedArray1D< Utf8Char >
 {
  public:
     SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
-    void CopyFromSubString(const SubString* string)   {
-        if (string->Length())
-            CopyFrom(string->Length(), string->Begin());
+    void CopyFromSubString(const SubString* str)   {
+        if (str->Length())
+            CopyFrom(str->Length(), str->Begin());
         else
             Resize1D(0);
     }
     void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }
-    void AppendSubString(SubString* string)     { Append((IntIndex)string->Length(), (Utf8Char*)string->Begin()); }
+    void AppendSubString(SubString* str)     { Append((IntIndex)str->Length(), (Utf8Char*)str->Begin()); }
     void AppendStringRef(StringRef stringRef)           {
         Append((IntIndex)stringRef->Length(), (Utf8Char*)stringRef->Begin());
     }
     void InsertCStr(IntIndex position, ConstCStr cstr)
                                               { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
-    void AppendViaDecoded(SubString *string);
+    void AppendViaDecoded(SubString *str);
     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
 
-    void InsertSubString(IntIndex position, SubString* string) {
-        Insert(position, (IntIndex)string->Length(), (Utf8Char*)string->Begin());
+    void InsertSubString(IntIndex position, SubString* str) {
+        Insert(position, (IntIndex)str->Length(), (Utf8Char*)str->Begin());
     }
 };
 
@@ -1254,8 +1254,8 @@ typedef NIPath *NIPathRef;
 class TempStackCStringFromString : public TempStackCString
 {
  public:
-    explicit TempStackCStringFromString(StringRef string)
-    : TempStackCString(string->Begin(), string->Length())
+    explicit TempStackCStringFromString(StringRef str)
+    : TempStackCString(str->Begin(), str->Length())
     { }
 };
 

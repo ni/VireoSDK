@@ -23,8 +23,6 @@ SDG
 #define DEFINE_VIREO_FUNCTION_TYPED(_root_, _type_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _root_##_type_, _proto_)
 #define DEFINE_VIREO_FUNCTION_2TYPED(_root_, _type1_, _type2_, _proto_)  DEFINE_VIREO_FUNCTION_CUSTOM(_root_, _type1_##_root_##_type2_, _proto_)
 
-using namespace Vireo;
-
 // Different compilers expose different sets of function signatures for
 // integer abs, so we define our own.
 inline Int8  IntAbs(Int8  value) { return abs(value); }
@@ -42,11 +40,12 @@ inline Int64 IntAbs(Int64 value) { return llabs(value); }
     #endif
 #endif
 
+namespace Vireo {
+
 extern "C" {
 
 // For some platforms isnan, isinf, abs are functions in std not macros
-using namespace std;
-
+using namespace std;  // NOLINT(build/namespaces)s
 
 // Basic Math
 #define DECLARE_VIREO_MATH_PRIMITIVES(TYPE) \
@@ -338,7 +337,6 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 
 //------------------------------------------------------------
 // Conversion
-// #define BOOLEAN 0 //TODO, do we need boolean conversions?
 #define TC_UINT8 1
 #define TC_UINT16 2
 #define TC_UINT32 3
@@ -574,7 +572,7 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Utf8Char)
 //------------------------------------------------------------
 
-// TODO: Make this into a macro and move to INTEGER_MATH
+// TODO(PaulAustin): Make this into a macro and move to INTEGER_MATH
 VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
 {
     Int32 shift = _Param(1);
@@ -588,7 +586,7 @@ VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
 
 VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 {
-    // TODO complete this function
+    // TODO(PaulAustin): complete this function
     Int32 rotate = _Param(1);
     if (rotate < 0) {
         _Param(2) = _Param(0) >> -rotate;
@@ -653,7 +651,6 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     DEFINE_VIREO_FUNCTION(BranchIfNull, "p(i(BranchTarget) i(DataPointer))");
     DEFINE_VIREO_FUNCTION(BranchIfNotNull, "p(i(BranchTarget) i(DataPointer))");
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Boolean)
-    // TODO do we need conversion functions for booleans?? just to int16?
 
     //--------------------------
     // UInt8
@@ -766,7 +763,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int32)
 
 #if 1
-    // TODO remove these once no targets are no longer relying on current gen LV via emitter
+    // TODO(PaulAustin): remove these once no targets are no longer relying on current gen LV via emitter
     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
     // branch instructions. These support the ones needed.
 #if defined (VIREO_TYPE_Int32)
@@ -805,7 +802,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     // Single
 #if defined(VIREO_TYPE_Single)
 #if 0
-    // TODO once type dependency sequencing works these definitions can be moved here.
+    // TODO(PaulAustin): once type dependency sequencing works these definitions can be moved here.
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bc(e(bb(32 IEEE754B)))))")
     DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))")
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")
@@ -1125,4 +1122,6 @@ DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
 DEFINE_VIREO_END()
 
 #endif
+
+}  // namespace Vireo
 

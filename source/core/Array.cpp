@@ -19,7 +19,7 @@ SDG
 #include <algorithm>
 #include <cmath>
 
-using namespace Vireo;
+namespace Vireo {
 
 //------------------------------------------------------------
 DECLARE_VIREO_PRIMITIVE2(ArrayResize, TypedArrayCoreRef, IntIndex, (_Param(0)->Resize1D(_Param(1)) ))
@@ -1924,3 +1924,5 @@ DEFINE_VIREO_BEGIN(Array)
 #endif
 
 DEFINE_VIREO_END()
+
+}  // namespace Vireo

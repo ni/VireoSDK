@@ -11,7 +11,8 @@ SDG
     \brief  C entry points for core Vireo functions. Used when the runtime is built and loaded as a library
  */
 
-using namespace Vireo;
+namespace Vireo {
+
 //------------------------------------------------------------
 // Keep in sync with module_eggShell.js
 typedef enum {
@@ -94,3 +95,5 @@ VIREO_EXPORT void Data_WriteBytes(TypedBlock* object, Int32 offset, Int32 count,
 //------------------------------------------------------------
 //! Occurrence functions
 VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence);
+
+}  // namespace Vireo

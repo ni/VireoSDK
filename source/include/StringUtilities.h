@@ -252,7 +252,7 @@ class SubString : public SubVector<Utf8Char>
     Boolean SplitString(SubString* beforeMatch, SubString* afterMatch, char separator) const;
 
     //! Compare the SubString with a reference string.
-    Boolean Compare(const SubString* string)  const { return Compare(string->Begin(), string->Length()); }
+    Boolean Compare(const SubString* str)  const { return Compare(str->Begin(), str->Length()); }
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
@@ -267,7 +267,7 @@ class SubString : public SubVector<Utf8Char>
     }
 
     //! Compare with the encoded string
-    Boolean CompareViaEncodedString(SubString* string);
+    Boolean CompareViaEncodedString(SubString* str);
 
     //! Functions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
@@ -371,15 +371,15 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
     TempStackCString() { }
 
     //! Construct a null terminated from an existing SubString.
-    explicit TempStackCString(SubString* string) : FixedCArray(string) { }
+    explicit TempStackCString(SubString* str) : FixedCArray(str) { }
 
     //! Construct a null terminated from rwa block of UTF-8 characters.
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) { }
 
     //! Append a SubString.
-    Boolean Append(SubString* string)
+    Boolean Append(SubString* str)
     {
-        return FixedCArray::Append(string->Begin(), (size_t)string->Length());
+        return FixedCArray::Append(str->Begin(), (size_t)str->Length());
     }
 
     //! Append a null terminated String.

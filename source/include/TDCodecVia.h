@@ -147,7 +147,7 @@ class TDViaParser
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
     TypeRef ParseEnumType(SubString *token);
-    EncodingEnum ParseEncoding(SubString* string);
+    EncodingEnum ParseEncoding(SubString* str);
 };
 
 #if defined (VIREO_VIA_FORMATTER)
@@ -165,7 +165,7 @@ class TDViaFormatter
 
     static const Int32 kTempFormattingBufferSize = 100;
  public:
-    TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null,
+    TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null,
                    Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
     // Type formatters
     void    FormatType(TypeRef type);
