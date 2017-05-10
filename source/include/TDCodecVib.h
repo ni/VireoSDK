@@ -48,7 +48,7 @@ class TDVibDecoder
 
  private:
     void MarkError(ConstCStr message);
-    TypeRef BadType()   {return _typeManager->BadType();}   // TODO could create error that encodes scan point
+    TypeRef BadType()   {return _typeManager->BadType();}   // TODO(PaulAustin): could create error that encodes scan point
     NIError ParseAggregateElementList(TypeRef ElementTypes[], Int32* pElementCount);
     TypeRef ParseArray();
     TypeRef ParseBitBlock();
@@ -58,7 +58,7 @@ class TDVibDecoder
     TypeRef ParseEquivalence();
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
-    EncodingEnum ParseEncoding(SubString* string);
+    EncodingEnum ParseEncoding(SubString* str);
 };
 
 //------------------------------------------------------------

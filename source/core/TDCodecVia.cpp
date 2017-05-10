@@ -21,7 +21,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 
-#include "VirtualInstrument.h"  // TODO remove once it is all driven by the type system.
+#include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 
 #if !kVireoOS_windows
     #include <math.h>
@@ -89,7 +89,7 @@ TypeRef TDViaParser::ParseEnqueue()
 {
     TypeRef type = BadType();
 
-    //! TODO merge with runtime enqueue function
+    //! TODO(PaulAustin): merge with runtime enqueue function
     SubString viName;
 
     if (!_string.EatChar('(')) {
@@ -416,7 +416,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitCluster()
 {
-    TypeRef elementTypes[1000];  // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];  // TODO(PaulAustin): enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
     ParseAggregateElementList(elementTypes, &calc);
     return BitClusterType::New(_typeManager, elementTypes, calc.ElementCount);
@@ -424,7 +424,7 @@ TypeRef TDViaParser::ParseBitCluster()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseCluster()
 {
-    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
     ParseAggregateElementList(elementTypes, &calc);
     return ClusterType::New(_typeManager, elementTypes, calc.ElementCount);
@@ -465,7 +465,7 @@ TypeRef TDViaParser::ParseDefine()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseEquivalence()
 {
-    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     EquivalenceAlignmentCalculator calc(_typeManager);
     ParseAggregateElementList(elementTypes, &calc);
     return EquivalenceType::New(_typeManager, elementTypes, calc.ElementCount);
@@ -473,7 +473,7 @@ TypeRef TDViaParser::ParseEquivalence()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseParamBlock()
 {
-    TypeRef elementTypes[1000];   // TODO enforce limits or make them dynamic
+    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     ParamBlockAlignmentCalculator calc(_typeManager);
     ParseAggregateElementList(elementTypes, &calc);
     return ParamBlockType::New(_typeManager, elementTypes, calc.ElementCount);
@@ -675,34 +675,34 @@ TypeRef TDViaParser::ParseEnumType(SubString *token)
     return enumVal;
 }
 //------------------------------------------------------------
-EncodingEnum TDViaParser::ParseEncoding(SubString *string)
+EncodingEnum TDViaParser::ParseEncoding(SubString *str)
 {
     EncodingEnum enc = kEncoding_None;
-    if (string->CompareCStr(tsBoolean)) {
+    if (str->CompareCStr(tsBoolean)) {
         enc = kEncoding_Boolean;
-    } else if (string->CompareCStr(tsIEEE754Binary)) {
+    } else if (str->CompareCStr(tsIEEE754Binary)) {
         enc = kEncoding_IEEE754Binary;
-    } else if (string->CompareCStr(tsUInt)) {
+    } else if (str->CompareCStr(tsUInt)) {
         enc = kEncoding_UInt;
-    } else if (string->CompareCStr(tsSInt)) {
+    } else if (str->CompareCStr(tsSInt)) {
         enc = kEncoding_S2CInt;
-    } else if (string->CompareCStr(tsFixedPoint)) {
+    } else if (str->CompareCStr(tsFixedPoint)) {
         enc = kEncoding_Q;
-    } else if (string->CompareCStr(ts1plusFractional)) {
+    } else if (str->CompareCStr(ts1plusFractional)) {
         enc = kEncoding_Q1;
-    } else if (string->CompareCStr(tsBiasedInt)) {
+    } else if (str->CompareCStr(tsBiasedInt)) {
         enc = kEncoding_BiasedInt;
-    } else if (string->CompareCStr(tsInt1sCompliment)) {
+    } else if (str->CompareCStr(tsInt1sCompliment)) {
         enc = kEncoding_S1CInt;
-    } else if (string->CompareCStr(tsAscii)) {
+    } else if (str->CompareCStr(tsAscii)) {
         enc = kEncoding_Ascii;
-    } else if (string->CompareCStr(tsUnicode)) {
+    } else if (str->CompareCStr(tsUnicode)) {
         enc = kEncoding_Unicode;
-    } else if (string->CompareCStr(tsGeneric)) {
+    } else if (str->CompareCStr(tsGeneric)) {
         enc = kEncoding_Generic;
-    } else if (string->CompareCStr(tsPointer)) {
+    } else if (str->CompareCStr(tsPointer)) {
         enc = kEncoding_Pointer;
-    } else if (string->CompareCStr(tsEnum)) {
+    } else if (str->CompareCStr(tsEnum)) {
         enc = kEncoding_Enum;
     }
 
@@ -843,7 +843,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 charCount = token.LengthAfterProcessingEscapes();
                 pArray->Resize1D(charCount);
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
-                    // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
+                    // TODO(PaulAustin): convert from Utf8 to ASCII, map chars that do not fit to something.
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
                     token.ProcessEscapes(pArray->RawBegin(), pArray->RawBegin());
@@ -853,7 +853,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 pArray->Resize1D(charCount);
 
                 if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Ascii) {
-                    // TODO convert from Utf8 to ASCII, map chars that do not fit to something.
+                    // TODO(PaulAustin): convert from Utf8 to ASCII, map chars that do not fit to something.
                     memcpy(pArray->RawBegin(), pBegin, charCount);
                 } else if (arrayElementType->TopAQSize() == 1 && arrayElementType->BitEncoding() == kEncoding_Unicode) {
                     memcpy(pArray->RawBegin(), pBegin, charCount);
@@ -948,7 +948,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
 }
 
 //------------------------------------------------------------
-//! Skip over a JSON item.  TODO merge with ReadSubexpression
+//! Skip over a JSON item.  TODO(PaulAustin): merge with ReadSubexpression
 Boolean EatJSONItem(SubString* input)
 {
     SubString token;
@@ -1109,7 +1109,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     return kLVError_ArgError;
                 }
 
-                // TODO support 16 bit reals? 128 bit reals? those are defined by IEEE754
+                // TODO(PaulAustin): support 16 bit reals? 128 bit reals? those are defined by IEEE754
             }
             break;
         case kEncoding_Ascii:
@@ -1123,23 +1123,23 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 } else {
                     LOG_EVENT(kSoftDataError, "Scalar that is unicode");
                     return kLVError_ArgError;
-                    // TODO support escaped chars, more error checking
+                    // TODO(PaulAustin): support escaped chars, more error checking
                 }
             }
             break;
         case kEncoding_None:
-            // TODO any thing to do ? value for empty cluster, how
+            // TODO(PaulAustin): anything to do? value for empty cluster?
             break;
         case kEncoding_Pointer:
             {
-                // TODO this is not really flat.
+                // TODO(PaulAustin): this is not really flat.
                 static SubString strTypeType(tsTypeType);
                 static SubString strExecutionContextType(tsExecutionContextType);
                 if (type->IsA(&strTypeType)) {
                     if (pData) {
                         *(TypeRef*)pData = this->ParseType();
                     } else {
-                        this->ParseType();  // TODO if preflight its read and lost
+                        this->ParseType();  // TODO(PaulAustin): if preflight its read and lost
                     }
                     return kLVError_NoError;
                 } else if (type->IsA(&strExecutionContextType)) {
@@ -1147,7 +1147,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     if (token.CompareCStr(tsWildCard)) {
                         // If a generic is specified then the default for the type should be
                         // used. For some pointer types this may be a process or thread global, etc.
-                        // TODO this is at too low a level, it could be done at
+                        // TODO(PaulAustin): this is at too low a level, it could be done at
                         // a higher level.
                         *(ExecutionContextRef*)pData = THREAD_EXEC();
                         return kLVError_NoError;
@@ -1629,7 +1629,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
 
                     state._parserFocus = token;
                     if (formalType) {
-                        // TODO the type classification can be moved into a codec independent class.
+                        // TODO(PaulAustin): the type classification can be moved into a codec independent class.
                         SubString formalParameterTypeName = formalType->Name();
 
                         if (formalParameterTypeName.CompareCStr("VarArgCount")) {
@@ -1906,11 +1906,11 @@ ViaFormatChars TDViaFormatter::formatJSONEggShell = { kJSONEncoding, '[', ']', '
 ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{', '}', '{', '}', ',', '\"', kViaFormat_NoFieldNames};
 
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef string, Boolean quoteOnTopString, Int32 fieldWidth,
+TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth,
     SubString* format, Boolean jsonLVExt/*= false*/, Boolean quoteInfNaN/*= false*/)
 {
     // Might move all options to format string.
-    _string = string;
+    _string = str;
     _options._bQuoteStrings = quoteOnTopString;
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
@@ -2079,7 +2079,7 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         // Unicode + elt size == 1 => Utf8
         // not planning on doing UTF16, or 32 at this time
         // These encodings have a special format
-        // TODO option for raw or escaped forms need to be covered, sometime in quotes
+        // TODO(PaulAustin): option for raw or escaped forms need to be covered, sometime in quotes
         if (_options._bQuoteStrings) {
             _string->Append(Fmt()._quote);
         }
@@ -2158,7 +2158,7 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
             if (useQuotes)
                 _string->Append('\"');
 
-           // TODO use percent encoding when needed
+           // TODO(PaulAustin): use percent encoding when needed
            // _string->Append(ss.Length(), ss.Begin());
             IntIndex pos = _string->Length();
             _string->AppendViaDecoded(&ss);
@@ -2361,7 +2361,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
     if (!error) {
         Int32 topSize = arg[0]._paramType->TopAQSize();
         char *buffer = new char[topSize];  // passed in default data is overwritten since it's also the output.  Save a copy.
-        // TODO Consider refactor to make default and output different args?
+        // TODO(spathiwa): Consider refactor to make default and output different args?
         memset(buffer, 0, topSize);
         arg[0]._paramType->InitData(buffer);
         arg[0]._paramType->CopyData(arg[0]._pData, buffer);
@@ -2388,10 +2388,10 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
 {
     TypeRef type = _ParamPointer(1);
 
-    SubString string = _Param(0)->MakeSubStringAlias();
+    SubString str = _Param(0)->MakeSubStringAlias();
     EventLog log(_Param(3));
 
-    TDViaParser parser(THREAD_TADM(), &string, &log, 1);
+    TDViaParser parser(THREAD_TADM(), &str, &log, 1);
     parser._loadVIsImmediately = true;
 
     parser.ParseData(type, _ParamPointer(2));
@@ -2416,7 +2416,7 @@ static void SaturateValue(TypeRef type, Int64 *value, Boolean sourceIsFloat) {
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
 {
-    StringRef string = _Param(0);
+    StringRef str = _Param(0);
     Int32 beginOffset = _ParamPointer(1) ? _Param(1) : 0;
     void *pDefault = _ParamPointer(2);
     TypeRef type = _ParamPointer(4);
@@ -2424,7 +2424,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
 
     if (beginOffset < 0)
         beginOffset = 0;
-    SubString substring(string->BeginAt(beginOffset), string->End());
+    SubString substring(str->BeginAt(beginOffset), str->End());
     Int32 length1 = substring.Length();
     Int32 length2;
     Boolean success;
@@ -2469,10 +2469,10 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
     return _NextInstruction();
 }
 
-static void BaseStringToNumber(Int32 base, StringRef string, Int32 beginOffset, Int32 *endOffset, void *pDefault, TypeRef type, void *pData) {
+static void BaseStringToNumber(Int32 base, StringRef str, Int32 beginOffset, Int32 *endOffset, void *pDefault, TypeRef type, void *pData) {
     if (beginOffset < 0)
         beginOffset = 0;
-    SubString substring(string->BeginAt(beginOffset), string->End());
+    SubString substring(str->BeginAt(beginOffset), str->End());
     Int32 length1 = substring.Length();
     Int32 length2;
     Boolean success;
@@ -2549,7 +2549,7 @@ VIREO_FUNCTION_SIGNATURE6(BinaryStringToNumber, StringRef, Int32, void, Int32, S
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int32, StaticType, void)
 {
-    StringRef string = _Param(0);
+    StringRef str = _Param(0);
     Int32 beginOffset = _ParamPointer(1) ? _Param(1) : 0;
     void *pDefault = _ParamPointer(2);
     TypeRef type = _ParamPointer(4);
@@ -2557,7 +2557,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
     if (beginOffset < 0)
         beginOffset = 0;
-    SubString substring(string->BeginAt(beginOffset), string->End());
+    SubString substring(str->BeginAt(beginOffset), str->End());
     Int32 length1 = substring.Length();
     Int32 length2;
     Boolean success;
@@ -2605,35 +2605,35 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 }
 
 //------------------------------------------------------------
-typedef void (*NumberToStringCallback)(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string);
+typedef void (*NumberToStringCallback)(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str);
 
-void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string) {
+void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str) {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dF", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string)
+void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef string)
+void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%^%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
@@ -2643,34 +2643,34 @@ void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, In
     else
         snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dX", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%do", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
-void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef string)
+void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
     StaticTypeAndData arguments[1] = {{ type, pData }};
     SubString format;
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%db", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, string, null);
+    Format(&format, 1, arguments, str, null);
 }
 
 Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, Int32 precision,
@@ -2694,8 +2694,8 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
             AQBlock1 *pElement = pArray->BeginAt(0);
             AQBlock1 *pDestElement = pDestArray->BeginAt(0);
             while (count > 0) {
-                StringRef string = *(StringRef*)pDestElement;
-                (*formatCallback)(subType, pElement, minWidth, precision, string);
+                StringRef str = *(StringRef*)pDestElement;
+                (*formatCallback)(subType, pElement, minWidth, precision, str);
                 pElement += elementSize;
                 pDestElement += destElementSize;
                 --count;
@@ -2720,8 +2720,8 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
             while (i < count) {
                 TypeRef subType = type->GetSubElement(i);
                 AQBlock1 *pElement = pData + subType->ElementOffset();
-                StringRef string = *(StringRef*)pDestElement;
-                (*formatCallback)(subType, pElement, minWidth, precision, string);
+                StringRef str = *(StringRef*)pDestElement;
+                (*formatCallback)(subType, pElement, minWidth, precision, str);
                 pDestElement += destElementSize;
                 ++i;
             }
@@ -2733,8 +2733,8 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
         case kEncoding_Enum:
         case kEncoding_IEEE754Binary:
             if (destEncoding == kEncoding_Array && destType->Rank() == 1 && destType->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
-                StringRef string = *(StringRef*)pDestData;
-                (*formatCallback)(type, pData, minWidth, precision, string);
+                StringRef str = *(StringRef*)pDestData;
+                (*formatCallback)(type, pData, minWidth, precision, str);
                 break;
             }  // else fall through...
         default:

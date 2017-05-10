@@ -14,7 +14,9 @@ SDG
 #include "TypeAndDataManager.h"
 #include <math.h>
 #include <limits>
-
+#if defined(VIREO_INSTRUCTION_REFLECTION)
+#include <map>
+#endif
 // Set VIREO_TRACK_MEMORY_ALLLOC_COUNTER to record monotonically increasing allocation number
 // with each allocation, to aid leak tracking, etc.
 #define VIREO_TRACK_MEMORY_ALLLOC_COUNTER 0
@@ -49,7 +51,7 @@ struct MallocInfo {
 //------------------------------------------------------------
 // TypeManager
 //------------------------------------------------------------
-// TODO each thread can have one active TypeManager at a time.
+// TODO(PaulAustin): each thread can have one active TypeManager at a time.
 // this is not thread local so the runtime is not ready for
 // multi-threaded execution.
 VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
@@ -646,7 +648,7 @@ NIError TypeCommon::InitData(void* pTarget, IntIndex count)
                 break;
             }
         }
-        // TODO if init fails, go back and clear?
+        // TODO(PaulAustin): if init fails, go back and clear?
     }
     return err;
 }
@@ -699,7 +701,7 @@ NIError TypeCommon::MultiCopyData(const void* pSource, void* pDest, IntIndex cou
     } else {
         BlockItr iDest(pDest, TopAQSize(), count);
         while (iDest.HasNext()) {
-            // TODO process errors
+            // TODO(PaulAustin): process errors
             CopyData(pSource, iDest.ReadP());
         }
     }
@@ -715,7 +717,7 @@ NIError TypeCommon::ClearData(void* pData)
 //------------------------------------------------------------
 // Determine if another type is defined from this type.
 // Arrays are the same if they have the same rank and their sub types compare
-// TODO: Consider merging this function with IsA function below.
+// TODO(PaulAustin): Consider merging this function with IsA function below.
 Boolean TypeCommon::CompareType(TypeRef otherType)
 {
     EncodingEnum thisEncoding = BitEncoding();
@@ -916,7 +918,7 @@ Boolean TypeCommon::IsComplex()
 //! about structural attributes.
 TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    // TODO this is a bit experimental.
+    // TODO(PaulAustin): this is a bit experimental.
     // Its important to note that drilling down structural attributes
     // is not generally useful. For example
     //
@@ -1147,7 +1149,7 @@ BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, Encoding
     _encoding = encoding;
 
     if (encoding == kEncoding_None && length > 0) {
-        // TODO revisit in terms of bounded and template
+        // TODO(PaulAustin): revisit in terms of bounded and template
         _isValid = false;
     }
 }
@@ -1206,7 +1208,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     _encoding = encoding;
     _pointerType = kPTNotAPointer;
 
-    // TODO figure out total bit size and bit offsets
+    // TODO(PaulAustin): figure out total bit size and bit offsets
 }
 //------------------------------------------------------------
 // ClusterElementAlignmentCalculator
@@ -1423,7 +1425,7 @@ NIError ClusterType::CopyData(const void* pData, void *pDataCopy)
         // For non trivial cases visit each element
         for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++)
         {
-            // TODO errors
+            // TODO(PaulAustin): errors
             Int32 offset = (*pType)->_offset;
             (*pType)->CopyData((((AQBlock1*)pData) + offset), (((AQBlock1*)pDataCopy) + offset));
         }
@@ -1496,7 +1498,7 @@ EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[],
         encoding = element->BitEncoding();
         isValid = element->IsValid();
 
-        //         // TODO make sure all are like this one
+        // TODO(PaulAustin): make sure all are like this one
         //        for (int i=0; i<_elements.size(); i++) {
         //            element = _elements[i];
         //        }
@@ -1559,7 +1561,7 @@ ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex r
     _topAQSize = TheTypeManager()->HostPointerToAQSize();
     _aqAlignment = TheTypeManager()->AQAlignment(sizeof(void*));
     _rank = rank;
-    _isFlat = false;  // TODO allow fixed / bounded arrays may be inlined
+    _isFlat = false;  // TODO(PaulAustin): allow fixed / bounded arrays may be inlined
     _encoding = kEncoding_Array;
     _isBitLevel = false;
     _hasCustomDefault = false;
@@ -1585,7 +1587,7 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
     // Note that if the type being inited was a named type the name will have been  peeled off
     // When it gets to this point.
     if (*pArray != null) {
-        // TODO for fixed arrays and ZDAs this not correct
+        // TODO(PaulAustin): for fixed arrays and ZDAs this not correct
         err = (*pArray)->Resize1D(0) ? kNIError_Success : kNIError_kInsufficientResources;
     } else {
         if (pattern == null) {
@@ -1767,7 +1769,8 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
 {
     Boolean isFlat = true;
     Boolean isTemplateType = false;
-    //  Boolean hasVarArg = false; TODO look for upto one and only one var arg type
+    //  Boolean hasVarArg = false;
+    // TODO(PaulAustin): look for upto one and only one var arg type
 
     // The param block describes the structure allocated for a single instruction object
     // For a native function. The size will be base plus the storage needed for pointers
@@ -1798,7 +1801,7 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     _isValid = alignmentCalculator.IsValid;
     _aqAlignment = alignmentCalculator.AggregateAlignment;
     _topAQSize = alignmentCalculator.AggregateSize;
-    _isFlat = isFlat;  // TODO always should be false ?? param blocks
+    _isFlat = isFlat;  // TODO(PaulAustin): always should be false?? param blocks
     _isTemplate = isTemplateType;
     _encoding = kEncoding_ParameterBlock;
 }
@@ -1923,9 +1926,9 @@ EnumType::EnumType(TypeManagerRef typeManager, TypeRef type)
     _encoding = kEncoding_Enum;
 }
 void EnumType::AddEnumItem(SubString *name) {
-    STACK_VAR(String, string);
-    string.Value->CopyFromSubString(name);
-    _items->Append(string.Value);
+    STACK_VAR(String, str);
+    str.Value->CopyFromSubString(name);
+    _items->Append(str.Value);
 }
 StringRef EnumType::GetEnumItemName(IntIndex i) {
     if (i >= 0 && i < _items->Length())
@@ -2062,7 +2065,7 @@ Boolean TypedArrayCore::SetElementType(TypeRef type, Boolean preserveValues)
         _capacity = 1;
         _eltTypeRef->InitData(RawBegin());
     } else {
-        // TODO: Resetting non ZDA array element type not currently supported
+        // TODO(PaulAustin): Resetting non-ZDA array element type not currently supported
         VIREO_ASSERT(false);
     }
     return true;
@@ -2223,13 +2226,13 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
                 bOK = false;
             dimCapactiy = typesDimLength;
             dimLength = dimCapactiy;
-            // TODO ignore excessive request or flag as error
+            // TODO(PaulAustin): ignore excessive request or flag as error
         } else if (!IsVariableLengthDim(typesDimLength)) {
             // Capacity is bounded length
             // Length is request, but clipped at bounded length
             dimCapactiy = -typesDimLength;
             if (dimLength > dimCapactiy) {
-                 // TODO ignore excessive request or clip
+                 // TODO(PaulAustin): ignore excessive request or clip
                  // dimLength = *pValueLengths;
                  dimLength = dimCapactiy;
             }
@@ -2254,7 +2257,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     }
 
     // 3. If more actual elements are needed, initialize the new ones (or all of them if requested)
-    // TODO honor bOK status.
+    // TODO(PaulAustin): honor bOK status.
     if (!preserveElements) {
         ElementType()->InitData(BeginAt(0), newLength);
     } else if ((newLength > originalLength) && !noInit && bOK) {
@@ -2371,7 +2374,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
 //! Remove a block of elements from a vector.
 NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
 {
-    // TODO error check
+    // TODO(PaulAustin): error check
     void* pPosition = BeginAt(position);
     void* pTail = BeginAt(position + count);
     IntIndex currentLength = Length();
@@ -2746,7 +2749,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeManagerWriteValueDouble, TypeManagerRef, StringRef
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(TypeOf, TypeRef, TypeRef)
 {
-    // TODO Using the static StaticTypeAndData may cause the the
+    // TODO(PaulAustin): Using the static StaticTypeAndData may cause the the
     // parameter to allocate a default value if one does not already exist
     // in corner cases such as very large array types.
     // This function does not need the value
@@ -3031,7 +3034,7 @@ VIREO_FUNCTION_SIGNATURE3(InstructionType, const InstructionRef, TypeRef, String
 VIREO_FUNCTION_SIGNATURE3(InstructionArg, const InstructionRef, const Int32, DataPointer)
 {
     _Param(2) = ((GenericInstruction*)_Param(0))->_args[_Param(1)];
-    // TODO
+    // TODO(PaulAustin):
     // Look up the type of this specific parameter
     // for simple args this works since it is just indexing into the ParamBlock list
     // for VarArgs there is a bit more work.

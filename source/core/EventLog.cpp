@@ -14,16 +14,16 @@ SDG
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 
-using namespace Vireo;
+namespace Vireo {
 
 //------------------------------------------------------------
 StringRef EventLog::DevNull = (StringRef) null;
 StringRef EventLog::StdOut = (StringRef) 1;
 
 //------------------------------------------------------------
-EventLog::EventLog(StringRef string)
+EventLog::EventLog(StringRef str)
 {
-    _errorLog = string;
+    _errorLog = str;
     _softErrorCount = 0;
     _hardErrorCount = 0;
     _warningCount = 0;
@@ -95,3 +95,6 @@ DEFINE_VIREO_BEGIN(EventLog)
     DEFINE_VIREO_FUNCTION(EventLogRecordEvent, "p(i(String))")
 DEFINE_VIREO_END()
 #endif
+
+}  // namespace Vireo
+

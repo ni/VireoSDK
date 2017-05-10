@@ -52,7 +52,7 @@ class EventLog {
     void LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
     void LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message);
 
-    // TODO: change to use streams
+    // TODO(PaulAustin): change to use streams
     //! Special string instance for constructor to skip all messages (counts still tallied)
     static StringRef DevNull;
     //! Special string instance for constructor to direct messages to stdout

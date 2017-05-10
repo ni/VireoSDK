@@ -65,7 +65,7 @@ class DataReflectionVisitor : public TypeVisitor
 //------------------------------------------------------------
 TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
 {
-    // TODO needs scope output (local, global, type constant)
+    // TODO(PaulAustin): needs scope output (local, global, type constant)
 
     path->Resize1D(0);
     DataReflectionVisitor drv(tNeedle, pNeedle, path);

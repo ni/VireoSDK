@@ -57,8 +57,6 @@ extern "C" void std_io_init();
 extern "C" void _exit();
 extern uint32_t gTickCount;
 
-using namespace Vireo;
-
 void* operator new(std::size_t size) {
     return gPlatform.Mem.Malloc(size);
 }
@@ -207,22 +205,22 @@ void DumpPlatformMemoryLeaks() {  // to be called from debugger
 #endif
 //============================================================
 //! Static memory deallocator used for all TM memory management.
-void PlatformIO::Print(ConstCStr string)
+void PlatformIO::Print(ConstCStr str)
 {
-    fwrite(string, 1, strlen(string), stdout);
+    fwrite(str, 1, strlen(str), stdout);
 #if kVireoOS_emscripten
     fflush(stdout);
 #endif
 #if VIREO_JOURNAL_ALLOCS
-    if (*string == 256)  // never true, hack to prevent dead code elim, only for debugging
+    if (*str == 256)  // never true, hack to prevent dead code elim, only for debugging
         DumpPlatformMemoryLeaks();
 #endif
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
-void PlatformIO::Print(Int32 len, ConstCStr string)
+void PlatformIO::Print(Int32 len, ConstCStr str)
 {
-    fwrite(string, 1, len, stdout);
+    fwrite(str, 1, len, stdout);
 #if kVireoOS_emscripten
     fflush(stdout);
 #endif
@@ -322,7 +320,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
             }
             PlatformIO::Print("\n");
 
-            string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);
+            buffer->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + packetSize);
             PlatformIO::Printf("packet read complete <%d>\n", (int)packetSize);
             return kNIError_Success;
         } else {
@@ -334,7 +332,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
                 _mallocBuffer[i++] = c;
                 c = fgetc(stdin);
             }
-            string->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + i);
+            buffer->AliasAssign((Utf8Char*)_mallocBuffer, (Utf8Char*)_mallocBuffer + i);
             return ((c == (char)EOF) && (0 == i)) ? kNIError_kResourceNotFound : kNIError_Success;
         }
         return kNIError_Success;

@@ -18,15 +18,15 @@ SDG
 #include "TDCodecVia.h"
 #include <ctype.h>
 
-using namespace Vireo;
+namespace Vireo {
 
 //---------------------------------------------
 //! Append a ViaEncoded string, decode it in the process.
-void String::AppendViaDecoded(SubString* string)
+void String::AppendViaDecoded(SubString* str)
 {
     Int32 value = 0;
     Utf8Char c;
-    SubString ss(*string);
+    SubString ss(*str);
 
     IntIndex originalLength = Length();
     Int32 decodedLength = originalLength + ss.Length();
@@ -43,7 +43,7 @@ void String::AppendViaDecoded(SubString* string)
         // Pass two, copy over the characters and decode
         // valid %XX sequences. Warning, %XX values above
         // 127 could easily result in invalid Utf8 sequences.
-        ss = *string;
+        ss = *str;
         Utf8Char* pDest = BeginAt(originalLength);
         while (ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value)) {
@@ -137,7 +137,7 @@ struct ReplaceSubstringStruct : public InstructionCore
     _ParamDef(StringRef, ReplacementString);
     _ParamDef(Int32, Offset);
     _ParamDef(Int32, Length);
-    _ParamDef(StringRef, ResultString);  // TODO cannot be in-place , might need to allow for this
+    _ParamDef(StringRef, ResultString);  // TODO(PaulAustin): cannot be in-place , might need to allow for this
     _ParamDef(StringRef, ReplacedSubString);
     NEXT_INSTRUCTION_METHOD()
 };
@@ -356,7 +356,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
 
     _Param(1)->Resize1D(targetLength);
 
-    // TODO only works for U+0000 .. U+007F
+    // TODO(PaulAustin): only works for U+0000 .. U+007F
     Utf8Char *pSourceChar      = _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = _Param(0)->End();
     Utf8Char *pDestChar        = _Param(1)->Begin();
@@ -372,11 +372,11 @@ VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 {
-    IntIndex targetLength = _Param(0)->Length();  // TODO only works for Ascii
+    IntIndex targetLength = _Param(0)->Length();  // TODO(PaulAustin): only works for Ascii
 
     _Param(1)->Resize1D(targetLength);
 
-    // TODO only works for U+0000 .. U+007F
+    // TODO(PaulAustin): only works for U+0000 .. U+007F
     // Adding Latin/Russian/Greek/Armenian not "too" hard
     // http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
     // ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
@@ -665,7 +665,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
         if (arrayInput->ElementType()->IsArray()) {
-            // TODO this needs to support N-Dim string arrays
+            // TODO(PaulAustin): this needs to support N-Dim string arrays
             for (Int32 j = 0; j < arrayInput->Length(); j++) {
                 StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
                 totalLength += stringInput->Length();
@@ -675,7 +675,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
         }
     }
     pDest->Resize1D(totalLength);
-    // TODO error check
+    // TODO(PaulAustin): error check
     AQBlock1* pInsert = pDest->BeginAt(0);
 
     TypeRef elementType = pDest->ElementType();  // Flat char type
@@ -683,7 +683,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
         if (arrayInput->ElementType()->IsArray())  {
-            // TODO this needs to support N-Dim string arrays
+            // TODO(PaulAustin): this needs to support N-Dim string arrays
             for (Int32 j = 0; j < arrayInput->Length(); j++) {
                 StringRef stringInput = *(StringRef*) arrayInput->BeginAt(j);
                 VIREO_ASSERT(stringInput != pDest);
@@ -861,3 +861,5 @@ DEFINE_VIREO_BEGIN(String)
 
 
 DEFINE_VIREO_END()
+
+}  // namespace Vireo

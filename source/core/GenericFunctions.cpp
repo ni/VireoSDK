@@ -48,7 +48,7 @@ ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize, Boolean isEnum)
 //------------------------------------------------------------
 InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder)
 {
-    // TODO security. user code should only be allowed to use the "Copy" operation,
+    // TODO(PaulAustin): security. user code should only be allowed to use the "Copy" operation,
     // not the more type-specific ones this function references.
     // those should be marked as kernel access. (can user name spaces over load the same names?)
     InstructionCore* pInstruction = null;
@@ -308,7 +308,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             // this will be the name of the _instructionPointerType.
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pVectorBinOpName = null;
-            // TODO: Validating runtime will require  type checking
+            // TODO(PaulAustin): Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
                 if (savedOperation.CompareCStr("Split"))
                     pVectorBinOpName = "VectorVectorSplitOp";
@@ -358,7 +358,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                 pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, accumulatorOpArgId);
                 snippetBuilder.StartInstruction(&accumulatorToken);
                 snippetBuilder.InternalAddArg(null, vectorBinOp == kFakedInstruction ?
-                                        null : vectorBinOp->_piSnippet);  // TODO this seems redundant
+                                        null : vectorBinOp->_piSnippet);  // TODO(PaulAustin): this seems redundant
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
@@ -723,7 +723,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterMaxMinOp, AggregateMaxAndMinInstruction)
         pInstruction->_p1 += (size_t)_ParamPointer(SY);
         pInstruction->_p2 += (size_t)_ParamPointer(SMax);
         pInstruction->_p3 += (size_t)_ParamPointer(SMin);
-        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO yield to the scheduler
+        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO(PaulAustin): yield to the scheduler
         pInstruction->_p0 -= (size_t)_ParamPointer(SX);
         pInstruction->_p1 -= (size_t)_ParamPointer(SY);
         pInstruction->_p2 -= (size_t)_ParamPointer(SMax);
@@ -835,7 +835,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             // this will be the name of the _instructionPointerType.
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pVectorBinOpName = null;
-            // TODO: Validating runtime will require  type checking
+            // TODO(PaulAustin): Validating runtime will require  type checking
             pVectorBinOpName = "VectorOrScalarInRangeOp";
             SubString vectorBinOpToken(pVectorBinOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false);  // build a vector op
@@ -1544,7 +1544,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
         Int32 originalLength = pDest->Length();
         Int32 totalLength = 0;
         for (Int32 i = 0; i < numInputs; i++) {
-            // TODO check for overflow
+            // TODO(PaulAustin): check for overflow
             if (typeComparisons[i]) {  // input is an array
                 TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
                 totalLength += arrayInput->Length();
@@ -1697,7 +1697,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnaryOp, AggregateUnOpInstruction)
     while (ExecutionContext::IsNotCulDeSac(pInstruction)) {
         pInstruction->_p0 += (size_t)_ParamPointer(SSource);
         pInstruction->_p1 += (size_t)_ParamPointer(SDest);
-        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO yield to the scheduler
+        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO(PaulAustin): yield to the scheduler
         pInstruction->_p0 -= (size_t)_ParamPointer(SSource);
         pInstruction->_p1 -= (size_t)_ParamPointer(SDest);
         pInstruction = (Instruction2<AQBlock1, AQBlock1>*)next;
@@ -1712,7 +1712,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnary2OutputOp, AggregateUnOp2OutputInstruction
         pInstruction->_p0 += (size_t)_ParamPointer(SSource);
         pInstruction->_p1 += (size_t)_ParamPointer(SDest);
         pInstruction->_p2 += (size_t)_ParamPointer(SDest2);
-        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO yield to the scheduler
+        InstructionCore* next = _PROGMEM_PTR(pInstruction, _function)(pInstruction);  // execute inline for now. TODO(PaulAustin): yield to the scheduler
         pInstruction->_p0 -= (size_t)_ParamPointer(SSource);
         pInstruction->_p1 -= (size_t)_ParamPointer(SDest);
         pInstruction->_p2 -= (size_t)_ParamPointer(SDest2);

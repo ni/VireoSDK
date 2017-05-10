@@ -19,7 +19,7 @@ SDG
 #include <cmath>
 #include "Waveform.h"
 
-using namespace Vireo;
+namespace Vireo {
 
 #ifdef VIREO_TYPE_Waveform
 DEFINE_VIREO_BEGIN(Waveform)
@@ -54,3 +54,5 @@ VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double
 DEFINE_VIREO_BEGIN(Waveform)
 DEFINE_VIREO_FUNCTION(AnalogWaveformBuild, "p(o(AnalogWaveform) i(Timestamp) i(Double) i(Array))")
 DEFINE_VIREO_END()
+
+}  // namespace Vireo

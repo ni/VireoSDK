@@ -15,7 +15,7 @@ Craig S.
 #include "RefNum.h"
 #include "UnitTest.h"
 
-using namespace Vireo;
+namespace Vireo {
 
 #ifndef VIREO_TEST_REFNUM
 #define VIREO_TEST_REFNUM VIREO_UNIT_TEST
@@ -105,3 +105,5 @@ bool RefNumTest::Execute() {
     return pass;
 }
 #endif
+
+}  // namespace Vireo

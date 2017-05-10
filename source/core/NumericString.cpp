@@ -619,7 +619,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     break;
                     case 'a': case 'A':
                     {
-                        // TODO don't assume data type. This just becomes the default format for real numbers, then use formatter
+                        // TODO(PaulAustin): don't assume data type. This just becomes the default format for real numbers, then use formatter
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
                         TempStackCString tempFormat(&percentFormat);
                         // Get the numeric string that will replace the format string
@@ -1915,12 +1915,12 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
         } else if (argType->IsTimestamp()) {
             format->AppendCStr("%T ");
         } else {
-            error->code = -1;  // TODO ErrorCluster fix error codes
+            error->code = -1;  // TODO(sanmut): ErrorCluster fix error codes
             error->status = true;
             break;
         }
         if (error->status == false && format->Length() > 255) {
-            error->code = -1;  // TODO ErrorCluster fix error codes
+            error->code = -1;  // TODO(sanmut): ErrorCluster fix error codes
             error->status = true;
             break;
         }

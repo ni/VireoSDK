@@ -15,8 +15,9 @@
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 #include "RefNum.h"
+#include <map>
 
-using namespace Vireo;
+namespace Vireo {
 
 //------------------------------------------------------------
 //! Insert an observer into the ObservableObject's list
@@ -1188,3 +1189,5 @@ DEFINE_VIREO_BEGIN(Synchronization)
     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue<.$1> queue)i($1 element)i(Int32 timeOut)o(Boolean timedOut))")
     // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue<.$1> queue)o($1 element)i(Int32 timeOut)o(Boolean timedOut))")
 DEFINE_VIREO_END()
+
+}  // namespace Vireo

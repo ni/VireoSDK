@@ -16,7 +16,7 @@ SDG
 #include "VirtualInstrument.h"
 
 #if defined (VIREO_TYPE_HttpClient)
-using namespace Vireo;
+namespace Vireo {
 
 #if kVireoOS_emscripten
 enum HttpClientMethodId {
@@ -37,7 +37,8 @@ extern "C" {
     extern void jsHttpClientGetHeader(UInt32, StringRef, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef, Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
+    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef,
+                Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
     extern void jsHttpClientConfigCORS(UInt32, UInt32, Boolean *, Int32 *, StringRef);
 }
 #endif
@@ -79,7 +80,7 @@ void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, ConstCStr m
 VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(4) || !_ParamPointer(5)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -109,7 +110,7 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
 VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -136,7 +137,7 @@ VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
 VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -163,7 +164,7 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -189,7 +190,7 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluste
 VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -216,7 +217,7 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, Err
 VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(4)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -244,7 +245,7 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, Str
 VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -271,7 +272,7 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster
 VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
@@ -301,12 +302,10 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             return clump->WaitOnObservableObject(_this);
-        }
-        else {
+        } else {
             return _NextInstruction();
         }
-    }
-    else {
+    } else {
         // re-entering the instruction and the operation is done or it timed out.
         // the clump should continue.
         AddCallChainToSourceIfErrorPresent(_ParamPointer(7), "HttpClientGet");
@@ -324,7 +323,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     // Timeout(2) null value is handled by js and occurrence(6) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1)|| !_ParamPointer(3) || !_ParamPointer(4) || !_ParamPointer(5)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
@@ -354,8 +353,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             return clump->WaitOnObservableObject(_this);
-        }
-        else {
+        } else {
             return _NextInstruction();
         }
     } else {
@@ -376,9 +374,10 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
 VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
-    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)
+        || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
     }
@@ -406,8 +405,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             return clump->WaitOnObservableObject(_this);
-        }
-        else {
+        } else {
             return _NextInstruction();
         }
     } else {
@@ -428,9 +426,10 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
-    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4)
+        || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
     }
@@ -458,8 +457,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             return clump->WaitOnObservableObject(_this);
-        }
-        else {
+        } else {
             return _NextInstruction();
         }
     } else {
@@ -480,9 +478,10 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringRef, Int32, StringRef, StringRef, UInt32, ErrorCluster, OccurrenceRef)
 {
 #if kVireoOS_emscripten
-    // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
     // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
-    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)
+        || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
     }
@@ -510,8 +509,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             return clump->WaitOnObservableObject(_this);
-        }
-        else {
+        } else {
             return _NextInstruction();
         }
     } else {
@@ -532,25 +530,25 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 VIREO_FUNCTION_SIGNATURE3(HttpClientConfigCORS, UInt32, UInt32, ErrorCluster)
 {
 #if kVireoOS_emscripten
-   // TODO mraj these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-   if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
-      THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
-      return THREAD_EXEC()->Stop();
-   }
+    // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
+    if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
+        return THREAD_EXEC()->Stop();
+    }
 
-   if (!_Param(2).status) {
-      jsHttpClientConfigCORS(
-         _Param(0),
-         _Param(1),
-         &_Param(2).status,
-         &_Param(2).code,
-         _Param(2).source);
-      AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientConfigCORS");
-   }
+    if (!_Param(2).status) {
+        jsHttpClientConfigCORS(
+             _Param(0),
+             _Param(1),
+             &_Param(2).status,
+             &_Param(2).code,
+             _Param(2).source);
+        AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientConfigCORS");
+    }
 #else
-   GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientConfigCORS");
+    GenerateNotSupportedOnPlatformError(_ParamPointer(2), "HttpClientConfigCORS");
 #endif
-   return _NextInstruction();
+    return _NextInstruction();
 }
 
 //------------------------------------------------------------
@@ -565,9 +563,14 @@ DEFINE_VIREO_BEGIN(HttpClient)
     DEFINE_VIREO_FUNCTION(HttpClientListHeaders, "p(io(.UInt32) o(.String) io(ErrorCluster))")
     DEFINE_VIREO_FUNCTION(HttpClientGet, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(ErrorCluster) s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientHead, "p(io(.UInt32) i(.String) i(.Int32) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(" ERROR_CLUST_TYPE_STRING ") s(.Occurrence))")
-    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) o(.String) o(.UInt32) io(ErrorCluster) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPut, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) o(.String) "
+                          "o(.String) o(.UInt32) io(ErrorCluster) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientDelete, "p(io(.UInt32) i(.String) i(.String) i(.Int32) o(.String) "
+                          "o(.String) o(.UInt32) io(ErrorCluster) s(.Occurrence))")
+    DEFINE_VIREO_FUNCTION(HttpClientPost, "p(io(.UInt32) i(.String) i(.String) i(.String) i(.Int32) "
+                          "o(.String) o(.String) o(.UInt32) io(ErrorCluster) s(.Occurrence))")
     DEFINE_VIREO_FUNCTION(HttpClientConfigCORS, "p(io(.UInt32) i(.UInt32) io(ErrorCluster))")
 DEFINE_VIREO_END()
-#endif
+
+}  // namespace Vireo
+#endif  // VIREO_TYPE_HttpClient

@@ -6,6 +6,9 @@ all: native js
 
 native:	simple
 
+lint:
+	@cd make-it/cpplint; make $@
+
 simple v32 v64:
 	cd make-it; make $@
 

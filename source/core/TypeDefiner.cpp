@@ -156,9 +156,9 @@ void TypeDefiner::DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IData
 //------------------------------------------------------------
 void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString)
 {
-    SubString string(typeString);
+    SubString str(typeString);
 
-    TDViaParser parser(tm, &string, null, 1);
+    TDViaParser parser(tm, &str, null, 1);
     TypeRef t = parser.ParseType();
 
     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);
@@ -166,8 +166,8 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
     if (cdt->BitEncoding() == kEncoding_S2CInt && cdt->TopAQSize() == 4) {
         *(Int32*)cdt->Begin(kPAInit) = value;
 
-        string.AliasAssignCStr(name);
-        tm->Define(&string, cdt);
+        str.AliasAssignCStr(name);
+        tm->Define(&str, cdt);
     }
 }
 //------------------------------------------------------------
@@ -247,7 +247,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Object", "DataPointer");
     Define(tm, "Array", "DataPointer");    // Object with Rank > 0
     Define(tm, "Array1D", "DataPointer");
-    Define(tm, "Variant", "DataPointer");  // TODO is this any different from the Type type if the type has a default value?
+    Define(tm, "Variant", "DataPointer");  // TODO(PaulAustin): is this any different from the Type type if the type has a default value?
 
     Define(tm, "ErrorCluster", ERROR_CLUST_TYPE_STRING);
     Define(tm, "NIPath", "c(e(a(String *) components) e(String type))");

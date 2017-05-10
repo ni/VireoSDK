@@ -17,6 +17,9 @@
     #include <io.h>
     #include <share.h>
     #include <codecvt>
+    #include <string>
+    #include <vector>
+    #include <algorithm>
     #include <regex>     // NOLINT(build/c++11)
     #include <iostream>  // REMOVE
     typedef size_t ssize_t;
@@ -39,7 +42,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-using namespace Vireo;
+namespace Vireo {
 
 typedef Int32 FileHandle;
 
@@ -408,3 +411,6 @@ DEFINE_VIREO_BEGIN(FileSystem)
 #endif
 
 DEFINE_VIREO_END()
+
+}  // namespace Vireo
+

@@ -14,7 +14,7 @@
 #include "TypeDefiner.h"
 #include <ctype.h>
 
-using namespace Vireo;
+namespace Vireo {
 
 static const UInt8 *AMatch(const UInt8 *, const Utf8Char*, const Utf8Char *);
 static Int32 InSet(UInt8 c, const Utf8Char *s, const Utf8Char *se);
@@ -418,3 +418,5 @@ VIREO_FUNCTION_SIGNATURE7(MatchPattern, StringRef, StringRef, Int32, StringRef, 
 DEFINE_VIREO_BEGIN(String)
 DEFINE_VIREO_FUNCTION(MatchPattern, "p(i(String) i(String) i(Int32) o(String) o(String) o(String) o(Int32))")
 DEFINE_VIREO_END()
+
+}  // namespace Vireo

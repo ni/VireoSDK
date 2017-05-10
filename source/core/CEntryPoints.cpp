@@ -19,7 +19,7 @@ SDG
 #include "CEntryPoints.h"
 
 #if defined (VIREO_C_ENTRY_POINTS)
-using namespace Vireo;
+namespace Vireo {
 
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Vireo_Version()
@@ -528,4 +528,7 @@ VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
     OccurrenceCore *pOcc = occurrence->ObjBegin();
     pOcc->SetOccurrence();
 }
-#endif
+
+}  // namespace Vireo
+#endif  // VIREO_C_ENTRY_POINTS
+

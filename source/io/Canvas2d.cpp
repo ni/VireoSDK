@@ -19,7 +19,7 @@
     #include <emscripten.h>
 #endif
 
-using namespace Vireo;
+namespace Vireo {
 
 typedef Int32 Canvas2D;
 
@@ -265,3 +265,6 @@ DEFINE_VIREO_BEGIN(Canvas2D)
     DEFINE_VIREO_FUNCTION(Font, "p(io(Canvas2D)i(String))")
 DEFINE_VIREO_END()
 #endif
+
+}  // namespace Vireo
+

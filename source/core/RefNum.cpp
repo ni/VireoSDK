@@ -15,8 +15,9 @@ Craig S.
 #include "RefNum.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
+#include <vector>
 
-using namespace Vireo;
+namespace Vireo {
 
 #define kNumberOfIndexBits  20
 #define kNumberOfMagicBits  (32 - kNumberOfIndexBits)    // 12 bits of magic number 4K
@@ -194,7 +195,7 @@ Int32 RefNumStorageBase::GetRefNumCount() {
 
 NIError RefNumStorageBase::GetRefNumList(RefNumList *list) {
     list->clear();
-#if 0  // TODO finish
+#if 0  // TODO(spathiwa): finish
     list->reserve(_refStorage.size());
     typename RefNumMap::iterator it = _refStorage.begin(), ite = _refStorage.end();
     while (it != ite) {
@@ -312,6 +313,8 @@ void RefNumManager::RunCleanupProcs(VirtualInstrument *vi) {
     }
 }
 
-void Vireo::RunCleanupProcs(VirtualInstrument *vi) {
+void RunCleanupProcs(VirtualInstrument *vi) {
     return RefNumManager::RunCleanupProcs(vi);
 }
+
+}  // namespace Vireo

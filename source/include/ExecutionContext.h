@@ -99,7 +99,7 @@ class ExecutionContext
     ECONTEXT    Int32           _breakoutCount;   // Inner execution loop "breaks out" when this gets to 0
     ECONTEXT    ExecutionState  _state;
  public:
-    ECONTEXT    Timer           _timer;           // TODO can be moved out of the execcontext once
+    ECONTEXT    Timer           _timer;           // TODO(PaulAustin): can be moved out of the execcontext once
                                                  // instruction can take injected parameters.
 
 #ifdef VIREO_SUPPORTS_ISR
