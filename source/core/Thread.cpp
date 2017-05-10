@@ -34,8 +34,9 @@ bool CompareAndSwapUInt32(volatile UInt32 *ptr, UInt32 new_value, UInt32 old_val
     if (*ptr == old_value) {
         *ptr = new_value;
         return true;
-    } else
+    } else {
         return false;
+    }
 #endif
 }
 

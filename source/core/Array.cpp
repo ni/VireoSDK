@@ -113,7 +113,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
     for (i = 0; i < rank; ++i) {
         bool wired = (ppDimensions[i] != null);
         IntIndex idx = 0;
-        if (wired || (i==0 && noneWired)) {
+        if (wired || (i == 0 && noneWired)) {
             idx = wired ? *ppDimensions[i] : 0;
             wired = true;
         } else {
@@ -124,8 +124,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
         if (empty || idx < 0 || idx >= len) {
             idx = 0;
             len = 0;
-        } else
+        } else {
             len -= idx;
+        }
         arrIndex[rank-1-i] = idx;
         if (!wired) {
             arrayLen[subRank-1-j] = len;
@@ -140,13 +141,16 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
     }
     if (subRank > 0) {
         TypedArrayCoreRef arrayOut = *(TypedArrayCoreRef*)_ParamImmediate(Element._pData);
-        if (_ParamImmediate(Element._paramType)->BitEncoding() != kEncoding_Array || _ParamImmediate(Element._paramType)->Rank() != subRank) {
+        if (_ParamImmediate(Element._paramType)->BitEncoding() != kEncoding_Array
+            || _ParamImmediate(Element._paramType)->Rank() != subRank) {
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayIndex bad output rank");
             return THREAD_EXEC()->Stop();
         }
         arrayOut->ResizeDimensions(subRank, arrayLen, false);
         if (!empty) {
-            ArrayToArrayCopyHelper(array->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), array->BeginAtND(rank, arrIndex), arrayLen, arraySlabLen, subRank, rank, true);
+            ArrayToArrayCopyHelper(array->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(),
+                                   array->BeginAtND(rank, arrIndex), arrayLen, arraySlabLen, subRank,
+                                   rank, true);
         }
     } else {
         void *pData = array->BeginAtND(rank, arrIndex);
@@ -219,8 +223,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexEltNDV, ArrayIndexNDVParamBlock)
     return _NextInstruction();
 }
 
-//indexing on 2d array, the row argument comes before column argument
-//which is different from the indexing used in normal N dimension functions(e.g 0 d index, 1st d index, 3nd d index ...)
+// Indexing on 2d array, the row argument comes before column argument
+// which is different from the indexing used in normal N dimension functions(e.g 0 d index,
+// 1st d index, 3nd d index ...)
 // Arguments: inputArray, row, column, outputElement/Array
 VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
 {
@@ -244,7 +249,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
     }
     TypedArrayCoreRef arrayOut;
     if (pickCol && pickRow) {
-        if (row >=0 && row < lengths[1] && col>=0 && col <lengths[0]) {
+        if (row >= 0 && row < lengths[1] && col >= 0 && col < lengths[0]) {
             IntIndex index2D[2];
             index2D[0] = col;
             index2D[1] = row;
@@ -252,7 +257,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
         }
     } else {
         IntIndex index2D[2];
-        arrayOut=  *((TypedArrayCoreRef*)_ParamPointer(3));
+        arrayOut =  *((TypedArrayCoreRef*)_ParamPointer(3));
         if (pickCol) {
             if (col >= 0 && col < lengths[0]) {
                 arrayOut->Resize1D(lengths[1]);
@@ -363,7 +368,8 @@ struct ArrayReplaceSubsetStruct : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-//ArrayReplaceSubset function for 1d array, support multiple inputs
+
+// ArrayReplaceSubset function for 1d array, support multiple inputs
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -387,8 +393,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
         TypedArrayCoreRef subArray = null;
         void* element = arguments[i]._pData;
         argType = arguments[i]._paramType;
-        //whether the input is single element or not. The argType needn't to be flat to specify single element
-        //. e.g. string type
+        // whether the input is single element or not. The argType needn't to be flat to specify single element
+        // e.g. string type
         if (!argType->IsA(arrayIn->ElementType())) {
             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
         }
@@ -410,10 +416,11 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
     return _NextInstruction();
 }
 
-//function called by ArrayReplaceSubset2DV for each pair of input.
-//arguments: output array, input array, newElem/newArray, row, column, rankofthenewElem.
-//elemRank specify the rank of the input element. in this case (2D input), it can only be 1 or 0.
-void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void* newElem, IntIndex row, IntIndex col, IntIndex elemRank)
+// Function called by ArrayReplaceSubset2DV for each pair of input.
+// Arguments: output array, input array, newElem/newArray, row, column, rankofthenewElem.
+// elemRank specify the rank of the input element. in this case (2D input), it can only be 1 or 0.
+void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void* newElem,
+                    IntIndex row, IntIndex col, IntIndex elemRank)
 {
     IntIndex rank = arrayOut->Rank();
     IntIndex* lengths = arrayIn->DimensionLengths();
@@ -453,7 +460,7 @@ void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void*
     }
 }
 
-//ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
+// ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
 // This function is obsoleted by prim ArrayReplaceSubset, implemented by ArrayReplaceSubsetND
 VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
 {
@@ -496,10 +503,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
         if (!argType->IsA(arrayIn->ElementType())) {
             subArray = *(TypedArrayCoreRef*)arguments[i]._pData;
             // if no index wired, column becomes disabled
-            if(!wireCol) {col = -1;}
+            if (!wireCol) {col = -1;}
             replace2dArray(arrayOut, arrayIn, subArray, row, col, 1);
         } else {
-            if(!wireRow && !wireCol) {row > 0? row-- : row = 0;}
+            if (!wireRow && !wireCol) {row > 0? row-- : row = 0;}
             replace2dArray(arrayOut, arrayIn, element, row, col, 0);
         }
         i++;
@@ -541,7 +548,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
     for (i = 0; i < rank; ++i) {
         bool wired = (arguments[i]._pData != NULL);
         IntIndex idx = 0;
-        if (wired || (i==0 && noneWired)) {
+        if (wired || (i == 0 && noneWired)) {
             idx = wired ? *(IntIndex*)arguments[i]._pData : 0;
         } else {
             arrayOutSlabLengths[expectedElemRank-1-j] = arrayOut->SlabLengths()[rank-1-i];
@@ -570,14 +577,14 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
         bool badType = false;
         if (srcRank > 0) {
             TypedArrayCoreRef subArray = *(TypedArrayCoreRef*)element;
-            if (!arrayOut->ElementType()->IsA(subArray->ElementType()))
-                badType= true;
-            else {
+            if (!arrayOut->ElementType()->IsA(subArray->ElementType())) {
+                badType = true;
+            } else {
                 AQBlock1 *srcData = subArray->BeginAt(0);
                 j = expectedElemRank-1;
                 for (i = 0; i < rank; ++i) {
                     bool wired = (arguments[i]._pData != NULL);
-                    if (!(wired || (i==0 && noneWired))) {
+                    if (!(wired || (i == 0 && noneWired))) {
                         subArrayLen[j] = subArray->DimensionLengths()[j];
                         if (subArrayLen[j] > arrayOut->DimensionLengths()[rank-1-i])
                             subArrayLen[j] = arrayOut->DimensionLengths()[rank-1-i];
@@ -593,8 +600,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
             TypeRef argType = arguments[i]._paramType;
             if (!argType->IsA(arrayOut->ElementType())) {
                 badType = true;
-            }
-            else {
+            } else {
                 AQBlock1 *srcData = (AQBlock1*)element;
                 AQBlock1 *pData = arrayOut->BeginAtND(rank, arrIndex);
                 if (pData)
@@ -691,7 +697,9 @@ VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDStruct)
     }
     arrayOut->ResizeDimensions(rank, tempDimensionLengths, false);
     if (!empty && arrayOut != arrayIn) {
-        ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(), arrayIn->BeginAtND(rank, tempDimensionLengths+rank), tempDimensionLengths, arrayIn->SlabLengths(), arrayOut->Rank(), arrayIn->Rank());
+        ArrayToArrayCopyHelper(arrayOut->ElementType(), arrayOut->BeginAt(0), arrayOut->SlabLengths(),
+                               arrayIn->BeginAtND(rank, tempDimensionLengths+rank), tempDimensionLengths,
+                               arrayIn->SlabLengths(), arrayOut->Rank(), arrayIn->Rank());
     }
     return _NextInstruction();
 }
@@ -713,7 +721,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, 
     return _NextInstruction();
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCoreRef, IntIndex, IntIndex, TypedArrayCoreRef)
+VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCoreRef,
+                          IntIndex, IntIndex, TypedArrayCoreRef)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(1);
@@ -728,13 +737,12 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
         return THREAD_EXEC()->Stop();
     }
 
-    if (arrayIn->Rank()==1) {
+    if (arrayIn->Rank() == 1) {
         IntIndex arrayInLength = arrayIn->Length();
         IntIndex subArrayLength = subArray->Length();
         if (0 > idx && idx > arrayInLength) {
             arrayOut->Type()->CopyData(&arrayIn, &arrayOut);
-        }
-        else if (arrayOut == arrayIn) {
+        } else if (arrayOut == arrayIn) {
             arrayOut->Insert1D(idx, subArrayLength, subArray->BeginAt(0));
         } else {
             arrayOut->Resize1D(arrayInLength + subArrayLength);
@@ -764,7 +772,8 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
         if (dimensionToInsert < 0 || dimensionToInsert >= numberOfDimensions) {
             return _NextInstruction();
         }
-        IntIndex insertedPortionLength = subArray->Rank() == numberOfDimensions ? subArray->GetLength(numberOfDimensions-1-dimensionToInsert) : 1;
+        IntIndex insertedPortionLength = subArray->Rank() == numberOfDimensions ?
+                            subArray->GetLength(numberOfDimensions-1-dimensionToInsert) : 1;
         if (insertedPortionLength <= 0 || startIndex < 0) {
             return _NextInstruction();
         }
@@ -777,8 +786,7 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
             if (numberOfDimensions == subArray->Rank()) {
                 sourceSlabLen[i] = subArray->SlabLengths()[i];
                 sourceDimLen[i] = subArray->DimensionLengths()[i];
-            }
-            else {
+            } else {
                 if (i == numberOfDimensions-1-dimensionToInsert) {
                     sourceSlabLen[i] = subArray->SlabLengths()[j];
                     sourceDimLen[i] = 1;
@@ -821,7 +829,8 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
             size_t numberOfElementsAfterInserted = 0;
             size_t bytesAfterInserted = 0;
             if (dimensionSize[dimensionToInsert] > (startIndex + insertedPortionLength)) {
-                numberOfElementsAfterInserted = (dimensionSize[dimensionToInsert] - (startIndex + insertedPortionLength)) * numberOfElementsInInsertedDimension;
+                numberOfElementsAfterInserted = (dimensionSize[dimensionToInsert]
+                    - (startIndex + insertedPortionLength)) * numberOfElementsInInsertedDimension;
                 bytesAfterInserted = numberOfElementsAfterInserted * elementSize;
             }
             Int32 currentDimension;
@@ -830,17 +839,18 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
                     memmove(destinationPtr -= bytesAfterInserted, sourcePtr -= bytesAfterInserted, bytesAfterInserted);
                 memset(destinationPtr -= bytesToBeInserted, 0, bytesToBeInserted);
                 if (bytesBeforeInserted) {
-                    memmove(destinationPtr -= bytesBeforeInserted, sourcePtr -= bytesBeforeInserted,  bytesBeforeInserted);
+                    memmove(destinationPtr -= bytesBeforeInserted,
+                            sourcePtr -= bytesBeforeInserted,  bytesBeforeInserted);
                 }
                 currentDimension = dimensionToInsert;
                 while (--currentDimension >= 0 && index[currentDimension]-- == 0)
                     index[currentDimension] = dimensionSize[currentDimension]-1;
             } while (currentDimension >= 0);
             ArrayToArrayCopyHelper(arrayOut->ElementType(),
-                                                 arrayOut->RawBegin()+startIndex*arrayOut->SlabLengths()[numberOfDimensions-1-dimensionToInsert],
-                                                 arrayOut->SlabLengths(), subArray->BeginAt(0), sourceDimLen, sourceSlabLen,
-                                                 numberOfDimensions, numberOfDimensions, true);
-            if (destinationPtr != arrayPtr) {
+                 arrayOut->RawBegin()+startIndex*arrayOut->SlabLengths()[numberOfDimensions-1-dimensionToInsert],
+                 arrayOut->SlabLengths(), subArray->BeginAt(0), sourceDimLen, sourceSlabLen,
+                                   numberOfDimensions, numberOfDimensions, true);
+if (destinationPtr != arrayPtr) {
                 THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInsert wild ptr!");
                 return THREAD_EXEC()->Stop();
             }
@@ -860,7 +870,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
     TypedArrayCoreRef subArray = _Param(3);
     IntIndex subArrayLength = subArray->Length();
     if (arrayOut->Rank() != 1) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInsertSubset needs dimNum arg for 2-D or higher arrays");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError,
+                                "ArrayInsertSubset needs dimNum arg for 2-D or higher arrays");
         return THREAD_EXEC()->Stop();
     }
     if (arrayOut == subArray) {
@@ -976,7 +987,7 @@ struct Sort1DArrayInstruction : public InstructionCore
     inline InstructionCore* Snippet()   { return this + 1; }
     inline InstructionCore* Next()      { return this->_piNext; }
 };
-//Emit the sort instruction for specific type
+// Emit the sort instruction for specific type
 //------------------------------------------------------------
 InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
 {
@@ -996,7 +1007,8 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType,
+                                   (void*)null, booleanType, (void*)null);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&sortOp->_piNext);
@@ -1009,7 +1021,7 @@ struct comparator
  private:
     Instruction3<void, void, Boolean>* _snippet;
  public:
-    comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
+    explicit comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
     bool operator()(AQBlock1* i, AQBlock1* j)
     {
         Boolean less = false;
@@ -1084,7 +1096,8 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, findOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType, (void*)null, booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType,
+                                   (void*)null, booleanType, (void*)null);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&findOp->_piNext);
@@ -1108,7 +1121,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         snippet->_p1 = minValue;
         snippet->_p2 = &less;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if(less) {
+        if (less) {
             minValue = arrayIn->BeginAt(i);
             minIndex = i;
         }
@@ -1116,7 +1129,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         snippet->_p1 = arrayIn->BeginAt(i);
         snippet->_p2 = &less;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if(less) {
+        if (less) {
            maxValue = arrayIn->BeginAt(i);
            maxIndex = i;
         }
@@ -1143,35 +1156,37 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
             if (minIndex >= 0) {
                 *minIndexPtr = minIndex / curDimSize;
                 minIndex -= *minIndexPtr * curDimSize;
-            }
-            else
+            } else {
                 *minIndexPtr = minIndex;
+            }
             if (maxIndex >= 0) {
                 *maxIndexPtr = maxIndex / curDimSize;
                 maxIndex -= *maxIndexPtr * curDimSize;
-            }
-            else
+            } else {
                 *maxIndexPtr = maxIndex;
+            }
         }
     }
     return _NextInstruction();
 }
-
-static void CopySubArray(AQBlock1* &sourcePtr, AQBlock1* &destinationPtr, const UInt32 elementSize, const size_t elementsToCopy)
+// NOLINT(runtime/references)
+static void CopySubArray(AQBlock1* &sourcePtr, AQBlock1* &destinationPtr,  // NOLINT(runtime/references)
+                         const UInt32 elementSize, const size_t elementsToCopy)
 {
     if (elementsToCopy) {
         size_t bytesToCopy = elementsToCopy * elementSize;
         if (destinationPtr) {
             memmove(destinationPtr, sourcePtr, bytesToCopy);
             sourcePtr += bytesToCopy, destinationPtr += bytesToCopy;
-        }
-        else
+        } else {
             sourcePtr += bytesToCopy;
+        }
     }
 }
 
 // ArrayDeleteND function, can delete one or multiple rows, columns, pages, etc. in an ND Array
-VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex, IntIndex)
+VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
+                          TypedArrayCoreRef, IntIndex, IntIndex, IntIndex)
 {
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(3);
@@ -1184,11 +1199,14 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
         deletedPortionLength = 0;
     }
 
-    IntIndex offset = (_ParamPointer(5) == NULL) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);;
+    IntIndex offset = (_ParamPointer(5) == NULL) ?
+        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);;
     Int32 rank = arrayIn->Rank();
 
     IntIndex startIndex = offset > 0 ? offset : 0;
-    IntIndex endIndex = offset + deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ? arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
+    IntIndex endIndex = offset +
+        deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ?
+        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
 
     if (endIndex <= 0) {
         endIndex = 0;
@@ -1204,14 +1222,16 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
         if (!deletedPartType->IsA(arrayIn->ElementType())) {
             TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
             deletedArray->Resize1D(endIndex - startIndex);
-            deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
-        } else if (endIndex - startIndex > 0 ) {
+            deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex),
+                                                   deletedArray->BeginAt(0), deletedArray->Length());
+        } else if (endIndex - startIndex > 0) {
             arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
-        } else
+        } else {
             arrayOut->ElementType()->InitData(_ParamPointer(2));
-
+        }
         if (endIndex < arrayIn->GetLength(0)) {
-            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
+            arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex),
+                                              arrayOutLength - startIndex);
         }
     } else {
         TypedArrayCoreRef deletedArray = *((TypedArrayCoreRef*)_ParamPointer(2));
@@ -1258,8 +1278,9 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void, Ty
                 numberOfElementsInDeletedDimension *= dimensionSize[i];
             size_t numberOfElementsBeforeDeleted = startIndex * numberOfElementsInDeletedDimension;
             size_t numberOfElementsToBeDeleted = deletedPortionLength * numberOfElementsInDeletedDimension;
-            size_t numberOfElementsAfterDeleted = (dimensionSize[dimensionToDelete] - (startIndex + deletedPortionLength)) * numberOfElementsInDeletedDimension;
-            Int32 currentDimension;
+            size_t numberOfElementsAfterDeleted = (dimensionSize[dimensionToDelete]
+                       - (startIndex + deletedPortionLength)) * numberOfElementsInDeletedDimension;
+Int32 currentDimension;
             do {
                 CopySubArray(inputArrayPtr, outputArrayPtr, elementSize, numberOfElementsBeforeDeleted);
                 CopySubArray(inputArrayPtr, deletedArrayPtr, elementSize, numberOfElementsToBeDeleted);
@@ -1287,7 +1308,7 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
 
     IntIndex startIndex = offset > 0? offset : 0;
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
-    if (arrayOut->Rank() != 1 || arrayIn->Rank()!=1) {
+    if (arrayOut->Rank() != 1 || arrayIn->Rank() != 1) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayDelete needs dimNum arg for 2-D or higher arrays");
         return THREAD_EXEC()->Stop();
     }
@@ -1305,14 +1326,16 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     if (!deletedPartType->IsA(arrayIn->ElementType())) {
         TypedArrayCoreRef deletedArray =  *((TypedArrayCoreRef*)_ParamPointer(2));
         deletedArray->Resize1D(endIndex - startIndex);
-        deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex), deletedArray->BeginAt(0), deletedArray->Length());
-    } else if (endIndex - startIndex > 0 ) {
+        deletedArray->ElementType() ->CopyData(arrayIn->BeginAt(startIndex),
+                                               deletedArray->BeginAt(0), deletedArray->Length());
+    } else if (endIndex - startIndex > 0) {
         arrayOut->ElementType()->CopyData(arrayIn->BeginAt(startIndex), _ParamPointer(2));
-    } else
+    } else {
         arrayOut->ElementType()->InitData(_ParamPointer(2));
-
+    }
     if (endIndex < arrayIn->Length()) {
-        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex), arrayOutLength - startIndex);
+        arrayOut->ElementType()->CopyData(arrayIn->BeginAt(endIndex), arrayOut->BeginAt(startIndex),
+                                          arrayOutLength - startIndex);
     }
     return _NextInstruction();
 }
@@ -1325,7 +1348,7 @@ struct ArrayReshapeStruct : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-//Array Iterator
+// Array Iterator
 class ArrayIterator
 {
  private:
@@ -1335,7 +1358,7 @@ class ArrayIterator
     IntIndex  _rank;
     TypedArrayCoreRef _array;
  public:
-    ArrayIterator(TypedArrayCoreRef array)
+    explicit ArrayIterator(TypedArrayCoreRef array)
     {
         _array = array;
         _rank = array->Rank();
@@ -1373,7 +1396,7 @@ class ArrayIterator
     };
 };
 
-//ArrayReshape function
+// ArrayReshape function
 VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
@@ -1397,8 +1420,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
         }
     }
     arrayOut->ResizeDimensions(rank, dimensions, false);
-    //IntIndex* inputDimensions = arrayOut->DimensionLengths();
-    //IntIndex inputRank = arrayIn->Rank();
+    // IntIndex* inputDimensions = arrayOut->DimensionLengths();
+    // IntIndex inputRank = arrayIn->Rank();
     ArrayIterator iteratorIn(arrayIn);
     ArrayIterator iteratorOut(arrayOut);
     void* input = iteratorIn.Begin();
@@ -1426,10 +1449,10 @@ VIREO_FUNCTION_SIGNATURE2(ArrayTranspose, TypedArrayCoreRef, TypedArrayCoreRef)
     IntIndex originalIndex[2];
     IntIndex transposeIndex[2];
     TypeRef elementType = arrayIn->ElementType();
-    for(IntIndex i = 0; i < pLengths[0]; i++) {
+    for (IntIndex i = 0; i < pLengths[0]; i++) {
         originalIndex[0] = i;
         transposeIndex[1] = i;
-        for(IntIndex j = 0; j < pLengths[1]; j++) {
+        for (IntIndex j = 0; j < pLengths[1]; j++) {
             originalIndex[1] = j;
             transposeIndex[0] = j;
             elementType->CopyData(arrayIn->BeginAtND(2, originalIndex), arrayOut->BeginAtND(2, transposeIndex));
@@ -1444,7 +1467,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
     Double fractionalIndex = ReadDoubleFromMemory(_ParamPointer(2), _ParamPointer(3));
     IntIndex left = 0;
     IntIndex right = arrayIn->Length()-1;
-    if(left > right) {
+    if (left > right) {
         *(Double*)_ParamPointer(0) = NAN;
         return _NextInstruction();
     }
@@ -1483,7 +1506,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
         if (rightX == leftX)
             *(Double*)_ParamPointer(0) = leftY;
         else
-            *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) + rightY*(fractionalIndex - leftX)/(rightX - leftX);
+            *(Double*)_ParamPointer(0) = leftY*(rightX - fractionalIndex)/(rightX - leftX) +
+                rightY*(fractionalIndex - leftX)/(rightX - leftX);
     } else {
         if (fractionalIndex < 0)
             fractionalIndex = 0;
@@ -1497,7 +1521,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
         Double rightD = (Double)right;
         Double leftValue = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(left));
         Double rightValue = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(right));
-        Double y = rightValue*(fractionalIndex - leftD)/(rightD - leftD) + leftValue*(rightD - fractionalIndex)/(rightD - leftD);
+        Double y = rightValue*(fractionalIndex - leftD)/(rightD - leftD) +
+            leftValue*(rightD - fractionalIndex)/(rightD - leftD);
         *(Double*)_ParamPointer(0) = y;
     }
     return _NextInstruction();
@@ -1508,24 +1533,24 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
     TypedArrayCoreRef arrayIn = _Param(1);
     Double thresholdY = _Param(2);
     IntIndex startIndex = _ParamPointer(3) == NULL? 0 : _Param(3);
-    if(arrayIn->Length() == 0) {
+    if (arrayIn->Length() == 0) {
         _Param(0) = NAN;
     }
     TypeRef elementType = arrayIn->ElementType();
     Double left = 0, right = 0;
     Double leftValue = 0, rightValue = 0;
     Boolean isCluster = elementType->IsCluster();
-    if(isCluster) {
+    if (isCluster) {
         TypeRef elementXType = elementType->GetSubElement(0);
         TypeRef elementYType = elementType->GetSubElement(1);
         IntIndex fieldOffsetX = elementXType->ElementOffset();
         IntIndex fieldOffsetY = elementYType->ElementOffset();
-        for(IntIndex i = startIndex; i < arrayIn->Length(); i++) {
+        for (IntIndex i = startIndex; i < arrayIn->Length(); i++) {
             void* xPtr = arrayIn->BeginAt(i) + fieldOffsetX;
             void* yPtr = arrayIn->BeginAt(i) + fieldOffsetY;
             Double x = ReadDoubleFromMemory(elementXType, xPtr);
             Double y = ReadDoubleFromMemory(elementYType, yPtr);
-            if (i == startIndex) { right = left = x;} //i
+            if (i == startIndex) { right = left = x;}  // i
             if (y < thresholdY) {
                 left = x;
                 leftValue = y;
@@ -1538,7 +1563,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
             }
         }
     } else {
-        for(IntIndex i = startIndex; i < arrayIn->Length(); i++) {
+        for (IntIndex i = startIndex; i < arrayIn->Length(); i++) {
             Double y = ReadDoubleFromMemory(arrayIn->ElementType(), arrayIn->BeginAt(i));
             if (i == startIndex) { left = right = (Double)startIndex;}
             if (y < thresholdY) {
@@ -1559,7 +1584,8 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
         if (leftValue == rightValue) {
             _Param(0) = (left + right)/2;
         } else {
-            _Param(0) = left*(rightValue - thresholdY)/(rightValue - leftValue) + right*(thresholdY - leftValue)/(rightValue - leftValue);
+            _Param(0) = left*(rightValue - thresholdY)/(rightValue - leftValue) +
+                right*(thresholdY - leftValue)/(rightValue - leftValue);
         }
     }
     return _NextInstruction();
@@ -1582,14 +1608,14 @@ VIREO_FUNCTION_SIGNATUREV(ArrayInterleave, ArrayInterleaveParamBlock)
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayInterleave invalid array rank");
         return THREAD_EXEC()->Stop();
     }
-    for(IntIndex i = 0; i < numberOfInput; i++) {
+    for (IntIndex i = 0; i < numberOfInput; i++) {
         if (length > (*arrayInputs[i])->Length()) {
             length = (*arrayInputs[i])->Length();
         }
     }
     arrayOut->Resize1D(length*numberOfInput);
     for (IntIndex i = 0; i < length; i++) {
-        for(IntIndex k = 0; k < numberOfInput; k++) {
+        for (IntIndex k = 0; k < numberOfInput; k++) {
             TypedArrayCoreRef arrayK = *arrayInputs[k];
             arrayOut->ElementType()->CopyData(arrayK->BeginAt(i), arrayOut->BeginAt(i*numberOfInput + k));
         }
@@ -1615,7 +1641,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayDecimate, ArrayDecimateParamBlock)
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "ArrayDecimate invalid array rank");
         return THREAD_EXEC()->Stop();
     }
-    for(IntIndex k = 0; k < numberOfOutputs; k++) {
+    for (IntIndex k = 0; k < numberOfOutputs; k++) {
         TypedArrayCoreRef arrayK = *arrayOutputs[k];
         arrayK->Resize1D(outLength);
         for (IntIndex i = 0; i < outLength; i++) {
@@ -1701,7 +1727,7 @@ VIREO_FUNCTION_SIGNATURE3(ClusterToArray, TypedArrayCoreRef, StaticType, void)
     TypedArrayCoreRef arrayOut = _Param(0);
     void* cluster = _ParamPointer(2);
     TypeRef clusterType = _ParamPointer(1);
-    arrayOut->Resize1D( clusterType->SubElementCount());
+    arrayOut->Resize1D(clusterType->SubElementCount());
     for (IntIndex i = 0; i < arrayOut->Length(); i++) {
          TypeRef elementType = clusterType->GetSubElement(i);
          IntIndex offset = elementType->ElementOffset();
@@ -1764,14 +1790,14 @@ VIREO_FUNCTION_SIGNATURE3(BooleanArrayToNumber, TypedArrayCoreRef, StaticType, v
 
 VIREO_FUNCTION_SIGNATURE2(IsEmptyArray, TypedArrayCoreRef, Boolean)
 {
-    if (!_Param(0) || _Param(0)->Length()==0)
+    if (!_Param(0) || _Param(0)->Length() == 0)
         _Param(1) = true;
     else
         _Param(1) = false;
     return _NextInstruction();
 }
 
-//#define VIREO_VECTOR_SPECIALIZATION_TEST
+// #define VIREO_VECTOR_SPECIALIZATION_TEST
 
 #if defined(VIREO_VECTOR_SPECIALIZATION_TEST)
 

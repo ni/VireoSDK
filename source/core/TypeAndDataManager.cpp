@@ -12,8 +12,8 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
-#include <limits>
 #include <math.h>
+#include <limits>
 
 // Set VIREO_TRACK_MEMORY_ALLLOC_COUNTER to record monotonically increasing allocation number
 // with each allocation, to aid leak tracking, etc.
@@ -88,7 +88,7 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
     _totalAQAllocated = 0;
     _totalAllocationFailures = 0;
     _maxAllocated = 0;
-    _allocationLimit = 16777216;  //16 meg for starters
+    _allocationLimit = 16777216;  // 16 meg for starters
 
     _typeList = null;
     _baseTypeManager = parentTm;
@@ -117,7 +117,7 @@ void* TypeManager::Malloc(size_t countAQ)
 {
     VIREO_ASSERT(countAQ != 0);
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
-        _totalAllocationFailures ++;
+        _totalAllocationFailures++;
         THREAD_EXEC()->ClearBreakout();
         gPlatform.IO.Print("Exceeded allocation limit\n");
         return null;
@@ -145,7 +145,6 @@ void* TypeManager::Malloc(size_t countAQ)
 #endif
         pBuffer = (MallocInfo*)pBuffer + 1;
 #endif
-
     }
     return pBuffer;
 }
@@ -184,7 +183,7 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
         pNewBuffer = (MallocInfo*)pNewBuffer + 1;
 #else
         TrackAllocation(pBuffer, 1, false);
-        TrackAllocation(pNewBuffer, 1, true); // could be same pointer
+        TrackAllocation(pNewBuffer, 1, true);  // could be same pointer
 #endif
     }
     // else realloc failed, old block is still there, same size
@@ -356,7 +355,7 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
         TypeDictionaryIterator iter;
         iter = _typeNameDictionary.begin();
 
-        while(iter != _typeNameDictionary.end()) {
+        while (iter != _typeNameDictionary.end()) {
             *pBegin = iter->second;
             pBegin++;
             iter++;
@@ -498,11 +497,11 @@ TypeRef TypeManager::BadType()
 Int32  TypeManager::AQAlignment(Int32 size)
 {
     // subject to be conditional to architecture
-    if (size<2)
+    if (size < 2)
         return 1;
-    if (size<4)
+    if (size < 4)
         return 2;
-    if (size<8)
+    if (size < 8)
         return 4;
     else
 #if VIREO_32_BIT_LONGLONGWORD_ALIGNMENT
@@ -714,9 +713,9 @@ NIError TypeCommon::ClearData(void* pData)
     return kNIError_Success;
 }
 //------------------------------------------------------------
-//Determine if another type is defined from this type.
-//Arrays are the same if they have the same rank and their sub types compare
-//TODO: Consider merging this function with IsA function below.
+// Determine if another type is defined from this type.
+// Arrays are the same if they have the same rank and their sub types compare
+// TODO: Consider merging this function with IsA function below.
 Boolean TypeCommon::CompareType(TypeRef otherType)
 {
     EncodingEnum thisEncoding = BitEncoding();
@@ -736,8 +735,10 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
             return true;
         }
     } else if (thisEncoding == otherEncoding && BitLength() == otherType->BitLength()
-               && (thisEncoding == kEncoding_IEEE754Binary || thisEncoding == kEncoding_S2CInt || thisEncoding == kEncoding_UInt
-                   || thisEncoding == kEncoding_Boolean || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode)) { // should we just check IsFlat() instead?
+               && (thisEncoding == kEncoding_IEEE754Binary || thisEncoding == kEncoding_S2CInt
+                   || thisEncoding == kEncoding_UInt
+                   || thisEncoding == kEncoding_Boolean || thisEncoding == kEncoding_Ascii
+                   || thisEncoding == kEncoding_Unicode)) {  // should we just check IsFlat() instead?
         return true;
     } else {
         if (this->IsA(otherType, true) || otherType->IsA(this, true))
@@ -759,8 +760,10 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 
         if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
             bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
-        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_S2CInt || thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
-            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_S2CInt || otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
+        } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_S2CInt ||
+                   thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
+            if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_S2CInt ||
+                otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
@@ -797,7 +800,7 @@ Boolean TypeCommon::IsA(TypeRef otherType)
     if (otherType->IsTemplate()) {
         SubString name = Name();
         IntIndex i = name.FindFirstMatch(&angle, 0, false);
-        if (i>0) {
+        if (i > 0) {
             name = SubString(name.Begin(), name.Begin() + i);
             if (name.Compare(&otherTypeName))
                 return true;
@@ -810,14 +813,14 @@ Boolean TypeCommon::IsA(TypeRef otherType)
 Boolean TypeCommon::IsA(const SubString *otherTypeName)
 {
 #if 0
-// clusters in arrays are often anonymous, compare structurally
+    // clusters in arrays are often anonymous, compare structurally
     if (otherTypeName->Length() == 0) {
         return false;
     }
 #endif
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(otherTypeName)) { // ??? should this really consider unnamed types equal?? -CS
+        if (t->Name().Compare(otherTypeName)) {  // ??? should this really consider unnamed types equal?? -CS
             return true;
         }
         t = t->BaseType();
@@ -831,54 +834,57 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
 //------------------------------------------------------------
 Boolean TypeCommon::IsNumeric()
 {
-   TypeRef t = this;
-   while (t) {
-      if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64) ||
-          t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
-         return true;
-      }
-      t = t->BaseType();
-   }
-   return false;
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32)
+            || t->Name().Compare(&TypeInt64) || t->Name().Compare(&TypeUInt8)
+            || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32)
+            || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle)
+            || t->Name().Compare(&TypeDouble)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
 }
 
 //------------------------------------------------------------
 Boolean TypeCommon::IsFloat()
 {
-   TypeRef t = this;
-   while (t) {
-      if (t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
-         return true;
-      }
-      t = t->BaseType();
-   }
-   return false;
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
 }
 
 //------------------------------------------------------------
 Boolean TypeCommon::IsBoolean()
 {
-   TypeRef t = this;
-   while (t) {
-      if (t->Name().Compare(&TypeBoolean)) {
-         return true;
-      }
-      t = t->BaseType();
-   }
-   return false;
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeBoolean)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
 }
 
 //------------------------------------------------------------
 Boolean TypeCommon::IsString()
 {
-   TypeRef t = this;
-   while (t) {
-      if (t->Name().Compare(&TypeString)) {
-         return true;
-      }
-      t = t->BaseType();
-   }
-   return false;
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeString)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
 }
 
 //------------------------------------------------------------
@@ -1095,7 +1101,6 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 
     // If the head matches one of the AggregateType's elements, add the offset.
     for (ElementTypeRef* pType = _elements.Begin(); pType != _elements.End(); pType++) {
-
         ElementTypeRef subType = *pType;
         if ((_elements.Length() == 1) && (subType->_elementName.Length() == 0) && pathTail.Length()) {
             // Simple cluster wrappers have only one element, and that element has no name.
@@ -1119,7 +1124,7 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
 TypeRef AggregateType::GetSubElement(Int32 index)
 {
     if (index < 0 || index >= _elements.Length())
-        return null; // element does not exist
+        return null;  // element does not exist
     return _elements[index];
 }
 //------------------------------------------------------------
@@ -1169,7 +1174,7 @@ BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], I
     Boolean isVariableSize = false;
     EncodingEnum encoding = kEncoding_None;
 
-    for (ElementTypeRef* pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+    for (ElementTypeRef* pType = _elements.Begin(); pType !=_elements.End(); pType++) {
         ElementTypeRef element = *pType;
 
         element->_offset = bitLength;
@@ -1332,7 +1337,7 @@ ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 c
 
     ClusterAlignmentCalculator alignmentCalculator(this->TheTypeManager());
 
-    for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+    for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++) {
         ElementTypeRef element = *pType;
 
 #ifdef VIREO_USING_ASSERTS
@@ -1367,10 +1372,10 @@ NIError ClusterType::InitData(void* pData, TypeRef pattern)
 {
     if (!IsFlat() || HasCustomDefault()) {
         // For non trivial cases visit each element
-        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++) {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
 
-            if ( !(*pType)->IsFlat() && (*pType)->IsAlias()) {
+            if (!(*pType)->IsFlat() && (*pType)->IsAlias()) {
                 // If the element type is a parameter then the value will be top copied.
                 // the only initialization that should be done is to zero-out the block
                 // arrays and custom defaults will be copied/initialized at call time.
@@ -1393,7 +1398,7 @@ NIError ClusterType::ClearData(void* pData)
         return TypeCommon::ClearData(pData);
     } else {
         // For non trivial cases visit each element
-        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++)
+        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++)
         {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
             // If the element is an input or output in a subVI call, the calling VI will clear
@@ -1416,11 +1421,11 @@ NIError ClusterType::CopyData(const void* pData, void *pDataCopy)
         return TypeCommon::CopyData(pData, pDataCopy);
     } else {
         // For non trivial cases visit each element
-        for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++)
+        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++)
         {
             // TODO errors
             Int32 offset = (*pType)->_offset;
-            (*pType)->CopyData( (((AQBlock1*)pData) + offset), (((AQBlock1*)pDataCopy) + offset) );
+            (*pType)->CopyData((((AQBlock1*)pData) + offset), (((AQBlock1*)pDataCopy) + offset));
         }
         return kNIError_Success;
     }
@@ -1482,7 +1487,7 @@ EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[],
     EncodingEnum encoding = kEncoding_None;
     Boolean isValid = true;
 
-    if (_elements.Length()>0) {
+    if (_elements.Length() > 0) {
         TypeRef element = _elements[0];
         isFlat  = element->IsFlat();
         alignment = element->AQAlignment();
@@ -1562,7 +1567,7 @@ ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex r
 
     memcpy(_dimensionLengths, dimensionLengths, rank * sizeof(IntIndex));
 
-    IntIndexItr iDim( DimensionLengths(), Rank());
+    IntIndexItr iDim(DimensionLengths(), Rank());
     while (iDim.HasNext()) {
         if (IsTemplateDim(iDim.Read())) {
             _isTemplate |= true;
@@ -1715,7 +1720,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         *end = null;
 
         // may allow end point relative as well ???
-        if (allowDynamic) { // Variable sized arrays can only be indexed if allowDynamic is true.
+        if (allowDynamic) {  // Variable sized arrays can only be indexed if allowDynamic is true.
             IntMax index = 0;
             if (pathHead.ReadInt(&index) && index >= 0 && index < array->Length()) {
                 ArrayDimensionVector dimIndex;
@@ -1769,7 +1774,7 @@ ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], I
     // to each element.
 
     ParamBlockAlignmentCalculator alignmentCalculator(this->TheTypeManager());
-    for (ElementTypeRef *pType = _elements.Begin(); pType!=_elements.End(); pType++) {
+    for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++) {
         ElementTypeRef element = *pType;
 
 #ifdef VIREO_USING_ASSERTS
@@ -1853,7 +1858,7 @@ DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boo
 //------------------------------------------------------------
 void* DefaultValueType::Begin(PointerAccessEnum mode)
 {
-    if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite) ) {
+    if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite)) {
         return null;
     }
 
@@ -2068,7 +2073,7 @@ IntIndex TypedArrayCore::InternalCalculateLength()
     // Calculate how many elements are in the array based on the
     // current length of each dimension.
     IntIndex length = 1;
-    IntIndexItr iDim( DimensionLengths(), Rank());
+    IntIndexItr iDim(DimensionLengths(), Rank());
     while (iDim.HasNext()) {
         length *= iDim.Read();
     }
@@ -2186,7 +2191,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
         pRequestedLengths = dimensionLengths;
     } else {
         // It too few are supplied fill out the remaining in a temporary copy.
-        Int32 i=0;
+        Int32 i = 0;
         Int32 dimsToBeFilledIn = valuesRank - rank;
 
         for (; i < dimsToBeFilledIn ; i++) {
@@ -2205,7 +2210,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     IntIndex newLength = 1;
     Boolean bOK = true;
 
-    while(iRequestedDim.HasNext()) {
+    while (iRequestedDim.HasNext()) {
         *pSlabLengths++ = slabLength;
         IntIndex dimLength = iRequestedDim.Read();
         IntIndex typesDimLength = *pTypesLengths;
@@ -2429,7 +2434,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 case 0: value = 0;                              break;
                 case 4: {
                     Single singleVal = RoundToEven(*(Single*)pData);
-                    if (singleVal >= std::numeric_limits<IntMax>::max()) // >= is actually correct here because Int64 max isn't representable as a single and rounds up.
+                    if (singleVal >= std::numeric_limits<IntMax>::max())
+                        // >= is actually correct here because Int64 max isn't representable as a single and rounds up.
                         value = std::numeric_limits<IntMax>::max();
                     else if (singleVal <= std::numeric_limits<IntMax>::min())
                         value =  std::numeric_limits<IntMax>::min();
@@ -2439,7 +2445,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 }
                 case 8: {
                     Double doubleVal = RoundToEven(*(Double*)pData);
-                    if (doubleVal >= std::numeric_limits<IntMax>::max()) // >= is actually correct here because Int64 max isn't representable as a double and rounds up.
+                    if (doubleVal >= std::numeric_limits<IntMax>::max())
+                        // >= is actually correct here because Int64 max isn't representable as a double and rounds up.
                         value = std::numeric_limits<IntMax>::max();
                     else if (doubleVal <= std::numeric_limits<IntMax>::min())
                         value =  std::numeric_limits<IntMax>::min();
@@ -2584,7 +2591,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
-                case 1:  value = (*(UInt8*)pData) ? 1.0:0.0;break;
+                case 1:  value = (*(UInt8*)pData) ? 1.0 : 0.0; break;
                 default: isErr = true;                      break;
             }
             break;
@@ -2643,7 +2650,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
         case kEncoding_Boolean:
             switch (aqSize) {
                 // Beware that anything that's not exactly 0.0 will be true
-                case 1:  *(UInt8*)pData = value!=0.0 ? 1 : 0;break;
+                case 1:  *(UInt8*)pData = value != 0.0 ? 1 : 0;  break;
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
@@ -2945,7 +2952,7 @@ VIREO_FUNCTION_SIGNATURE5(GetSubElementFromPath, StaticType, void, StringRef, St
     if (pTargetValue && targetType && targetType->CompareType(_ParamPointer(3)))
         _ParamPointer(3)->CopyData(pTargetValue, _ParamPointer(4));
     else
-        _ParamPointer(3)->InitData(_ParamPointer(4));;
+        _ParamPointer(3)->InitData(_ParamPointer(4));
     return _NextInstruction();
 }
 
@@ -2969,19 +2976,24 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
 
 class TypeRefDumpVisitor : public TypeVisitor
 {
-public:
+ public:
     TypeRefDumpVisitor() { }
 
-private:
+ private:
     virtual void VisitBad(TypeRef type) { gPlatform.IO.Printf("<bad> "); }
     virtual void VisitBitBlock(BitBlockType* type) { gPlatform.IO.Printf("<bitblock> "); }
     virtual void VisitBitCluster(BitClusterType* type) { gPlatform.IO.Printf("<bitcluster> "); }
     virtual void VisitCluster(ClusterType* type) { gPlatform.IO.Printf("<cluster> "); }
-    virtual void VisitParamBlock(ParamBlockType* type) { gPlatform.IO.Printf("("); int i = 0, n = type->SubElementCount(); while (i < n) { type->GetSubElement(i)->Accept(this); ++i; }  gPlatform.IO.Printf(")"); }
+    virtual void VisitParamBlock(ParamBlockType* type) {
+        gPlatform.IO.Printf("(");
+        int i = 0, n = type->SubElementCount();
+        while (i < n) { type->GetSubElement(i)->Accept(this); ++i; }
+        gPlatform.IO.Printf(")");
+    }
     virtual void VisitEquivalence(EquivalenceType* type) { gPlatform.IO.Printf("<eq> "); }
     virtual void VisitArray(ArrayType* type) { gPlatform.IO.Printf("<array> "); }
-    virtual void VisitElement(ElementType* type) { gPlatform.IO.Printf("");type->BaseType()->Accept(this); }
-    virtual void VisitNamed(NamedType* type) {} // gPlatform.IO.Printf("<.%s>", &type->Name());// type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
+    virtual void VisitElement(ElementType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
+    virtual void VisitNamed(NamedType* type) {}  // gPlatform.IO.Printf("<.%s>", &type->Name()); // type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
     virtual void VisitPointer(PointerType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
     virtual void VisitRefNumVal(RefNumValType* type) { gPlatform.IO.Printf("<rn> "); type->BaseType()->Accept(this); }
     virtual void VisitEnum(EnumType* type) { gPlatform.IO.Printf("<enum> "); type->BaseType()->Accept(this); }
@@ -3051,12 +3063,11 @@ VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
     return _NextInstruction();
 }
 #endif
-}
+}  // namespace Vireo
 
 //------------------------------------------------------------
 // Most of the TypeManager knows nothing of the TDCodecVia
 // of the type definer, but definitions cannot be parsed without them
-
 
 #include "TypeDefiner.h"
 
@@ -3064,7 +3075,6 @@ namespace Vireo {
 //------------------------------------------------------------
 TypeManagerRef TypeManager::New(TypeManagerRef parentTADM)
 {
-
     // Bootstrap the TADM, get memory, construct it, make it responsible for its memory
     TypeManagerRef newTADM = (TypeManagerRef) gPlatform.Mem.Malloc(sizeof(TypeManager));
     new (newTADM) TypeManager(parentTADM);
@@ -3087,9 +3097,6 @@ TypeManagerRef TypeManager::New(TypeManagerRef parentTADM)
     }
 }
 
-} // namespace
-
-using namespace Vireo;
 DEFINE_VIREO_BEGIN(TypeManager)
 
 #if defined(VIREO_TYPE_Double)
@@ -3148,5 +3155,6 @@ DEFINE_VIREO_BEGIN(TypeManager)
 
 DEFINE_VIREO_END()
 
+}  // namespace Vireo
 
 

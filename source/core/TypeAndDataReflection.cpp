@@ -144,7 +144,7 @@ void DataReflectionVisitor::Accept(TypeRef tHayStack, DataPointer pHayStack)
     if (_pNeedle == tHayStack) {
         // The value may be a TypeRef. If so check and catch it here,
         // no need for each visitor to do a check.
-        //_isTypeRef = true;
+        // _isTypeRef = true;
         _found = true;
     } else if ((_pNeedle == pHayStack) && (_tNeedle->IsA(tHayStack, true) )) {
         // Once the needle is found then there is no need to keep
@@ -214,8 +214,6 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
     if (type->IsZDA()) {
         // ZDA's have one element.
         Accept(elementType, pArray->RawBegin());
-    } else {
-
     }
 #if 0
     // still in work
@@ -279,5 +277,5 @@ void DataReflectionVisitor::VisitCustomDataProc(CustomDataProcType* type)
     Accept(type->BaseType(), _pHayStack);
 }
 #endif
-}
+}  // namespace Vireo
 

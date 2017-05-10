@@ -44,19 +44,19 @@ inline Int64 IntAbs(Int64 value) { return llabs(value); }
 
 extern "C" {
 
-//For some platforms isnan, isinf, abs are functions in std not macros
+// For some platforms isnan, isinf, abs are functions in std not macros
 using namespace std;
 
 
 // Basic Math
 #define DECLARE_VIREO_MATH_PRIMITIVES(TYPE) \
-    DECLARE_VIREO_PRIMITIVE3( Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0)) ) \
-    DECLARE_VIREO_PRIMITIVE2( Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)) )    \
-    DECLARE_VIREO_PRIMITIVE2( Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1) )    \
-    DECLARE_VIREO_PRIMITIVE2( Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1) )    \
+    DECLARE_VIREO_PRIMITIVE3(Add##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) + _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Sub##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Mul##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) * _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE2(Sign##TYPE, TYPE, TYPE, (_Param(1) = (_Param(0) > 0) - (_Param(0) < 0))) \
+    DECLARE_VIREO_PRIMITIVE2(Negate##TYPE, TYPE, TYPE, (_Param(1) = 0 - _Param(0)))    \
+    DECLARE_VIREO_PRIMITIVE2(Increment##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) + 1))    \
+    DECLARE_VIREO_PRIMITIVE2(Decrement##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) - 1))    \
 
 #define DEFINE_VIREO_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Add, TYPE, "BinOp"#TYPE) \
@@ -71,17 +71,16 @@ using namespace std;
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) / _Param(1)) : 0 ) ) */ \
-    DECLARE_VIREO_PRIMITIVE3( Mod##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) % _Param(1)) : 0 ) ) \
+    DECLARE_VIREO_PRIMITIVE3(Mod##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) % _Param(1)) : 0)) \
     VIREO_FUNCTION_SIGNATURE3(Quotient##TYPE, TYPE, TYPE, TYPE) \
     { \
         TYPE quotient, remainder; \
-        if (_Param(1) == 0) \
+        if (_Param(1) == 0) { \
             quotient = 0; \
-        else { \
+        } else { \
             quotient  = _Param(0) / _Param(1); \
             remainder = _Param(0) - _Param(1) * quotient; \
-            if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) \
-            { \
+            if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) { \
                 quotient--; \
                 remainder += _Param(1); \
             } \
@@ -89,16 +88,15 @@ using namespace std;
         _Param(2) = quotient; \
         return _NextInstruction(); \
     } \
-    VIREO_FUNCTION_SIGNATURE3(Remainder##TYPE, TYPE, TYPE, TYPE ) \
+    VIREO_FUNCTION_SIGNATURE3(Remainder##TYPE, TYPE, TYPE, TYPE) \
     { \
         TYPE quotient, remainder; \
-        if (_Param(1) == 0) \
+        if (_Param(1) == 0) { \
             remainder = _Param(0); \
-        else { \
+        } else { \
             quotient  = _Param(0) / _Param(1); \
             remainder = _Param(0) - _Param(1) * quotient; \
-            if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) \
-            { \
+            if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) { \
                 quotient--; \
                 remainder += _Param(1); \
             } \
@@ -137,86 +135,89 @@ using namespace std;
     DEFINE_VIREO_FUNCTION_TYPED(Join, SOURCE, "p(i("#SOURCE") i("#SOURCE") o("#DEST"))")
 
 //------------------------------------------------------------
-//Signed Integer Math
+// Signed Integer Math
 #define DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(TYPE) \
-    DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = IntAbs(_Param(0)) ) )
+    DECLARE_VIREO_PRIMITIVE2(Absolute##TYPE, TYPE, TYPE, (_Param(1) = IntAbs(_Param(0))))
 
 #define DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Absolute, TYPE, "p(i("#TYPE") o("#TYPE"))")
 //------------------------------------------------------------
-//Floating-point Math
+// Floating-point Math
 #if kVireoOS_emscripten
     inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
-    inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); } // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined
+    inline EMSCRIPTEN_NOOPT int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); }
+    // work around Emscripten bug in rintf impl; opt off to prevent rint being replaced with rintf when RoundToEven is inlined
 #else
     inline int ScaleRoundToInt_Double(Double x) { return int(trunc(x)); }
     inline int ScaleRoundToInt_Single(Single x) { return int(truncf(x)); }
 #endif
 #define DECLARE_SCALE2X_REALN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##TYPE(TYPE x, TYPE n) { \
-        if (::isnan(x) || ::isnan(n)) \
+        if (::isnan(x) || ::isnan(n)) { \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
-        else if (x == 0.0) \
+        } else if (x == 0.0) { \
             return (n > 0 && ::isinf(n)) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
-        else if (n < 0 && ::isinf(n)) \
+        } else if (n < 0 && ::isinf(n)) { \
             return ::isinf(x) ? std::numeric_limits<TYPE>::quiet_NaN() : 0.0; \
-        else if (n > 0 && ::isinf(n)) \
+        } else if (n > 0 && ::isinf(n)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
-        else if (n < 0 && ::isinf(x)) \
+        } else if (n < 0 && ::isinf(x)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
-        else \
+        } else { \
             return x * pow(2.0, ScaleRoundToInt_##TYPE(n));  \
+        } \
     }
 #define DECLARE_SCALE2X_INTN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##Int32(TYPE x, Int32 n) { \
-        if (::isnan(x)) \
+        if (::isnan(x)) { \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
-        else if (x == 0.0) \
+        } else if (x == 0.0) { \
             return 0.0; \
-        else if (n < 0 && ::isinf(x)) \
+        } else if (n < 0 && ::isinf(x)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
-        else \
+        } else { \
             return x * pow(2.0, ScaleRoundToInt_##TYPE(n));  \
-        }
+        } \
+    }
 DECLARE_SCALE2X_REALN_HELPER(Double)
 DECLARE_SCALE2X_REALN_HELPER(Single)
 DECLARE_SCALE2X_INTN_HELPER(Double)
 DECLARE_SCALE2X_INTN_HELPER(Single)
 
 #define DECLARE_VIREO_FLOAT_MATH_PRIMITIVES(TYPE) \
-    DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) / _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( Sine##TYPE, TYPE, TYPE, (_Param(1) = sin(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Cosine##TYPE, TYPE, TYPE, (_Param(1) = cos(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Tangent##TYPE,TYPE, TYPE, (_Param(1) = tan(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Cotangent##TYPE,TYPE, TYPE, (_Param(1) = 1.0/tan(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Secant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/cos(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Cosecant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/sin(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Sinc##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) == 0 ? 1.0 : sin(_Param(0))/_Param(0) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Log10##TYPE, TYPE, TYPE, (_Param(1) = log10(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Log##TYPE, TYPE, TYPE, (_Param(1) = log(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Log2##TYPE, TYPE, TYPE, (_Param(1) = log2(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Exp##TYPE, TYPE, TYPE, (_Param(1) = exp(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE3( Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)) ) ) \
-    DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE##TYPE, TYPE, TYPE, TYPE, _Param(2) = Scale2X_##TYPE##TYPE(_Param(0), _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE##Int64, TYPE, Int64, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), Int32(_Param(1))) ) \
-    DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE##Int32, TYPE, Int32, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE##Int16, TYPE, Int16, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Scale2X##TYPE##Int8, TYPE, Int8, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcSine##TYPE,TYPE, TYPE, (_Param(1) = asin(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcTan##TYPE, TYPE, TYPE, (_Param(1) = atan(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE3( ArcTan2##TYPE, TYPE, TYPE, TYPE, (_Param(2) = atan2(_Param(0), _Param(1)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcCosecant##TYPE, TYPE, TYPE, (_Param(1) = asin(1.0/_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcSecant##TYPE, TYPE, TYPE, (_Param(1) = acos(1.0/_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( ArcCotangent##TYPE, TYPE, TYPE, (_Param(1) = atan(1.0/_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Ceil##TYPE, TYPE, TYPE, (_Param(1) = ceil(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Absolute##TYPE, TYPE, TYPE, (_Param(1) = abs(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Floor##TYPE, TYPE, TYPE, (_Param(1) = floor(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)) ) ) \
-    DECLARE_VIREO_PRIMITIVE3( Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)) ) ) \
-    DECLARE_VIREO_PRIMITIVE3( Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)) ) ) \
-    DECLARE_VIREO_PRIMITIVE2( Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0)) ) )
+    DECLARE_VIREO_PRIMITIVE3(Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) / _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE2(Sine##TYPE, TYPE, TYPE, (_Param(1) = sin(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Cosine##TYPE, TYPE, TYPE, (_Param(1) = cos(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Tangent##TYPE, TYPE, TYPE, (_Param(1) = tan(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Cotangent##TYPE, TYPE, TYPE, (_Param(1) = 1.0/tan(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Secant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/cos(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Cosecant##TYPE, TYPE, TYPE, (_Param(1) = 1.0/sin(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Sinc##TYPE, TYPE, TYPE, (_Param(1) = _Param(0) == 0 ? 1.0 : sin(_Param(0))/_Param(0))) \
+    DECLARE_VIREO_PRIMITIVE2(Log10##TYPE, TYPE, TYPE, (_Param(1) = log10(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Log##TYPE, TYPE, TYPE, (_Param(1) = log(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Log2##TYPE, TYPE, TYPE, (_Param(1) = log2(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Exp##TYPE, TYPE, TYPE, (_Param(1) = exp(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(SquareRoot##TYPE, TYPE, TYPE, (_Param(1) = sqrt(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE3(Pow##TYPE, TYPE, TYPE, TYPE, (_Param(2) = pow(_Param(0), _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##TYPE, TYPE, TYPE, TYPE, _Param(2) = Scale2X_##TYPE##TYPE(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int64, TYPE, Int64, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), Int32(_Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int32, TYPE, Int32, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int16, TYPE, Int16, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int8, TYPE, Int8, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcSine##TYPE, TYPE, TYPE, (_Param(1) = asin(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcCosine##TYPE, TYPE, TYPE, (_Param(1) = acos(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcTan##TYPE, TYPE, TYPE, (_Param(1) = atan(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE3(ArcTan2##TYPE, TYPE, TYPE, TYPE, (_Param(2) = atan2(_Param(0), _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcCosecant##TYPE, TYPE, TYPE, (_Param(1) = asin(1.0/_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcSecant##TYPE, TYPE, TYPE, (_Param(1) = acos(1.0/_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(ArcCotangent##TYPE, TYPE, TYPE, (_Param(1) = atan(1.0/_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Ceil##TYPE, TYPE, TYPE, (_Param(1) = ceil(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Absolute##TYPE, TYPE, TYPE, (_Param(1) = abs(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(Floor##TYPE, TYPE, TYPE, (_Param(1) = floor(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE2(RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = RoundToEven(_Param(0)))) \
+    DECLARE_VIREO_PRIMITIVE3(Quotient##TYPE, TYPE, TYPE, TYPE, (_Param(2) = floor(_Param(0) / _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Remainder##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) - _Param(1) * floor(_Param(0) / _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE2(Reciprocal##TYPE, TYPE, TYPE, (_Param(1) = (TYPE)1/(_Param(0))))
 
 #define DEFINE_VIREO_FLOAT_MATH_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Div, TYPE, "BinOp"#TYPE) \
@@ -252,14 +253,14 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 //------------------------------------------------------------
 // Bitwise
 #define DECLARE_VIREO_BITWISE_PRIMITIVES(TYPE) \
-    DECLARE_VIREO_PRIMITIVE3( And##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) & _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Or##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) | _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Xor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) ^ _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Implies##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~_Param(0) | _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( Nand##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) & _Param(1))) ) \
-    DECLARE_VIREO_PRIMITIVE3( Nor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) | _Param(1))) ) \
-    DECLARE_VIREO_PRIMITIVE3( Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1))) ) \
-    DECLARE_VIREO_PRIMITIVE2( Not##TYPE, TYPE, TYPE, (_Param(1) = ~_Param(0)) )
+    DECLARE_VIREO_PRIMITIVE3(And##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) & _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Or##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) | _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Xor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(0) ^ _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Implies##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~_Param(0) | _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Nand##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) & _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Nor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) | _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Nxor##TYPE, TYPE, TYPE, TYPE, (_Param(2) = ~(_Param(0) ^ _Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE2(Not##TYPE, TYPE, TYPE, (_Param(1) = ~_Param(0)))
 
 #define DEFINE_VIREO_BITWISE_FUNCTIONS(TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(And, TYPE, "BinOp"#TYPE) \
@@ -274,40 +275,46 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 //------------------------------------------------------------
 // Comparison
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE) \
-    DECLARE_VIREO_PRIMITIVE3( IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <  _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <= _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE3( IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1)) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsLE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <= 0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
-    DECLARE_VIREO_PRIMITIVE4( MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }    \
-        else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )    \
-    DECLARE_VIREO_PRIMITIVE4( MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (_Param(0) >= _Param(1)) { _Param(2) = _Param(0); _Param(3) = _Param(1); }    \
-        else { _Param(2) = _Param(1); _Param(3) = _Param(0); } )    \
+    DECLARE_VIREO_PRIMITIVE3(IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <  _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <= _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE2(IsLE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <= 0)) \
+    DECLARE_VIREO_PRIMITIVE2(IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0)) \
+    DECLARE_VIREO_PRIMITIVE2(IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0)) \
+    DECLARE_VIREO_PRIMITIVE2(IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0)) \
+    DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
+    DECLARE_VIREO_PRIMITIVE4(MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,    \
+        if (_Param(0) >= _Param(1)) { \
+         _Param(2) = _Param(0); _Param(3) = _Param(1); \
+        } else { \
+         _Param(2) = _Param(1); _Param(3) = _Param(0); \
+        })    \
+    DECLARE_VIREO_PRIMITIVE4(MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,    \
+        if (_Param(0) >= _Param(1)) { \
+         _Param(2) = _Param(0); _Param(3) = _Param(1);  \
+        } else { \
+         _Param(2) = _Param(1); _Param(3) = _Param(0); \
+        })    \
     VIREO_FUNCTION_SIGNATURE7(InRangeAndCoerce##TYPE, TYPE, TYPE, TYPE, Boolean, Boolean, TYPE, Boolean) { \
          /* Args:  x loLimit hiLimit includeLo includeHi coercedOut  inRangeOut */\
         VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)    \
         _Param(5) = _Param(0) < _Param(1) ? _Param(1) : _Param(0) > _Param(2) ? _Param(2) : _Param(0); \
-        _Param(6) = (_Param(0) > _Param(1) || (_Param(3) && _Param(0)==_Param(1)))    \
-                 && (_Param(0) < _Param(2) || (_Param(4) && _Param(0)==_Param(1)));    \
+        _Param(6) = (_Param(0) > _Param(1) || (_Param(3) && _Param(0) == _Param(1)))    \
+                 && (_Param(0) < _Param(2) || (_Param(4) && _Param(0) == _Param(1)));    \
         return _NextInstruction();    \
         }
 
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES(TYPE) \
-    DECLARE_VIREO_PRIMITIVE2( IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0) ) \
+    DECLARE_VIREO_PRIMITIVE2(IsLT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) <  0)) \
+    DECLARE_VIREO_PRIMITIVE2(IsGE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >= 0)) \
     DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE)
 
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN() \
-    DECLARE_VIREO_PRIMITIVE2( IsLT0Boolean, Boolean, Boolean, (_Param(1) = false) ) \
-    DECLARE_VIREO_PRIMITIVE2( IsGE0Boolean, Boolean, Boolean, (_Param(1) = true) ) \
+    DECLARE_VIREO_PRIMITIVE2(IsLT0Boolean, Boolean, Boolean, (_Param(1) = false)) \
+    DECLARE_VIREO_PRIMITIVE2(IsGE0Boolean, Boolean, Boolean, (_Param(1) = true)) \
     DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(Boolean)
 
 #define DEFINE_VIREO_COMPARISON_FUNCTIONS(TYPE) \
@@ -331,7 +338,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 
 //------------------------------------------------------------
 // Conversion
-//#define BOOLEAN 0 //TODO, do we need boolean conversions?
+// #define BOOLEAN 0 //TODO, do we need boolean conversions?
 #define TC_UINT8 1
 #define TC_UINT16 2
 #define TC_UINT32 3
@@ -348,30 +355,31 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
     { \
         SOURCE src = _Param(0); \
-        if (::isnan(src)) \
+        if (::isnan(src)) { \
             _Param(1) = numeric_limits<DEST>::max(); \
-        else if (::isinf(src)) \
+        } else if (::isinf(src)) { \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
-        else \
+        } else { \
             _Param(1) = (DEST) RoundToEven(src); \
+        } \
         return _NextInstruction(); \
     }
 
-#define DEFINE_VIREO_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, "p(i("#SOURCE") o("#DEST"))")
-#define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED( Convert, SOURCE, DEST, "p(i("#SOURCE") o("#DEST"))")
+#define DEFINE_VIREO_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED(Convert, SOURCE, DEST, "p(i("#SOURCE") o("#DEST"))")
+#define DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(DEST, SOURCE) DEFINE_VIREO_FUNCTION_2TYPED(Convert, SOURCE, DEST, "p(i("#SOURCE") o("#DEST"))")
 
 //------------------------------------------------------------
 // Branch Instructions
 #define DECLARE_VIREO_CONDITIONAL_BRANCHES(TYPE) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfGT##TYPE, TYPE, TYPE, (_Param(1) > _Param(2)) ) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfGE##TYPE, TYPE, TYPE, (_Param(1) >= _Param(2)) ) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfLT##TYPE, TYPE, TYPE, (_Param(1) < _Param(2)) ) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfLE##TYPE, TYPE, TYPE, (_Param(1) <= _Param(2)) ) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfEQ##TYPE, TYPE, TYPE, (_Param(1) == _Param(2)) ) \
-    DECLARE_VIREO_CONDITIONAL_BRANCH( BranchIfNE##TYPE, TYPE, TYPE, (_Param(1) != _Param(2)) )
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfGT##TYPE, TYPE, TYPE, (_Param(1) > _Param(2))) \
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfGE##TYPE, TYPE, TYPE, (_Param(1) >= _Param(2))) \
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfLT##TYPE, TYPE, TYPE, (_Param(1) < _Param(2))) \
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfLE##TYPE, TYPE, TYPE, (_Param(1) <= _Param(2))) \
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQ##TYPE, TYPE, TYPE, (_Param(1) == _Param(2))) \
+    DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfNE##TYPE, TYPE, TYPE, (_Param(1) != _Param(2)))
 
 #define DEFINE_VIREO_BRANCH_FUNCTIONS(TYPE) \
-    DEFINE_VIREO_FUNCTION_TYPED(BranchIfGT, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))" ); \
+    DEFINE_VIREO_FUNCTION_TYPED(BranchIfGT, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfGE, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfLT, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
     DEFINE_VIREO_FUNCTION_TYPED(BranchIfLE, TYPE, "p(i(BranchTarget) i("#TYPE") i("#TYPE"))"); \
@@ -381,35 +389,35 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 //------------------------------------------------------------
 // Boolean
 DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN()
-//DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
-DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfTrue, Boolean, (_Param(1)) )
-DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfFalse, Boolean, (!_Param(1)) )
-DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNull, void*, (null==_Param(1)) )
-DECLARE_VIREO_CONDITIONAL_BRANCH1( BranchIfNotNull, void*, (null!=_Param(1)) )
+// DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfTrue, Boolean, (_Param(1)))
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfFalse, Boolean, (!_Param(1)))
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNull, void*, (null == _Param(1)))
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNotNull, void*, (null != _Param(1)))
 
-DECLARE_VIREO_PRIMITIVE3( AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) & _Param(1)) ) \
-DECLARE_VIREO_PRIMITIVE3( OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1)) ) \
-DECLARE_VIREO_PRIMITIVE3( XorBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) ^ _Param(1)) ) \
-DECLARE_VIREO_PRIMITIVE3( ImpliesBoolean, Boolean, Boolean, Boolean, (_Param(2) = !_Param(0) | _Param(1)) ) \
-DECLARE_VIREO_PRIMITIVE3( NandBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) & _Param(1))) ) \
-DECLARE_VIREO_PRIMITIVE3( NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) | _Param(1))) ) \
-DECLARE_VIREO_PRIMITIVE3( NxorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) ^ _Param(1)))) \
-DECLARE_VIREO_PRIMITIVE2( NotBoolean, Boolean, Boolean, (_Param(1) = !_Param(0)) )
+DECLARE_VIREO_PRIMITIVE3(AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) & _Param(1))) \
+DECLARE_VIREO_PRIMITIVE3(OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1))) \
+DECLARE_VIREO_PRIMITIVE3(XorBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) ^ _Param(1))) \
+DECLARE_VIREO_PRIMITIVE3(ImpliesBoolean, Boolean, Boolean, Boolean, (_Param(2) = !_Param(0) | _Param(1))) \
+DECLARE_VIREO_PRIMITIVE3(NandBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) & _Param(1)))) \
+DECLARE_VIREO_PRIMITIVE3(NorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) | _Param(1)))) \
+DECLARE_VIREO_PRIMITIVE3(NxorBoolean, Boolean, Boolean, Boolean, (_Param(2) = !(_Param(0) ^ _Param(1)))) \
+DECLARE_VIREO_PRIMITIVE2(NotBoolean, Boolean, Boolean, (_Param(1) = !_Param(0)))
 
 //------------------------------------------------------------
 // UInt8
 #if defined (VIREO_TYPE_UInt8)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt8)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt8)
-DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt8)
-DECLARE_VIREO_INTEGER_JOIN(UInt16,UInt8)
+DECLARE_VIREO_INTEGER_SPLIT(UInt8, UInt8)
+DECLARE_VIREO_INTEGER_JOIN(UInt16, UInt8)
 DECLARE_VIREO_BITWISE_PRIMITIVES(UInt8)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt8)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt8)
 
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt8)
 #define TYPE_CODE TC_UINT8
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -417,45 +425,45 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt8)
 #if defined (VIREO_TYPE_UInt16)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt16)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt16)
-DECLARE_VIREO_INTEGER_SPLIT(UInt8,UInt16)
-DECLARE_VIREO_INTEGER_JOIN(UInt32,UInt16)
+DECLARE_VIREO_INTEGER_SPLIT(UInt8, UInt16)
+DECLARE_VIREO_INTEGER_JOIN(UInt32, UInt16)
 DECLARE_VIREO_BITWISE_PRIMITIVES(UInt16)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt16)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt16)
 
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt16)
 #define TYPE_CODE TC_UINT16
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
-//UInt32
+// UInt32
 #if defined (VIREO_TYPE_UInt32)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt32)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt32)
-DECLARE_VIREO_INTEGER_SPLIT(UInt16,UInt32)
-DECLARE_VIREO_INTEGER_JOIN(UInt64,UInt32)
+DECLARE_VIREO_INTEGER_SPLIT(UInt16, UInt32)
+DECLARE_VIREO_INTEGER_JOIN(UInt64, UInt32)
 DECLARE_VIREO_BITWISE_PRIMITIVES(UInt32)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt32)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt32)
 
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt32)
 #define TYPE_CODE TC_UINT32
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 //------------------------------------------------------------
 
-//UInt64
+// UInt64
 #if defined (VIREO_TYPE_UInt64)
 DECLARE_VIREO_MATH_PRIMITIVES(UInt64)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(UInt64)
-DECLARE_VIREO_INTEGER_SPLIT(UInt32,UInt64)
+DECLARE_VIREO_INTEGER_SPLIT(UInt32, UInt64)
 DECLARE_VIREO_BITWISE_PRIMITIVES(UInt64)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(UInt64)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt64)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, UInt64)
 #define TYPE_CODE TC_UINT64
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -463,15 +471,15 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(UInt64)
 #if defined (VIREO_TYPE_Int8)
 DECLARE_VIREO_MATH_PRIMITIVES(Int8)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int8)
-DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int8)
-DECLARE_VIREO_INTEGER_JOIN(UInt16,Int8)
+DECLARE_VIREO_INTEGER_SPLIT(UInt8, Int8)
+DECLARE_VIREO_INTEGER_JOIN(UInt16, Int8)
 DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int8)
 DECLARE_VIREO_BITWISE_PRIMITIVES(Int8)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Int8)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(Int8)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int8)
 #define TYPE_CODE TC_INT8
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -479,8 +487,8 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int8)
 #if defined (VIREO_TYPE_Int16)
 DECLARE_VIREO_MATH_PRIMITIVES(Int16)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int16)
-DECLARE_VIREO_INTEGER_SPLIT(UInt8,Int16)
-DECLARE_VIREO_INTEGER_JOIN(UInt32,Int16)
+DECLARE_VIREO_INTEGER_SPLIT(UInt8, Int16)
+DECLARE_VIREO_INTEGER_JOIN(UInt32, Int16)
 DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int16)
 DECLARE_VIREO_BITWISE_PRIMITIVES(Int16)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Int16)
@@ -488,7 +496,7 @@ DECLARE_VIREO_PRIMITIVE2(BooleanConvertInt16, Boolean, Int16, (_Param(1) = (Int1
 DECLARE_VIREO_CONDITIONAL_BRANCHES(Int16)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int16)
 #define TYPE_CODE TC_INT16
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -496,15 +504,15 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int16)
 #if defined (VIREO_TYPE_Int32)
 DECLARE_VIREO_MATH_PRIMITIVES(Int32)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int32)
-DECLARE_VIREO_INTEGER_SPLIT(UInt16,Int32)
-DECLARE_VIREO_INTEGER_JOIN(UInt64,Int32)
+DECLARE_VIREO_INTEGER_SPLIT(UInt16, Int32)
+DECLARE_VIREO_INTEGER_JOIN(UInt64, Int32)
 DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int32)
 DECLARE_VIREO_BITWISE_PRIMITIVES(Int32)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Int32)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(Int32)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int32)
 #define TYPE_CODE TC_INT32
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -512,14 +520,14 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Int32)
 #if defined (VIREO_TYPE_Int64)
 DECLARE_VIREO_MATH_PRIMITIVES(Int64)
 DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(Int64)
-DECLARE_VIREO_INTEGER_SPLIT(UInt32,Int64)
+DECLARE_VIREO_INTEGER_SPLIT(UInt32, Int64)
 DECLARE_VIREO_SIGNED_INTEGER_MATH_PRIMITIVES(Int64)
 DECLARE_VIREO_BITWISE_PRIMITIVES(Int64)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Int64)
 DECLARE_VIREO_CONDITIONAL_BRANCHES(Int64)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Int64)
 #define TYPE_CODE TC_INT64
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //--------------------------
@@ -532,7 +540,7 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Single)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Single)
 #define Y(TYPE) DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(TYPE, Single)
 #define TYPE_CODE TC_SINGLE
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
 //------------------------------------------------------------
@@ -545,7 +553,8 @@ DECLARE_VIREO_CONDITIONAL_BRANCHES(Double)
 #define X(TYPE) DECLARE_VIREO_CONVERSION_PRIMITIVE(TYPE, Double)
 #define Y(TYPE) DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(TYPE, Double)
 #define TYPE_CODE TC_DOUBLE
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
+
 VIREO_FUNCTION_SIGNATURE1(Random, Double)
 {
     static Boolean seeded = false;
@@ -554,7 +563,7 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
             srand((unsigned int)gPlatform.Timer.TickCount());
             seeded = true;
         }
-        _Param(0) = rand() / ((Double) RAND_MAX + 1);
+        _Param(0) = rand() / ((Double) RAND_MAX + 1);  // NOLINT(runtime/threadsafe_fn)
     }
     return _NextInstruction();
 }
@@ -565,11 +574,11 @@ VIREO_FUNCTION_SIGNATURE1(Random, Double)
 DECLARE_VIREO_COMPARISON_PRIMITIVES(Utf8Char)
 //------------------------------------------------------------
 
-//TODO: Make this into a macro and move to INTEGER_MATH
+// TODO: Make this into a macro and move to INTEGER_MATH
 VIREO_FUNCTION_SIGNATURE3(LogicalShiftInt32, UInt32, Int32, UInt32)
 {
     Int32 shift = _Param(1);
-    if ( shift < 0) {
+    if (shift < 0) {
         _Param(2) = _Param(0) >> -shift;
     } else {
         _Param(2) = _Param(0) << shift;
@@ -581,7 +590,7 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 {
     // TODO complete this function
     Int32 rotate = _Param(1);
-    if ( rotate < 0) {
+    if (rotate < 0) {
         _Param(2) = _Param(0) >> -rotate;
     } else {
         _Param(2) = _Param(0) << rotate;
@@ -590,7 +599,7 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 }
 
 
-} // extern "C"
+}  // extern "C"
 
 DEFINE_VIREO_BEGIN(IEEE754Math)
 
@@ -639,27 +648,27 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 
     // Int1 (Boolean)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Boolean)
-    DEFINE_VIREO_FUNCTION(BranchIfTrue, "p(i(BranchTarget) i(Boolean))" );
+    DEFINE_VIREO_FUNCTION(BranchIfTrue, "p(i(BranchTarget) i(Boolean))");
     DEFINE_VIREO_FUNCTION(BranchIfFalse, "p(i(BranchTarget) i(Boolean))");
-    DEFINE_VIREO_FUNCTION(BranchIfNull, "p(i(BranchTarget) i(DataPointer))" );
+    DEFINE_VIREO_FUNCTION(BranchIfNull, "p(i(BranchTarget) i(DataPointer))");
     DEFINE_VIREO_FUNCTION(BranchIfNotNull, "p(i(BranchTarget) i(DataPointer))");
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Boolean)
-    //TODO do we need conversion functions for booleans?? just to int16?
+    // TODO do we need conversion functions for booleans?? just to int16?
 
     //--------------------------
     // UInt8
 #if defined (VIREO_TYPE_UInt8)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt8)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt8)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt8)
-    DEFINE_VIREO_INTEGER_JOIN(UInt16,UInt8)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt8, UInt8)
+    DEFINE_VIREO_INTEGER_JOIN(UInt16, UInt8)
     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt8)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt8)
     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt8)
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt8)
     #define TYPE_CODE TC_UINT8
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -667,15 +676,15 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_UInt8)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt16)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt16)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt8,UInt16)
-    DEFINE_VIREO_INTEGER_JOIN(UInt32,UInt16)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt8, UInt16)
+    DEFINE_VIREO_INTEGER_JOIN(UInt32, UInt16)
     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt16)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt16)
     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt16)
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt16)
     #define TYPE_CODE TC_UINT16
-    #include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -683,15 +692,15 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_UInt32)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt32)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt32)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt16,UInt32)
-    DEFINE_VIREO_INTEGER_JOIN(UInt64,UInt32)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt16, UInt32)
+    DEFINE_VIREO_INTEGER_JOIN(UInt64, UInt32)
     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt32)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt32)
     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt32)
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt32)
     #define TYPE_CODE TC_UINT32
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -699,13 +708,13 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_UInt64)
     DEFINE_VIREO_MATH_FUNCTIONS(UInt64)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(UInt64)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt32,UInt64)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt32, UInt64)
     DEFINE_VIREO_BITWISE_FUNCTIONS(UInt64)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(UInt64)
     DEFINE_VIREO_BRANCH_FUNCTIONS(UInt64)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, UInt64)
     #define TYPE_CODE TC_UINT64
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -713,15 +722,15 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_Int8)
     DEFINE_VIREO_MATH_FUNCTIONS(Int8)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int8)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int8)
-    DEFINE_VIREO_INTEGER_JOIN(UInt16,Int8)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt8, Int8)
+    DEFINE_VIREO_INTEGER_JOIN(UInt16, Int8)
     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int8)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Int8)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int8)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int8)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int8)
     #define TYPE_CODE TC_INT8
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -729,16 +738,16 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_Int16)
     DEFINE_VIREO_MATH_FUNCTIONS(Int16)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int16)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt8,Int16)
-    DEFINE_VIREO_INTEGER_JOIN(UInt32,Int16)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt8, Int16)
+    DEFINE_VIREO_INTEGER_JOIN(UInt32, Int16)
     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int16)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Int16)
     DEFINE_VIREO_COMPARISON_FUNCTIONS(Int16)
-    DEFINE_VIREO_FUNCTION( BooleanConvertInt16, "p(i(Boolean) o(Int16))")
+    DEFINE_VIREO_FUNCTION(BooleanConvertInt16, "p(i(Boolean) o(Int16))")
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int16)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int16)
     #define TYPE_CODE TC_INT16
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -746,8 +755,8 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_Int32)
     DEFINE_VIREO_MATH_FUNCTIONS(Int32)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int32)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt16,Int32)
-    DEFINE_VIREO_INTEGER_JOIN(UInt64,Int32)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt16, Int32)
+    DEFINE_VIREO_INTEGER_JOIN(UInt64, Int32)
     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int32)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Int32)
 
@@ -761,18 +770,18 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     // Generator 1.0 VIA generator for LV and a few of the tests use type specific
     // branch instructions. These support the ones needed.
 #if defined (VIREO_TYPE_Int32)
-    DEFINE_VIREO_FUNCTION(BranchIfGEInt32, "p(i(BranchTarget) i(Int32) i(Int32))" )
-    DEFINE_VIREO_FUNCTION(BranchIfEQInt32, "p(i(BranchTarget) i(Int32) i(Int32))" )
+    DEFINE_VIREO_FUNCTION(BranchIfGEInt32, "p(i(BranchTarget) i(Int32) i(Int32))")
+    DEFINE_VIREO_FUNCTION(BranchIfEQInt32, "p(i(BranchTarget) i(Int32) i(Int32))")
 #endif
 #if defined (VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION(BranchIfLTDouble, "p(i(BranchTarget) i(Double) i(Double))" )
-    DEFINE_VIREO_FUNCTION(BranchIfLEDouble, "p(i(BranchTarget) i(Double) i(Double))" )
+    DEFINE_VIREO_FUNCTION(BranchIfLTDouble, "p(i(BranchTarget) i(Double) i(Double))")
+    DEFINE_VIREO_FUNCTION(BranchIfLEDouble, "p(i(BranchTarget) i(Double) i(Double))")
 #endif
 #endif
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int32)
     #define TYPE_CODE TC_INT32
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -780,7 +789,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
 #if defined (VIREO_TYPE_Int64)
     DEFINE_VIREO_MATH_FUNCTIONS(Int64)
     DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(Int64)
-    DEFINE_VIREO_INTEGER_SPLIT(UInt32,Int64)
+    DEFINE_VIREO_INTEGER_SPLIT(UInt32, Int64)
     DEFINE_VIREO_SIGNED_INTEGER_MATH_FUNCTIONS(Int64)
     DEFINE_VIREO_BITWISE_FUNCTIONS(Int64)
 //    DEFINE_VIREO_FUNCTION(LogicalShiftInt64, ".BinOpInt64")
@@ -789,14 +798,14 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     DEFINE_VIREO_BRANCH_FUNCTIONS(Int64)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Int64)
     #define TYPE_CODE TC_INT64
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
-    //Single
+    // Single
 #if defined(VIREO_TYPE_Single)
 #if 0
-    // TODO, once type dependency sequencing works these definitions can be moved here.
+    // TODO once type dependency sequencing works these definitions can be moved here.
     DEFINE_VIREO_TYPE(SingleAtomic, "c(e(bc(e(bb(32 IEEE754B)))))")
     DEFINE_VIREO_TYPE(SingleCluster, "c(e(bc(e(bb(1 Boolean) sign) e(bb(8 BiasedInt) exponent) e(bb(23 Q1) fraction))))")
     DEFINE_VIREO_TYPE(Single, "eq(e(.SingleAtomic), e(.SingleCluster))")
@@ -812,7 +821,7 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Single)
     #define Y(TYPE) DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(TYPE, Single)
     #define TYPE_CODE TC_SINGLE
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 #endif
 
     //--------------------------
@@ -830,8 +839,8 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, Double)
     #define Y(TYPE) DEFINE_VIREO_FLOAT_TO_INT_CONVERSION_FUNCTION(TYPE, Double)
     #define TYPE_CODE TC_DOUBLE
-    #include "ConversionTable.def"
-    DEFINE_VIREO_FUNCTION(Random, "p(o(Double))" );
+    #include "ConversionTable.def"  // NOLINT(build/include)
+    DEFINE_VIREO_FUNCTION(Random, "p(o(Double))");
 #endif
 
     //--------------------------
@@ -844,73 +853,80 @@ DEFINE_VIREO_END()
 #if defined(VIREO_TYPE_ComplexSingle)
 
 #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexSingleConvert##TYPE, ComplexSingle, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 
 #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexSingle, TYPE, ComplexSingle, (_Param(1) = (ComplexSingle) _Param(0)))
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 
-DECLARE_VIREO_PRIMITIVE3( AddComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) + _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( SubComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) - _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( MulComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) * _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( DivComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) / _Param(1)) )
-DECLARE_VIREO_PRIMITIVE2( IncrementComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) + 1.0f) )
-DECLARE_VIREO_PRIMITIVE2( DecrementComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) - 1.0f) )
-DECLARE_VIREO_PRIMITIVE2( ReciprocalComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f / _Param(0) ) )
-DECLARE_VIREO_PRIMITIVE2( SignComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexSingle, ComplexSingle, Single, (_Param(1) = abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( NormComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = norm(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( PhaseComplexSingle, ComplexSingle, Single, (_Param(1) = arg(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ConjugateComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = conj(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SquareRootComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sqrt(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SincComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) == 0.0f ? 1.0f : sin(_Param(0))/_Param(0) ) )
-DECLARE_VIREO_PRIMITIVE2( CosineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( TangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = tan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcTanComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = atan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE3( ArcTan2ComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = atan(_Param(0).real() / _Param(1).real()) ) )
-DECLARE_VIREO_PRIMITIVE2( CotangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/tan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( CosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcSineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = asin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCosineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = acos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = asin(1.0f/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcSecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = acos(1.0f/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCotangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = atan(1.0f/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log10ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log10(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( LogComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
-DECLARE_VIREO_PRIMITIVE2( ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE3( PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleSingle, ComplexSingle, Single, ComplexSingle, {
+DECLARE_VIREO_PRIMITIVE3(AddComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) + _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3(SubComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) - _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3(MulComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) * _Param(1)) )
+DECLARE_VIREO_PRIMITIVE3(DivComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = _Param(0) / _Param(1)) )
+DECLARE_VIREO_PRIMITIVE2(IncrementComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) + 1.0f) )
+DECLARE_VIREO_PRIMITIVE2(DecrementComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) - 1.0f) )
+DECLARE_VIREO_PRIMITIVE2(ReciprocalComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f / _Param(0) ) )
+DECLARE_VIREO_PRIMITIVE2(SignComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(AbsoluteComplexSingle, ComplexSingle, Single, (_Param(1) = abs(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(NormComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = norm(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(PhaseComplexSingle, ComplexSingle, Single, (_Param(1) = arg(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ConjugateComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = conj(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(SquareRootComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sqrt(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(SineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = sin(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(SincComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) == 0.0f ? 1.0f : sin(_Param(0))/_Param(0)))
+DECLARE_VIREO_PRIMITIVE2(CosineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = cos(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(TangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = tan(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcTanComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = atan(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE3(ArcTan2ComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = atan(_Param(0).real() / _Param(1).real()) ) )
+DECLARE_VIREO_PRIMITIVE2(CotangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/tan(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(SecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/cos(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(CosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f/sin(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcSineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = asin(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcCosineComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = acos(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcCosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = asin(1.0f/_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcSecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = acos(1.0f/_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(ArcCotangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = atan(1.0f/_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(Log10ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log10(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(LogComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
+DECLARE_VIREO_PRIMITIVE2(ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE3(PowComplexSingle, ComplexSingle, ComplexSingle, ComplexSingle, (_Param(2) = pow(_Param(0), _Param(1)) ) )
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexSingleSingle, ComplexSingle, Single, ComplexSingle, {
     _Param(2).real(Scale2X_SingleSingle(_Param(0).real(), _Param(1)));
     _Param(2).imag(Scale2X_SingleSingle(_Param(0).imag(), _Param(1)));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt64, ComplexSingle, Int64, ComplexSingle, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexSingleInt64, ComplexSingle, Int64, ComplexSingle, {
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt32, ComplexSingle, Int32, ComplexSingle, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexSingleInt32, ComplexSingle, Int32, ComplexSingle, {
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), _Param(1)));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), _Param(1)));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt16, ComplexSingle, Int16, ComplexSingle, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexSingleInt16, ComplexSingle, Int16, ComplexSingle, {
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexSingleInt8, ComplexSingle, Int8, ComplexSingle, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexSingleInt8, ComplexSingle, Int8, ComplexSingle, {
     _Param(2).real(Scale2X_SingleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_SingleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = _Param(1) == 0.0f ? ComplexSingle(_Param(0),0.0) : _Param(0) >= 0.0f ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+Single(M_PI))) )
-DECLARE_VIREO_PRIMITIVE2( IsEQ0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) == 0.0f ) )
-DECLARE_VIREO_PRIMITIVE2( IsNE0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) != 0.0f ) )
+DECLARE_VIREO_PRIMITIVE3(PolarComplexSingle, Single, Single, ComplexSingle, (_Param(2) = _Param(1) == 0.0f ?
+    ComplexSingle(_Param(0), 0.0) : _Param(0) >= 0.0f ? polar(_Param(0), _Param(1)) :
+    polar(-_Param(0), _Param(1)+Single(M_PI))))
+DECLARE_VIREO_PRIMITIVE2(IsEQ0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) == 0.0f))
+DECLARE_VIREO_PRIMITIVE2(IsNE0ComplexSingle, ComplexSingle, Boolean, (_Param(1) = _Param(0) != 0.0f))
 // The following are redundant but match LV prims and are needed so they can be polymorphic over arrays/clusters of complex
-DECLARE_VIREO_PRIMITIVE3( ComplexToPolarComplexSingle, ComplexSingle, Single, Single, _Param(1) = abs(_Param(0)); _Param(2) = arg(_Param(0)) )
-DECLARE_VIREO_PRIMITIVE4( PolarToReOrImSingle, Single, Single, Single, Single, ComplexSingle z = polar(_Param(0), _Param(1)); _Param(2) = z.real(); _Param(3) = z.imag(); )
-DECLARE_VIREO_PRIMITIVE4( ReOrImToPolarSingle, Single, Single, Single, Single, ComplexSingle z = ComplexSingle(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
-DECLARE_VIREO_PRIMITIVE3( ComplexToReOrImComplexSingle, ComplexSingle, Single, Single, _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
-DECLARE_VIREO_PRIMITIVE3( ReOrImToComplexSingle, Single, Single, ComplexSingle, _Param(2) = ComplexSingle(_Param(0), _Param(1)); )
-DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnumComplexSingle, ComplexSingle, Boolean, (_Param(1) = ::isnan((Single)_Param(0).real()) || ::isnan((Single)_Param(0).imag())) )
+DECLARE_VIREO_PRIMITIVE3(ComplexToPolarComplexSingle, ComplexSingle, Single, Single, _Param(1) = abs(_Param(0)); _Param(2) = arg(_Param(0)))
+DECLARE_VIREO_PRIMITIVE4(PolarToReOrImSingle, Single, Single, Single, Single,
+    ComplexSingle z = polar(_Param(0), _Param(1)); _Param(2) = z.real(); _Param(3) = z.imag(); )
+DECLARE_VIREO_PRIMITIVE4(ReOrImToPolarSingle, Single, Single, Single, Single,
+    ComplexSingle z = ComplexSingle(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
+DECLARE_VIREO_PRIMITIVE3(ComplexToReOrImComplexSingle, ComplexSingle, Single, Single,
+    _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
+DECLARE_VIREO_PRIMITIVE3(ReOrImToComplexSingle, Single, Single, ComplexSingle,
+    _Param(2) = ComplexSingle(_Param(0), _Param(1)); )
+DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexSingle, ComplexSingle, Boolean,
+    (_Param(1) = ::isnan((Single)_Param(0).real()) || ::isnan((Single)_Param(0).imag())))
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
     DEFINE_VIREO_TYPE(ComplexSingle, "c(e(Single real) e(Single imaginary))");
@@ -918,9 +934,9 @@ DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
     DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(ComplexSingle x) i(ComplexSingle y) o(ComplexSingle result))")
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexSingle)
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexSingle, TYPE)
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 
     DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexSingle, "BinOpComplexSingle")
     DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexSingle, "BinOpComplexSingle")
@@ -975,73 +991,80 @@ DEFINE_VIREO_END()
 #if defined(VIREO_TYPE_ComplexDouble)
 
 #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(ComplexDoubleConvert##TYPE, ComplexDouble, TYPE, (_Param(1) = (TYPE) _Param(0).real()))
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 
 #define X(TYPE) DECLARE_VIREO_PRIMITIVE2(TYPE##ConvertComplexDouble, TYPE, ComplexDouble, (_Param(1) = (ComplexDouble) _Param(0)))
-#include "ConversionTable.def"
+#include "ConversionTable.def"  // NOLINT(build/include)
 
-DECLARE_VIREO_PRIMITIVE3( AddComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) + _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( SubComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) - _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( MulComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) * _Param(1)) )
-DECLARE_VIREO_PRIMITIVE3( DivComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) / _Param(1)) )
-DECLARE_VIREO_PRIMITIVE2( IncrementComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) + 1.0) )
-DECLARE_VIREO_PRIMITIVE2( DecrementComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) - 1.0) )
-DECLARE_VIREO_PRIMITIVE2( ReciprocalComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0 / _Param(0) ) )
-DECLARE_VIREO_PRIMITIVE2( SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( AbsoluteComplexDouble, ComplexDouble, Double, (_Param(1) = abs(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( PhaseComplexDouble, ComplexDouble, Double, (_Param(1) = arg(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ConjugateComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = conj(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SquareRootComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sqrt(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( SincComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) == 0.0 ? 1.0 : sin(_Param(0))/_Param(0) ) )
-DECLARE_VIREO_PRIMITIVE2( CosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( TangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = tan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( CotangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/tan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcTanComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = atan(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE3( ArcTan2ComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = atan(_Param(0).real() / _Param(1).real()) ) )
-DECLARE_VIREO_PRIMITIVE2( SecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/cos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( CosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/sin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcSineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = asin(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = acos(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = asin(1.0/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcSecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = acos(1.0/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( ArcCotangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = atan(1.0/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2( Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0) ) )
-DECLARE_VIREO_PRIMITIVE2( ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE3( PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1)) ) )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleDouble, ComplexDouble, Double, ComplexDouble, {
+DECLARE_VIREO_PRIMITIVE3(AddComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) + _Param(1)))
+DECLARE_VIREO_PRIMITIVE3(SubComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) - _Param(1)))
+DECLARE_VIREO_PRIMITIVE3(MulComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) * _Param(1)))
+DECLARE_VIREO_PRIMITIVE3(DivComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = _Param(0) / _Param(1)))
+DECLARE_VIREO_PRIMITIVE2(IncrementComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) + 1.0))
+DECLARE_VIREO_PRIMITIVE2(DecrementComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) - 1.0))
+DECLARE_VIREO_PRIMITIVE2(ReciprocalComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0 / _Param(0)))
+DECLARE_VIREO_PRIMITIVE2(SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ))
+DECLARE_VIREO_PRIMITIVE2(AbsoluteComplexDouble, ComplexDouble, Double, (_Param(1) = abs(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(PhaseComplexDouble, ComplexDouble, Double, (_Param(1) = arg(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ConjugateComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = conj(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(SquareRootComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sqrt(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(SineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = sin(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(SincComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) == 0.0 ? 1.0 : sin(_Param(0))/_Param(0)))
+DECLARE_VIREO_PRIMITIVE2(CosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = cos(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(TangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = tan(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(CotangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/tan(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ArcTanComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = atan(_Param(0))))
+DECLARE_VIREO_PRIMITIVE3(ArcTan2ComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = atan(_Param(0).real() / _Param(1).real())))
+DECLARE_VIREO_PRIMITIVE2(SecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/cos(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(CosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0/sin(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ArcSineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = asin(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ArcCosineComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = acos(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ArcCosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = asin(1.0/_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(ArcSecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = acos(1.0/_Param(0))) )
+DECLARE_VIREO_PRIMITIVE2(ArcCotangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = atan(1.0/_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0)) )
+DECLARE_VIREO_PRIMITIVE2(ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0))))
+DECLARE_VIREO_PRIMITIVE3(PowComplexDouble, ComplexDouble, ComplexDouble, ComplexDouble, (_Param(2) = pow(_Param(0), _Param(1))))
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexDoubleDouble, ComplexDouble, Double, ComplexDouble, {
     _Param(2).real(Scale2X_DoubleDouble(_Param(0).real(), _Param(1)));
     _Param(2).imag(Scale2X_DoubleDouble(_Param(0).imag(), _Param(1)));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleInt64, ComplexDouble, Int64, ComplexDouble, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexDoubleInt64, ComplexDouble, Int64, ComplexDouble, {
     _Param(2).real(Scale2X_DoubleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_DoubleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleInt32, ComplexDouble, Int32, ComplexDouble, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexDoubleInt32, ComplexDouble, Int32, ComplexDouble, {
     _Param(2).real(Scale2X_DoubleInt32(_Param(0).real(), _Param(1)));
     _Param(2).imag(Scale2X_DoubleInt32(_Param(0).imag(), _Param(1)));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleInt16, ComplexDouble, Int16, ComplexDouble, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexDoubleInt16, ComplexDouble, Int16, ComplexDouble, {
     _Param(2).real(Scale2X_DoubleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_DoubleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( Scale2XComplexDoubleInt8, ComplexDouble, Int8, ComplexDouble, {
+DECLARE_VIREO_PRIMITIVE3(Scale2XComplexDoubleInt8, ComplexDouble, Int8, ComplexDouble, {
     _Param(2).real(Scale2X_DoubleInt32(_Param(0).real(), Int32(_Param(1))));
     _Param(2).imag(Scale2X_DoubleInt32(_Param(0).imag(), Int32(_Param(1))));
 } )
-DECLARE_VIREO_PRIMITIVE3( PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = _Param(1) == 0.0 ? ComplexDouble(_Param(0),0.0) : _Param(0) >= 0.0 ? polar(_Param(0), _Param(1)) : polar(-_Param(0), _Param(1)+M_PI)) )
-DECLARE_VIREO_PRIMITIVE2( IsEQ0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) == 0.0 ) )
-DECLARE_VIREO_PRIMITIVE2( IsNE0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) != 0.0 ) )
+DECLARE_VIREO_PRIMITIVE3(PolarComplexDouble, Double, Double, ComplexDouble, (_Param(2) = _Param(1) == 0.0 ?
+    ComplexDouble(_Param(0), 0.0) : _Param(0) >= 0.0 ? polar(_Param(0), _Param(1)) :
+    polar(-_Param(0), _Param(1)+M_PI)) )
+DECLARE_VIREO_PRIMITIVE2(IsEQ0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) == 0.0))
+DECLARE_VIREO_PRIMITIVE2(IsNE0ComplexDouble, ComplexDouble, Boolean, (_Param(1) = _Param(0) != 0.0))
 // The following are redundant but match LV prims and are needed so they can be polymorphic over arrays/clusters of complex
-DECLARE_VIREO_PRIMITIVE3( ComplexToPolarComplexDouble, ComplexDouble, Double, Double, _Param(1) = abs(_Param(0)); _Param(2) = arg(_Param(0)) )
-DECLARE_VIREO_PRIMITIVE4( PolarToReOrImDouble, Double, Double, Double, Double, ComplexDouble z = polar(_Param(0), _Param(1)); _Param(2) = z.real(); _Param(3) = z.imag(); )
-DECLARE_VIREO_PRIMITIVE4( ReOrImToPolarDouble, Double, Double, Double, Double, ComplexDouble z = ComplexDouble(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
-DECLARE_VIREO_PRIMITIVE3( ComplexToReOrImComplexDouble, ComplexDouble, Double, Double, _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
-DECLARE_VIREO_PRIMITIVE3( ReOrImToComplexDouble, Double, Double, ComplexDouble, _Param(2) = ComplexDouble(_Param(0), _Param(1)); )
-DECLARE_VIREO_PRIMITIVE2( IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = ::isnan(_Param(0).real()) || ::isnan(_Param(0).imag())) )
+DECLARE_VIREO_PRIMITIVE3(ComplexToPolarComplexDouble, ComplexDouble, Double, Double,
+    _Param(1) = abs(_Param(0)); _Param(2) = arg(_Param(0)) )
+DECLARE_VIREO_PRIMITIVE4(PolarToReOrImDouble, Double, Double, Double, Double,
+    ComplexDouble z = polar(_Param(0), _Param(1)); _Param(2) = z.real(); _Param(3) = z.imag(); )
+DECLARE_VIREO_PRIMITIVE4(ReOrImToPolarDouble, Double, Double, Double, Double,
+    ComplexDouble z = ComplexDouble(_Param(0), _Param(1)); _Param(2) = abs(z); _Param(3) = arg(z) )
+DECLARE_VIREO_PRIMITIVE3(ComplexToReOrImComplexDouble, ComplexDouble, Double, Double,
+    _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
+DECLARE_VIREO_PRIMITIVE3(ReOrImToComplexDouble, Double, Double, ComplexDouble,
+    _Param(2) = ComplexDouble(_Param(0), _Param(1)); )
+DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = ::isnan(_Param(0).real()) || ::isnan(_Param(0).imag())) )
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
     DEFINE_VIREO_TYPE(ComplexDouble, "c(e(Double real) e(Double imaginary))");
@@ -1049,9 +1072,9 @@ DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
     DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(ComplexDouble x) i(ComplexDouble y) o(ComplexDouble result))")
 
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(TYPE, ComplexDouble)
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
     #define X(TYPE) DEFINE_VIREO_CONVERSION_FUNCTION(ComplexDouble, TYPE)
-    #include "ConversionTable.def"
+    #include "ConversionTable.def"  // NOLINT(build/include)
 
     DEFINE_VIREO_FUNCTION_TYPED(Add, ComplexDouble, "BinOpComplexDouble")
     DEFINE_VIREO_FUNCTION_TYPED(Sub, ComplexDouble, "BinOpComplexDouble")

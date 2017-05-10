@@ -39,7 +39,7 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     VIClump *pElt = _clumps->Begin();
     for (IntIndex i= 0; i < clumpCount; i++)
     {
-        pElt->_fireCount = 1; // clumps default to 1  (0 would run instantly)
+        pElt->_fireCount = 1;  // clumps default to 1  (0 would run instantly)
         pElt->_shortCount = 1;
         pElt->_owningVI = this;
         pElt++;
@@ -104,7 +104,7 @@ void VirtualInstrument::PressGo()
 
     InitParamBlock();
 
-    VIREO_ASSERT( rootClump->FireCount() == 1 )
+    VIREO_ASSERT(rootClump->FireCount() == 1)
     rootClump->Trigger();
 }
 
@@ -174,7 +174,7 @@ void VIClump::InsertIntoWaitList(VIClump* elt)
 void VIClump::AppendToWaitList(VIClump* elt)
 {
     // The clump being added to this list should not be in another list.
-    VIREO_ASSERT (null == elt->_next )
+    VIREO_ASSERT(null == elt->_next)
 
     // Add to the end of the list.
     if (_waitingClumps == null) {
@@ -223,8 +223,8 @@ void VIClump::ClearObservationStates()
 //------------------------------------------------------------
 InstructionCore* VIClump::WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInstruction)
 {
-    VIREO_ASSERT( _next == null )
-    VIREO_ASSERT( _shortCount == 0 )
+    VIREO_ASSERT(_next == null)
+    VIREO_ASSERT(_shortCount == 0)
 
     ReserveObservationStatesWithTimeout(1, tickCount);
     return this->WaitOnObservableObject(nextInstruction);
@@ -252,7 +252,7 @@ void InstructionAllocator::AddRequest(size_t count)
     _size += count;
 }
 //------------------------------------------------------------
-void InstructionAllocator::Allocate (TypeManagerRef tm)
+void InstructionAllocator::Allocate(TypeManagerRef tm)
 {
     VIREO_ASSERT(_next == null);
     if (_size) {
@@ -362,14 +362,13 @@ InstructionCore* ClumpParseState::CreateInstruction(TypeRef instructionType, Int
     VIREO_ASSERT(instructionType->TopAQSize() == sizeof(void*))
 
     if (instructionType->TopAQSize() == sizeof(void*) && instructionType->HasCustomDefault()) {
-
         // Alloc the memory and set the pointer to the runtime function
         instruction = this->AllocInstructionCore(argCount);
         if (!_cia->IsCalculatePass()) {
             instructionType->InitData(&instruction->_function);
 
             GenericInstruction *ginstruction = (GenericInstruction*)instruction;
-            for (Int32 i=0; i<argCount; i++) {
+            for (Int32 i = 0; i < argCount; i++) {
                 ginstruction->_args[i] = args[i];
             }
         }
@@ -539,7 +538,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
             cdt = cdt->FinalizeDVT();
             if (needsAddress) {
-                *ppData = (AQBlock1*)cdt->Begin(kPARead); // * passed as a param means null
+                *ppData = (AQBlock1*)cdt->Begin(kPARead);  // * passed as a param means null
             }
         } else {
             // For flat data, the call instruction logic for VIs will initialize the callee parameter
@@ -672,7 +671,7 @@ void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
 
     if (_varArgCount >= 0) {
         ++_varArgCount;
-        _argPointers[0] = (void*)intptr_t(_varArgCount); // VargArgCount is always first argument; update
+        _argPointers[0] = (void*)intptr_t(_varArgCount);  // VargArgCount is always first argument; update
     }
 }
 //------------------------------------------------------------
@@ -700,7 +699,7 @@ void ClumpParseState::AddVarArgCount()
     VIREO_ASSERT(_argCount == 0 && _argPointers.size() == 0);
 
     _argPointers.push_back(null);
-    _argTypes.resize(1); // placeholder, not used
+    _argTypes.resize(1);  // placeholder, not used
     ++_argCount;
     _varArgCount = 0;
 }
@@ -718,10 +717,10 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
             _perches.resize(perchIndex+kClumpStateIncrementSize);
-        if (_perches[perchIndex]<0) {
+        if (_perches[perchIndex] < 0) {
             LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
         }
-        if (_perchIndexToRecordNextInstrAddr<0) {
+        if (_perchIndexToRecordNextInstrAddr < 0) {
             // Reserve the perch till the next instruction is emitted
             // null will never be a valid instruction address.
             _perches[perchIndex] = kPerchBeingAllocated;
@@ -748,7 +747,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
             // Remember the address of this perch as place to patch
             // once the clump is finished.
             _argumentState = kArgumentResolvedToPerch;
-            InternalAddArgNeedingPatch(PatchInfo::Perch, //(void**)&_perches[
+            InternalAddArgNeedingPatch(PatchInfo::Perch,  // (void**)&_perches[
                                        perchIndex);
         }
     } else {
@@ -844,9 +843,9 @@ void ClumpParseState::LogEvent(EventLog::EventSeverity severity, Int32 lineNumbe
     }
 
     va_list args;
-    va_start (args, message);
+    va_start(args, message);
     _pLog->LogEventV(severity, _approximateLineNumber, message, args);
-    va_end (args);
+    va_end(args);
 }
 //------------------------------------------------------------
 void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
@@ -924,9 +923,9 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     _instructionType = ReresolveInstruction(&opName, false);
 
     // Recurse now that the instruction is a simple one.
-    CallVIInstruction* callInstruction  = (CallVIInstruction*) EmitInstruction();
+    CallVIInstruction* callInstruction = (CallVIInstruction*)EmitInstruction();
 
-    VirtualInstrument* vi =targetVIClump->OwningVI();
+    VirtualInstrument* vi = targetVIClump->OwningVI();
     TypedObjectRef viParamBlock = vi->Params();
 
     TypeRef viParamType = viParamBlock->ElementType();
@@ -1029,24 +1028,22 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
     Boolean keepTrying = true;
     StartInstruction(opName);
     while (keepTrying) {
-        va_start (args, argCount);
+        va_start(args, argCount);
         for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
-
             TypeRef formalType  = ReadFormalParameterType();
             TypeRef actualType = va_arg(args, TypeRef);
             void* actualData = va_arg(args, void*);
 
-            if (actualType->IsA(formalType, false) ) {
+            if (actualType->IsA(formalType, false)) {
                 InternalAddArg(actualType, actualData);
             } else {
                 keepTrying = false;
             }
         }
-        va_end (args);
+        va_end(args);
         if (keepTrying) {
             keepTrying = false;
         } else {
-            //
             keepTrying = StartNextOverload() != null;
         }
     }
@@ -1083,7 +1080,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
             if (type->IsStaticParam()) {
                 DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), type, true);
                 cdt = cdt->FinalizeDVT();
-                void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite); // * passed as a param means null
+                void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite);  // * passed as a param means null
                 InternalAddArg(type, pData);
             } else {
 //              foundMissing = true;
@@ -1106,7 +1103,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     if (_cia->IsCalculatePass())
         return instruction;
 
-    if (_perchIndexToRecordNextInstrAddr>=0) {
+    if (_perchIndexToRecordNextInstrAddr >= 0) {
         // TODO support multiple perch patching
         VIREO_ASSERT(_perches[_perchIndexToRecordNextInstrAddr] == kPerchBeingAllocated);
         _perches[_perchIndexToRecordNextInstrAddr] = instruction;
@@ -1196,7 +1193,7 @@ class VIDataProcsClass : public IDataProcs
         VIClump *pClumpEnd = viCopy->Clumps()->End();
         // Set clumps to point to the correct owner,
         // clear any indication they are running.
-        for (;pClump< pClumpEnd; pClump++) {
+        for (; pClump < pClumpEnd; pClump++) {
             pClump->_owningVI = viCopy;
             pClump->_next = null;
             pClump->_codeStart = null;
@@ -1271,4 +1268,4 @@ DEFINE_VIREO_BEGIN(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(Start, "p(i(VirtualInstrument))");
 DEFINE_VIREO_END()
 
-} // namespace Vireo
+}  // namespace Vireo
