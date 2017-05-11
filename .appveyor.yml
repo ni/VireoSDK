@@ -1,0 +1,23 @@
+branches:
+  except:
+    - gh-pages
+image: Visual Studio 2017
+init:
+- tzutil /s "Central Standard Time"
+- cmd: node -v
+- cmd: npm -v
+- cmd: python -V
+- cmd: pip -V
+- cmd: firefox -v
+install:
+  - chocolatey install make
+platform:
+  - x64
+configuration:
+  - Debug
+build:
+  project: Vireo_VS/VireoCommandLine.sln
+before_test:
+  - npm install
+test_script:
+  - make testnative

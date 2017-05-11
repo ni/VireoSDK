@@ -7,18 +7,18 @@ all: native js
 native:	simple
 
 simple v32 v64:
-	cd make-it; make $@
+	cd make-it && make $@
 
 vjs js:
-	cd make-it; make vjs
+	cd make-it && make vjs
 
 test: testnative testjs
 
 testjs:
-	cd test-it; ./test.js -j --dots
+	cd test-it && node test.js -j --dots
 
 testnative:
-	cd test-it; ./test.js -n --dots
+	cd test-it && node test.js -n --dots
 
 clean:
-	cd make-it; make clean
+	cd make-it && make clean
