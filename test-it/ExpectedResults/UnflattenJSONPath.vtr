@@ -1,0 +1,4 @@
+000 All tests pass: 'true'.
+010     Error status: 'true'.
+020     Expected error code is '-375005', got '-375005'.
+020     Expected value 'false', got 'false'.
