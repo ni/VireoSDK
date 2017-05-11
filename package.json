@@ -40,7 +40,8 @@
     "httpbin": "python -m httpbin.core --port 64526",
     "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"",
     "doxygen": "cd source && doxygen",
-    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages"
+    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages",
+    "createobjs": "shx mkdir -p make-it/objs"
   },
   "repository": {
     "type": "git",
