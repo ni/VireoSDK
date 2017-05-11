@@ -12,6 +12,13 @@ install:
   - chocolatey install make
   - chocolatey install gnuwin32-coreutils.portable
   - npm install
+  - ps: (new-object net.webclient).DownloadFile('https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip', 'emsdk-1.35.0-portable-64bit.zip')
+  - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
+  - emscripten-sdk\emsdk update
+  - emscripten-sdk\emsdk list
+  - emscripten-sdk\emsdk install emscripten-1.35.0
+  - emscripten-sdk\emsdk activate
+  - emcc -v
 platform:
   - Win32
 configuration:
