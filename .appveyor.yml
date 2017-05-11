@@ -28,7 +28,7 @@ before_build:
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
-  - make vjs
+  - cmd: make vjs
 test_script:
   - make testjs
   - make testnative
