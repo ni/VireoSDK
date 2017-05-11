@@ -40,11 +40,7 @@
     "httpbin": "python -m httpbin.core --port 64526",
     "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"",
     "doxygen": "cd source && doxygen",
-    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages",
-    "js-make": "cd make-it && emmake make -f EmMakefile",
-    "js-make-example-usage": "npm run js-make -- vjs",
-    "js-build": "cd make-it && emmake make -f EmMakefile vjs",
-    "js-clean": "cd make-it && emmake make -f EmMakefile clean"
+    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages"
   },
   "repository": {
     "type": "git",
