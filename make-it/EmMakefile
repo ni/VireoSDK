@@ -14,8 +14,8 @@ UTSOURCEDIR=$(VIREO_SDK_DIR)/source/unittest
 .DEFAULT_GOAL=help
 
 clean:
-	rm -f $(OBJS)/*
-	rm -f $(TARGETDIR)/vireo.js*
+	shx rm -f $(OBJS)/*
+	shx rm -f $(TARGETDIR)/vireo.js*
 
 help:
 	@echo 'Execute "make vjs"     to build vireo.js'
@@ -136,7 +136,7 @@ $(OBJS)/%.bc: $(UTSOURCEDIR)/%.cpp
 
 $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
-	@mkdir -p $(OBJS)
+	shx mkdir -p $(OBJS)
 
 $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
