@@ -37,8 +37,7 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     _clumpSource = *clumpSource;
 
     VIClump *pElt = _clumps->Begin();
-    for (IntIndex i= 0; i < clumpCount; i++)
-    {
+    for (IntIndex i= 0; i < clumpCount; i++) {
         pElt->_fireCount = 1;  // clumps default to 1  (0 would run instantly)
         pElt->_shortCount = 1;
         pElt->_owningVI = this;
@@ -853,8 +852,7 @@ void ClumpParseState::LogArgumentProcessing(Int32 lineNumber)
     _approximateLineNumber = lineNumber;
     EventLog::EventSeverity severity = LastArgumentError() ? EventLog::kSoftDataError : EventLog::kTrace;
     ConstCStr simpleMessage = null;
-    switch (_argumentState)
-    {
+    switch (_argumentState) {
         case kArgumentNotResolved:
             // Ignore arguments if the instruction was not resolved.
             simpleMessage = _instructionType ? "Argument not resolved" : null;
@@ -1174,16 +1172,14 @@ VIREO_FUNCTION_SIGNATURE1(Start, VirtualInstrumentObjectRef)
 //! Custom data methods needed to Copy a VI.
 class VIDataProcsClass : public IDataProcs
 {
-    virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern)
-    {
+    virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern) {
         // The Proto-VI has a generic Param/Locals with no clumps. The Pattern type still has that type,
         // but will have a custom default value for the underlying type. This means the
         // InitData method will detect the default value and will copy the pattern's value
         // once the core structure is set up. Look in ArrayType::InitData() for more details.
         return type->InitData(pData, pattern);
     }
-    virtual NIError CopyData(TypeRef type, const void* pDataSource, void* pDataCopy)
-    {
+    virtual NIError CopyData(TypeRef type, const void* pDataSource, void* pDataCopy) {
         // First copy the basics, then fix up a few things.
         type->CopyData(pDataSource, pDataCopy);
 
@@ -1202,8 +1198,7 @@ class VIDataProcsClass : public IDataProcs
         }
         return kNIError_Success;
     }
-    virtual NIError ClearData(TypeRef type, void* pData)
-    {
+    virtual NIError ClearData(TypeRef type, void* pData) {
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pData;
         if (null == vio)
             return kNIError_Success;
@@ -1224,8 +1219,7 @@ class VIDataProcsClass : public IDataProcs
         return type->ClearData(pData);
     }
     //------------------------------------------------------------
-    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic)
-    {
+    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) {
         VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pStart;
         VirtualInstrument* vi = vio->ObjBegin();
 
@@ -1244,8 +1238,7 @@ VIDataProcsClass gVIDataProcs;
 //! Custom data methods needed to free up instruction lists.
 class InstructionBlockDataProcsClass : public IDataProcs
 {
-    virtual NIError ClearData(TypeRef type, void* pData)
-    {
+    virtual NIError ClearData(TypeRef type, void* pData) {
         // All instructions for all clumps in a VI are stored in one
         // block of memory. The VI will free it.
         *(void**)pData = null;

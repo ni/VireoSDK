@@ -37,10 +37,8 @@ VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double
 
     TypedArrayCoreRef* argY_source = _ParamPointer(3);
     TypedArrayCoreRef* waveY_dest = &_Param(0)._Y;
-    if (argY_source)
-    {
-        if (!(*argY_source)->ElementType()->IsA((*waveY_dest)->ElementType()))
-        {
+    if (argY_source) {
+        if (!(*argY_source)->ElementType()->IsA((*waveY_dest)->ElementType())) {
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "AnalogWaveformBuild() Type of argument-3 does not match type of output waveform");
             return THREAD_EXEC()->Stop();
         }

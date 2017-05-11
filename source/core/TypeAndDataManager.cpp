@@ -1011,8 +1011,7 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
 // WrappedType
 //------------------------------------------------------------
 WrappedType::WrappedType(TypeManagerRef typeManager, TypeRef type)
-    : TypeCommon(typeManager)
-{
+    : TypeCommon(typeManager) {
     _wrapped = type;
 
     _topAQSize      = _wrapped->TopAQSize();
@@ -1052,8 +1051,7 @@ ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeR
 }
 //------------------------------------------------------------
 ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
-: WrappedType(typeManager, wrappedType), _elementName(name->Length())
-{
+: WrappedType(typeManager, wrappedType), _elementName(name->Length()) {
     _elementName.Assign(name->Begin(), name->Length());
     _elementUsageType = (UInt16)usageType;
     _offset = offset;
@@ -1067,8 +1065,7 @@ NamedType* NamedType::New(TypeManagerRef typeManager, const SubString* name, Typ
 }
 //------------------------------------------------------------
 NamedType::NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload)
-: WrappedType(typeManager, wrappedType), _name(name->Length())
-{
+: WrappedType(typeManager, wrappedType), _name(name->Length()) {
     if (nextOverload) {
         _nextOverload = nextOverload->_nextOverload;
         nextOverload->_nextOverload = this;
@@ -1138,8 +1135,7 @@ BitBlockType* BitBlockType::New(TypeManagerRef typeManager, IntIndex length, Enc
 }
 //------------------------------------------------------------
 BitBlockType::BitBlockType(TypeManagerRef typeManager, IntIndex length, EncodingEnum encoding)
-: TypeCommon(typeManager)
-{
+: TypeCommon(typeManager) {
     _blockLength = length;
     _isFlat = true;
     _aqAlignment = 0;   // BitBlocks are not addressable, no alignment
@@ -1166,8 +1162,7 @@ BitClusterType* BitClusterType::New(TypeManagerRef typeManager, TypeRef elements
 }
 //------------------------------------------------------------
 BitClusterType::BitClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
-    : AggregateType(typeManager, elements, count)
-{
+    : AggregateType(typeManager, elements, count) {
     Int32   bitLength = 0;
     Boolean isFlat = true;
     Boolean isValid = true;
@@ -1273,8 +1268,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
 // ParamBlockAlignmentCalculator
 //------------------------------------------------------------
 ParamBlockAlignmentCalculator::ParamBlockAlignmentCalculator(TypeManagerRef tm)
-: AggregateAlignmentCalculator(tm)
-{
+: AggregateAlignmentCalculator(tm) {
     // ParamBlock describe a native instruction parameter block.
     // This structure derives from InstructionCore and at minimum
     // includes a function pointer.
@@ -1330,8 +1324,7 @@ ClusterType* ClusterType::New(TypeManagerRef typeManager, TypeRef elements[], In
 }
 //------------------------------------------------------------
 ClusterType::ClusterType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
-    : AggregateType(typeManager, elements, count)
-{
+    : AggregateType(typeManager, elements, count) {
     Boolean hasCustomValue = false;
     Boolean isTemplateType = false;
     EncodingEnum encoding = kEncoding_None;
@@ -1400,8 +1393,7 @@ NIError ClusterType::ClearData(void* pData)
         return TypeCommon::ClearData(pData);
     } else {
         // For non trivial cases visit each element
-        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++)
-        {
+        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++) {
             AQBlock1* pEltData = ((AQBlock1*)pData) + (*pType)->_offset;
             // If the element is an input or output in a subVI call, the calling VI will clear
             // the data this is an alias to. For In/Out types this is normally zeroed out as
@@ -1423,8 +1415,7 @@ NIError ClusterType::CopyData(const void* pData, void *pDataCopy)
         return TypeCommon::CopyData(pData, pDataCopy);
     } else {
         // For non trivial cases visit each element
-        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++)
-        {
+        for (ElementTypeRef *pType = _elements.Begin(); pType != _elements.End(); pType++) {
             // TODO(PaulAustin): errors
             Int32 offset = (*pType)->_offset;
             (*pType)->CopyData((((AQBlock1*)pData) + offset), (((AQBlock1*)pDataCopy) + offset));
@@ -1480,8 +1471,7 @@ EquivalenceType* EquivalenceType::New(TypeManagerRef typeManager, TypeRef elemen
 }
 //------------------------------------------------------------
 EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
-    : AggregateType(typeManager, elements, count)
-{
+    : AggregateType(typeManager, elements, count) {
     // To be equivalence they must be flat and same bit or AQ Size
     Boolean isFlat = true;
     Int32 alignment = 0;
@@ -1556,8 +1546,7 @@ ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIn
 }
 //------------------------------------------------------------
 ArrayType::ArrayType(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
-    : WrappedType(typeManager, elementType)
-{
+    : WrappedType(typeManager, elementType) {
     _topAQSize = TheTypeManager()->HostPointerToAQSize();
     _aqAlignment = TheTypeManager()->AQAlignment(sizeof(void*));
     _rank = rank;
@@ -1765,8 +1754,7 @@ ParamBlockType* ParamBlockType::New(TypeManagerRef typeManager, TypeRef elements
 }
 //------------------------------------------------------------
 ParamBlockType::ParamBlockType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
-    : AggregateType(typeManager, elements, count)
-{
+    : AggregateType(typeManager, elements, count) {
     Boolean isFlat = true;
     Boolean isTemplateType = false;
     //  Boolean hasVarArg = false;
@@ -1850,8 +1838,7 @@ DefaultValueType* DefaultValueType::FinalizeDVT()
 }
 //------------------------------------------------------------
 DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue)
-: WrappedType(typeManager, type)
-{
+: WrappedType(typeManager, type) {
     // Initialize the block where ever it was allocated.
     _hasCustomDefault = true;
     _isMutableValue = mutableValue;
@@ -1891,8 +1878,7 @@ PointerType* PointerType::New(TypeManagerRef typeManager, TypeRef type)
 }
 //------------------------------------------------------------
 PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
-: WrappedType(typeManager, type)
-{
+: WrappedType(typeManager, type) {
 }
 //------------------------------------------------------------
 // RefNumValType
@@ -1903,8 +1889,7 @@ RefNumValType* RefNumValType::New(TypeManagerRef typeManager, TypeRef type)
 }
 //------------------------------------------------------------
 RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
-: WrappedType(typeManager, type)
-{
+: WrappedType(typeManager, type) {
     _refnum = 0;
     _isFlat = true;
     _maxSize = -1;
@@ -1919,8 +1904,7 @@ EnumType* EnumType::New(TypeManagerRef typeManager, TypeRef type)
 }
 //------------------------------------------------------------
 EnumType::EnumType(TypeManagerRef typeManager, TypeRef type)
-: WrappedType(typeManager, type)
-{
+: WrappedType(typeManager, type) {
     TypeRef itemType = typeManager->FindType(tsStringArrayType);
     _items = (StringRefArray1D*) StringRefArray1D::New(itemType);
     _encoding = kEncoding_Enum;
@@ -1952,8 +1936,7 @@ DefaultPointerType* DefaultPointerType::New(TypeManagerRef typeManager, TypeRef 
 }
 //------------------------------------------------------------
 DefaultPointerType::DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType)
-: PointerType(typeManager, type)
-{
+: PointerType(typeManager, type) {
     _hasCustomDefault = true;
     _topAQSize = sizeof(void*);
     _encoding = kEncoding_Pointer;
@@ -1969,8 +1952,7 @@ CustomDataProcType* CustomDataProcType::New(TypeManagerRef typeManager, TypeRef 
 }
 //------------------------------------------------------------
 CustomDataProcType::CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs* pDataProcs)
-: WrappedType(typeManager, type)
-{
+: WrappedType(typeManager, type) {
     _isFlat = false;    // Force calls to the alloc functions
     _pDataProcs = pDataProcs;
 }

@@ -312,10 +312,8 @@ bool ReadLocalizedDecimalSeparator(SubString* format, Int32 count, StaticTypeAnd
 }
 
 void UpdateNumericStringWithDecimalSeparator(FormatOptions fOptions, char *numericString, Int32 size) {
-    for (int i = 0; i < size; i++)
-    {
-        if (numericString[i] == '.')
-        {
+    for (int i = 0; i < size; i++) {
+        if (numericString[i] == '.') {
             numericString[i] = fOptions.DecimalSeparator;
         }
     }
@@ -327,27 +325,21 @@ void TruncateLeadingZerosFromTimeString(StringRef buffer)
     int indexToScan = 0;
     bool nonZeroFound = false;
     int numColon = 0;  // Track this to ensure not removing leading 0 in seconds.
-    for (int i = 0; i < buffer->Capacity() && !nonZeroFound && numColon < 2; i++)
-    {
-        if (buffer->At(i) == ':')
-        {
+    for (int i = 0; i < buffer->Capacity() && !nonZeroFound && numColon < 2; i++) {
+        if (buffer->At(i) == ':') {
             numColon++;
-            for (int k = indexToScan; k < i; k++)
-            {
-                if (buffer->At(k) != '0')
-                {
+            for (int k = indexToScan; k < i; k++) {
+                if (buffer->At(k) != '0') {
                     nonZeroFound = true;
                     break;
                 }
             }
-            if (!nonZeroFound)
-            {
+            if (!nonZeroFound) {
                 indexToScan = i + 1;
             }
         }
     }
-    if (indexToScan != 0)
-    {
+    if (indexToScan != 0) {
         buffer->Remove1D(0, indexToScan);
     }
 }
@@ -383,8 +375,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
     char defaultDecimalSeparator = '.';
     fOptions.DecimalSeparator = defaultDecimalSeparator;
 
-    while (validFormatString && f.ReadRawChar(&c))
-    {
+    while (validFormatString && f.ReadRawChar(&c)) {
         Utf8Char c1, c2;
         if (c == '\\' && f.PeekRawChar(&c1) && f.PeekRawChar(&c2, 1) && isalnum(c1) && isalnum(c2) && !islower(c1) && !islower(c2)) {
             // Process ASCII escape codes. LabVIEW supports only uppercase alphabets in the hex codes
@@ -397,8 +388,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             char ascii = strtol(str, null, 16);
             buffer->Append(ascii);
         } else if (c == '\\' && f.ReadRawChar(&c)) {
-            switch (c)
-            {
+            switch (c) {
                 case 'n':       buffer->Append('\n');      break;
                 case 'r':       buffer->Append('\r');      break;
                 case 't':       buffer->Append('\t');      break;
@@ -480,8 +470,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         pData = (void*)((AQBlock1*)pData + argType->ElementOffset());
                     }
                 }
-                switch (fOptions.FormatChar)
-                {
+                switch (fOptions.FormatChar) {
                     case 'g': case 'G':
                     {
                         // will re-parse the format later with new format code
@@ -697,8 +686,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         tempFormat.AppendCStr(specifier);
 
                         char formattedNumber[2*kTempCStringLength];
-                        if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData))
-                        {
+                        if (!argType->IsNumeric() && !argType->IsBoolean() && !argType->IsA(&TypeCommon::TypeStaticTypeAndData)) {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
@@ -744,8 +732,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 's':      // %s
                     {
                         argType = arguments[argumentIndex]._paramType;
-                        if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean() && !argType->IsEnum())
-                        {
+                        if (fOptions.FormatChar == 's' && !argType->IsString() && !argType->IsBoolean() && !argType->IsEnum()) {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
@@ -808,8 +795,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             tz = Date::getLocaletimeZone(time.Integer());
                         }
-                        if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric()))
-                        {
+                        if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric())) {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
@@ -837,12 +823,10 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 //  The %<digit>u is deep in this string.
                                 snprintf(defaultFormatString, kTempCStringLength, "%%H:%%M:%%S%%%du", (int)fractionLen);
                             } else {
-                                if (fOptions.MinimumFieldWidth >= 0)
-                                {
+                                if (fOptions.MinimumFieldWidth >= 0) {
                                     fractionLen = fOptions.MinimumFieldWidth;
                                 }
-                                if (fOptions.Precision >= 0) {
-                                    fractionLen = fOptions.Precision;
+                                if (fOptions.Precision >= 0) { fractionLen = fOptions.Precision;
                                 }
                                 if (fractionLen < 0) {
                                     fractionLen = 3;
@@ -868,8 +852,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             Date date(time, tz);
                             validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
                         }
-                        if (fOptions.FormatChar == 't')
-                        {
+                        if (fOptions.FormatChar == 't') {
                             TruncateLeadingZerosFromTimeString(buffer);
                         }
 #endif
@@ -1371,19 +1354,16 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
         IntIndex longestMatchLength = 0;
         for (IntIndex i = 0; i < argumentType->GetEnumItemCount(); i++) {
             SubString itemName = argumentType->GetEnumItemName(i)->MakeSubStringAlias();
-            if (in->ComparePrefix(itemName.Begin(), itemName.Length()))
-            {
+            if (in->ComparePrefix(itemName.Begin(), itemName.Length())) {
                 found = true;
-                if (itemName.Length() > longestMatchLength)
-                {
+                if (itemName.Length() > longestMatchLength) {
                     longestMatchIndex = i;
                     longestMatchLength = itemName.Length();
                 }
             }
         }
 
-        if (found)
-        {
+        if (found) {
             IntMax intValue = longestMatchIndex;
             WriteIntToMemory(argumentType, argument->_pData, intValue);
             *endPointer = beginPointer + longestMatchLength;
@@ -1783,8 +1763,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
         DefaultFormatCode(1, &Value, &tempformat);
     } else {
         Utf8Char* index = NULL;
-        while (format.ReadRawChar(&c))
-        {
+        while (format.ReadRawChar(&c)) {
             index = (Utf8Char*)format.Begin();
             if (c == '%') {
                 FormatOptions fOptions;
@@ -1901,8 +1880,7 @@ struct StringScanStruct : public VarArgInstruction
 
 void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, StaticTypeAndData arguments[])
 {
-    for (Int32 i = 0; i < argCount; i++)
-    {
+    for (Int32 i = 0; i < argCount; i++) {
         TypeRef argType = arguments[i]._paramType;
         if (argType->IsString() || argType->IsBoolean() || argType->IsEnum()) {
             format->AppendCStr("%s ");
@@ -1960,8 +1938,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScanWithErr, StringScanStructWithErr)
     Int32 argCount = (_ParamVarArgCount() - 6) / 2;
     STACK_VAR(String, tempFormat);
     if (!errPtr || !errPtr->status) {
-        if (format.Length() == 0)
-        {
+        if (format.Length() == 0) {
             MakeFormatString(tempFormat.Value, errPtr, argCount, arguments);
             format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
         }
@@ -2056,17 +2033,14 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     Utf8Char c = 0;
     Boolean validFormatString = true;
     Int32 hourFormat = 0;
-    while (validFormatString && tempFormat.ReadRawChar(&c))
-    {
+    while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
             ReadTimeFormatOptions(&tempFormat, &fOption);
             Boolean parseFinished = !fOption.Valid;
-            while (!parseFinished)
-            {
+            while (!parseFinished) {
                 parseFinished = true;
-                switch (fOption.FormatChar)
-                {
+                switch (fOption.FormatChar) {
                     case 'a' : case 'A':
                     {
                         Int32 index = date.WeekDay();
@@ -2195,8 +2169,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         char fractionString[10];
                         Int32 size = 0;
                         Int32 fractionLen = 0;
-                        if (fOption.MinimumFieldWidth >= 0)
-                        {
+                        if (fOption.MinimumFieldWidth >= 0) {
                             fractionLen = fOption.MinimumFieldWidth;
                         }
                         if (fOption.Precision >= 0) {
@@ -2279,8 +2252,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         hourFormat = 12;
                         TempStackCString localeFormatString;
                         Int32 fractionLen = 0;
-                        if (fOption.MinimumFieldWidth >= 0)
-                        {
+                        if (fOption.MinimumFieldWidth >= 0) {
                             fractionLen = fOption.MinimumFieldWidth;
                         }
                         if (fOption.Precision >= 0) {
@@ -2495,8 +2467,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
     } else {
         Int32 lineIndex = 0;
         while (input.ReadLine(&line)) {
-            if (line.Length() == 0)
-            {
+            if (line.Length() == 0) {
                 lineIndex = 0;
                 continue;
             }
@@ -2597,8 +2568,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         IntIndex lineIndex = 0;
         IntIndex dim = 2;
         while (input.ReadLine(&line)) {
-            if (line.Length() == 0)
-            {
+            if (line.Length() == 0) {
                 lineIndex = 0;
                 elemIndex[dim]++;
                 if (elemIndex[dim] >= array->GetLength(dim)) {

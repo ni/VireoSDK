@@ -1022,8 +1022,7 @@ struct comparator
     Instruction3<void, void, Boolean>* _snippet;
  public:
     explicit comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
-    bool operator()(AQBlock1* i, AQBlock1* j)
-    {
+    bool operator()(AQBlock1* i, AQBlock1* j) {
         Boolean less = false;
         _snippet->_p0 = i;
         _snippet->_p1 = j;
@@ -1358,8 +1357,7 @@ class ArrayIterator
     IntIndex  _rank;
     TypedArrayCoreRef _array;
  public:
-    explicit ArrayIterator(TypedArrayCoreRef array)
-    {
+    explicit ArrayIterator(TypedArrayCoreRef array) {
         _array = array;
         _rank = array->Rank();
         _indexDim = 0;
@@ -1367,17 +1365,15 @@ class ArrayIterator
         for (IntIndex i = 0; i < _rank; i++) {
             _indexStack[i] = 0;
         }
-    };
-    void* Begin()
-    {
+    }
+    void* Begin() {
         for (IntIndex i = 0; i < _rank; i++) {
             _indexStack[i] = 0;
         }
         _indexDim = 0;
         return _array->BeginAtND(_rank, _indexStack);
     }
-    void* Next()
-    {
+    void* Next() {
         _indexStack[_indexDim]++;
         if (dimensions[_indexDim] <= _indexStack[_indexDim]) {
             while (dimensions[_indexDim] <= _indexStack[_indexDim]) {
@@ -1393,7 +1389,7 @@ class ArrayIterator
             }
         }
         return (void*)_array->BeginAtND(_rank, _indexStack);
-    };
+    }
 };
 
 // ArrayReshape function

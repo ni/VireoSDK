@@ -46,24 +46,19 @@ class Timestamp {
 
     //! Subtract two timestamps, result is a relative value.
     Timestamp const operator-(const Timestamp & value);
-    Boolean operator==(const Timestamp & value) const
-    {
+    Boolean operator==(const Timestamp & value) const {
         return ((_integer == value._integer) && (_fraction == value._fraction));
     }
-    Boolean operator>(const Timestamp & value) const
-    {
+    Boolean operator>(const Timestamp & value) const {
         return ((_integer > value._integer) || ((_integer == value._integer) && (_fraction > value._fraction)));
     }
-    Boolean operator<(const Timestamp & value) const
-    {
+    Boolean operator<(const Timestamp & value) const {
         return ((_integer < value._integer) || ((_integer == value._integer) && (_fraction < value._fraction)));
     }
-    Boolean operator>=(const Timestamp & value) const
-    {
+    Boolean operator>=(const Timestamp & value) const {
         return (*this > value) || (value == *this);
     }
-    Boolean operator<=(const Timestamp & value) const
-    {
+    Boolean operator<=(const Timestamp & value) const {
         return (*this < value) || (value == *this);
     }
     Double ToDouble(void) const;

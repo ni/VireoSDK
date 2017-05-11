@@ -19,155 +19,131 @@ SDG
 
 namespace Vireo {
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetTickCount, Int64) {
         _Param(0) = gPlatform.Timer.TickCount();
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt32, UInt32)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt32, UInt32) {
         _Param(0) = (UInt32)gPlatform.Timer.TickCount();
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt16, UInt16)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt16, UInt16) {
         _Param(0) = (UInt16)gPlatform.Timer.TickCount();
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt8, UInt8)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt8, UInt8) {
         _Param(0) = (UInt8)gPlatform.Timer.TickCount();
         return _NextInstruction();
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCount, Int64) {
         _Param(0) = gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt32, UInt32)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt32, UInt32) {
         _Param(0) = (UInt32) gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt16, UInt16)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt16, UInt16) {
         _Param(0) = (UInt16)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt8, UInt8)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt8, UInt8) {
         _Param(0) = (UInt8)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32) {
         _Param(0) = (UInt32) gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt16, UInt16)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt16, UInt16) {
         _Param(0) = (UInt16)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt8, UInt8)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt8, UInt8) {
         _Param(0) = (UInt8)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
 
 #if defined(VIREO_TYPE_Timestamp)
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(SubTimestamp, Timestamp, Timestamp, Double)
-    {
+    VIREO_FUNCTION_SIGNATURE3(SubTimestamp, Timestamp, Timestamp, Double) {
         Timestamp diff = _Param(0) - _Param(1);
         _Param(2) = diff.ToDouble();
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleR, Timestamp, Double, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleR, Timestamp, Double, Timestamp) {
         Timestamp delta(_Param(1));
         _Param(2) = _Param(0) + delta;
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleL, Double, Timestamp, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleL, Double, Timestamp, Timestamp) {
         Timestamp delta(_Param(0));
         _Param(2) = delta + _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32R, Timestamp, Int32, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32R, Timestamp, Int32, Timestamp) {
         _Param(2) = _Param(0) + _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32L, Int32, Timestamp, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE3(AddTimestampInt32L, Int32, Timestamp, Timestamp) {
         _Param(2) = _Param(1) + _Param(0);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(IsLTTimestamp, Timestamp, Timestamp, Boolean)
-    {
+    VIREO_FUNCTION_SIGNATURE3(IsLTTimestamp, Timestamp, Timestamp, Boolean) {
         _Param(2) = _Param(0) < _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(IsLETimestamp, Timestamp, Timestamp, Boolean)
-    {
+    VIREO_FUNCTION_SIGNATURE3(IsLETimestamp, Timestamp, Timestamp, Boolean) {
         _Param(2) = _Param(0) <= _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(IsGTTimestamp, Timestamp, Timestamp, Boolean)
-    {
+    VIREO_FUNCTION_SIGNATURE3(IsGTTimestamp, Timestamp, Timestamp, Boolean) {
         _Param(2) = _Param(0) > _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(IsGETimestamp, Timestamp, Timestamp, Boolean)
-    {
+    VIREO_FUNCTION_SIGNATURE3(IsGETimestamp, Timestamp, Timestamp, Boolean) {
         _Param(2) = _Param(0) >= _Param(1);
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE1(GetTimestamp, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE1(GetTimestamp, Timestamp) {
         Timestamp::GetCurrentTimestamp(_ParamPointer(0));
         return _NextInstruction();
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double)
-    {
+    VIREO_FUNCTION_SIGNATURE2(TimestampConvertDouble, Timestamp, Double) {
         _Param(1) = _Param(0).ToDouble();
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE2(ToTimestamp, Double, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE2(ToTimestamp, Double, Timestamp) {
         _Param(1) = Timestamp(_Param(0));
         return _NextInstruction();
     }
 
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(DateTimeToTimestamp, LVDateTimeRec, Boolean, Timestamp)
-    {
+    VIREO_FUNCTION_SIGNATURE3(DateTimeToTimestamp, LVDateTimeRec, Boolean, Timestamp) {
         LVDateTimeRec *dt = _ParamPointer(0);
         Boolean isUTC = _ParamPointer(1) ? _Param(1) : false;
         Timestamp timestamp(dt->fractional_secs, dt->second, dt->minute, dt->hour, dt->day_of_month, dt->month, dt->year);
@@ -177,8 +153,7 @@ namespace Vireo {
         return _NextInstruction();
     }
     //------------------------------------------------------------
-    VIREO_FUNCTION_SIGNATURE3(TimestampToDateTime, Timestamp, Boolean, LVDateTimeRec)
-    {
+    VIREO_FUNCTION_SIGNATURE3(TimestampToDateTime, Timestamp, Boolean, LVDateTimeRec) {
         Timestamp timestamp = _Param(0);
         Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
         LVDateTimeRec *dt = _ParamPointer(2);

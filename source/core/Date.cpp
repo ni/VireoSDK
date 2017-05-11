@@ -57,8 +57,7 @@ namespace Vireo {
 #if kVireoOS_windows
     // UnixTimeToFileTime and UnixTimeToSystemTime are from
     // https:support.microsoft.com/en-us/help/167296/how-to-convert-a-unix-time-t-to-a-win32-filetime-or-systemtime
-    static void UnixTimeToFileTime(time_t t, LPFILETIME pft)
-    {
+    static void UnixTimeToFileTime(time_t t, LPFILETIME pft) {
        // Note that LONGLONG is a 64-bit value
        LONGLONG ll;
 
@@ -67,23 +66,20 @@ namespace Vireo {
        pft->dwHighDateTime = ll >> 32;
     }
 
-    static void UnixTimeToSystemTime(time_t t, LPSYSTEMTIME pst)
-    {
+    static void UnixTimeToSystemTime(time_t t, LPSYSTEMTIME pst) {
        FILETIME ft;
 
        UnixTimeToFileTime(t, &ft);
        FileTimeToSystemTime(&ft, pst);
     }
 
-    static void UtcTimeToSystemTime(Int64 utcTime, LPSYSTEMTIME pst)
-    {
+    static void UtcTimeToSystemTime(Int64 utcTime, LPSYSTEMTIME pst) {
        FILETIME ft;
        UnixTimeToFileTime(utcTime, &ft);
        FileTimeToSystemTime(&ft, pst);
     }
 
-    static Int64 FileTimeToTimeInSeconds(FILETIME fileTimeLocal)
-    {
+    static Int64 FileTimeToTimeInSeconds(FILETIME fileTimeLocal) {
        const Int32 k100_ns_in_1_second = 10000000;
        ULARGE_INTEGER l;
        l.HighPart = fileTimeLocal.dwHighDateTime;
@@ -91,8 +87,7 @@ namespace Vireo {
        return l.QuadPart / k100_ns_in_1_second;
     }
 
-    static Int32 GetTimeZoneOffsetSeconds(Int64 utcTime)
-    {
+    static Int32 GetTimeZoneOffsetSeconds(Int64 utcTime) {
        TIME_ZONE_INFORMATION timeZoneInfo;
        GetTimeZoneInformation(&timeZoneInfo);
 
@@ -110,15 +105,13 @@ namespace Vireo {
 #endif
 
     //------------------------------------------------------------
-    Int32 numberOfLeapYears(Int32 year, Int32 baseYear)
-    {
+    Int32 numberOfLeapYears(Int32 year, Int32 baseYear) {
         Int32 numberOfYears = year / 4 - year / 100 + year / 400 - (baseYear / 4 - baseYear / 100 + baseYear / 400);
         return numberOfYears;
     }
 
     //------------------------------------------------------------
-    Int32 getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays)
-    {
+    Int32 getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays) {
         // Thursday, January 01, 1903
         Int32 baseYear = 1903;
         Int32 baseWeek = 4;  // 3;  3 was with 0=Monday, want 0=Sunday
@@ -167,14 +160,11 @@ namespace Vireo {
         return currentYear;
     }
 
-    static void abbreviateTimeZone(const char * input, char output[kTempCStringLength])
-    {
+    static void abbreviateTimeZone(const char * input, char output[kTempCStringLength]) {
         char prev = ' ';
         size_t j = 0;
-        for (size_t i = 0; i < strlen(input); i++)
-        {
-            if (prev == ' ' && input[i] != ' ')
-            {
+        for (size_t i = 0; i < strlen(input); i++) {
+            if (prev == ' ' && input[i] != ' ') {
                 output[j] = input[i];
                 ++j;
             }
@@ -184,8 +174,7 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    Boolean isLeapYear(Int32 year)
-    {
+    Boolean isLeapYear(Int32 year) {
         return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
     }
 
@@ -193,8 +182,7 @@ namespace Vireo {
     void Date::getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
                  Int32* monthPtr, Int32* dayPtr, Int32* hourPtr,
                  Int32* minutePtr, Int32* secondPtr, Double* fractionPtr,
-                 Int32* weekDayPtr, Int32* weekOfFirstDay, char** timeZoneString)
-    {
+                 Int32* weekDayPtr, Int32* weekOfFirstDay, char** timeZoneString) {
         Int64 secondsOfYear = 0;
         Int32 firstweekDay = 0;
 
@@ -245,8 +233,7 @@ namespace Vireo {
         TIME_ZONE_INFORMATION timeZoneInfo;
         int rc = GetTimeZoneInformationForYear(year, NULL, &timeZoneInfo);
         char timeZoneName[kTempCStringLength] = "UnknownTimeZone";
-        if (rc != 0)
-        {
+        if (rc != 0) {
            Int32 timeZoneOffsetMinsStandard = timeZoneInfo.Bias;
            Int32 timeZoneOffsetMinsDaylight = timeZoneInfo.Bias + timeZoneInfo.DaylightBias;
            Int32 timeZoneOffsetMins = -(GetTimeZoneOffsetSeconds(timestamp.Integer()) / 60);
@@ -286,10 +273,8 @@ namespace Vireo {
         if (weekDayPtr != NULL) {
             *weekDayPtr = (secondsOfYear/kSecondsPerDay + firstweekDay) % kDaysInWeek;
         }
-        if (timeZoneString != NULL)
-        {
-            if (*timeZoneString != NULL)
-            {
+        if (timeZoneString != NULL) {
+            if (*timeZoneString != NULL) {
                 free(*timeZoneString);
             }
             *timeZoneString = (char *)malloc(strlen(timeZoneAbbr)+1);
@@ -298,8 +283,7 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    Date::Date(Timestamp timestamp, Int32 timeZoneOffset)
-    {
+    Date::Date(Timestamp timestamp, Int32 timeZoneOffset) {
         _timeZoneOffset = timeZoneOffset;
         _timeZoneString = NULL;
         Timestamp local = timestamp + _timeZoneOffset;
@@ -349,10 +333,8 @@ namespace Vireo {
 #endif
     }
 
-    Date::~Date()
-    {
-        if (_timeZoneString)
-        {
+    Date::~Date() {
+        if (_timeZoneString) {
             free(_timeZoneString);
             _timeZoneString = NULL;
         }
@@ -360,8 +342,7 @@ namespace Vireo {
 
 
     //------------------------------------------------------------
-    Int32 Date::getLocaletimeZone(Int64 utcTime)
-    {
+    Int32 Date::getLocaletimeZone(Int64 utcTime) {
 // #if kVireoOS_emscripten formerly here which was using jsTimestampGetTimeZoneOffset has been deleted (03/2017);
 // the localtime_r emulation works correctly
 #if (kVireoOS_linuxU || kVireoOS_macosxU || kVireoOS_emscripten)
@@ -373,11 +354,10 @@ namespace Vireo {
         _systemLocaleTimeZone = GetTimeZoneOffsetSeconds(utcTime);
 #endif
         return _systemLocaleTimeZone;
-    };
+    }
 
     //------------------------------------------------------------
-    Int32 Date::isDaylightSavingTime()
-    {
+    Int32 Date::isDaylightSavingTime() {
         return 0;
     }
 #endif

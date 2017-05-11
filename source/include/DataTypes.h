@@ -189,33 +189,28 @@ class SubVector
     const T*  _end;
  public:
     //! Construct a wrapper from an existing wrapper.
-    SubVector()
-    {
+    SubVector() {
         _begin = _end = null;
     }
     //! Construct a wrapper for a raw block of elements.
-    SubVector(const T* begin, const T* end)
-    {
+    SubVector(const T* begin, const T* end) {
         _begin = begin;
         _end = end;
     }
     //! Reassign the wrapper.
-    void AliasAssign(SubVector *subVector)
-    {
+    void AliasAssign(SubVector *subVector) {
         _begin = subVector->Begin();
         _end = subVector->End();
     }
 
     //! Reassign the wrapper to a new raw block of elements.
-    void AliasAssign(const T* begin, const T* end)
-    {
+    void AliasAssign(const T* begin, const T* end) {
         _begin = begin;
         _end = end;
     }
 
     //! Construct a wrapper for a raw block of elements.
-    IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer)
-    {
+    IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer) {
         bufferLength--;  // Make room for null
         IntIndex length = Length();
         if (bufferLength < length) {
@@ -236,14 +231,12 @@ class SubVector
     IntIndex Length()  const   { return (IntIndex)(_end - _begin); }
 
     //! Return true if the blocks are equivalent.
-    Boolean Compare(const T* begin2, IntIndex length2)
-    {
+    Boolean Compare(const T* begin2, IntIndex length2) {
         return (length2 == Length() && (memcmp(_begin, begin2, Length()) == 0));
     }
 
     //! Return true if the blocks are equivalent.
-    Boolean Compare(const SubVector *subVector)
-    {
+    Boolean Compare(const SubVector *subVector) {
         return Compare(subVector->Begin(), subVector->Length());
     }
 };
@@ -281,13 +274,11 @@ class BlockItr : public Itr<AQBlock1>
  public:
     //! Construct an iterator for an array of blocks
     BlockItr(void* begin, IntIndex blockLength, IntIndex count)
-    : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count))
-    {
+    : Itr((AQBlock1*)begin, (AQBlock1*)begin + (blockLength * count)) {
         _blockLength = blockLength;
     }
     //! Read the iterators next pointer
-    AQBlock1* ReadP()
-    {
+    AQBlock1* ReadP() {
         AQBlock1* p = _current;
         _current += _blockLength;
         return p;
@@ -310,21 +301,18 @@ class FixedCArray : public SubVector<T>
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
  public:
     //! Construct the array and initialize it as empty.
-    void Clear()
-    {
+    void Clear() {
         this->_begin = _buffer;
         this->_end = _buffer;
         *NonConstEnd() = (T) 0;
     }
 
-    FixedCArray()
-    {
+    FixedCArray() {
         Clear();
     }
 
     //! Construct the array and initialize it from a SubVector.
-    explicit FixedCArray(SubVector<T>* buffer)
-    {
+    explicit FixedCArray(SubVector<T>* buffer) {
         this->_begin = _buffer;
         size_t length = (buffer->Length() < COUNT) ? buffer->Length() : COUNT;
         this->_end = _buffer + length;
@@ -333,8 +321,7 @@ class FixedCArray : public SubVector<T>
     }
 
     //! Construct the array and initialize it from a block of data.
-    FixedCArray(T* begin, IntIndex length)
-    {
+    FixedCArray(T* begin, IntIndex length) {
         this->_begin = _buffer;
         if (length >= COUNT)
             length = COUNT;
@@ -350,8 +337,7 @@ class FixedCArray : public SubVector<T>
     const T&  operator[] (const int i)  { return _buffer[i]; }
 
     //! Append an element to the array if there is room.
-    Boolean Append(T element)
-    {
+    Boolean Append(T element) {
         IntIndex i = this->Length();
         if (i < COUNT) {
             _buffer[i] = element;
@@ -364,8 +350,7 @@ class FixedCArray : public SubVector<T>
     }
 
     //! Append a block of elements to the array if there is room.
-    Boolean Append(const T* begin, size_t length)
-    {
+    Boolean Append(const T* begin, size_t length) {
         if (IntIndex(length + this->Length()) > Capacity()) {
             return false;
         }

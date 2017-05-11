@@ -700,8 +700,7 @@ VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
     snippet->_p1 = beginY;
     snippet->_p2 = beginMax;
     snippet->_p3 = beginMin;
-    while (snippet->_p2 < endMax)
-    {
+    while (snippet->_p2 < endMax) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSizeX;
         snippet->_p1 += elementSizeY;
@@ -1070,8 +1069,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
     snippet->_p3 = _ParamPointer(EndOffset);
     snippet->_p4 = (AQBlock1*)type->GetSubElement(0);
     snippet->_p5 = beginDest;
-    while (snippet->_p5 < endDest)
-    {
+    while (snippet->_p5 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSizeStr;
         snippet->_p5 += elementSizeDest;
@@ -1914,8 +1912,7 @@ void VectorOpConvertArgs(Instruction3<AQBlock1, AQBlock1, AQBlock1>* snippet, AQ
     }
     convertSnippet->_p1 = convertBuffer;
     snippet->_p2 = beginDest;
-    while (snippet->_p2 < endDest)
-    {
+    while (snippet->_p2 < endDest) {
         _PROGMEM_PTR(convertSnippet, _function)(convertSnippet);
         _PROGMEM_PTR(snippet, _function)(snippet);
         if (whichConvertArg == 1) {
@@ -1965,8 +1962,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     snippet->_p2 = beginDest;
     if (destArray2)
         snippet->_p3 = beginDest2;
-    while (snippet->_p2 < endDest)
-    {
+    while (snippet->_p2 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSize1;
         snippet->_p1 += elementSize2;
@@ -2019,8 +2015,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
     snippet->_p4 = _ParamPointer(includeHi);
     snippet->_p5 = beginCoerced;
     snippet->_p6 = beginDest;
-    while (snippet->_p6 < endDest)
-    {
+    while (snippet->_p6 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSizeX;
         snippet->_p1 += elementSizeLo;
@@ -2085,8 +2080,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruc
         _PROGMEM_PTR(accumulator, _function)(accumulator);
     } else {
         // Iterate over minLength elements of the vectors using the accumulator to compare and possibly short-circuit.
-        while (minLength-- > 0)
-        {
+        while (minLength-- > 0) {
             if (_PROGMEM_PTR(accumulator, _function)(accumulator) == null) {
                 return _NextInstruction();
             }
@@ -2095,8 +2089,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruc
         }
 
         // If the vectors have different lengths, pass null as the argument pointer for the array that ran out of elements.
-        if (lengthA1 != lengthA2)
-        {
+        if (lengthA1 != lengthA2) {
             if (lengthA1 < lengthA2) {
                 snippet->_p0 = null;
             } else {
@@ -2132,8 +2125,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
     snippet->_p0 = beginSrc;
     snippet->_p1 = beginDest1;
     snippet->_p2 = beginDest2;
-    while (snippet->_p2 < endDest)
-    {
+    while (snippet->_p2 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSizeSrc;
         snippet->_p1 += elementSizeDest1;
@@ -2173,8 +2165,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     snippet->_p2 = beginDest;
     if (beginDest2)
         snippet->_p3 = beginDest2;
-    while (snippet->_p2 < endDest)
-    {
+    while (snippet->_p2 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p1 += elementSize1;
         snippet->_p2 += elementSizeDest;
@@ -2215,8 +2206,7 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     snippet->_p2 = beginDest;
     if (beginDest2)
         snippet->_p3 = beginDest2;
-    while (snippet->_p2 < endDest)
-    {
+    while (snippet->_p2 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSize1;
         snippet->_p2 += elementSizeDest;
@@ -2266,8 +2256,7 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
 
     snippet->_p0 = begin1;
     snippet->_p1 = beginDest;
-    while (snippet->_p1 < endDest)
-    {
+    while (snippet->_p1 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSize1;
         snippet->_p1 += elementSizeDest;
@@ -2298,8 +2287,7 @@ VIREO_FUNCTION_SIGNATURET(VectorUnary2OutputOp, AggregateUnOp2OutputInstruction)
     snippet->_p0 = begin1;
     snippet->_p1 = beginDest;
     snippet->_p2 = beginDest2;
-    while (snippet->_p1 < endDest)
-    {
+    while (snippet->_p1 < endDest) {
         _PROGMEM_PTR(snippet, _function)(snippet);
         snippet->_p0 += elementSize1;
         snippet->_p1 += elementSizeDest;

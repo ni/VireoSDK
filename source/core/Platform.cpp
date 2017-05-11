@@ -288,8 +288,7 @@ void PlatformIO::ReadStdin(StringRef buffer)
 
 #if 0
     //------------------------------------------------------------
-    NIError PlatformIO::ReadStdin(StringRef buffer)
-    {
+    NIError PlatformIO::ReadStdin(StringRef buffer) {
         const int lenlen = 10;
         Int32 i = 0;
         char c;
