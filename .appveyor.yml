@@ -11,7 +11,7 @@ init:
 - ps: $PSVersionTable
 install:
   - chocolatey install make
-  - chocolatey install gnuwin32-coreutils.portable
+#  - chocolatey install gnuwin32-coreutils.portable
   - npm install
   - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
   - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
@@ -28,7 +28,8 @@ before_build:
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
-  - cmd: make vjs
+  - npm install -g cash-rm cash-touch
+  - make vjs
 test_script:
   - make testjs
   - make testnative
