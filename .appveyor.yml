@@ -10,15 +10,14 @@ init:
 - cmd: pip -V
 - ps: $PSVersionTable
 install:
-#  - chocolatey install make
-#  - chocolatey install gnuwin32-coreutils.portable
+  - chocolatey install make
+  - chocolatey install gnuwin32-coreutils.portable
   - npm install
   - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
   - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
   - emscripten-sdk\emsdk update
-  - emscripten-sdk\emsdk install emscripten-1.37.9
-  - emscripten-sdk\emsdk activate emscripten-1.37.9
-  - emscripten-sdk\emsdk_env.bat
+  - emscripten-sdk\emsdk install sdk-1.35.0-64bit
+  - emscripten-sdk\emsdk activate sdk-1.35.0-64bit
   - emcc -v
 platform:
   - Win32
