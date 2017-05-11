@@ -8,7 +8,6 @@ init:
 - cmd: npm -v
 - cmd: python -V
 - cmd: pip -V
-- cmd: reg query "HKLM\SOFTWARE\Mozilla\Mozilla Firefox" /v CurrentVersion
 install:
   - chocolatey install make
 platform:
