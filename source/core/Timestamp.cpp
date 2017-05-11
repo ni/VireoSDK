@@ -65,8 +65,7 @@ namespace Vireo
     // January 1, 1904 (the epoch of AbsTime128) in FILETIME
     static const Timestamp k_1904FileTime = Timestamp(0x0153b281e0fb4000ull, 0);
     #if 0
-    Timestamp ATime128FromHILOTime(const uInt32 &high, const uInt32 &low)
-    {
+    Timestamp ATime128FromHILOTime(const uInt32 &high, const uInt32 &low) {
         NITime temp(high, low, 0, 0);
         temp -= k_1904FileTime;
         return Timestamp(temp /1E7);
@@ -76,8 +75,7 @@ namespace Vireo
     /**
      Functions for getting Timestamps
       */
-    void Timestamp::GetCurrentTimestamp(Timestamp *t)
-    {
+    void Timestamp::GetCurrentTimestamp(Timestamp *t) {
     #if kVireoOS_win32U
         struct timeval tv;
         Int32 retval;
@@ -120,8 +118,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    Timestamp::Timestamp(double seconds)
-    {
+    Timestamp::Timestamp(double seconds) {
         if (seconds > 0) {
             Double wholeSeconds = floor(seconds);
             _integer = (Int64)wholeSeconds;
@@ -134,8 +131,7 @@ namespace Vireo
         }
     }
     //------------------------------------------------------------
-    Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year)
-    {
+    Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year) {
     #ifdef VIREO_DATE_TIME_STDLIB
     #if !kVireoOS_windows
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
@@ -148,31 +144,27 @@ namespace Vireo
         *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
     }
     //------------------------------------------------------------
-    Double Timestamp::ToDouble() const
-    {
+    Double Timestamp::ToDouble() const {
         Double wholeSeconds = (Double)this->Integer();
         Double fractionalSeconds = (Double)this->_fraction * (1.0 / 18446744073709551616.0);
         return wholeSeconds + fractionalSeconds;
     }
     //------------------------------------------------------------
-    Timestamp const Timestamp::operator+(const Int64& value)
-    {
+    Timestamp const Timestamp::operator+(const Int64& value) {
         Timestamp answer;
         answer._integer = _integer + value;
         answer._fraction = _fraction;
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp const Timestamp::operator-(const Int64& value)
-    {
+    Timestamp const Timestamp::operator-(const Int64& value) {
         Timestamp answer;
         answer._integer = _integer - value;
         answer._fraction = _fraction;
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp const Timestamp::operator+(const Timestamp& value)
-    {
+    Timestamp const Timestamp::operator+(const Timestamp& value) {
         Timestamp answer;
         answer._integer = _integer + value._integer;
         answer._fraction = _fraction + value._fraction;
@@ -182,8 +174,7 @@ namespace Vireo
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp const Timestamp::operator-(const Timestamp& value)
-    {
+    Timestamp const Timestamp::operator-(const Timestamp& value) {
         Timestamp answer;
         answer._integer = _integer - value._integer;
         answer._fraction = _fraction - value._fraction;

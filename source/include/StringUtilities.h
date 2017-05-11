@@ -377,8 +377,7 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) { }
 
     //! Append a SubString.
-    Boolean Append(SubString* str)
-    {
+    Boolean Append(SubString* str) {
         return FixedCArray::Append(str->Begin(), (size_t)str->Length());
     }
 
@@ -387,8 +386,7 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 
     //! Get the standard char* pointer to the null terminated string.
     //! The pointer is only valid during the scope of the TempStackCString instance
-    char* BeginCStr()
-    {
+    char* BeginCStr() {
         return (char*) _buffer;
     }
 };

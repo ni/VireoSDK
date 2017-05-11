@@ -179,8 +179,7 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
         return;
 
     IntIndex count = type->SubElementCount();
-    for (IntIndex j = 0; j < count; j++)
-    {
+    for (IntIndex j = 0; j < count; j++) {
         TypeRef elementType = type->GetSubElement(j);
         IntIndex offset = elementType->ElementOffset();
         AQBlock1* pElementData = (AQBlock1*)_pHayStack + offset;
@@ -229,8 +228,7 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
 
     if (!eltType->IsFlat()) {
         IntIndex count = type->SubElementCount();
-        for (IntIndex j = 0; j < count; j++)
-        {
+        for (IntIndex j = 0; j < count; j++) {
             TypeRef elementType = type->GetSubElement(j);
             IntIndex offset = elementType->ElementOffset();
             AQBlock1* pElementData = (AQBlock1*)_pHayStack + offset;

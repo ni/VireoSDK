@@ -368,17 +368,14 @@ class TypeManagerScope
     VIVM_THREAD_LOCAL static TypeManagerRef ThreadsTypeManager;
 
  public:
-    explicit TypeManagerScope(TypeManagerRef typeManager)
-    {
+    explicit TypeManagerScope(TypeManagerRef typeManager) {
       _saveTypeManager = TypeManagerScope::ThreadsTypeManager;
       TypeManagerScope::ThreadsTypeManager = typeManager;
     }
-    ~TypeManagerScope()
-    {
+    ~TypeManagerScope() {
         TypeManagerScope::ThreadsTypeManager = _saveTypeManager;
     }
-    static TypeManagerRef Current()
-    {
+    static TypeManagerRef Current() {
         VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != null);
         return TypeManagerScope::ThreadsTypeManager;
     }
@@ -737,13 +734,11 @@ class AggregateType : public TypeCommon
     InlineArray<ElementType*>   _elements;
 
     AggregateType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
-    : TypeCommon(typeManager), _elements(count)
-    {
+    : TypeCommon(typeManager), _elements(count) {
         _pDefault = null;
         _elements.Assign((ElementTypeRef*)elements, count);
     }
-    static size_t   StructSize(Int32 count)
-    {
+    static size_t   StructSize(Int32 count) {
         return sizeof(AggregateType) + InlineArray<ElementType*>::ExtraStructSize(count);
     }
 
@@ -853,19 +848,16 @@ class ParamBlockType : public AggregateType
  public:
     static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitParamBlock(this); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)
-        {
+    virtual NIError InitData(void* pData, TypeRef pattern = null) {
             return kNIError_Success;
-        }
-    virtual NIError CopyData(const void* pData, void* pDataCopy)
-        {
+    }
+    virtual NIError CopyData(const void* pData, void* pDataCopy) {
             VIREO_ASSERT(false);  // TODO(PaulAustin): Is this needed? (spathiwa)
             return kNIError_kInsufficientResources;
-        }
-    virtual NIError ClearData(void* pData)
-        {
+    }
+    virtual NIError ClearData(void* pData) {
             return kNIError_kInsufficientResources;
-        }
+    }
 };
 //------------------------------------------------------------
 //! A type that is a multi-dimension collection of another type.
@@ -952,8 +944,7 @@ class RefNumValType : public WrappedType
     }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                  { return 1; }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)
-    {
+    virtual NIError InitData(void* pData, TypeRef pattern = null) {
         *(RefNumValType**)pData = this;
         return kNIError_Success;
     }
@@ -997,8 +988,7 @@ class DefaultPointerType : public PointerType
     static DefaultPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer,
                                    PointerTypeEnum pointerType);
 
-    virtual NIError InitData(void* pData, TypeRef pattern = null)
-    {
+    virtual NIError InitData(void* pData, TypeRef pattern = null) {
         *(void**)pData = _defaultPointerValue;
         return kNIError_Success;
     }
@@ -1076,8 +1066,7 @@ class TypedArrayCore
     static void Delete(TypedArrayCoreRef);
 
  public:
-    AQBlock1* BeginAt(IntIndex index)
-    {
+    AQBlock1* BeginAt(IntIndex index) {
         VIREO_ASSERT(index >= 0)
         VIREO_ASSERT(ElementType() != null)
         AQBlock1* begin = (RawBegin() + (index * ElementType()->TopAQSize()));
@@ -1107,8 +1096,7 @@ class TypedArrayCore
 
  public:
     //! A minimal sanity check, it could do more.
-    static Boolean ValidateHandle(TypedArrayCoreRef block)
-    {
+    static Boolean ValidateHandle(TypedArrayCoreRef block) {
         return (block != null);
     }
 
@@ -1216,7 +1204,7 @@ class String : public TypedArray1D< Utf8Char >
         Append((IntIndex)stringRef->Length(), (Utf8Char*)stringRef->Begin());
     }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-                                              { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+         { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
     void AppendViaDecoded(SubString *str);
     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
 
@@ -1255,8 +1243,7 @@ class TempStackCStringFromString : public TempStackCString
 {
  public:
     explicit TempStackCStringFromString(StringRef str)
-    : TempStackCString(str->Begin(), str->Length())
-    { }
+    : TempStackCString(str->Begin(), str->Length()) { }
 };
 
 //------------------------------------------------------------
@@ -1272,8 +1259,7 @@ class StackVar
     T *Value;
 
     //! Construct and instance of the type using the name passed by the macro.
-    explicit StackVar(ConstCStr name)
-    {
+    explicit StackVar(ConstCStr name) {
         TypeRef type = TypeManagerScope::Current()->FindType(name);
         VIREO_ASSERT(type->IsArray() && !type->IsFlat());
         Value = null;
@@ -1282,15 +1268,13 @@ class StackVar
         }
     }
     //! Remove ownership of the managed value.
-    T* DetachValue()
-    {
+    T* DetachValue() {
         T* temp = Value;
         Value = null;
         return temp;
     }
     //! Free any storage used by the value if it is still managed.
-    ~StackVar()
-    {
+    ~StackVar() {
         if (Value) {
             Value->Type()->ClearData(&Value);
         }

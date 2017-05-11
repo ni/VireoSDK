@@ -732,8 +732,7 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
 {
     Int64 value = 0, sign = 1;
     EatWhiteSpaces();
-    if (base == 10)  // allow negative other bases?
-    {
+    if (base == 10) {  // allow negative other bases?
         if (EatChar('-')) {
             sign = -1;
         } else {
@@ -1006,8 +1005,7 @@ void SubString::EatLeadingSpaces()
     // If a '//' comment is found skip to an EOL char or end of string
     // If at '/*' Comment is found skip till closing or end of string
 
-    while (_begin < _end)
-    {
+    while (_begin < _end) {
         if (IsSpaceChar(*_begin)) {
             _begin++;
             continue;

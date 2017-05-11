@@ -48,8 +48,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
             // Conditionally prepend an array with its length.
             // This is only optional for top-level data.  Arrays contained in
             // other data structures always include length information.
-            if (prependArrayLength)
-            {
+            if (prependArrayLength) {
                 for (Int32 i = 0; i < rank; i++) {
                     // LV format is bigendian.
                     UInt32 arrayLength = dimLengths[i];
@@ -77,8 +76,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
         {
             IntIndex count = type->SubElementCount();
 
-            for (IntIndex j = 0; j < count; j++)
-            {
+            for (IntIndex j = 0; j < count; j++) {
                 TypeRef elementType = type->GetSubElement(j);
                 IntIndex offset = elementType->ElementOffset();
                 AQBlock1* pElementData = (AQBlock1*)pData + offset;
@@ -179,8 +177,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 AQBlock1 *pEnd = pDefaultArray->BeginAt(0) + (pDefaultArray->DimensionLengths()[0] * elementLength);
                 AQBlock1 *pElementData = pDefaultArray->BeginAt(0);
 
-                for (; pElementData < pEnd; pElementData += elementLength)
-                {
+                for (; pElementData < pEnd; pElementData += elementLength) {
                     stringIndex = UnflattenData(pBuffer, true, stringIndex, pElementData, elementType, null);
                     if (stringIndex == -1)
                         return -1;
@@ -192,8 +189,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
         {
             IntIndex count = type->SubElementCount();
 
-            for (IntIndex j = 0; j < count; j++)
-            {
+            for (IntIndex j = 0; j < count; j++) {
                 // Recursively call UnflattenData for each element with
                 // prependArrayLength set to true.
                 TypeRef elementType = type->GetSubElement(j);
@@ -244,8 +240,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
         type->CopyData(pDefaultData, pData);
 
     // Set the optional output param for the remaining string.
-    if (pRemainder)
-    {
+    if (pRemainder) {
         pRemainder->Resize1D(0);
         if (!error)
             pRemainder->Append(remainderLength, pString->BeginAt(remainderIndex));
