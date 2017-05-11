@@ -329,7 +329,7 @@
                 once = true;
             } else if (arg === '-all' || arg === '--all') {
                 console.log('--all option deprecated; the default behavior is to run all tests in the default test list if one is not specified');
-            } else if (arg === '-once' || arg === '--once') {
+            } else if (arg === '-o' || arg === '-once' || arg === '--once') {
                 once = true;
             } else if (arg === '-t') {
                 argv.shift(); // shift to testname
