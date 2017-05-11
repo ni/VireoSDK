@@ -10,6 +10,7 @@ init:
 - cmd: pip -V
 install:
   - chocolatey install make
+  - chocolatey install gnuwin32-coreutils.portable
 platform:
   - Win32
 configuration:

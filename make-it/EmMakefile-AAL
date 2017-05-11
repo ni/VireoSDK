@@ -27,9 +27,9 @@ endif
 ifeq (,$(wildcard $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY)/AnalysisWrapper*.cpp))
 ANALYSIS_LIBRARY = $(OBJS)/NoAnalysisLibrary.bc
 $(OBJS)/NoAnalysisLibrary.bc: | no-analysis
-	shx touch $(OBJS)/NoAnalysis.cpp
+	touch $(OBJS)/NoAnalysis.cpp
 	$(EMCC) $(EM_ANALYSIS_FLAGS) -o $@ $(OBJS)/NoAnalysis.cpp
-	shx rm $(OBJS)/NoAnalysis.cpp
+	rm $(OBJS)/NoAnalysis.cpp
 
 no-analysis::
 	$(info Note: Analysis library not found in $(ANALYSIS_ROOT_DIRECTORY) or Analysis Wrappers not found in $(ANALYSIS_WRAPPERS_SOURCE_DIRECTORY); omitting from build.)
@@ -235,7 +235,7 @@ ifeq (,$(VIREO_SDK_DIR))
 endif
 
 $(OBJS):
-	shx mkdir -p $(OBJS)
+	mkdir -p $(OBJS)
 
 vjs:	$(TARGETDIR)/vireo.js
  
