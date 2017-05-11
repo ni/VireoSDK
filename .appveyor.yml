@@ -1,3 +1,4 @@
+version: {build}
 branches:
   except:
     - gh-pages
