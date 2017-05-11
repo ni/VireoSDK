@@ -1058,7 +1058,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_Boolean:
             {
-                _string.ReadToken(&token);
+                TokenTraits tt = _string.ReadToken(&token);
                 Boolean value = false;
                 if (token.CompareCStr("t") || token.CompareCStr("true")) {
                     value = true;
@@ -1066,7 +1066,13 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     value = false;
                 } else {
                     LOG_EVENT(kSoftDataError, "Data boolean value syntax error");
-                    return kLVError_ArgError;
+                    if (Fmt().UseFieldNames()) {
+                        if (_options._allowNulls && tt == TokenTraits_SymbolName && token.CompareCStr("null"))
+                            return _options._allowNulls ? Int32(kLVError_NoError) : Int32(kLVError_JSONTypeMismatch);
+                        if (TokenTraits_Integer == tt || TokenTraits_String == tt || TokenTraits_IEEE754 == tt)
+                            return  Int32(kLVError_JSONTypeMismatch);
+                    }
+                    return  Int32(kLVError_ArgError);
                 }
                 if (!pData)
                     return kLVError_NoError;
@@ -1202,8 +1208,6 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             }
                             if (subErr && !error)
                                 error = subErr;
-                            if (error)
-                                break;
                         } else {
                             if (Fmt().JSONStrictValidation()) {
                                 LOG_EVENT(kWarning, "JSON field not found in cluster");
@@ -1213,6 +1217,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             if (!EatJSONItem(&_string))
                                 error = kLVError_JSONInvalidString;
                         }
+                        if (error && error != kLVError_JSONStrictFieldNotFound)
+                            break;
                         _string.EatWhiteSpaces();
                         _string.EatChar(',');
                     }
