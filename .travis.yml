@@ -35,8 +35,8 @@ before_script:
 - nohup python -m httpbin.core --port 64526 &
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
-- make
 - make lint
+- make
 script:
 - make testjs
 - make testnative
