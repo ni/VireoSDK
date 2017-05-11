@@ -17,5 +17,5 @@ include ../Makefile
 COMMANDLINESRCS = $(COMMANDLINE:%.cpp=../../source/CommandLine/%.cpp)
 CORESRCS = $(CORE:%.cpp=../../source/core/%.cpp)
 IOSRCS = $(IO:%.cpp=../../source/io/%.cpp)
-INCSRCS = ../../source/include/*.h
+INCSRCS = $(wildcard ../../source/include/*.h)
 
