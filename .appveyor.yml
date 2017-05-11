@@ -11,14 +11,15 @@ init:
 install:
   - chocolatey install make
   - chocolatey install gnuwin32-coreutils.portable
+  - npm install
 platform:
   - Win32
 configuration:
   - Debug
+before_build:
+  - npm run createobjs
 build:
   project: Vireo_VS/VireoCommandLine.sln
-before_test:
-  - npm install
 test_script:
   - make testnative
 
