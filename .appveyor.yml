@@ -21,3 +21,4 @@ before_test:
   - npm install
 test_script:
   - make testnative
+
