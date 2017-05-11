@@ -29,7 +29,7 @@ build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
   - npm install -g cash-rm cash-touch
-  - make vjs
+  - cmd /c cd make-it && emmake make -f EmMakefile vjs
 test_script:
   - make testjs
   - make testnative
