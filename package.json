@@ -41,7 +41,7 @@
     "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"",
     "doxygen": "cd source && doxygen",
     "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages",
-    "createobjs": "shx mkdir -p make-it/objs"
+    "createdirs": "shx mkdir -p make-it/objs dist"
   },
   "repository": {
     "type": "git",

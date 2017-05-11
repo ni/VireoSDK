@@ -176,8 +176,7 @@ lARMv5:
 
 #========= Use makefile designed for emscripten builds
 vjs: $(OUTPUT_DIR)
-	# Just buid everything
-	make -f EmMakefile vjs
+	emmake make -f EmMakefile vjs
 
 #========= Build documentation
 dox:

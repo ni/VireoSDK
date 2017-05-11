@@ -24,9 +24,12 @@ platform:
 configuration:
   - Debug
 before_build:
-  - npm run createobjs
+  - npm run createdirs
 build:
   project: Vireo_VS/VireoCommandLine.sln
+after_build:
+  - make vjs
 test_script:
+  - make testjs
   - make testnative
-
+  - npm run test
