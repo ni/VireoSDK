@@ -117,7 +117,7 @@ class TDViaParser
     NIError ParseREPL();
     TypeRef ParseEnqueue();
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
-    TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN = false);
+    TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);

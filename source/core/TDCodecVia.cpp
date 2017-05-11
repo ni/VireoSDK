@@ -761,7 +761,7 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
     Int32 dimIndex;
     while (depth >= 0) {
         dimIndex = (rank - depth) - 1;
-        if (!ReadArrayItem(&tempString, &token, Fmt().SuppressInfNaN())) {
+        if (!ReadArrayItem(&tempString, &token, true, Fmt().SuppressInfNaN())) {
              // Avoid infinite loop for incorrect input.
              break;
         }
@@ -795,7 +795,7 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
     return inconsistentDimSizes;
 }
 
-TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boolean suppressInfNaN /*=false*/)
+TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN)
 {
     if (input->EatChar('{')) {
         input->EatWhiteSpaces();
@@ -805,9 +805,20 @@ TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boole
             if (!input->EatChar(*tsNameSuffix)) {
                return TokenTraits_Unrecognized;
             }
-            if (!ReadArrayItem(input, token, suppressInfNaN)) {
+            if (!ReadArrayItem(input, token, false, suppressInfNaN)) {
                 return TokenTraits_Unrecognized;
             }
+            input->EatChar(',');
+        }
+        return TokenTraits_NestedExpression;
+    } else if (!topLevel && input->EatChar('[')) {
+        input->EatWhiteSpaces();
+        while (input->Length() > 0 && !input->EatChar(']')) {
+            if (!ReadArrayItem(input, token, false, suppressInfNaN)) {
+                return TokenTraits_Unrecognized;
+            }
+            if (input->EatChar(']'))
+                break;
             input->EatChar(',');
         }
         return TokenTraits_NestedExpression;
@@ -965,7 +976,8 @@ Boolean EatJSONItem(SubString* input)
     } else if (input->EatChar('[')) {
         while (input->Length() > 0 && !input->EatChar(']')) {
             EatJSONItem(input);
-            input->EatWhiteSpaces();
+            if (input->EatChar(']'))
+                break;
             if (!input->EatChar(',')) {
                 return false;
             }
@@ -1097,6 +1109,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     (leadingChar == '.' || leadingChar == '-' || isdigit(leadingChar));  // not inf, nan
                 Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN, &errCode);
                 if (!readSuccess) {
+                    if (_options._allowNulls && tt == TokenTraits_SymbolName && token.CompareCStr("null"))
+                        return kLVError_NoError;
                     LOG_EVENT(kSoftDataError, "Data IEEE754 syntax error");
                     return errCode;
                 }
