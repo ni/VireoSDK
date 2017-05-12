@@ -13,6 +13,7 @@ install:
   - chocolatey install make
   - npm install -g cash-rm cash-touch cash-mkdir
   - npm install
+  - pip install --user -r requirements.txt
   - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
   - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
   - emscripten-sdk\emsdk update
@@ -23,6 +24,10 @@ platform:
   - Win32
 configuration:
   - Debug
+before_build:
+  - npm run httpbin-win
+# TODO capture standard out and error to log at the end?
+# TODO script needed to wait for server startup?
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
