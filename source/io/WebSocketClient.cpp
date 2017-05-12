@@ -21,7 +21,7 @@ SDG
 #include <emscripten.h>
 #endif
 
-using namespace Vireo;
+namespace Vireo {
 
 #if kVireoOS_emscripten
 
@@ -144,4 +144,5 @@ DEFINE_VIREO_BEGIN(WebSocketClient)
     DEFINE_VIREO_FUNCTION(WebSocketClientClose, "p(i(.UInt32) io(.Int32) o(.String))")
     DEFINE_VIREO_FUNCTION(WebSocketClientState, "p(i(.UInt32) io(.Int32) io(.Int32) o(.String))")
 DEFINE_VIREO_END()
-#endif
+}  // namespace Vireo
+#endif  // VIREO_TYPE_WebSocketClient
