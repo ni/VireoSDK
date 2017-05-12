@@ -11,7 +11,7 @@ init:
 - ps: $PSVersionTable
 install:
   - chocolatey install make
-  - npm install -g cash-rm cash-touch cash-mkdir
+  - chocolatey install gnuwin32-coreutils.portable
   - npm install
   - pip install --user -r requirements.txt
   - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
