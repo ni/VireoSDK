@@ -4,12 +4,15 @@
             "include": [ "common" ],
             "tests": [
                 "HelloRequire.via",
+                "DateFormatStringLocaleSpecific.via",
                 "ListDirectory.via"
             ]
         },
         "js": {
             "include": [ "common" ],
-            "tests": []
+            "tests": [
+               "DateFormatStringLocaleSpecific.via"
+            ]
         },
         "browser": {
             "include": ["common"],
@@ -90,7 +93,6 @@
                 "CoreArray.via",
                 "CoreTypes.via",
                 "DateFormatString.via",
-                "DateFormatStringLocaleSpecific.via",
                 "DateTime.via",
                 "DateTimeRecordToTimestamp.via",
                 "DecodeViaString.via",
