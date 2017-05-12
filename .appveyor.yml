@@ -25,7 +25,7 @@ platform:
 configuration:
   - Debug
 before_build:
-  - start npm run httpbin
+  - ps: Start-Process npm "run httpbin" -PassThru
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
 build:
