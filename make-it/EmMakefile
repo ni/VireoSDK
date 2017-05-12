@@ -136,7 +136,7 @@ $(OBJS)/%.bc: $(UTSOURCEDIR)/%.cpp
 
 $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
-	mkdir -p $(OBJS)
+	"mkdir" -p $(OBJS)
 
 $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)

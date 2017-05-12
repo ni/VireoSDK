@@ -108,7 +108,7 @@ endif
 .DEFAULT_GOAL=help
 
 $(OUTPUT_DIR):
-	@mkdir -p $(OUTPUT_DIR)
+	"mkdir" -p $(OUTPUT_DIR)
 
 install: esh
 	@username=`whoami`; \
@@ -232,7 +232,7 @@ slmicro: $(OBJDIR) ../source/micro/StaticMicroMain.cpp ../source/core/Math.cpp
 	$(CC) -o $@ $(LDFLAGS) $(LDSTATIC) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(OBJDIR)/DebugGPIO.o $(LIBS) $(OBJDIR)/Queue.o $(OBJDIR)/ExecutionContext.o $(LIBS)
 
 $(OBJDIR):
-	mkdir -p $@
+	"mkdir" -p $@
 
 $(COMMANDLINEOBJS): $(OBJDIR)/%.o: ../source/CommandLine/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<

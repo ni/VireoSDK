@@ -235,7 +235,7 @@ ifeq (,$(VIREO_SDK_DIR))
 endif
 
 $(OBJS):
-	mkdir -p $(OBJS)
+	"mkdir" -p $(OBJS)
 
 vjs:	$(TARGETDIR)/vireo.js
  
