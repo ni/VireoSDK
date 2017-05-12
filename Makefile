@@ -15,6 +15,9 @@ simple v32 v64:
 vjs js:
 	cd make-it && make vjs
 
+unittest:
+	cd make-it && make $@
+
 test: testnative testjs
 
 testjs:
