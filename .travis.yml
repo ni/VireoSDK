@@ -37,6 +37,7 @@ before_script:
 - curl http://127.0.0.1:64526/get?show_env=1
 - make lint
 - make
+- make unittest
 script:
 - make testjs
 - make testnative

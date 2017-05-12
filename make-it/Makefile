@@ -128,6 +128,9 @@ simple:
 	make esh esh-test
 	$(STRIP)
 
+unittest: esh-test
+	$(OUTPUT_TEST_EXE)
+
 coverage:
 	make CC='$(COVERAGE_CC)' CFLAGS='$(COVERAGE_CFLAGS)' LDFLAGS='$(COVERAGE_LDFLAGS)' esh
 	cd ../test-it; ./test.js -once -n
