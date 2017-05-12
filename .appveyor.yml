@@ -28,6 +28,8 @@ before_build:
   - ps: Start-Process npm "run httpbin" -PassThru
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
+ - make lint
+ - npm run lint
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
@@ -35,4 +37,5 @@ after_build:
 test_script:
   - make testjs
   - make testnative
-  - npm run test
+  - npm run karma-win
+  - npm run karma-longrun-win
