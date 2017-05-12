@@ -5,13 +5,19 @@
             "tests": [
                 "HelloRequire.via",
                 "DateFormatStringLocaleSpecific.via",
-                "ListDirectory.via"
+                "ListDirectory.via",
+                "Round.via",
+                "Scale2X.via",
+                "StringFormatComplex.via"
             ]
         },
         "js": {
             "include": [ "common" ],
             "tests": [
-               "DateFormatStringLocaleSpecific.via"
+                "DateFormatStringLocaleSpecific.via",
+                "Round.via",
+                "Scale2X.via",
+                "StringFormatComplex.via"
             ]
         },
         "browser": {
@@ -224,8 +230,6 @@
                 "ReplaceArraySubset2D.via",
                 "ReverseString.via",
                 "RotateString.via",
-                "Round.via",
-                "Scale2X.via",
                 "ScanEnum.via",
                 "ScanFormat.via",
                 "ScanFormatErr.via",
@@ -245,7 +249,6 @@
                 "StringFormatExtra.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
-                "StringFormatComplex.via",
                 "StringFormatFloat.via",
                 "StringFormatTimeRelative.via",
                 "StringFunctions.via",
