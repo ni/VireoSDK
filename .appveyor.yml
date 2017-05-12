@@ -37,5 +37,5 @@ after_build:
 test_script:
   - make testjs
   - make testnative
-  - npm run karma-win
-  - npm run karma-longrun-win
+  - npm run karma -- --browsers PhantomJS,Chrome,Firefox,IE
+  - npm run karma-longrun -- --browsers PhantomJS,Chrome,Firefox,IE
