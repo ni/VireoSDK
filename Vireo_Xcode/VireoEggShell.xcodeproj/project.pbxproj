@@ -14,6 +14,7 @@
 		444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46921E2D70AB0037FA98 /* UnitTest.cpp */; };
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
+		44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B71BD21EC65368008683F6 /* WebSocketClient.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
@@ -261,6 +262,7 @@
 		44ABE7DC1D3D6A20008EB066 /* Round.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Round.via; path = "../test-it/Round.via"; sourceTree = "<group>"; };
 		44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayInterpolate.via; path = "../test-it/ArrayInterpolate.via"; sourceTree = "<group>"; };
 		44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFunctions.via; path = "../test-it/ComplexMathFunctions.via"; sourceTree = "<group>"; };
+		44B71BD21EC65368008683F6 /* WebSocketClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebSocketClient.cpp; path = ../source/io/WebSocketClient.cpp; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
@@ -749,12 +751,13 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
-				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
-				47A877751AE6925800EC5D77 /* library_httpClient.js */,
-				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
-				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
-				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				4786297D1927064300141666 /* Canvas2d.cpp */,
+				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
+				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
+				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
+				44B71BD21EC65368008683F6 /* WebSocketClient.cpp */,
+				47A877751AE6925800EC5D77 /* library_httpClient.js */,
+				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
 			);
 			name = IO;
 			sourceTree = "<group>";
@@ -810,33 +813,33 @@
 		479AFE8C170DCFB2002C0FF0 /* core */ = {
 			isa = PBXGroup;
 			children = (
-				444C46821E1C5A540037FA98 /* Date.cpp */,
-				444C46831E1C5A540037FA98 /* TimeFunctions.cpp */,
 				47D84DD317C2A271009053DB /* Array.cpp */,
 				47E220B01950C1F700988185 /* Assert.cpp */,
+				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
+				444C46821E1C5A540037FA98 /* Date.cpp */,
+				472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */,
+				470F626B1886F53F003146BF /* EventLog.cpp */,
+				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
+				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
+				47D84DDF17C2A271009053DB /* Math.cpp */,
+				472A07891AA6204A008109FA /* NumericString.cpp */,
+				47B76CD81B28DB090083AEEB /* Platform.cpp */,
+				47D84DE117C2A271009053DB /* Queue.cpp */,
+				444C468B1E26D73C0037FA98 /* RefNum.cpp */,
+				47D84DE217C2A271009053DB /* String.cpp */,
+				47D84DE317C2A271009053DB /* StringUtilities.cpp */,
+				47E180571A083769007A8DB4 /* Synchronization.cpp */,
 				47C554E318452E4A001DDC46 /* TDCodecLVFlat.cpp */,
 				472B7BE317D0E1E800201196 /* TDCodecVia.cpp */,
+				47D84DE017C2A271009053DB /* Thread.cpp */,
+				444C46831E1C5A540037FA98 /* TimeFunctions.cpp */,
+				47D84DE417C2A271009053DB /* Timestamp.cpp */,
 				47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */,
 				47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */,
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
-				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
-				470F626B1886F53F003146BF /* EventLog.cpp */,
-				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
-				47D84DDF17C2A271009053DB /* Math.cpp */,
-				472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */,
-				444C468B1E26D73C0037FA98 /* RefNum.cpp */,
-				47E180571A083769007A8DB4 /* Synchronization.cpp */,
-				47D84DE017C2A271009053DB /* Thread.cpp */,
-				4466C7981E4F08EE004B5E31 /* Waveform.cpp */,
-				47D84DE117C2A271009053DB /* Queue.cpp */,
-				47D84DE217C2A271009053DB /* String.cpp */,
-				47D84DE317C2A271009053DB /* StringUtilities.cpp */,
-				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
-				472A07891AA6204A008109FA /* NumericString.cpp */,
-				47D84DE417C2A271009053DB /* Timestamp.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
-				47B76CD81B28DB090083AEEB /* Platform.cpp */,
+				4466C7981E4F08EE004B5E31 /* Waveform.cpp */,
 			);
 			name = core;
 			path = ../source;
@@ -1111,6 +1114,7 @@
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
+				44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
 				4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,

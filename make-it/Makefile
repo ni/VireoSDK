@@ -10,8 +10,7 @@ OUTPUT_TEST_EXE=$(OUTPUT_DIR)/esh-test
 COMMANDLINE = main.cpp
 CORE = Array.cpp Assert.cpp CEntryPoints.cpp Date.cpp EventLog.cpp ExecutionContext.cpp GenericFunctions.cpp MatchPat.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp RefNum.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp UnitTest.cpp VirtualInstrument.cpp Waveform.cpp
 UNITTEST = RefNumTest.cpp
-#CORE = VireoMerged.cpp Thread.cpp Timestamp.cpp CEntryPoints.cpp
-IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp HttpClient.cpp
+IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp HttpClient.cpp WebSocketClient.cpp
 
 OBJS = $(COMMANDLINEOBJS) $(COREOBJS) $(IOOBJS)
 COMMANDLINEOBJS = $(COMMANDLINE:%.cpp=$(OBJDIR)/%.o)
