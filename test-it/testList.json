@@ -4,12 +4,21 @@
             "include": [ "common" ],
             "tests": [
                 "HelloRequire.via",
-                "ListDirectory.via"
+                "DateFormatStringLocaleSpecific.via",
+                "ListDirectory.via",
+                "Round.via",
+                "Scale2X.via",
+                "StringFormatComplex.via"
             ]
         },
         "js": {
             "include": [ "common" ],
-            "tests": []
+            "tests": [
+                "DateFormatStringLocaleSpecific.via",
+                "Round.via",
+                "Scale2X.via",
+                "StringFormatComplex.via"
+            ]
         },
         "browser": {
             "include": ["common"],
@@ -90,7 +99,6 @@
                 "CoreArray.via",
                 "CoreTypes.via",
                 "DateFormatString.via",
-                "DateFormatStringLocaleSpecific.via",
                 "DateTime.via",
                 "DateTimeRecordToTimestamp.via",
                 "DecodeViaString.via",
@@ -222,8 +230,6 @@
                 "ReplaceArraySubset2D.via",
                 "ReverseString.via",
                 "RotateString.via",
-                "Round.via",
-                "Scale2X.via",
                 "ScanEnum.via",
                 "ScanFormat.via",
                 "ScanFormatErr.via",
@@ -243,7 +249,6 @@
                 "StringFormatExtra.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
-                "StringFormatComplex.via",
                 "StringFormatFloat.via",
                 "StringFormatTimeRelative.via",
                 "StringFunctions.via",
