@@ -1,7 +1,7 @@
 # Vireo make file for linux/unix
 
 # The mkdir command has to be quoted so that it is not intercepted in the windows shell
-# and instead uses the version on PATH (ie that is gnu make compatible)
+# and instead uses the version on PATH (ie that is unix mkdir compatible)
 MKDIR="mkdir"
 
 OBJDIR=./objs
