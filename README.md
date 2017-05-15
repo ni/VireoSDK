@@ -75,7 +75,7 @@ $ ./test.js -l native
 ```
 Will list out all of the tests that would be run against the `native` test suite.
 
-## Test help
+## Test Help
 ```shell
 $ ./test.js -h
 Usage: ./test.js [options] [via test files]
