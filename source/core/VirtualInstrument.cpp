@@ -716,7 +716,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
             _perches.resize(perchIndex+kClumpStateIncrementSize);
-        if (_perches[perchIndex] < ((void *)0)) {
+        if (_perches[perchIndex] < kPerchUndefined) {
             LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
         }
         if (_perchIndexToRecordNextInstrAddr < 0) {
