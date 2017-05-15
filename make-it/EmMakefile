@@ -1,5 +1,9 @@
 # Vireo make file for linux/unix
 
+# The mkdir command has to be quoted so that it is not intercepted in the windows shell
+# and instead uses the version on PATH (ie that is gnu make compatible)
+MKDIR="mkdir"
+
 VIREO_SDK_DIR=..
 
 OBJS=$(VIREO_SDK_DIR)/make-it/objs
@@ -136,7 +140,7 @@ $(OBJS)/%.bc: $(UTSOURCEDIR)/%.cpp
 
 $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
-	"mkdir" -p $(OBJS)
+	@$(MKDIR) -p $(OBJS)
 
 $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)

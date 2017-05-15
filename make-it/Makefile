@@ -1,5 +1,9 @@
 # Vireo make file for linux/unix
 
+# The mkdir command has to be quoted so that it is not intercepted in the windows shell
+# and instead uses the version on PATH (ie that is gnu make compatible)
+MKDIR="mkdir"
+
 OBJDIR=./objs
 INCDIR=../source/include
 BIN=../bin
@@ -108,7 +112,7 @@ endif
 .DEFAULT_GOAL=help
 
 $(OUTPUT_DIR):
-	"mkdir" -p $(OUTPUT_DIR)
+	@$(MKDIR) -p $(OUTPUT_DIR)
 
 install: esh
 	@username=`whoami`; \
@@ -232,7 +236,7 @@ slmicro: $(OBJDIR) ../source/micro/StaticMicroMain.cpp ../source/core/Math.cpp
 	$(CC) -o $@ $(LDFLAGS) $(LDSTATIC) $(OBJDIR)/StaticMicroMain.o $(OBJDIR)/Math.o $(OBJDIR)/DebugGPIO.o $(LIBS) $(OBJDIR)/Queue.o $(OBJDIR)/ExecutionContext.o $(LIBS)
 
 $(OBJDIR):
-	"mkdir" -p $@
+	@$(MKDIR) -p $@
 
 $(COMMANDLINEOBJS): $(OBJDIR)/%.o: ../source/CommandLine/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $<
