@@ -1,9 +1,11 @@
 # Vireo
+[![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
 [![Travis Build Status](https://travis-ci.org/ni/VireoSDK.svg?branch=incoming)](https://travis-ci.org/ni/VireoSDK)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ni/VireoSDK?svg=true)](https://ci.appveyor.com/project/cglzaguilar/vireosdk)
-[![dependencies Status](https://david-dm.org/ni/VireoSDK/status.svg)](https://david-dm.org/ni/VireoSDK)
-[![devDependencies Status](https://david-dm.org/ni/VireoSDK/dev-status.svg)](https://david-dm.org/ni/VireoSDK?type=dev)
+[![Dependencies Status](https://david-dm.org/ni/VireoSDK/status.svg)](https://david-dm.org/ni/VireoSDK)
+[![Development Dependencies Status](https://david-dm.org/ni/VireoSDK/dev-status.svg)](https://david-dm.org/ni/VireoSDK?type=dev)
 [![Repository Size](https://reposs.herokuapp.com/?path=ni/VireoSDK&style=flat&color=brightgreen)](https://github.com/ruddfawcett/reposs)
+[![NPM Downloads](https://img.shields.io/npm/dt/vireo.svg)](https://www.npmjs.com/package/vireo)
 
 A compact parallel execution runtime for VIs saved in VI assembly format (.via files).
 
