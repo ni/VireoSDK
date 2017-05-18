@@ -1,4 +1,4 @@
-describe('can run test suite file', function () {
+describe('The Vireo VTR test suite', function () {
     'use strict';
 
     // Reference aliases
@@ -11,61 +11,53 @@ describe('can run test suite file', function () {
     var vireo = new Vireo();
     var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
-    var stringArrayToObjectMap = function (arr, cb) {
-        return arr.reduce(function (obj, currentString) {
-            obj[currentString] = cb(currentString);
-            return obj;
-        }, {});
-    };
-
-    var createViaPath = function (testName) {
-        return fixtures.convertToAbsoluteFromViaTestsDir(testName + '.via');
-    };
-
-    var createVtrPath = function (testName) {
-        return fixtures.convertToAbsoluteFromExpectedResultsDir(testName + '.vtr');
-    };
-
-    var viaFiles = stringArrayToObjectMap(viaTestNames, createViaPath);
-    var vtrFiles = stringArrayToObjectMap(viaTestNames, createVtrPath);
-
-    beforeAll(function (done) {
-        var allUrls = Object.values(viaFiles).concat(Object.values(vtrFiles));
-        fixtures.preloadAbsoluteUrls(allUrls, done);
+    var viaTestConfigs = viaTestNames.map(function (testName) {
+        return {
+            testName: testName,
+            viaFile: fixtures.convertToAbsoluteFromViaTestsDir(testName + '.via'),
+            vtrFile: fixtures.convertToAbsoluteFromExpectedResultsDir(testName + '.vtr')
+        };
     });
 
-    var setToTrue = function () {
-        return true;
-    };
-
-    var focusTests = stringArrayToObjectMap([
-    ], setToTrue);
-
-    var disabledTests = stringArrayToObjectMap([
-    ], setToTrue);
-
-    Object.keys(viaFiles).forEach(function (testName) {
-        /* eslint no-restricted-globals: 'off' */
-        var viaAbsolutePath = viaFiles[testName];
-        var vtrAbsolutePath = vtrFiles[testName];
-
-        var test = function (done) {
-            var vtrText = fixtures.loadAbsoluteUrl(vtrAbsolutePath);
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaAbsolutePath);
-
-            runSlicesAsync(function (results, errorText) {
-                expect(errorText).toBeEmptyString();
-                expect(results).toMatchVtrText(vtrText);
-                done();
+    describe('can preload files for test', function () {
+        viaTestConfigs.forEach(function (viaTestConfig) {
+            it(viaTestConfig.testName, function (done) {
+                fixtures.preloadAbsoluteUrls([
+                    viaTestConfig.viaFile,
+                    viaTestConfig.vtrFile
+                ], done);
             });
-        };
+        });
+    });
 
-        if (focusTests[testName] === true) {
-            fit(testName, test);
-        } else if (disabledTests[testName] === true) {
-            xit(testName, test);
-        } else {
-            it(testName, test);
-        }
+    describe('can run test', function () {
+        // To disable a test add a key for the test name set to true, ie:
+        // {'AwesomeDisabledTest': true}
+        var focusTests = {};
+        var disabledTests = {};
+
+        viaTestConfigs.forEach(function (viaTestConfig) {
+            /* eslint no-restricted-globals: 'off' */
+
+            var test = function (done) {
+                var vtrText = fixtures.loadAbsoluteUrl(viaTestConfig.vtrFile);
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaTestConfig.viaFile);
+
+                runSlicesAsync(function (results, errorText) {
+                    expect(errorText).toBeEmptyString();
+                    expect(results).toMatchVtrText(vtrText);
+                    done();
+                });
+            };
+
+            var testName = viaTestConfig.testName;
+            if (focusTests[testName] === true) {
+                fit(testName, test);
+            } else if (disabledTests[testName] === true) {
+                xit(testName, test);
+            } else {
+                it(testName, test);
+            }
+        });
     });
 });
