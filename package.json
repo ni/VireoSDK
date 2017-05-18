@@ -18,7 +18,7 @@
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.2",
-    "karma-verbose-reporter": "0.0.5",
+    "karma-verbose-reporter": "^0.0.6",
     "requirejs": "^2.3.2",
     "setimmediate": "^1.0.5",
     "shx": "^0.2.2",
