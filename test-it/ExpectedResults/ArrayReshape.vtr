@@ -1,0 +1,9 @@
+000 All tests pass: 'true'.
+010     Test Cluster 3D to 1D: 'true'.
+020     Test Empty 1D Array NoShape: 'true'.
+030     Test Empty 1D Array NoShape2: 'true'.
+040     Test 1D to 2D Shrink: 'true'.
+050     Test 1D to 3D Grow: 'true'.
+060     Test 2D to 3D Exact: 'true'.
+070     Test 2D to 1D Grow String: 'true'.
+080     Test 3D to 1D Shrink: 'true'.
