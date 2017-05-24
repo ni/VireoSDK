@@ -55,6 +55,7 @@
                 "ArrayOfStrings.via",
                 "ArrayReplaceEltNDV.via",
                 "ArrayReplaceSubset2DV.via",
+                "ArrayReshape.via",
                 "ArraySearch.via",
                 "ArrayShiftRegister.via",
                 "ArraySplit.via",

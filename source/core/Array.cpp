@@ -1351,44 +1351,52 @@ struct ArrayReshapeStruct : public VarArgInstruction
 class ArrayIterator
 {
  private:
-    ArrayDimensionVector  _indexStack;
-    IntIndex _indexDim;
-    IntIndex*  dimensions;
-    IntIndex  _rank;
     TypedArrayCoreRef _array;
+    IntIndex  _rank;
+    IntIndex*  _dimensionsLengths;
+    ArrayDimensionVector _indexes;
+
+ private:
+    void ResetIndexes() {
+        for (IntIndex i = 0; i < _rank; i++) {
+            _indexes[i] = 0;
+        }
+    }
+
  public:
     explicit ArrayIterator(TypedArrayCoreRef array) {
         _array = array;
-        _rank = array->Rank();
-        _indexDim = 0;
-        dimensions = array->DimensionLengths();
-        for (IntIndex i = 0; i < _rank; i++) {
-            _indexStack[i] = 0;
-        }
+        _rank = array->Rank();        
+        _dimensionsLengths = array->DimensionLengths();
+        ResetIndexes();
     }
+
     void* Begin() {
-        for (IntIndex i = 0; i < _rank; i++) {
-            _indexStack[i] = 0;
-        }
-        _indexDim = 0;
-        return _array->BeginAtND(_rank, _indexStack);
+        ResetIndexes();
+        return _array->BeginAtND(_rank, _indexes);
     }
+
     void* Next() {
-        _indexStack[_indexDim]++;
-        if (dimensions[_indexDim] <= _indexStack[_indexDim]) {
-            while (dimensions[_indexDim] <= _indexStack[_indexDim]) {
-                _indexDim++;
-                _indexStack[_indexDim]++;
+        IntIndex dimensionIndex = 0;
+        bool increasingIndexes = true;
+        while (increasingIndexes && dimensionIndex < _rank)
+        {
+            _indexes[dimensionIndex]++;
+            if (_indexes[dimensionIndex] >= _dimensionsLengths[dimensionIndex])
+            {
+                _indexes[dimensionIndex] = 0;
+                dimensionIndex++;
             }
-            if (_indexDim >= _rank) {
-                return NULL;
-            }
-            for (IntIndex i = 0; i < _indexDim; i++) {
-                _indexStack[i] = 0;
-                _indexDim = 0;
+            else {
+                increasingIndexes = false;
             }
         }
-        return (void*)_array->BeginAtND(_rank, _indexStack);
+
+        if (dimensionIndex >= _rank) {
+            return NULL;
+        }
+
+        return _array->BeginAtND(_rank, _indexes);
     }
 };
 
@@ -1416,8 +1424,6 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
         }
     }
     arrayOut->ResizeDimensions(rank, dimensions, false);
-    // IntIndex* inputDimensions = arrayOut->DimensionLengths();
-    // IntIndex inputRank = arrayIn->Rank();
     ArrayIterator iteratorIn(arrayIn);
     ArrayIterator iteratorOut(arrayOut);
     void* input = iteratorIn.Begin();
