@@ -1353,7 +1353,7 @@ class ArrayIterator
  private:
     TypedArrayCoreRef _array;
     IntIndex  _rank;
-    IntIndex*  _dimensionsLengths;
+    IntIndex*  _dimensionLengths;
     ArrayDimensionVector _indexes;
 
  private:
@@ -1366,8 +1366,8 @@ class ArrayIterator
  public:
     explicit ArrayIterator(TypedArrayCoreRef array) {
         _array = array;
-        _rank = array->Rank();        
-        _dimensionsLengths = array->DimensionLengths();
+        _rank = array->Rank();
+        _dimensionLengths = array->DimensionLengths();
         ResetIndexes();
     }
 
@@ -1378,17 +1378,13 @@ class ArrayIterator
 
     void* Next() {
         IntIndex dimensionIndex = 0;
-        bool increasingIndexes = true;
-        while (increasingIndexes && dimensionIndex < _rank)
-        {
+        while (dimensionIndex < _rank) {
             _indexes[dimensionIndex]++;
-            if (_indexes[dimensionIndex] >= _dimensionsLengths[dimensionIndex])
-            {
+            if (_indexes[dimensionIndex] >= _dimensionLengths[dimensionIndex]) {
                 _indexes[dimensionIndex] = 0;
                 dimensionIndex++;
-            }
-            else {
-                increasingIndexes = false;
+            } else {
+                break;
             }
         }
 
