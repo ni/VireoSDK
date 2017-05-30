@@ -1764,18 +1764,15 @@ bool DoLTBinayCompareAccumulator(BinaryCompareInstruction* binop)
     if (binop->_p1 == null) {
         *dest = false;
         return true;
-    }
-    else if (binop->_p0 == null) {
+    } else if (binop->_p0 == null) {
         *dest = true;
         return true;
-    }
-    else {
+    } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
                 return true;
-            }
-            else {  // commute the args
+            } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
                 binop->_p1 = temp;
