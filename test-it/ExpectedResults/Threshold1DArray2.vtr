@@ -1,0 +1,14 @@
+000 All tests pass: 'true'.
+010     Result too large start index test pass: 'true'.
+020     Negative start test pass: 'true'.
+030     Negative infinite threshhold test pass: 'true'.
+040     Infinite threshhold test pass: 'true'.
+050     Too large threshhold test pass: 'true'.
+060     NaN in array test pass: 'true'.
+070     Negative infinity in array test pass: 'true'.
+080     Positive Infinity in array test pass: 'true'.
+090     Fractional threshhold test pass: 'true'.
+100     Exact threshhold test pass: 'true'.
+110     Int too small threshhold wired start test pass: 'true'.
+120     Int too small threshhold no start test pass: 'true'.
+130     Empty array returns NaN test pass: 'true'.
