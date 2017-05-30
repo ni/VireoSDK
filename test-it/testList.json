@@ -273,6 +273,7 @@
                 "SubVISimple.via",
                 "TemplateBasics.via",
                 "Threshold1DArray.via",
+                "Threshold1DArray2.via",
                 "TicTock.via",
                 "Time128.via",
                 "TimerCount.via",

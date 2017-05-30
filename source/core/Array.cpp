@@ -1482,9 +1482,17 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
 {
     TypedArrayCoreRef arrayIn = _Param(1);
     Double thresholdY = _Param(2);
-    IntIndex startIndex = _ParamPointer(3) == NULL? 0 : _Param(3);
-    if (arrayIn->Length() == 0) {
+    IntIndex startIndex = _ParamPointer(3) == NULL ? 0 : _Param(3);
+    if (arrayIn->Length() == 0) {  // Emtpy array returns NaN
         _Param(0) = NAN;
+        return _NextInstruction();
+    }
+    if (startIndex > arrayIn->Length() - 1) {  // Index greater than array capacity returns NaN
+        _Param(0) = NAN;
+        return _NextInstruction();
+    }
+    if (startIndex < 0) {  // Coerce negative index to 0
+        startIndex = 0;
     }
     TypeRef elementType = arrayIn->ElementType();
     Double left = 0, right = 0;
@@ -1530,13 +1538,15 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
     }
     if (left == right) {
         _Param(0) = left;
+    } else if (leftValue == rightValue) {
+        _Param(0) = (left + right) / 2;
+    } else if (::isinf(rightValue)) {
+        _Param(0) = left;
+    } else if (::isnan(rightValue)) {
+        _Param(0) = right;
     } else {
-        if (leftValue == rightValue) {
-            _Param(0) = (left + right)/2;
-        } else {
-            _Param(0) = left*(rightValue - thresholdY)/(rightValue - leftValue) +
-                right*(thresholdY - leftValue)/(rightValue - leftValue);
-        }
+        _Param(0) = left*(rightValue - thresholdY) / (rightValue - leftValue) +
+            right*(thresholdY - leftValue) / (rightValue - leftValue);
     }
     return _NextInstruction();
 }
