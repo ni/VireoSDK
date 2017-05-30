@@ -243,6 +243,7 @@
                 "SlashAsterComments.via",
                 "SlashComments.via",
                 "SnippetMemoryLoss.via",
+                "Sort1DArray.via",
                 "SplitJoin.via",
                 "StrCatCrash.via",
                 "StringArrayConcat.via",

@@ -999,7 +999,7 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     InstructionCore* pInstruction = null;
     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
     TypeRef elementType  = arrayArg->ElementType();
-    SubString LTName("IsLT");
+    SubString LTName("IsLTSort");
     // Add param slot to hold the snippet
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
     Sort1DArrayInstruction* sortOp = (Sort1DArrayInstruction*) pInstructionBuilder->EmitInstruction();

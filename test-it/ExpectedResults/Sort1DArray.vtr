@@ -1,0 +1,9 @@
+000 All tests pass: 'true'.
+010     All same value test pass: 'true'.
+020     Empty array test pass: 'true'.
+030     Boolean array test pass: 'true'.
+040     String array test pass: 'true'.
+050     Double array test pass: 'true'.
+060     Integer array test pass: 'true'.
+070     Crazy doubles test pass: 'true'.
+080     Cluster array test pass: 'true'.
