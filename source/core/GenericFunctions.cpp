@@ -1950,10 +1950,18 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     IntIndex *srcArray1Lengths  = srcArray1->DimensionLengths();
     IntIndex *srcArray2Lengths  = srcArray2->DimensionLengths();
     VIREO_ASSERT(rank <= kArrayMaxRank);
+
+    // if the dimension lenghts for all dimensions for both the array inputs are same,
+    // this will be true and we can advance the iterator directly without going through
+    // the ArrayIterator for sligthly better performance.
+    bool isInputArraysDimensionsSame = true;
+
     for (int i = 0; i < rank; i++) {
        IntIndex dim1 = *(srcArray1Lengths + i);
        IntIndex dim2 = *(srcArray2Lengths + i);
        newDimensionLengths[i] = (dim1 < dim2) ? dim1 : dim2;
+       if (dim1 != dim2)
+           isInputArraysDimensionsSame = false;
     }
     destArray->ResizeDimensions(rank, newDimensionLengths, true);
 
@@ -1977,18 +1985,18 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
         return _NextInstruction();
     }
 
-    while (destArray1IterPtr != NULL) {
+    while (isInputArraysDimensionsSame ? (destArray1IterPtr != destArray1EndIterPos) : (destArray1IterPtr != NULL)) {
         snippet->_p0 = srcArray1IterPtr;
         snippet->_p1 = srcArray2IterPtr;
         snippet->_p2 = destArray1IterPtr;
         if (destArray2)
            snippet->_p3 = destArray2IterPtr;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        srcArray1IterPtr = (AQBlock1 *)srcArray1Iter.Next();
-        srcArray2IterPtr = (AQBlock1 *)srcArray2Iter.Next();
-        destArray1IterPtr = (AQBlock1 *)destArray1Iter.Next();
+        srcArray1IterPtr = isInputArraysDimensionsSame ? (srcArray1IterPtr + elementSize1) : (AQBlock1 *)srcArray1Iter.Next();
+        srcArray2IterPtr = isInputArraysDimensionsSame ? (srcArray2IterPtr + elementSize2) : (AQBlock1 *)srcArray2Iter.Next();
+        destArray1IterPtr = isInputArraysDimensionsSame ? (destArray1IterPtr + elementSizeDest) : (AQBlock1 *)destArray1Iter.Next();
         if (destArray2)
-           destArray2IterPtr = (AQBlock1 *)destArray2Iter.Next();
+           destArray2IterPtr = isInputArraysDimensionsSame ? (destArray2IterPtr + elementSizeDest) : (AQBlock1 *)destArray2Iter.Next();
     }
     snippet->_p1 = null;
     return _NextInstruction();
