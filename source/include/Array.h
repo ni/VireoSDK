@@ -40,6 +40,22 @@ class ArrayIterator
         ResetIndexes();
     }
 
+    // Intended to be used only in special cases where the iterator is walked for the subset of arrays (for instance,
+    // polymorphic binary operations). Thus, debug mode asserts that passed in rank and dimensionlengths are smaller
+    // than that of the passed in array.
+    explicit ArrayIterator(TypedArrayCoreRef array, IntIndex rank, IntIndex* dimensionLengths) {
+        _array = array;
+        if (array != NULL) {
+            VIREO_ASSERT(rank == array->Rank());
+            for (int i = 0; i < rank; i++) {
+                VIREO_ASSERT(dimensionLengths[i] <= array->DimensionLengths()[i]);
+            }
+        }
+        _rank = rank;
+        _dimensionLengths = dimensionLengths;
+        ResetIndexes();
+    }
+
     void* Begin() {
         ResetIndexes();
         return _array->BeginAtND(_rank, _indexes);
