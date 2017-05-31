@@ -235,6 +235,7 @@
                 "ScanFormat.via",
                 "ScanFormatErr.via",
                 "ScanFormat2.via",
+                "Search1DArray.via",
                 "SearchSplitString.via",
                 "ShabangHelloWorld.via",
                 "SharedArray.via",

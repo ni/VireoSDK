@@ -1,0 +1,16 @@
+000 All tests pass: 'true'.
+010     Search for NaN test pass: 'true'.
+020     Search for negative infinity test pass: 'true'.
+030     Search for infinity test pass: 'true'.
+040     Search crazy doubles no match test pass: 'true'.
+050     Search past crazy doubles test pass: 'true'.
+060     String test pass: 'true'.
+070     String no match test pass: 'true'.
+080     Bool test pass: 'true'.
+010     Bool no match test pass: 'true'.
+020     Negative index test pass: 'true'.
+030     Start past match test pass: 'true'.
+040     Many matches2 test pass: 'true'.
+050     Many matches test pass: 'true'.
+060     No match test pass: 'true'.
+070     Null array test pass: 'true'.

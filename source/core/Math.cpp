@@ -283,6 +283,12 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
         }) \
     DECLARE_VIREO_PRIMITIVE3(IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <= _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsEQSearch##TYPE, TYPE, TYPE, Boolean, \
+        if (::isnan((double)_Param(0)) && ::isnan((double)_Param(1))) { \
+            _Param(2) = true; \
+        } else { \
+            _Param(2) = _Param(0) == _Param(1); \
+        }) \
     DECLARE_VIREO_PRIMITIVE3(IsNE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) != _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsGT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >  _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1))) \
@@ -327,6 +333,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DEFINE_VIREO_FUNCTION_TYPED(IsLE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsLTSort, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsEQ, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
+    DEFINE_VIREO_FUNCTION_TYPED(IsEQSearch, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsNE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGT, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
     DEFINE_VIREO_FUNCTION_TYPED(IsGE, TYPE, "p(i("#TYPE") i("#TYPE") o(Boolean))") \
