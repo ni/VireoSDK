@@ -1722,8 +1722,10 @@ VIREO_FUNCTION_SIGNATURET(ClusterUnary2OutputOp, AggregateUnOp2OutputInstruction
 //------------------------------------------------------------
 typedef Instruction3<AQBlock1, AQBlock1, Boolean> BinaryCompareInstruction;
 //------------------------------------------------------------
-bool DoIsEQBinayCompareAccumulator(BinaryCompareInstruction* binop)
+// Accumulators are used for elements of an array and elements of a cluster
+VIREO_FUNCTION_SIGNATURE1(IsEQAccumulator, void)
 {
+    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
     InstructionCore* pInstruction = binop;
     if ((binop->_p0 == null) || (binop->_p1 == null)) {
@@ -1732,28 +1734,8 @@ bool DoIsEQBinayCompareAccumulator(BinaryCompareInstruction* binop)
         while (ExecutionContext::IsNotCulDeSac(pInstruction)) {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if (!*dest)
-                return true;
+                return null;
         }
-    }
-    return false;
-}
-//------------------------------------------------------------
-// Accumulators are used for elements of an array and elements of a cluster
-VIREO_FUNCTION_SIGNATURE1(IsEQAccumulator, void)
-{
-    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
-    if (DoIsEQBinayCompareAccumulator(binop)) {
-        return null;
-    }
-    return _this;
-}
-//------------------------------------------------------------
-// Accumulators are used for elements of an array and elements of a cluster
-VIREO_FUNCTION_SIGNATURE1(IsEQSearchAccumulator, void)
-{
-    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
-    if (DoIsEQBinayCompareAccumulator(binop)) {
-        return null;
     }
     return _this;
 }
@@ -1776,20 +1758,22 @@ VIREO_FUNCTION_SIGNATURE1(IsNEAccumulator, void)
     return _this;
 }
 //------------------------------------------------------------
-bool DoIsLTBinayCompareAccumulator(BinaryCompareInstruction* binop)
+// Execute a snippet of binops until one of them returns true or the commutative pair returns true
+VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
 {
+    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
     if (binop->_p1 == null) {
         *dest = false;
-        return true;
+        return null;
     } else if (binop->_p0 == null) {
         *dest = true;
-        return true;
+        return null;
     } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
-                return true;
+                return null;
             } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
@@ -1799,31 +1783,11 @@ bool DoIsLTBinayCompareAccumulator(BinaryCompareInstruction* binop)
                 binop->_p0 = temp;
                 if (*dest) {
                     *dest = false;  // flip the result and return
-                    return true;
+                    return null;
                 }
             }
             binop = (BinaryCompareInstruction*)next;
         }
-    }
-    return false;
-}
-//------------------------------------------------------------
-// Execute a snippet of binops until one of them returns true or the commutative pair returns true
-VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
-{
-    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
-    if (DoIsLTBinayCompareAccumulator(binop)) {
-        return null;
-    }
-    return _this;
-}
-//------------------------------------------------------------
-// Execute a snippet of binops until one of them returns true or the commutative pair returns true
-VIREO_FUNCTION_SIGNATURE1(IsLTSortAccumulator, void)
-{
-    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
-    if (DoIsLTBinayCompareAccumulator(binop)) {
-        return null;
     }
     return _this;
 }
@@ -2582,10 +2546,10 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(ClusterUnaryOp, "p(i(*) o(*) s(Instruction))")
     DEFINE_VIREO_FUNCTION(ClusterUnary2OutputOp, "p(i(*) o(*) o(*) s(Instruction))")
     DEFINE_VIREO_FUNCTION(IsEQAccumulator, "p(i(GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsEQSearchAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQSearchAccumulator, IsEQAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsNEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLTAccumulator, "p(i(GenericBinOp))");
-    DEFINE_VIREO_FUNCTION(IsLTSortAccumulator, "p(i(GenericBinOp))");
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsLTSortAccumulator, IsLTAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsGTAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsLEAccumulator, "p(i(GenericBinOp))");
     DEFINE_VIREO_FUNCTION(IsGEAccumulator, "p(i(GenericBinOp))");
