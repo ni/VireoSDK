@@ -118,6 +118,9 @@
     <ClCompile Include="..\source\core\Waveform.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\MatchPat.cpp" />
+    <ClCompile Include="..\source\core\RefNum.cpp" />
+    <ClCompile Include="..\source\core\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">
@@ -192,6 +195,11 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\Waveform.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\RefNum.h" />
+    <ClInclude Include="..\source\include\UnitTest.h" />
+    <ClInclude Include="..\source\include\Array.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>

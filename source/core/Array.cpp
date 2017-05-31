@@ -15,6 +15,7 @@ SDG
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
 #include "VirtualInstrument.h"
+#include "Array.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -1345,55 +1346,6 @@ struct ArrayReshapeStruct : public VarArgInstruction
     _ParamDef(TypedArrayCoreRef, ArrayIn);
     _ParamImmediateDef(IntIndex*, Dimension1[1]);
     NEXT_INSTRUCTION_METHODV()
-};
-
-// Array Iterator
-class ArrayIterator
-{
- private:
-    TypedArrayCoreRef _array;
-    IntIndex  _rank;
-    IntIndex*  _dimensionLengths;
-    ArrayDimensionVector _indexes;
-
- private:
-    void ResetIndexes() {
-        for (IntIndex i = 0; i < _rank; i++) {
-            _indexes[i] = 0;
-        }
-    }
-
- public:
-    explicit ArrayIterator(TypedArrayCoreRef array) {
-        _array = array;
-        _rank = array->Rank();
-        _dimensionLengths = array->DimensionLengths();
-        ResetIndexes();
-    }
-
-    void* Begin() {
-        ResetIndexes();
-        return _array->BeginAtND(_rank, _indexes);
-    }
-
-    void* Next() {
-        IntIndex dimensionIndex = 0;
-        while (dimensionIndex < _rank) {
-            _indexes[dimensionIndex]++;
-            if (_indexes[dimensionIndex] >= _dimensionLengths[dimensionIndex]) {
-                _indexes[dimensionIndex] = 0;
-                dimensionIndex++;
-            } else {
-                break;
-            }
-        }
-
-        if (dimensionIndex >= _rank) {
-            return NULL;
-        }
-
-        return _array->BeginAtND(_rank, _indexes);
-    }
 };
 
 // ArrayReshape function
