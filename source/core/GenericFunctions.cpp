@@ -16,6 +16,7 @@ SDG
 #include "TypeAndDataManager.h"
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
+#include "Array.h"
 
 namespace Vireo
 {
@@ -1942,33 +1943,52 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     IntIndex lengthA2 = srcArray2->Length();
     IntIndex count = (lengthA1 < lengthA2) ? lengthA1 : lengthA2;
 
-    // Resize output to minimum of input arrays
-    destArray->Resize1D(count);
+    // Resize output to minimum of input arrays for each dimension
+    ArrayDimensionVector newDimensionLengths;
+    // TODO(sanmut) Error out if ranks of srcArray1 and srcArray2 don't match
+    IntIndex rank = srcArray1->Rank();
+    IntIndex *srcArray1Lengths  = srcArray1->DimensionLengths();
+    IntIndex *srcArray2Lengths  = srcArray2->DimensionLengths();
+    VIREO_ASSERT(rank <= kArrayMaxRank);
+    for (int i = 0; i < rank; i++) {
+       IntIndex dim1 = *(srcArray1Lengths + i);
+       IntIndex dim2 = *(srcArray2Lengths + i);
+       newDimensionLengths[i] = (dim1 < dim2) ? dim1 : dim2;
+    }
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
+
     if (destArray2)
-        destArray2->Resize1D(count);
-    AQBlock1 *begin1 = srcArray1->RawBegin();
-    AQBlock1 *begin2 = srcArray2->RawBegin();
-    AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
-    AQBlock1 *endDest = beginDest + (count * elementSizeDest);
-    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : NULL;
+        destArray2->ResizeDimensions(rank, newDimensionLengths, true);
+
+    ArrayIterator srcArray1Iter(srcArray1, rank, newDimensionLengths);
+    ArrayIterator srcArray2Iter(srcArray2, rank, newDimensionLengths);
+    ArrayIterator destArray1Iter(destArray, rank, newDimensionLengths);
+    ArrayIterator destArray2Iter(destArray2, rank, newDimensionLengths);
+
+    AQBlock1 *srcArray1IterPtr = (AQBlock1 *)srcArray1Iter.Begin();
+    AQBlock1 *srcArray2IterPtr = (AQBlock1 *)srcArray2Iter.Begin();
+    AQBlock1 *destArray1IterPtr = (AQBlock1 *)destArray1Iter.Begin();
+    AQBlock1 *destArray2IterPtr = destArray2 ? (AQBlock1 *)destArray2Iter.Begin() : NULL;
+    AQBlock1 *destArray1EndIterPos = destArray1IterPtr + (count * elementSizeDest);
     if (snippet->_p1) {  // we need to call a conversion snippet for one of the args
         AQBlock1 *saveArg = snippet->_p1;
-        VectorOpConvertArgs(snippet, begin1, begin2, beginDest, endDest, elementSize1, elementSize2, elementSizeDest);
+        VectorOpConvertArgs(snippet, srcArray1IterPtr, srcArray2IterPtr, destArray1IterPtr, destArray1EndIterPos, elementSize1, elementSize2, elementSizeDest);
         snippet->_p1 = saveArg;
         return _NextInstruction();
     }
-    snippet->_p0 = begin1;
-    snippet->_p1 = begin2;
-    snippet->_p2 = beginDest;
-    if (destArray2)
-        snippet->_p3 = beginDest2;
-    while (snippet->_p2 < endDest) {
-        _PROGMEM_PTR(snippet, _function)(snippet);
-        snippet->_p0 += elementSize1;
-        snippet->_p1 += elementSize2;
-        snippet->_p2 += elementSizeDest;
+
+    while (destArray1IterPtr != NULL) {
+        snippet->_p0 = srcArray1IterPtr;
+        snippet->_p1 = srcArray2IterPtr;
+        snippet->_p2 = destArray1IterPtr;
         if (destArray2)
-            snippet->_p3 += elementSizeDest;
+           snippet->_p3 = destArray2IterPtr;
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        srcArray1IterPtr = (AQBlock1 *)srcArray1Iter.Next();
+        srcArray2IterPtr = (AQBlock1 *)srcArray2Iter.Next();
+        destArray1IterPtr = (AQBlock1 *)destArray1Iter.Next();
+        if (destArray2)
+           destArray2IterPtr = (AQBlock1 *)destArray2Iter.Next();
     }
     snippet->_p1 = null;
     return _NextInstruction();
