@@ -54,6 +54,7 @@
     <None Include="..\source\io\library_webSocketClient.js" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\include\Array.h" />
     <ClInclude Include="..\source\include\BuildConfig.h" />
     <ClInclude Include="..\source\include\CEntryPoints.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
