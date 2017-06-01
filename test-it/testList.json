@@ -177,6 +177,7 @@
                 "MultiClump.via",
                 "MultiDimensionArrayDefaults.via",
                 "MultiDimensionArrays.via",
+                "NanInfComparisons.via",
                 "NegativeNumbers.via",
                 "NestedConstant.via",
                 "NestedContexts.via",
