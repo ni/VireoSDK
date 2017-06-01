@@ -1527,7 +1527,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInterpolate, void, TypedArrayCoreRef, StaticType,
 }
 
 //----------------------------------------------------------------------
-// interpolated result(0), input array(1), threshold y(2), star index(3)
+// interpolated result(0), input array(1), threshold y(2), start index(3)
 VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, IntIndex)
 {
     TypedArrayCoreRef arrayIn = _Param(1);
