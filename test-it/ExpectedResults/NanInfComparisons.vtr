@@ -1,0 +1,4 @@
+000 All tests pass: 'true'.
+010     NaN comparisons pass: 'true'.
+020     Infinity comparisons pass: 'true'.
+030     Negative infinity comparisons pass: 'true'.
