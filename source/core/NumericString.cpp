@@ -1788,6 +1788,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     Format(&format, 1, &Value, output, null);
     output->AppendSubString(&remainingFormat);
 }
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, void)
 {
@@ -1798,15 +1799,9 @@ VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, v
 
     return _NextInstruction();
 }
+
 //------------------------------------------------------------
 struct StringFormatStruct : public VarArgInstruction
-{
-    _ParamDef(StringRef, StringOut);
-    _ParamDef(StringRef, StringFormat);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
-struct StringFormatWithErrStruct : public VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
     _ParamDef(StringRef, StringFormat);
@@ -1815,7 +1810,7 @@ struct StringFormatWithErrStruct : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(StringFormatWithErr, StringFormatWithErrStruct) {
+VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct) {
     Int32 count = (_ParamVarArgCount() -3)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
@@ -1866,17 +1861,6 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     }
     return _NextInstruction();
 }
-//------------------------------------------------------------
-struct StringScanStruct : public VarArgInstruction
-{
-    _ParamDef(StringRef, StringInput);
-    _ParamDef(StringRef, StringRemaining);
-    _ParamDef(StringRef, StringFormat);
-    _ParamDef(UInt32, InitialPos);
-    _ParamDef(UInt32, OffsetPast);
-    _ParamImmediateDef(StaticTypeAndData, argument1[1]);
-    NEXT_INSTRUCTION_METHODV()
-};
 
 void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, StaticTypeAndData arguments[])
 {
@@ -1912,7 +1896,7 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
 }
 
 //------------------------------------------------------------
-struct StringScanStructWithErr : public VarArgInstruction
+struct StringScanStruct : public VarArgInstruction
 {
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);
@@ -1923,8 +1907,9 @@ struct StringScanStructWithErr : public VarArgInstruction
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
+
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringScanWithErr, StringScanStructWithErr)
+VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
 {
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
@@ -2626,11 +2611,9 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
 DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(StringFormatValue, "p(o(String) i(String) i(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(StringFormat, StringFormatWithErr,
-        "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(StringScan, StringScanWithErr,
-        "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
