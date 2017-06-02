@@ -50,7 +50,7 @@
         var ttyout = [];
         Module.stdout = function (val) {
             if (val === null || val === 0x0A) {
-                Module.print(Module.coreHelpers.utf8ArrayToStringWithNull(ttyout, 0));
+                Module.print(Module.coreHelpers.sizedUtf8ArrayToJSString(ttyout, 0, ttyout.length));
                 ttyout = [];
             } else {
                 ttyout.push(val);

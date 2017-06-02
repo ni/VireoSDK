@@ -56,15 +56,22 @@
             fpSync = fn;
         };
 
-        Module.coreHelpers.utf8ArrayToStringWithNull = function (u8Array, idxIn) {
+        // TODO mraj when we manipulate strings in vireo do we always utf8 encode the value?
+        // TODO mraj the manual and textDecoder function may return different values in cases of corrupt utf8 or truncated multibyte utf8 character
+        // ie the character 128 would be 2 bytes in utf8
+        // Requires a length. Should NOT include a terminating null as part of length.
+        // Allows UTF8 arrays with internal null values.
+        var manualSizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             var u0, u1, u2, u3, u4, u5;
-            var idx = idxIn;
+            var idx = startIndex;
+            var lastVisitedIndex = startIndex + length;
+            lastVisitedIndex = lastVisitedIndex > u8Array.length ? u8Array.length : lastVisitedIndex;
             var str = '';
             while (true) {
                 // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
                 u0 = u8Array[idx++];
-                if (idx > u8Array.length) {
+                if (idx > lastVisitedIndex) {
                     return str;
                 }
                 if (!(u0 & 0x80)) {
@@ -101,6 +108,29 @@
                 }
             }
         };
+
+        // reference this issue https://github.com/kripken/emscripten/issues/4693
+        // var utf8Decoder;
+        // var textDecoderSizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
+        //     // Used by the stdout to print full buffers
+        //     if (startIndex === 0 && u8Array.length <= length) {
+        //         return utf8Decoder.decode(u8Array);
+        //     }
+        //     // Stealing this optimization from emscripten https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L536
+        //     if (length < 16) {
+        //         return manualSizedUtf8ArrayToJSString(u8Array, startIndex, length);
+        //     }
+        //     return utf8Decoder.decode(u8Array.subarray(startIndex, startIndex + length));
+        // };
+
+        if (TextDecoder === undefined) {
+            Module.coreHelpers.sizedUtf8ArrayToJSString = manualSizedUtf8ArrayToJSString;
+        } else {
+            // TODO mraj only works for ArrayBuffers, maybe should change tty to use arraybuffer
+            // utf8Decoder = new TextDecoder('utf8');
+            // Module.coreHelpers.sizedUtf8ArrayToJSString = textDecoderSizedUtf8ArrayToJSString;
+            Module.coreHelpers.sizedUtf8ArrayToJSString = manualSizedUtf8ArrayToJSString;
+        }
 
         Module.coreHelpers.jsCurrentBrowserFPS = function () {
             if (trackingFPS === false) {

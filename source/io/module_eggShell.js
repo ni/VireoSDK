@@ -289,7 +289,7 @@
         Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
-            var str = Module.Pointer_stringify(begin, length);
+            var str = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAP8, begin, length);
             return str;
         };
 
