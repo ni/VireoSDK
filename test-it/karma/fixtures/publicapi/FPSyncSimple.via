@@ -1,0 +1,11 @@
+define (c1 dv(.String 'Hello World'))
+
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+    )
+        clump(1
+        FPSync(c1)
+    )
+)))
+enqueue (MyVI)
+

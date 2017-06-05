@@ -1,0 +1,17 @@
+define (c0 dv(.Double 7))
+define (c1 dv(.String 'Iñtërnâtiônàlizætiøn☃💩'))
+define (c2 dv(.Double 8))
+
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(.Double myDouble)
+    )
+        clump(1
+        Copy(c0 myDouble)
+        FPSync(c1)
+        Copy(c2 myDouble)
+        FPSync(c1)
+    )
+)))
+enqueue (MyVI)
+
