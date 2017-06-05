@@ -21,7 +21,7 @@ describe('Arrays in Vireo', function () {
             expect(rawPrintError).toBeEmptyString();
 
             var resized = vireo.eggShell.resizeArray(viName, 'variableArray1d', [5]);
-            console.log(resized);
+            expect(resized).toBe(0);
             expect(vireo.eggShell.getArrayDimLength(viName, 'variableArray1d', 0)).toBe(5);
             done();
         });
