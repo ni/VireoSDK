@@ -1,0 +1,54 @@
+define (g0 dv(a(.Int32 * *) ((10 20 )(11 21 )(12 22 ))))
+
+//---------------------------------------------------
+define (ReshapeArrayNumerics dv(.VirtualInstrument (
+    Locals: c(   // Data Space1
+        e(a(.Int32 * *) dataItem_SameSize1)
+        e(a(.Int32 *) dataItem_SameSize2)
+        e(a(.Int32 * *) dataItem_SameSize3)
+        e(a(.Int32 *) dataItem_SmallerSize1)
+        e(a(.Int32 * *) dataItem_SmallerSize2)
+        e(a(.Int32 * *) dataItem_SmallerSize3)
+        e(a(.Int32 * *) dataItem_SmallerSize4)
+        e(a(.Int32 * *) dataItem_BiggerSize1)
+        e(a(.Int32 * *) dataItem_BiggerSize2)
+        e(a(.Int32 * *) dataItem_BiggerSize3)
+        e(a(.Int32 * *) dataItem_EmptyArray1)
+        e(a(.Int32 * *) dataItem_EmptyArray2)
+        e(a(.Int32 *) dataItem_EmptyArray3)
+    )
+        clump(1
+        ArrayReshape(dataItem_SameSize1 g0 3 2 )
+        Printf("SameSize1: %z\n" dataItem_SameSize1)
+        ArrayReshape(dataItem_SameSize2 g0 6 )
+        Printf("SameSize2: %z\n" dataItem_SameSize2)
+        ArrayReshape(dataItem_SameSize3 g0 2 3 )
+        Printf("SameSize3: %z\n" dataItem_SameSize3)
+
+        ArrayReshape(dataItem_SmallerSize1 g0 4 )
+        Printf("SmallerSize1: %z\n" dataItem_SmallerSize1 )
+        ArrayReshape(dataItem_SmallerSize2 g0 2 1 )
+        Printf("SmallerSize2: %z\n" dataItem_SmallerSize2 )
+        ArrayReshape(dataItem_SmallerSize3 g0 3 1 )
+        Printf("SmallerSize3: %z\n" dataItem_SmallerSize3 )
+        ArrayReshape(dataItem_SmallerSize4 g0 2 2 )
+        Printf("SmallerSize4: %z\n" dataItem_SmallerSize4 )
+
+        ArrayReshape(dataItem_BiggerSize1 g0 4 2 )
+        Printf("BiggerSize1: %z\n" dataItem_BiggerSize1 )
+        ArrayReshape(dataItem_BiggerSize2 g0 3 3 )
+        Printf("BiggerSize2: %z\n" dataItem_BiggerSize2 )
+        ArrayReshape(dataItem_BiggerSize3 g0 4 3 )
+        Printf("BiggerSize3: %z\n" dataItem_BiggerSize3 )
+
+        ArrayReshape(dataItem_EmptyArray1 g0 3 0 )
+        Printf("EmptyArray1: %z\n" dataItem_EmptyArray1 )
+        ArrayReshape(dataItem_EmptyArray2 g0 0 3 )
+        Printf("EmptyArray2: %z\n" dataItem_EmptyArray2 )
+        ArrayReshape(dataItem_EmptyArray3 g0 0 )
+        Printf("EmptyArray3: %z\n" dataItem_EmptyArray3 )
+/* Clump Ended. */    )
+)))
+enqueue (ReshapeArrayNumerics)
+//Finished!! :D
+

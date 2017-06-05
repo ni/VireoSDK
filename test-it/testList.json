@@ -232,6 +232,7 @@
                 "ReentrantSubVISimple.via",
                 "ReentrantSubVIWtihShiftRegister.via",
                 "ReplaceArraySubset2D.via",
+                "ReshapeArrayNumerics.via",
                 "ReverseString.via",
                 "RotateString.via",
                 "ScanEnum.via",
