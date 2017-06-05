@@ -235,6 +235,7 @@
             }
 
             var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            // The following use of Pointer_stringify is safe as long as arrayTypeNamePointer is a valid C string
             var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
             var arrayRank = Module.getValue(arrayRankPointer, 'i32');
             var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');

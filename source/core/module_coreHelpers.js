@@ -56,14 +56,7 @@
             fpSync = fn;
         };
 
-        // reference this issue https://github.com/kripken/emscripten/issues/4693
-        // TODO mraj Add the TextDecoder optimization used by emscripten https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L536
-        // Note: TextDecoder only works for ArrayBuffers, maybe should change tty to use arraybuffer
-        // TODO mraj when we manipulate strings in vireo do we always utf8 encode the value?
-        // TODO mraj the manual and textDecoder function may return different values in cases of corrupt utf8 or truncated multibyte utf8 character
-        // ie the character 128 would be 2 bytes in utf8
-        // Requires a length. Should NOT include a terminating null as part of length.
-        // Allows UTF8 arrays with internal null values.
+        // Takes Vireo Strings that are UTF-8 encoded strings with known length and returns a JS string
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             var u0, u1, u2, u3, u4, u5;
