@@ -57,19 +57,20 @@
         };
 
         // Takes Vireo Strings that are UTF-8 encoded strings with known length and returns a JS string
+        // TODO mraj assumes valid UTF8 encoding https://github.com/ni/VireoSDK/issues/283
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             var u0, u1, u2, u3, u4, u5;
             var idx = startIndex;
-            var lastVisitedIndex = startIndex + length;
-            lastVisitedIndex = lastVisitedIndex > u8Array.length ? u8Array.length : lastVisitedIndex;
+            var endIndex = startIndex + length;
+            endIndex = endIndex > u8Array.length ? u8Array.length : endIndex;
             var str = '';
             while (true) {
-                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
-                u0 = u8Array[idx++];
-                if (idx > lastVisitedIndex) {
+                if (idx >= endIndex) {
                     return str;
                 }
+                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
+                u0 = u8Array[idx++];
                 if (!(u0 & 0x80)) {
                     str += String.fromCharCode(u0);
                     continue;

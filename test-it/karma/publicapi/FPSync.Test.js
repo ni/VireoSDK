@@ -40,11 +40,11 @@ describe('The Vireo CoreHelpers setFPSyncFunction api', function () {
         var viName = 'MyVI';
 
         var trackerCalls = [];
-        var tracker = function (fpsyncString) {
+        var tracker = function (fpSyncString) {
             var myDouble = vireo.eggShell.readDouble(viName, 'myDouble');
             trackerCalls.push({
                 myDouble: myDouble,
-                fpsyncString: fpsyncString
+                fpSyncString: fpSyncString
             });
         };
 
@@ -52,13 +52,14 @@ describe('The Vireo CoreHelpers setFPSyncFunction api', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiFPSyncUtf8ViaUrl);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
+            var fpSyncString = 'Iñtërnâtiônàlizætiøn\0☃💩';
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(trackerCalls.length).toBe(2);
             expect(trackerCalls[0].myDouble).toBe(7);
-            expect(trackerCalls[0].fpsyncString).toBe('Iñtërnâtiônàlizætiøn☃💩');
+            expect(trackerCalls[0].fpSyncString).toBe(fpSyncString);
             expect(trackerCalls[1].myDouble).toBe(8);
-            expect(trackerCalls[1].fpsyncString).toBe('Iñtërnâtiônàlizætiøn☃💩');
+            expect(trackerCalls[1].fpSyncString).toBe(fpSyncString);
 
             done();
         });
