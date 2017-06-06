@@ -1,5 +1,5 @@
 define (c0 dv(.Double 7))
-define (c1 dv(.String 'Iñtërnâtiônàlizætiøn☃💩'))
+define (c1 dv(.String 'Iñtërnâtiônàlizætiøn\x00☃💩'))
 define (c2 dv(.Double 8))
 
 define (MyVI dv(.VirtualInstrument (
