@@ -74,6 +74,8 @@ VIREO_FUNCTION_SIGNATURE3(ArrayFill, TypedArrayCoreRef, IntIndex, void)
     TypeRef     eltType = array->ElementType();
     IntIndex    length = _Param(1);
 
+    if (length < 0)
+        length = 0;
     if (array->Resize1D(length)) {
         eltType->MultiCopyData(_ParamPointer(2), array->RawBegin(), length);
     }
