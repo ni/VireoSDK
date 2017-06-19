@@ -70,6 +70,9 @@ using namespace std;  // NOLINT(build/namespaces)s
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) / _Param(1)) : 0 ) ) */ \
+    DECLARE_VIREO_PRIMITIVE2(Ceil##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
+    DECLARE_VIREO_PRIMITIVE2(Floor##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
+    DECLARE_VIREO_PRIMITIVE2(RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
     DECLARE_VIREO_PRIMITIVE3(Mod##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) % _Param(1)) : 0)) \
     VIREO_FUNCTION_SIGNATURE3(Quotient##TYPE, TYPE, TYPE, TYPE) \
     { \
@@ -107,6 +110,9 @@ using namespace std;  // NOLINT(build/namespaces)s
 #define DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DEFINE_VIREO_FUNCTION(Div##TYPE, ".BinOp"#TYPE) */ \
+    DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i("#TYPE") o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Mod, TYPE, "BinOp"#TYPE) \
     DEFINE_VIREO_FUNCTION_TYPED(Quotient, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Remainder, TYPE, "p(i("#TYPE") i("#TYPE") o("#TYPE"))")

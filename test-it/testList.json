@@ -235,6 +235,7 @@
                 "ReshapeArrayNumerics.via",
                 "ReverseString.via",
                 "RotateString.via",
+                "RoundWithIntegers.via",
                 "ScanEnum.via",
                 "ScanFormat.via",
                 "ScanFormatErr.via",
