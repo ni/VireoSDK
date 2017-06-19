@@ -6,6 +6,7 @@ define(c4 dv(a(.Int32 * *) ((111 122 133 144) (211 222 233 244) ) ))
 define(c5 dv(a(.Int32 * *) ((-11 -22 -33 -44) (-88 -77 -66 -55) ) ))
 define(c6 dv(a(.Int32 *) (-11 -22 -33 -44) ) )
 define(c7 dv(a(.Int32 * * *) (((111 112) (121 122)) ((211 212) (221 222)) ((311 312) (321 322)))))
+define(c8 dv(a(.Int32 * *) ((5 5 5 5 5) (7 7 7 7 7) ) ))
 
 //---------------------------------------------------
 //VI Definition: Untitled 1
@@ -24,54 +25,59 @@ define(videf1 dv(.VirtualInstrument (
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertElt(local1 local1 * c3)
-    Println(local1)
+    Printf("1:%z\n" local1)
 
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertSubset(local1 local1 * local2)
-    Println(local1)
+    Printf("2:%z\n" local1)
 
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertSubset(local1 local2 * local2)
-    Println(local1)
+    Printf("3:%z\n" local1)
 
 // Set index param to insert between array elements
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertSubset(local1 local1 c0 local2)
-    Println(local1)
+    Printf("4:%z\n" local1)
 
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertSubset(local1 local2 c0 local2)
-    Println(local1)
+    Printf("5:%z\n" local1)
 
     ArrayInsertSubset(localA2D c4 1 1 c6)
-    Println(localA2D)
+    Printf("6:%z\n" localA2D)
 
     ArrayInsertSubset(localA2D c4 1 0 c6)
-    Println(localA2D)
+    Printf("7:%z\n" localA2D)
 
     ArrayInsertSubset(localA2D c4 1 1 c5)
-    Println(localA2D)
+    Printf("8:%z\n" localA2D)
 
     ArrayInsertSubset(localA2D c4 3 1 c5)
-    Println(localA2D)
+    Printf("9:%z\n" localA2D)
+
+    ArrayInsertSubset(localA2D c4 1 0 c8)
+    Printf("//9.5:%z\n" localA2D)
+    // Expected 9.5:((111 122 133 144) (5 5 5 5) (7 7 7 7) (211 222 233 244))
+    // Actual   9.5:((111 122 133 144) (5 5 5 5) (7 7 7 7) (7 222 233 244))
 
     ArrayInsertSubset(localA3D c7 3 * c5)
-    Println(localA3D)
+    Printf("10:%z\n" localA3D)
 
     ArrayInsertSubset(localA3D c7 * 0 c5)
-    Println(localA3D)
+    Printf("11:%z\n" localA3D)
 
     ArrayInsertSubset(localA3D c7 1 2 c5)
-    Println(localA3D)
+    Printf("12:%z\n" localA3D)
 
     Convert(c1 local1)
     Convert(c2 local2)
     ArrayInsertSubset(local1 c2 c0 local1)
-    Println(local1)
+    Printf("13:%z\n" local1)
     //--- end of vi
   )
 )))

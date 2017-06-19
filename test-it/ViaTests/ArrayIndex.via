@@ -18,46 +18,54 @@ define(videf1 dv(.VirtualInstrument (
 	e(dv(a(.String * *) (("hello" "world")("abcde" "fg")("xyzzy" ""))) arrstr)
 	e(a(.String *) arrstrout)
     )
-    clump(1 
+    clump(1
         ArrayIndex(c1 elem 1)
-        Println(elem)
+        Printf("1:%z\n" elem)
         ArrayIndex(c1 elem c3) // -2
-        Println(elem)
+        Printf("2:%z\n" elem)
         ArrayIndex(c1 elem c4) // 4
-        Println(elem)
+        Printf("3:%z\n" elem)
         ArrayIndex(c6 elem *)
-        Println(elem)
+        Printf("4:%z\n" elem)
         ArrayIndex(c1 elem c2) // 2
-        Println(elem)
+        Printf("5:%z\n" elem)
         ArrayIndex(c1 elem *)
-        Println(elem)
+        Printf("6:%z\n" elem)
 
 	ArrayIndex(arrfoo arrbar -1 *)
-	Println(arrbar)
+	Printf("7:%z\n" arrbar)
 
 	ArrayIndex(arrfoo elem 1 1)
-	Println(elem)
+	Printf("8:%z\n" elem)
 
 	ArrayIndex(arrfoo arrbar * *)
-	Println(arrbar)
+	Printf("9:%z\n" arrbar)
 
 	ArrayIndex(arrfoo arrbar 2 *)
-	Println(arrbar)
+	Printf("10:%z\n" arrbar)
+
+	ArrayIndex(arrfoo arrbar 4 *)
+	Printf("10.5:%z\n" arrbar)
 
 	ArrayIndex(arrfoo arrbar * 1)
-	Println(arrbar)
+	Printf("11:%z\n" arrbar)
+
+	ArrayIndex(arrfoo arrbar * 4)
+	Printf("//11.5:%z\n" arrbar)
+	// Expected: 11.5:()
+	// Actual: 11.5:(0 0 0 0)
 
 	ArrayIndex(arrstr arrstrout 1 *)
-	Println(arrstrout)
+	Printf("12:%z\n" arrstrout)
 
 	ArrayIndex(arr3d arr2dout 1 * *)
-	Println(arr2dout)
+	Printf("13:%z\n" arr2dout)
 
 	ArrayIndex(arr3d arr2dout * 1 *)
-	Println(arr2dout)
+	Printf("14:%z\n" arr2dout)
 
 	ArrayIndex(arr3d arr2dout * * 1)
-	Println(arr2dout)
+	Printf("15:%z\n" arr2dout)
 //--- end of vi
     )
 )))
