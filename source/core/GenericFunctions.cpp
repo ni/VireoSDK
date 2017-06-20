@@ -1635,9 +1635,10 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
     Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, AQBlock1,
         AQBlock1, AQBlock1>*)_ParamMethod(Snippet()), *origSnippet = snippet;  // pointer to snippet.
     AQBlock1 *saveArg = origSnippet->_p1;
-    if (intptr_t(snippet->_p1) < 0) {  // we need to call a conversion snippet for one of the args
-        UInt8 convertBuffer[16];
-        while (ExecutionContext::IsNotCulDeSac(snippet)) {
+
+    while (ExecutionContext::IsNotCulDeSac(snippet)) {
+        if (intptr_t(snippet->_p1) < 0) {  // we need to call a conversion snippet for one of the args
+            UInt8 convertBuffer[16];
             // Argument snippet is conversion function, real op follows
             Instruction2<AQBlock1, AQBlock1>* convertSnippet = (Instruction2<AQBlock1, AQBlock1>*)snippet;
             int whichConvertArg = -int(intptr_t(convertSnippet->_p1));
@@ -1667,10 +1668,6 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
         }
-        origSnippet->_p1 = saveArg;
-        return _NextInstruction();
-    }
-    while (ExecutionContext::IsNotCulDeSac(snippet)) {
         snippet->_p0 += (size_t)_ParamPointer(SX);
         snippet->_p1 += (size_t)_ParamPointer(SY);
         snippet->_p2 += (size_t)_ParamPointer(SDest);

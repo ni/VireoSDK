@@ -70,6 +70,15 @@ using namespace std;  // NOLINT(build/namespaces)s
 #define DECLARE_VIREO_INTEGER_MATH_PRIMITIVES(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DECLARE_VIREO_PRIMITIVE3( Div##TYPE, TYPE, TYPE, TYPE, (_Param(2) = _Param(1) ? (_Param(0) / _Param(1)) : 0 ) ) */ \
+    DECLARE_SCALE2X_INTX_HELPER(TYPE) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int64, TYPE, Int64, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), Int32(_Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int32, TYPE, Int32, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int16, TYPE, Int16, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##Int8, TYPE, Int8, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##UInt64, TYPE, UInt64, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), Int32(_Param(1)))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##UInt32, TYPE, UInt32, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##UInt16, TYPE, UInt16, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(Scale2X##TYPE##UInt8, TYPE, UInt8, TYPE, _Param(2) = Scale2X_##TYPE##Int32(_Param(0), _Param(1))) \
     DECLARE_VIREO_PRIMITIVE2(Ceil##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
     DECLARE_VIREO_PRIMITIVE2(Floor##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
     DECLARE_VIREO_PRIMITIVE2(RoundToNearest##TYPE, TYPE, TYPE, (_Param(1) = _Param(0))) \
@@ -110,6 +119,14 @@ using namespace std;  // NOLINT(build/namespaces)s
 #define DEFINE_VIREO_INTEGER_MATH_FUNCTIONS(TYPE) \
     /* Integer division operator not needed by LabVIEW */ \
     /* DEFINE_VIREO_FUNCTION(Div##TYPE, ".BinOp"#TYPE) */ \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##Int64, "p(i("#TYPE") i(Int64) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##Int32, "p(i("#TYPE") i(Int32) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##Int16, "p(i("#TYPE") i(Int16) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##Int8, "p(i("#TYPE") i(Int8) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##UInt64, "p(i("#TYPE") i(UInt64) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##UInt32, "p(i("#TYPE") i(UInt32) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##UInt16, "p(i("#TYPE") i(UInt16) o("#TYPE"))") \
+    DEFINE_VIREO_FUNCTION_CUSTOM(Scale2X, Scale2X##TYPE##UInt8, "p(i("#TYPE") i(UInt8) o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Ceil, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(Floor, TYPE, "p(i("#TYPE") o("#TYPE"))") \
     DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, TYPE, "p(i("#TYPE") o("#TYPE"))") \
@@ -182,6 +199,14 @@ TYPE Scale2X_##TYPE##Int32(TYPE x, Int32 n) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
         } else { \
             return x * pow(2.0, ScaleRoundToInt_##TYPE(n));  \
+        } \
+    }
+#define DECLARE_SCALE2X_INTX_HELPER(TYPE) \
+TYPE Scale2X_##TYPE##Int32(TYPE x, Int32 n) { \
+        if (x == 0) { \
+            return 0; \
+        } else { \
+            return x * pow(2.0, n);  \
         } \
     }
 DECLARE_SCALE2X_REALN_HELPER(Double)
