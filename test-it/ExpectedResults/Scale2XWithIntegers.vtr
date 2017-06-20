@@ -1,0 +1,14 @@
+000 All tests pass: 'true'.
+010     Double test pass: 'true'.
+020     Single test pass: 'true'.
+030     I8 test pass: 'true'.
+040     I16 test pass: 'true'.
+050     I32 test pass: 'true'.
+060     I64 test pass: 'true'.
+070     U8 test pass: 'true'.
+080     U16 test pass: 'true'.
+090     U32 test pass: 'true'.
+100     U64 test pass: 'true'.
+110     Widen test pass: 'true'.
+120     Nested Widen test pass: 'true'.
+130     Mixed test pass: 'true'.
