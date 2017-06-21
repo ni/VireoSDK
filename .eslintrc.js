@@ -4,7 +4,8 @@ module.exports = {
         'amd': true,
         'node': true,
         'browser': true,
-        'jasmine': true
+        'jasmine': true,
+        'es6': true
     },
     'rules': {
         'no-console': 'off',

@@ -188,7 +188,7 @@
                 if (request.status === 0) {
                     completeRequest({
                         header: '',
-                        text: '',
+                        body: [],
                         status: 0,
                         labviewCode: CODES.NETWORK_ERROR,
                         errorMessage: 'Network Error: Check Output or Console for more information'
@@ -202,9 +202,10 @@
                 var allResponseHeaders = request.getAllResponseHeaders();
 
                 var header = statusLine + allResponseHeaders;
+                var body = new Uint8Array(request.response);
                 completeRequest({
                     header: header,
-                    text: request.response,
+                    body: body,
                     status: request.status,
                     labviewCode: CODES.NO_ERROR,
                     errorMessage: ''
@@ -214,7 +215,7 @@
             eventListeners.error = function () {
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.NETWORK_ERROR,
                     errorMessage: 'Network Error: Check Output or Console for more information'
@@ -225,7 +226,7 @@
             eventListeners.timeout = function () {
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.TIMEOUT,
                     errorMessage: 'Timeout'
@@ -235,7 +236,7 @@
             eventListeners.abort = function () {
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.ABORT,
                     errorMessage: 'Request Aborted'
@@ -256,7 +257,7 @@
                 errorMessage = formatMessageWithException('Invalid URL', ex);
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.INVALID_URL,
                     errorMessage: errorMessage
@@ -276,7 +277,7 @@
                 errorMessage = formatMessageWithException('Invalid Header: The provided header "' + currentHeaderName + '" with value "' + currentHeaderValue + '" is invalid', ex);
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.INVALID_HEADER,
                     errorMessage: errorMessage
@@ -289,8 +290,8 @@
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
             request.withCredentials = this._includeCredentialsDuringCORS;
 
-            // TODO mraj attempt to use 'ArrayBuffer' for the transfer type to get binary data
-            request.responseType = 'text';
+            // Receive the response as an ArrayBuffer. Relies on the server to send data as UTF-8 encoded text for text transmission.
+            request.responseType = 'arraybuffer';
 
             // In IE 11 the timeout property may only be set after calling open and before calling send
             request.timeout = requestData.xhrTimeout;
@@ -308,7 +309,7 @@
                 errorMessage = formatMessageWithException('Network Error: Check Output or Console for more information', ex);
                 completeRequest({
                     header: '',
-                    text: '',
+                    body: [],
                     status: 0,
                     labviewCode: CODES.NETWORK_ERROR,
                     errorMessage: errorMessage
@@ -619,7 +620,7 @@
                 Module.eggShell.dataWriteUInt32(statusCodePointer, responseData.status);
 
                 if (bodyPointer !== NULL) {
-                    Module.eggShell.dataWriteString(bodyPointer, responseData.text);
+                    Module.eggShell.dataWriteStringFromArray(bodyPointer, responseData.body);
                 }
 
                 var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;

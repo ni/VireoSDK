@@ -43,6 +43,7 @@
             'Data_ReadBoolean',
             'Data_WriteBoolean',
             'Data_WriteString',
+            'Data_WriteStringFromArray',
             'Data_WriteInt32',
             'Data_WriteUInt32',
             'EggShell_REPL',
@@ -69,6 +70,7 @@
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
+        var Data_WriteStringFromArray = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'array', 'number']);
         var Data_ReadBoolean = Module.cwrap('Data_ReadBoolean', 'number', ['number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
@@ -294,9 +296,16 @@
             return str;
         };
 
+        // Source should be a JS String
         Module.eggShell.dataWriteString = function (destination, source) {
             var sourceLength = Module.lengthBytesUTF8(source);
             Data_WriteString(v_userShell, destination, source, sourceLength);
+        };
+
+        // Source should be a JS array of numbers or a TypedArray of Uint8Array or Int8Array
+        // Relies on cwrap behavior: https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap
+        Module.eggShell.dataWriteStringFromArray = function (destination, source) {
+            Data_WriteStringFromArray(v_userShell, destination, source, source.length);
         };
 
         Module.eggShell.dataReadBoolean = function (booleanPointer) {
