@@ -456,8 +456,7 @@
 
             // Possibly run only once (default is false, so run twice)
             if (!once) {
-                testFiles.map(
-                function (testName) {
+                testFiles.map(function (testName) {
                     return tester(testName, execOnly);
                 });
             }
