@@ -18,6 +18,7 @@ define(videf1 dv(.VirtualInstrument (
     e(a(.Int32 * * *) localA3D)
   )
   clump(1
+
 // Use default value for index param (append to end of array)
     ArrayInsertSubset(localA3D c7 * 0 c5)
     ArrayInsertSubset(localA3D c7 3 * c5)
@@ -61,9 +62,7 @@ define(videf1 dv(.VirtualInstrument (
     Printf("9:%z\n" localA2D)
 
     ArrayInsertSubset(localA2D c4 1 0 c8)
-    Printf("//9.5:%z\n" localA2D)
-    // Expected 9.5:((111 122 133 144) (5 5 5 5) (7 7 7 7) (211 222 233 244))
-    // Actual   9.5:((111 122 133 144) (5 5 5 5) (7 7 7 7) (7 222 233 244))
+    Printf("9.5:%z\n" localA2D)
 
     ArrayInsertSubset(localA3D c7 3 * c5)
     Printf("10:%z\n" localA3D)

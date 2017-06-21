@@ -51,9 +51,7 @@ define(videf1 dv(.VirtualInstrument (
 	Printf("11:%z\n" arrbar)
 
 	ArrayIndex(arrfoo arrbar * 4)
-	Printf("//11.5:%z\n" arrbar)
-	// Expected: 11.5:()
-	// Actual: 11.5:(0 0 0 0)
+	Printf("11.5:%z\n" arrbar)
 
 	ArrayIndex(arrstr arrstrout 1 *)
 	Printf("12:%z\n" arrstrout)
