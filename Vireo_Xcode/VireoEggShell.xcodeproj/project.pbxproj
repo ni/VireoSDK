@@ -116,6 +116,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		44026BAA1EFAEFC600DB51B4 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = include/Array.h; sourceTree = "<group>"; };
 		443536321CFF4979002BA5DB /* 2HelloWorlds.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 2HelloWorlds.via; path = "../test-it/2HelloWorlds.via"; sourceTree = "<group>"; };
 		443536331CFF4979002BA5DB /* AllocatedDataValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AllocatedDataValues.via; path = "../test-it/AllocatedDataValues.via"; sourceTree = "<group>"; };
 		443536341CFF4979002BA5DB /* ArrayComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayComparison.via; path = "../test-it/ArrayComparison.via"; sourceTree = "<group>"; };
@@ -848,6 +849,7 @@
 		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				44026BAA1EFAEFC600DB51B4 /* Array.h */,
 				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 				444C46871E1C5ABC0037FA98 /* Date.h */,
 				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
