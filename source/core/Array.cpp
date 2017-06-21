@@ -143,6 +143,8 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
         arrayLen[j] = 1;
     }
     if (subRank > 0) {
+        if (empty)
+            arrayLen[subRank-1] = 0;
         TypedArrayCoreRef arrayOut = *(TypedArrayCoreRef*)_ParamImmediate(Element._pData);
         if (_ParamImmediate(Element._paramType)->BitEncoding() != kEncoding_Array
             || _ParamImmediate(Element._paramType)->Rank() != subRank) {
@@ -789,6 +791,8 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
             if (numberOfDimensions == subArray->Rank()) {
                 sourceSlabLen[i] = subArray->SlabLengths()[i];
                 sourceDimLen[i] = subArray->DimensionLengths()[i];
+                if (sourceDimLen[i] > newLengths[i])
+                    sourceDimLen[i] = newLengths[i];
             } else {
                 if (i == numberOfDimensions-1-dimensionToInsert) {
                     sourceSlabLen[i] = subArray->SlabLengths()[j];
