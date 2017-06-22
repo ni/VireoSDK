@@ -75,11 +75,20 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     for (IntIndex i=0; i< len; i++) {
         Utf8Char c = *(begin+i);
         // see the document on http://json.org. need handle more control character and \uhexadecimal
+        // TODO(mraj) should also replace multibyte line separator and paragraph separator for interop http://timelessrepo.com/json-isnt-a-javascript-subset
         switch (c) {
-        case '\n': case '\r': case '\t':
-        case '\f': case '\b': case '\\':
-        case '"':
+        case '\b': case '\t': case '\n':  // x08, x09, x0A
+        case '\f': case '\r':             // x0C, x0D
+        case '\\': case '"':
             needLength += 2;
+            break;
+        // escape control characters
+        case '\x00': case '\x01': case '\x02': case '\x03': case '\x04': case '\x05': case '\x06': case '\x07':
+        case '\x0B':
+        case '\x0E': case '\x0F':
+        case '\x10': case '\x11': case '\x12': case '\x13': case '\x14': case '\x15': case '\x16': case '\x17': case '\x18': case '\x19':
+        case '\x1A': case '\x1B': case '\x1C': case '\x1D': case '\x1E': case '\x1F':
+            needLength += 6;  // \uXXXX
             break;
         default:
             needLength++;
@@ -96,34 +105,40 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     for (IntIndex i = len -1; i >= 0; i--) {
         Utf8Char c = *(begin + i);
         switch (c) {
-        case '\n':
-            *ptr-- = 'n';
-            *ptr-- = '\\';
+        case '\b':  // x08
+            *ptr-- = 'b'; *ptr-- = '\\';
             break;
-        case '\r':
-            *ptr-- ='r';
-            *ptr-- = '\\';
+        case '\t':  // x09
+            *ptr-- = 't'; *ptr-- = '\\';
             break;
-        case '\t':
-            *ptr-- = 't';
-            *ptr-- = '\\';
-           break;
-        case '\f' :
-            *ptr-- = 'f';
-            *ptr-- = '\\';
-           break;
-        case '\b':
-           *ptr-- = 'b';
-           *ptr-- = '\\';
-           break;
+        case '\n':  // x0A
+            *ptr-- = 'n'; *ptr-- = '\\';
+            break;
+        case '\f':  // x0C
+            *ptr-- = 'f'; *ptr-- = '\\';
+            break;
+        case '\r':  // x0D
+            *ptr-- = 'r'; *ptr-- = '\\';
+            break;
         case '\\':
-            *ptr-- = '\\';
-            *ptr-- = '\\';
-           break;
+            *ptr-- = '\\'; *ptr-- = '\\';
+            break;
         case '"':
-            *ptr--  = '\"';
-            *ptr-- = '\\';
-        break;
+            *ptr--  = '\"'; *ptr-- = '\\';
+            break;
+        case '\x00': case '\x01': case '\x02': case '\x03': case '\x04': case '\x05': case '\x06': case '\x07':
+            *ptr-- = c + 48; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            break;
+        case '\x0B':
+        case '\x0E': case '\x0F':
+            *ptr-- = c - 10 + 65; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            break;
+        case '\x10': case '\x11': case '\x12': case '\x13': case '\x14': case '\x15': case '\x16': case '\x17': case '\x18': case '\x19':
+            *ptr-- = c -16 + 48; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            break;
+        case '\x1A': case '\x1B': case '\x1C': case '\x1D': case '\x1E': case '\x1F':
+            *ptr-- = c - 26 + 65; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            break;
         default:
             *ptr-- = c;
             break;
