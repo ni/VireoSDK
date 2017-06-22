@@ -33,6 +33,20 @@ describe('The Vireo EggShell readJSON api can read', function () {
             expect(actual).toBe('Hello');
         });
 
+        it('String Control Characters', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_StringControlCharacters');
+            var actual = JSON.parse(actualJSON);
+            expect(actualJSON).toBe('"\\u0000\\u0001\\u0002\\u0003\\u0004\\u0005\\u0006\\u0007\\b\\t\\n\\u000B\\f\\r\\u000E\\u000F\\u0010\\u0011\\u0012\\u0013\\u0014\\u0015\\u0016\\u0017\\u0018\\u0019\\u001A\\u001B\\u001C\\u001D\\u001E\\u001F"');
+            expect(actual).toBe('\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u000A\u000B\u000C\u000D\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F');
+        });
+
+        it('String Other JSON Escaped Characters', function () {
+            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_StringOtherJSONEscapedCharacters');
+            var actual = JSON.parse(actualJSON);
+            expect(actualJSON).toBe('"\\\\\\""'); // the JSON string is "\\\"" and to inline in JS we have to escape \
+            expect(actual).toBe('\\"');
+        });
+
         it('Double', function () {
             var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_NumericDouble');
             var actual = JSON.parse(actualJSON);
