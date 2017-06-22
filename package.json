@@ -58,5 +58,6 @@
     "url": "https://github.com/NI/VireoSDK/issues"
   },
   "homepage": "https://github.com/NI/VireoSDK#readme",
-  "main": "source/core/vireo.loader.js"
+  "main": "source/core/vireo.loader.js",
+  "dependencies": {}
 }
