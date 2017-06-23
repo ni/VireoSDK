@@ -4,4 +4,3 @@ JSON encoded control characters
 020
 Other JSON encoded characters that must be escaped
 {"other_characters":"\\\""}
-
