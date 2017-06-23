@@ -128,6 +128,7 @@
                 "FlattenCoA.via",
                 "FlattenCluster.via",
                 "FlattenJSON.via",
+                "FlattenJSONStrings.via",
                 "FlattenToJSONInfNaN.via",
                 "FlattenScalar.via",
                 "FloatConvertInteger.via",
