@@ -61,7 +61,7 @@
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             /* eslint complexity: ["error", 40]*/
-            var u0, u1, u2, u3, u4, u5;
+            var u0, u1, u2, u3;
             var idx = startIndex;
             var endIndex = startIndex + length;
             endIndex = endIndex > u8Array.length ? u8Array.length : endIndex;
@@ -77,7 +77,7 @@
                     continue;
                 }
 
-                // Validate the UTF-8 structure
+                // Look ahead to validate the UTF-8 structure
                 if ((u0 & 0xE0) === 0xC0) {
                     if (idx >= endIndex || (u8Array[idx] & 0xC0) !== 0x80) {
                         str += String.fromCharCode(0xFFFD);
@@ -100,28 +100,23 @@
                 }
 
                 // Valid UTf-8 structure so encode
+                // 2 byte sequences always less than surrogate pair so create codepoint and move on
                 u1 = u8Array[idx++] & 63;
                 if ((u0 & 0xE0) === 0xC0) {
                     str += String.fromCharCode(((u0 & 31) << 6) | u1);
                     continue;
                 }
+
+                // >2 byte sequences may require surrogate pair so create point and then check if should be transformed to surrogate pair
                 u2 = u8Array[idx++] & 63;
                 if ((u0 & 0xF0) === 0xE0) {
                     u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
                 } else {
                     u3 = u8Array[idx++] & 63;
-                    if ((u0 & 0xF8) === 0xF0) {
-                        u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
-                    } else {
-                        u4 = u8Array[idx++] & 63;
-                        if ((u0 & 0xFC) === 0xF8) {
-                            u0 = ((u0 & 3) << 24) | (u1 << 18) | (u2 << 12) | (u3 << 6) | u4;
-                        } else {
-                            u5 = u8Array[idx++] & 63;
-                            u0 = ((u0 & 1) << 30) | (u1 << 24) | (u2 << 18) | (u3 << 12) | (u4 << 6) | u5;
-                        }
-                    }
+                    u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
                 }
+
+                // Check if needs to be transformed to surrogate pair
                 if (u0 < 0x10000) {
                     str += String.fromCharCode(u0);
                 } else {
