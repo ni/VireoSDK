@@ -683,13 +683,18 @@ VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
     IntIndex elementSizeY = srcArrayY->ElementType()->TopAQSize();
     IntIndex elementSizeMax = maxArray->ElementType()->TopAQSize();
     IntIndex elementSizeMin = minArray->ElementType()->TopAQSize();
+    IntIndex* newDimensionLengths = srcArrayX->DimensionLengths();
+    IntIndex rank = srcArrayX->Rank();
     IntIndex count = srcArrayX->Length();
-    if (srcArrayY->Length() < count)
+    if (srcArrayY->Length() < count) {
         count = srcArrayY->Length();
+        newDimensionLengths = srcArrayY->DimensionLengths();
+        rank = srcArrayY->Rank();
+    }
 
     // Resize output to size of input arrays
-    maxArray->Resize1D(count);
-    minArray->Resize1D(count);
+    maxArray->ResizeDimensions(rank, newDimensionLengths, true);
+    minArray->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *beginX = srcArrayX->RawBegin();
     AQBlock1 *beginY = srcArrayY->RawBegin();
     AQBlock1 *beginMax = maxArray->RawBegin();  // might be in-place to one of the input arrays.
@@ -2038,13 +2043,28 @@ VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
     IntIndex lengthAX = srcArrayX ? srcArrayX->Length() : 0;
     IntIndex lengthALo = srcArrayLo ? srcArrayLo->Length() : 0;
     IntIndex lengthAHi = srcArrayHi ? srcArrayHi->Length() : 0;
-    IntIndex count = (srcArrayX && (!srcArrayLo || lengthAX < lengthALo)) ? lengthAX : srcArrayLo ? lengthALo : lengthAHi;
-    if (srcArrayHi && lengthAHi < count)
+    IntIndex* newDimensionLengths = null;
+    IntIndex rank = 0;
+    IntIndex count = INT32_MAX;
+    if (srcArrayX) {
+        count = lengthAX;
+        newDimensionLengths = srcArrayX->DimensionLengths();
+        rank = srcArrayX->Rank();
+    }
+    if (srcArrayLo && lengthALo <= count) {
+        count = lengthALo;
+        newDimensionLengths = srcArrayLo->DimensionLengths();
+        rank = srcArrayLo->Rank();
+    }
+    if (srcArrayHi && lengthAHi <= count) {
         count = lengthAHi;
-
+        newDimensionLengths = srcArrayHi->DimensionLengths();
+        rank = srcArrayHi->Rank();
+    }
     // Resize output to minimum of input arrays
-    coercedArray->Resize1D(count);
-    destArray->Resize1D(count);
+    VIREO_ASSERT(newDimensionLengths != null);
+    coercedArray->ResizeDimensions(rank, newDimensionLengths, true);
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *beginX = srcArrayX ? srcArrayX->RawBegin() : _ParamPointer(SX);
     AQBlock1 *beginLo = srcArrayLo ? srcArrayLo->RawBegin() : _ParamPointer(SLo);
     AQBlock1 *beginHi = srcArrayHi ? srcArrayHi->RawBegin() : _ParamPointer(SHi);
@@ -2158,8 +2178,10 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
     IntIndex count = srcArray->Length();
 
     // Resize output arrays to minimum of input arrays
-    destArray1->Resize1D(count);
-    destArray2->Resize1D(count);
+    IntIndex* newDimensionLengths = srcArray->DimensionLengths();
+    IntIndex rank = srcArray->Rank();
+    destArray1->ResizeDimensions(rank, newDimensionLengths, true);
+    destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *beginSrc = srcArray->RawBegin();
     AQBlock1 *beginDest1 = destArray1->RawBegin();
     AQBlock1 *beginDest2 = destArray2->RawBegin();  // might be in-place to one of the input arrays.
@@ -2191,7 +2213,9 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     IntIndex count = srcArray1->Length();
 
     // Resize output to size of input array
-    destArray->Resize1D(count);
+    IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
+    IntIndex rank = srcArray1->Rank();
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
@@ -2232,7 +2256,9 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     IntIndex count = srcArray1->Length();
 
     // Resize output to size of input array
-    destArray->Resize1D(count);
+    IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
+    IntIndex rank = srcArray1->Rank();
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
@@ -2292,7 +2318,9 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
     IntIndex count = srcArray1->Length();
 
     // Resize output to size of input arrays
-    destArray->Resize1D(count);
+    IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
+    IntIndex rank = srcArray1->Rank();
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
@@ -2320,8 +2348,10 @@ VIREO_FUNCTION_SIGNATURET(VectorUnary2OutputOp, AggregateUnOp2OutputInstruction)
     IntIndex count = srcArray1->Length();
 
     // Resize output to size of input arrays
-    destArray->Resize1D(count);
-    destArray2->Resize1D(count);
+    IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
+    IntIndex rank = srcArray1->Rank();
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
+    destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest2 = destArray2->RawBegin();  // might be in-place to one of the input arrays.

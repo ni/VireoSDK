@@ -1,0 +1,6 @@
+Everything pass: 'true'
+    One to one pass: 'true'
+    Two to one pass: 'true'
+    One to two pass: 'true'
+    Vector max min pass: 'true'
+    Vector in range pass: 'true'
