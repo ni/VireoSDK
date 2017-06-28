@@ -1,0 +1,31 @@
+define(Array1DInt32 dv(a(.Int32 *) (53546 45687796 2147483647 567675465)))
+define(Array2DInt32 dv(a(.Int32 * *) ((53546 45687796 ) (2147483647 567675465))))
+define(Array3DInt32 dv(a(.Int32 * * *) (((53546 45687796)(2147483647 567675465)(53546 45687796)))))
+  
+//---------------------------------------------------
+
+define(videf1 dv(.VirtualInstrument (
+    c(		
+        e(dv(a(.UInt16 *) () ) Array1D_U16_1)
+        e(dv(a(.UInt16 *) () ) Array1D_U16_2)
+        e(dv(a(.UInt16 * *) () ) Array2D_U16_1)
+        e(dv(a(.UInt16 * *) () ) Array2D_U16_2)
+        e(dv(a(.UInt16 * *) () ) Array3D_U16_1)
+        e(dv(a(.UInt16 * *) () ) Array3D_U16_2)
+    )
+    clump(1
+        Println("010 1D Array Split")
+        Split(Array1DInt32 Array1D_U16_1 Array1D_U16_2)
+        Printf("020    %z\n" Array1D_U16_1)
+        Printf("030    %z\n" Array1D_U16_2)
+        Println("040 2D Array Split")
+        Split(Array2DInt32 Array2D_U16_1 Array2D_U16_2)
+        Printf("050    %z\n" Array2D_U16_1)
+        Printf("060    %z\n" Array2D_U16_2)
+        Println("070 3D Array Split")
+        Split(Array3DInt32 Array3D_U16_1 Array3D_U16_2)
+        Printf("080    %z\n" Array3D_U16_1)
+        Printf("090    %z\n" Array3D_U16_2)
+    )
+)))
+enqueue(videf1)
