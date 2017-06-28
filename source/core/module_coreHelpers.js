@@ -56,10 +56,11 @@
             fpSync = fn;
         };
 
-        // Takes Vireo Strings that are UTF-8 encoded strings with known length and returns a JS string
-        // TODO mraj assumes valid UTF8 encoding https://github.com/ni/VireoSDK/issues/283
+        // Takes Vireo Strings that are UTF-8 encoded strings with known length that may be potentially invalid UTF-8 byte sequences
+        // and returns a JS string using the Unicode Replacement Character for invalid bytes
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
+            /* eslint complexity: ["error", 40]*/
             var u0, u1, u2, u3, u4, u5;
             var idx = startIndex;
             var endIndex = startIndex + length;
@@ -75,6 +76,30 @@
                     str += String.fromCharCode(u0);
                     continue;
                 }
+
+                // Validate the UTF-8 structure
+                if ((u0 & 0xE0) === 0xC0) {
+                    if (idx >= endIndex || (u8Array[idx] & 0xC0) !== 0x80) {
+                        str += String.fromCharCode(0xFFFD);
+                        continue;
+                    }
+                } else if ((u0 & 0xF0) === 0xE0) {
+                    if (idx + 1 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80) {
+                        str += String.fromCharCode(0xFFFD);
+                        continue;
+                    }
+                } else if ((u0 & 0xF8) === 0xF0) {
+                    if (idx + 2 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80 || (u8Array[idx + 2] & 0xC0) !== 0x80) {
+                        str += String.fromCharCode(0xFFFD);
+                        continue;
+                    }
+                } else {
+                    // u0 byte says multi-byte utf-8 encoding but is invalid so replace this byte and move on
+                    str += String.fromCharCode(0xFFFD);
+                    continue;
+                }
+
+                // Valid UTf-8 structure so encode
                 u1 = u8Array[idx++] & 63;
                 if ((u0 & 0xE0) === 0xC0) {
                     str += String.fromCharCode(((u0 & 31) << 6) | u1);
