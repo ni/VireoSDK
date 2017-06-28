@@ -119,9 +119,13 @@
                 // Check if needs to be transformed to surrogate pair
                 if (u0 < 0x10000) {
                     str += String.fromCharCode(u0);
-                } else {
+                } else if (u0 <= 0x10FFFF) {
                     var ch = u0 - 0x10000;
                     str += String.fromCharCode(0xD800 | (ch >> 10), 0xDC00 | (ch & 0x3FF));
+                } else {
+                    // Values from 0x10FFFF to 0x1FFFFF are valid UTF-8 structures but UTF-16 can only represent up to 0x10FFFF with surrogate pairs and Unicode max is 0x10FFFF
+                    // TODO(mraj) Would be better to emit one replacement character per byte
+                    str += String.fromCharCode(0xFFFD);
                 }
             }
         };
