@@ -56,8 +56,33 @@
             fpSync = fn;
         };
 
-        // Takes Vireo Strings that are UTF-8 encoded strings with known length that may be potentially invalid UTF-8 byte sequences
+        Module.coreHelpers.findCStringLength = function (u8Array, startIndex) {
+            var i,
+                end = u8Array.length;
+
+            for (i = startIndex; i < end; i += 1) {
+                if (u8Array[i] === 0) {
+                    return i - startIndex;
+                }
+            }
+            return -1;
+        };
+
+        // WARNING: DO NOT USE UNLESS STACK SAVED FIRST
+        Module.coreHelpers.writeJSStringToStack = function (str) {
+            /* eslint-disable no-bitwise */
+            // See https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L155
+            // at most 4 bytes per UTF-8 code point, +1 for the trailing '\0'
+            var strMaxStackLength = (str.length << 2) + 1;
+            var strStackPointer = Module.Runtime.stackAlloc(strMaxStackLength);
+            Module.stringToUTF8(str, strStackPointer, strMaxStackLength);
+            return strStackPointer;
+        };
+
+        // Takes Vireo Strings that are non-safe UTF-8 encoded strings with known length that may be potentially invalid UTF-8 byte sequences
         // and returns a JS string using the Unicode Replacement Character for invalid bytes
+        // safe utf-8 refers to forbidding unicode reserved blocks, forbidding internal use blocks, preventing overlong sequences, preventing surrogate code points in utf, etc.
+        // this code does not validate for safety, only for utf-8 byte sequence structure
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             /* eslint complexity: ["error", 40]*/
@@ -66,6 +91,9 @@
             var endIndex = startIndex + length;
             endIndex = endIndex > u8Array.length ? u8Array.length : endIndex;
             var str = '';
+            if (length <= 0) {
+                return str;
+            }
             while (true) {
                 if (idx >= endIndex) {
                     return str;

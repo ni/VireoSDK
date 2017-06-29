@@ -57,7 +57,7 @@ void String::AppendViaDecoded(SubString* str)
 
 /**
  * This one will escape the input substring and then append it to current string
- * e.g. It is used for JSON formatting.
+ * e.g. It is used for JSON formatting. See the document on http://json.org
  * dest is the location in the string to append.
  * This function is well implemented so that it support in place operation
  * which means the input substring could point to the String object.
@@ -65,7 +65,7 @@ void String::AppendViaDecoded(SubString* str)
  * */
 void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
 {
-    // if inplaceiNDEX is positive, it means it's an in place operation
+    // if inplaceIndex is positive, it means it's an in place operation
     IntIndex inplaceIndex = -1;
     if (source >= this->Begin() && source < this->End()) {
         inplaceIndex = (IntIndex) (source - this->Begin());
@@ -74,7 +74,6 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     const Utf8Char* begin = source;
     for (IntIndex i=0; i< len; i++) {
         Utf8Char c = *(begin+i);
-        // see the document on http://json.org. need handle more control character and \uhexadecimal
         // TODO(mraj) should also replace multibyte line separator and paragraph separator for interop http://timelessrepo.com/json-isnt-a-javascript-subset
         switch (c) {
         case '\b': case '\t': case '\n':  // x08, x09, x0A
