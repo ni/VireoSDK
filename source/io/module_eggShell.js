@@ -306,6 +306,13 @@
             return str;
         };
 
+        // Note this function is tied to the underlying buffer, a copy is not made
+        Module.eggShell.dataReadStringAsArray_NoCopy = function (stringPointer) {
+            var begin = Data_GetStringBegin(stringPointer);
+            var length = Data_GetStringLength(stringPointer);
+            return Module.HEAP8.subarray(begin, begin + length);
+        };
+
         // Source should be a JS String
         Module.eggShell.dataWriteString = function (destination, source) {
             var sourceLength = Module.lengthBytesUTF8(source);

@@ -575,7 +575,7 @@
 
             var buffer;
             if (bufferPointer !== NULL) {
-                buffer = Module.eggShell.dataReadString(bufferPointer);
+                buffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
             }
 
             var httpClient;
