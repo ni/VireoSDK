@@ -573,9 +573,11 @@
                 }
             }
 
-            var buffer;
+            var buffer, typedArrayBuffer;
             if (bufferPointer !== NULL) {
-                buffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
+                typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
+                // TODO(mraj) would like to use the typed array directly but not supported in iOS and PhantomJS
+                buffer = new Blob([typedArrayBuffer]);
             }
 
             var httpClient;
