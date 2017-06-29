@@ -5,7 +5,8 @@
     var convertToAbsoluteUrl = function (relativePath) {
         // For some reason resolving localhost on Windows 7 can be slow, so use home ip directly
         // Also some processes were on port 5000 so switched to higher port
-        return 'http://127.0.0.1:64526/' + relativePath;
+        var host = window.location.hostname === 'localhost' ? '127.0.0.1' : window.location.hostname;
+        return 'http://' + host + ':64526/' + relativePath;
     };
 
     var serverOnline;
@@ -77,7 +78,7 @@
         }
         if (serverOnline === false) {
             if (serverWarningShown === false) {
-                console.warn('HTTPBin Server offline, skipping HTTP tests');
+                console.warn('HTTPBin Server offline, skipping HTTP tests. Attempted to query the url: ' + convertToAbsoluteUrl('get?show_env=1'));
                 serverWarningShown = true;
             }
             pending();

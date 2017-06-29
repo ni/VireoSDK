@@ -204,7 +204,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('validating a simple 200 response with simple buffer', function (done) {
+    it('validating a simple 200 response with simple buffer #FailsPhantomJS', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -255,7 +255,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('validating a simple 200 response with non-ascii buffer', function (done) {
+    it('validating a simple 200 response with non-ascii buffer #FailsPhantomJS', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
