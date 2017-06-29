@@ -16,7 +16,7 @@ describe('Performing a GET request', function () {
     var vireo;
 
     var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-    var httpUtf8TextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8.txt');
+    var httpUtf8TextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8Demo.txt');
     var httpGetOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
     var httpGetOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
     var httpGetParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetParallel.via');

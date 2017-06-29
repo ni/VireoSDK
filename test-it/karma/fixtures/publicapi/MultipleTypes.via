@@ -69,6 +69,49 @@ define (MyVI dv(.VirtualInstrument (
 
         e(dv(.String 'Hello')dataItem_String)
         e(dv(.String '\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u000A\u000B\u000C\u000D\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F') dataItem_StringControlCharacters)
+
+        e(dv('\x00') dataItem_utf8sequence_firstinsequence1byte)
+        e(dv('\xC2\x80') dataItem_utf8sequence_firstinsequence2byte)
+        e(dv('\xE0\xA0\x80') dataItem_utf8sequence_firstinsequence3byte)
+        e(dv('\xF0\x90\x80\x80') dataItem_utf8sequence_firstinsequence4byte)
+
+        e(dv('\x7F') dataItem_utf8sequence_lastinsequence1byte) // U+007F
+        e(dv('\xDF\xBF') dataItem_utf8sequence_lastinsequence2byte) // U+07FF
+        e(dv('\xEF\xBF\xBF') dataItem_utf8sequence_lastinsequence3byte) // U+FFFF
+        e(dv('\xF4\x8F\xBF\xBF') dataItem_utf8sequence_lastinsequence4byte_lastvalidunicode) // U+10FFFF (also last valid UTF-16)
+        e(dv('\xF7\xBF\xBF\xBF') dataItem_utf8sequence_lastinsequence4byte_lastpossibleutf8) // U+1FFFFF (last utf-8 is invalid UTF-16 and invalid unicode)
+
+        e(dv('\xED\x9F\xBF') dataItem_utf8sequence_lastbeforesurrogate) // U+D7FF
+        e(dv('\xED\xA0\x80') dataItem_utf8sequence_firstinsurrogate) // U+D800 (reserved unicode point, a safe utf-8 system would not allow)
+        e(dv('\xED\xBF\xBF') dataItem_utf8sequence_lastinsurrogate) // U+DFFF (reserved unicode point, a safe utf-8 system would not allow)
+        e(dv('\xEE\x80\x80') dataItem_utf8sequence_firstaftersurrogate) // U+E000
+
+        e(dv('\x80') dataItem_utf8sequence_firstcontinuationbyte)
+        e(dv('\xBF') dataItem_utf8sequence_lastcontinuationbyte)
+
+        e(dv('\x80\x80') dataItem_utf8sequence_2continuationbytes)
+        e(dv('\x80\x80\x80') dataItem_utf8sequence_3continuationbytes)
+        e(dv('\x80\x80\x80\x80') dataItem_utf8sequence_4continuationbytes)
+        e(dv('\x80\x80\x80\x80\x80') dataItem_utf8sequence_5continuationbytes)
+        e(dv('\x80\x80\x80\x80\x80\x80') dataItem_utf8sequence_6continuationbytes)
+        e(dv('\x80\x80\x80\x80\x80\x80\x80') dataItem_utf8sequence_7continuationbytes)
+
+        e(dv('\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF') dataItem_utf8sequence_allcontinuationbytes)
+        e(dv('\xC0 \xC1 \xC2 \xC3 \xC4 \xC5 \xC6 \xC7 \xC8 \xC9 \xCA \xCB \xCC \xCD \xCE \xCF \xD0 \xD1 \xD2 \xD3 \xD4 \xD5 \xD6 \xD7 \xD8 \xD9 \xDA \xDB \xDC \xDD \xDE \xDF') dataItem_utf8sequence_allstartbytesfor2bytes)
+        e(dv('\xE0 \xE1 \xE2 \xE3 \xE4 \xE5 \xE6 \xE7 \xE8 \xE9 \xEA \xEB \xEC \xED \xEE \xEF') dataItem_utf8sequence_allstartbytesfor3bytes)
+        e(dv('\xF0 \xF1 \xF2 \xF3 \xF4 \xF5 \xF6 \xF7') dataItem_utf8sequence_allstartbytesfor4bytes)
+        e(dv('\xF8 \xF9 \xFA \xFB') dataItem_utf8sequence_allstartbytesfor5bytes) // invalid utf-8
+        e(dv('\xFC \xFD') dataItem_utf8sequence_allstartbytesfor6bytes) // invalid utf-8
+
+        e(dv('\xC0') dataItem_utf8sequence_2bytesequencewithlastbytemissing)
+        e(dv('\xE0\x80') dataItem_utf8sequence_3bytesequencewithlastbytemissing)
+        e(dv('\xF0\x80\x80') dataItem_utf8sequence_4bytesequencewithlastbytemissing)
+        e(dv('\xC0\xE0\x80\xF0\x80\x80') dataItem_utf8sequence_concatenatedtruncatedsequences)
+
+        e(dv('\xFE') dataItem_utf8sequence_impossible1)
+        e(dv('\xFF') dataItem_utf8sequence_impossible2)
+        e(dv('\xFE\xFE\xFF\xFF') dataItem_utf8sequence_impossible3)
+
         e(dv(.String '\\"') dataItem_StringOtherJSONEscapedCharacters)
         e(dv(.Double 123.456)dataItem_NumericDouble)
         e(dv(.Double nan)dataItem_NumericDoubleNaN)

@@ -33,7 +33,6 @@
             'EggShell_Delete',
             'EggShell_ReadDouble',
             'EggShell_WriteDouble',
-            'EggShell_ReadValueString',
             'EggShell_WriteValueString',
             'EggShell_GetArrayMetadata',
             'EggShell_GetArrayDimLength',
@@ -62,7 +61,6 @@
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
         var EggShell_ReadDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', 'string', 'string']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
-        var EggShell_ReadValueString = Module.cwrap('EggShell_ReadValueString', 'string', ['number', 'string', 'string', 'string']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetArrayMetadata = Module.cwrap('EggShell_GetArrayMetadata', 'number', ['number', 'string', 'string', 'number', 'number', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
@@ -132,7 +130,19 @@
         };
 
         Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (vi, path) {
-            return EggShell_ReadValueString(v_userShell, vi, path, 'JSON');
+            var stack = Module.Runtime.stackSave(); // Stack save only needed for input parameter string or array
+
+            var type = 'JSON';
+            var viStackPointer = Module.coreHelpers.writeJSStringToStack(vi);
+            var pathStackPointer = Module.coreHelpers.writeJSStringToStack(path);
+            var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
+
+            var responsePointer = Module._EggShell_ReadValueString(v_userShell, viStackPointer, pathStackPointer, typeStackPointer);
+            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAP8, responsePointer);
+            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAP8, responsePointer, responseLength);
+
+            Module.Runtime.stackRestore(stack);
+            return response;
         };
 
         Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (vi, path, value) {
