@@ -1,4 +1,4 @@
-describe('Tests that fail to run on PhantomJS', function () {
+describe('Tests that fail to run on PhantomJS #FailsPhantomJS', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
