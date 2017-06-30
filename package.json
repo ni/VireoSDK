@@ -28,6 +28,7 @@
   "scripts": {
     "test": "npm run lint && npm run karma -- --browsers Chrome && npm run karma-longrun -- --browsers Chrome",
     "lint": "eslint .",
+    "karma": "karma start --single-run",
     "karma-start": "karma start",
     "karma-win": "karma start --single-run --browsers PhantomJS --skip-tags FailsPhantomJS,Slow && karma start --single-run --browsers Chrome,Firefox,IE,Edge",
     "karma-coverage": "karma start karma.coverage.conf.js",
