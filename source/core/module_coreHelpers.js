@@ -81,7 +81,7 @@
 
         // Takes Vireo Strings that are non-safe UTF-8 encoded strings with known length that may be potentially invalid UTF-8 byte sequences
         // and returns a JS string using the Unicode Replacement Character for invalid bytes
-        // safe utf-8 refers to forbidding unicode reserved blocks, forbidding internal use blocks, preventing overlong sequences, preventing surrogate code points in utf, etc.
+        // safe utf-8 refers to forbidding unicode reserved blocks, forbidding internal use blocks, preventing surrogate code points in utf, etc.
         // this code does not validate for safety, only for utf-8 byte sequence structure
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
@@ -131,7 +131,12 @@
                 // 2 byte sequences always less than surrogate pair so create codepoint and move on
                 u1 = u8Array[idx++] & 63;
                 if ((u0 & 0xE0) === 0xC0) {
-                    str += String.fromCharCode(((u0 & 31) << 6) | u1);
+                    u0 = ((u0 & 31) << 6) | u1;
+                    if (u0 < 0x80) {
+                        str += '\uFFFD\uFFFD';
+                        continue;
+                    }
+                    str += String.fromCharCode(u0);
                     continue;
                 }
 
@@ -139,9 +144,17 @@
                 u2 = u8Array[idx++] & 63;
                 if ((u0 & 0xF0) === 0xE0) {
                     u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
+                    if (u0 < 0x800) {
+                        str += '\uFFFD\uFFFD\uFFFD';
+                        continue;
+                    }
                 } else {
                     u3 = u8Array[idx++] & 63;
                     u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
+                    if (u0 < 0x10000) {
+                        str += '\uFFFD\uFFFD\uFFFD\uFFFD';
+                        continue;
+                    }
                 }
 
                 // Check if needs to be transformed to surrogate pair

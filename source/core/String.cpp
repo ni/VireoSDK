@@ -123,7 +123,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
             *ptr-- = '\\'; *ptr-- = '\\';
             break;
         case '"':
-            *ptr--  = '\"'; *ptr-- = '\\';
+            *ptr--  = '"'; *ptr-- = '\\';
             break;
         case '\x00': case '\x01': case '\x02': case '\x03': case '\x04': case '\x05': case '\x06': case '\x07':
             *ptr-- = c + 48; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';

@@ -115,6 +115,14 @@ define (MyVI dv(.VirtualInstrument (
         e(dv('\xFF') dataItem_utf8sequence_impossible2)
         e(dv('\xFE\xFE\xFF\xFF') dataItem_utf8sequence_impossible3)
 
+        e(dv('\xC0\x80') dataItem_utf8sequence_overlongnull2byte)
+        e(dv('\xE0\x80\x80') dataItem_utf8sequence_overlongnull3byte)
+        e(dv('\xF0\x80\x80\x80') dataItem_utf8sequence_overlongnull4byte)
+
+        e(dv('\xC1\xBF') dataItem_utf8sequence_overlonglargest2byte) // U+7F
+        e(dv('\xE0\x9F\xBF') dataItem_utf8sequence_overlonglargest3byte) // U+7FF
+        e(dv('\xF0\x8F\xBF\xBF') dataItem_utf8sequence_overlonglargest4byte) // U+FFFF
+
         e(dv(.String '\\"') dataItem_StringOtherJSONEscapedCharacters)
         e(dv(.Double 123.456)dataItem_NumericDouble)
         e(dv(.Double nan)dataItem_NumericDoubleNaN)
