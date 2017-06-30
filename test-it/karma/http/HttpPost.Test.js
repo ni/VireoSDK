@@ -255,7 +255,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('validating a simple 200 response with non-ascii buffer #FailsPhantomJS', function (done) {
+    it('validating a simple 200 response with utf-8 buffer #FailsPhantomJS', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -263,6 +263,50 @@ describe('Performing a POST request', function () {
         var url = httpBinHelpers.convertToAbsoluteUrl('post');
         viPathWriter('url', url);
         var buffer = 'Iñtërnâtiônàlizætiøn☃💩';
+        viPathWriter('buffer', buffer);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+            var requestUrl = httpParser.parseUrl(httpBinBody.url);
+            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.data).toBe(buffer);
+            expect(requestUrl.pathname).toBe('/post');
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a simple 200 response with binary buffer #FailsPhantomJS', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('post');
+        viPathWriter('url', url);
+        var buffer = '\xCB\xD2\x7C\x42\x00\xA9\x78\xC2';
         viPathWriter('buffer', buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
