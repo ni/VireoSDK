@@ -14,15 +14,16 @@ module.exports = function (config) {
         'test-it/karma/helloworld/*.Test.js',
         'test-it/karma/publicapi/*.Test.js',
         'test-it/karma/vtrsuite/*.Test.js',
-        'test-it/karma/http/*.Test.js'
+        'test-it/karma/http/*.Test.js',
+        'test-it/karma/longrun/*.Test.js'
     ]);
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     sharedConfig.logLevel = config.LOG_INFO;
 
-    // Timeout for jasmine set to 10000 in extendJasmineTimeout.js so warn if test time getting close
-    sharedConfig.reportSlowerThan = 8000;
+    // Timeout for jasmine set to 50000 in ExtendJasmineTimeout.js so warn if test time getting close
+    sharedConfig.reportSlowerThan = 40000;
 
     config.set(sharedConfig);
 };

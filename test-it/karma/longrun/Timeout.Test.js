@@ -1,4 +1,4 @@
-describe('Timeout test suite', function () {
+describe('Timeout test suite #Slow', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
