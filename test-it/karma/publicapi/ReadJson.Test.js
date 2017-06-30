@@ -207,6 +207,27 @@ describe('The Vireo EggShell readJSON api can read', function () {
             );
         });
 
+        it('Overlong UTF-8 sequences', function () {
+            readTest('dataItem_utf8sequence_overlongnull2byte',
+                '\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_overlongnull3byte',
+                '\uFFFD\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_overlongnull4byte',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_overlonglargest2byte',
+                '\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_overlonglargest3byte',
+                '\uFFFD\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_overlonglargest4byte',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+        });
+
         it('Double', function () {
             readTest('dataItem_NumericDouble', 123.456);
         });

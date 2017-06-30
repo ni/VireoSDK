@@ -16,7 +16,8 @@ describe('Performing a GET request', function () {
     var vireo;
 
     var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-    var httpUtf8TextUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8Demo.txt');
+    var httpUtf8DemoUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8Demo.txt');
+    var httpUtf8TestUrl = fixtures.convertToAbsoluteFromFixturesDir('http/Utf8Test.txt');
     var httpGetOpenMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenMethodClose.via');
     var httpGetOpenAddMethodCloseViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetOpenAddMethodClose.via');
     var httpGetParallelViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetParallel.via');
@@ -24,7 +25,7 @@ describe('Performing a GET request', function () {
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             httpGetMethodViaUrl,
-            httpUtf8TextUrl,
+            httpUtf8DemoUrl,
             httpGetOpenMethodCloseViaUrl,
             httpGetOpenAddMethodCloseViaUrl,
             httpGetParallelViaUrl
@@ -244,7 +245,7 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a response with UTF8 data', function (done) {
-        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(httpUtf8TextUrl));
+        var bodyText = textFormat.normalizeLineEndings(fixtures.loadAbsoluteUrl(httpUtf8DemoUrl));
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -283,7 +284,44 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('validating a response with binary data', function (done) {
+    it('validating a response with binary data from UTF stress test', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        viPathWriter('url', httpUtf8TestUrl);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBeNonEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a response with binary data seeded bytes', function (done) {
         // Body bytes: '\xCB\xD2\x7C\x42\x00\xA9\x78\xC2';
         var bodyReadAsString = '\uFFFD\uFFFD\x7C\x42\x00\uFFFD\x78\uFFFD';
 
@@ -311,6 +349,158 @@ describe('Performing a GET request', function () {
             // body
             var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
             expect(responseBody).toBe(bodyReadAsString);
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a response with binary data image png', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('image/png');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBeNonEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a response with binary data image jpeg', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('image/jpeg');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBeNonEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a response with binary data image webp', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('image/webp');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBeNonEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a response with binary data image svg', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('image/svg');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(200);
+            expect(responseHeader.reasonPhrase).toBe('OK');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+            expect(responseBody).toBeNonEmptyString();
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
