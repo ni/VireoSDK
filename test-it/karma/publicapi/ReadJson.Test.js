@@ -74,6 +74,10 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 '"\uD800\uDC00"',
                 '\uD800\uDC00'
             );
+            readTestWithJSON('dataItem_utf8sequence_firstinsequence5byte',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
             readTestWithJSON('dataItem_utf8sequence_lastinsequence1byte',
                 '"\u007F"',
                 '\u007F'
@@ -90,10 +94,13 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 '"\uDBFF\uDFFF"',
                 '\uDBFF\uDFFF'
             );
-            // TODO mraj the last valid UTF-8 should be 4 replacement code points
-            readTestWithJSON('dataItem_utf8sequence_lastinsequence4byte_lastpossibleutf8',
-                '"\uFFFD"',
-                '\uFFFD'
+            readTestWithJSON('dataItem_utf8sequence_lastinsequence4byte_firsthighinvalidutf8',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_lastinsequence4byte_lasthighinvalidutf8',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
             );
         });
 

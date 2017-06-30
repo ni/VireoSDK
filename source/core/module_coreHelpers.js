@@ -108,22 +108,22 @@
                 // Look ahead to validate the UTF-8 structure
                 if ((u0 & 0xE0) === 0xC0) {
                     if (idx >= endIndex || (u8Array[idx] & 0xC0) !== 0x80) {
-                        str += String.fromCharCode(0xFFFD);
+                        str += '\uFFFD';
                         continue;
                     }
                 } else if ((u0 & 0xF0) === 0xE0) {
                     if (idx + 1 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80) {
-                        str += String.fromCharCode(0xFFFD);
+                        str += '\uFFFD';
                         continue;
                     }
                 } else if ((u0 & 0xF8) === 0xF0) {
                     if (idx + 2 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80 || (u8Array[idx + 2] & 0xC0) !== 0x80) {
-                        str += String.fromCharCode(0xFFFD);
+                        str += '\uFFFD';
                         continue;
                     }
                 } else {
                     // u0 byte says multi-byte utf-8 encoding but is invalid so replace this byte and move on
-                    str += String.fromCharCode(0xFFFD);
+                    str += '\uFFFD';
                     continue;
                 }
 
@@ -152,8 +152,7 @@
                     str += String.fromCharCode(0xD800 | (ch >> 10), 0xDC00 | (ch & 0x3FF));
                 } else {
                     // Values from 0x10FFFF to 0x1FFFFF are valid UTF-8 structures but UTF-16 can only represent up to 0x10FFFF with surrogate pairs and Unicode max is 0x10FFFF
-                    // TODO(mraj) Would be better to emit one replacement character per byte
-                    str += String.fromCharCode(0xFFFD);
+                    str += '\uFFFD\uFFFD\uFFFD\uFFFD';
                 }
             }
         };

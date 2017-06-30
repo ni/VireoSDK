@@ -138,8 +138,8 @@
             var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
 
             var responsePointer = Module._EggShell_ReadValueString(v_userShell, viStackPointer, pathStackPointer, typeStackPointer);
-            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAP8, responsePointer);
-            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAP8, responsePointer, responseLength);
+            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, responsePointer);
+            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, responsePointer, responseLength);
 
             Module.Runtime.stackRestore(stack);
             return response;
@@ -302,7 +302,7 @@
         Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
-            var str = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAP8, begin, length);
+            var str = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, begin, length);
             return str;
         };
 
@@ -310,7 +310,7 @@
         Module.eggShell.dataReadStringAsArray_NoCopy = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
-            return Module.HEAP8.subarray(begin, begin + length);
+            return Module.HEAPU8.subarray(begin, begin + length);
         };
 
         // Source should be a JS String
