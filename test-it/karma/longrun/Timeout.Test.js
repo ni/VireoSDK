@@ -12,12 +12,10 @@ describe('Timeout test suite #Slow', function () {
     var vireo;
 
     var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
-    var httpDefaultTimeoutViaUrl = fixtures.convertToAbsoluteFromFixturesDir('longrun/DefaultTimeout.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            httpGetMethodViaUrl,
-            httpDefaultTimeoutViaUrl
+            httpGetMethodViaUrl
         ], done);
     });
 
@@ -36,7 +34,7 @@ describe('Timeout test suite #Slow', function () {
         vireo = new Vireo();
     });
 
-    it('GET method with timeout 0s times out with httpbin delay of 30s', function (done) {
+    it('GET method with timeout 0s times out with httpbin delay of 10s', function (done) {
         var timeout = 0;
         var timeoutEpsilon = 1000;
 
@@ -44,7 +42,7 @@ describe('Timeout test suite #Slow', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/10');
         viPathWriter('url', url);
         viPathWriter('timeout', timeout);
 
@@ -69,14 +67,14 @@ describe('Timeout test suite #Slow', function () {
         });
     });
 
-    it('GET method with timeout 1s times out with httpbin delay of 30s', function (done) {
+    it('GET method with timeout 1s times out with httpbin delay of 10s', function (done) {
         var timeout = 1000;
 
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/10');
         viPathWriter('url', url);
         viPathWriter('timeout', timeout);
 
@@ -101,16 +99,16 @@ describe('Timeout test suite #Slow', function () {
         });
     });
 
-    it('GET method with default timeout of 10 seconds times out with httpbin delay of 30s', function (done) {
-        var timeout = 10000;
+    it('GET method with timeout of 5 seconds times out with httpbin delay of 10s', function (done) {
+        var timeout = 5000;
 
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDefaultTimeoutViaUrl);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/10');
         viPathWriter('url', url);
-        // Do not write timeout, default of 10s should be used
+        viPathWriter('timeout', timeout);
 
         var startTime = performance.now();
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -134,15 +132,16 @@ describe('Timeout test suite #Slow', function () {
         });
     });
 
-    it('GET method with default timeout of 10 seconds times and httpbin delay of 30s is aborted after 5s', function (done) {
-        var abortTimeout = 5000;
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDefaultTimeoutViaUrl);
+    it('GET method with timeout of 5 seconds times and httpbin delay of 10s is aborted after 2s', function (done) {
+        var timeout = 5000;
+        var abortTimeout = 2000;
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('delay/30');
+        var url = httpBinHelpers.convertToAbsoluteUrl('delay/10');
         viPathWriter('url', url);
-        // Do not write timeout, default of 10s should be used
+        viPathWriter('timeout', timeout);
 
         var startTime = performance.now();
 
