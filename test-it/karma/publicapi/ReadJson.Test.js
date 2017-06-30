@@ -90,9 +90,113 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 '"\uDBFF\uDFFF"',
                 '\uDBFF\uDFFF'
             );
+            // TODO mraj the last valid UTF-8 should be 4 replacement code points
             readTestWithJSON('dataItem_utf8sequence_lastinsequence4byte_lastpossibleutf8',
                 '"\uFFFD"',
                 '\uFFFD'
+            );
+        });
+
+        it('String UTF-8 around surrogate border', function () {
+            readTestWithJSON('dataItem_utf8sequence_lastbeforesurrogate',
+                '"\uD7FF"',
+                '\uD7FF'
+            );
+            readTestWithJSON('dataItem_utf8sequence_firstinsurrogate',
+                '"\uD800"',
+                '\uD800'
+            );
+            readTestWithJSON('dataItem_utf8sequence_lastinsurrogate',
+                '"\uDFFF"',
+                '\uDFFF'
+            );
+            readTestWithJSON('dataItem_utf8sequence_firstaftersurrogate',
+                '"\uE000"',
+                '\uE000'
+            );
+        });
+
+        it('Invalid continuation bytes', function () {
+            readTestWithJSON('dataItem_utf8sequence_firstcontinuationbyte',
+                '"\uFFFD"',
+                '\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_lastcontinuationbyte',
+                '"\uFFFD"',
+                '\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_2continuationbytes',
+                '"\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_3continuationbytes',
+                '"\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_4continuationbytes',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_5continuationbytes',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_6continuationbytes',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_7continuationbytes',
+                '"\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD"',
+                '\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+            readTestWithJSON('dataItem_utf8sequence_allcontinuationbytes',
+                '"' + Array(65).join('\uFFFD') + '"',
+                Array(65).join('\uFFFD')
+            );
+        });
+
+        it('Invalid start bytes', function () {
+            readTest('dataItem_utf8sequence_allstartbytesfor2bytes',
+                Array(33).join('\uFFFD ').trim()
+            );
+            readTest('dataItem_utf8sequence_allstartbytesfor3bytes',
+                Array(17).join('\uFFFD ').trim()
+            );
+            readTest('dataItem_utf8sequence_allstartbytesfor4bytes',
+                Array(9).join('\uFFFD ').trim()
+            );
+            readTest('dataItem_utf8sequence_allstartbytesfor5bytes',
+                Array(5).join('\uFFFD ').trim()
+            );
+            readTest('dataItem_utf8sequence_allstartbytesfor6bytes',
+                Array(3).join('\uFFFD ').trim()
+            );
+        });
+
+        it('Missing last byte in sequence', function () {
+            readTest('dataItem_utf8sequence_2bytesequencewithlastbytemissing',
+                '\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_3bytesequencewithlastbytemissing',
+                '\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_4bytesequencewithlastbytemissing',
+                '\uFFFD\uFFFD\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_concatenatedtruncatedsequences',
+                '\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD'
+            );
+        });
+
+        it('Impossible UTF-8 sequences', function () {
+            readTest('dataItem_utf8sequence_impossible1',
+                '\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_impossible2',
+                '\uFFFD'
+            );
+            readTest('dataItem_utf8sequence_impossible3',
+                '\uFFFD\uFFFD\uFFFD\uFFFD'
             );
         });
 
