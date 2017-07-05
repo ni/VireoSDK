@@ -81,16 +81,16 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
         case '\\': case '"':
             needLength += 2;
             break;
-        // escape control characters
-        case '\x00': case '\x01': case '\x02': case '\x03': case '\x04': case '\x05': case '\x06': case '\x07':
-        case '\x0B':
-        case '\x0E': case '\x0F':
-        case '\x10': case '\x11': case '\x12': case '\x13': case '\x14': case '\x15': case '\x16': case '\x17': case '\x18': case '\x19':
-        case '\x1A': case '\x1B': case '\x1C': case '\x1D': case '\x1E': case '\x1F':
-            needLength += 6;  // \uXXXX
-            break;
         default:
-            needLength++;
+            // escape control characters
+            if ( (c >= '\x00' && c <= '\x07') ||
+                 (c == '\x0B' || c == '\x0E' || c == '\x0F') ||
+                 (c >= '\x10' && c <= '\x19') ||
+                 (c >= '\x1A' && c<= '\x1F') ) {
+                     needLength += 6;  // \uXXXX
+            } else {
+                needLength++;
+            }
             break;
         }
     }
@@ -125,21 +125,18 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
         case '"':
             *ptr--  = '"'; *ptr-- = '\\';
             break;
-        case '\x00': case '\x01': case '\x02': case '\x03': case '\x04': case '\x05': case '\x06': case '\x07':
-            *ptr-- = c + '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
-            break;
-        case '\x0B':
-        case '\x0E': case '\x0F':
-            *ptr-- = c - '\x0A' + 'A'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
-            break;
-        case '\x10': case '\x11': case '\x12': case '\x13': case '\x14': case '\x15': case '\x16': case '\x17': case '\x18': case '\x19':
-            *ptr-- = c - '\x10' + '0'; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
-            break;
-        case '\x1A': case '\x1B': case '\x1C': case '\x1D': case '\x1E': case '\x1F':
-            *ptr-- = c - '\x1A' + 'A'; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
-            break;
         default:
-            *ptr-- = c;
+            if (c >= '\x00' && c <= '\x07') {
+                *ptr-- = c + '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            } else if (c == '\x0B' || c == '\x0E' || c == '\x0F') {
+                *ptr-- = c - '\x0A' + 'A'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            } else if (c >= '\x10' && c <= '\x19') {
+                *ptr-- = c - '\x10' + '0'; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            } else if (c >= '\x1A' && c<= '\x1F') {
+                *ptr-- = c - '\x1A' + 'A'; *ptr-- = '1'; *ptr-- = '0'; *ptr-- = '0'; *ptr-- = 'u'; *ptr-- = '\\';
+            } else {
+                *ptr-- = c;
+            }
             break;
        }
     }
