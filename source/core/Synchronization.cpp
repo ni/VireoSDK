@@ -811,10 +811,17 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, TypedArra
 {
     RefNumValType* refnumPtr = _Param(0);
     ErrorCluster *errPtr = _ParamPointer(3);
+
+    if (!refnumPtr) {
+        if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
+        return _NextInstruction();
+    }
+
     QueueRef queueRef = NULL;
     TypeRef type = refnumPtr->GetSubElement(0);
     QueueCore *pQV = NULL;
-    if (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
+    if (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
         pQV = queueRef->ObjBegin();
     }
     if (_ParamPointer(2)) {  // elements array
@@ -831,17 +838,13 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumValType*, StringRef, TypedArra
             _Param(2)->Resize1D(0);
         }
     }
-    if (refnumPtr) {
-        if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum(), _ParamPointer(1))) {
-            // was a named queue alias
-        } else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
-            if (errPtr && !errPtr->status)
-                errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
-        } else {
-            type->ClearData(&queueRef);
-        }
-    } else if (errPtr && !errPtr->status) {
-        errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
+    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum(), _ParamPointer(1))) {
+        // was a named queue alias
+    } else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
+        if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kQueueArgErr, "ReleaseQueue", true);
+    } else {
+        type->ClearData(&queueRef);
     }
     return _NextInstruction();
 }
