@@ -227,6 +227,7 @@
                 "QueueRefNumEnqueueFront.via",
                 "QueueRefNumGetStatus.via",
                 "QueueRefNumNamed.via",
+                "QueueInvalidRefnum.via",
                 "Random.via",
                 "ReadWriteUsingPaths.via",
                 "ReentrantMemLeak2.via",

@@ -1,0 +1,26 @@
+
+define(TestProgram dv(.VirtualInstrument (
+    c(
+        e(.QueueRefNum<.Double> qDouble)
+        e(.ErrorCluster err)
+    )
+    clump (
+        Enqueue(qDouble 0.0 0 * err)
+        Printf("Enqueue:%z %z\n" err.status err.code)
+        ReleaseQueue(qDouble * * err)
+        Printf("ReleaseQueue:%z %z\n" err.status err.code)
+        Dequeue(qDouble * * * err)
+        Printf("Dequeue:%z %z\n" err.status err.code)
+        PeekQueue(qDouble * 0 * err)
+        Printf("PeekQueue:%z %z\n" err.status err.code)
+        GetQueueStatus(qDouble * * * * * * * err)
+        Printf("GetQueueStatus:%z %z\n" err.status err.code)
+        LossyEnqueue(qDouble 0 * * err)
+        Printf("LossyEnqueue:%z %z\n" err.status err.code)
+        EnqueueFront(qDouble 0 * * err)
+        Printf("EnqueueFront:%z %z\n" err.status err.code)
+        FlushQueue(qDouble * err)
+        Printf("FlushQueue:%z %z\n" err.status err.code)
+    )
+) ) )
+enqueue(TestProgram)
