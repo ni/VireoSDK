@@ -669,7 +669,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
     return pInstruction;
 }
 //------------------------------------------------------------
-bool GetMinimumArrayDimensions(TypedArrayCoreRef sourceArray1, TypedArrayCoreRef sourceArray2,
+static bool GetMinimumArrayDimensions(TypedArrayCoreRef sourceArray1, TypedArrayCoreRef sourceArray2,
     ArrayDimensionVector* newDimensionLengths, IntIndex* newRank)
 {
     VIREO_ASSERT(sourceArray1 != null);
@@ -699,6 +699,7 @@ bool GetMinimumArrayDimensions(TypedArrayCoreRef sourceArray1, TypedArrayCoreRef
     return isInputArraysDimensionsSame;
 }
 //------------------------------------------------------------
+// This function is used by the "Max and Min" primitive when both inputs are arrays
 VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
 {
     TypedArrayCoreRef srcArrayX = _Param(VX);
@@ -2052,7 +2053,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
 
 //------------------------------------------------------------
 typedef Instruction7<AQBlock1, AQBlock1, AQBlock1, Boolean, Boolean, AQBlock1, AQBlock1> InRangeCompareInstructionArgs;
-
+// This function is used by the "In Range and Coerce" primitive when one of the inputs is an array
 VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
 {
     InRangeAndCoerceInstruction::IRCFlags flags = _ParamImmediate(flags);
@@ -2213,6 +2214,8 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
 }
 
 //------------------------------------------------------------
+// This function is used by primitives like "Add" when one of the inputs is an scalar and the other is an array
+// Cases in which destArray2 is not null is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
 VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VY);
@@ -2229,6 +2232,8 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
     IntIndex rank = srcArray1->Rank();
     destArray->ResizeDimensions(rank, newDimensionLengths, true);
+    if (destArray2)
+        destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
@@ -2256,6 +2261,8 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+// This function is used by primitives like "Add" when one of the inputs is an scalar and the other is an array
+// Cases in which destArray2 is not null is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
 VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VX);
@@ -2272,6 +2279,8 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
     IntIndex* newDimensionLengths = srcArray1->DimensionLengths();
     IntIndex rank = srcArray1->Rank();
     destArray->ResizeDimensions(rank, newDimensionLengths, true);
+    if (destArray2)
+        destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
@@ -2320,6 +2329,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarScalarConvertBinaryOp, AggregateBinOpInstruction
     return _NextInstruction();
 }
 //------------------------------------------------------------
+// This function is used by primitives like "Not" when the input is an array
 VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VSource);
@@ -2348,6 +2358,8 @@ VIREO_FUNCTION_SIGNATURET(VectorUnaryOp, AggregateUnOpInstruction)
 
     return _NextInstruction();
 }
+//------------------------------------------------------------
+// This function is used by primitives like "Complex to Real and Imaginary" when the input is an array
 VIREO_FUNCTION_SIGNATURET(VectorUnary2OutputOp, AggregateUnOp2OutputInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VSource);
