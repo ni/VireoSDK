@@ -79,13 +79,18 @@
             return strStackPointer;
         };
 
-        // Takes Vireo Strings that are non-safe UTF-8 encoded strings with known length that may be potentially invalid UTF-8 byte sequences
-        // and returns a JS string using the Unicode Replacement Character for invalid bytes
-        // safe utf-8 refers to forbidding unicode reserved blocks, forbidding internal use blocks, preventing surrogate code points in utf, etc.
-        // this code does not validate for safety, only for utf-8 byte sequence structure
+        // Takes Vireo Strings (non-safe UTF-8 encoded byte buffers with known length) and returns JS strings (non-safe UTF-16 encoded character arrays)
+        // Any bytes that are not part of a valid UTF-8 byte sequence are replaced with the Unicode Replacement Character
+        // In addition, code points represented as overlong UTF-8 byte sequences have the byte sequence replaced with an equal number of Unicode Replacement Characters
+        // This code does not validate for UTF-8 safety, only for UTF-8 byte sequence structure.
+        // As such, the following UTF-8 safety checks are not performed: forbidding unicode reserved blocks, forbidding internal use blocks, forbidding the surrogate code point range in UTF-8 byte sequences, etc.
         Module.coreHelpers.sizedUtf8ArrayToJSString = function (u8Array, startIndex, length) {
             /* eslint-disable no-continue, no-plusplus, no-bitwise */
             /* eslint complexity: ["error", 40]*/
+            var REPLACEMENT_CODEPOINT = '\uFFFD';
+            var REPLACEMENT_CODEPOINT_LENGTH_2 = '\uFFFD\uFFFD';
+            var REPLACEMENT_CODEPOINT_LENGTH_3 = '\uFFFD\uFFFD\uFFFD';
+            var REPLACEMENT_CODEPOINT_LENGTH_4 = '\uFFFD\uFFFD\uFFFD\uFFFD';
             var u0, u1, u2, u3;
             var idx = startIndex;
             var endIndex = startIndex + length;
@@ -95,77 +100,102 @@
                 return str;
             }
             while (true) {
+                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
+                // This algorithm was adapted from the emscripten source: https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L543
+
+                // Algorithm based on the following UTF-8 byte structure:
+                // [1 byte] 0xxx xxxx
+                // [2 byte] 110x xxxx   10xx xxxx
+                // [3 byte] 1110 xxxx   10xx xxxx   10xx xxxx
+                // [4 byte] 1111 0xxx   10xx xxxx   10xx xxxx   10xx xxxx
+                // Note: The [4 byte] sequence can numerically encode a 21-bit number representing values up to U+1FFFFF however the last valid Unicode code point is U+10FFFF
+                // Note: Numerically a character must be represented with the minimum number of bytes in a UTF-8 byte sequence as possible. For example NULL (U+0000) can be represented as
+                // [1 byte] with 7-bits of zero, [2 bytes] with 11 bits of zero, [3 bytes] with 16 bits of zero, or [4 bytes] with 21 bits of zero.
+                // Using a longer byte sequence than necessary is referred to as overlong encoding and is an invalid UTF-8 byte sequence.
+
+                // Continue as long as there are bytes to process
                 if (idx >= endIndex) {
                     return str;
                 }
-                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
+
+                // [1 byte] sequences take the value as is and continue
                 u0 = u8Array[idx++];
                 if (!(u0 & 0x80)) {
                     str += String.fromCharCode(u0);
                     continue;
                 }
 
-                // Look ahead to validate the UTF-8 structure
+                // Look ahead to validate the UTF-8 structure for [2 byte] to [4 byte] representations
+                // For invalid UTF-8 byte structures replace the current byte and continue
+                // Note: at this point idx refers to the first byte after u0
                 if ((u0 & 0xE0) === 0xC0) {
                     if (idx >= endIndex || (u8Array[idx] & 0xC0) !== 0x80) {
-                        str += '\uFFFD';
+                        str += REPLACEMENT_CODEPOINT;
                         continue;
                     }
                 } else if ((u0 & 0xF0) === 0xE0) {
                     if (idx + 1 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80) {
-                        str += '\uFFFD';
+                        str += REPLACEMENT_CODEPOINT;
                         continue;
                     }
                 } else if ((u0 & 0xF8) === 0xF0) {
                     if (idx + 2 >= endIndex || (u8Array[idx] & 0xC0) !== 0x80 || (u8Array[idx + 1] & 0xC0) !== 0x80 || (u8Array[idx + 2] & 0xC0) !== 0x80) {
-                        str += '\uFFFD';
+                        str += REPLACEMENT_CODEPOINT;
                         continue;
                     }
                 } else {
                     // u0 byte says multi-byte utf-8 encoding but is invalid so replace this byte and move on
-                    str += '\uFFFD';
+                    str += REPLACEMENT_CODEPOINT;
                     continue;
                 }
 
-                // Valid UTf-8 structure so encode
-                // 2 byte sequences always less than surrogate pair so create codepoint and move on
+                // At this point UTF-8 byte sequence following byte u0 is valid
+
+                // [2 byte] sequences are always below the UTF-16 surrogate pair range so take the value and continue
+                // Note: The first code point in a [2 byte] sequence is U+0080, so any code point less than that is overlong and is replaced
                 u1 = u8Array[idx++] & 63;
                 if ((u0 & 0xE0) === 0xC0) {
                     u0 = ((u0 & 31) << 6) | u1;
                     if (u0 < 0x80) {
-                        str += '\uFFFD\uFFFD';
+                        str += REPLACEMENT_CODEPOINT_LENGTH_2;
                         continue;
                     }
                     str += String.fromCharCode(u0);
                     continue;
                 }
 
-                // >2 byte sequences may require surrogate pair so create point and then check if should be transformed to surrogate pair
+                // [3 byte] and [4 byte] sequences may require UTF-16 surrogate pair so create point but do not append to the string until checking
+                // Note: The first code point in a [3 byte] sequence is U+0800, so any code point less than that is overlong and is replaced
+                // Note: The first code point in a [4 byte] sequence is U+10000, so any code point less than that is overlong and is replaced
                 u2 = u8Array[idx++] & 63;
                 if ((u0 & 0xF0) === 0xE0) {
                     u0 = ((u0 & 15) << 12) | (u1 << 6) | u2;
                     if (u0 < 0x800) {
-                        str += '\uFFFD\uFFFD\uFFFD';
+                        str += REPLACEMENT_CODEPOINT_LENGTH_3;
                         continue;
                     }
                 } else {
                     u3 = u8Array[idx++] & 63;
                     u0 = ((u0 & 7) << 18) | (u1 << 12) | (u2 << 6) | u3;
                     if (u0 < 0x10000) {
-                        str += '\uFFFD\uFFFD\uFFFD\uFFFD';
+                        str += REPLACEMENT_CODEPOINT_LENGTH_4;
                         continue;
                     }
                 }
 
-                // Check if needs to be transformed to surrogate pair
+                // Codepoints in the range U+10000 to U+10FFFF must be encoded as a UTF-16 surrogate pair
+                // A surrogate pair is a high surrogate UTF-16 character with range 0xD800-0xDBFF and a low surrogate UTF-16 character with range 0xDC00-0xDFFF
+                // The algorithm for encoding a codepoint as a UTF-16 surrogate pair is available here: https://en.wikipedia.org/wiki/UTF-16#U.2B10000_to_U.2B10FFFF
+                // Note: Code points less than U+10000 are saved as a single UTF-16 character
+                // Note: Code points >= U+10000 and <= 0x10FFFF are saved as two UTF-16 characters using the surrogate pair algorithm
+                // Note: Code points greater than U+10FFFF are outside the Unicode range and replaced with the Unicode Replacement Character
                 if (u0 < 0x10000) {
                     str += String.fromCharCode(u0);
                 } else if (u0 <= 0x10FFFF) {
                     var ch = u0 - 0x10000;
                     str += String.fromCharCode(0xD800 | (ch >> 10), 0xDC00 | (ch & 0x3FF));
                 } else {
-                    // Values from 0x10FFFF to 0x1FFFFF are valid UTF-8 structures but UTF-16 can only represent up to 0x10FFFF with surrogate pairs and Unicode max is 0x10FFFF
-                    str += '\uFFFD\uFFFD\uFFFD\uFFFD';
+                    str += REPLACEMENT_CODEPOINT_LENGTH_4;
                 }
             }
         };
