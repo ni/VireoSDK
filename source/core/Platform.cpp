@@ -96,11 +96,23 @@ namespace Vireo {
 Platform gPlatform;
 
 //============================================================
+#if kVireoOS_windows
+LONG WINAPI UnhandledExceptionFilter(_EXCEPTION_POINTERS *lpTopLevelExceptionFilter) {
+    fprintf(stderr, "Uncaught exception such as Access Violation\n");
+    ExitProcess(1);  // non-zero return code
+}
+#endif
+
 void Platform::Setup()
 {
 #if defined(VIREO_EMBEDDED_EXPERIMENT)
     std_io_init();
     std_cpp_init();
+#endif
+
+#if kVireoOS_windows
+    SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);  // do not display different error dialogs
 #endif
 }
 
