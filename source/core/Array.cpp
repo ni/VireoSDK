@@ -366,7 +366,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayReplaceElt, TypedArrayCoreRef, TypedArrayCoreRef,
 
 //------------------------------------------------------------
 // arguments: output array, input array, index1, newElement1/subarray1(, indexk, newElementk/subarrayk)
-struct ArrayReplaceSubsetStruct : public VarArgInstruction
+struct ArrayReplaceSubsetParamBlock : public VarArgInstruction
 {
     _ParamDef(TypedArrayCoreRef, ArrayOut);
     _ParamDef(TypedArrayCoreRef, ArrayIn);
@@ -375,7 +375,7 @@ struct ArrayReplaceSubsetStruct : public VarArgInstruction
 };
 
 // ArrayReplaceSubset function for 1d array, support multiple inputs
-VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetStruct)
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetParamBlock)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
@@ -467,7 +467,7 @@ void replace2dArray(TypedArrayCoreRef arrayOut, TypedArrayCoreRef arrayIn, void*
 
 // ArrayReplaceSubset function for 2d array, the function can be used to replace a single element, a row or a column
 // This function is obsoleted by prim ArrayReplaceSubset, implemented by ArrayReplaceSubsetND
-VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetParamBlock)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
@@ -521,7 +521,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetStruct)
 
 // ArrayReplaceSubset function for N-D array, the function can be used to replace a single element or any sub-array
 // by leaving the appropriate indexes unwired (*)
-VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetStruct)
+VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetParamBlock)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
@@ -656,7 +656,7 @@ struct IndexAndLength {
     IntIndex *len;
 };
 
-struct ArraySubsetNDStruct : public VarArgInstruction
+struct ArraySubsetNDParamBlock : public VarArgInstruction
 {
     _ParamDef(TypedArrayCoreRef, ArrayOut);
     _ParamDef(TypedArrayCoreRef, ArrayIn);
@@ -664,7 +664,7 @@ struct ArraySubsetNDStruct : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDStruct)
+VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDParamBlock)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
@@ -1346,7 +1346,7 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     return _NextInstruction();
 }
 
-struct ArrayReshapeStruct : public VarArgInstruction
+struct ArrayReshapeParamBlock : public VarArgInstruction
 {
     _ParamDef(TypedArrayCoreRef, ArrayOut);
     _ParamDef(TypedArrayCoreRef, ArrayIn);
@@ -1355,7 +1355,7 @@ struct ArrayReshapeStruct : public VarArgInstruction
 };
 
 // ArrayReshape function
-VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeStruct)
+VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeParamBlock)
 {
     TypedArrayCoreRef arrayOut = _Param(ArrayOut);
     TypedArrayCoreRef arrayIn = _Param(ArrayIn);
