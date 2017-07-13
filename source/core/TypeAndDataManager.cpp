@@ -2841,7 +2841,7 @@ VIREO_FUNCTION_SIGNATURE4(TypeMakeVectorType, TypeManagerRef, TypeRef, TypeRef, 
     return _NextInstruction();
 }
 //------------------------------------------------------------
-struct TypeMakeClusterType : public VarArgInstruction
+struct TypeMakeClusterTypeParamBlock : public VarArgInstruction
 {
     _ParamDef(TypeManagerRef, tm);
     _ParamDef(TypeRef, computedType);

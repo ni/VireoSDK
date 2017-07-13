@@ -1801,7 +1801,7 @@ VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, v
 }
 
 //------------------------------------------------------------
-struct StringFormatStruct : public VarArgInstruction
+struct StringFormatParamBlock : public VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
     _ParamDef(StringRef, StringFormat);
@@ -1810,7 +1810,7 @@ struct StringFormatStruct : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatStruct) {
+VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatParamBlock) {
     Int32 count = (_ParamVarArgCount() -3)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
@@ -1896,7 +1896,7 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
 }
 
 //------------------------------------------------------------
-struct StringScanStruct : public VarArgInstruction
+struct StringScanParamBlock : public VarArgInstruction
 {
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);
@@ -1909,7 +1909,7 @@ struct StringScanStruct : public VarArgInstruction
 };
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanStruct)
+VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
 {
     SubString input = _Param(StringInput)->MakeSubStringAlias();
     SubString format = _Param(StringFormat)->MakeSubStringAlias();
