@@ -51,6 +51,7 @@ deploy:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
   artifact: esh_i686-pc-windows-msvc
   force_update: true
+  # AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
+  # branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
   on:
-    branch: appveyor-gh-releases
     appveyor_repo_tag: true
