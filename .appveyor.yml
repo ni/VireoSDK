@@ -13,32 +13,32 @@ install:
   - chocolatey install make
   - chocolatey install gnuwin32-coreutils.portable
   - npm install
-  - pip install --user -r requirements.txt
-  - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
-  - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
-  - emscripten-sdk\emsdk update
-  - emscripten-sdk\emsdk install sdk-1.37.9-64bit
-  - emscripten-sdk\emsdk activate sdk-1.37.9-64bit
-  - emcc -v
+#  - pip install --user -r requirements.txt
+#  - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
+#  - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
+#  - emscripten-sdk\emsdk update
+#  - emscripten-sdk\emsdk install sdk-1.37.9-64bit
+#  - emscripten-sdk\emsdk activate sdk-1.37.9-64bit
+#  - emcc -v
 platform:
   - Win32
 configuration:
   - Debug
 before_build:
-  - ps: Start-Process npm "run httpbin" -PassThru
+#  - ps: Start-Process npm "run httpbin" -PassThru
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
-  - make lint
-  - npm run lint
+#  - make lint
+#  - npm run lint
 build:
   project: Vireo_VS/VireoCommandLine.sln
-after_build:
-  - make vjs
+#after_build:
+#  - make vjs
 test_script:
-  - make testjs
+#  - make testjs
   - make testnative
-  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
-  - npm run karma -- --browsers Chrome,Firefox,IE
+#  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
+#  - npm run karma -- --browsers Chrome,Firefox,IE
 # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
 artifacts:
   - path: dist\Debug\esh.exe
@@ -52,5 +52,5 @@ deploy:
   artifact: esh_i686-pc-windows-msvc
   force_update: true
   on:
-    branch: incoming
+    branch: appveyor-gh-releases
     appveyor_repo_tag: true
