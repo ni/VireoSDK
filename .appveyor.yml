@@ -39,4 +39,8 @@ test_script:
   - make testnative
   - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
   - npm run karma -- --browsers Chrome,Firefox,IE
-  
+# Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
+artifacts:
+  - path: dist\Debug\esh.exe
+    name: esh_i686-pc-windows-msvc
+    type: File
