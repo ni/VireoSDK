@@ -44,3 +44,13 @@ artifacts:
   - path: dist\Debug\esh.exe
     name: esh_i686-pc-windows-msvc
     type: File
+deploy:
+  provider: Github
+  description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
+  auth_token:
+    secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
+  artifact: esh_i686-pc-windows-msvc
+  force_update: true
+  on:
+    branch: incoming
+    appveyor_repo_tag: true
