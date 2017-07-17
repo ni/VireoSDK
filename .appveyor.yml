@@ -39,10 +39,8 @@ test_script:
 #  - make testnative
 #  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
 #  - npm run karma -- --browsers Chrome,Firefox,IE
-# Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
 
-# AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
-# branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
+# Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
 after_test:
   - set ESH_i686_DEBUG=esh_%APPVEYOR_REPO_TAG_NAME%_i686-pc-windows-msvc_debug.zip
   - 7z a %ESH_i686_DEBUG% %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
