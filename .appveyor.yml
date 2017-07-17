@@ -51,7 +51,7 @@ artifacts:
     type: Zip
 deploy:
   provider: GitHub
-  description: 'test deploy'
+  description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   auth_token:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
   artifact: esh_i686-pc-windows-msvc
