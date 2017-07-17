@@ -32,7 +32,7 @@ before_install:
 # - cat ~/.emscripten
 # - emcc -v
 # - gcc -v
-before_script:
+# before_script:
 # - nohup npm run httpbin &
 # - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 # - curl http://127.0.0.1:64526/get?show_env=1
@@ -40,7 +40,7 @@ before_script:
 # - npm run lint
 # - make
 # - make unittest
-# script:
+script:
 # - make testjs
 # - make testnative
 # - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
