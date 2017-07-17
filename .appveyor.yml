@@ -52,7 +52,7 @@ deploy:
   provider: GitHub
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   auth_token:
-    secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
+    secure: Asuu2xJwFoy8ML6DIsZf2mqlgdO2b1dQRCJALbYpUFNP/3DjuhBPDcWiSxTK6iw/
   artifact: '%ESH_i686_DEBUG%'
   force_update: true
   on:
