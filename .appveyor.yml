@@ -10,9 +10,9 @@ init:
 - cmd: pip -V
 - ps: $PSVersionTable
 install:
-  - chocolatey install make
-  - chocolatey install gnuwin32-coreutils.portable
-  - npm install
+#  - chocolatey install make
+#  - chocolatey install gnuwin32-coreutils.portable
+#  - npm install
 #  - pip install --user -r requirements.txt
 #  - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
 #  - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
@@ -36,7 +36,7 @@ build:
 #  - make vjs
 test_script:
 #  - make testjs
-  - make testnative
+#  - make testnative
 #  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
 #  - npm run karma -- --browsers Chrome,Firefox,IE
 # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
