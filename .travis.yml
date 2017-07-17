@@ -47,6 +47,8 @@ script:
 - npm run karma -- --browsers Firefox
 before_deploy:
 - npm run doxygen
+- export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"
+- zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
 deploy:
   - provider: npm
     skip_cleanup: true
@@ -66,6 +68,16 @@ deploy:
     on: 
       tags: true
       repo: ni/VireoSDK
+  - provider: releases
+    overwrite: true
+    skip_cleanup: true
+    file:
+      - $ESH_64_RELEASE
+    on:
+      tags: true
+      repo: ni/VireoSDK
+    api_key:
+      secure: fMjCwcnQ0mPHXqeCBXAv/XeymPjGTH/EiX/g0MOikDwrPDwlRFOjTZRuOxcluPYilQTEWzTCiuyvkhA4dWmWVcnXU4CjxJBlkdbjTeut1Z3p3O62gp+x1qUnqMiJTsGU8+y8MRg25BCtM7XxdDr/7D8J1OT65HNh2hIS0nzCEG5ZYpSKSjv/tJvaz9gYCB3HF4klIcVBrO+2wjVVvVpkCqIHR44LqEAzqUm79x+CtutnTBfc7dvvMh5OrB7K1QivaCqJnmnaOGEaGL5zRNgikGG0xh6j44oj3hDNT0PHPGbBq+u205hqeP/LBK5IzTZqgoYWs5wV1q4B9gwMd0nJsEVldB+ICUEJxyc1NQtdrO4i/hNts4uv4WEzGRjCkGjvlRc512caAB8RImDbS9JJSE0fFNc+hQKOeBe30WgdlBjxsSqQZSlmuE1ssHxooqbLo7ahf1n851f3Ov3jjSpYxX2pRy+2lHoPzCs/uUkzNKofB2YtlpYpAvtyox2+khvI5DdSUkqUDqttsAsujS58JKQ9qoHMEXJbpIBsoQ9eeY4QXc7ihKuQa7RkFDeSS65FZ9colOHO9+4AcGgGolghFNcGkQaf1S3LU9xDgUb9cwSUOvGKYyzmIPlOE/ObXpPyfJt7WEfyJ3OxMO1gS5Sy4P6KNgxX+Thohdukrm3Es5s=
 after_script:
 - jobs -l
 - kill $!
