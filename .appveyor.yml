@@ -48,12 +48,13 @@ artifacts:
     name: esh_i686-pc-windows-msvc
     type: File
 deploy:
-  name: github-release
   provider: Github
-  description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
+  description: 'test deploy'
   auth_token:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
   artifact: esh_i686-pc-windows-msvc
+  draft: false
+  prerelease: false
   force_update: true
   on:
     appveyor_repo_tag: true
