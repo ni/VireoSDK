@@ -73,7 +73,7 @@ deploy:
     overwrite: true
     skip_cleanup: true
     file:
-      - esh_x86_64-unknown-linux-gnu.zip
+      - esh_x86_64-unknown-linux-gnu_release.zip
     on:
       tags: true
     api_key:
