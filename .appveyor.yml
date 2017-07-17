@@ -44,18 +44,18 @@ test_script:
 # AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
 # branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
 after_test:
-  - set ESH_i686_DEBUG=esh_$(APPVEYOR_REPO_TAG_NAME)_i686-pc-windows-msvc_debug.zip
-  - 7z a $(ESH_i686_DEBUG) %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
+  - set ESH_i686_DEBUG=esh_%APPVEYOR_REPO_TAG_NAME%_i686-pc-windows-msvc_debug.zip
+  - 7z a %ESH_i686_DEBUG% %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
 artifacts:
-  - path: $(ESH_i686_DEBUG)
-    name: $(ESH_i686_DEBUG)
+  - path: '%ESH_i686_DEBUG%'
+    name: '%ESH_i686_DEBUG%'
     type: Zip
 deploy:
   provider: GitHub
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   auth_token:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
-  artifact: $(ESH_i686_DEBUG)
+  artifact: '%ESH_i686_DEBUG%'
   force_update: true
   on:
     appveyor_repo_tag: true
