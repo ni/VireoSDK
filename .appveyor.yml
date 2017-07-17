@@ -48,7 +48,7 @@ artifacts:
     name: esh_i686-pc-windows-msvc
     type: File
 deploy:
-  provider: Github
+  provider: GitHub
   description: 'test deploy'
   auth_token:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
