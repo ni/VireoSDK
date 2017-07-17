@@ -113,4 +113,5 @@ env/
 *.tgz
 coverage/
 emscripten-sdk/
+emsdk/
 nohup.out
