@@ -49,7 +49,8 @@ script:
 before_deploy:
 # - npm run doxygen
 # I think travis is making a 64-bit Release build...
-  - zip -j esh_x86_64-unknown-linux-gnu_release.zip dist/esh README.md LICENSE.txt
+  - export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"
+  - zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
 deploy:
   # - provider: npm
   #   skip_cleanup: true
@@ -73,7 +74,7 @@ deploy:
     overwrite: true
     skip_cleanup: true
     file:
-      - esh_x86_64-unknown-linux-gnu_release.zip
+      - $ESH_64_RELEASE
     on:
       tags: true
     api_key:
