@@ -1,0 +1,15 @@
+# Each line is a file pattern followed by one or more owners.
+# More info: https://github.com/blog/2392-introducing-code-owners
+
+# These owners will be the default owners for everything in the repo.
+*                           @cglzaguilar
+
+# Owners of specific locations in the repo.
+# Order is important. The last matching pattern has the most precedence.
+make-it/*                   @spathiwa @rajsite
+Vireo_VS/*                  @cglzaguilar @sanmut
+Vireo_Xcode/*               @spathiwa
+*.js                        @rajsite
+*.md                        @rajsite
+*.txt                       @rajsite
+.*                          @rajsite
