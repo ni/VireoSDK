@@ -22,54 +22,52 @@ before_install:
 - pip -V
 - firefox -v
 - doxygen --version
-# install:
-#- npm install
-#- pip install --user -r requirements.txt
-#- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-#- if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
-# - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
-# - source emscripten-sdk/emsdk_env.sh
-# - cat ~/.emscripten
-# - emcc -v
-# - gcc -v
-# before_script:
-# - nohup npm run httpbin &
-# - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
-# - curl http://127.0.0.1:64526/get?show_env=1
-# - make lint
-# - npm run lint
-# - make
-# - make unittest
+install:
+- npm install
+- pip install --user -r requirements.txt
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+- if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
+- emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
+- source emscripten-sdk/emsdk_env.sh
+- cat ~/.emscripten
+- emcc -v
+- gcc -v
+before_script:
+- nohup npm run httpbin &
+- while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
+- curl http://127.0.0.1:64526/get?show_env=1
+- make lint
+- npm run lint
+- make
+- make unittest
 script:
-# - make testjs
-# - make testnative
-# - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
-# - npm run karma -- --browsers Firefox
-  - make native
+- make testjs
+- make testnative
+- npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
+- npm run karma -- --browsers Firefox
 before_deploy:
-# - npm run doxygen
-# I think travis is making a 64-bit Release build...
-  - export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"
-  - zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
+- npm run doxygen
+- export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"
+- zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
 deploy:
-  # - provider: npm
-  #   skip_cleanup: true
-  #   email: webapps.ops@ni.com
-  #   api_key:
-  #       secure: I68ZjWDNHfycyjfItlPZLotfXc4R4wRmSxl/jXJ3D29SsW0E7tr7QYVwrDRwbGbRdG9OGmWoLHzw7b27He04qtS8Vaw4OhmoYqibNRDnWOhvdrcWa5L/2Hcaw1LxMclOepsGxzMktOp2pJR22L7od1iPi7KocPV5NgsHtp/fcC6K2Mqnh63Hiq5jgZvXVTF0JHanLpu3W52Yl5iEpQ9UomKS/8ZLdWW5Z/QzQvWNqS3V/54Q5rJBMIQOv4yDeF57HtYkXqI3IJIErdbIQyldq4r6LbwQ2gOhu7DvNi/yZ2ZB0n5eo1nA8bDgTlRvFBi1tWr4qAvc/8O0kOEBkwwQjnJFcR6acWixskKbLpy3djodUkdXVq7AcWo4gVhKO+hRiUZc5P4F6xfGJSXuzmog+xHhVdaCjgYRli8Lp3m4lK2nUo3BW0pSbqvKcUVZZ03kVy0Ikr0rK1fFC3JYF+clB6jmeTb5vWTg6vks9sXPzRFf1fr5GxUjig+dEmV72R1RYvmdqII11+7sVJyuJHynUIa8MvEiR72t83KY2IHggbjw+hh+Nk+kOM31jZTrh9TUCTQ48HCCbjoOAey46vZ5yTaIqG3PM1R0jska8GqyW8H2xDQHWm6IIROcteY2AD53hMRBWvhDz1sNY87X2Y6kvua16BCtluJcS/+fYxvOlaY=
-  #   on:
-  #     tags: true
-  #     repo: ni/VireoSDK
-  # - provider: pages
-  #   skip_cleanup: true
-  #   local_dir: gh-pages/
-  #   email: vireobot@users.noreply.github.com
-  #   name: Vireo Bot
-  #   github_token:
-  #     secure: PJD/9XrPDUATO1O5SZXSosi0maiSFh4YblSOGhbcNacJmuWGYTpRSdXS+uEGI7vtegFrfl7Yo2AoyVZ4shKArjwbVSjUOyBPphXJfRV/8nV7I90d+mvJ8xR4F/2CED1ddHAbnsHVzluXCus8L1Mr6CVrO2qURlZ6SG6BR0jn6hfOR93VzEotmHbF32Pm+MpQWMcDOch1lUkEy4+u96LcfhA6qlQEVH6/MJs3o+sDqe4LlAY6SGKAq6rzwG3w5ZmGQENN+1cXYy7fQz2gNzro3UW59RoWzYECl7DApkM00LbhHu/i0xtDhrZpJV8sdCb2dgbe2HreT2egKdwT02uhotg9Z/mgEf2Com5B8hZlXSf8RbiGmaRHm/s1xv7jmjbDbrStnoPwH7zH8W9DTq2l8EpeueWyNhbx0q6inmi2ZgWgHpo9bk2Cb7gPXKV50WWjzq8ldzCbbBvKP11jKZhsADu0tDuakZpLLiNeDQN0a1/qkOl9AFSrqYe5imaVxAdM6andvH94sume5X5taBppDG9Apu0sfiM6fqrsph1fJM+cjIuwOXDI2OlQIZeQtHSEH7uj1B0FraZ/rLBY28tmlLQw9IbulmlhBrhwyehVZNP/3F0pDvy2FQrkLG30kkBu9fenREZI4w2Hy6l1HmblMhcSzABRJG3LhJKBjR9FzPQ=
-  #   on: 
-  #     tags: true
-  #     repo: ni/VireoSDK
+  - provider: npm
+    skip_cleanup: true
+    email: webapps.ops@ni.com
+    api_key:
+        secure: I68ZjWDNHfycyjfItlPZLotfXc4R4wRmSxl/jXJ3D29SsW0E7tr7QYVwrDRwbGbRdG9OGmWoLHzw7b27He04qtS8Vaw4OhmoYqibNRDnWOhvdrcWa5L/2Hcaw1LxMclOepsGxzMktOp2pJR22L7od1iPi7KocPV5NgsHtp/fcC6K2Mqnh63Hiq5jgZvXVTF0JHanLpu3W52Yl5iEpQ9UomKS/8ZLdWW5Z/QzQvWNqS3V/54Q5rJBMIQOv4yDeF57HtYkXqI3IJIErdbIQyldq4r6LbwQ2gOhu7DvNi/yZ2ZB0n5eo1nA8bDgTlRvFBi1tWr4qAvc/8O0kOEBkwwQjnJFcR6acWixskKbLpy3djodUkdXVq7AcWo4gVhKO+hRiUZc5P4F6xfGJSXuzmog+xHhVdaCjgYRli8Lp3m4lK2nUo3BW0pSbqvKcUVZZ03kVy0Ikr0rK1fFC3JYF+clB6jmeTb5vWTg6vks9sXPzRFf1fr5GxUjig+dEmV72R1RYvmdqII11+7sVJyuJHynUIa8MvEiR72t83KY2IHggbjw+hh+Nk+kOM31jZTrh9TUCTQ48HCCbjoOAey46vZ5yTaIqG3PM1R0jska8GqyW8H2xDQHWm6IIROcteY2AD53hMRBWvhDz1sNY87X2Y6kvua16BCtluJcS/+fYxvOlaY=
+    on:
+      tags: true
+      repo: ni/VireoSDK
+  - provider: pages
+    skip_cleanup: true
+    local_dir: gh-pages/
+    email: vireobot@users.noreply.github.com
+    name: Vireo Bot
+    github_token:
+      secure: PJD/9XrPDUATO1O5SZXSosi0maiSFh4YblSOGhbcNacJmuWGYTpRSdXS+uEGI7vtegFrfl7Yo2AoyVZ4shKArjwbVSjUOyBPphXJfRV/8nV7I90d+mvJ8xR4F/2CED1ddHAbnsHVzluXCus8L1Mr6CVrO2qURlZ6SG6BR0jn6hfOR93VzEotmHbF32Pm+MpQWMcDOch1lUkEy4+u96LcfhA6qlQEVH6/MJs3o+sDqe4LlAY6SGKAq6rzwG3w5ZmGQENN+1cXYy7fQz2gNzro3UW59RoWzYECl7DApkM00LbhHu/i0xtDhrZpJV8sdCb2dgbe2HreT2egKdwT02uhotg9Z/mgEf2Com5B8hZlXSf8RbiGmaRHm/s1xv7jmjbDbrStnoPwH7zH8W9DTq2l8EpeueWyNhbx0q6inmi2ZgWgHpo9bk2Cb7gPXKV50WWjzq8ldzCbbBvKP11jKZhsADu0tDuakZpLLiNeDQN0a1/qkOl9AFSrqYe5imaVxAdM6andvH94sume5X5taBppDG9Apu0sfiM6fqrsph1fJM+cjIuwOXDI2OlQIZeQtHSEH7uj1B0FraZ/rLBY28tmlLQw9IbulmlhBrhwyehVZNP/3F0pDvy2FQrkLG30kkBu9fenREZI4w2Hy6l1HmblMhcSzABRJG3LhJKBjR9FzPQ=
+    on: 
+      tags: true
+      repo: ni/VireoSDK
   - provider: releases
     overwrite: true
     skip_cleanup: true
@@ -79,8 +77,8 @@ deploy:
       tags: true
     api_key:
       secure: HqknyC1080Uj5EXt8+3Sw6BxdzpaI9VMmqkroX6jvR916o1KK3BF74Xvf/QyL8nVWMy8vE5tXc5CG+wJYESd9yvVrcN6ayhadRnbIwg6MhdSL6+jvjBknMi5vBo2OMsZfwmTf/jENLxNEmAMruKMXrR3ZTUyDTeX12s7tcB+QhalSjKZ+4b1w2A60es4vxswwoqQOjPWtn1KaocLfkrp657fOnVdxVkqpzAd1jmLXDifolced3UiKITIDNBBIbgpPSmWeH4dYEiQ5oFNlEwl76me/ewFbIazGW7T3tKDTSTc1w1D6BNcdl7s+x5lGY2Y2GaeKllgWgTJYGzezBmS42ApTQ6zw8FW/e1ZMFMEgVRZ4GY1lR16tFTRop+qjMy337HjJIhfdj/5cTjuNYOkL1RCfFqPlQXpA1rL9Z0XAsP6Cwu/YUBJW7CZ9aDPRLN291XHxOcB0sugRdOD5NKvUxtmhyGuC/fnT67UFDXnzWC/ybNhSHZ1Y9hYbFfH604ksrRpPyoDkk3Tbh3vsw/BvOSEsVtaB6DAmkSh6M12RUP/SDLDYAEbNldKq3asxTfOphv4QbYzsTGW1CAl8biaIWe0LbrtRa2Gw+sHdWjwSrD6qwpZMUHPLL134h+Hj91LILwK/eqa4tAb0PGq/nPVo6WckwMvANr5WoyFQc174rM=
-# after_script:
-# - jobs -l
-# - kill $!
-# - wait
-# - cat ./nohup.out
+after_script:
+- jobs -l
+- kill $!
+- wait
+- cat ./nohup.out
