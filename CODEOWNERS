@@ -7,8 +7,6 @@
 # Owners of specific locations in the repo.
 # Order is important. The last matching pattern has the most precedence.
 make-it/*                   @rajsite @spathiwa
-Vireo_VS/*                  @cglzaguilar @sanmut
-Vireo_Xcode/*               @spathiwa
 *.js                        @rajsite
 *.md                        @rajsite
 *.txt                       @rajsite
