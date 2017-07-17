@@ -48,8 +48,8 @@ script:
   - make native
 before_deploy:
 # - npm run doxygen
-# I think travis is making a 64-bit build...
-  - zip esh_x86_64-unknown-linux-gnu.zip $TRAVIS_BUILD_DIR/dist/esh $TRAVIS_BUILD_DIR/README.md $TRAVIS_BUILD_DIR/LICENSE.txt
+# I think travis is making a 64-bit Release build...
+  - zip -j esh_x86_64-unknown-linux-gnu_release.zip dist/esh README.md LICENSE.txt
 deploy:
   # - provider: npm
   #   skip_cleanup: true

@@ -44,7 +44,7 @@ test_script:
 # AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
 # branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
 after_test:
-  - 7z a esh_i686-pc-windows-msvc.zip %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
+  - 7z a esh_i686-pc-windows-msvc_debug.zip %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
 artifacts:
   - path: esh_i686-pc-windows-msvc.zip
     name: esh_i686-pc-windows-msvc
