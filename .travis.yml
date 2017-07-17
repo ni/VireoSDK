@@ -49,7 +49,7 @@ script:
 before_deploy:
 # - npm run doxygen
 # I think travis is making a 64-bit build...
-  - 7z a esh_x86_64-unknown-linux-gnu.zip $TRAVIS_BUILD_DIR/dist/esh $TRAVIS_BUILD_DIR/README.md $TRAVIS_BUILD_DIR/LICENSE.txt
+  - zip esh_x86_64-unknown-linux-gnu.zip $TRAVIS_BUILD_DIR/dist/esh $TRAVIS_BUILD_DIR/README.md $TRAVIS_BUILD_DIR/LICENSE.txt
 deploy:
   # - provider: npm
   #   skip_cleanup: true
