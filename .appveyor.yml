@@ -40,18 +40,20 @@ test_script:
 #  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
 #  - npm run karma -- --browsers Chrome,Firefox,IE
 # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
+
+# AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
+# branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
 artifacts:
   - path: dist\Debug\esh.exe
     name: esh_i686-pc-windows-msvc
     type: File
 deploy:
+  name: github-release
   provider: Github
   description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
   auth_token:
     secure: EMHIMInThBDaSSOuGwntAOQYeqNkwNqx7Za0qlSqiFhC7UG4Q4BCKyey5k4ATi2m
   artifact: esh_i686-pc-windows-msvc
   force_update: true
-  # AppVeyor does not deploy with annotated tags http://help.appveyor.com/discussions/problems/3960-build-on-tag-wrongly-thinks-its-on-a-different-branch-than-master
-  # branch and AppVeyor tag are mutually exclusive https://www.appveyor.com/docs/branches/#build-on-tags-github-gitlab-and-bitbucket-only
   on:
     appveyor_repo_tag: true
