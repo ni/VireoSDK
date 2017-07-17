@@ -16,7 +16,7 @@ install:
   - pip install --user -r requirements.txt
   - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
   - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
-  - emscripten-sdk\emsdk update
+  - emscripten-sdk\emsdk update-tags
   - emscripten-sdk\emsdk install sdk-1.37.9-64bit
   - emscripten-sdk\emsdk activate sdk-1.37.9-64bit
   - emcc -v
