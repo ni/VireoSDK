@@ -15,7 +15,7 @@ install:
   - npm install
   - pip install --user -r requirements.txt
   - git clone https://github.com/juj/emsdk.git
-  - cd emsdk && git checkout a90d9ef4c805ab4a78eddb57fee8dc89d8198cdb && cd ..
+  - cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
   - emsdk\emsdk install sdk-1.37.9-64bit
   - emsdk\emsdk activate sdk-1.37.9-64bit
   - emcc -v
