@@ -14,11 +14,10 @@ install:
   - chocolatey install gnuwin32-coreutils.portable
   - npm install
   - pip install --user -r requirements.txt
-  - ps: Start-BitsTransfer -Source https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-1.35.0-portable-64bit.zip -Destination .\emsdk-1.35.0-portable-64bit.zip
-  - ps: Expand-Archive .\emsdk-1.35.0-portable-64bit.zip -DestinationPath .\emscripten-sdk
-  - emscripten-sdk\emsdk update
-  - emscripten-sdk\emsdk install sdk-1.37.9-64bit
-  - emscripten-sdk\emsdk activate sdk-1.37.9-64bit
+  - git clone https://github.com/juj/emsdk.git
+  - cd emsdk && git checkout a90d9ef4c805ab4a78eddb57fee8dc89d8198cdb && cd ..
+  - emsdk\emsdk install sdk-1.37.9-64bit
+  - emsdk\emsdk activate sdk-1.37.9-64bit
   - emcc -v
 platform:
   - Win32
