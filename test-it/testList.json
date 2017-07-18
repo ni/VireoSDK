@@ -285,6 +285,7 @@
                 "TestVI_VectorScalarBinaryOp.via",
                 "TestVI_VectorUnaryOp.via",
                 "TestVI_VectorUnary2OutputOp.via",
+                "TestVIMergeErrors.via",
                 "Threshold1DArray.via",
                 "Threshold1DArray2.via",
                 "TicTock.via",

@@ -2437,6 +2437,84 @@ VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+// arguments: output cluster, then variable number of inputs that can be null, error cluster or a 1D array of error clusters
+struct MergeErrorsParamBlock : public VarArgInstruction
+{
+    _ParamDef(ErrorCluster, ErrorClusterOut);
+    _ParamImmediateDef(StaticTypeAndData, ErrorClusterInputs[1]);
+    NEXT_INSTRUCTION_METHODV()
+};
+
+static Boolean UpdateErrorWhenErrorOrWarningFound(ErrorCluster* errorClusterIn, ErrorCluster* errorClusterOut, Boolean findErrors) {
+    Boolean errorFound = errorClusterIn->status && findErrors;
+    Boolean warningFound = !errorClusterIn->status && errorClusterIn->code != 0 && !findErrors;
+    if (errorFound || warningFound) {
+        errorClusterOut->status = errorClusterIn->status;
+        errorClusterOut->code = errorClusterIn->code;
+        errorClusterOut->source->AppendStringRef(errorClusterIn->source);
+        return true;
+    }
+    return false;
+}
+
+static Boolean ErrorOrWarningFound(StaticTypeAndData *inputs, IntIndex inputCount, ErrorCluster* errorClusterOut, Boolean findErrors) {
+    VIREO_ASSERT(inputs != null);
+    VIREO_ASSERT(errorClusterOut != null);
+    for (IntIndex i = 0; i < inputCount; i++) {
+        if (inputs[i]._pData == NULL) {  // input parameter was not wired, move to the next one
+            continue;
+        }
+        TypeRef parameterType = inputs[i]._paramType;
+        if (parameterType->IsArray()) {
+            IntIndex rank = parameterType->Rank();
+            if (rank != 1) {
+                ConstCStr errorMessage = "MergeErrors only supports ErrorCluster or 1D Array of ErrorCluster as inputs";
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, errorMessage);
+                return THREAD_EXEC()->Stop();
+            }
+            TypedArrayCoreRef errorClusterArray = *(TypedArrayCoreRef*)inputs[i]._pData;
+            IntIndex arrayLength = errorClusterArray->Length();
+            for (IntIndex i = 0; i < arrayLength; i++) {
+                ErrorCluster *errorCluster = (ErrorCluster*)errorClusterArray->BeginAt(i);
+                if (UpdateErrorWhenErrorOrWarningFound(errorCluster, errorClusterOut, findErrors)) {
+                    return true;
+                }
+            }
+        } else {
+            ErrorCluster *errorCluster = (ErrorCluster*) inputs[i]._pData;
+            if (UpdateErrorWhenErrorOrWarningFound(errorCluster, errorClusterOut, findErrors)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+//------------------------------------------------------------
+// MergeErrors function for error clusters, supports multiple inputs
+VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
+{
+    // Initialize output error cluster to not error
+    ErrorCluster* errorClusterOut = _ParamPointer(ErrorClusterOut);
+    errorClusterOut->SetError(false, 0, "", false);
+
+    Int32 inputParametersCount = (_ParamVarArgCount() - 1) / 2;
+    StaticTypeAndData *errorClusterInputs = _ParamImmediate(ErrorClusterInputs);
+    // Find the first error and return it if there is one
+    if (ErrorOrWarningFound(errorClusterInputs, inputParametersCount, errorClusterOut, true)) {
+        return _NextInstruction();
+    }
+    // If not error was found, then find the first warning and return it
+    if (ErrorOrWarningFound(errorClusterInputs, inputParametersCount, errorClusterOut, false)) {
+        return _NextInstruction();
+    }
+
+    // Not error or warning was found, just return the already initialized errorClusterOut
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Init, "p(i(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Clear, "p(i(StaticTypeAndData))");
@@ -2617,6 +2695,9 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(ScalarScalarConvertBinaryOp, "p(i(*) i(*) o(*) s(Instruction))" )
     DEFINE_VIREO_FUNCTION(VectorUnaryOp, "p(i(Array) o(Array) s(Instruction))" )
     DEFINE_VIREO_FUNCTION(VectorUnary2OutputOp, "p(i(Array) o(Array) o(Array) s(Instruction))" )
+
+    // Error operations
+    DEFINE_VIREO_FUNCTION(MergeErrors, "p(i(VarArgCount) o(ErrorCluster) i(StaticTypeAndData))")
 
 DEFINE_VIREO_END()
 }  // namespace Vireo
