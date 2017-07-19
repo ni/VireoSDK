@@ -1225,8 +1225,11 @@ struct ErrorCluster {
     StringRef source;
 
     void SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain = true);
+    void SetError(ErrorCluster error);
     void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
     void AddAppendixPostamble() { }  // no postamble
+    Boolean hasError() { return status; }
+    Boolean hasWarning() { return !status && code != 0; }
 };
 
 #define ERROR_CLUST_TYPE_STRING "c(e(Boolean status) e(Int32 code) e(String source))"

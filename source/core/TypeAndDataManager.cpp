@@ -37,6 +37,15 @@ void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCal
     }
 }
 
+void ErrorCluster::SetError(ErrorCluster error) {
+    status = error.status;
+    code = error.code;
+    if (source) {
+        source->Resize1D(0);
+        source->AppendStringRef(error.source);
+    }
+}
+
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
 // Optional header added to blocks allocated from the system
 struct MallocInfo {

@@ -1,1 +1,16 @@
 000 All tests pass: 'true'.
+010     Default error pass: 'true'.
+020     Warning found pass: 'true'.
+030     Error found pass: 'true'.
+040     Empty array pass: 'true'.
+050     Result two warnings pass: 'true'.
+060     Source Ok pass: 'true'.
+070     Code Ok pass: 'true'.
+080     Status Ok pass: 'true'.
+090     Error arrays pass: 'true'.
+100     Non error coercions pass: 'true'.
+110     Multi input pass: 'true'.
+120     Two input 2 pass: 'true'.
+130     Two input 1 pass: 'true'.
+140     Single input 2 pass: 'true'.
+150     Single input 1 pass: 'true'.
