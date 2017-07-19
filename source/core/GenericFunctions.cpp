@@ -2445,26 +2445,37 @@ struct MergeErrorsParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-static Boolean UpdateErrorWhenErrorOrWarningFound(ErrorCluster* errorClusterIn, ErrorCluster* errorClusterOut, Boolean findErrors) {
-    Boolean errorFound = errorClusterIn->status && findErrors;
-    Boolean warningFound = !errorClusterIn->status && errorClusterIn->code != 0 && !findErrors;
-    if (errorFound || warningFound) {
-        errorClusterOut->status = errorClusterIn->status;
-        errorClusterOut->code = errorClusterIn->code;
-        errorClusterOut->source->AppendStringRef(errorClusterIn->source);
-        return true;
+static Boolean UpdateOutputAndCheckIfErrorWasFound(ErrorCluster* errorClusterIn, ErrorCluster* errorClusterOut) {
+    if (errorClusterIn->hasError() || (errorClusterIn->hasWarning() && !errorClusterOut->hasWarning())) {
+        errorClusterOut->SetError(*errorClusterIn);
     }
-    return false;
+    return errorClusterIn->hasError();
 }
 
-static Boolean ErrorOrWarningFound(StaticTypeAndData *inputs, IntIndex inputCount, ErrorCluster* errorClusterOut, Boolean findErrors) {
-    VIREO_ASSERT(inputs != null);
-    VIREO_ASSERT(errorClusterOut != null);
-    for (IntIndex i = 0; i < inputCount; i++) {
-        if (inputs[i]._pData == NULL) {  // input parameter was not wired, move to the next one
+//------------------------------------------------------------
+// MergeErrors function for error clusters, supports multiple inputs
+VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
+{
+    Int32 inputParametersCount = (_ParamVarArgCount() - 1) / 2;
+    StaticTypeAndData *errorClusterInputs = _ParamImmediate(ErrorClusterInputs);
+
+    // Initialize output error cluster to first error cluster if there is any
+    ErrorCluster* errorClusterOut = _ParamPointer(ErrorClusterOut);
+    errorClusterOut->SetError(false, 0, "", false);
+    if ((inputParametersCount > 0) && (errorClusterInputs[0]._pData != NULL)) {
+        TypeRef parameterType = errorClusterInputs[0]._paramType;
+        if (!parameterType->IsArray()) {
+            ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[0]._pData;
+            errorClusterOut->SetError(*errorCluster);
+        }
+    }
+
+    // Find the first error and return it if there is one, otherwise save the first warning and return it at the end
+    for (IntIndex i = 0; i < inputParametersCount; i++) {
+        if (errorClusterInputs[i]._pData == NULL) {  // input parameter was not wired, move to the next one
             continue;
         }
-        TypeRef parameterType = inputs[i]._paramType;
+        TypeRef parameterType = errorClusterInputs[i]._paramType;
         if (parameterType->IsArray()) {
             IntIndex rank = parameterType->Rank();
             if (rank != 1) {
@@ -2472,45 +2483,23 @@ static Boolean ErrorOrWarningFound(StaticTypeAndData *inputs, IntIndex inputCoun
                 THREAD_EXEC()->LogEvent(EventLog::kHardDataError, errorMessage);
                 return THREAD_EXEC()->Stop();
             }
-            TypedArrayCoreRef errorClusterArray = *(TypedArrayCoreRef*)inputs[i]._pData;
+            TypedArrayCoreRef errorClusterArray = *(TypedArrayCoreRef*)errorClusterInputs[i]._pData;
             IntIndex arrayLength = errorClusterArray->Length();
             for (IntIndex i = 0; i < arrayLength; i++) {
                 ErrorCluster *errorCluster = (ErrorCluster*)errorClusterArray->BeginAt(i);
-                if (UpdateErrorWhenErrorOrWarningFound(errorCluster, errorClusterOut, findErrors)) {
-                    return true;
+                if (UpdateOutputAndCheckIfErrorWasFound(errorCluster, errorClusterOut)) {
+                    return _NextInstruction();
                 }
             }
         } else {
-            ErrorCluster *errorCluster = (ErrorCluster*) inputs[i]._pData;
-            if (UpdateErrorWhenErrorOrWarningFound(errorCluster, errorClusterOut, findErrors)) {
-                return true;
+            ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[i]._pData;
+            if (UpdateOutputAndCheckIfErrorWasFound(errorCluster, errorClusterOut)) {
+                return _NextInstruction();
             }
         }
     }
 
-    return false;
-}
-
-//------------------------------------------------------------
-// MergeErrors function for error clusters, supports multiple inputs
-VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
-{
-    // Initialize output error cluster to not error
-    ErrorCluster* errorClusterOut = _ParamPointer(ErrorClusterOut);
-    errorClusterOut->SetError(false, 0, "", false);
-
-    Int32 inputParametersCount = (_ParamVarArgCount() - 1) / 2;
-    StaticTypeAndData *errorClusterInputs = _ParamImmediate(ErrorClusterInputs);
-    // Find the first error and return it if there is one
-    if (ErrorOrWarningFound(errorClusterInputs, inputParametersCount, errorClusterOut, true)) {
-        return _NextInstruction();
-    }
-    // If not error was found, then find the first warning and return it
-    if (ErrorOrWarningFound(errorClusterInputs, inputParametersCount, errorClusterOut, false)) {
-        return _NextInstruction();
-    }
-
-    // Not error or warning was found, just return the already initialized errorClusterOut
+    // return the warning
     return _NextInstruction();
 }
 
