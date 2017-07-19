@@ -2483,7 +2483,7 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
             IntIndex arrayLength = errorClusterArray->Length();
             for (IntIndex j = 0; j < arrayLength; j++) {
                 ErrorCluster *errorCluster = (ErrorCluster*)errorClusterArray->BeginAt(j);
-                if (i == 0 && j == 0) {
+                if (i == 0 && j == 0) {  // Initialize output cluster with first error
                     errorClusterOut->SetError(*errorCluster);
                 }
                 if (UpdateOutputAndCheckIfErrorWasFound(errorClusterOut, errorCluster)) {
@@ -2492,7 +2492,7 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
             }
         } else {
             ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[i]._pData;
-            if (i == 0) {
+            if (i == 0) {  // Initialize output cluster with first error
                 errorClusterOut->SetError(*errorCluster);
             }
             if (UpdateOutputAndCheckIfErrorWasFound(errorClusterOut, errorCluster)) {
