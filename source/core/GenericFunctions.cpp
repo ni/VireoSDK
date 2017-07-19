@@ -2445,9 +2445,12 @@ struct MergeErrorsParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-static Boolean UpdateOutputAndCheckIfErrorWasFound(ErrorCluster* errorClusterIn, ErrorCluster* errorClusterOut) {
-    if (errorClusterIn->hasError() || (errorClusterIn->hasWarning() && !errorClusterOut->hasWarning())) {
-        errorClusterOut->SetError(*errorClusterIn);
+static Boolean UpdateOutputAndCheckIfErrorWasFound(ErrorCluster* errorClusterInOut, ErrorCluster* errorClusterIn) {
+    if (errorClusterInOut->hasError()) {
+        return true;
+    }
+    if (errorClusterIn->hasError() || (errorClusterIn->hasWarning() && !errorClusterInOut->hasWarning())) {
+        errorClusterInOut->SetError(*errorClusterIn);
     }
     return errorClusterIn->hasError();
 }
@@ -2459,16 +2462,9 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
     Int32 inputParametersCount = (_ParamVarArgCount() - 1) / 2;
     StaticTypeAndData *errorClusterInputs = _ParamImmediate(ErrorClusterInputs);
 
-    // Initialize output error cluster to first error cluster if there is any
+    // Initialize output error cluster
     ErrorCluster* errorClusterOut = _ParamPointer(ErrorClusterOut);
     errorClusterOut->SetError(false, 0, "", false);
-    if ((inputParametersCount > 0) && (errorClusterInputs[0]._pData != NULL)) {
-        TypeRef parameterType = errorClusterInputs[0]._paramType;
-        if (!parameterType->IsArray()) {
-            ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[0]._pData;
-            errorClusterOut->SetError(*errorCluster);
-        }
-    }
 
     // Find the first error and return it if there is one, otherwise save the first warning and return it at the end
     for (IntIndex i = 0; i < inputParametersCount; i++) {
@@ -2485,15 +2481,21 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
             }
             TypedArrayCoreRef errorClusterArray = *(TypedArrayCoreRef*)errorClusterInputs[i]._pData;
             IntIndex arrayLength = errorClusterArray->Length();
-            for (IntIndex i = 0; i < arrayLength; i++) {
-                ErrorCluster *errorCluster = (ErrorCluster*)errorClusterArray->BeginAt(i);
-                if (UpdateOutputAndCheckIfErrorWasFound(errorCluster, errorClusterOut)) {
+            for (IntIndex j = 0; j < arrayLength; j++) {
+                ErrorCluster *errorCluster = (ErrorCluster*)errorClusterArray->BeginAt(j);
+                if (i == 0 && j == 0) {
+                    errorClusterOut->SetError(*errorCluster);
+                }
+                if (UpdateOutputAndCheckIfErrorWasFound(errorClusterOut, errorCluster)) {
                     return _NextInstruction();
                 }
             }
         } else {
             ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[i]._pData;
-            if (UpdateOutputAndCheckIfErrorWasFound(errorCluster, errorClusterOut)) {
+            if (i == 0) {
+                errorClusterOut->SetError(*errorCluster);
+            }
+            if (UpdateOutputAndCheckIfErrorWasFound(errorClusterOut, errorCluster)) {
                 return _NextInstruction();
             }
         }
