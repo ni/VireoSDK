@@ -83,6 +83,13 @@ namespace Vireo {
         _Param(2) = diff.ToDouble();
         return _NextInstruction();
     }
+
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE3(SubTimestampDouble, Timestamp, Double, Timestamp) {
+        _Param(2) = _Param(0) - Timestamp(_Param(1));
+        return _NextInstruction();
+    }
+
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE3(AddTimestampDoubleR, Timestamp, Double, Timestamp) {
         Timestamp delta(_Param(1));
@@ -136,6 +143,31 @@ namespace Vireo {
         _Param(1) = _Param(0).ToDouble();
         return _NextInstruction();
     }
+
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE2(TimestampConvertUInt32, Timestamp, UInt32) {
+        _Param(1) = static_cast<UInt32>(_Param(0).Integer());
+        return _NextInstruction();
+    }
+
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE2(TimestampConvertUInt64, Timestamp, UInt64) {
+        _Param(1) = _Param(0).Integer();
+        return _NextInstruction();
+    }
+
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE2(TimestampConvertInt32, Timestamp, Int32) {
+        _Param(1) = static_cast<Int32>(_Param(0).Integer());
+        return _NextInstruction();
+    }
+
+    //------------------------------------------------------------
+    VIREO_FUNCTION_SIGNATURE2(TimestampConvertInt64, Timestamp, Int64) {
+        _Param(1) = _Param(0).Integer();
+        return _NextInstruction();
+    }
+
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE2(ToTimestamp, Double, Timestamp) {
         _Param(1) = Timestamp(_Param(0));
@@ -213,6 +245,10 @@ namespace Vireo {
     }
 #endif
 
+    DECLARE_VIREO_PRIMITIVE2(CeilTimestamp, Timestamp, Timestamp, (_Param(1) = Timestamp((_Param(0) + Timestamp(0.9999999)).Integer(), 0)))
+    DECLARE_VIREO_PRIMITIVE2(FloorTimestamp, Timestamp, Timestamp, (_Param(1) = Timestamp(_Param(0).Integer(), 0)))
+    DECLARE_VIREO_PRIMITIVE2(RoundToNearestTimestamp, Timestamp, Timestamp, (_Param(1) = Timestamp((_Param(0) + Timestamp(0.5)).Integer(), 0)))
+
 DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
 
@@ -240,10 +276,15 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32R, "p(i(Timestamp) i(Int32) o(Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampInt32L, "p(i(Int32) i(Timestamp) o(Timestamp))")
 #if defined(VIREO_TYPE_Double)
-    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestamp, "p(i(Timestamp) i(Timestamp)o(Double))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(Double)i(Timestamp)o(Timestamp))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(Timestamp)i(Double)o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestamp, "p(i(Timestamp) i(Timestamp) o(Double))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Sub, SubTimestampDouble, "p(i(Timestamp) i(Double) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleL, "p(i(Double) i(Timestamp) o(Timestamp))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Add, AddTimestampDoubleR, "p(i(Timestamp) i(Double) o(Timestamp))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertDouble, "p(i(Timestamp) o(Double))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertUInt32, "p(i(Timestamp) o(UInt32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertUInt64, "p(i(Timestamp) o(UInt64))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertInt32, "p(i(Timestamp) o(Int32))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, TimestampConvertInt64, "p(i(Timestamp) o(Int64))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ToTimestamp, "p(i(Double) o(Timestamp))")
 
 #define kLVDateTimeTypeStr  "c(e(Double fractional_sec) e(Int32 second) e(Int32 minute) e(Int32 hour)"\
@@ -254,6 +295,9 @@ DEFINE_VIREO_BEGIN(Timestamp)
     DEFINE_VIREO_FUNCTION(GetDateTimeString, "p(i(Timestamp) i(UInt16 format) i(Boolean showSecs) i(Boolean useUTC) o(String) o(String))");
 #endif
 #endif
-
+    DEFINE_VIREO_TYPE(UnOpTimestamp, "p(i(Timestamp input) o(Timestamp output))")
+    DEFINE_VIREO_FUNCTION_TYPED(Ceil, Timestamp, "UnOpTimestamp")
+    DEFINE_VIREO_FUNCTION_TYPED(Floor, Timestamp, "UnOpTimestamp")
+    DEFINE_VIREO_FUNCTION_TYPED(RoundToNearest, Timestamp, "UnOpTimestamp")
 DEFINE_VIREO_END()
 }  // namespace Vireo
