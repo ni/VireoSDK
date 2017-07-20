@@ -79,6 +79,17 @@
             return strStackPointer;
         };
 
+        // WARNING: CALLER IS RESPONSIBLE TO FREE THE RETURNED POINTER
+        Module.coreHelpers.writeJSStringToHeap = function (str) {
+            /* eslint-disable no-bitwise */
+            // See https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L155
+            // at most 4 bytes per UTF-8 code point, +1 for the trailing '\0'
+            var strMaxHeapLength = (str.length << 2) + 1;
+            var strHeapPointer = Module._malloc(strMaxHeapLength);
+            Module.stringToUTF8(str, strHeapPointer, strMaxHeapLength);
+            return strHeapPointer;
+        };
+
         // Takes Vireo Strings (non-safe UTF-8 encoded byte buffers with known length) and returns JS strings (non-safe UTF-16 encoded character arrays)
         // Any bytes that are not part of a valid UTF-8 byte sequence are replaced with the Unicode Replacement Character
         // In addition, code points represented as overlong UTF-8 byte sequences have the byte sequence replaced with an equal number of Unicode Replacement Characters
