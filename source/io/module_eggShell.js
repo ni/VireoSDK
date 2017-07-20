@@ -73,7 +73,6 @@
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
-        var EggShell_REPL = Module.cwrap('EggShell_REPL', 'number', ['number', 'string', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -366,7 +365,10 @@
             }
 
             var viaTextLength = Module.lengthBytesUTF8(viaText);
-            return EggShell_REPL(v_userShell, viaText, viaTextLength);
+            var viaTextPointer = Module.coreHelpers.writeJSStringToHeap(viaText);
+            var result = Module._EggShell_REPL(v_userShell, viaTextPointer, viaTextLength);
+            Module._free(viaTextPointer);
+            return result;
         };
 
         Module.eggShell.executeSlices = publicAPI.eggShell.executeSlices = function (slices) {
