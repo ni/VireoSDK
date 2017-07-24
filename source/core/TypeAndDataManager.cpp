@@ -737,7 +737,8 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     } else if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
         if (this->Rank() == otherType->Rank())
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
-    } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
+    } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
+               !this->IsNamedClusterDataType() && !otherType->IsNamedClusterDataType()) {
         if (this->SubElementCount() == otherType->SubElementCount()) {
             for (Int32 i = 0; i < this->SubElementCount(); i++) {
                 if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
@@ -777,7 +778,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
                 otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
-        } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
+        } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
+                   !this->IsNamedClusterDataType() && !otherType->IsNamedClusterDataType()) {
             if (this->SubElementCount() == otherType->SubElementCount()) {
                 for (Int32 i = 0; i < this->SubElementCount(); i++) {
                     if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
@@ -922,6 +924,20 @@ Boolean TypeCommon::IsComplex()
     }
     return false;
 }
+
+//------------------------------------------------------------
+Boolean TypeCommon::IsNamedClusterDataType() {
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeComplexDouble) || t->Name().Compare(&TypeComplexSingle) ||
+            t->Name().Compare(&TypeTimestamp)) {  // TODO(sanmut) Add Waveform types also
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+
 //------------------------------------------------------------
 //! Parse an element path by name. Base class only knows
 //! about structural attributes.
