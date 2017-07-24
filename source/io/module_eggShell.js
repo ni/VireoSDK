@@ -68,7 +68,6 @@
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
-        var Data_WriteStringFromArray = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'array', 'number']);
         var Data_ReadBoolean = Module.cwrap('Data_ReadBoolean', 'number', ['number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
@@ -319,9 +318,11 @@
         };
 
         // Source should be a JS array of numbers or a TypedArray of Uint8Array or Int8Array
-        // Relies on cwrap behavior: https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#calling-compiled-c-functions-from-javascript-using-ccall-cwrap
         Module.eggShell.dataWriteStringFromArray = function (destination, source) {
-            Data_WriteStringFromArray(v_userShell, destination, source, source.length);
+            var sourceHeapPointer = Module._malloc(source.length);
+            Module.writeArrayToMemory(source, sourceHeapPointer);
+            Module._Data_WriteString(v_userShell, destination, sourceHeapPointer, source.length);
+            Module._free(sourceHeapPointer);
         };
 
         Module.eggShell.dataReadBoolean = function (booleanPointer) {
