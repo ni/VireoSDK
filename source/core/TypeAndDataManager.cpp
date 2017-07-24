@@ -738,7 +738,7 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
         if (this->Rank() == otherType->Rank())
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
     } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
-               !this->IsNamedClusterDataType() && !otherType->IsNamedClusterDataType()) {
+               !this->IsIntrinsicClusterDataType() && !otherType->IsIntrinsicClusterDataType()) {
         if (this->SubElementCount() == otherType->SubElementCount()) {
             for (Int32 i = 0; i < this->SubElementCount(); i++) {
                 if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
@@ -779,7 +779,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
         } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
-                   !this->IsNamedClusterDataType() && !otherType->IsNamedClusterDataType()) {
+                   !this->IsIntrinsicClusterDataType() && !otherType->IsIntrinsicClusterDataType()) {
             if (this->SubElementCount() == otherType->SubElementCount()) {
                 for (Int32 i = 0; i < this->SubElementCount(); i++) {
                     if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
@@ -926,11 +926,11 @@ Boolean TypeCommon::IsComplex()
 }
 
 //------------------------------------------------------------
-Boolean TypeCommon::IsNamedClusterDataType() {
+Boolean TypeCommon::IsIntrinsicClusterDataType() {
     TypeRef t = this;
     while (t) {
         if (t->Name().Compare(&TypeComplexDouble) || t->Name().Compare(&TypeComplexSingle) ||
-            t->Name().Compare(&TypeTimestamp)) {  // TODO(sanmut) Add Waveform types also
+            t->Name().Compare(&TypeTimestamp)) {  // TODO(sanmut) Add Waveform types also. https://github.com/ni/VireoSDK/issues/308
             return true;
         }
         t = t->BaseType();
