@@ -906,7 +906,7 @@ DECLARE_VIREO_PRIMITIVE2(DecrementComplexSingle, ComplexSingle, ComplexSingle, (
 DECLARE_VIREO_PRIMITIVE2(ReciprocalComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = 1.0f / _Param(0) ) )
 DECLARE_VIREO_PRIMITIVE2(SignComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = _Param(0) / abs(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE2(AbsoluteComplexSingle, ComplexSingle, Single, {
-    ComplexSingle z = (ComplexSingle)_Param(0);
+    ComplexSingle z = _Param(0);
     _Param(1) = sqrt(z.real()*z.real() + z.imag()*z.imag());
 } )
 DECLARE_VIREO_PRIMITIVE2(NormComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = norm(_Param(0)) ) )
@@ -1047,7 +1047,7 @@ DECLARE_VIREO_PRIMITIVE2(DecrementComplexDouble, ComplexDouble, ComplexDouble, (
 DECLARE_VIREO_PRIMITIVE2(ReciprocalComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0 / _Param(0)))
 DECLARE_VIREO_PRIMITIVE2(SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ))
 DECLARE_VIREO_PRIMITIVE2(AbsoluteComplexDouble, ComplexDouble, Double, {
-    ComplexDouble z = (ComplexDouble)_Param(0);
+    ComplexDouble z = _Param(0);
     _Param(1) = sqrt(z.real()*z.real() + z.imag()*z.imag());
 } )
 DECLARE_VIREO_PRIMITIVE2(NormComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = norm(_Param(0))))
