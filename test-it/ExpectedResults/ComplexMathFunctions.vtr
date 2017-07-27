@@ -40,5 +40,5 @@ Log (0 99) => (4.59512 1.5708)
 Log2 (0 99) => (6.62936 2.26618)
 Log10 (0 99) => (1.99564 0.682188)
 Log10 ((1.75517 0.958851) (1.62091 2.52441)) => ((0.30103 0.217147) (0.477121 0.434294))
-Absolute Double (-96.7324 -265.621) => 282.687, epsilon pass=true
-Absolute Single (-96.7324 -265.621) => 282.687, epsilon pass=true
+Absolute Double (-96.7324 -265.621) => 282.686519, epsilon pass=true
+Absolute Single (-96.7324 -265.621) => 282.686523, epsilon pass=true
