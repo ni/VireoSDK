@@ -1046,6 +1046,12 @@ DECLARE_VIREO_PRIMITIVE2(IncrementComplexDouble, ComplexDouble, ComplexDouble, (
 DECLARE_VIREO_PRIMITIVE2(DecrementComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) - 1.0))
 DECLARE_VIREO_PRIMITIVE2(ReciprocalComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = 1.0 / _Param(0)))
 DECLARE_VIREO_PRIMITIVE2(SignComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = _Param(0) / abs(_Param(0)) ))
+// NOTE: Instead of using abs(), we are doing the calculation explicitly
+//      The expected value for (-96.7324 - 265.621i) is: 282.6865193998785912,
+//          but we're getting 282.6865193998785344 on the browser, 14 digit is different
+//      When the result of abs is squared, expected value is 79911.66825041793345,
+//          but actual value is 79911.66825041790435 on the browser, 11 digit is different
+//      This difference is causing the TestVI_Correlation.gvi test to fail.
 DECLARE_VIREO_PRIMITIVE2(AbsoluteComplexDouble, ComplexDouble, Double, {
     ComplexDouble z = _Param(0);
     _Param(1) = sqrt(z.real()*z.real() + z.imag()*z.imag());
