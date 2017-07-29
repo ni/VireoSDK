@@ -791,7 +791,7 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
             if (numberOfDimensions == subArray->Rank()) {
                 sourceSlabLen[i] = subArray->SlabLengths()[i];
                 sourceDimLen[i] = subArray->DimensionLengths()[i];
-                if (sourceDimLen[i] > newLengths[i])
+                if (numberOfDimensions-1-i != dimensionToInsert && sourceDimLen[i] > newLengths[i])
                     sourceDimLen[i] = newLengths[i];
             } else {
                 if (i == numberOfDimensions-1-dimensionToInsert) {
