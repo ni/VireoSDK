@@ -7,8 +7,6 @@ describe('The Vireo VTR test suite', function () {
     var fixtures = window.testHelpers.fixtures;
     var testListLoader = window.testHelpers.testListLoader;
 
-    // Sharing Vireo instances across tests make them run soooo much faster
-    var vireo = new Vireo();
     var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
     var viaTestConfigs = viaTestNames.map(function (testName) {
@@ -31,6 +29,10 @@ describe('The Vireo VTR test suite', function () {
     });
 
     describe('can run test', function () {
+        var vireo;
+        beforeEach(function () {
+            vireo = new Vireo();
+        });
         // To disable a test add a key for the test name set to true, ie:
         // {'AwesomeDisabledTest': true}
         var focusTests = {};
