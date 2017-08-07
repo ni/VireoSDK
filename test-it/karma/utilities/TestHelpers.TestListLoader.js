@@ -36,7 +36,7 @@
         request.addEventListener('error', loadFailed);
         request.addEventListener('timeout', loadFailed);
         request.addEventListener('abort', loadFailed);
-        request.open('GET', testListDataUrl, false);
+        request.open('GET', url, false);
         request.send();
     };
 
