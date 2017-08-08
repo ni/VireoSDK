@@ -601,14 +601,21 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
     TypeRef maxType = pInstructionBuilder->_argTypes[2];
     TypeRef minType = pInstructionBuilder->_argTypes[3];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-    if (!sourceXType->CompareType(sourceYType) || !sourceXType->CompareType(maxType) || !maxType->CompareType(minType)) {
-        return null;
-    }
 
     switch (maxType->BitEncoding()) {
         case kEncoding_Array:
         {
-            ConstCStr pVectorUnOpName = "VectorMaxMinOp";
+            // Find out what this name of the original opcode was.
+            // this will be the name of the _instructionPointerType.
+            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+            ConstCStr pVectorUnOpName = null;
+            if (sourceXType->IsArray() && sourceYType->IsArray()) {
+                pVectorUnOpName = "VectorMaxMinOp";
+            } else if (sourceXType->IsArray()) {
+                pVectorUnOpName = "VectorScalarMaxMinOp";
+            } else if (sourceYType->IsArray()) {
+                pVectorUnOpName = "ScalarVectorMaxMinOp";
+            }
             SubString vectorUnOpToken(pVectorUnOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false);  // build a vector op
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
@@ -619,8 +626,12 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
 
-            snippetBuilder.EmitInstruction(&savedOperation, 4, sourceXType->GetSubElement(0), (void*)null,
-                sourceYType->GetSubElement(0), (void*)null, maxType->GetSubElement(0), (void*)null,
+            TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
+            TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
+            snippetBuilder.EmitInstruction(&savedOperation, 4,
+                xEltType, (void*)null,
+                yEltType, (void*)null,
+                maxType->GetSubElement(0), (void*)null,
                 minType->GetSubElement(0), (void*)null);
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -762,7 +773,88 @@ VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
 
     return _NextInstruction();
 }
+//------------------------------------------------------------
+// This function is used by the "Max and Min" primitive when first input is scalar and second input is array
+VIREO_FUNCTION_SIGNATURET(ScalarVectorMaxMinOp, AggregateMaxAndMinInstruction)
+{
+    TypedArrayCoreRef srcArrayY = _Param(VY);
+    TypedArrayCoreRef maxArray = _Param(VMax);
+    TypedArrayCoreRef minArray = _Param(VMin);
+    Instruction4<void, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<void,
+        AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
 
+    IntIndex elementSizeY = srcArrayY->ElementType()->TopAQSize();
+    IntIndex elementSizeMax = maxArray->ElementType()->TopAQSize();
+    IntIndex elementSizeMin = minArray->ElementType()->TopAQSize();
+    IntIndex count = srcArrayY->Length();
+    // Resize output to size of input arrays
+    IntIndex* newDimensionLengths = srcArrayY->DimensionLengths();
+    IntIndex rank = srcArrayY->Rank();
+    maxArray->ResizeDimensions(rank, newDimensionLengths, true);
+    minArray->ResizeDimensions(rank, newDimensionLengths, true);
+
+    ArrayIterator srcArrayYIter(srcArrayY, rank, newDimensionLengths);
+    ArrayIterator destArrayMaxIter(maxArray, rank, newDimensionLengths);
+    ArrayIterator destArrayMinIter(minArray, rank, newDimensionLengths);
+
+    AQBlock1 *srcArrayYIterPtr = (AQBlock1 *)srcArrayYIter.Begin();
+    AQBlock1 *destArrayMaxIterPtr = (AQBlock1 *)destArrayMaxIter.Begin();
+    AQBlock1 *destArrayMinIterPtr = (AQBlock1 *)destArrayMinIter.Begin();
+    AQBlock1 *destArrayMaxEndIterPtr = destArrayMaxIterPtr + (count * elementSizeMax);
+    snippet->_p0 = _ParamPointer(SX);
+    while (destArrayMaxIterPtr < destArrayMaxEndIterPtr) {
+        snippet->_p1 = srcArrayYIterPtr;
+        snippet->_p2 = destArrayMaxIterPtr;
+        snippet->_p3 = destArrayMinIterPtr;
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        srcArrayYIterPtr += elementSizeY;
+        destArrayMaxIterPtr += elementSizeMax;
+        destArrayMinIterPtr += elementSizeMin;
+    }
+
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+// This function is used by the "Max and Min" primitive when first input is array and second input is scalar
+VIREO_FUNCTION_SIGNATURET(VectorScalarMaxMinOp, AggregateMaxAndMinInstruction)
+{
+    TypedArrayCoreRef srcArrayX = _Param(VX);
+    TypedArrayCoreRef maxArray = _Param(VMax);
+    TypedArrayCoreRef minArray = _Param(VMin);
+    Instruction4<AQBlock1, void, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1,
+        void, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
+
+    IntIndex elementSizeX = srcArrayX->ElementType()->TopAQSize();
+    IntIndex elementSizeMax = maxArray->ElementType()->TopAQSize();
+    IntIndex elementSizeMin = minArray->ElementType()->TopAQSize();
+    IntIndex count = srcArrayX->Length();
+    // Resize output to size of input arrays
+    IntIndex* newDimensionLengths = srcArrayX->DimensionLengths();
+    IntIndex rank = srcArrayX->Rank();
+    maxArray->ResizeDimensions(rank, newDimensionLengths, true);
+    minArray->ResizeDimensions(rank, newDimensionLengths, true);
+
+    ArrayIterator srcArrayXIter(srcArrayX, rank, newDimensionLengths);
+    ArrayIterator destArrayMaxIter(maxArray, rank, newDimensionLengths);
+    ArrayIterator destArrayMinIter(minArray, rank, newDimensionLengths);
+
+    AQBlock1 *srcArrayXIterPtr = (AQBlock1 *)srcArrayXIter.Begin();
+    AQBlock1 *destArrayMaxIterPtr = (AQBlock1 *)destArrayMaxIter.Begin();
+    AQBlock1 *destArrayMinIterPtr = (AQBlock1 *)destArrayMinIter.Begin();
+    AQBlock1 *destArrayMaxEndIterPtr = destArrayMaxIterPtr + (count * elementSizeMax);
+    snippet->_p1 = _ParamPointer(SY);
+    while (destArrayMaxIterPtr < destArrayMaxEndIterPtr) {
+        snippet->_p0 = srcArrayXIterPtr;
+        snippet->_p2 = destArrayMaxIterPtr;
+        snippet->_p3 = destArrayMinIterPtr;
+        _PROGMEM_PTR(snippet, _function)(snippet);
+        srcArrayXIterPtr += elementSizeX;
+        destArrayMaxIterPtr += elementSizeMax;
+        destArrayMinIterPtr += elementSizeMin;
+    }
+
+    return _NextInstruction();
+}
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURET(ClusterMaxMinOp, AggregateMaxAndMinInstruction)
 {
@@ -2638,6 +2730,8 @@ DEFINE_VIREO_BEGIN(Generics)
 
     DEFINE_VIREO_GENERIC(MaxAndMinElts, "p(i(*) i(*) o(*) o(*) s(Instruction))", EmitMaxMinEltsInstruction);
     DEFINE_VIREO_FUNCTION(VectorMaxMinOp, "p(i(Array) i(Array) o(Array) o(Array) s(Instruction))")
+    DEFINE_VIREO_FUNCTION(ScalarVectorMaxMinOp, "p(i(*) i(Array) o(Array) o(Array) s(Instruction))")
+    DEFINE_VIREO_FUNCTION(VectorScalarMaxMinOp, "p(i(Array) i(*) o(Array) o(Array) s(Instruction))")
     DEFINE_VIREO_FUNCTION(ClusterMaxMinOp, "p(i(*) i(*) o(*) o(*) s(Instruction))")
 
     DEFINE_VIREO_GENERIC(InRangeAndCoerce, "p(i(*) i(*) i(*) i(Boolean) i(Boolean) o(*) o(*) s(StaticType) s(Instruction))",
