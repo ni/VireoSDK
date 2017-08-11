@@ -737,14 +737,22 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     } else if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
         if (this->Rank() == otherType->Rank())
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
-    } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
-               !this->IsIntrinsicClusterDataType() && !otherType->IsIntrinsicClusterDataType()) {
-        if (this->SubElementCount() == otherType->SubElementCount()) {
-            for (Int32 i = 0; i < this->SubElementCount(); i++) {
-                if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
-                    return false;
+    } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
+        SubString thisTypeName, otherTypeName;
+        Boolean isThisIntrinsicClusterType = this->IsIntrinsicClusterDataType(&thisTypeName);
+        Boolean isOtherIntrinsicClusterType = otherType->IsIntrinsicClusterDataType(&otherTypeName);
+        if (isThisIntrinsicClusterType && isOtherIntrinsicClusterType) {
+            if (thisTypeName.Compare(&otherTypeName)) {
+                return true;
             }
-            return true;
+        } else if (!isThisIntrinsicClusterType && !isOtherIntrinsicClusterType) {
+            if (this->SubElementCount() == otherType->SubElementCount()) {
+                for (Int32 i = 0; i < this->SubElementCount(); i++) {
+                    if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
+                        return false;
+                }
+                return true;
+            }
         }
     } else if (thisEncoding == otherEncoding && BitLength() == otherType->BitLength()
                && (thisEncoding == kEncoding_IEEE754Binary || thisEncoding == kEncoding_S2CInt
@@ -778,14 +786,22 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
                 otherEncoding == kEncoding_Ascii || otherEncoding == kEncoding_Unicode) {
                 bMatch = TopAQSize() == otherType->TopAQSize();
             }
-        } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster &&
-                   !this->IsIntrinsicClusterDataType() && !otherType->IsIntrinsicClusterDataType()) {
-            if (this->SubElementCount() == otherType->SubElementCount()) {
-                for (Int32 i = 0; i < this->SubElementCount(); i++) {
-                    if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
-                        break;
+        } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
+            SubString thisTypeName, otherTypeName;
+            Boolean isThisIntrinsicClusterType = this->IsIntrinsicClusterDataType(&thisTypeName);
+            Boolean isOtherIntrinsicClusterType = otherType->IsIntrinsicClusterDataType(&otherTypeName);
+            if (isThisIntrinsicClusterType && isOtherIntrinsicClusterType) {
+                if (thisTypeName.Compare(&otherTypeName)) {
+                    bMatch = true;
                 }
-                bMatch = true;
+            } else if (!isThisIntrinsicClusterType && !isOtherIntrinsicClusterType) {
+                if (this->SubElementCount() == otherType->SubElementCount()) {
+                    for (Int32 i = 0; i < this->SubElementCount(); i++) {
+                        if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
+                            break;
+                    }
+                    bMatch = true;
+                }
             }
         }
     }
@@ -796,7 +812,7 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
     }
 #endif
 
-    if (!bMatch  && (otherType->Name().Length() > 0)) {
+    if (!bMatch && (otherType->Name().Length() > 0)) {
         bMatch = IsA(otherType);
     }
 
@@ -926,15 +942,18 @@ Boolean TypeCommon::IsComplex()
 }
 
 //------------------------------------------------------------
-Boolean TypeCommon::IsIntrinsicClusterDataType() {
+Boolean TypeCommon::IsIntrinsicClusterDataType(SubString *foundTypeName) {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeComplexDouble) || t->Name().Compare(&TypeComplexSingle) ||
-            t->Name().Compare(&TypeTimestamp)) {  // TODO(sanmut) Add Waveform types also. https://github.com/ni/VireoSDK/issues/308
+        SubString typeName = t->Name();
+        if (typeName.Compare(&TypeComplexDouble) || typeName.Compare(&TypeComplexSingle) ||
+            typeName.Compare(&TypeTimestamp)) {  // TODO(sanmut) Add Waveform types also. https://github.com/ni/VireoSDK/issues/308
+            foundTypeName->AliasAssign(&typeName);
             return true;
         }
         t = t->BaseType();
     }
+    foundTypeName->AliasAssignCStr(tsInvalidIntrinsicClusterType);
     return false;
 }
 
