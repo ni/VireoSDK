@@ -283,6 +283,7 @@
                 "SubVISimple.via",
                 "TemplateBasics.via",
                 "TestVI_ArrayInsertPartial.via",
+                "TestVI_InRangeAndCoerce.via",
                 "TestVI_LargeArray.via",
                 "TestVI_VectorMaxMinOp.via",
                 "TestVI_VectorScalarBinaryOp.via",

@@ -83,6 +83,7 @@ typedef TypeCommon StaticType;
 
 //------------------------------------------------------------
 //! Names for some cores types.
+#define tsInvalidIntrinsicClusterType       ""
 #define tsBooleanType       "Boolean"
 #define tsInt32Type         "Int32"
 #define tsInt64Type         "Int64"
@@ -607,7 +608,7 @@ class TypeCommon
     Boolean IsString();
     Boolean IsTimestamp();
     Boolean IsComplex();
-    Boolean IsIntrinsicClusterDataType();  // Returns true for builtin data types such as Timestamp, Complex, etc
+    Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
 
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {
