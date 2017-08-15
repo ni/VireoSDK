@@ -20,6 +20,7 @@ SDG
 #include "TypeAndDataManager.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 
@@ -416,18 +417,20 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseBitCluster()
 {
-    TypeRef elementTypes[1000];  // TODO(PaulAustin): enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
-    ParseAggregateElementList(elementTypes, &calc);
-    return BitClusterType::New(_typeManager, elementTypes, calc.ElementCount);
+    std::vector<TypeRef> elementTypesVector;
+    ParseAggregateElementList(&elementTypesVector, &calc);
+    BitClusterType *bitClusterType = BitClusterType::New(_typeManager, (TypeRef*)elementTypesVector.data(), calc.ElementCount);
+    return bitClusterType;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseCluster()
 {
-    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     ClusterAlignmentCalculator calc(_typeManager);
-    ParseAggregateElementList(elementTypes, &calc);
-    return ClusterType::New(_typeManager, elementTypes, calc.ElementCount);
+    std::vector<TypeRef> elementTypesVector;
+    ParseAggregateElementList(&elementTypesVector, &calc);
+    ClusterType *clusterType = ClusterType::New(_typeManager, (TypeRef*)elementTypesVector.data(), calc.ElementCount);
+    return  clusterType;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseDefine()
@@ -465,22 +468,26 @@ TypeRef TDViaParser::ParseDefine()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseEquivalence()
 {
-    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     EquivalenceAlignmentCalculator calc(_typeManager);
-    ParseAggregateElementList(elementTypes, &calc);
-    return EquivalenceType::New(_typeManager, elementTypes, calc.ElementCount);
+    std::vector<TypeRef> elementTypesVector;
+    ParseAggregateElementList(&elementTypesVector, &calc);
+    EquivalenceType* equivalenceType = EquivalenceType::New(_typeManager, (TypeRef*)elementTypesVector.data(), calc.ElementCount);
+    return  equivalenceType;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseParamBlock()
 {
-    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     ParamBlockAlignmentCalculator calc(_typeManager);
-    ParseAggregateElementList(elementTypes, &calc);
-    return ParamBlockType::New(_typeManager, elementTypes, calc.ElementCount);
+    std::vector<TypeRef> elementTypesVector;
+    ParseAggregateElementList(&elementTypesVector, &calc);
+    ParamBlockType *paramBlockType = ParamBlockType::New(_typeManager, (TypeRef*)elementTypesVector.data(), calc.ElementCount);
+    return paramBlockType;
 }
 //------------------------------------------------------------
-void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator)
+void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVector, AggregateAlignmentCalculator* calculator)
 {
+    VIREO_ASSERT(elementTypesVector != null)
+
     SubString  token;
     SubString  fieldName;
     UsageTypeEnum  usageType;
@@ -537,7 +544,7 @@ void TDViaParser::ParseAggregateElementList(TypeRef ElementTypes[], AggregateAli
 
         Int32 offset = calculator->AlignNextElement(subType);
         ElementTypeRef element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset);
-        ElementTypes[calculator->ElementCount-1] = element;
+        elementTypesVector->push_back(element);
 
         _string.ReadToken(&token);
     }

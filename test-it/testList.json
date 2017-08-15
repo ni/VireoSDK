@@ -31,7 +31,8 @@
         },
         "manual": {
             "tests": [
-                "StringFormatTime.via"
+                "StringFormatTime.via",
+                "TestVI_LargeBDTest.via"
             ]
         },
         "common": {

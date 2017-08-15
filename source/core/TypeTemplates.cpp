@@ -147,13 +147,14 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
 
-    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
+    TypeRef* elementTypes = new TypeRef[subElementCount];
 
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
-    _newType  = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
+    _newType = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
+    delete[]elementTypes;
 
     _alignmentCalculator = saveCalc;
 }
@@ -180,13 +181,14 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
     AggregateAlignmentCalculator* saveCalc = _alignmentCalculator;
     _alignmentCalculator = &calc;
 
-    TypeRef elementTypes[1000];   // TODO(PaulAustin): enforce limits or make them dynamic
     IntIndex subElementCount = type->SubElementCount();
+    TypeRef* elementTypes = new TypeRef[subElementCount];
 
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypes[i] = Accept(type->GetSubElement(i));
     }
-    _newType  = EquivalenceType::New(_typeManager, elementTypes, type->SubElementCount());
+    _newType = EquivalenceType::New(_typeManager, elementTypes, type->SubElementCount());
+    delete[]elementTypes;
 
     _alignmentCalculator = saveCalc;
     VIREO_ASSERT(false);
