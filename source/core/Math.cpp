@@ -327,13 +327,21 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE2(IsGT0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) >  0)) \
     DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4(MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (_Param(0) >= _Param(1)) { \
+        if (::isnan((double)_Param(0))) { \
+         _Param(2) = _Param(0); _Param(3) = _Param(1);  \
+        } else if (::isnan((double)_Param(1))) { \
+         _Param(2) = _Param(0); _Param(3) = _Param(1);  \
+        } else if (_Param(0) >= _Param(1)) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1); \
         } else { \
          _Param(2) = _Param(1); _Param(3) = _Param(0); \
         })    \
     DECLARE_VIREO_PRIMITIVE4(MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (_Param(0) >= _Param(1)) { \
+        if (::isnan((double)_Param(0))) { \
+         _Param(2) = _Param(1); _Param(3) = _Param(1);  \
+        } else if (::isnan((double)_Param(1))) { \
+         _Param(2) = _Param(0); _Param(3) = _Param(0);  \
+        } else if (_Param(0) >= _Param(1)) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1);  \
         } else { \
          _Param(2) = _Param(1); _Param(3) = _Param(0); \
