@@ -14,7 +14,7 @@ IR&C-13 (2 (55 10 11) 57) = (55 10 11) (false false false)
 IR&C-14 (55 (55 10 11) 57) = (55 55 55) (false true true)
 IR&C-15 (99 (55 10 11) 60) = (60 60 60) (false false false)
 IR&C-16 ((60 0 11) 10 30) = (30 10 11) (false false true)
-IR&C-17 ((1 2 3 4) 2 (1 10 20)) = (2 2 3) (false false true)
+IR&C-17 ((1 2 3 4) 2 (1 10 20)) = (1 2 3) (false false true)
 IR&C-18 (() () (60 0 11)) = () ()
 IR&C-19 (() () (60 0 11)) = () false
-IR&C-20 of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'efg' 5), (true false false)>
+IR&C-20 of (('cab' 'yyz' 2), ('abc' 'xyz' 5), ('dcba' 'efg' 4)) is <('cab' 'efg' 4), (true false false)>
