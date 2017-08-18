@@ -687,7 +687,7 @@ static bool GetMinimumArrayDimensions(std::vector<TypedArrayCoreRef> arrays,
 {
     int arrayCount = arrays.size();
     for (int i = 0; i < arrayCount; i++) {
-        VIREO_ASSERT(sourceArrays[i] != null);
+        VIREO_ASSERT(arrays[i] != null);
     }
     VIREO_ASSERT(newDimensionLengths != null);
     VIREO_ASSERT(newRank != null);
