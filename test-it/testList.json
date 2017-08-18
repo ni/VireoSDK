@@ -16,6 +16,8 @@
             "include": [ "common" ],
             "tests": [
                 "DateFormatStringLocaleSpecific.via",
+                "HttpHeadersTest.via",
+                "HttpHandles.via",
                 "Round.via",
                 "Scale2X.via",
                 "Scale2XWithIntegers.via",

@@ -1,23 +1,23 @@
 010
-(true -1967362020 'HttpClientClose in HttpHandles<APPEND>
-Attempted to close an invalid or non-existant handle')
+true
+-1967362020
 020
-(true 1 'HttpClientAddHeader in HttpHandles<APPEND>
-Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
+true
+1
 030
-(true 1 'HttpClientRemoveHeader in HttpHandles<APPEND>
-Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
+true
+1
 040
 
-(true 1 'HttpClientGetHeader in HttpHandles<APPEND>
-Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
+true
+1
 050
 0
 
-(true 1 'HttpClientHeaderExists in HttpHandles<APPEND>
-Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
+true
+1
 060
 
-(true 1 'HttpClientListHeaders in HttpHandles<APPEND>
-Handle Not Found, Make sure to use HttpClientOpen to create a handle first')
+true
+1
 end

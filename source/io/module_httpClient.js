@@ -32,21 +32,54 @@
 
     var DEFAULT_INVALID_HANDLE = 0;
 
-    var CODES = {
+    var ERRORS = {
         // Shared
-        NO_ERROR: 0,
-        NETWORK_ERROR: -1967370240, // Internal Networking Error, the HTTP Client network errors are too specific
-        CLOSE_INVALID_HANDLE: -1967362020, // The provided refnum is invalid
-        RECEIVE_INVALID_HANDLE: 1, // An input parameter is invalid
-        TIMEOUT: 56, // The network operation exceeded the user-specified or system time limit.
-        INVALID_URL: 363500,
-        ABORT: 363508,
-        HEADER_DOES_NOT_EXIST: 363528,
-        HTTP_CLIENT_UNKNOWN_ERROR: 363798,
+        NO_ERROR: {
+            CODE: 0,
+            MESSAGE: ''
+        },
+        NETWORK_ERROR: {
+            CODE: -1967370240, // Internal Networking Error, the HTTP Client network errors are too specific
+            MESSAGE: ''
+        },
+        CLOSE_INVALID_HANDLE: {
+            CODE: -1967362020, // The provided refnum is invalid
+            MESSAGE: ''
+        },
+        RECEIVE_INVALID_HANDLE: {
+            CODE: 1, // An input parameter is invalid
+            MESSAGE: ''
+        },
+        TIMEOUT: {
+            CODE: 56, // The network operation exceeded the user-specified or system time limit.
+            MESSAGE: 'Timeout'
+        },
+        INVALID_URL: {
+            CODE: 363500,
+            MESSAGE: ''
+        },
+        ABORT: {
+            CODE: 363508,
+            MESSAGE: 'Abort'
+        },
+        HEADER_DOES_NOT_EXIST: {
+            CODE: 363528,
+            MESSAGE: ''
+        },
+        HTTP_CLIENT_UNKNOWN_ERROR: {
+            CODE: 363798,
+            MESSAGE: ''
+        },
 
         // WebVI Specific
-        WEBVI_UNSUPPORTED_INPUT: 363650,
-        INVALID_HEADER: 363651
+        WEBVI_UNSUPPORTED_INPUT: {
+            CODE: 363650,
+            MESSAGE: ''
+        },
+        INVALID_HEADER: {
+            CODE: 363651,
+            MESSAGE: ''
+        }
     };
 
     var DEFAULT_TIMEOUT_MS = 10000;
@@ -190,8 +223,8 @@
                         header: '',
                         body: [],
                         status: 0,
-                        labviewCode: CODES.NETWORK_ERROR,
-                        errorMessage: 'Network Error: Check Output or Console for more information'
+                        labviewCode: ERRORS.NETWORK_ERROR.CODE,
+                        errorMessage: ERRORS.NETWORK_ERROR.MESSAGE
                     });
                     return;
                 }
@@ -207,8 +240,8 @@
                     header: header,
                     body: body,
                     status: request.status,
-                    labviewCode: CODES.NO_ERROR,
-                    errorMessage: ''
+                    labviewCode: ERRORS.NO_ERROR.CODE,
+                    errorMessage: ERRORS.NO_ERROR.MESSAGE
                 });
             };
 
@@ -217,8 +250,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.NETWORK_ERROR,
-                    errorMessage: 'Network Error: Check Output or Console for more information'
+                    labviewCode: ERRORS.NETWORK_ERROR.CODE,
+                    errorMessage: ERRORS.NETWORK_ERROR.MESSAGE
                 });
             };
 
@@ -228,8 +261,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.TIMEOUT,
-                    errorMessage: 'Timeout'
+                    labviewCode: ERRORS.TIMEOUT.CODE,
+                    errorMessage: ERRORS.TIMEOUT.MESSAGE
                 });
             };
 
@@ -238,8 +271,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.ABORT,
-                    errorMessage: 'Request Aborted'
+                    labviewCode: ERRORS.ABORT.CODE,
+                    errorMessage: ERRORS.ABORT.MESSAGE
                 });
             };
 
@@ -254,12 +287,12 @@
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
-                errorMessage = formatMessageWithException('Invalid URL', ex);
+                errorMessage = formatMessageWithException(ERRORS.INVALID_URL.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.INVALID_URL,
+                    labviewCode: ERRORS.INVALID_URL.CODE,
                     errorMessage: errorMessage
                 });
                 return;
@@ -274,12 +307,12 @@
                     request.setRequestHeader(header, value);
                 });
             } catch (ex) {
-                errorMessage = formatMessageWithException('Invalid Header: The provided header "' + currentHeaderName + '" with value "' + currentHeaderValue + '" is invalid', ex);
+                errorMessage = formatMessageWithException(ERRORS.INVALID_HEADER.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.INVALID_HEADER,
+                    labviewCode: ERRORS.INVALID_HEADER.CODE,
                     errorMessage: errorMessage
                 });
                 return;
@@ -306,12 +339,12 @@
                     request.send(requestData.buffer);
                 }
             } catch (ex) {
-                errorMessage = formatMessageWithException('Network Error: Check Output or Console for more information', ex);
+                errorMessage = formatMessageWithException(ERRORS.NETWORK_ERROR.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: CODES.NETWORK_ERROR,
+                    labviewCode: ERRORS.NETWORK_ERROR.CODE,
                     errorMessage: errorMessage
                 });
                 return;
@@ -402,8 +435,8 @@
             var newErrorSource;
 
             if (httpClient === undefined) {
-                newErrorSource = createSourceFromMessage('Handle Not Found, Make sure to use HttpClientOpen to create a handle first');
-                Module.coreHelpers.mergeErrors(true, CODES.RECEIVE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.RECEIVE_INVALID_HANDLE.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.RECEIVE_INVALID_HANDLE.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
@@ -424,16 +457,16 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = createSourceFromMessage('Cookie File unsupported in WebVIs (please leave as default of empty string)');
-                Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = createSourceFromMessage('Verify Server unsupported in WebVIs (please leave as default of true)');
-                Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -450,8 +483,8 @@
             var handleExists = httpClientManager.get(handle) !== undefined;
 
             if (handleExists === false) {
-                newErrorSource = createSourceFromMessage('Attempted to close an invalid or non-existant handle');
-                Module.coreHelpers.mergeErrors(true, CODES.CLOSE_INVALID_HANDLE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.CLOSE_INVALID_HANDLE.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.CLOSE_INVALID_HANDLE.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
 
@@ -495,8 +528,8 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = createSourceFromMessage('The header ' + header + ' does not exist');
-                Module.coreHelpers.mergeErrors(true, CODES.HEADER_DOES_NOT_EXIST, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.HEADER_DOES_NOT_EXIST.MESSAGE + '\nheader:' + header);
+                Module.coreHelpers.mergeErrors(true, ERRORS.HEADER_DOES_NOT_EXIST.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -566,8 +599,8 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = createSourceFromMessage('Output File unsupported in WebVIs (please leave as default of empty string)');
-                    Module.coreHelpers.mergeErrors(true, CODES.WEBVI_UNSUPPORTED_INPUT, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
+                    Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     setDefaultOutputs();
                     return;
                 }
@@ -625,7 +658,7 @@
                     Module.eggShell.dataWriteStringFromArray(bodyPointer, responseData.body);
                 }
 
-                var newErrorStatus = responseData.labviewCode !== CODES.NO_ERROR;
+                var newErrorStatus = responseData.labviewCode !== ERRORS.NO_ERROR.CODE;
                 var newErrorCode = responseData.labviewCode;
                 var newErrorSource = createSourceFromMessage(responseData.errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
@@ -634,7 +667,7 @@
         };
 
         Module.httpClient.jsHttpClientConfigCORS = function (handle, includeCredentialsDuringCORS, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var httpClient = findhttpClientOrWriteError(handle, 'LabVIEWHTTPClient:Credentials', errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
             if (httpClient === undefined) {
                 return;
             }
