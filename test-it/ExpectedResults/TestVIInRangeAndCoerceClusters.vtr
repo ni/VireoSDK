@@ -1,0 +1,13 @@
+TestResultNumericInRange = true
+TestResultCoercedOne = true
+TestResultCoercedAll = true
+TestResultNestedCluster = true
+TestResultNestedCoercedSome = true
+TestResultNestedCoercedAll = true
+TestResultNumericInRangeAggregate = true
+TestResultCoercedOneAggregate = true
+TestResultCoercedAllAggregate = true
+TestResultNestedClusterAggregate = true
+TestResultNestedCoercedSomeAggregate = true
+TestResultNestedCoercedAllAggregate = true
+TestResultClusterScalarScalar = true
