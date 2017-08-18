@@ -35,7 +35,8 @@ define(HttpHeadersTest dv(VirtualInstrument (
         Println('030')
         HttpClientGetHeader(handle 'nonexistant' result error)
         Println(result)
-        Println(error)
+        Println(error.status)
+        Println(error.code)
         Copy(noerror error)
 
         Println('040')
@@ -99,7 +100,8 @@ define(HttpHeadersTest dv(VirtualInstrument (
         Println('150')
         HttpClientGetHeader(handle '\tMor ty\t' result error)
         Println(result)
-        Println(error)
+        Println(error.status)
+        Println(error.code)
         Copy(noerror error)
 
         Println('160')

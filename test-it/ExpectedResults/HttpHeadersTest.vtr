@@ -5,8 +5,8 @@
 (false 0 '')
 030
 
-(true 363528 'HttpClientGetHeader in HttpHeadersTest<APPEND>
-The header nonexistant does not exist')
+true
+363528
 040
 0
 
@@ -43,8 +43,8 @@ Rick: Sanchez
 (false 0 '')
 150
 
-(true 363528 'HttpClientGetHeader in HttpHeadersTest<APPEND>
-The header 	Mor ty	 does not exist')
+true
+363528
 160
 0
 
