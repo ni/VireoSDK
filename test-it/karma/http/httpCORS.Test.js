@@ -1,4 +1,4 @@
-describe('Performing a CORS request', function () {
+describe('Performing a CORS request #FailsIE', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;

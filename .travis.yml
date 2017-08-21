@@ -43,7 +43,7 @@ before_script:
 script:
 - make testjs
 - make testnative
-- npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
+- npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
 - npm run karma -- --browsers Firefox
 before_deploy:
 - npm run doxygen

@@ -36,8 +36,9 @@ after_build:
 test_script:
   - make testjs
   - make testnative
-  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS,Slow
-  - npm run karma -- --browsers Chrome,Firefox,IE
+  - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
+  - npm run karma -- --browsers IE --skip-tags FailsIE
+  - npm run karma -- --browsers Chrome,Firefox
 
 # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
 after_test:
