@@ -12,6 +12,7 @@ SDG
 
 #include "TypeAndDataManager.h"
 #include "ExecutionContext.h"
+#include <vector>
 
 namespace Vireo
 {
@@ -148,13 +149,12 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     _alignmentCalculator = &calc;
 
     IntIndex subElementCount = type->SubElementCount();
-    TypeRef* elementTypes = new TypeRef[subElementCount];
+    std::vector<TypeRef> elementTypesVector;
 
     for (Int32 i = 0; i < subElementCount; i++) {
-        elementTypes[i] = Accept(type->GetSubElement(i));
+        elementTypesVector.push_back(Accept(type->GetSubElement(i)));
     }
-    _newType = ClusterType::New(_typeManager, elementTypes, type->SubElementCount());
-    delete[]elementTypes;
+    _newType = ClusterType::New(_typeManager, (TypeRef*)elementTypesVector.data(), type->SubElementCount());
 
     _alignmentCalculator = saveCalc;
 }
@@ -182,13 +182,12 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
     _alignmentCalculator = &calc;
 
     IntIndex subElementCount = type->SubElementCount();
-    TypeRef* elementTypes = new TypeRef[subElementCount];
+    std::vector<TypeRef> elementTypesVector;
 
     for (Int32 i = 0; i < subElementCount; i++) {
-        elementTypes[i] = Accept(type->GetSubElement(i));
+        elementTypesVector.push_back(Accept(type->GetSubElement(i)));
     }
-    _newType = EquivalenceType::New(_typeManager, elementTypes, type->SubElementCount());
-    delete[]elementTypes;
+    _newType = EquivalenceType::New(_typeManager, (TypeRef*)elementTypesVector.data(), type->SubElementCount());
 
     _alignmentCalculator = saveCalc;
     VIREO_ASSERT(false);
