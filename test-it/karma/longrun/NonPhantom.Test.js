@@ -15,7 +15,7 @@ describe('Tests that fail to run on PhantomJS #FailsPhantomJS', function () {
     var httpPostMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/PostMethod.via');
 
     var WEBVI_INVALID_URL = 363500;
-    var WEBVI_NETWORK_ERROR = -1967370240;
+    var WEBVI_NETWORK_ERROR = 363650;
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             httpGetMethodViaUrl,

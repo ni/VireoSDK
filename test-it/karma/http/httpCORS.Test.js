@@ -34,7 +34,8 @@ describe('Performing a CORS request', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        // Break cache for IE11 by adding random string
+        var url = httpBinHelpers.convertToAbsoluteUrl('get?rand=' + Math.random());
         viPathWriter('url', url);
         viPathWriter('withCredentials', 1);
 
@@ -55,7 +56,7 @@ describe('Performing a CORS request', function () {
             // body
             var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.args).toBeNonEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             var header1 = 'Cookie';
             var header2 = 'cookie';
@@ -79,7 +80,8 @@ describe('Performing a CORS request', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
 
-        var url = httpBinHelpers.convertToAbsoluteUrl('get');
+        // Break cache for IE11 by adding random string
+        var url = httpBinHelpers.convertToAbsoluteUrl('get?rand=' + Math.random());
         viPathWriter('url', url);
         viPathWriter('withCredentials', 0);
 
@@ -100,7 +102,7 @@ describe('Performing a CORS request', function () {
             // body
             var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
-            expect(httpBinBody.args).toBeEmptyObject();
+            expect(httpBinBody.args).toBeNonEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(httpBinBody.headers).not.toHaveMember('Cookie');
             expect(httpBinBody.headersLowerCase).not.toHaveMember('cookie');

@@ -7,10 +7,12 @@ describe('Performing a DELETE request', function () {
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
     var httpParser = window.testHelpers.httpParser;
 
-    var WEBVI_UNSUPPORTED_INPUT = 363650;
+    var kNIHttpWebVIOutputFileUnsupported = 363654;
+    var kNIHttpResultInternalUndefinedError = 363798;
     var WEBVI_RECEIVE_INVALID_HANDLE = 1;
     var WEBVI_INVALID_HEADER = 363651;
-    var WEBVI_NETWORK_ERROR = -1967370240;
+    var WEBVI_NETWORK_ERROR = 363650;
+    var ncTimeOutErr = 56;
     var vireo;
 
     var httpDeleteMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/DeleteMethod.via');
@@ -104,7 +106,7 @@ describe('Performing a DELETE request', function () {
             expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_NETWORK_ERROR);
+            expect([WEBVI_NETWORK_ERROR, kNIHttpResultInternalUndefinedError, ncTimeOutErr]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
             done();
         });
@@ -131,7 +133,7 @@ describe('Performing a DELETE request', function () {
             expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
+            expect(viPathParser('error.code')).toBe(kNIHttpWebVIOutputFileUnsupported);
             expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
             done();
         });

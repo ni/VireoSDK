@@ -62,7 +62,7 @@ describe('Timeout test suite #Slow', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
-            expect(viPathParser('error.source')).toMatch(/Timeout/);
+            expect(viPathParser('error.source')).toMatch(/time limit/);
             done();
         });
     });
@@ -94,7 +94,7 @@ describe('Timeout test suite #Slow', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
-            expect(viPathParser('error.source')).toMatch(/Timeout/);
+            expect(viPathParser('error.source')).toMatch(/time limit/);
             done();
         });
     });
@@ -127,7 +127,7 @@ describe('Timeout test suite #Slow', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(TIMEOUT_CODE);
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
-            expect(viPathParser('error.source')).toMatch(/Timeout/);
+            expect(viPathParser('error.source')).toMatch(/time limit/);
             done();
         });
     });
@@ -165,7 +165,7 @@ describe('Timeout test suite #Slow', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(ABORT_CODE);
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
-            expect(viPathParser('error.source')).toMatch(/Abort/);
+            expect(viPathParser('error.source')).toMatch(/aborted/);
             done();
         });
     });

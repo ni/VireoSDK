@@ -5,7 +5,8 @@ describe('Running an Open Handle call', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var WEBVI_UNSUPPORTED_INPUT = 363650;
+    var kNIHttpWebVICookieFileUnsupported = 363652;
+    var kNIHttpWebVIVerifyServerUnsupported = 363653;
     var vireo;
 
     var httpOpenHandleViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/OpenHandle.via');
@@ -55,7 +56,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
+            expect(viPathParser('error.code')).toBe(kNIHttpWebVICookieFileUnsupported);
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
@@ -76,7 +77,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('verifyServer')).toBe(0);
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
+            expect(viPathParser('error.code')).toBe(kNIHttpWebVIVerifyServerUnsupported);
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
@@ -147,7 +148,7 @@ describe('Running an Open Handle call', function () {
             expect(viPathParser('verifyServer')).toBe(1);
             expect(viPathParser('handle')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_UNSUPPORTED_INPUT);
+            expect(viPathParser('error.code')).toBe(kNIHttpWebVICookieFileUnsupported);
             expect(viPathParser('error.source')).toMatch(/HttpClientOpen in MyVI/);
             done();
         });
