@@ -38,47 +38,71 @@
             CODE: 0,
             MESSAGE: ''
         },
-        NETWORK_ERROR: {
-            CODE: -1967370240, // Internal Networking Error, the HTTP Client network errors are too specific
-            MESSAGE: ''
-        },
-        CLOSE_INVALID_HANDLE: {
-            CODE: -1967362020, // The provided refnum is invalid
-            MESSAGE: ''
-        },
-        RECEIVE_INVALID_HANDLE: {
-            CODE: 1, // An input parameter is invalid
-            MESSAGE: ''
-        },
-        TIMEOUT: {
-            CODE: 56, // The network operation exceeded the user-specified or system time limit.
-            MESSAGE: 'Timeout'
-        },
-        INVALID_URL: {
-            CODE: 363500,
-            MESSAGE: ''
-        },
-        ABORT: {
-            CODE: 363508,
-            MESSAGE: 'Abort'
-        },
-        HEADER_DOES_NOT_EXIST: {
-            CODE: 363528,
-            MESSAGE: ''
-        },
-        HTTP_CLIENT_UNKNOWN_ERROR: {
-            CODE: 363798,
-            MESSAGE: ''
+
+        // penguin\lvaddon\errors\osnetwork\trunk\17.0\source\errors.nimxl
+        InvalidRefnum: {
+            CODE: -1967362020,
+            MESSAGE: 'The provided refnum is invalid.'
         },
 
-        // WebVI Specific
-        WEBVI_UNSUPPORTED_INPUT: {
-            CODE: 363650,
-            MESSAGE: ''
+        // penguin\lvaddon\errors\lv\trunk\17.0\source\errors.nimxl
+        mgArgErr: {
+            CODE: 1,
+            MESSAGE: 'An input parameter is invalid. For example if the input is a path, the path might contain a character not allowed by the OS such as ? or @.'
         },
-        INVALID_HEADER: {
+        ncTimeOutErr: {
+            CODE: 56,
+            MESSAGE: 'The network operation exceeded the user-specified or system time limit.'
+        },
+        kNIHttpResultCouldNotConnect: {
+            CODE: 363500,
+            MESSAGE: 'Failed to connect to the specified hostname.  Be sure the specified hostname is correct, the server is running and configured to accept remote requests.'
+        },
+        kNIHttpResultAbortedByCallback: {
+            CODE: 363508,
+            MESSAGE: 'The request was aborted by the caller.'
+        },
+        kNIHttpResultRequestHeaderDoesNotExist: {
+            CODE: 363528,
+            MESSAGE: 'The specified request header does not exist.'
+        },
+
+        kNIHttpWebVINetworkError: {
+            CODE: 363650,
+            MESSAGE: 'A network error has occurred. Possible reasons for this error include Cross-Origin Resource Sharing (CORS) configuration issues between the client and the target server or that the client cannot reach the target server. Due to browser security restrictions, detailed information about the cause of the network error cannot be provided. You may find specific details about the cause of the network error in the browser development tools console or in the LabVIEW output window.'
+        },
+        kNIHttpWebVIHeaderInvalid: {
             CODE: 363651,
-            MESSAGE: ''
+            MESSAGE: 'Setting a header or header value resulted in an error, possibly due to an invalid character in a header or header value. Verify that each header and header value contains only valid characters.'
+        },
+        kNIHttpWebVICookieFileUnsupported: {
+            CODE: 363652,
+            MESSAGE: 'This target does not support modification of the cookie file input. The browser manages saving cookies from an HTTP response and including cookies in HTTP requests on behalf of the user. The HTTP Client VIs cannot manipulate cookies directly. Set the cookie file input as either Not a path or an empty path for this target.'
+        },
+        kNIHttpWebVIVerifyServerUnsupported: {
+            CODE: 363653,
+            MESSAGE: 'This target does not support modification of the verify server input. The browser manages settings related to validation of a server\'s identity and establishing secure connections. Set the verify server input to True for this target.'
+        },
+        kNIHttpWebVIOutputFileUnsupported: {
+            CODE: 363654,
+            MESSAGE: 'This target does not support usage of an output file. Set output file as either Not a path or an empty path for this target.'
+        },
+        kNIHttpCORSNotRequired: {
+            CODE: 363655,
+            MESSAGE: 'This target is not subject to Cross-Origin Resource Sharing (CORS) restrictions and cannot perform CORS configuration. Do not attempt to perform CORS configuration on this target.'
+        },
+        kNIHttpWebVIProxyConfigUnsupported: {
+            CODE: 363656,
+            MESSAGE: 'This target does not support proxy server configuration using the HTTP Client VIs. The host browser or environment must be configured directly to change proxy server settings. Do not attempt to perform proxy server configuration on this target.'
+        },
+        kNIHttpWebVISSLConfigUnsupported: {
+            CODE: 363657,
+            MESSAGE: 'This target does not support SSL configuration using the HTTP Client VIs. The host browser or environment must be configured directly to change SSL settings. Do not attempt to perform SSL configuration on this target.'
+        },
+
+        kNIHttpResultInternalUndefinedError: {
+            CODE: 363798,
+            MESSAGE: 'The HTTP client produced an unknown error.'
         }
     };
 
@@ -223,8 +247,8 @@
                         header: '',
                         body: [],
                         status: 0,
-                        labviewCode: ERRORS.NETWORK_ERROR.CODE,
-                        errorMessage: ERRORS.NETWORK_ERROR.MESSAGE
+                        labviewCode: ERRORS.kNIHttpResultInternalUndefinedError.CODE,
+                        errorMessage: ERRORS.kNIHttpResultInternalUndefinedError.MESSAGE
                     });
                     return;
                 }
@@ -250,8 +274,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.NETWORK_ERROR.CODE,
-                    errorMessage: ERRORS.NETWORK_ERROR.MESSAGE
+                    labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
+                    errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE
                 });
             };
 
@@ -261,8 +285,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.TIMEOUT.CODE,
-                    errorMessage: ERRORS.TIMEOUT.MESSAGE
+                    labviewCode: ERRORS.ncTimeOutErr.CODE,
+                    errorMessage: ERRORS.ncTimeOutErr.MESSAGE
                 });
             };
 
@@ -271,8 +295,8 @@
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.ABORT.CODE,
-                    errorMessage: ERRORS.ABORT.MESSAGE
+                    labviewCode: ERRORS.kNIHttpResultAbortedByCallback.CODE,
+                    errorMessage: ERRORS.kNIHttpResultAbortedByCallback.MESSAGE
                 });
             };
 
@@ -287,12 +311,12 @@
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
-                errorMessage = formatMessageWithException(ERRORS.INVALID_URL.MESSAGE, ex);
+                errorMessage = formatMessageWithException(ERRORS.kNIHttpResultCouldNotConnect.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.INVALID_URL.CODE,
+                    labviewCode: ERRORS.kNIHttpResultCouldNotConnect.CODE,
                     errorMessage: errorMessage
                 });
                 return;
@@ -307,19 +331,18 @@
                     request.setRequestHeader(header, value);
                 });
             } catch (ex) {
-                errorMessage = formatMessageWithException(ERRORS.INVALID_HEADER.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue, ex);
+                errorMessage = formatMessageWithException(ERRORS.kNIHttpWebVIHeaderInvalid.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.INVALID_HEADER.CODE,
+                    labviewCode: ERRORS.kNIHttpWebVIHeaderInvalid.CODE,
                     errorMessage: errorMessage
                 });
                 return;
             }
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
-            // Setting to false so communication to servers with Access-Control-Allow-Origin: *
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
             request.withCredentials = this._includeCredentialsDuringCORS;
 
@@ -339,12 +362,12 @@
                     request.send(requestData.buffer);
                 }
             } catch (ex) {
-                errorMessage = formatMessageWithException(ERRORS.NETWORK_ERROR.MESSAGE, ex);
+                errorMessage = formatMessageWithException(ERRORS.kNIHttpWebVINetworkError.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
-                    labviewCode: ERRORS.NETWORK_ERROR.CODE,
+                    labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
                     errorMessage: errorMessage
                 });
                 return;
@@ -435,8 +458,8 @@
             var newErrorSource;
 
             if (httpClient === undefined) {
-                newErrorSource = createSourceFromMessage(ERRORS.RECEIVE_INVALID_HANDLE.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.RECEIVE_INVALID_HANDLE.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.mgArgErr.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.mgArgErr.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
             return httpClient;
@@ -457,16 +480,16 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVICookieFileUnsupported.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVICookieFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVIVerifyServerUnsupported.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIVerifyServerUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -483,8 +506,8 @@
             var handleExists = httpClientManager.get(handle) !== undefined;
 
             if (handleExists === false) {
-                newErrorSource = createSourceFromMessage(ERRORS.CLOSE_INVALID_HANDLE.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.CLOSE_INVALID_HANDLE.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.InvalidRefnum.MESSAGE);
+                Module.coreHelpers.mergeErrors(true, ERRORS.InvalidRefnum.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
 
@@ -528,8 +551,8 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = createSourceFromMessage(ERRORS.HEADER_DOES_NOT_EXIST.MESSAGE + '\nheader:' + header);
-                Module.coreHelpers.mergeErrors(true, ERRORS.HEADER_DOES_NOT_EXIST.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpResultRequestHeaderDoesNotExist.MESSAGE + '\nheader:' + header);
+                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpResultRequestHeaderDoesNotExist.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
             }
@@ -599,8 +622,8 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = createSourceFromMessage(ERRORS.WEBVI_UNSUPPORTED_INPUT.MESSAGE);
-                    Module.coreHelpers.mergeErrors(true, ERRORS.WEBVI_UNSUPPORTED_INPUT.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVIOutputFileUnsupported.MESSAGE);
+                    Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIOutputFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     setDefaultOutputs();
                     return;
                 }
