@@ -633,7 +633,10 @@
             if (bufferPointer !== NULL) {
                 typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
                 // TODO(mraj) would like to use the typed array directly but not supported in iOS and PhantomJS
-                buffer = new Blob([typedArrayBuffer]);
+                buffer = new Blob([typedArrayBuffer], {
+                    type: 'text/plain;charset=utf-8'
+                });
+                // TODO need tests to show that text/plain is the default and can be overridden
             }
 
             var httpClient;
