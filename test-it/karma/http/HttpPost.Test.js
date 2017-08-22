@@ -604,4 +604,96 @@ describe('Performing a POST request', function () {
             done();
         });
     });
+
+    describe('with a mime type', function () {
+        it('of the default of application/x-www-form-urlencoded', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+            var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+            var url = httpBinHelpers.convertToAbsoluteUrl('post');
+            viPathWriter('url', url);
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+
+                // handle
+                expect(viPathParser('handle')).toBe(0);
+
+                // header
+                var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+                expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+                expect(responseHeader.statusCode).toBe(200);
+                expect(responseHeader.reasonPhrase).toBe('OK');
+                expect(responseHeader.headers).toBeNonEmptyObject();
+
+                // body
+                var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+                var requestUrl = httpParser.parseUrl(httpBinBody.url);
+                expect(httpBinBody.args).toBeEmptyObject();
+                expect(httpBinBody.headers).toBeNonEmptyObject();
+                // IE and Edge do not use the Blob type as the Content-Type and instead avoid sending the header
+                expect(['application/x-www-form-urlencoded', undefined]).toContain(httpBinBody.headers['Content-Type']);
+                expect(httpBinBody.data).toBeEmptyString();
+                expect(requestUrl.pathname).toBe('/post');
+
+                // status code
+                expect(viPathParser('statusCode')).toBe(200);
+
+                // error
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+
+                done();
+            });
+        });
+
+        it('of application/json by adding a Content-Type header', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostOpenAddMethodCloseViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+            var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+            var url = httpBinHelpers.convertToAbsoluteUrl('post');
+            var header = 'Content-Type';
+            var value = 'application/json';
+            viPathWriter('url', url);
+            viPathWriter('header', header);
+            viPathWriter('value', value);
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+
+                // handle
+                expect(viPathParser('handle')).toBeGreaterThan(0);
+
+                // header
+                var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+                expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+                expect(responseHeader.statusCode).toBe(200);
+                expect(responseHeader.reasonPhrase).toBe('OK');
+                expect(responseHeader.headers).toBeNonEmptyObject();
+
+                // body
+                var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+                var requestUrl = httpParser.parseUrl(httpBinBody.url);
+                expect(httpBinBody.args).toBeEmptyObject();
+                expect(httpBinBody.headers).toBeNonEmptyObject();
+                expect(httpBinBody.headers[header]).toBe(value);
+                expect(httpBinBody.data).toBeEmptyString();
+                expect(requestUrl.pathname).toBe('/post');
+
+                // status code
+                expect(viPathParser('statusCode')).toBe(200);
+
+                // error
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                done();
+            });
+        });
+    });
 });
