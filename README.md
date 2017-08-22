@@ -21,6 +21,11 @@ Requirements:
 Setup:
 - `npm install`
 
+Setup (Windows):
+You need some UNIX command tools. [Chocolatey](https://chocolatey.org/) is a good option to get them. Once you have it, run:
+- `choco install make`
+- `choco install gnuwin32-coreutils.portable`
+
 #### Visual Studio
 Works with Visual Studio 2013 and 2015 (see the `Vireo_VS` folder).
 
