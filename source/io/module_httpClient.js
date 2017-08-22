@@ -633,8 +633,10 @@
             if (bufferPointer !== NULL) {
                 typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
                 // TODO(mraj) would like to use the typed array directly but not supported in iOS and PhantomJS
+                // Set the type to application/x-www-form-urlencoded as this is the default on desktop
+                // User can add a Content-Type header to override this default
                 buffer = new Blob([typedArrayBuffer], {
-                    type: 'text/plain;charset=utf-8'
+                    type: 'application/x-www-form-urlencoded'
                 });
                 // TODO need tests to show that text/plain is the default and can be overridden
             }
