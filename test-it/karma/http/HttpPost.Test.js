@@ -190,6 +190,7 @@ describe('Performing a POST request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
@@ -220,7 +221,7 @@ describe('Performing a POST request', function () {
             summer: 'smith',
             mr: 'pbh'
         });
-        viPathWriter('buffer', buffer);
+        viPathWriter('buffer', 'mydata=' + buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -241,7 +242,10 @@ describe('Performing a POST request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(httpBinBody.data).toBe(buffer);
+            expect(httpBinBody.form).toEqual({
+                mydata: buffer
+            });
+            expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
             // status code
@@ -264,7 +268,7 @@ describe('Performing a POST request', function () {
         var url = httpBinHelpers.convertToAbsoluteUrl('post');
         viPathWriter('url', url);
         var buffer = 'Iñtërnâtiônàlizætiøn☃💩';
-        viPathWriter('buffer', buffer);
+        viPathWriter('buffer', 'mydata=' + buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -285,7 +289,10 @@ describe('Performing a POST request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(httpBinBody.data).toBe(buffer);
+            expect(httpBinBody.form).toEqual({
+                mydata: buffer
+            });
+            expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
             // status code
@@ -308,7 +315,7 @@ describe('Performing a POST request', function () {
         var url = httpBinHelpers.convertToAbsoluteUrl('post');
         viPathWriter('url', url);
         var buffer = '\xCB\xD2\x7C\x42\x00\xA9\x78\xC2';
-        viPathWriter('buffer', buffer);
+        viPathWriter('buffer', 'mydata=' + buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -329,7 +336,10 @@ describe('Performing a POST request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(httpBinBody.data).toBe(buffer);
+            expect(httpBinBody.form).toEqual({
+                mydata: buffer
+            });
+            expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
             // status code
@@ -430,6 +440,7 @@ describe('Performing a POST request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
@@ -507,6 +518,7 @@ describe('Performing a POST request', function () {
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(httpBinBody.headersLowerCase[header]).toBe(value);
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/post');
 
@@ -562,6 +574,7 @@ describe('Performing a POST request', function () {
             expect(httpBinBody1.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody1.headersLowerCase).not.toHaveMember(header2);
             expect(httpBinBody1.headersLowerCase[header1]).toBe(value1);
+            expect(httpBinBody1.form).toBeEmptyObject();
             expect(httpBinBody1.data).toBeEmptyString();
             expect(requestUrl1.pathname).toBe('/post');
 
@@ -591,6 +604,7 @@ describe('Performing a POST request', function () {
             expect(httpBinBody2.headersLowerCase).not.toHaveMember(header1);
             expect(httpBinBody2.headersLowerCase).toHaveMember(header2);
             expect(httpBinBody2.headersLowerCase[header2]).toBe(value2);
+            expect(httpBinBody2.form).toBeEmptyObject();
             expect(httpBinBody2.data).toBeEmptyString();
             expect(requestUrl2.pathname).toBe('/post');
 
@@ -635,6 +649,7 @@ describe('Performing a POST request', function () {
                 expect(httpBinBody.headers).toBeNonEmptyObject();
                 // IE and Edge do not use the Blob type as the Content-Type and instead avoid sending the header
                 expect(['application/x-www-form-urlencoded', undefined]).toContain(httpBinBody.headers['Content-Type']);
+                expect(httpBinBody.form).toBeEmptyObject();
                 expect(httpBinBody.data).toBeEmptyString();
                 expect(requestUrl.pathname).toBe('/post');
 
@@ -682,6 +697,7 @@ describe('Performing a POST request', function () {
                 expect(httpBinBody.args).toBeEmptyObject();
                 expect(httpBinBody.headers).toBeNonEmptyObject();
                 expect(httpBinBody.headers[header]).toBe(value);
+                expect(httpBinBody.form).toBeEmptyObject();
                 expect(httpBinBody.data).toBeEmptyString();
                 expect(requestUrl.pathname).toBe('/post');
 

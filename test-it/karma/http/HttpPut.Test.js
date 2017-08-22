@@ -166,6 +166,7 @@ describe('Performing a PUT request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/put');
 
@@ -196,7 +197,7 @@ describe('Performing a PUT request', function () {
             summer: 'smith',
             mr: 'pbh'
         });
-        viPathWriter('buffer', buffer);
+        viPathWriter('buffer', 'mydata=' + buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -217,7 +218,10 @@ describe('Performing a PUT request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(httpBinBody.data).toBe(buffer);
+            expect(httpBinBody.form).toEqual({
+                mydata: buffer
+            });
+            expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/put');
 
             // status code
@@ -240,7 +244,7 @@ describe('Performing a PUT request', function () {
         var url = httpBinHelpers.convertToAbsoluteUrl('put');
         viPathWriter('url', url);
         var buffer = 'Iñtërnâtiônàlizætiøn☃💩';
-        viPathWriter('buffer', buffer);
+        viPathWriter('buffer', 'mydata=' + buffer);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -261,7 +265,10 @@ describe('Performing a PUT request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
-            expect(httpBinBody.data).toBe(buffer);
+            expect(httpBinBody.form).toEqual({
+                mydata: buffer
+            });
+            expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/put');
 
             // status code
@@ -362,6 +369,7 @@ describe('Performing a PUT request', function () {
             var requestUrl = httpParser.parseUrl(httpBinBody.url);
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/put');
 
@@ -439,6 +447,7 @@ describe('Performing a PUT request', function () {
             expect(httpBinBody.args).toBeEmptyObject();
             expect(httpBinBody.headers).toBeNonEmptyObject();
             expect(httpBinBody.headersLowerCase[header]).toBe(value);
+            expect(httpBinBody.form).toBeEmptyObject();
             expect(httpBinBody.data).toBeEmptyString();
             expect(requestUrl.pathname).toBe('/put');
 
@@ -494,6 +503,7 @@ describe('Performing a PUT request', function () {
             expect(httpBinBody1.headersLowerCase).toHaveMember(header1);
             expect(httpBinBody1.headersLowerCase).not.toHaveMember(header2);
             expect(httpBinBody1.headersLowerCase[header1]).toBe(value1);
+            expect(httpBinBody1.form).toBeEmptyObject();
             expect(httpBinBody1.data).toBeEmptyString();
             expect(requestUrl1.pathname).toBe('/put');
 
@@ -523,6 +533,7 @@ describe('Performing a PUT request', function () {
             expect(httpBinBody2.headersLowerCase).not.toHaveMember(header1);
             expect(httpBinBody2.headersLowerCase).toHaveMember(header2);
             expect(httpBinBody2.headersLowerCase[header2]).toBe(value2);
+            expect(httpBinBody2.form).toBeEmptyObject();
             expect(httpBinBody2.data).toBeEmptyString();
             expect(requestUrl2.pathname).toBe('/put');
 
