@@ -17,6 +17,7 @@ SDG
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
 #include "Array.h"
+#include <vector>
 
 namespace Vireo
 {
@@ -679,36 +680,43 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
     }
     return pInstruction;
 }
+
 //------------------------------------------------------------
-static bool GetMinimumArrayDimensions(TypedArrayCoreRef sourceArray1, TypedArrayCoreRef sourceArray2,
+static bool GetMinimumArrayDimensions(std::vector<TypedArrayCoreRef> arrays,
     ArrayDimensionVector* newDimensionLengths, IntIndex* newRank)
 {
-    VIREO_ASSERT(sourceArray1 != null);
-    VIREO_ASSERT(sourceArray2 != null);
+    int arrayCount = arrays.size();
+    for (int i = 0; i < arrayCount; i++) {
+        VIREO_ASSERT(arrays[i] != null);
+    }
     VIREO_ASSERT(newDimensionLengths != null);
     VIREO_ASSERT(newRank != null);
-    IntIndex rankSource1 = sourceArray1->Rank();
-    IntIndex rankSource2 = sourceArray1->Rank();
-    VIREO_ASSERT(rankSource1 == rankSource2);
-    VIREO_ASSERT(rankSource1 <= kArrayMaxRank);
-    *newRank = rankSource1;
-
-    // if the dimension lenghts for all dimensions for both the array inputs are same,
-    // this will be true and we can advance the iterator directly without going through
-    // the ArrayIterator for sligthly better performance.
-    bool isInputArraysDimensionsSame = true;
-    IntIndex *sourceArray1Lengths = sourceArray1->DimensionLengths();
-    IntIndex *sourceArray2Lengths = sourceArray2->DimensionLengths();
-    for (int i = 0; i < rankSource1; i++) {
-        IntIndex dimension1 = *(sourceArray1Lengths + i);
-        IntIndex dimension2 = *(sourceArray2Lengths + i);
-        (*newDimensionLengths)[i] = (dimension1 < dimension2) ? dimension1 : dimension2;
-        if (dimension1 != dimension2)
-            isInputArraysDimensionsSame = false;
+    IntIndex array0Rank = arrays[0]->Rank();
+    for (int i = 1; i < arrayCount; i++) {
+        IntIndex rank = arrays[i]->Rank();
+        VIREO_ASSERT(rank == array0Rank &&  rank <= kArrayMaxRank);
     }
+    *newRank = array0Rank;
 
+    // if the dimension lengths for all dimensions for both the array inputs are same,
+    // this will be true and we can advance the iterator directly without going through
+    // the ArrayIterator for slightly better performance.
+    bool isInputArraysDimensionsSame = true;
+    IntIndex *array0Lengths = arrays[0]->DimensionLengths();
+    for (int i = 0; i < array0Rank; i++) {
+        IntIndex dimension0 = *(array0Lengths + i);
+        for (int j = 1; j < arrayCount; j++) {
+            IntIndex *arrayLengths = arrays[j]->DimensionLengths();
+            IntIndex dimension = *(arrayLengths + i);
+            if (dimension0 != dimension)
+                isInputArraysDimensionsSame = false;
+            dimension0 = (dimension0 < dimension) ? dimension0 : dimension;
+        }
+        (*newDimensionLengths)[i] = dimension0;
+    }
     return isInputArraysDimensionsSame;
 }
+
 //------------------------------------------------------------
 // This function is used by the "Max and Min" primitive when both inputs are arrays
 VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
@@ -731,7 +739,10 @@ VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
     // Resize output to size of input arrays
     ArrayDimensionVector newDimensionLengths;
     IntIndex rank = 0;
-    bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArrayX, srcArrayY, &newDimensionLengths, &rank);
+    std::vector<TypedArrayCoreRef> srcArrays;
+    srcArrays.push_back(srcArrayX);
+    srcArrays.push_back(srcArrayY);
+    bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArrays, &newDimensionLengths, &rank);
     maxArray->ResizeDimensions(rank, newDimensionLengths, true);
     minArray->ResizeDimensions(rank, newDimensionLengths, true);
 
@@ -2087,7 +2098,11 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     // Resize output to minimum of input arrays for each dimension
     ArrayDimensionVector newDimensionLengths;
     IntIndex rank = 0;
-    bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArray1, srcArray2, &newDimensionLengths, &rank);
+
+    std::vector<TypedArrayCoreRef> srcArrays;
+    srcArrays.push_back(srcArray1);
+    srcArrays.push_back(srcArray2);
+    bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArrays, &newDimensionLengths, &rank);
     destArray->ResizeDimensions(rank, newDimensionLengths, true);
     if (destArray2)
         destArray2->ResizeDimensions(rank, newDimensionLengths, true);
@@ -2149,6 +2164,11 @@ typedef Instruction7<AQBlock1, AQBlock1, AQBlock1, Boolean, Boolean, AQBlock1, A
 VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
 {
     InRangeAndCoerceInstruction::IRCFlags flags = _ParamImmediate(flags);
+    if ((flags & InRangeAndCoerceInstruction::kXIsScalar) && (flags & InRangeAndCoerceInstruction::kLoIsScalar) &&
+        (flags & InRangeAndCoerceInstruction::kHiIsScalar)) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Internal error:At least one of the inputs must be a vector.");
+        return THREAD_EXEC()->Stop();
+    }
     TypedArrayCoreRef srcArrayX = !(flags & InRangeAndCoerceInstruction::kXIsScalar) ? _Param(VX) : NULL;
     TypedArrayCoreRef srcArrayLo = !(flags & InRangeAndCoerceInstruction::kLoIsScalar) ? _Param(VLo) : NULL;
     TypedArrayCoreRef srcArrayHi = !(flags & InRangeAndCoerceInstruction::kHiIsScalar) ? _Param(VHi) : NULL;
@@ -2156,41 +2176,53 @@ VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
     TypedArrayCoreRef destArray = _Param(VDest);
     InRangeCompareInstructionArgs* snippet = (InRangeCompareInstructionArgs*)_ParamMethod(Snippet());
 
-    IntIndex elementSizeX = srcArrayX ? srcArrayX->ElementType()->TopAQSize() : 0;
-    IntIndex elementSizeLo = srcArrayLo ? srcArrayLo->ElementType()->TopAQSize() : 0;
-    IntIndex elementSizeHi = srcArrayHi ? srcArrayHi->ElementType()->TopAQSize() : 0;
-    IntIndex elementSizeCoerced = coercedArray->ElementType()->TopAQSize();
-    IntIndex elementSizeDest = destArray->ElementType()->TopAQSize();
-    IntIndex lengthAX = srcArrayX ? srcArrayX->Length() : 0;
-    IntIndex lengthALo = srcArrayLo ? srcArrayLo->Length() : 0;
-    IntIndex lengthAHi = srcArrayHi ? srcArrayHi->Length() : 0;
-    IntIndex count = (srcArrayX && (!srcArrayLo || lengthAX < lengthALo)) ? lengthAX : srcArrayLo ? lengthALo : lengthAHi;
-    if (srcArrayHi && lengthAHi < count)
-        count = lengthAHi;
+    ArrayDimensionVector newDimensionLengths;
+    IntIndex rank;
+    std::vector<TypedArrayCoreRef> srcArrays;
+    if (srcArrayX)
+        srcArrays.push_back(srcArrayX);
+    if (srcArrayLo)
+        srcArrays.push_back(srcArrayLo);
+    if (srcArrayHi)
+        srcArrays.push_back(srcArrayHi);
+
+    GetMinimumArrayDimensions(srcArrays, &newDimensionLengths, &rank);
 
     // Resize output to minimum of input arrays
-    coercedArray->Resize1D(count);
-    destArray->Resize1D(count);
-    AQBlock1 *beginX = srcArrayX ? srcArrayX->RawBegin() : _ParamPointer(SX);
-    AQBlock1 *beginLo = srcArrayLo ? srcArrayLo->RawBegin() : _ParamPointer(SLo);
-    AQBlock1 *beginHi = srcArrayHi ? srcArrayHi->RawBegin() : _ParamPointer(SHi);
-    AQBlock1 *beginCoerced = coercedArray->RawBegin();  // might be in-place to one of the input arrays.
-    AQBlock1 *beginDest = destArray->RawBegin();
-    AQBlock1 *endDest = beginDest + (count * elementSizeDest);
-    snippet->_p0 = beginX;
-    snippet->_p1 = beginLo;
-    snippet->_p2 = beginHi;
-    snippet->_p3 = _ParamPointer(includeLo);
-    snippet->_p4 = _ParamPointer(includeHi);
-    snippet->_p5 = beginCoerced;
-    snippet->_p6 = beginDest;
-    while (snippet->_p6 < endDest) {
+    destArray->ResizeDimensions(rank, newDimensionLengths, true);
+    coercedArray->ResizeDimensions(rank, newDimensionLengths, true);
+
+    ArrayIterator srcArrayXIter(srcArrayX, rank, newDimensionLengths);
+    ArrayIterator srcArrayLoIter(srcArrayLo, rank, newDimensionLengths);
+    ArrayIterator srcArrayHiIter(srcArrayHi, rank, newDimensionLengths);
+    ArrayIterator coercedArrayIter(coercedArray, rank, newDimensionLengths);
+    ArrayIterator destArrayIter(destArray, rank, newDimensionLengths);
+
+    AQBlock1 *beginX = srcArrayX ? (AQBlock1 *) srcArrayXIter.Begin() : _ParamPointer(SX);
+    AQBlock1 *beginLo = srcArrayLo ? (AQBlock1 *) srcArrayLoIter.Begin() : _ParamPointer(SLo);
+    AQBlock1 *beginHi = srcArrayHi ? (AQBlock1 *) srcArrayHiIter.Begin() : _ParamPointer(SHi);
+    AQBlock1 *beginCoerced = (AQBlock1 *) coercedArrayIter.Begin();  // might be in-place to one of the input arrays.
+    AQBlock1 *beginDest = (AQBlock1 *) destArrayIter.Begin();
+    while (beginDest != NULL) {
+        snippet->_p0 = beginX;
+        snippet->_p1 = beginLo;
+        snippet->_p2 = beginHi;
+        snippet->_p3 = _ParamPointer(includeLo);
+        snippet->_p4 = _ParamPointer(includeHi);
+        snippet->_p5 = beginCoerced;
+        snippet->_p6 = beginDest;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        snippet->_p0 += elementSizeX;
-        snippet->_p1 += elementSizeLo;
-        snippet->_p2 += elementSizeHi;
-        snippet->_p5 += elementSizeCoerced;
-        snippet->_p6 += elementSizeDest;
+        if (!(flags & InRangeAndCoerceInstruction::kXIsScalar)) {
+            beginX = (AQBlock1 *)srcArrayXIter.Next();
+        }
+        if (!(flags & InRangeAndCoerceInstruction::kLoIsScalar)) {
+            beginLo = (AQBlock1 *)srcArrayLoIter.Next();
+        }
+        if (!(flags & InRangeAndCoerceInstruction::kHiIsScalar)) {
+            beginHi = (AQBlock1 *)srcArrayHiIter.Next();
+        }
+        beginCoerced = (AQBlock1 *)coercedArrayIter.Next();
+        beginDest = (AQBlock1 *)destArrayIter.Next();
     }
     return _NextInstruction();
 }

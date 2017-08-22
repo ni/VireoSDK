@@ -16,6 +16,7 @@ SDG
 
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
+#include <vector>
 
 namespace Vireo
 {
@@ -132,7 +133,7 @@ class TDViaParser
 
  private:
     TypeRef BadType()   {return _typeManager->BadType();}
-    void    ParseAggregateElementList(TypeRef ElementTypes[], AggregateAlignmentCalculator* calculator);
+    void    ParseAggregateElementList(std::vector<TypeRef> *elementTypesVector, AggregateAlignmentCalculator* calculator);
     TypeRef ParseArray();
     TypeRef ParseBitBlock();
     TypeRef ParseBitCluster();

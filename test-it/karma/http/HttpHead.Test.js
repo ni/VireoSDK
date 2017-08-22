@@ -10,7 +10,9 @@ describe('Performing a HEAD request', function () {
     var WEBVI_RECEIVE_INVALID_HANDLE = 1;
     var WEBVI_INVALID_URL = 363500;
     var WEBVI_INVALID_HEADER = 363651;
-    var WEBVI_NETWORK_ERROR = -1967370240;
+    var WEBVI_NETWORK_ERROR = 363650;
+    var kNIHttpResultInternalUndefinedError = 363798;
+    var ncTimeOutErr = 56;
     var vireo;
 
     var httpHeadMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/HeadMethod.via');
@@ -121,7 +123,7 @@ describe('Performing a HEAD request', function () {
             expect(viPathParser('headers')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(WEBVI_NETWORK_ERROR);
+            expect([WEBVI_NETWORK_ERROR, kNIHttpResultInternalUndefinedError, ncTimeOutErr]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientHead in MyVI/);
             done();
         });

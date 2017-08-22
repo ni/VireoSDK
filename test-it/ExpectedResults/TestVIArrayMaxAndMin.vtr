@@ -1,0 +1,5 @@
+TestResultNullArray = true
+TestResultAllSameValue = true
+TestResultMultipleMaxesMins = true
+TestResultStrings = true
+TestResult2DArray = true
