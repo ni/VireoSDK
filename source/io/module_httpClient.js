@@ -638,7 +638,6 @@
                 buffer = new Blob([typedArrayBuffer], {
                     type: 'application/x-www-form-urlencoded'
                 });
-                // TODO need tests to show that text/plain is the default and can be overridden
             }
 
             var httpClient;
