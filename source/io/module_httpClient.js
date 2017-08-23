@@ -324,11 +324,18 @@
 
             // Add request headers
             var currentHeaderName, currentHeaderValue;
+            var hasContentType = false;
+
             try {
                 this._headers.forEach(function (value, header) {
                     currentHeaderName = header;
                     currentHeaderValue = value;
+
                     request.setRequestHeader(header, value);
+
+                    if (header.toLowerCase() === 'content-type') {
+                        hasContentType = true;
+                    }
                 });
             } catch (ex) {
                 errorMessage = formatMessageWithException(ERRORS.kNIHttpWebVIHeaderInvalid.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue, ex);
@@ -340,6 +347,13 @@
                     errorMessage: errorMessage
                 });
                 return;
+            }
+
+            // Set the Content-Type to application/x-www-form-urlencoded to match the default on Desktop
+            // User can add a Content-Type header to override this default
+            // Only add the default Content-Type header to requests that include a buffer
+            if (hasContentType === false && requestData.buffer !== undefined) {
+                request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             }
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
@@ -633,11 +647,8 @@
             if (bufferPointer !== NULL) {
                 typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
                 // TODO(mraj) would like to use the typed array directly but not supported in iOS and PhantomJS
-                // Set the type to application/x-www-form-urlencoded as this is the default on desktop
-                // User can add a Content-Type header to override this default
-                buffer = new Blob([typedArrayBuffer], {
-                    type: 'application/x-www-form-urlencoded'
-                });
+                // Blob type not set to determine Content-Type for XHR as IE and Edge seem to ignore it.
+                buffer = new Blob([typedArrayBuffer]);
             }
 
             var httpClient;
