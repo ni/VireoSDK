@@ -647,8 +647,7 @@ describe('Performing a POST request', function () {
                 var requestUrl = httpParser.parseUrl(httpBinBody.url);
                 expect(httpBinBody.args).toBeEmptyObject();
                 expect(httpBinBody.headers).toBeNonEmptyObject();
-                // IE and Edge do not use the Blob type as the Content-Type and instead avoid sending the header
-                expect(['application/x-www-form-urlencoded', undefined]).toContain(httpBinBody.headers['Content-Type']);
+                expect(httpBinBody.headers['Content-Type']).toBe('application/x-www-form-urlencoded');
                 expect(httpBinBody.form).toBeEmptyObject();
                 expect(httpBinBody.data).toBeEmptyString();
                 expect(requestUrl.pathname).toBe('/post');
@@ -697,6 +696,54 @@ describe('Performing a POST request', function () {
                 expect(httpBinBody.args).toBeEmptyObject();
                 expect(httpBinBody.headers).toBeNonEmptyObject();
                 expect(httpBinBody.headers[header]).toBe(value);
+                expect(httpBinBody.form).toBeEmptyObject();
+                expect(httpBinBody.data).toBeEmptyString();
+                expect(requestUrl.pathname).toBe('/post');
+
+                // status code
+                expect(viPathParser('statusCode')).toBe(200);
+
+                // error
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                done();
+            });
+        });
+
+        it('of application/json by adding a Content-Type header with different casing', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostOpenAddMethodCloseViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+            var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+            var url = httpBinHelpers.convertToAbsoluteUrl('post');
+            var header = 'CONTENT-type';
+            var value = 'application/json';
+            viPathWriter('url', url);
+            viPathWriter('header', header);
+            viPathWriter('value', value);
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+
+                // handle
+                expect(viPathParser('handle')).toBeGreaterThan(0);
+
+                // header
+                var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+                expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+                expect(responseHeader.statusCode).toBe(200);
+                expect(responseHeader.reasonPhrase).toBe('OK');
+                expect(responseHeader.headers).toBeNonEmptyObject();
+
+                // body
+                var httpBinBody = httpBinHelpers.parseBody(viPathParser('body'));
+                var requestUrl = httpParser.parseUrl(httpBinBody.url);
+                expect(httpBinBody.args).toBeEmptyObject();
+                expect(httpBinBody.headers).toBeNonEmptyObject();
+                // XHR will reformat the header name for us
+                expect(httpBinBody.headers['Content-Type']).toBe(value);
                 expect(httpBinBody.form).toBeEmptyObject();
                 expect(httpBinBody.data).toBeEmptyString();
                 expect(requestUrl.pathname).toBe('/post');
