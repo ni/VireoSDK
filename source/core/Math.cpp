@@ -415,6 +415,8 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         } else if (src < numeric_limits<DEST>::min()) { \
             _Param(1) = numeric_limits<DEST>::min(); \
+        } else if (src > numeric_limits<DEST>::max()) { \
+            _Param(1) = numeric_limits<DEST>::max(); \
         } else { \
             _Param(1) = (DEST) RoundToEven(src); \
         } \
