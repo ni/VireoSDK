@@ -286,7 +286,7 @@
                 "TemplateBasics.via",
                 "TestVI_ArrayInsertPartial.via",
                 "TestVIArrayMaxAndMin.via",
-				"TestVIConversion.via",
+                "TestVIConversion.via",
                 "TestVI_Compare_Aggregates_InRange.via",
                 "TestVI_InRangeAndCoerce.via",
                 "TestVI_InRangeAndCoerce_Arrays.via",
