@@ -1,6 +1,6 @@
 {
   "name": "vireo",
-  "version": "5.9.0",
+  "version": "5.9.1",
   "description": "SDK for an experimental vireo runtime engine.",
   "devDependencies": {
     "colors": "^1.1.2",
