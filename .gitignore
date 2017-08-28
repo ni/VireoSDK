@@ -50,6 +50,7 @@ Vireo_SimpleMake/objs/
 *.opensdf
 make-it/asm/
 make-it/objs/
+objs/
 Vireo_XCode/Instruments_hw100000.trace/shared_data
 Vireo_XCode/Instruments_hw100000.trace/instrument_data
 Vireo_XCode/Instruments_hw100000.trace/Trace*.run
