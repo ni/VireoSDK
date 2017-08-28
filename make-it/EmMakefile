@@ -67,7 +67,7 @@ EMCC= emcc
 EM_OPTFLAG = -Os
 
 ifeq ($(BUILD), debug)
-   EM_OPTFLAG = -g4
+   EM_OPTFLAG = -g4 -s ASSERTIONS=2 -s SAFE_HEAP=1
 endif
 
 ifeq ($(BUILD), profile)
