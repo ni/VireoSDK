@@ -17,7 +17,7 @@
         if (remainingSlices > 0) {
             setTimeout(continueUntilDone, 0);
         } else {
-            console.log(eggShell.readJSON('_%46unction%2Egvi', 'dataItem_String'));
+            console.log(JSON.parse(eggShell.readJSON('%3AWeb%20Server%3AInteractive%3AApplication%3AMain%2Egviweb', 'dataItem_Body')));
             console.log('finished :D');
         }
     };
@@ -25,9 +25,9 @@
     var createAndRun = function (Vireo, viaCode) {
         var vireo = new Vireo();
 
-        vireo.httpClient.enableHttpDebugging(true);
-
         eggShell = vireo.eggShell;
+        eggShell.setPrintFunction(console.log);
+        eggShell.setPrintErrorFunction(console.error);
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };

@@ -36,7 +36,10 @@ From the root directory:
 ```shell
 $ make
 ```
-The `esh` and `vireo.js` files will be put into the `./dist` directory.
+The `esh` and `vireo.js` files will be put into the `./dist` directory based on the build configuration.
+
+For example the default vireo.js output of `TARGET=asmjs-unknown-emscripten` and `BUILD=release` will be:
+`./dist/asmjs-unknown-emscripten/release/vireo.js`
 
 #### Build Native Binary
 ```shell
@@ -46,6 +49,11 @@ $ make native
 #### Build JavaScript File
 ```shell
 $ make js
+```
+
+To create a debug build of vireo.js you can change the BUILD variable passed to the make command. For example:
+```shell
+$ make js BUILD=debug
 ```
 
 # Testing
