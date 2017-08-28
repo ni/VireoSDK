@@ -1524,7 +1524,11 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
                 parser.ParseClump(pClump, &cia);
             }
         }
-        VIREO_ASSERT(cia._size == 0);
+
+        if (cia._size != 0) {
+            pLog->LogEvent(EventLog::kHardDataError, vi->_lineNumberBase, "Requested and allocated memory size is different.");
+            exit(1);
+        }
     }
 }
 //------------------------------------------------------------
