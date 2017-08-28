@@ -23,20 +23,11 @@ namespace Vireo
 {
 
 //------------------------------------------------------------
-ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize, Boolean isEnum)
+ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
 {
     // If the source or dest are not aligned to aqSize bytes, return null.
-    if (((uintptr_t) pSource % aqSize != 0) || ((uintptr_t) pDest % aqSize != 0))
+    if (((uintptr_t)pSource % aqSize != 0) || ((uintptr_t)pDest % aqSize != 0))
         return null;
-    if (isEnum) {
-        switch (aqSize) {  // these are bytes not bits.  Enums are max UInt64 sized.
-            case 1:     return "CopyEnum1";   break;
-            case 2:     return "CopyEnum2";   break;
-            case 4:     return "CopyEnum4";   break;
-            case 8:     return "CopyEnum8";   break;
-            default:    return null;      break;
-        }
-    }
     switch (aqSize) {  // copy sizes go to 32 bytes just for efficiency
         case 1:     return "Copy1";   break;
         case 2:     return "Copy2";   break;
@@ -44,6 +35,17 @@ ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize, Boolean isEnum)
         case 8:     return "Copy8";   break;
         case 16:    return "Copy16";  break;
         case 32:    return "Copy32";  break;
+        default:    return null;      break;
+    }
+}
+//------------------------------------------------------------
+ConstCStr CopyEnumProcName(Int32 aqSize)
+{
+    switch (aqSize) {  // these are bytes not bits.  Enums are max UInt64 sized.
+        case 1:     return "CopyEnum1";   break;
+        case 2:     return "CopyEnum2";   break;
+        case 4:     return "CopyEnum4";   break;
+        case 8:     return "CopyEnum8";   break;
         default:    return null;      break;
     }
 }
@@ -68,13 +70,16 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         void* extraParam = null;
         ConstCStr copyOpName = null;
         if (sourceType->IsFlat() || originalCopyOp.CompareCStr("CopyTop")) {
-            copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize(), destType->IsEnum());
-            if (!copyOpName) {
+            if (destType->IsEnum()) {
+                copyOpName = CopyEnumProcName(sourceType->TopAQSize());
+                if (!copyOpName) {
+                    pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Unsupported enum size");
+                }
+                extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
+            } else {
                 copyOpName = "CopyN";
                 // For CopyN a count is passed as well
-                extraParam = (void*) (size_t)sourceType->TopAQSize();
-            } else if (destType->IsEnum()) {
-                extraParam = (void*) (uintptr_t)destType->GetEnumItemCount();
+                extraParam = (void*)(size_t)sourceType->TopAQSize();
             }
         } else if (sourceType->IsArray()) {
             VIREO_ASSERT(!destType->IsInputParam());
