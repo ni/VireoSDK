@@ -64,7 +64,7 @@ help:
 EMCC= emcc
 
 # release config
-EM_OPTFLAG = -Os
+EM_OPTFLAG = -O3
 
 ifeq ($(BUILD), debug)
    EM_OPTFLAG = -g4 -s ASSERTIONS=2 -s SAFE_HEAP=1
