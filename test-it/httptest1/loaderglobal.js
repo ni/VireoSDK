@@ -24,6 +24,8 @@
 
     var createAndRun = function (Vireo, viaCode) {
         eggShell = new Vireo().eggShell;
+        eggShell.setPrintFunction(console.log);
+        eggShell.setPrintErrorFunction(console.error);
         eggShell.loadVia(viaCode);
         setTimeout(continueUntilDone, 0);
     };

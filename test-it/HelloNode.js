@@ -13,7 +13,7 @@
             vireo = actualVireo.eggShell;
         } catch (err) {
             if (err.code === 'MODULE_NOT_FOUND') {
-                console.log('Error: ../dist/vireo.js not found (Maybe build it first?)');
+                console.log('Error: vireo.js not found (Maybe build it first?)');
                 process.exit(1);
             } else {
                 throw err;

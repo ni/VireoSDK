@@ -74,11 +74,6 @@ ifeq ($(BUILD), profile)
    EM_OPTFLAG = --profiling
 endif
 
-ifneq ($(wildcard custom.mak),)
-   include custom.mak
-endif
-
-# Can be overrided in custom.mak
 EM_OPTFLAGS ?= $(EM_OPTFLAG)
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
 

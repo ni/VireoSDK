@@ -17,7 +17,7 @@
         worker.postMessage({
             type: 'init',
             data: [
-                '../../dist/vireo.js',
+                '../../dist/asmjs-unknown-emscripten/release/vireo.js',
                 '../../source/core/module_coreHelpers.js',
                 '../../source/io/module_eggShell.js',
                 '../../source/io/module_httpClient.js',
