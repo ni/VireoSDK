@@ -5,7 +5,9 @@
 # npm will force include README*, LICENSE*, and package.json files
 # so do not visit subdirectories using **/* patterns or extra files will be included
 # can test output by running npm pack
-!/dist/vireo.js
+!/dist/asmjs-unknown-emscripten/release/*.*
+!/dist/asmjs-unknown-emscripten/debug/*.*
+!/dist/asmjs-unknown-emscripten/profile/*.*
 !/source/core/vireo.loader.js
 !/source/core/module_*.js
 !/source/io/module_*.js

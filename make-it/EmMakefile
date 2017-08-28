@@ -4,23 +4,37 @@
 # and instead uses the version on PATH (ie that is unix mkdir compatible)
 MKDIR="mkdir"
 
-VIREO_SDK_DIR=..
+VIREO_SDK=..
 
-OBJS=$(VIREO_SDK_DIR)/make-it/objs
-INCDIR=$(VIREO_SDK_DIR)/source/include
-BIN=$(VIREO_SDK_DIR)/bin
-TARGETDIR=$(VIREO_SDK_DIR)/dist
-CORESOURCEDIR=$(VIREO_SDK_DIR)/source/core
-IOSOURCEDIR=$(VIREO_SDK_DIR)/source/io
-UTSOURCEDIR=$(VIREO_SDK_DIR)/source/unittest
+
+TARGETS_SUPPORTED=asmjs-unknown-emscripten wasm32-unknown-emscripten
+TARGET=asmjs-unknown-emscripten
+
+ifeq ($(filter $(TARGET), $(TARGETS_SUPPORTED)),)
+$(error invalid TARGET value, TARGET=$(TARGET) not supported, supported targets are $(TARGETS_SUPPORTED))
+endif 
+
+BUILDS_SUPPORTED=debug release profile
+BUILD=release
+
+ifeq ($(filter $(BUILD), $(BUILDS_SUPPORTED)),)
+$(error invalid BUILD value, BUILD=$(BUILD) not supported, supported builds are $(BUILDS_SUPPORTED))
+endif 
+
+OBJS=$(VIREO_SDK)/objs/$(TARGET)/$(BUILD)
+DIST=$(VIREO_SDK)/dist/$(TARGET)/$(BUILD)
+
+INCDIR=$(VIREO_SDK)/source/include
+CORESOURCEDIR=$(VIREO_SDK)/source/core
+IOSOURCEDIR=$(VIREO_SDK)/source/io
+UTSOURCEDIR=$(VIREO_SDK)/source/unittest
 
 .PHONY: clean install help vjs dox
 .DEFAULT_GOAL=help
 
 clean:
-	rm -f $(OBJS)/*
-	rm -f $(TARGETDIR)/vireo.js*
-
+	rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/objs/$(CURRTARGET)/$(CURRBUILD)/* ))
+	rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/dist/$(CURRTARGET)/$(CURRBUILD)/* ))
 help:
 	@echo 'Execute "make vjs"     to build vireo.js'
 	@echo '        "make clean"   to remove intermediate files'
@@ -50,8 +64,15 @@ help:
 #  Vireo has grown as well, so emscripten is getting better if the over all size has shrunk by about 20%
 
 EMCC= emcc
-EM_DBGFLAG = -g4
-EM_OPTFLAG = -Os # -Os -O3
+EM_OPTFLAG = -O3 #release config
+
+ifeq ($(BUILD), debug)
+   EM_OPTFLAG = -g4
+endif
+
+ifeq ($(BUILD), profile)
+   EM_OPTFLAG = --profiling
+endif
 
 ifneq ($(wildcard custom.mak),)
    include custom.mak
@@ -60,9 +81,13 @@ endif
 EM_OPTFLAGS ?= $(EM_OPTFLAG)	# Can be overrided in custom.mak
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
 
+ifeq ($(TARGET), wasm32-unknown-emscripten)
+   WASM_FLAG = -s WASM=1
+endif
+
 # NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
-EM_OPT = $(EM_OPTFLAGS) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
-EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
+EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
+EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(IOSOURCEDIR)/library_canvas2d.js \
             --js-library $(IOSOURCEDIR)/library_httpClient.js
@@ -145,18 +170,9 @@ $(OBJS):
 $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
 
-vjs: $(TARGETDIR)/vireo.js
+vjs: $(DIST)/vireo.js
 
-$(TARGETDIR)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS)
+$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
-
-# In at least the initial test the compression made start up mcuh slower (2x?)
-# it was much better to let the server use gzip automatically
-
-#$(EMCC) $(EM_OPT) $(EM_BC_FILES) -o vireo.html --compression $(EM_DIR)third_party/lzma.js/lzma-native,$(EM_DIR)third_party/lzma.js/lzma-decoder.js,LZMA.decompress
-#$(EMCC) $(EM_OPT) $(EM_WRAP) $(EM_BC_FILES) -o vireo.js
-
-DEPS := $(EM_BC_FILES:.bc=.bc.d)
-
-
--include $(DEPS)
+$(DIST):
+	@$(MKDIR) -p $(DIST)

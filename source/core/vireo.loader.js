@@ -20,7 +20,7 @@
     } else if (typeof module === 'object' && module.exports) {
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
         module.exports = factory(
-            require('../../dist/vireo.js'),
+            require('../../dist/asmjs-unknown-emscripten/release/vireo.js'),
             require('../../source/core/module_coreHelpers.js'),
             require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js')

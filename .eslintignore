@@ -7,3 +7,4 @@ source/io/library_webSocketClient.js
 emscripten-sdk/*
 emsdk/*
 coverage/*
+objs/*
