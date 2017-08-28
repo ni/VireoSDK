@@ -104,6 +104,10 @@ COVERAGE_CFLAGS = $(CFLAGS) -fprofile-arcs -ftest-coverage
 COVERAGE_LDFLAGS = $(LDFLAGS) --coverage
 COVERAGE_CC = /usr/bin/clang++
 
+ifneq ($(wildcard custom.mak),)
+   include custom.mak
+endif
+
 .PHONY: install clean v32 v64 lARMv5 help
 .DEFAULT_GOAL=help
 
