@@ -22,7 +22,7 @@ SDG
 namespace Vireo
 {
 //------------------------------------------------------------
-// Currently we are not calling this function, it intermittently returns different values 
+// Currently we are not calling this function, it intermittently returns different values
 // between the first and second pass. We need to root cause the issue and reenable the code
 // This is tracked in github issue: https://github.com/ni/VireoSDK/issues/332
 //------------------------------------------------------------
