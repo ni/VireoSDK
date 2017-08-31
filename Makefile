@@ -27,4 +27,4 @@ testnative:
 	cd test-it && node test.js -n --dots
 
 clean:
-	cd make-it && make clean
+	cd make-it && make clean && make -f EmMakefile clean

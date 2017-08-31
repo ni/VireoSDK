@@ -125,8 +125,8 @@ install: esh
 	@echo '==> esh installed to $(PROGRAM_DIR)'
 
 clean:
-	rm -f $(OUTPUT_EXE) $(OUTPUT_TEST_EXE) libvireo.so $(BIN)/esh *~ $(INCDIR)/*~
-	rm -rf $(OBJDIR)
+	rm -f $(OUTPUT_EXE) $(OUTPUT_TEST_EXE) libvireo.SO $(BIN)/esh *~ $(INCDIR)/*~
+	rm -rf $(OBJDIR) $(OUTPUT_DIR)/* ../Vireo_VS/Debug ../Vireo_VS/Release
 
 simple:
 	make esh esh-test
