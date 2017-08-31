@@ -29,7 +29,8 @@ namespace Vireo
 ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
 {
     // If the source or dest are not aligned to aqSize bytes, return null.
-    if (((uintptr_t)pSource % aqSize != 0) || ((uintptr_t)pDest % aqSize != 0))
+    Int32 alignment = aqSize > sizeof(void*) ? sizeof(void*) : aqSize;
+    if (((uintptr_t)pSource % alignment != 0) || ((uintptr_t)pDest % alignment != 0))
         return null;
     switch (aqSize) {  // copy sizes go to 32 bytes just for efficiency
         case 1:     return "Copy1";   break;
@@ -80,9 +81,12 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 }
                 extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
             } else {
-                copyOpName = "CopyN";
-                // For CopyN a count is passed as well
-                extraParam = (void*)(size_t)sourceType->TopAQSize();
+                copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize());
+                if (!copyOpName) {
+                    copyOpName = "CopyN";
+                    // For CopyN a count is passed as well
+                    extraParam = (void*)(size_t)sourceType->TopAQSize();
+                }
             }
         } else if (sourceType->IsArray()) {
             VIREO_ASSERT(!destType->IsInputParam());
@@ -693,17 +697,19 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
 static bool GetMinimumArrayDimensions(std::vector<TypedArrayCoreRef> arrays,
     ArrayDimensionVector* newDimensionLengths, IntIndex* newRank)
 {
-    int arrayCount = arrays.size();
-    for (int i = 0; i < arrayCount; i++) {
+    size_t arrayCount = arrays.size();
+    IntIndex array0Rank = arrays[0]->Rank();
+#ifdef VIREO_USING_ASSERTS
+    for (size_t i = 0; i < arrayCount; i++) {
         VIREO_ASSERT(arrays[i] != null);
     }
     VIREO_ASSERT(newDimensionLengths != null);
     VIREO_ASSERT(newRank != null);
-    IntIndex array0Rank = arrays[0]->Rank();
-    for (int i = 1; i < arrayCount; i++) {
+    for (size_t i = 1; i < arrayCount; i++) {
         IntIndex rank = arrays[i]->Rank();
-        VIREO_ASSERT(rank == array0Rank &&  rank <= kArrayMaxRank);
+        VIREO_ASSERT(rank == array0Rank && rank <= kArrayMaxRank);
     }
+#endif
     *newRank = array0Rank;
 
     // if the dimension lengths for all dimensions for both the array inputs are same,
