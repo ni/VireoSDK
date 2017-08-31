@@ -21,15 +21,14 @@ SDG
 
 namespace Vireo
 {
-//------------------------------------------------------------
-// Currently we are not calling this function, it intermittently returns different values
-// between the first and second pass. We need to root cause the issue and reenable the code
-// This is tracked in github issue: https://github.com/ni/VireoSDK/issues/332
-//------------------------------------------------------------
-ConstCStr CopyProcName(void *pSource, void *pDest, Int32 aqSize)
+ConstCStr CopyProcName(void *pSource, void *pDest, TypeRef elemType)
 {
-    // If the source or dest are not aligned to aqSize bytes, return null.
-    Int32 alignment = aqSize > sizeof(void*) ? sizeof(void*) : aqSize;
+    Int32 aqSize = elemType->TopAQSize();
+    // If the source or dest are not aligned to the alignment required by the Copy proc
+    // for this size, return null.
+    // (Just because an object is 4 bytes doesn't mean it's an integer and appropriately aligned;
+    // it could be an unaligned cluster of 4 Booleans).
+    Int32 alignment = elemType->TheTypeManager()->AQAlignment(aqSize);
     if (((uintptr_t)pSource % alignment != 0) || ((uintptr_t)pDest % alignment != 0))
         return null;
     switch (aqSize) {  // copy sizes go to 32 bytes just for efficiency
@@ -81,7 +80,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 }
                 extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
             } else {
-                copyOpName = CopyProcName(pSource, pDest, sourceType->TopAQSize());
+                copyOpName = CopyProcName(pSource, pDest, sourceType);
                 if (!copyOpName) {
                     copyOpName = "CopyN";
                     // For CopyN a count is passed as well
