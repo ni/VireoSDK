@@ -669,7 +669,7 @@ TokenTraits SubString::ReadSubexpressionToken(SubString* token)
     } while (tt && (depth > 0));
 
     // Look for template parameters
-    while (*_begin == '<') {
+    while (_begin < _end && *_begin == '<') {
         EatChar('<');
         tt = TokenTraits_TemplateExpression;
         // If the expression is followed by template parameters.
