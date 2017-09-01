@@ -2568,6 +2568,13 @@ VIREO_FUNCTION_SIGNATURE4(ConvertEnum, StaticType, void, StaticType, void)
     }
     return _NextInstruction();
 }
+
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE2(ConvertErrorClusterToBoolean, ErrorCluster, Boolean) {
+    _Param(1) = _Param(0).status;
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 // arguments: output cluster, then variable number of inputs that can be null, error cluster or a 1D array of error clusters
 struct MergeErrorsParamBlock : public VarArgInstruction
@@ -2665,6 +2672,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(CopyEnum8, "p(i(UInt64)  o(UInt64) i(UInt64))");
 
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertErrorClusterToBoolean, "p(i(ErrorCluster errorCluster) o(Boolean output))")
 
     // Deep copy where needed for objects/arrays/strings.
     DEFINE_VIREO_FUNCTION(CopyObject, "p(i(Object) o(Object))")
