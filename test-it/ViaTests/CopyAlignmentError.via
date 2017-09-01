@@ -404,6 +404,7 @@ define (%3AWeb%20Server%3AInteractive%3AApplication%3ACopyErrorSmallFor2%2Egviwe
         Perch(1)
         Branch(0)
         Perch(0)
+        Printf("Test completed.\n")
 /* Clump Ended. */    )
 )))
 //---------------------------------------------------
