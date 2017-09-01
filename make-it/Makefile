@@ -218,9 +218,9 @@ esh-test:	$(OUTPUT_TEST_EXE)
 
 # Build the executable with symbols stripped
 $(OUTPUT_EXE): $(OBJDIR) $(OBJS) $(OUTPUT_DIR)
-	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(LDFLAGS) $(OBJS) $(LIBS)
+	$(CC) -o $(OUTPUT_EXE) $(TARGETARCH) $(EXTRACFLAGS) $(LDFLAGS) $(OBJS) $(LIBS)
 $(OUTPUT_TEST_EXE): $(OBJDIR) $(OBJS) $(UTOBJS) $(OUTPUT_DIR)
-	$(CC) -o $@ $(TARGETARCH) $(LDFLAGS) $(OBJS) $(UTOBJS) $(LIBS)
+	$(CC) -o $@ $(TARGETARCH) $(EXTRACFLAGS) $(LDFLAGS) $(OBJS) $(UTOBJS) $(LIBS)
 
 libvireo.so: $(OBJDIR) $(COREOBJS) $(IOOBJS) $(COMMANDLINEOBJS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
