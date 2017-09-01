@@ -2677,6 +2677,8 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(CopyEnum8, "p(i(UInt64)  o(UInt64) i(UInt64))");
 
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
+
+    // Issue: Remove instruction and use error.status directly in generated VIA code:  https://github.com/ni/VireoSDK/issues/338
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertErrorClusterToBoolean, "p(i(ErrorCluster errorCluster) o(Boolean output))")
 
     // Deep copy where needed for objects/arrays/strings.
