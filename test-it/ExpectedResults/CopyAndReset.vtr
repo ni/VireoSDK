@@ -1,8 +1,8 @@
 Before
-    from = <true>
-    to = <false>
-    defaultValue = <false>
+    source = <true>
+    destination = <false>
+    sourceNewValue = <false>
 After
-    from = <false>
-    to = <true>
-    defaultValue = <false>
+    source = <false>
+    destination = <true>
+    sourceNewValue = <false>
