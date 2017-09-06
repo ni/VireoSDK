@@ -101,6 +101,7 @@
                 "Conjugate.via",
                 "ConvertStringNumber.via",
                 "CopyAlignmentError.via",
+                "CopyAndReset.via",
                 "CopyingVIs.via",
                 "CopyOp.via",
                 "CoreArray.via",

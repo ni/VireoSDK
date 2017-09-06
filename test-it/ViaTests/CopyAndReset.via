@@ -1,0 +1,19 @@
+define(CopyAndResetTest dv(.VirtualInstrument (
+    c(
+        e(dv(.Boolean true) from)
+        e(dv(.Boolean false) to)
+        e(dv(.Boolean false) defaultValue)
+    )
+    clump (1
+        Printf("Before\n")
+        Printf("    from = <%s>\n" from)
+        Printf("    to = <%s>\n" to)
+        Printf("    defaultValue = <%s>\n" defaultValue)
+        CopyAndReset(from to defaultValue)
+        Printf("After\n")
+        Printf("    from = <%s>\n" from)
+        Printf("    to = <%s>\n" to)
+        Printf("    defaultValue = <%s>\n" defaultValue)
+    )
+) ) )
+enqueue(CopyAndResetTest)

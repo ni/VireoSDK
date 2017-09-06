@@ -2650,6 +2650,16 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
 }
 
 //------------------------------------------------------------
+// We need this operation on a single vireo instruction so boolean latched buttons work correctly
+// from(0), to(1), fromNewValue(2)
+VIREO_FUNCTION_SIGNATURE3(CopyAndReset, Boolean, Boolean, Boolean)
+{
+    _Param(1) = _Param(0);
+    _Param(0) = _Param(2);
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(Init, "p(i(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Clear, "p(i(StaticTypeAndData))");
@@ -2675,6 +2685,9 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(CopyEnum2, "p(i(UInt16)  o(UInt16) i(UInt16))");
     DEFINE_VIREO_FUNCTION(CopyEnum4, "p(i(UInt32)  o(UInt32) i(UInt32))");
     DEFINE_VIREO_FUNCTION(CopyEnum8, "p(i(UInt64)  o(UInt64) i(UInt64))");
+
+    // Instruction to copy boolean value and reset it to another value
+    DEFINE_VIREO_FUNCTION(CopyAndReset, "p(io(Boolean from)  o(Boolean to) i(Boolean fromNewValue))");
 
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
 
