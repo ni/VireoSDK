@@ -2408,14 +2408,64 @@ VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, Typ
     }
     return _NextInstruction();
 }
+
+// Find the next delimiter in a spreadsheet string starting at offset and return the matching offset (or -1)
+// and the offset past the match; delimiterParam can be either a single StringRef or an array of StringRefs
+static inline IntIndex FindDelimiter(SubString &input, TypedArrayCoreRef delimiterParam, IntIndex offset, IntIndex *next, Boolean isDelimArray) {
+    if (!isDelimArray) {
+        StringRef delimiterString = (StringRef)delimiterParam;
+        SubString delimiter = delimiterString->MakeSubStringAlias();
+
+        IntIndex index = input.FindFirstMatch(&delimiter, offset, false);
+        *next = index >= 0 ? index + delimiter.Length() : -1;
+        return index;
+    } else {
+        StringRefArray1D *delimArray = (StringRefArray1D*)delimiterParam;
+        Int32 index = -1, pastMatch = -1;
+        Int32 length = delimArray->Length();
+        for (IntIndex i = 0; i < length; ++i) {
+            StringRef delimiterString = delimArray->At(i);
+            SubString delimiter = delimiterString->MakeSubStringAlias();
+            IntIndex match = input.FindFirstMatch(&delimiter, offset, false);
+            // Find the first match in the delimiter array, if multiple delims match, take the longest
+            if (match >= 0 && (index == -1 || match < index
+                || (match == index && index + delimiter.Length() > pastMatch))) {
+                index = match;
+                pastMatch = index + delimiter.Length();
+            } else if (input.Length() - offset < delimiter.Length()) {
+                // This dutifully replicates what is arguably a CG bug; if we have a successful partial match
+                // of one of the delimiter string when we 'run out' of input string, we ignore the delimiter.
+                delimiter.AliasAssignLen(delimiter.Begin(), input.Length() - offset);
+                match = input.FindFirstMatch(&delimiter, offset, false);
+                if (match >= 0) {
+                    index = pastMatch = -1;
+                    break;
+                }
+            }
+        }
+        *next = pastMatch;
+        return index;
+    }
+}
+
+// Wrapper around FormatScan:  %s for Spreadsheet Strings does not stop at whitespace the way it does
+// for the other format functions.
+static inline void FormatScanSS(SubString &elemString, SubString &format,  StaticTypeAndData &Value, Boolean formatIsString) {
+    if (formatIsString) {
+        StringRef *pString = (StringRef*)(Value._pData);
+        (*pString)->Replace1D(0, elemString.Length(), elemString.Begin(), true);
+    } else
+        FormatScan(&elemString, &format, 1, &Value, null);
+}
+
 //------------------------------------------------------------------------------------------------
-void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef delimiterString, TypedArrayCoreRef array)
+void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCoreRef delimiterParam, TypedArrayCoreRef array, Boolean isDelimArray)
 {
     SubString format = formatString->MakeSubStringAlias();
     SubString input = inputString->MakeSubStringAlias();
-    SubString delimiter = delimiterString->MakeSubStringAlias();
     ArrayDimensionVector  dimensionLength;
     IntIndex rank = array->Rank();
+    Boolean formatIsString = format.CompareCStr("%s");
     SubString line;
     for (IntIndex i = 0; i < kArrayMaxRank; i++) {
         dimensionLength[i] = 0;
@@ -2425,7 +2475,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         IntIndex rowlen = 1;
         IntIndex split = 0;
 
-        while ((split = input.FindFirstMatch(&delimiter, split + delimiter.Length(), false)) > -1) {
+        while (FindDelimiter(input, delimiterParam, split, &split, isDelimArray) > -1) {
             rowlen++;
         }
         if (rowlen > dimensionLength[0]) {
@@ -2435,12 +2485,13 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         Int32 lineIndex = 0;
         while (input.ReadLine(&line)) {
             if (line.Length() == 0) {
+                lineIndex++;
                 continue;
             }
             lineIndex++;
             IntIndex split = 0;
             IntIndex rowlen = 1;
-            while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false)) > -1) {
+            while (FindDelimiter(line, delimiterParam, split, &split, isDelimArray) > -1) {
                 rowlen++;
             }
             if (rowlen > dimensionLength[0]) {
@@ -2472,7 +2523,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
             } else {
                 IntIndex split = 0;
                 IntIndex rowlen = 1;
-                while ((split = line.FindFirstMatch(&delimiter, split + delimiter.Length(), false)) > -1) {
+                while (FindDelimiter(line, delimiterParam, split, &split, isDelimArray) > -1) {
                     rowlen++;
                 }
                 if (rowlen > dimensionLength[0]) {
@@ -2503,19 +2554,19 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         elemIndex[0] = 0;
 
         SubString elemString;
-        IntIndex next = 0;
-        while ((next = input.FindFirstMatch(&delimiter, split, false)) > -1) {
+        IntIndex pastDelim = 0, next = 0;
+        while ((next = FindDelimiter(input, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
             elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
             Value._pData = array->BeginAtND(rank, elemIndex);
-            FormatScan(&elemString, &format, 1, &Value, null);
-            split = next+delimiter.Length();
+            FormatScanSS(elemString, format, Value, formatIsString);
+            split = pastDelim;
             elemIndex[0]++;
         }
         if (split > 0) {
             elemString.AliasAssign(input.Begin()+split, input.End());
             if (elemString.Length() > 0) {
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, 1, &Value, null);
+                FormatScanSS(elemString, format, Value, formatIsString);
             }
         }
     } else if (rank == 2) {
@@ -2523,25 +2574,26 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
         IntIndex lineIndex = 0;
         while (input.ReadLine(&line)) {
             if (line.Length() == 0) {
+                lineIndex++;
                 continue;
             }
             IntIndex split = 0;
-            IntIndex next = 0;
+            IntIndex pastDelim = 0, next = 0;
             SubString elemString;
             elemIndex[0] = 0;
             elemIndex[1] = lineIndex;
-            while ((next = line.FindFirstMatch(&delimiter, split, false)) > -1) {
+            while ((next = FindDelimiter(line, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
                 elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScan(&elemString, &format, 1, &Value, null);
-                split = next+delimiter.Length();
+                FormatScanSS(elemString, format, Value, formatIsString);
+                split = pastDelim;
                 elemIndex[0]++;
             }
             if (split > 0) {
                 line.AliasAssign(line.Begin()+split, line.End());
                 if (line.Length() > 0) {
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&line, &format, 1, &Value, null);
+                    FormatScanSS(line, format, Value, formatIsString);
                 }
             }
             lineIndex++;
@@ -2569,22 +2621,22 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
                 // this line specify the index block [1, 2, 1, 0]
             } else {
                 IntIndex split = 0;
-                IntIndex next = 0;
+                IntIndex pastDelim = 0, next = 0;
                 SubString elemString;
                 elemIndex[0] = 0;
                 elemIndex[1] = lineIndex -1;  // because the fist line is not for array data.
-                while ((next = line.FindFirstMatch(&delimiter, split, false)) > -1) {
+                while ((next = FindDelimiter(line, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
                     elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScan(&elemString, &format, 1, &Value, null);
-                    split = next+delimiter.Length();
+                    FormatScanSS(elemString, format, Value, formatIsString);
+                    split = pastDelim; // next+delimiter.Length();
                     elemIndex[0]++;
                 }
                 if (split > 0) {
                     line.AliasAssign(line.Begin()+split, line.End());
                     if (line.Length() > 0) {
                         Value._pData = array->BeginAtND(rank, elemIndex);
-                        FormatScan(&line, &format, 1, &Value, null);
+                        FormatScanSS(line, format, Value, formatIsString);
                     }
                 }
             }
@@ -2593,15 +2645,28 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, StringRef de
     }
 }
 //-------------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
+VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, TypedArrayCoreRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef outputArray = _Param(3);
     if (_Param(2)->Length() ==0) {
         STACK_VAR(String, delimiter);
         delimiter.Value->AppendCStr("\t");
-        ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray);
+        ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray, false);
     } else {
-        ScanSpreadsheet(_Param(0), _Param(1), _Param(2), outputArray);
+        ScanSpreadsheet(_Param(0), _Param(1), _Param(2), outputArray, false);
+    }
+    return _NextInstruction();
+}
+//-------------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArrayWithArrayDelim, StringRef, StringRef, TypedArrayCoreRef, TypedArrayCoreRef)
+{
+    TypedArrayCoreRef outputArray = _Param(3);
+    if (_Param(2)->Length() ==0) {
+        STACK_VAR(String, delimiter);
+        delimiter.Value->AppendCStr("\t");
+        ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray, false);
+    } else {
+        ScanSpreadsheet(_Param(0), _Param(1), _Param(2), outputArray, true);
     }
     return _NextInstruction();
 }
@@ -2618,6 +2683,7 @@ DEFINE_VIREO_BEGIN(NumericString)
 #if defined(VIREO_SPREADSHEET_FORMATTING)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
     DEFINE_VIREO_FUNCTION(SpreadsheetStringtoArray, "p(i(String) i(String) i(String) o(Array))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(SpreadsheetStringtoArray, SpreadsheetStringtoArrayWithArrayDelim, "p(i(String) i(String) i(Array) o(Array))")
 #endif
 
 #if defined(VIREO_TIME_FORMATTING)

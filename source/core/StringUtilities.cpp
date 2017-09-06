@@ -1075,13 +1075,13 @@ void SubString::TrimQuotedString(TokenTraits tt)
 IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase)
 {
     IntIndex searchStringLength = searchString->Length();
-    if (searchStringLength > Length())
+    if (Length() == 0 || searchStringLength > Length())
         return -1;
     if (offset < 0) {
         offset = 0;
     }
     const Utf8Char* pStart = _begin + offset;
-    const Utf8Char* pEnd = _end - searchStringLength;
+    const Utf8Char* pEnd = _end - searchStringLength+1;
     for (; pStart < pEnd; ) {
         if (searchString->Compare(pStart, searchStringLength, ignoreCase)) {
             return (IntIndex)(pStart - _begin);
