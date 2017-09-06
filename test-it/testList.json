@@ -296,6 +296,8 @@
                 "TestVI_InRangeAndCoerce_Arrays.via",
                 "TestVIInRangeAndCoerceClusters.via",
                 "TestVI_LargeArray.via",
+                "TestVI_MultipleDelimiters.via",
+                "TestVI_SpreadSheetStringToArray.via",
                 "TestVI_VectorMaxMinOp.via",
                 "TestVI_VectorScalarBinaryOp.via",
                 "TestVI_VectorUnaryOp.via",
