@@ -2647,6 +2647,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
 }
 //-------------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
+// Params: InputString, FormatString, DelimiterString, OutputArray
 {
     TypedArrayCoreRef outputArray = _Param(3);
     if (_Param(2)->Length() == 0) {
@@ -2660,6 +2661,7 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, String
 }
 //-------------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArrayWithArrayDelim, StringRef, StringRef, TypedArrayCoreRef, TypedArrayCoreRef)
+// Params: InputString, FormatString, DelimiterStringArray, OutputArray
 {
     TypedArrayCoreRef outputArray = _Param(3);
     if (_Param(2)->Length() == 0) {
