@@ -2450,7 +2450,7 @@ static inline IntIndex FindDelimiter(SubString *input, TypedArrayCoreRef delimit
 
 // Wrapper around FormatScan:  %s for Spreadsheet Strings does not stop at whitespace the way it does
 // for the other format functions.
-static inline void FormatScanSS(SubString *elemString, SubString *format,  StaticTypeAndData *Value, Boolean formatIsString) {
+static inline void FormatScanForSpreadsheet(SubString *elemString, SubString *format,  StaticTypeAndData *Value, Boolean formatIsString) {
     if (formatIsString) {
         StringRef *pString = (StringRef*)(Value->_pData);
         (*pString)->Replace1D(0, elemString->Length(), elemString->Begin(), true);
@@ -2559,7 +2559,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
         while ((next = FindDelimiter(&input, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
             elemString.AliasAssign(input.Begin()+split, input.Begin()+next);
             Value._pData = array->BeginAtND(rank, elemIndex);
-            FormatScanSS(&elemString, &format, &Value, formatIsString);
+            FormatScanForSpreadsheet(&elemString, &format, &Value, formatIsString);
             split = pastDelim;
             elemIndex[0]++;
         }
@@ -2567,7 +2567,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
             elemString.AliasAssign(input.Begin()+split, input.End());
             if (elemString.Length() > 0) {
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScanSS(&elemString, &format, &Value, formatIsString);
+                FormatScanForSpreadsheet(&elemString, &format, &Value, formatIsString);
             }
         }
     } else if (rank == 2) {
@@ -2586,7 +2586,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
             while ((next = FindDelimiter(&line, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
                 elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                 Value._pData = array->BeginAtND(rank, elemIndex);
-                FormatScanSS(&elemString, &format, &Value, formatIsString);
+                FormatScanForSpreadsheet(&elemString, &format, &Value, formatIsString);
                 split = pastDelim;
                 elemIndex[0]++;
             }
@@ -2594,7 +2594,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
                 line.AliasAssign(line.Begin()+split, line.End());
                 if (line.Length() > 0) {
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScanSS(&line, &format, &Value, formatIsString);
+                    FormatScanForSpreadsheet(&line, &format, &Value, formatIsString);
                 }
             }
             lineIndex++;
@@ -2629,7 +2629,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
                 while ((next = FindDelimiter(&line, delimiterParam, split, &pastDelim, isDelimArray)) > -1) {
                     elemString.AliasAssign(line.Begin()+split, line.Begin()+next);
                     Value._pData = array->BeginAtND(rank, elemIndex);
-                    FormatScanSS(&elemString, &format, &Value, formatIsString);
+                    FormatScanForSpreadsheet(&elemString, &format, &Value, formatIsString);
                     split = pastDelim;
                     elemIndex[0]++;
                 }
@@ -2637,7 +2637,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
                     line.AliasAssign(line.Begin()+split, line.End());
                     if (line.Length() > 0) {
                         Value._pData = array->BeginAtND(rank, elemIndex);
-                        FormatScanSS(&line, &format, &Value, formatIsString);
+                        FormatScanForSpreadsheet(&line, &format, &Value, formatIsString);
                     }
                 }
             }
@@ -2646,10 +2646,10 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
     }
 }
 //-------------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, TypedArrayCoreRef, TypedArrayCoreRef)
+VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, StringRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef outputArray = _Param(3);
-    if (_Param(2)->Length() ==0) {
+    if (_Param(2)->Length() == 0) {
         STACK_VAR(String, delimiter);
         delimiter.Value->AppendCStr("\t");
         ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray, false);
@@ -2662,7 +2662,7 @@ VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArray, StringRef, StringRef, TypedA
 VIREO_FUNCTION_SIGNATURE4(SpreadsheetStringtoArrayWithArrayDelim, StringRef, StringRef, TypedArrayCoreRef, TypedArrayCoreRef)
 {
     TypedArrayCoreRef outputArray = _Param(3);
-    if (_Param(2)->Length() ==0) {
+    if (_Param(2)->Length() == 0) {
         STACK_VAR(String, delimiter);
         delimiter.Value->AppendCStr("\t");
         ScanSpreadsheet(_Param(0), _Param(1), delimiter.Value, outputArray, false);
