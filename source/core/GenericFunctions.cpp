@@ -1583,7 +1583,7 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
                 return NULL;
             Int32 copiedLength = sourceDimLengths[0] * elemSize;
             if (!preinit && copiedLength < destSlabLengths[1]) {
-                memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+                elementType->InitData(pDest + copiedLength, (destSlabLengths[1] - copiedLength)/elemSize);
             }
         } else {
             AQBlock1 *pTemp = pDest;
