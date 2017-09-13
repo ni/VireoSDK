@@ -57,6 +57,7 @@
                 "ArrayInterpolate.via",
                 "ArrayInterleave.via",
                 "ArrayMaxMin.via",
+                "ArrayNonFlatInflate.via",
                 "ArrayOfStrings.via",
                 "ArrayReplaceEltNDV.via",
                 "ArrayReplaceSubset2DV.via",
