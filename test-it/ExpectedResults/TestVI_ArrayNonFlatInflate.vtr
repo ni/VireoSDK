@@ -1,0 +1,9 @@
+000 All tests pass: 'true'.
+010     Strings pass: 'true'.
+020         Value for strings is '(('1' '2' '') ('1' '2' '3'))'.
+030     Cluster pass: 'true'.
+040         Value for clusters is '((('1') ('2') ('')) (('1') ('2') ('3')))'.
+050     Signed integers pass: 'true'.
+060         Value for signed integers is '((1 2 0) (1 2 3))'.
+070     Clusters with arrays pass: 'true'.
+080         Value for clusters with arrays '(((('1' '2')) (('1' '2')) (())) ((('1' '2')) (('1' '2')) (('1' '2'))))'.
