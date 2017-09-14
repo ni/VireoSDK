@@ -951,8 +951,12 @@ class RefNumValType : public WrappedType
         *(RefNumValType**)pData = this;
         return kNIError_Success;
     }
-    virtual NIError ClearData(void* pData) { return kNIError_Success; }
-    virtual void*   Begin(PointerAccessEnum mode)       { return (void*)&_refnum; }
+    virtual NIError CopyData(const void* pData, void* pDataCopy)  {
+        *(RefNumValType**)pDataCopy = *(RefNumValType**)pData;
+        return kNIError_Success;
+    }
+    virtual NIError ClearData(void* pData) { _refnum = 0; _maxSize = 0; return kNIError_Success; }
+    virtual void*   Begin(PointerAccessEnum mode)       { return &_refnum; }
     UInt32 GetRefNum() const { return _refnum; }
     Int32 GetMaxSize() const { return _maxSize; }
     void SetRefNum(UInt32 refNum) { _refnum = refNum; }
