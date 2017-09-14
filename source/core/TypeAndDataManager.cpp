@@ -852,6 +852,8 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
         if (t->Name().Compare(otherTypeName)) {  // ??? should this really consider unnamed types equal?? -CS
             return true;
         }
+        if (t->BitEncoding() == kEncoding_RefNum)
+            break;
         t = t->BaseType();
     }
 
