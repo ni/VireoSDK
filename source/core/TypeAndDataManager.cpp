@@ -630,6 +630,7 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _encoding       = kEncoding_None;
     _pointerType    = kPTNotAPointer;
     _elementUsageType = kUsageTypeSimple;
+    _opaqueReference = false;
 }
 //------------------------------------------------------------
 void TypeCommon::ZeroOutTop(void* pData)
@@ -852,7 +853,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
         if (t->Name().Compare(otherTypeName)) {  // ??? should this really consider unnamed types equal?? -CS
             return true;
         }
-        if (t->BitEncoding() == kEncoding_RefNum)
+        if (t->IsOpaqueReference())
             break;
         t = t->BaseType();
     }
@@ -1925,6 +1926,8 @@ PointerType* PointerType::New(TypeManagerRef typeManager, TypeRef type)
 //------------------------------------------------------------
 PointerType::PointerType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type) {
+    _opaqueReference = true;  // TODO(spathiwa): This flag only makes a difference in IsA type comparisons;
+    // since this is type is only used internally, this is hard to unit test but probably doesn't matter
 }
 //------------------------------------------------------------
 // RefNumValType
@@ -1940,6 +1943,7 @@ RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
     _isFlat = true;
     _maxSize = -1;
     _encoding = kEncoding_RefNum;
+    _opaqueReference = true;
 }
 //------------------------------------------------------------
 // EnumType
