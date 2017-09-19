@@ -492,6 +492,7 @@ class TypeCommon
     //  properties unique to DefaultPointerType objects
     UInt16  _pointerType:3;       // (10-12)
     UInt16  _ownsDefDefData:1;    // (13) Owns DefaultDefault data (clusters and arrays)
+    UInt16  _opaqueReference:1;   // (14) Data is not an instance of the type it wraps or is templated from (e.g. refnum(Queue))
 
  public:
     /// @name Core Property Methods
@@ -528,6 +529,7 @@ class TypeCommon
     Boolean HasPadding()            { return _hasPadding != 0; }
     //! True if the type contains one or more template parameter types.
     Boolean IsTemplate()            { return _isTemplate != 0; }
+    Boolean IsOpaqueReference()     { return _opaqueReference != 0; }
     //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam()          {
         return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput);
