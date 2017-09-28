@@ -1,0 +1,3 @@
+000 All tests pass: 'true'.
+010     Offset beyong string length pass: 'true'.
+020     Last character pass: 'true'.
