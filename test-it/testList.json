@@ -251,6 +251,7 @@
                 "ScanFormat2.via",
                 "Search1DArray.via",
                 "SearchSplitString.via",
+                "SearchSplitStringRegression.via",
                 "ShabangHelloWorld.via",
                 "SharedArray.via",
                 "SlashAsterComments.via",
