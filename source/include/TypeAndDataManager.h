@@ -877,7 +877,7 @@ class ArrayType : public WrappedType
                           IntIndex* dimensionLengths, Boolean inhibitUniq = false);
 
     // _pDefault is a singleton for each instance of an ArrayType used as the default
-    // value, allocated one demand
+    // value, allocated on demand
     void*   _pDefault;
 
     // In the type dimension is described as follows:
@@ -930,13 +930,29 @@ class PointerType : public WrappedType
     virtual Int32   SubElementCount()                   { return 1; }
     // TODO(PaulAustin): Add GetSubElementAddressFromPath
 };
+
+class RefNumVal {
+public:
+    RefNumVal(TypeRef typeRef, Int32 maxSize) : _typeRef(typeRef) { _maxSize = maxSize; }
+    //! Array's type.
+    TypeRef Type()                  { return _typeRef; }
+    UInt32 GetRefNum() const { return _refnum; }
+    Int32 GetMaxSize() const { return _maxSize; }
+    void SetRefNum(UInt32 refNum) { _refnum = refNum; }
+    void SetMaxSize(Int32 maxSize) { _maxSize = maxSize; }
+private:
+    void SetType(const TypeRef typeRef) {  _typeRef = typeRef; }
+    UInt32   _refnum;
+    Int32   _maxSize;
+    TypeRef _typeRef;
+
+    friend class RefNumValType; // Allowed to call SetType
+};
 //------------------------------------------------------------
 //! A type describes a refnum to another type.
 class RefNumValType : public WrappedType
 {
  protected:
-    UInt32   _refnum;
-    Int32   _maxSize;
     RefNumValType(TypeManagerRef typeManager, TypeRef type);
  public:
     static RefNumValType* New(TypeManagerRef typeManager, TypeRef type);
@@ -949,20 +965,9 @@ class RefNumValType : public WrappedType
     }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                  { return 1; }
-    virtual NIError InitData(void* pData, TypeRef pattern = null) {
-        *(RefNumValType**)pData = this;
-        return kNIError_Success;
-    }
-    virtual NIError CopyData(const void* pData, void* pDataCopy)  {
-        *(RefNumValType**)pDataCopy = *(RefNumValType**)pData;
-        return kNIError_Success;
-    }
-    virtual NIError ClearData(void* pData) { _refnum = 0; _maxSize = 0; return kNIError_Success; }
-    virtual void*   Begin(PointerAccessEnum mode)       { return &_refnum; }
-    UInt32 GetRefNum() const { return _refnum; }
-    Int32 GetMaxSize() const { return _maxSize; }
-    void SetRefNum(UInt32 refNum) { _refnum = refNum; }
-    void SetMaxSize(Int32 maxSize) { _maxSize = maxSize; }
+    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError CopyData(const void* pData, void* pDataCopy);
+    virtual NIError ClearData(void* pData);
 };
 //------------------------------------------------------------
 //! A type describes a pointer to another type. Initial value will be null.
