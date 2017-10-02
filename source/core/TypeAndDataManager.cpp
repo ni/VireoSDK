@@ -1939,11 +1939,29 @@ RefNumValType* RefNumValType::New(TypeManagerRef typeManager, TypeRef type)
 //------------------------------------------------------------
 RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
 : WrappedType(typeManager, type) {
-    _refnum = 0;
     _isFlat = true;
-    _maxSize = -1;
+    _hasCustomDefault = true;
+    _topAQSize = sizeof(RefNumVal);
     _encoding = kEncoding_RefNum;
     _opaqueReference = true;
+}
+NIError RefNumValType::InitData(void* pData, TypeRef pattern) {
+    RefNumVal* pRefnumData = (RefNumVal*)pData;
+    pRefnumData->SetType(pattern);
+
+    pRefnumData->SetRefNum(0);
+    pRefnumData->SetMaxSize(-1);
+    return kNIError_Success;
+}
+NIError RefNumValType::CopyData(const void* pData, void* pDataCopy)  {
+    *(RefNumVal*)pDataCopy = *(RefNumVal*)pData;
+    return kNIError_Success;
+}
+NIError RefNumValType::ClearData(void* pData) {
+    RefNumVal* pRefnumData = (RefNumVal*)pData;
+    pRefnumData->SetRefNum(0);
+    pRefnumData->SetMaxSize(-1);
+    return kNIError_Success;
 }
 //------------------------------------------------------------
 // EnumType

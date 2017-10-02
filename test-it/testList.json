@@ -31,6 +31,28 @@
                 "HttpHandles.via"
             ]
         },
+        "queue": {
+            "tests": [
+                "QueueBug.via",
+                "QueueBugDequeueElement.via",
+                "QueueBugEnqueueElement.via",
+                "QueueBugObtainQueue.via",
+                "QueueBugReleaseQueue.via",
+                "QueueErrorCodes.via",
+                "QueueOfNothingReaderWriter.via",
+                "QueueReaderWriter.via",
+                "QueueTypeTemplate.via",
+                "QueueType.via",
+                "QueueTypeWithSize.via",
+                "QueueRefNumBasic.via",
+                "QueueRefNumCleanup.via",
+                "QueueRefNumEnqueueFront.via",
+                "QueueRefNumGetStatus.via",
+                "QueueRefNumNamed.via",
+                "QueueRefNumSimpleArrayAndCluster.via",
+                "QueueInvalidRefnum.via"
+            ]
+        },
         "manual": {
             "tests": [
                 "StringFormatTime.via",
@@ -38,6 +60,7 @@
             ]
         },
         "common": {
+            "include": ["queue"],
             "tests": [
                 "2HelloWorlds.via",
                 "AllocatedDataValues.via",
@@ -217,23 +240,6 @@
                 "PrintTemplateTypes.via",
                 "PrintTypes.via",
                 "PrintTypeVectors.via",
-                "QueueBug.via",
-                "QueueBugDequeueElement.via",
-                "QueueBugEnqueueElement.via",
-                "QueueBugObtainQueue.via",
-                "QueueBugReleaseQueue.via",
-                "QueueErrorCodes.via",
-                "QueueOfNothingReaderWriter.via",
-                "QueueReaderWriter.via",
-                "QueueTypeTemplate.via",
-                "QueueType.via",
-                "QueueTypeWithSize.via",
-                "QueueRefNumBasic.via",
-                "QueueRefNumCleanup.via",
-                "QueueRefNumEnqueueFront.via",
-                "QueueRefNumGetStatus.via",
-                "QueueRefNumNamed.via",
-                "QueueInvalidRefnum.via",
                 "Random.via",
                 "ReadWriteUsingPaths.via",
                 "ReentrantMemLeak2.via",

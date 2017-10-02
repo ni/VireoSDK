@@ -2242,8 +2242,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_RefNum:
             {
-                RefNumValType *refType = *(RefNumValType**)pData;
-                SubString name = refType->Name();
+                RefNumVal *refType = (RefNumVal*)pData;
+                SubString name = refType->Type()->Name();
                 UInt32 refnum = refType->GetRefNum();
                 _string->AppendCStr("refnum ");
                 FormatInt(kEncoding_UInt, refnum);
