@@ -932,7 +932,7 @@ class PointerType : public WrappedType
 };
 
 class RefNumVal {
-public:
+ public:
     RefNumVal(TypeRef typeRef, Int32 maxSize) : _typeRef(typeRef) { _maxSize = maxSize; }
     //! Array's type.
     TypeRef Type()                  { return _typeRef; }
@@ -940,13 +940,13 @@ public:
     Int32 GetMaxSize() const { return _maxSize; }
     void SetRefNum(UInt32 refNum) { _refnum = refNum; }
     void SetMaxSize(Int32 maxSize) { _maxSize = maxSize; }
-private:
+ private:
     void SetType(const TypeRef typeRef) {  _typeRef = typeRef; }
     UInt32   _refnum;
     Int32   _maxSize;
     TypeRef _typeRef;
 
-    friend class RefNumValType; // Allowed to call SetType
+    friend class RefNumValType;  // Allowed to call SetType
 };
 //------------------------------------------------------------
 //! A type describes a refnum to another type.
