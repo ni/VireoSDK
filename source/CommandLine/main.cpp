@@ -14,6 +14,7 @@ SDG
 #if kVireoOS_emscripten
     #include <emscripten.h>
 #endif
+#include <unistd.h>
 
 namespace Vireo {
 
@@ -114,8 +115,11 @@ int VIREO_MAIN(int argc, const char * argv[])
 void Vireo::RunExec() {
     TypeManagerRef tm = gShells._pUserShell;
     TypeManagerScope scope(tm);
-    gShells._keepRunning = tm->TheExecutionContext()->ExecuteSlices(400, 10000000) != kExecutionState_None;
-
+    Int32 state = tm->TheExecutionContext()->ExecuteSlices(400, 10000000);
+    Int32 delay = state > 0 ? state : 0;
+    gShells._keepRunning = (state != kExecSlices_ClumpsFinished);
+    if (delay)
+        gPlatform.Timer.SleepMilliseconds(delay);
     if (!gShells._keepRunning) {
         // No more to execute
 #if defined(kVireoOS_emscripten)

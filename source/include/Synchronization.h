@@ -69,12 +69,15 @@ class OccurrenceCore : public ObservableCore
 };
 typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 
+const Int32 kMaxExecWakeUpTime = 10000;  // (milliseconds).  10 seconds.
+
 //------------------------------------------------------------
 //! Timer object that clumps can wait on.
 class Timer : public ObservableCore
 {
  public:
     Boolean AnythingWaiting()                   { return _observerList != null; }
+    IntMax NextWakeUpTime()                     { return _observerList != null ? _observerList->_info : 0; }
     void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
     void CheckTimers(PlatformTickType t);
     void InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount);

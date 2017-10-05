@@ -12,8 +12,9 @@
         vireo.eggShell.setPrintFunction(console.log.bind(console));
         vireo.eggShell.loadVia(viaCode);
         (function runUntildone () {
-            if (vireo.eggShell.executeSlices(1000000)) {
-                setTimeout(runUntildone, 0);
+            var execResult = vireo.eggShell.executeSlices(1000000);
+            if (execResult != 0) {
+                setTimeout(runUntildone, execResult > 0 ? execResult : 0);
             }
         }());
     };
