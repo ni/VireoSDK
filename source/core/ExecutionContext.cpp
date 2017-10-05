@@ -14,7 +14,6 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
-
 #if kVireoOS_emscripten
 #include <emscripten.h>
 #endif
@@ -311,7 +310,7 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
     }
 }
 //------------------------------------------------------------
-ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
+Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
 {
     VIREO_ASSERT((_runningQueueElt == null))
 
@@ -383,21 +382,38 @@ ExecutionState ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType
         }
     }
 
-    ExecutionState reply = kExecutionState_None;
+    ExecutionState state = kExecutionState_None;
+    Int32 reply = kExecSlices_ClumpsFinished;
     if (!_runQueue.IsEmpty()) {
-        reply = (ExecutionState) (reply | kExecutionState_ClumpsInRunQueue);
+        state = kExecutionState_ClumpsInRunQueue;
+        reply = kExecSlices_ClumpsInRunQueue;
     }
     if (_timer.AnythingWaiting()) {
-        reply = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
+        state = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
+        reply = kExecSlices_ClumpsWaiting;
+        Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
+        // This is the time of earliest scheduled clump to wake up; we return this time to allow the caller to sleep.
+        // They are allowed to call us earlier, say, if they set an occurrence to give us something to do.
+        // If we're called with nothing to run, we'll do nothing and return the remaining waiting time.
+        if (timeToWait < 0)
+            timeToWait = 0;
+        else if (timeToWait > kMaxExecWakeUpTime)
+            timeToWait = kMaxExecWakeUpTime;
+        // Negative return value (kExecSlices_ClumpsInRunQueue) means we should be called again immediately/ASAP
+        // because there is stuff to run. Zero (kExecSlices_ClumpsFinished) means the VI is completely finished
+        // and nothing is waiting to be scheduled.
+        if (timeToWait > 0)
+            reply = timeToWait;
     }
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // TODO(PaulAustin): check global memory manager for allocation errors
 #else
     if (THREAD_TADM()->_totalAllocationFailures > 0) {
-        reply = kExecutionState_None;
+        state = kExecutionState_None;
+        reply = kExecSlices_ClumpsFinished;
     }
 #endif
-    _state = reply;
+    _state = state;
     return reply;
 }
 //------------------------------------------------------------

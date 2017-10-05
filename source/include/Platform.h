@@ -80,6 +80,9 @@ class PlatformTimer {
     Int64 TickCountToMicroseconds(PlatformTickType);
     PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);
     PlatformTickType MicrosecondsFromNowToTickCount(Int64 microseconds);
+#if !kVireoOS_emscripten
+    void SleepMilliseconds(Int64 milliseconds);  // Cannot sleep in emscripten code without using interpreter, must sleep in caller on JS side
+#endif
 };
 
 //------------------------------------------------------------
