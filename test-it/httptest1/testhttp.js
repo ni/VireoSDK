@@ -12,10 +12,10 @@
     };
 
     var continueUntilDone = function () {
-        var remainingSlices = eggShell.executeSlices(1000);
+        var execResult = eggShell.executeSlices(1000);
 
-        if (remainingSlices > 0) {
-            setTimeout(continueUntilDone, 0);
+        if (execResult != 0) {
+            setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
         } else {
             console.log(JSON.parse(eggShell.readJSON('%3AWeb%20Server%3AInteractive%3AApplication%3AMain%2Egviweb', 'dataItem_Body')));
             console.log('finished :D');

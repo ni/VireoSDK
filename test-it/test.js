@@ -181,7 +181,7 @@
 
     // Process the via files for the provided tester function and compare with
     // the results file of the same name but with a '.vtr' extension
-    var runTestCore = function (testName, tester, execOnly) {
+    var runTestCore = function (testName, tester, testFinished, execOnly) {
         var resultsFileName = 'ExpectedResults/' + path.basename(testName, '.via') + '.vtr';
         var oldResults = '';
         var noOldResults = false;
@@ -197,22 +197,24 @@
             }
         }
         var hrstart = process.hrtime();
-        var newResults = tester(testName);
-        var hrend = process.hrtime(hrstart);
-        var msec = hrend[1] / 1000000;
+        tester(testName, function(newResults) {
+            var hrend = process.hrtime(hrstart);
+            var msec = hrend[1] / 1000000;
 
-        if (execOnly) {
-            console.log(newResults);
-        } else if (noOldResults) {
-            // Save the generated resutls as the new reference
-            // Add the file name to a list that can be printed at the end.
-        } else {
-            compareResults(testName, oldResults, newResults, msec);
-        }
+            if (execOnly) {
+                console.log(newResults);
+            } else if (noOldResults) {
+                // Save the generated resutls as the new reference
+                // Add the file name to a list that can be printed at the end.
+            } else {
+                compareResults(testName, oldResults, newResults, msec);
+            }
+            testFinished();
+        });
     };
 
     // Process a provided test and return the stdout from the vireo.js runtime
-    var RunVJSTest = function (testName) {
+    var RunVJSTest = function (testName, testFinishedCB) {
         var viaCode;
         var viaPath = 'ViaTests/' + testName;
         vireo.reboot();
@@ -220,24 +222,46 @@
             viaCode = fs.readFileSync(viaPath).toString();
         } catch (e) {
             if (e.code === 'ENOENT') {
-                viaCode = '';
-                throw new Error('No such test ' + testName);
+                viaPath = testName;
+                try {
+                    viaCode = fs.readFileSync(viaPath).toString();
+		} catch (e) {
+                    if (e.code === 'ENOENT') {
+                        viaCode = '';
+                        throw new Error('No such test ' + testName);
+	            }
+		}
             }
         }
+        var testOutput = '';
+        vireo.setPrintFunction(function (text) {
+                        testOutput = testOutput + text + '\n';
+                        });
 
-        vireo.stdout = '';
         if (viaCode !== '' && vireo.loadVia(viaCode) === 0) {
             // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
-            while (vireo.executeSlices(1000000)) {
-                // Nothing here
+            // TODO spathiwa I think we can now...
+            var execVireo = function(done) {
+                var state;
+                while ((state = vireo.executeSlices(1000000)) != 0) {
+                   var timeDelay = state > 0 ? state : 0;
+                   if (timeDelay > 0) {
+                       setTimeout(execVireo, timeDelay);
+                       break;
+                   }
+                }
+                if (state == 0) {
+                    testFinishedCB(testOutput);
+                }
             }
+            execVireo(testFinishedCB);
+        } else {
+            testFinishedCB(testOutput);
         }
-
-        return vireo.stdout;
     };
 
     // Setup the esh binary for via execution
-    var RunNativeTest = function (testName) {
+    var RunNativeTest = function (testName, testFinishedCB) {
         var newResults = '';
         var exec = '../dist/esh';
         var viaPath = 'ViaTests/' + testName;
@@ -253,7 +277,7 @@
             // and exec will throw an exception, so catch the results.
             newResults = e.stdout.toString();
         }
-        return newResults;
+        testFinishedCB(newResults);
     };
 
     // Setup the vireo.js runtime for instruction execution
@@ -271,19 +295,47 @@
                 throw err;
             }
         }
-        vireo.stdout = '';
-        vireo.setPrintFunction(function (text) {
-            vireo.stdout = vireo.stdout + text + '\n';
-        });
     };
 
     // Testing functions for processing the tests against vireo.js or esh binary
-    var JSTester = function (testName, execOnly) {
-        runTestCore(testName, RunVJSTest, execOnly);
+    var JSTester = function (testName, testFinishedCB, execOnly) {
+        runTestCore(testName, RunVJSTest, testFinishedCB, execOnly);
     };
 
-    var NativeTester = function (testName, execOnly) {
-        runTestCore(testName, RunNativeTest, execOnly);
+    var NativeTester = function (testName, testFinishedCB, execOnly) {
+        runTestCore(testName, RunNativeTest, testFinishedCB, execOnly);
+    };
+    var errorCode = 0;
+
+    var Report = function() {
+        // ----------------------------------------------------------------------
+        // Run twice to look for global state issues.
+        // Some tests are failing on a second iteration during the test execution.
+        // This is being tracked by defect: DE9032
+        // testFiles.map(tester);
+        // ----------------------------------------------------------------------
+
+        // Check the testFailures (if any)
+        if (Object.keys(app.testFailures).length > 0) {
+            console.log('\n=============================================');
+            console.log('The following tests failed: ' + Object.keys(app.testFailures).length);
+            console.log('=============================================\n');
+            for (var test in app.testFailures) {
+                if (app.testFailures.hasOwnProperty(test)) {
+                    console.log('===========================');
+                    console.log(app.testFailures[test].name);
+                    console.log('===========================');
+                    console.log(app.testFailures[test].results);
+                    console.log('\n');
+                }
+            }
+            // Make sure to set error code for travis-ci failure
+            errorCode = 1;
+        } else {
+            console.log('\n============================================='.green);
+            console.log('SUCCESS: All tests passed for this execution!'.green);
+            console.log('=============================================\n'.green);
+        }
     };
 
     // -------------------- Main Function
@@ -303,8 +355,7 @@
             once = false,
             execOnly = false,
             individualTests = false,
-            showHelp = false,
-            errorCode = 0;
+            showHelp = false;
 
         argv.shift(); // node path
         argv.shift(); // script path
@@ -450,55 +501,33 @@
         }
 
         if (testFiles.length > 0) {
-            testFiles.map(function (testName) {
-                return tester(testName, execOnly);
-            });
-
-            // Possibly run only once (default is false, so run twice)
-            if (!once) {
-                testFiles.map(function (testName) {
-                    return tester(testName, execOnly);
-                });
-            }
-
-            // Don't diff the test
-            if (execOnly) {
-                return;
-            }
-            // ----------------------------------------------------------------------
-            // Run twice to look for global state issues.
-            // Some tests are failing on a second iteration during the test execution.
-            // This is being tracked by defect: DE9032
-            // testFiles.map(tester);
-            // ----------------------------------------------------------------------
-
-            // Check the testFailures (if any)
-            if (Object.keys(app.testFailures).length > 0) {
-                console.log('\n=============================================');
-                console.log('The following tests failed: ' + Object.keys(app.testFailures).length);
-                console.log('=============================================\n');
-                for (var test in app.testFailures) {
-                    if (app.testFailures.hasOwnProperty(test)) {
-                        console.log('===========================');
-                        console.log(app.testFailures[test].name);
-                        console.log('===========================');
-                        console.log(app.testFailures[test].results);
-                        console.log('\n');
-                    }
+            var runNextTest = function(testFiles, chain) {
+                if (testFiles.length > 0) {
+                    var testName = testFiles.shift();
+                    tester(testName, function() {
+                           runNextTest(testFiles, chain);
+                           }, execOnly);
+                } else if (!execOnly) {
+                    chain();
                 }
-                // Make sure to set error code for travis-ci failure
-                errorCode = 1;
-            } else {
-                console.log('\n============================================='.green);
-                console.log('SUCCESS: All tests passed for this execution!'.green);
-                console.log('=============================================\n'.green);
-            }
+            };
+            var saveTestFiles = testFiles.slice();
+
+            runNextTest(testFiles, function() {
+                if (once) {
+                    Report();
+                    process.exit(errorCode);
+                } else {
+                    runNextTest(saveTestFiles, function() {
+                        Report();
+                        process.exit(errorCode);
+                    });
+                }
+            });
         } else {
             console.log('Nothing to test.  Use test.js -h for help');
-            errorCode = 1;
+            process.exit(1);
         }
 
-        // Provide an exit code
-        process.exit(errorCode);
     }());
 }());
