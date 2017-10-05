@@ -34,25 +34,25 @@
 
     var fs = require('fs');
     try {
-       var text = fs.readFileSync(arg).toString();
+        var text = fs.readFileSync(arg).toString();
+        vireo.loadVia(text);
     } catch (e) {
-       console.log("Usage: " + command + " [file.via]...");
-       if (arg.substring(0,1)!=="-")
-           console.log("Can't open " + arg);
-       process.exit(1);
-    }
-
-    vireo.loadVia(text);
-
-    var execVireo = function() {
-        var state;
-        while ((state = vireo.executeSlices(100000)) != 0) {
-           var timeDelay = state > 0 ? state : 0;
-           if (timeDelay > 0) {
-               setTimeout(execVireo, timeDelay);
-               break;
-           }
+        console.log('Usage: ' + command + ' [file.via]...');
+        if (arg.substring(0, 1) !== '-') {
+            console.log('Cannot open ' + arg);
         }
+        process.exit(1);
     }
-    execVireo()
+
+    var execVireo = function () {
+        var state;
+        while ((state = vireo.executeSlices(100000)) !== 0) {
+            var timeDelay = state > 0 ? state : 0;
+            if (timeDelay > 0) {
+                setTimeout(execVireo, timeDelay);
+                break;
+            }
+        }
+    };
+    execVireo();
 }());

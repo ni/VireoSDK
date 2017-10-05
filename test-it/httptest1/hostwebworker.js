@@ -13,7 +13,7 @@
         vireo.eggShell.loadVia(viaCode);
         (function runUntildone () {
             var execResult = vireo.eggShell.executeSlices(1000000);
-            if (execResult != 0) {
+            if (execResult !== 0) {
                 setTimeout(runUntildone, execResult > 0 ? execResult : 0);
             }
         }());

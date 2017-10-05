@@ -42,14 +42,14 @@
                 var execState = vireo.eggShell.executeSlices(1000000);
                 executeSlicesInvocationCount += 1;
 
-                if (execState != 0) {
+                if (execState !== 0) {
                     var timeUntilNextClump = execState > 0 ? execState : 0;
                     // The setImmediate polyfill in PhantomJS does not work when combined with xhr requests.
                     // I think the polyfill blocks servicing network ops...
                     // so periodically use setTimeout to let PhantomJS service the network stack
-                    if (timeUntilNextClump > 0)
+                    if (timeUntilNextClump > 0) {
                         setTimeout(runExecuteSlicesAsync, timeUntilNextClump);
-                    else if (executeSlicesInvocationCount % 1000 === 0) {
+                    } else if (executeSlicesInvocationCount % 1000 === 0) {
                         setTimeout(runExecuteSlicesAsync, 0);
                     } else {
                         setImmediate(runExecuteSlicesAsync);

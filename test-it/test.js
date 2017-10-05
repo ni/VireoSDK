@@ -197,7 +197,7 @@
             }
         }
         var hrstart = process.hrtime();
-        tester(testName, function(newResults) {
+        tester(testName, function (newResults) {
             var hrend = process.hrtime(hrstart);
             var msec = hrend[1] / 1000000;
 
@@ -225,35 +225,35 @@
                 viaPath = testName;
                 try {
                     viaCode = fs.readFileSync(viaPath).toString();
-		} catch (e) {
+                } catch (e) {
                     if (e.code === 'ENOENT') {
                         viaCode = '';
                         throw new Error('No such test ' + testName);
-	            }
-		}
+                    }
+                }
             }
         }
         var testOutput = '';
         vireo.setPrintFunction(function (text) {
-                        testOutput = testOutput + text + '\n';
-                        });
+            testOutput = testOutput + text + '\n';
+        });
 
         if (viaCode !== '' && vireo.loadVia(viaCode) === 0) {
             // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
             // TODO spathiwa I think we can now...
-            var execVireo = function(done) {
+            var execVireo = function () {
                 var state;
-                while ((state = vireo.executeSlices(1000000)) != 0) {
-                   var timeDelay = state > 0 ? state : 0;
-                   if (timeDelay > 0) {
-                       setTimeout(execVireo, timeDelay);
-                       break;
-                   }
+                while ((state = vireo.executeSlices(1000000)) !== 0) {
+                    var timeDelay = state > 0 ? state : 0;
+                    if (timeDelay > 0) {
+                        setTimeout(execVireo, timeDelay);
+                        break;
+                    }
                 }
-                if (state == 0) {
+                if (state === 0) {
                     testFinishedCB(testOutput);
                 }
-            }
+            };
             execVireo(testFinishedCB);
         } else {
             testFinishedCB(testOutput);
@@ -307,7 +307,7 @@
     };
     var errorCode = 0;
 
-    var Report = function() {
+    var report = function () {
         // ----------------------------------------------------------------------
         // Run twice to look for global state issues.
         // Some tests are failing on a second iteration during the test execution.
@@ -501,25 +501,25 @@
         }
 
         if (testFiles.length > 0) {
-            var runNextTest = function(testFiles, chain) {
+            var runNextTest = function (testFiles, chain) {
                 if (testFiles.length > 0) {
                     var testName = testFiles.shift();
-                    tester(testName, function() {
-                           runNextTest(testFiles, chain);
-                           }, execOnly);
+                    tester(testName, function () {
+                        runNextTest(testFiles, chain);
+                    }, execOnly);
                 } else if (!execOnly) {
                     chain();
                 }
             };
             var saveTestFiles = testFiles.slice();
 
-            runNextTest(testFiles, function() {
+            runNextTest(testFiles, function () {
                 if (once) {
-                    Report();
+                    report();
                     process.exit(errorCode);
                 } else {
-                    runNextTest(saveTestFiles, function() {
-                        Report();
+                    runNextTest(saveTestFiles, function () {
+                        report();
                         process.exit(errorCode);
                     });
                 }
@@ -528,6 +528,5 @@
             console.log('Nothing to test.  Use test.js -h for help');
             process.exit(1);
         }
-
     }());
 }());
