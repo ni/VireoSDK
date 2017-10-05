@@ -25,9 +25,11 @@
   #include <pthread.h>
   #include <time.h>
   #include <mach/mach_time.h>
+  #include <unistd.h>
 #elif (kVireoOS_linuxU)
   #include <pthread.h>
   #include <time.h>
+  #include <unistd.h>
 #elif kVireoOS_ZynqARM
   #include "xscutimer.h"
 #elif kVireoOS_emscripten
@@ -351,7 +353,6 @@ void PlatformIO::ReadStdin(StringRef buffer)
 
 #endif
 
-
 //============================================================
 PlatformTickType PlatformTimer::TickCount()
 {
@@ -545,4 +546,15 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
 #endif
 }
 
+#if !kVireoOS_emscripten  // Cannot sleep in emscripten code, must sleep on JS side
+void PlatformTimer::SleepMilliseconds(Int64 milliseconds) {
+#if defined(_WIN32) || defined(_WIN64)
+    Sleep((DWORD)milliseconds);
+#elif kVireoOS_macosxU || kVireoOS_linuxU
+    usleep(UInt32(milliseconds * 1000));
+#else
+    #error "implement SleepMilliseconds"
+#endif
+}
+#endif  // !kVireoOS_emscripten
 }  // namespace Vireo

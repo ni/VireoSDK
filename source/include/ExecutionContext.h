@@ -63,8 +63,13 @@ enum ExecutionState
     kExecutionState_None = 0,
     kExecutionState_ClumpsInRunQueue = 0x01,
     kExecutionState_ClumpsWaitingOnTime = 0x02,
-    kExecutionState_ClumpsWaitingOnQueues = 0x04,
-    kExecutionState_ClumpsWaitingOnISRs = 0x08,
+};
+
+enum ExecSlicesResult {
+    kExecSlices_ClumpsWaiting = -2,
+    kExecSlices_ClumpsInRunQueue = -1,
+    kExecSlices_ClumpsFinished = 0,
+    // ... or positive value indicating clumps waiting for specific time (in ms)
 };
 
 // Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work
@@ -114,7 +119,7 @@ class ExecutionContext
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
 
     // Run the concurrent execution system for a short period of time
-    ECONTEXT    ExecutionState  ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
+    ECONTEXT    Int32 /*ExecSlicesResult*/ ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
