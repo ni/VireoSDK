@@ -122,7 +122,7 @@ module.exports = {
         'no-mixed-operators': 'error',
         'no-mixed-spaces-and-tabs': 'error',
         'no-multiple-empty-lines': 'error',
-        'no-negated-condition': 'error',
+        'no-negated-condition': 'off',
         'no-nested-ternary': 'error',
         'no-new-object': 'error',
         'no-plusplus': 'error',
