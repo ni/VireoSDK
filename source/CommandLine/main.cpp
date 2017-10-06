@@ -14,7 +14,6 @@ SDG
 #if kVireoOS_emscripten
     #include <emscripten.h>
 #endif
-#include <unistd.h>
 
 namespace Vireo {
 

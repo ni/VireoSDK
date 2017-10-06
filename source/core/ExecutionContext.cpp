@@ -14,7 +14,6 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
-#include <unistd.h>
 #if kVireoOS_emscripten
 #include <emscripten.h>
 #endif
