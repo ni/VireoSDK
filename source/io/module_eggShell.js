@@ -373,6 +373,14 @@
         };
 
         Module.eggShell.executeSlices = publicAPI.eggShell.executeSlices = function (slices) {
+            // compatibility non-async entry point for callers which do not expect negative return values
+            var result = EggShell_ExecuteSlices(v_userShell, slices);
+            return (result !== 0) ? 1 : 0;
+        };
+
+        Module.eggShell.executeSlicesAsync = publicAPI.eggShell.executeSlicesAsync = function (slices) {
+            // returns -1 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
+            // to delay up to N milliseconds before calling again
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 

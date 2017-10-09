@@ -264,6 +264,15 @@
 		44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayInterpolate.via; path = "../test-it/ArrayInterpolate.via"; sourceTree = "<group>"; };
 		44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFunctions.via; path = "../test-it/ComplexMathFunctions.via"; sourceTree = "<group>"; };
 		44B71BD21EC65368008683F6 /* WebSocketClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebSocketClient.cpp; path = ../source/io/WebSocketClient.cpp; sourceTree = "<group>"; };
+		44C295D51F8C037A001877B4 /* library_webSocketClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_webSocketClient.js; path = ../source/io/library_webSocketClient.js; sourceTree = "<group>"; };
+		44C295D61F8C037A001877B4 /* module_httpClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_httpClient.js; path = ../source/io/module_httpClient.js; sourceTree = "<group>"; };
+		44C295D71F8C037A001877B4 /* module_other.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_other.js; path = ../source/io/module_other.js; sourceTree = "<group>"; };
+		44C295D81F8C037A001877B4 /* module_webSocketClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_webSocketClient.js; path = ../source/io/module_webSocketClient.js; sourceTree = "<group>"; };
+		44C295D91F8C037A001877B4 /* module_eggShell.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_eggShell.js; path = ../source/io/module_eggShell.js; sourceTree = "<group>"; };
+		44C295DA1F8C03B7001877B4 /* library_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_coreHelpers.js; path = core/library_coreHelpers.js; sourceTree = "<group>"; };
+		44C295DB1F8C03B7001877B4 /* vireo.loader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.loader.js; path = core/vireo.loader.js; sourceTree = "<group>"; };
+		44C295DC1F8C03B7001877B4 /* module_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_coreHelpers.js; path = core/module_coreHelpers.js; sourceTree = "<group>"; };
+		44C295DD1F8C03B7001877B4 /* vireo.wrapper.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.wrapper.js; path = core/vireo.wrapper.js; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
@@ -759,6 +768,11 @@
 				44B71BD21EC65368008683F6 /* WebSocketClient.cpp */,
 				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
+				44C295D51F8C037A001877B4 /* library_webSocketClient.js */,
+				44C295D91F8C037A001877B4 /* module_eggShell.js */,
+				44C295D61F8C037A001877B4 /* module_httpClient.js */,
+				44C295D71F8C037A001877B4 /* module_other.js */,
+				44C295D81F8C037A001877B4 /* module_webSocketClient.js */,
 			);
 			name = IO;
 			sourceTree = "<group>";
@@ -841,6 +855,10 @@
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
 				4466C7981E4F08EE004B5E31 /* Waveform.cpp */,
+				44C295DA1F8C03B7001877B4 /* library_coreHelpers.js */,
+				44C295DC1F8C03B7001877B4 /* module_coreHelpers.js */,
+				44C295DB1F8C03B7001877B4 /* vireo.loader.js */,
+				44C295DD1F8C03B7001877B4 /* vireo.wrapper.js */,
 			);
 			name = core;
 			path = ../source;
