@@ -23,7 +23,7 @@
         };
 
         var continueUntilDone = function () {
-            var execResult = eggShell.executeSlices(1000);
+            var execResult = eggShell.executeSlicesAsync(1000);
 
             if (execResult !== 0) {
                 setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
