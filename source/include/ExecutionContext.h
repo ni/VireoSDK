@@ -66,10 +66,10 @@ enum ExecutionState
 };
 
 enum ExecSlicesResult {
-    kExecSlices_ClumpsWaiting = -2,
-    kExecSlices_ClumpsInRunQueue = -1,
-    kExecSlices_ClumpsFinished = 0,
-    // ... or positive value indicating clumps waiting for specific time (in ms)
+    kExecSlices_ClumpsWaiting = -2,     // Clumps waiting, but for less than 1 ms; call executeSlices again ASAP
+    kExecSlices_ClumpsInRunQueue = -1,  // Clumps ready to run in run queue; call executeSlices again ASAP
+    kExecSlices_ClumpsFinished = 0,     // All clumps done executing, nothing waiting on timers.  VI done.
+    // ... or positive value indicating clumps waiting for specific time (in ms);call executeSlices again no later than this time delay later
 };
 
 // Each thread can have at most one ExecutionContext (ECs). ExecutionContexts can work
