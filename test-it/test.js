@@ -243,7 +243,7 @@
             // TODO spathiwa I think we can now...
             var execVireo = function () {
                 var state;
-                while ((state = vireo.executeSlicesAsync(1000000)) !== 0) {
+                while ((state = vireo.executeSlicesUntilWait(1000000)) !== 0) {
                     var timeDelay = state > 0 ? state : 0;
                     if (timeDelay > 0) {
                         setTimeout(execVireo, timeDelay);

@@ -47,7 +47,7 @@
     });
 
     vireo.loadVia(text);
-    vireo.executeSlices(1);
+    vireo.executeSlicesUntilWait(1);
 
     var testResult = false;
     var testString = '';

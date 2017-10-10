@@ -24,7 +24,7 @@ describe('Vireo loaded as a global in the browser', function () {
         });
 
         vireo.eggShell.loadVia(viaCode);
-        vireo.eggShell.executeSlices(1);
+        vireo.eggShell.executeSlicesUntilWait(1);
         expect(result).toBe('Hello, sky. I can fly.\n');
     });
 });

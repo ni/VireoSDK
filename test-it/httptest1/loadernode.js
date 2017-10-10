@@ -7,9 +7,9 @@ var eggShell = new Vireo().eggShell;
 
 eggShell.loadVia(viaCode);
 
-var execResult = eggShell.executeSlices(1000);
+var execResult = eggShell.executeSlicesUntilWait(1000);
 while (execResult !== 0) {
-    execResult = eggShell.executeSlices(1000);
+    execResult = eggShell.executeSlicesUntilWait(1000);
 }
 
 console.log('done :D');

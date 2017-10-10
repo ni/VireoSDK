@@ -12,7 +12,7 @@
     };
 
     var continueUntilDone = function () {
-        var execResult = vireo.eggShell.executeSlicesAsync(1000);
+        var execResult = vireo.eggShell.executeSlicesUntilWait(1000);
 
         if (execResult !== 0) {
             setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
