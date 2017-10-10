@@ -39,7 +39,7 @@
 
             (function runExecuteSlicesAsync () {
                 // TODO mraj Executing 1000 slices at a time ran much slower, need better tuning of this value
-                var execState = vireo.eggShell.executeSlicesAsync(1000000);
+                var execState = vireo.eggShell.executeSlicesUntilWait(1000000);
                 executeSlicesInvocationCount += 1;
 
                 if (execState !== 0) {

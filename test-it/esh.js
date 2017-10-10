@@ -46,7 +46,7 @@
 
     var execVireo = function () {
         var state;
-        while ((state = vireo.executeSlices(100000)) !== 0) {
+        while ((state = vireo.executeSlicesUntilWait(100000)) !== 0) {
             var timeDelay = state > 0 ? state : 0;
             if (timeDelay > 0) {
                 setTimeout(execVireo, timeDelay);
