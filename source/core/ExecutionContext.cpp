@@ -310,6 +310,9 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
     }
 }
 //------------------------------------------------------------
+// ExecuteSlices - execute instructions in run queue repeatedly (numSlices at a time before breaking out and checking
+// timers), until all clumps are finished or tickCount time is reached.
+// See enum ExecSlicesResult for explanation of return values, or comments below where result is set.
 Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
 {
     VIREO_ASSERT((_runningQueueElt == null))
@@ -390,20 +393,24 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
     }
     if (_timer.AnythingWaiting()) {
         state = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
-        reply = kExecSlices_ClumpsWaiting;
-        Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
-        // This is the time of earliest scheduled clump to wake up; we return this time to allow the caller to sleep.
-        // They are allowed to call us earlier, say, if they set an occurrence to give us something to do.
-        // If we're called with nothing to run, we'll do nothing and return the remaining waiting time.
-        if (timeToWait < 0)
-            timeToWait = 0;
-        else if (timeToWait > kMaxExecWakeUpTime)
-            timeToWait = kMaxExecWakeUpTime;
-        // Negative return value (kExecSlices_ClumpsInRunQueue) means we should be called again immediately/ASAP
-        // because there is stuff to run. Zero (kExecSlices_ClumpsFinished) means the VI is completely finished
-        // and nothing is waiting to be scheduled.
-        if (timeToWait > 0)
-            reply = timeToWait;
+        if (reply != kExecSlices_ClumpsInRunQueue) {
+            reply = kExecSlices_ClumpsWaiting; // clumps waiting, but for less than 1 ms, we should be called again ASAP
+            Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
+            // This is the time of earliest scheduled clump to wake up; we return this time to allow the caller to sleep.
+            // Callers are allowed to call us earlier, say, if they set an occurrence to give us something to do.
+            // If we're called with nothing to run, we'll do nothing and return the remaining waiting time.
+            if (timeToWait < 0)
+                timeToWait = 0;
+            else if (timeToWait > kMaxExecWakeUpTime)
+                timeToWait = kMaxExecWakeUpTime;
+            // Negative return value (kExecSlices_ClumpsInRunQueue or kExecSlices_ClumpsWaiting) means we should be
+            // called again immediately/ASAP because there are clumps ready to run or will be in <1ms.
+            // Zero return (kExecSlices_ClumpsFinished) means the VI is completely finished
+            // and nothing is waiting to be scheduled.
+            if (timeToWait > 0)
+                reply = timeToWait;
+            // else time is < 1ms (after rounding from platform tick type), keep kExecSlices_ClumpsWaiting return value
+        }
     }
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // TODO(PaulAustin): check global memory manager for allocation errors
