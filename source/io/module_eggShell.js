@@ -373,7 +373,7 @@
         };
 
         Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (slices) {
-            // returns -1 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
+            // returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
             // to delay up to N milliseconds before calling again
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
