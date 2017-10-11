@@ -392,7 +392,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
         reply = kExecSlices_ClumpsInRunQueue;
     }
     if (_timer.AnythingWaiting()) {
-        state = (ExecutionState) (reply | kExecutionState_ClumpsWaitingOnTime);
+        state = (ExecutionState) (state | kExecutionState_ClumpsWaitingOnTime);
         if (reply != kExecSlices_ClumpsInRunQueue) {
             reply = kExecSlices_ClumpsWaiting;  // clumps waiting, but for less than 1 ms, we should be called again ASAP
             Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
