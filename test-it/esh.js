@@ -44,15 +44,12 @@
         process.exit(1);
     }
 
-    var execVireo = function () {
-        var state;
-        while ((state = vireo.executeSlicesUntilWait(100000)) !== 0) {
-            var timeDelay = state > 0 ? state : 0;
-            if (timeDelay > 0) {
-                setTimeout(execVireo, timeDelay);
-                break;
-            }
+    (function executeVireo () {
+        var timeDelay = vireo.executeSlicesUntilWait(100000);
+        if (timeDelay > 0) {
+            setTimeout(executeVireo, timeDelay);
+        } else if (timeDelay < 0) {
+            setImmediate(executeVireo);
         }
-    };
-    execVireo();
+    }());
 }());
