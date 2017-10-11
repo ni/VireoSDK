@@ -58,13 +58,6 @@ class VIClumpQueue
     void Enqueue(VIClump* elt);
 };
 
-enum ExecutionState
-{
-    kExecutionState_None = 0,
-    kExecutionState_ClumpsInRunQueue = 0x01,
-    kExecutionState_ClumpsWaitingOnTime = 0x02,
-};
-
 enum ExecSlicesResult {
     kExecSlices_ClumpsWaiting = -2,     // Clumps waiting, but for less than 1 ms; call executeSlices again ASAP
     kExecSlices_ClumpsInRunQueue = -1,  // Clumps ready to run in run queue; call executeSlices again ASAP
@@ -102,11 +95,10 @@ class ExecutionContext
  private:
     ECONTEXT    VIClumpQueue    _runQueue;         // Clumps ready to run
     ECONTEXT    Int32           _breakoutCount;   // Inner execution loop "breaks out" when this gets to 0
-    ECONTEXT    ExecutionState  _state;
+
  public:
     ECONTEXT    Timer           _timer;           // TODO(PaulAustin): can be moved out of the execcontext once
                                                  // instruction can take injected parameters.
-
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;  // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
@@ -123,7 +115,6 @@ class ExecutionContext
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
-    ECONTEXT    ExecutionState  State() { return _state; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;    // Element actually running
 
