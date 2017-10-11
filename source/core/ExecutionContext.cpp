@@ -284,7 +284,6 @@ ExecutionContext::ExecutionContext()
     _breakoutCount = 0;
     _runningQueueElt = (VIClump*) null;
     _timer._observerList = null;
-    _state = kExecutionState_None;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -385,14 +384,11 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
         }
     }
 
-    ExecutionState state = kExecutionState_None;
     Int32 reply = kExecSlices_ClumpsFinished;
     if (!_runQueue.IsEmpty()) {
-        state = kExecutionState_ClumpsInRunQueue;
         reply = kExecSlices_ClumpsInRunQueue;
     }
     if (_timer.AnythingWaiting()) {
-        state = (ExecutionState) (state | kExecutionState_ClumpsWaitingOnTime);
         if (reply != kExecSlices_ClumpsInRunQueue) {
             reply = kExecSlices_ClumpsWaiting;  // clumps waiting, but for less than 1 ms, we should be called again ASAP
             Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
@@ -416,11 +412,9 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
     // TODO(PaulAustin): check global memory manager for allocation errors
 #else
     if (THREAD_TADM()->_totalAllocationFailures > 0) {
-        state = kExecutionState_None;
         reply = kExecSlices_ClumpsFinished;
     }
 #endif
-    _state = state;
     return reply;
 }
 //------------------------------------------------------------
@@ -429,7 +423,6 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
     VIREO_ASSERT((NULL == elt->_next))
     VIREO_ASSERT((0 == elt->_shortCount))
     _runQueue.Enqueue(elt);
-    _state = (ExecutionState) (_state | kExecutionState_ClumpsInRunQueue);
 }
 //------------------------------------------------------------
 void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)

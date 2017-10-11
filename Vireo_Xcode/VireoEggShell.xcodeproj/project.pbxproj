@@ -274,7 +274,6 @@
 		44C295DC1F8C03B7001877B4 /* module_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_coreHelpers.js; path = core/module_coreHelpers.js; sourceTree = "<group>"; };
 		44C295DD1F8C03B7001877B4 /* vireo.wrapper.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.wrapper.js; path = core/vireo.wrapper.js; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
-		4700BD771949017000794482 /* MicroMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MicroMain.cpp; path = ../source/CommandLine/MicroMain.cpp; sourceTree = "<group>"; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
 		470C345218FC485400E1E148 /* Intro.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = Intro.md; path = ../source/dox/Intro.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = "<none>"; };
 		470E20771A36A5DB006FEACC /* TypeTemplates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TypeTemplates.cpp; path = ../source/core/TypeTemplates.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -300,7 +299,6 @@
 		472D7ACC18C683A10023C688 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../LICENSE.txt; sourceTree = "<group>"; };
 		4730015E19AFCAF400B3F4CA /* Internals */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Internals; path = ../source/dox/Internals; sourceTree = "<group>"; };
 		4730015F19AFCBF200B3F4CA /* DoxygenLayout.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DoxygenLayout.xml; path = ../source/dox/DoxygenLayout.xml; sourceTree = "<group>"; };
-		4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleCountMain.cpp; path = ../source/CommandLine/SimpleCountMain.cpp; sourceTree = "<group>"; };
 		4737987517D0EBBB00C3BC2A /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/CommandLine/main.cpp; sourceTree = "<group>"; };
 		4744496F19098ED8002A9A96 /* IntroTypeExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroTypeExamples.md; path = ../source/dox/IntroTypeExamples.md; sourceTree = "<group>"; };
 		4744497019099FD1002A9A96 /* IntroParallelClumpExamples.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = IntroParallelClumpExamples.md; path = ../source/dox/IntroParallelClumpExamples.md; sourceTree = "<group>"; };
@@ -911,8 +909,6 @@
 		47B3D49A17304C4400944D32 /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
-				4700BD771949017000794482 /* MicroMain.cpp */,
-				4737987417D0EBBB00C3BC2A /* SimpleCountMain.cpp */,
 				4737987517D0EBBB00C3BC2A /* main.cpp */,
 			);
 			name = CommandLine;
