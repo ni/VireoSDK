@@ -69,7 +69,7 @@ class OccurrenceCore : public ObservableCore
 };
 typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 
-const Int32 kMaxExecWakeUpTime = 200;  // (milliseconds)
+const Int32 kMaxExecWakeUpTime = 200;  // (milliseconds) TODO spathiwa - increase after HTTP JS refactor
 
 //------------------------------------------------------------
 //! Timer object that clumps can wait on.
