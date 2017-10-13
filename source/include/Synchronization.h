@@ -69,7 +69,7 @@ class OccurrenceCore : public ObservableCore
 };
 typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 
-const Int32 kMaxExecWakeUpTime = 10000;  // (milliseconds).  10 seconds.
+const Int32 kMaxExecWakeUpTime = 200;  // (milliseconds)
 
 //------------------------------------------------------------
 //! Timer object that clumps can wait on.
