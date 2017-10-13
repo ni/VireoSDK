@@ -391,7 +391,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
     if (_timer.AnythingWaiting()) {
         if (reply != kExecSlices_ClumpsInRunQueue) {
             reply = kExecSlices_ClumpsWaiting;  // clumps waiting, but for less than 1 ms, we should be called again ASAP
-            Int32 timeToWait = Int32(gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime() - currentTime));
+            Int64 timeToWait = gPlatform.Timer.TickCountToMilliseconds(_timer.NextWakeUpTime()-currentTime);
             // This is the time of earliest scheduled clump to wake up; we return this time to allow the caller to sleep.
             // Callers are allowed to call us earlier, say, if they set an occurrence to give us something to do.
             // If we're called with nothing to run, we'll do nothing and return the remaining waiting time.
@@ -404,7 +404,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Plat
             // Zero return (kExecSlices_ClumpsFinished) means the VI is completely finished
             // and nothing is waiting to be scheduled.
             if (timeToWait > 0)
-                reply = timeToWait;
+                reply = Int32(timeToWait);  // okay to truncate since kMaxExecWakeUpTime already checked range
             // else time is < 1ms (after rounding from platform tick type), keep kExecSlices_ClumpsWaiting return value
         }
     }
