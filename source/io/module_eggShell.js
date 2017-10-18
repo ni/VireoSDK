@@ -390,6 +390,35 @@
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
+        var nodeTimeMS = function () {
+            var hrtime = process.hrtime();
+            return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
+        };
+
+        var nodeStartTimeMS;
+        if (Performance !== undefined) {
+            Module.eggShell.performanceNow = function () {
+                return Performance.now();
+            };
+        } else if (process !== undefined) {
+            nodeStartTimeMS = nodeTimeMS();
+            Module.eggShell.performanceNow = function () {
+                return nodeTimeMS() - nodeStartTimeMS;
+            };
+        } else {
+            Module.eggShell.performanceNow = function () {
+                throw new Error('Platform unsupported, require either Performance.now or process.hrtime timing api');
+            };
+        }
+
+        // Pumps vireo asynchronously until the currently loaded via is completed
+        // Runs synchronously for a maximum of 4ms at a time to cooperate with most browser execution environments
+        // A good starting point for most vireo uses but can be copied and modified as needed
+        // callback (stdout, stderr, ex)
+        Module.eggShell.executeSlicesToCompletion = function (callback) {
+
+        };
+
         Module.eggShell.setOccurrenceAsync = function (occurrence) {
             // TODO mraj currently setOccurrenceAsync is only called
             // by relatively slow operation, may need to change from setTimeout
