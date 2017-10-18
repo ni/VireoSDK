@@ -106,6 +106,18 @@
             Module.printErr = fn;
         };
 
+        Module.eggShell.executeSlicesWakeupCallback = function () {
+            // By default do no action
+        };
+
+        publicAPI.eggShell.setExecuteSlicesWakeupCallback = function (fn) {
+            if (typeof fn !== 'function') {
+                throw new Error('Execute slices wakeup callback must be a callable function');
+            }
+
+            Module.eggShell.executeSlicesWakeupCallback = fn;
+        };
+
         publicAPI.eggShell.internal_module_do_not_use_or_you_will_be_fired = Module;
 
         // Exporting functions to both Module.eggShell and publicAPI.eggShell is not normal
@@ -384,6 +396,7 @@
             // to improve performance in the future
             setTimeout(function () {
                 Occurrence_Set(occurrence);
+                Module.eggShell.executeSlicesWakeupCallback.call(undefined);
             }, 0);
         };
     };
