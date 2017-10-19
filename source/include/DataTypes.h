@@ -123,6 +123,7 @@ inline IntIndex TemplateDimIndex(IntIndex dim)
 
 
 //------------------------------------------------------------
+// Keep in sync with niErrorEnum in module_eggShell.js
 typedef enum {
     kNIError_Success = 0,
     kNIError_kInsufficientResources = 1,  // Typically memory
@@ -132,7 +133,7 @@ typedef enum {
     kNIError_kCantDecode = 4,             // Data in stream does not fit grammar
     kNIError_kCantEncode = 5,             // Data type not supported by encoder
     kNIError_kLogicFailure = 6,
-    kNIError_ValueTruncated = 7,
+    kNIError_kValueTruncated = 7,
 } NIError;
 
 typedef enum {

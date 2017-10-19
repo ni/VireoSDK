@@ -14,7 +14,7 @@ SDG
 namespace Vireo {
 
 //------------------------------------------------------------
-// Keep in sync with module_eggShell.js
+// Keep in sync with eggShellResultEnum in module_eggShell.js
 typedef enum {
     kEggShellResult_Success = 0,
     kEggShellResult_ObjectNotFoundAtPath = 1,
