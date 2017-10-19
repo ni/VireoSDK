@@ -238,26 +238,29 @@
             testOutput = testOutput + text + '\n';
         });
 
-        if (viaCode !== '' && vireo.loadVia(viaCode) === 0) {
-            // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
-            // TODO spathiwa I think we can now...
-            var execVireo = function () {
-                var state;
-                while ((state = vireo.executeSlicesUntilWait(1000000)) !== 0) {
-                    var timeDelay = state > 0 ? state : 0;
-                    if (timeDelay > 0) {
-                        setTimeout(execVireo, timeDelay);
-                        break;
-                    }
-                }
-                if (state === 0) {
-                    testFinishedCB(testOutput);
-                }
-            };
-            execVireo(testFinishedCB);
-        } else {
+        try {
+            vireo.loadVia(viaCode);
+        } catch (ex) {
             testFinishedCB(testOutput);
+            return;
         }
+
+        // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
+        // TODO spathiwa I think we can now...
+        var execVireo = function () {
+            var state;
+            while ((state = vireo.executeSlicesUntilWait(1000000)) !== 0) {
+                var timeDelay = state > 0 ? state : 0;
+                if (timeDelay > 0) {
+                    setTimeout(execVireo, timeDelay);
+                    break;
+                }
+            }
+            if (state === 0) {
+                testFinishedCB(testOutput);
+            }
+        };
+        execVireo();
     };
 
     // Setup the esh binary for via execution

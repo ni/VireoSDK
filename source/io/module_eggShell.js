@@ -78,7 +78,6 @@
         // Create shell for vireo instance
         var v_root = EggShell_Create(0);
         var v_userShell = EggShell_Create(v_root);
-        var userPrintFunction;
 
         // Exported functions
         Module.print = function (text) {
@@ -94,7 +93,6 @@
                 throw new Error('Print must be a callable function');
             }
 
-            userPrintFunction = fn;
             Module.print = fn;
         };
 
@@ -170,13 +168,25 @@
             Double: Module.HEAPF64
         };
 
-        // Keep in sync with CEntryPoints.cpp
+        // Keep in sync with EggShellResult in CEntryPoints.h
         var eggShellResultEnum = {
             0: 'Success',
             1: 'ObjectNotFoundAtPath',
             2: 'UnexpectedObjectType',
             3: 'InvalidResultPointer',
             4: 'UnableToCreateReturnBuffer'
+        };
+
+        // Keep in sync with NIError in DataTypes.h
+        var niErrorEnum = {
+            0: 'Success',
+            1: 'InsufficientResources',
+            2: 'ResourceNotFound',
+            3: 'ArrayRankMismatch',
+            4: 'CantDecode',
+            5: 'CantEncode',
+            6: 'LogicFailure',
+            7: 'ValueTruncated',
         };
 
         var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
@@ -373,15 +383,35 @@
                 throw new Error('Empty viaText provided, nothing to run');
             }
 
-            if (userPrintFunction === undefined) {
-                console.warn('Failing to call eggShell.setPrintFunction prior to eggShell.loadVia may result in missed messages');
-            }
-
             var viaTextLength = Module.lengthBytesUTF8(viaText);
             var viaTextPointer = Module.coreHelpers.writeJSStringToHeap(viaText);
+
+            var printText = '',
+                printErrText = '';
+            var origPrint = Module.print,
+                origPrintErr = Module.printErr;
+            
+            Module.print = function (text) {
+                printText += text + '\n';
+                origPrint(text);
+            };
+            
+            Module.printErr = function (textErr) {
+                printErrText += textErr + '\n';
+                origPrintErr(text);
+            };
+
             var result = Module._EggShell_REPL(v_userShell, viaTextPointer, viaTextLength);
             Module._free(viaTextPointer);
-            return result;
+            Module.print = origPrint;
+            Module.printErr = origPrintErr;
+
+            if (result !== 0 || printText.length !== 0 || printErrText.length !== 0) {
+                throw new Error('Loading VIA failed for the following reason: ' + niErrorEnum[result] +
+                    ' (error code: ' + result + ')' +
+                    ' (stdout: ' + printText + ')' + 
+                    ' (stderr: ' + printErrText + ')');
+            }
         };
 
         Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (slices) {
@@ -390,6 +420,7 @@
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
+        // Module.eggshell.performanceNow is a small polyfill for the browser Performance.now api to use in node.js
         var nodeTimeMS = function () {
             var hrtime = process.hrtime();
             return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
@@ -416,7 +447,13 @@
         // A good starting point for most vireo uses but can be copied and modified as needed
         // callback (stdout, stderr, ex)
         Module.eggShell.executeSlicesToCompletion = function (callback) {
+            var oldPrint = Module.print;
+            var oldPrintErr = Module.printErr;
 
+            var stdoutBuffer = '';
+            var stderrBuffer = '';
+
+            Module.
         };
 
         Module.eggShell.setOccurrenceAsync = function (occurrence) {
