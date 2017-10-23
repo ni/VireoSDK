@@ -24,40 +24,24 @@
             rawPrintError += text + '\n';
         });
 
-        var niError = vireo.eggShell.loadVia(viaText);
+        var loadError = false;
+        try {
+            vireo.eggShell.loadVia(viaText);
+        } catch (ex) {
+            console.log(ex);
+            loadError = true;
+        }
 
         var runSlicesAsync = function (cb) {
             // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
             expect(typeof cb).toBe('function');
 
-            if (niError !== 0) {
+            if (loadError) {
                 cb(rawPrint, rawPrintError);
                 return;
             }
 
-            var executeSlicesInvocationCount = 0;
-
-            (function runExecuteSlicesAsync () {
-                // TODO mraj Executing 1000 slices at a time ran much slower, need better tuning of this value
-                var execState = vireo.eggShell.executeSlicesUntilWait(1000000);
-                executeSlicesInvocationCount += 1;
-
-                if (execState !== 0) {
-                    var timeUntilNextClump = execState > 0 ? execState : 0;
-                    // The setImmediate polyfill in PhantomJS does not work when combined with xhr requests.
-                    // I think the polyfill blocks servicing network ops...
-                    // so periodically use setTimeout to let PhantomJS service the network stack
-                    if (timeUntilNextClump > 0) {
-                        setTimeout(runExecuteSlicesAsync, timeUntilNextClump);
-                    } else if (executeSlicesInvocationCount % 1000 === 0) {
-                        setTimeout(runExecuteSlicesAsync, 0);
-                    } else {
-                        setImmediate(runExecuteSlicesAsync);
-                    }
-                } else {
-                    cb(rawPrint, rawPrintError);
-                }
-            }());
+            vireo.eggShell.executeSlicesToCompletion(cb);
         };
 
         return runSlicesAsync;
