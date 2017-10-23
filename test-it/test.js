@@ -10,7 +10,7 @@
         jsdiff = require('diff'),
         path = require('path'),
         cp = require('child_process'),
-        vireo = {};
+        vireo;
 
     var dots = false;
     var app = {};
@@ -217,7 +217,7 @@
     var RunVJSTest = function (testName, testFinishedCB) {
         var viaCode;
         var viaPath = 'ViaTests/' + testName;
-        vireo.reboot();
+        vireo.eggShell.reboot();
         try {
             viaCode = fs.readFileSync(viaPath).toString();
         } catch (e) {
@@ -234,12 +234,12 @@
             }
         }
         var testOutput = '';
-        vireo.setPrintFunction(function (text) {
+        vireo.eggShell.setPrintFunction(function (text) {
             testOutput = testOutput + text + '\n';
         });
 
         try {
-            vireo.loadVia(viaCode);
+            vireo.eggShell.loadVia(viaCode);
         } catch (ex) {
             testFinishedCB(testOutput);
             return;
@@ -249,7 +249,7 @@
         // TODO spathiwa I think we can now...
         var execVireo = function () {
             var state;
-            while ((state = vireo.executeSlicesUntilWait(1000000)) !== 0) {
+            while ((state = vireo.eggShell.executeSlicesUntilWait(1000000)) !== 0) {
                 var timeDelay = state > 0 ? state : 0;
                 if (timeDelay > 0) {
                     setTimeout(execVireo, timeDelay);
@@ -289,7 +289,7 @@
 
         try {
             Vireo = require('../');
-            vireo = new Vireo().eggShell;
+            vireo = new Vireo();
         } catch (err) {
             if (err.code === 'MODULE_NOT_FOUND') {
                 console.log('Error: vireo.js not found (Maybe build it first?)');

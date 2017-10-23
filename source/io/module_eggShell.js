@@ -186,7 +186,7 @@
             4: 'CantDecode',
             5: 'CantEncode',
             6: 'LogicFailure',
-            7: 'ValueTruncated',
+            7: 'ValueTruncated'
         };
 
         var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
@@ -387,18 +387,18 @@
             var viaTextPointer = Module.coreHelpers.writeJSStringToHeap(viaText);
 
             var printText = '',
-                printErrText = '';
+                printTextErr = '';
             var origPrint = Module.print,
                 origPrintErr = Module.printErr;
-            
+
             Module.print = function (text) {
                 printText += text + '\n';
                 origPrint(text);
             };
-            
+
             Module.printErr = function (textErr) {
-                printErrText += textErr + '\n';
-                origPrintErr(text);
+                printTextErr += textErr + '\n';
+                origPrintErr(textErr);
             };
 
             var result = Module._EggShell_REPL(v_userShell, viaTextPointer, viaTextLength);
@@ -406,11 +406,11 @@
             Module.print = origPrint;
             Module.printErr = origPrintErr;
 
-            if (result !== 0 || printText.length !== 0 || printErrText.length !== 0) {
+            if (result !== 0) {
                 throw new Error('Loading VIA failed for the following reason: ' + niErrorEnum[result] +
                     ' (error code: ' + result + ')' +
-                    ' (stdout: ' + printText + ')' + 
-                    ' (stderr: ' + printErrText + ')');
+                    ' (stdout: ' + printText + ')' +
+                    ' (stderr: ' + printTextErr + ')');
             }
         };
 
@@ -420,40 +420,97 @@
             return EggShell_ExecuteSlices(v_userShell, slices);
         };
 
-        // Module.eggshell.performanceNow is a small polyfill for the browser Performance.now api to use in node.js
-        var nodeTimeMS = function () {
-            var hrtime = process.hrtime();
-            return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
-        };
+        // performanceNow is a small polyfill for the browser Performance.now api to use in node.js
+        var performanceNow = (function () {
+            var result;
 
-        var nodeStartTimeMS;
-        if (Performance !== undefined) {
-            Module.eggShell.performanceNow = function () {
-                return Performance.now();
+            var nodeStartTimeMS;
+            var nodeTimeMS = function () {
+                var hrtime = process.hrtime();
+                return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
             };
-        } else if (process !== undefined) {
-            nodeStartTimeMS = nodeTimeMS();
-            Module.eggShell.performanceNow = function () {
-                return nodeTimeMS() - nodeStartTimeMS;
-            };
-        } else {
-            Module.eggShell.performanceNow = function () {
-                throw new Error('Platform unsupported, require either Performance.now or process.hrtime timing api');
-            };
-        }
+
+            if (performance !== undefined) {
+                result = function () {
+                    return performance.now();
+                };
+            } else if (process !== undefined) {
+                nodeStartTimeMS = nodeTimeMS();
+                result = function () {
+                    return nodeTimeMS() - nodeStartTimeMS;
+                };
+            } else {
+                result = function () {
+                    throw new Error('Platform unsupported, require either performance.now or process.hrtime timing api');
+                };
+            }
+            return result;
+        }());
 
         // Pumps vireo asynchronously until the currently loaded via is completed
         // Runs synchronously for a maximum of 4ms at a time to cooperate with most browser execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
-        // callback (stdout, stderr, ex)
-        Module.eggShell.executeSlicesToCompletion = function (callback) {
-            var oldPrint = Module.print;
-            var oldPrintErr = Module.printErr;
+        // callback (stdout, stderr)
+        Module.eggShell.executeSlicesToCompletion = publicAPI.eggShell.executeSlicesToCompletion = function (callback) {
+            var printText = '';
+            var printTextErr = '';
+            var timerToken;
 
-            var stdoutBuffer = '';
-            var stderrBuffer = '';
+            var origPrint = Module.print;
+            var origPrintErr = Module.printErr;
+            var origExecuteSlicesWakeupCallback = Module.eggShell.executeSlicesWakeupCallback;
 
-            Module.
+            var complete = function () {
+                Module.print = origPrint;
+                Module.printErr = origPrintErr;
+                Module.eggShell.executeSlicesWakeupCallback = origExecuteSlicesWakeupCallback;
+                callback(printText, printTextErr);
+            };
+
+            var runExecuteSlicesAsync = function () {
+                var execState, elapsedTime;
+                var startTime = performanceNow();
+
+                do {
+                    execState = Module.eggShell.executeSlicesUntilWait(100000);
+
+                    if (execState >= 0) {
+                        break;
+                    }
+
+                    elapsedTime = performanceNow() - startTime;
+                } while (elapsedTime < 4000);
+
+                if (execState > 0) {
+                    timerToken = setTimeout(runExecuteSlicesAsync, execState);
+                } else if (execState < 0) {
+                    timerToken = setTimeout(runExecuteSlicesAsync, 0);
+                } else {
+                    timerToken = undefined;
+                    complete();
+                }
+            };
+
+            Module.print = function (text) {
+                printText += text + '\n';
+                origPrint(text);
+            };
+
+            Module.printErr = function (textErr) {
+                printTextErr += textErr + '\n';
+                origPrintErr(textErr);
+            };
+
+            Module.eggShell.executeSlicesWakeupCallback = function () {
+                origExecuteSlicesWakeupCallback();
+                if (timerToken !== undefined) {
+                    clearTimeout(timerToken);
+                    timerToken = undefined;
+                    runExecuteSlicesAsync();
+                }
+            };
+
+            runExecuteSlicesAsync();
         };
 
         Module.eggShell.setOccurrenceAsync = function (occurrence) {
