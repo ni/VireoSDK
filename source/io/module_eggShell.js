@@ -430,11 +430,11 @@
                 return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
             };
 
-            if (performance !== undefined) {
+            if (typeof performance !== 'undefined') {
                 result = function () {
                     return performance.now();
                 };
-            } else if (process !== undefined) {
+            } else if (typeof process !== 'undefined') {
                 nodeStartTimeMS = nodeTimeMS();
                 result = function () {
                     return nodeTimeMS() - nodeStartTimeMS;

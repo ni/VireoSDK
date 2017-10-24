@@ -1,4 +1,4 @@
-fdescribe('The Vireo VTR test suite', function () {
+describe('The Vireo VTR test suite', function () {
     'use strict';
 
     // Reference aliases
