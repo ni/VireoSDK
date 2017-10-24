@@ -7,7 +7,7 @@
         self.importScripts.apply(self, scripts);
     };
 
-    handlers.loadAndRunSync = function (viaCode) {
+    handlers.loadAndRun = function (viaCode) {
         var vireo = new self.NationalInstruments.Vireo.Vireo();
         vireo.eggShell.setPrintFunction(console.log.bind(console));
         vireo.eggShell.loadVia(viaCode);
