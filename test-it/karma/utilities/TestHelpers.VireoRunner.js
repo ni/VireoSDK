@@ -42,7 +42,7 @@
             if (loadErrorOccurred) {
                 complete();
             } else {
-                vireo.eggShell.executeSlicesToCompletion(complete);
+                vireo.eggShell.executeSlicesUntilClumpsFinished(complete);
             }
         };
 

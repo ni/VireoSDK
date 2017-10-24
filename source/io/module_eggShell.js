@@ -415,6 +415,7 @@
         };
 
         Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (slices) {
+            // Returns an ExecSlicesResult:
             // returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
             // to delay up to N milliseconds before calling again
             return EggShell_ExecuteSlices(v_userShell, slices);
@@ -451,7 +452,7 @@
         // Runs synchronously for a maximum of 4ms at a time to cooperate with most browser execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
         // callback (stdout, stderr)
-        Module.eggShell.executeSlicesToCompletion = publicAPI.eggShell.executeSlicesToCompletion = function (callback) {
+        Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
             var printText = '';
             var printTextErr = '';
             var timerToken;
@@ -468,22 +469,22 @@
             };
 
             var runExecuteSlicesAsync = function () {
-                var execState, elapsedTime;
+                var execSlicesResult, elapsedTime;
                 var startTime = performanceNow();
 
                 do {
-                    execState = Module.eggShell.executeSlicesUntilWait(100000);
+                    execSlicesResult = Module.eggShell.executeSlicesUntilWait(100000);
 
-                    if (execState >= 0) {
+                    if (execSlicesResult >= 0) {
                         break;
                     }
 
                     elapsedTime = performanceNow() - startTime;
                 } while (elapsedTime < 4000);
 
-                if (execState > 0) {
-                    timerToken = setTimeout(runExecuteSlicesAsync, execState);
-                } else if (execState < 0) {
+                if (execSlicesResult > 0) {
+                    timerToken = setTimeout(runExecuteSlicesAsync, execSlicesResult);
+                } else if (execSlicesResult < 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, 0);
                 } else {
                     timerToken = undefined;
