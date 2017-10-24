@@ -448,11 +448,12 @@
             return result;
         }());
 
-        // Pumps vireo asynchronously until the currently loaded via is completed
-        // Runs synchronously for a maximum of 4ms at a time to cooperate with most browser execution environments
+        // Pumps vireo asynchronously until the currently loaded via has finished all clumps
+        // Runs synchronously for a maximum of 4ms at a time to cooperate with browser and node.js execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
-        // callback (stdout, stderr)
+        // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
+            var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
             var printText = '';
             var printTextErr = '';
             var timerToken;
@@ -461,11 +462,14 @@
             var origPrintErr = Module.printErr;
             var origExecuteSlicesWakeupCallback = Module.eggShell.executeSlicesWakeupCallback;
 
-            var complete = function () {
+            var vireoFinished = function () {
                 Module.print = origPrint;
                 Module.printErr = origPrintErr;
                 Module.eggShell.executeSlicesWakeupCallback = origExecuteSlicesWakeupCallback;
-                callback(printText, printTextErr);
+
+                if (typeof callback === 'function') {
+                    callback(printText, printTextErr);
+                }
             };
 
             var runExecuteSlicesAsync = function () {
@@ -474,13 +478,12 @@
 
                 do {
                     execSlicesResult = Module.eggShell.executeSlicesUntilWait(100000);
+                    elapsedTime = performanceNow() - startTime;
 
                     if (execSlicesResult >= 0) {
                         break;
                     }
-
-                    elapsedTime = performanceNow() - startTime;
-                } while (elapsedTime < 4000);
+                } while (elapsedTime < MAXIMUM_VIREO_EXECUTION_TIME_MS);
 
                 if (execSlicesResult > 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, execSlicesResult);
@@ -488,7 +491,7 @@
                     timerToken = setTimeout(runExecuteSlicesAsync, 0);
                 } else {
                     timerToken = undefined;
-                    complete();
+                    setTimeout(vireoFinished, 0);
                 }
             };
 
@@ -504,7 +507,9 @@
 
             Module.eggShell.executeSlicesWakeupCallback = function () {
                 origExecuteSlicesWakeupCallback();
-                if (timerToken !== undefined) {
+                if (timerToken === undefined) {
+                    console.error('Attempted to wake up Vireo runtime but Vireo is not waiting');
+                } else {
                     clearTimeout(timerToken);
                     timerToken = undefined;
                     runExecuteSlicesAsync();

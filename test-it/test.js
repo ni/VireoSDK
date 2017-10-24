@@ -247,20 +247,10 @@
 
         // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
         // TODO spathiwa I think we can now...
-        var execVireo = function () {
-            var state;
-            while ((state = vireo.eggShell.executeSlicesUntilWait(1000000)) !== 0) {
-                var timeDelay = state > 0 ? state : 0;
-                if (timeDelay > 0) {
-                    setTimeout(execVireo, timeDelay);
-                    break;
-                }
-            }
-            if (state === 0) {
-                testFinishedCB(testOutput);
-            }
-        };
-        execVireo();
+        // TODO mraj I think so too! Only thing left is deciding if we want an XHR polyfill available in the runner for http tests specifically...
+        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            testFinishedCB(testOutput);
+        });
     };
 
     // Setup the esh binary for via execution
