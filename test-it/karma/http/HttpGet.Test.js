@@ -14,6 +14,7 @@ describe('Performing a GET request', function () {
     var WEBVI_INVALID_URL = 363500;
     var WEBVI_INVALID_HEADER = 363651;
     var WEBVI_NETWORK_ERROR = 363650;
+    var WEBVI_TIMEOUT = 56;
     var vireo;
 
     var httpGetMethodViaUrl = fixtures.convertToAbsoluteFromFixturesDir('http/GetMethod.via');
@@ -134,7 +135,7 @@ describe('Performing a GET request', function () {
             expect(viPathParser('body')).toBeEmptyString();
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
-            expect([WEBVI_NETWORK_ERROR, kNIHttpResultInternalUndefinedError]).toContain(viPathParser('error.code'));
+            expect([WEBVI_TIMEOUT, WEBVI_NETWORK_ERROR, kNIHttpResultInternalUndefinedError]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
             done();
         });

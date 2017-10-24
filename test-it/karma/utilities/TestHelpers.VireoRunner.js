@@ -24,24 +24,26 @@
             rawPrintError += text + '\n';
         });
 
-        var loadError = false;
+        var loadErrorOccurred = false;
         try {
             vireo.eggShell.loadVia(viaText);
         } catch (ex) {
-            console.log(ex);
-            loadError = true;
+            loadErrorOccurred = true;
         }
 
         var runSlicesAsync = function (cb) {
             // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
             expect(typeof cb).toBe('function');
 
-            if (loadError) {
+            var complete = function () {
                 cb(rawPrint, rawPrintError);
-                return;
-            }
+            };
 
-            vireo.eggShell.executeSlicesToCompletion(cb);
+            if (loadErrorOccurred) {
+                complete();
+            } else {
+                vireo.eggShell.executeSlicesToCompletion(complete);
+            }
         };
 
         return runSlicesAsync;
