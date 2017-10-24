@@ -26,12 +26,12 @@
         });
 
         worker.postMessage({
-            type: 'loadAndRunSync',
+            type: 'loadAndRun',
             data: viaCode
         });
 
         worker.postMessage({
-            type: 'loadAndRunSync',
+            type: 'loadAndRun',
             data: viaCodeHttp
         });
     };

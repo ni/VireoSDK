@@ -2,8 +2,6 @@
 (function () {
     'use strict';
 
-    var vireo;
-
     var domReady = function (callback) {
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', callback);
@@ -13,7 +11,7 @@
     };
 
     var createAndRun = function (Vireo, viaCode) {
-        vireo = new Vireo();
+        var vireo = new Vireo();
         vireo.eggShell.setPrintFunction(console.log);
         vireo.eggShell.setPrintErrorFunction(console.error);
         vireo.eggShell.loadVia(viaCode);
