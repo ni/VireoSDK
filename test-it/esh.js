@@ -7,49 +7,35 @@
     argv.shift();
     var command = argv.shift();
     var arg = argv[0];
-    var vireo = {};
-    var actualVireo;
 
-    var setupVJS = function () {
-        var Vireo;
-        try {
-            Vireo = require('../');
-
-            actualVireo = new Vireo();
-            vireo = actualVireo.eggShell;
-        } catch (err) {
-            if (err.code === 'MODULE_NOT_FOUND') {
-                console.log('Error: vireo.js not found (Maybe build it first?)');
-                process.exit(1);
-            } else {
-                throw err;
-            }
+    var Vireo;
+    try {
+        Vireo = require('../');
+    } catch (err) {
+        if (err.code === 'MODULE_NOT_FOUND') {
+            console.error('Error: vireo.js not found (Maybe build it first?)');
+            process.exit(1);
+        } else {
+            throw err;
         }
-        vireo.setPrintFunction(function (text) {
-            console.log(text);
-        });
-    };
-
-    setupVJS();
+    }
 
     var fs = require('fs');
+    var text;
     try {
-        var text = fs.readFileSync(arg).toString();
-        vireo.loadVia(text);
+        text = fs.readFileSync(arg).toString();
     } catch (e) {
         console.log('Usage: ' + command + ' [file.via]...');
         if (arg.substring(0, 1) !== '-') {
-            console.log('Cannot open ' + arg);
+            console.error('Cannot open ' + arg);
         }
         process.exit(1);
     }
 
-    (function executeVireo () {
-        var timeDelay = vireo.executeSlicesUntilWait(100000);
-        if (timeDelay > 0) {
-            setTimeout(executeVireo, timeDelay);
-        } else if (timeDelay < 0) {
-            setImmediate(executeVireo);
-        }
-    }());
+    var vireo = new Vireo();
+    vireo.eggShell.setPrintFunction(function (text) {
+        console.log(text);
+    });
+    vireo.eggShell.loadVia(text);
+    vireo.eggShell.executeSlicesUntilClumpsFinished();
 }());

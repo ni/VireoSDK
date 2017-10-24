@@ -11,23 +11,15 @@
         }
     };
 
-    var continueUntilDone = function () {
-        var execResult = vireo.eggShell.executeSlicesUntilWait(1000);
-
-        if (execResult !== 0) {
-            setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
-        } else {
-            console.log('finished :D');
-        }
-    };
-
     var runTest = function () {
         var viaCode = document.getElementById('viacode').textContent;
         vireo = new window.NationalInstruments.Vireo.Vireo();
         vireo.eggShell.setPrintFunction(console.log);
         vireo.eggShell.setPrintErrorFunction(console.error);
         vireo.eggShell.loadVia(viaCode);
-        setTimeout(continueUntilDone, 0);
+        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            console.log('finished :D');
+        });
     };
 
     domReady(runTest);

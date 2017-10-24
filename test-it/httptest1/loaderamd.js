@@ -12,7 +12,7 @@
     });
 
     requirejs(['NationalInstruments.Vireo.Vireo'], function (Vireo) {
-        var eggShell;
+        var vireo;
 
         var domReady = function (callback) {
             if (document.readyState === 'loading') {
@@ -22,23 +22,15 @@
             }
         };
 
-        var continueUntilDone = function () {
-            var execResult = eggShell.executeSlicesUntilWait(1000);
-
-            if (execResult !== 0) {
-                setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
-            } else {
-                console.log('finished :D');
-            }
-        };
-
         var runTest = function () {
             var viaCode = document.getElementById('viacode').textContent;
-            eggShell = new Vireo().eggShell;
-            eggShell.setPrintFunction(console.log);
-            eggShell.setPrintErrorFunction(console.error);
-            eggShell.loadVia(viaCode);
-            setTimeout(continueUntilDone, 0);
+            vireo = new Vireo();
+            vireo.eggShell.setPrintFunction(console.log);
+            vireo.eggShell.setPrintErrorFunction(console.error);
+            vireo.eggShell.loadVia(viaCode);
+            vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+                console.log('finished :D');
+            });
         };
 
         domReady(runTest);

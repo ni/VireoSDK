@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var eggShell;
+    var vireo;
 
     var domReady = function (callback) {
         if (document.readyState === 'loading') {
@@ -11,25 +11,16 @@
         }
     };
 
-    var continueUntilDone = function () {
-        var execResult = eggShell.executeSlicesUntilWait(1000);
-
-        if (execResult !== 0) {
-            setTimeout(continueUntilDone, execResult > 0 ? execResult : 0);
-        } else {
-            console.log(JSON.parse(eggShell.readJSON('%3AWeb%20Server%3AInteractive%3AApplication%3AMain%2Egviweb', 'dataItem_Body')));
-            console.log('finished :D');
-        }
-    };
-
     var createAndRun = function (Vireo, viaCode) {
-        var vireo = new Vireo();
+        vireo = new Vireo();
 
-        eggShell = vireo.eggShell;
-        eggShell.setPrintFunction(console.log);
-        eggShell.setPrintErrorFunction(console.error);
-        eggShell.loadVia(viaCode);
-        setTimeout(continueUntilDone, 0);
+        vireo.eggShell.setPrintFunction(console.log);
+        vireo.eggShell.setPrintErrorFunction(console.error);
+        vireo.eggShell.loadVia(viaCode);
+        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            console.log(JSON.parse(vireo.eggShell.readJSON('%3AWeb%20Server%3AInteractive%3AApplication%3AMain%2Egviweb', 'dataItem_Body')));
+            console.log('finished :D');
+        });
     };
 
     var runTest = function () {

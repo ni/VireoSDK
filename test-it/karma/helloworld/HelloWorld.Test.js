@@ -27,4 +27,21 @@ describe('Vireo loaded as a global in the browser', function () {
         vireo.eggShell.executeSlicesUntilWait(1);
         expect(result).toBe('Hello, sky. I can fly.\n');
     });
+
+    it('can run HelloWorld Async', function (done) {
+        var Vireo = window.NationalInstruments.Vireo.Vireo;
+        var vireo = new Vireo();
+        var viaCode = 'start( VI<( clump( Println("Hello, sky. I can fly.") ) ) > )';
+
+        var result = '';
+        vireo.eggShell.setPrintFunction(function (text) {
+            result += text + '\n';
+        });
+
+        vireo.eggShell.loadVia(viaCode);
+        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            expect(result).toBe('Hello, sky. I can fly.\n');
+            done();
+        });
+    });
 });
