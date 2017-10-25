@@ -1,8 +1,8 @@
 (function () {
     'use strict';
+    var Vireo = require('../../');
     var fs = require('fs');
 
-    var Vireo = require('../../source/core/vireo.loader.js');
     var viaCode = fs.readFileSync('./loadernode.via', 'utf8');
 
     var vireo = new Vireo();

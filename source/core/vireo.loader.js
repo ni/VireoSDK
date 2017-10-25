@@ -1,6 +1,8 @@
 // Using a modified UMD module format. Specifically a modified returnExports (with dependencies) version
 (function (root, globalName, factory) {
     'use strict';
+    var vireoCore;
+
     var buildGlobalNamespace = function () {
         var buildArgs = Array.prototype.slice.call(arguments);
         return globalName.split('.').reduce(function (currObj, subNamespace, currentIndex, globalNameParts) {
@@ -19,8 +21,14 @@
         ], factory);
     } else if (typeof module === 'object' && module.exports) {
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
+        try {
+            vireoCore = require('../../dist/asmjs-unknown-emscripten/release/vireo.js');
+        } catch (ex) {
+            console.error('\n\nFailed to load Vireo core, make sure that vireo.js is built first\n\n');
+            throw ex;
+        }
         module.exports = factory(
-            require('../../dist/asmjs-unknown-emscripten/release/vireo.js'),
+            vireoCore,
             require('../../source/core/module_coreHelpers.js'),
             require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js')

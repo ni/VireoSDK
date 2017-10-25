@@ -1,17 +1,6 @@
 (function () {
     'use strict';
-
-    var Vireo;
-    try {
-        Vireo = require('../');
-    } catch (err) {
-        if (err.code === 'MODULE_NOT_FOUND') {
-            console.log('Error: vireo.js not found (Maybe build it first?)');
-            process.exit(1);
-        } else {
-            throw err;
-        }
-    }
+    var Vireo = require('../');
 
     var vireo = new Vireo();
     vireo.eggShell.setPrintFunction(function (text) {
