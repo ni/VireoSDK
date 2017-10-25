@@ -275,19 +275,8 @@
 
     // Setup the vireo.js runtime for instruction execution
     var setupVJS = function () {
-        var Vireo;
-
-        try {
-            Vireo = require('../');
-            vireo = new Vireo();
-        } catch (err) {
-            if (err.code === 'MODULE_NOT_FOUND') {
-                console.log('Error: vireo.js not found (Maybe build it first?)');
-                process.exit(1);
-            } else {
-                throw err;
-            }
-        }
+        var Vireo = require('../');
+        vireo = new Vireo();
     };
 
     // Testing functions for processing the tests against vireo.js or esh binary
