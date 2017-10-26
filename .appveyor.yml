@@ -36,6 +36,7 @@ after_build:
 test_script:
   - make testjs
   - make testnative
+  - make testhttpbin
   - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
   - npm run karma -- --browsers IE --skip-tags FailsIE
   - npm run karma -- --browsers Chrome,Firefox

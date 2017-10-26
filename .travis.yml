@@ -46,6 +46,7 @@ before_script:
 script:
 - make testjs
 - make testnative
+- make testhttpbin
 - npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
 - npm run karma -- --browsers Firefox
 before_deploy:

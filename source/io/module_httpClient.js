@@ -720,9 +720,15 @@
             var buffer, typedArrayBuffer;
             if (bufferPointer !== NULL) {
                 typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
-                // TODO(mraj) would like to use the typed array directly but not supported in iOS and PhantomJS
-                // Blob type not set to determine Content-Type for XHR as IE and Edge seem to ignore it.
-                buffer = new Blob([typedArrayBuffer]);
+
+                // Blob API does not exist in node.js
+                if (typeof Blob === 'undefined') {
+                    buffer = typedArrayBuffer;
+                } else {
+                    // TODO(mraj) would like to use the typed array in all browsers but not supported in iOS and PhantomJS with XHR.send
+                    // Blob type property not set to determine Content-Type for XHR as IE and Edge seem to ignore it.
+                    buffer = new Blob([typedArrayBuffer]);
+                }
             }
 
             var httpClient;

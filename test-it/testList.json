@@ -31,6 +31,12 @@
                 "HttpHandles.via"
             ]
         },
+        "httpbin": {
+            "tests": [
+                "HttpBinGet.via",
+                "HttpBinPost.via"
+            ]
+        },
         "queue": {
             "tests": [
                 "QueueBug.via",

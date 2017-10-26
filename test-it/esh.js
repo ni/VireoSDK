@@ -4,6 +4,7 @@
     'use strict';
     var Vireo = require('../');
     var fs = require('fs');
+    var xhr2 = require('xhr2');
 
     var argv = process.argv.slice();
     argv.shift();
@@ -22,6 +23,7 @@
     }
 
     var vireo = new Vireo();
+    vireo.httpClient.setXMLHttpRequestImplementation(xhr2);
     vireo.eggShell.loadVia(text);
     vireo.eggShell.executeSlicesUntilClumpsFinished();
 }());
