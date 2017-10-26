@@ -3,9 +3,6 @@
     var Vireo = require('../');
 
     var vireo = new Vireo();
-    vireo.eggShell.setPrintFunction(function (text) {
-        console.log('console: ' + text);
-    });
     var text =
         'define(c0 dv(.String "wubbalubbadubdub"))\n' +
         'define(HelloWorld dv(.VirtualInstrument (\n' +

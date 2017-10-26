@@ -22,9 +22,6 @@
     }
 
     var vireo = new Vireo();
-    vireo.eggShell.setPrintFunction(function (text) {
-        console.log(text);
-    });
     vireo.eggShell.loadVia(text);
     vireo.eggShell.executeSlicesUntilClumpsFinished();
 }());

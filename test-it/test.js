@@ -235,7 +235,7 @@
         }
         var testOutput = '';
         vireo.eggShell.setPrintFunction(function (text) {
-            testOutput = testOutput + text + '\n';
+            testOutput += text + '\n';
         });
 
         try {
