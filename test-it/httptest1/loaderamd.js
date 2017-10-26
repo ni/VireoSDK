@@ -23,8 +23,6 @@
         var runTest = function () {
             var viaCode = document.getElementById('viacode').textContent;
             var vireo = new Vireo();
-            vireo.eggShell.setPrintFunction(console.log);
-            vireo.eggShell.setPrintErrorFunction(console.error);
             vireo.eggShell.loadVia(viaCode);
             vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
                 console.log('finished :D');

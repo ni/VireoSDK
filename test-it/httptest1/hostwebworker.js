@@ -9,7 +9,6 @@
 
     handlers.loadAndRun = function (viaCode) {
         var vireo = new self.NationalInstruments.Vireo.Vireo();
-        vireo.eggShell.setPrintFunction(console.log.bind(console));
         vireo.eggShell.loadVia(viaCode);
         vireo.eggShell.executeSlicesUntilClumpsFinished();
     };

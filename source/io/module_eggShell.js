@@ -81,7 +81,7 @@
 
         // Exported functions
         Module.print = function (text) {
-            console.debug(text);
+            console.log(text);
         };
 
         Module.printErr = function (text) {
