@@ -454,21 +454,15 @@
         // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
-            var printText = '';
-            var printTextErr = '';
-            var timerToken;
 
-            var origPrint = Module.print;
-            var origPrintErr = Module.printErr;
+            var timerToken;
             var origExecuteSlicesWakeupCallback = Module.eggShell.executeSlicesWakeupCallback;
 
             var vireoFinished = function () {
-                Module.print = origPrint;
-                Module.printErr = origPrintErr;
                 Module.eggShell.executeSlicesWakeupCallback = origExecuteSlicesWakeupCallback;
 
                 if (typeof callback === 'function') {
-                    callback(printText, printTextErr);
+                    callback();
                 }
             };
 
@@ -493,16 +487,6 @@
                     timerToken = undefined;
                     setTimeout(vireoFinished, 0);
                 }
-            };
-
-            Module.print = function (text) {
-                printText += text + '\n';
-                origPrint(text);
-            };
-
-            Module.printErr = function (textErr) {
-                printTextErr += textErr + '\n';
-                origPrintErr(textErr);
             };
 
             Module.eggShell.executeSlicesWakeupCallback = function () {
