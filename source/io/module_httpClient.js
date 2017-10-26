@@ -125,13 +125,65 @@
         return messageText;
     };
 
+    var RunningRequestsTracker;
+    (function () {
+        // Static private reference aliases
+        // None
+
+        // Constructor Function
+        RunningRequestsTracker = function () {
+            // Public Instance Properties
+            // None
+
+            // Private Instance Properties
+            this._runningRequests = [];
+        };
+
+        // Static Public Variables
+        // None
+
+        // Static Public Functions
+        // None
+
+        // Prototype creation
+        var child = RunningRequestsTracker;
+        var proto = child.prototype;
+
+        // Static Private Variables
+        // None
+
+        // Static Private Functions
+        // None
+
+        // Public Prototype Methods
+        proto.addRequest = function (request) {
+            this._runningRequests.push(request);
+        };
+
+        proto.removeRequest = function (request) {
+            var index = this._runningRequests.indexOf(request);
+            if (index > -1) {
+                this._runningRequests.splice(index, 1);
+            }
+        };
+
+        proto.abortAllRunningRequests = function () {
+            // Abort event handlers seem to run synchronously
+            // So run on a copy to prevent mutating while aborting
+            var runningRequestsCopy = this._runningRequests.slice();
+            runningRequestsCopy.forEach(function (request) {
+                request.abort();
+            });
+        };
+    }());
+
     var HttpClient;
     (function () {
         // Static private reference aliases
         // None
 
         // Constructor Function
-        HttpClient = function (username, password) {
+        HttpClient = function (username, password, requestTracker, xmlHttpRequestImplementation) {
             // Public Instance Properties
             // None
 
@@ -140,22 +192,15 @@
             this._password = password;
             this._headers = new Map();
             this._includeCredentialsDuringCORS = false;
+            this._requestTracker = requestTracker;
+            this._xmlHttpRequestImplementation = xmlHttpRequestImplementation;
         };
 
         // Static Public Variables
         // None
 
         // Static Public Functions
-        var runningRequests = [];
-
-        HttpClient.abortAllRunningRequests = function () {
-            // Abort event handlers seem to run synchronously
-            // So run on a copy to prevent mutating while aborting
-            var runningRequestsCopy = runningRequests.slice();
-            runningRequestsCopy.forEach(function (request) {
-                request.abort();
-            });
-        };
+        // None
 
         // Prototype creation
         var child = HttpClient;
@@ -199,11 +244,13 @@
         };
 
         proto.createRequest = function (requestData, cb) {
+            var that = this;
+            var XMLHttpRequestImplementation = that._xmlHttpRequestImplementation;
             var errorMessage;
-            var request = new XMLHttpRequest();
+            var request = new XMLHttpRequestImplementation();
 
             // Save a reference to the request
-            runningRequests.push(request);
+            that._requestTracker.addRequest(request);
 
             // Create event listeners
             var eventListeners = {};
@@ -229,10 +276,7 @@
                 });
 
                 // Remove reference to complete request
-                var index = runningRequests.indexOf(request);
-                if (index > -1) {
-                    runningRequests.splice(index, 1);
-                }
+                that._requestTracker.removeRequest(request);
 
                 cb(responseData);
             };
@@ -307,7 +351,7 @@
 
             // Open request to set properties
             try {
-                request.open(requestData.method, requestData.url, true, this._username, this._password);
+                request.open(requestData.method, requestData.url, true, that._username, that._password);
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
@@ -327,7 +371,7 @@
             var hasContentType = false;
 
             try {
-                this._headers.forEach(function (value, header) {
+                that._headers.forEach(function (value, header) {
                     currentHeaderName = header;
                     currentHeaderValue = value;
 
@@ -358,7 +402,7 @@
 
             // withCredentials allows cookies (to be sent / set), HTTP Auth, and TLS Client certs when sending requests Cross Origin
             // See https://w3c.github.io/webappsec-cors-for-developers/#anonymous-requests-or-access-control-allow-origin
-            request.withCredentials = this._includeCredentialsDuringCORS;
+            request.withCredentials = that._includeCredentialsDuringCORS;
 
             // Receive the response as an ArrayBuffer. Relies on the server to send data as UTF-8 encoded text for text transmission.
             request.responseType = 'arraybuffer';
@@ -405,6 +449,15 @@
 
             // Private Instance Properties
             this._httpClients = new Map();
+            this._runningRequestsTracker = new RunningRequestsTracker();
+
+            if (typeof XMLHttpRequest === 'function') {
+                this._xmlHttpRequestImplementation = XMLHttpRequest;
+            } else {
+                this._xmlHttpRequestImplementation = function () {
+                    throw new Error('Vireo could not find a global implementation of XMLHttpRequest Level 2. Please provide one to vireo.httpClient.setXMLHttpRequestImplementation to use the Vireo HTTP Client');
+                };
+            }
         };
 
         // Static Public Variables
@@ -434,11 +487,16 @@
 
         // Public Prototype Methods
         proto.create = function (username, password) {
-            var httpClient = new HttpClient(username, password);
+            var httpClient = new HttpClient(username, password, this._runningRequestsTracker, this._xmlHttpRequestImplementation);
             var handle = createHandle();
 
             this._httpClients.set(handle, httpClient);
             return handle;
+        };
+
+        proto.createHttpClientWithoutHandle = function (username, password) {
+            var httpClient = new HttpClient(username, password, this._runningRequestsTracker, this._xmlHttpRequestImplementation);
+            return httpClient;
         };
 
         proto.destroy = function (handle) {
@@ -447,13 +505,25 @@
                 return;
             }
 
-            // We do not abort any existing requests with this handle
-
+            // Currently we do not abort any existing requests that were made with this handle
             this._httpClients.delete(handle);
         };
 
         proto.get = function (handle) {
             return this._httpClients.get(handle);
+        };
+
+        proto.abortAllRunningRequests = function () {
+            this._runningRequestsTracker.abortAllRunningRequests();
+        };
+
+        proto.setXMLHttpRequestImplementation = function (fn) {
+            if (typeof fn !== 'function') {
+                throw new Error('A valid function must be provided');
+            }
+
+            // This does not have an effect on already instanced HttpClients or running requests, only on new HttpClient instances
+            this._xmlHttpRequestImplementation = fn;
         };
     }());
 
@@ -481,7 +551,11 @@
 
         // Exported functions
         publicAPI.httpClient.abortAllRunningRequests = function () {
-            HttpClient.abortAllRunningRequests();
+            httpClientManager.abortAllRunningRequests();
+        };
+
+        publicAPI.httpClient.setXMLHttpRequestImplementation = function (fn) {
+            httpClientManager.setXMLHttpRequestImplementation(fn);
         };
 
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
@@ -653,7 +727,7 @@
 
             var httpClient;
             if (handle === NULL) {
-                httpClient = new HttpClient('', '');
+                httpClient = httpClientManager.createHttpClientWithoutHandle('', '');
             } else {
                 httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 if (httpClient === undefined) {
