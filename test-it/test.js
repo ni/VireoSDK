@@ -10,6 +10,7 @@
         jsdiff = require('diff'),
         path = require('path'),
         cp = require('child_process'),
+        xhr2 = require('xhr2'),
         vireo;
 
     var dots = false;
@@ -277,6 +278,7 @@
     var setupVJS = function () {
         var Vireo = require('../');
         vireo = new Vireo();
+        vireo.httpClient.setXMLHttpRequestImplementation(xhr2);
     };
 
     // Testing functions for processing the tests against vireo.js or esh binary

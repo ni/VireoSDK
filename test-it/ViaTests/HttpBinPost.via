@@ -1,0 +1,32 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.UInt32 0) handle)
+        e('http://127.0.0.1:64526/post' url)
+        e('' outputFile)
+        e('test=helloworldhttppostfromvireo' buffer)
+        e(10000 timeout)
+        e('' headers)
+        e('' body)
+        e(dv(.UInt32 0) statusCode)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+        e(c(
+            e(c(
+                e(.String test)
+            ) form)
+        ) clusterRepresentation)
+    )
+    clump (
+        HttpClientPost(handle url outputFile buffer timeout headers body statusCode error)
+
+        // string lvtype pathIntoJSON lvExtensionsBool strictValidationBool defaultNullBool errorCluster
+        UnflattenFromJSON(body clusterRepresentation * false false false error)
+        Println(clusterRepresentation)
+        Println(error)
+    )
+) ) )
+
+enqueue(MyVI)

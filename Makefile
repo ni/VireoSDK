@@ -20,6 +20,9 @@ unittest:
 
 test: testnative testjs
 
+testhttpbin:
+	cd test-it && node test.js -j -t httpbin --dots
+
 testjs:
 	cd test-it && node test.js -j --dots
 

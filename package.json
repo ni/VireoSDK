@@ -21,9 +21,9 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-verbose-reporter": "^0.0.6",
     "requirejs": "^2.3.2",
-    "setimmediate": "^1.0.5",
     "shx": "^0.2.2",
-    "whatwg-fetch": "^2.0.3"
+    "whatwg-fetch": "^2.0.3",
+    "xhr2": "^0.1.4"
   },
   "scripts": {
     "test": "npm run lint && npm run karma -- --browsers Chrome",
