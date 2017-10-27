@@ -451,12 +451,12 @@
             this._httpClients = new Map();
             this._runningRequestsTracker = new RunningRequestsTracker();
 
-            if (typeof XMLHttpRequest === 'function') {
-                this._xmlHttpRequestImplementation = XMLHttpRequest;
-            } else {
+            if (typeof XMLHttpRequest === 'undefined') {
                 this._xmlHttpRequestImplementation = function () {
                     throw new Error('Vireo could not find a global implementation of XMLHttpRequest Level 2. Please provide one to vireo.httpClient.setXMLHttpRequestImplementation to use the Vireo HTTP Client');
                 };
+            } else {
+                this._xmlHttpRequestImplementation = XMLHttpRequest;
             }
         };
 
