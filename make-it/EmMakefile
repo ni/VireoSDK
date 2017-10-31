@@ -98,6 +98,7 @@ EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
+	'_Vireo_MaxExecWakeUpTime', \
     '_EggShell_Create', \
     '_EggShell_REPL',\
     '_EggShell_ExecuteSlices',\
