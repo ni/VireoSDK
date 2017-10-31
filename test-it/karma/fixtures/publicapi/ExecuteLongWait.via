@@ -1,0 +1,10 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(dv(.UInt32 0) waitTime)
+    )
+    clump(
+        WaitMilliseconds(waitTime *)
+    )
+)))
+
+enqueue (MyVI)
