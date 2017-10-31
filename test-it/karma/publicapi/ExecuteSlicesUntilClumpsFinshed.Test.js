@@ -3,6 +3,7 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
 
     var fixtures = window.testHelpers.fixtures;
     var publicApiExecuteManyHTTPGetUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteManyHTTPGet.via');
+    var publicApiExecuteLongWaitUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteLongWait.via');
 
     var XHRShimResolveImmediatelyAsync = function () {
         var noop = function () {
@@ -36,7 +37,8 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            publicApiExecuteManyHTTPGetUrl
+            publicApiExecuteManyHTTPGetUrl,
+            publicApiExecuteLongWaitUrl
         ], done);
     });
 
@@ -71,34 +73,32 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         });
     });
 
-    // it('can run many HTTP requests quickly when HTTP is resolved immediately', function (done) {
-    //     var Vireo = window.NationalInstruments.Vireo.Vireo;
-    //     var viaCode = fixtures.loadAbsoluteUrl(publicApiExecuteManyHTTPGetUrl);
+    it('can run executeSlicesUntilWait slowly while performing a long wait', function (done) {
+        var Vireo = window.NationalInstruments.Vireo.Vireo;
+        var viaCode = fixtures.loadAbsoluteUrl(publicApiExecuteLongWaitUrl);
 
-    //     var vireo = new Vireo();
-    //     vireo.httpClient.setXMLHttpRequestImplementation(XHRShimResolveImmediatelyAsync);
-    //     var result = '';
-    //     vireo.eggShell.setPrintFunction(function (text) {
-    //         result += text + '\n';
-    //     });
+        var vireo = new Vireo();
+        var result = '';
+        vireo.eggShell.setPrintFunction(function (text) {
+            result += text + '\n';
+        });
 
-    //     vireo.eggShell.loadVia(viaCode);
-    //     var maxExecWakeUpTime = vireo.eggShell.maxExecWakeUpTime();
-    //     var numIterations = 100;
-    //     vireo.eggShell.writeJSON('MyVI', 'numIterations', JSON.stringify(numIterations));
+        vireo.eggShell.loadVia(viaCode);
+        var maxExecWakeUpTime = vireo.eggShell.maxExecWakeUpTime();
+        var maxExecuteSlicesCalls = 20;
+        var waitTime = maxExecuteSlicesCalls * maxExecWakeUpTime;
+        vireo.eggShell.writeJSON('MyVI', 'waitTime', JSON.stringify(waitTime));
 
-    //     var maxTimewithBuffer = maxExecWakeUpTime * numIterations * 0.5;
+        var internalModule = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired;
+        spyOn(internalModule.eggShell, 'executeSlicesUntilWait').and.callThrough();
+        var startTime = performance.now();
+        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            var totalTime = performance.now() - startTime;
 
-    //     var wakeupspy = jasmine.createSpy();
-    //     vireo.eggShell.setExecuteSlicesWakeupCallback(wakeupspy);
-
-    //     var startTime = performance.now();
-    //     vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
-    //         var totalTime = performance.now() - startTime;
-    //         expect(totalTime).toBeLessThan(maxTimewithBuffer);
-    //         expect(result).toBeEmptyString();
-    //         expect(wakeupspy.calls.count()).toBeGreaterThanOrEqualTo(numIterations);
-    //         done();
-    //     });
-    // });
+            expect(result).toBeEmptyString();
+            expect(totalTime).toBeNear(waitTime, waitTime * 0.5);
+            expect(internalModule.eggShell.executeSlicesUntilWait.calls.count()).toBeNear(maxExecuteSlicesCalls, maxExecuteSlicesCalls * 10);
+            done();
+        });
+    });
 });
