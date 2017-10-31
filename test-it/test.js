@@ -246,9 +246,6 @@
             return;
         }
 
-        // TODO mraj because this is running synchronously we cannot do tests that rely on asynchronous results like http
-        // TODO spathiwa I think we can now...
-        // TODO mraj I think so too! Only thing left is deciding if we want an XHR polyfill available in the runner for http tests specifically...
         vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
             testFinishedCB(testOutput);
         });
