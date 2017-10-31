@@ -1,0 +1,30 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(dv(.UInt32 0) handle)
+        e('fakeurl' url)
+        e('' outputFile)
+        // no buffer to send
+        e(10000 timeout)
+        e('' headers)
+        e('' body)
+        e(dv(.UInt32 0) statusCode)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+
+        e(dv(.Int32 0) numIterations)
+        e(.Int32 currIterations)
+    )
+    clump(
+        Perch(0)
+        BranchIfGE(1 currIterations numIterations)
+        HttpClientGet(handle url outputFile timeout headers body statusCode error)
+        Add(currIterations 1 currIterations)
+        Branch(0)
+        Perch(1)
+    )
+)))
+
+enqueue (MyVI)
