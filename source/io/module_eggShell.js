@@ -106,16 +106,16 @@
             Module.printErr = fn;
         };
 
-        Module.eggShell.executeSlicesWakeupCallback = function () {
+        Module.eggShell.executeSlicesWakeUpCallback = function () {
             // By default do no action
         };
 
-        publicAPI.eggShell.setExecuteSlicesWakeupCallback = function (fn) {
+        publicAPI.eggShell.setExecuteSlicesWakeUpCallback = function (fn) {
             if (typeof fn !== 'function') {
-                throw new Error('Execute slices wakeup callback must be a callable function');
+                throw new Error('Execute slices wake-up callback must be a callable function');
             }
 
-            Module.eggShell.executeSlicesWakeupCallback = fn;
+            Module.eggShell.executeSlicesWakeUpCallback = fn;
         };
 
         publicAPI.eggShell.internal_module_do_not_use_or_you_will_be_fired = Module;
@@ -459,10 +459,10 @@
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
 
             var timerToken;
-            var origExecuteSlicesWakeupCallback = Module.eggShell.executeSlicesWakeupCallback;
+            var origExecuteSlicesWakeUpCallback = Module.eggShell.executeSlicesWakeUpCallback;
 
             var vireoFinished = function () {
-                Module.eggShell.executeSlicesWakeupCallback = origExecuteSlicesWakeupCallback;
+                Module.eggShell.executeSlicesWakeUpCallback = origExecuteSlicesWakeUpCallback;
 
                 if (typeof callback === 'function') {
                     callback();
@@ -492,8 +492,8 @@
                 }
             };
 
-            Module.eggShell.executeSlicesWakeupCallback = function () {
-                origExecuteSlicesWakeupCallback();
+            Module.eggShell.executeSlicesWakeUpCallback = function () {
+                origExecuteSlicesWakeUpCallback();
                 if (timerToken === undefined) {
                     console.error('Attempted to wake up Vireo runtime but Vireo is not waiting');
                 } else {
@@ -512,7 +512,7 @@
             // to improve performance in the future
             setTimeout(function () {
                 Occurrence_Set(occurrence);
-                Module.eggShell.executeSlicesWakeupCallback.call(undefined);
+                Module.eggShell.executeSlicesWakeUpCallback.call(undefined);
             }, 0);
         };
     };

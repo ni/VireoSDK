@@ -60,15 +60,15 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
 
         var maxTimewithBuffer = maxExecWakeUpTime * numIterations * 0.5;
 
-        var wakeupspy = jasmine.createSpy();
-        vireo.eggShell.setExecuteSlicesWakeupCallback(wakeupspy);
+        var wakeUpSpy = jasmine.createSpy();
+        vireo.eggShell.setExecuteSlicesWakeUpCallback(wakeUpSpy);
 
         var startTime = performance.now();
         vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
             var totalTime = performance.now() - startTime;
             expect(totalTime).toBeLessThan(maxTimewithBuffer);
             expect(result).toBeEmptyString();
-            expect(wakeupspy.calls.count()).toBeGreaterThanOrEqualTo(numIterations);
+            expect(wakeUpSpy.calls.count()).toBeGreaterThanOrEqualTo(numIterations);
             done();
         });
     });
