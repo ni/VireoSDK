@@ -312,12 +312,11 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
 // ExecuteSlices - execute instructions in run queue repeatedly (numSlices at a time before breaking out and checking
 // timers), until all clumps are finished or tickCount time is reached.
 // See enum ExecSlicesResult for explanation of return values, or comments below where result is set.
-Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, PlatformTickType tickCount)
+Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int32 millisecondsToRun)
 {
     VIREO_ASSERT((_runningQueueElt == null))
-
     PlatformTickType currentTime  = gPlatform.Timer.TickCount();
-    PlatformTickType breakOutTime = currentTime + tickCount;
+    PlatformTickType breakOutTime = currentTime + gPlatform.Timer.MicrosecondsToTickCount(millisecondsToRun * 1000);
 
     _timer.QuickCheckTimers(currentTime);
 

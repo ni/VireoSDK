@@ -111,7 +111,7 @@ class ExecutionContext
     ECONTEXT    void            ExecuteFunction(FunctionClump* fclump);  // Run a simple function to completion.
 
     // Run the concurrent execution system for a short period of time
-    ECONTEXT    Int32 /*ExecSlicesResult*/ ExecuteSlices(Int32 numSlices, PlatformTickType tickCount);
+    ECONTEXT    Int32 /*ExecSlicesResult*/ ExecuteSlices(Int32 numSlices, Int32 millisecondsToRun);
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }

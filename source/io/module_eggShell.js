@@ -74,7 +74,7 @@
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
-        var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number']);
+        var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
         // Create shell for vireo instance
@@ -417,47 +417,25 @@
             }
         };
 
-        Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (slices) {
-            // Returns an ExecSlicesResult:
-            // returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
-            // to delay up to N milliseconds before calling again
-            return EggShell_ExecuteSlices(v_userShell, slices);
+        // executeSlicesUntilWait
+        // numSlices (optional): The minimum number of slice sets to run before checking if maxTimeMS has passed.
+        //    The larger the value the less overhead for execution and the quicker the diagram progresses
+        //    One slice set corresponds to 10 slices and at a minimum one slice set executes per invocation
+        // millisecondsToRun (optional): The amount of time in milliseconds vireo can execute slice sets before vireo saves state and returns
+        // return value (type ExecSlicesResult):
+        //     returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
+        //     to delay up to N milliseconds before calling again
+        Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (numSlices, millisecondsToRun) {
+            return EggShell_ExecuteSlices(v_userShell, numSlices, millisecondsToRun);
         };
-
-        // performanceNow is a small polyfill for the browser Performance.now api to use in node.js
-        var performanceNow = (function () {
-            var result;
-
-            var nodeStartTimeMS;
-            var nodeTimeMS = function () {
-                var hrtime = process.hrtime();
-                return (hrtime[0] * 1000) + (hrtime[1] / 1e6);
-            };
-
-            if (typeof performance !== 'undefined') {
-                result = function () {
-                    return performance.now();
-                };
-            } else if (typeof process !== 'undefined') {
-                nodeStartTimeMS = nodeTimeMS();
-                result = function () {
-                    return nodeTimeMS() - nodeStartTimeMS;
-                };
-            } else {
-                result = function () {
-                    throw new Error('Platform unsupported, require either performance.now or process.hrtime timing api');
-                };
-            }
-            return result;
-        }());
 
         // Pumps vireo asynchronously until the currently loaded via has finished all clumps
         // Runs synchronously for a maximum of 4ms at a time to cooperate with browser and node.js execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
         // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
+            var SLICE_SETS_PER_TIME_CHECK = 100000;
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
-
             var timerToken;
             var origExecuteSlicesWakeUpCallback = Module.eggShell.executeSlicesWakeUpCallback;
 
@@ -470,18 +448,7 @@
             };
 
             var runExecuteSlicesAsync = function () {
-                var execSlicesResult, elapsedTime;
-                var startTime = performanceNow();
-
-                do {
-                    execSlicesResult = Module.eggShell.executeSlicesUntilWait(100000);
-                    elapsedTime = performanceNow() - startTime;
-
-                    if (execSlicesResult >= 0) {
-                        break;
-                    }
-                } while (elapsedTime < MAXIMUM_VIREO_EXECUTION_TIME_MS);
-
+                var execSlicesResult = Module.eggShell.executeSlicesUntilWait(SLICE_SETS_PER_TIME_CHECK, MAXIMUM_VIREO_EXECUTION_TIME_MS);
                 if (execSlicesResult > 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, execSlicesResult);
                 } else if (execSlicesResult < 0) {

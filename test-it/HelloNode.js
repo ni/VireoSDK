@@ -23,7 +23,7 @@
     });
 
     vireo.eggShell.loadVia(text);
-    vireo.eggShell.executeSlicesUntilWait(1);
+    vireo.eggShell.executeSlicesUntilWait();
 
     var testResult = false;
     var testString = '';

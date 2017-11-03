@@ -51,10 +51,10 @@ VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, 
 }
 //------------------------------------------------------------
 //! Run the vireo execution system for a few slices.
-VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices)
+VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices, Int32 millisecondsToRun)
 {
     TypeManagerScope scope(tm);
-    return tm->TheExecutionContext()->ExecuteSlices(numSlices, 20);
+    return tm->TheExecutionContext()->ExecuteSlices(numSlices, millisecondsToRun);
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef EggShell_GetTypeList(TypeManagerRef tm)
