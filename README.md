@@ -1,6 +1,6 @@
 # Vireo
 [![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
-[![Travis Build Status](https://travis-ci.org/ni/VireoSDK.svg?branch=incoming)](https://travis-ci.org/ni/VireoSDK)
+[![Travis Build Status](https://travis-ci.org/ni/VireoSDK.svg)](https://travis-ci.org/ni/VireoSDK)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ni/VireoSDK?svg=true)](https://ci.appveyor.com/project/vireobot/vireosdk)
 [![Dependencies Status](https://david-dm.org/ni/VireoSDK/status.svg)](https://david-dm.org/ni/VireoSDK)
 [![Development Dependencies Status](https://david-dm.org/ni/VireoSDK/dev-status.svg)](https://david-dm.org/ni/VireoSDK?type=dev)
