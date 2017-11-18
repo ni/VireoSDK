@@ -111,6 +111,7 @@ make-it/linktest
 make-it/compile.bat
 make-it/make.exe
 env/
+.tox/
 *.tgz
 coverage/
 emscripten-sdk/

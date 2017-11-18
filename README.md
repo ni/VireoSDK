@@ -142,7 +142,7 @@ $ ./test.js -n -t rpi
 ## Running the HTTP test server
 
 ### Overview
-Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client functionality. The tests rely on a locally running instance of the httpbin server to perform the tests. The test suite will skip tests (without failing) that rely on the httpbin server running locally if the server is not running. However, if you would like to run the HTTP client tests locally these instructions will help you get configured.
+Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client functionality. The tests rely on a locally running instance of the httpbin server. The test suite will skip tests (without failing) that rely on the httpbin server running locally if the server is not running. However, if you would like to run the HTTP client tests locally these instructions will help you get configured.
 
 ### Requirements
 - Python 2.7.9 or later (primarily for pip availability)
@@ -150,17 +150,14 @@ Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client funct
 
 ### Setup
 1. Ensure that python (correct version) and pip are available on the path
-2. From a command line in the VireoSDK directory or elsewhere do `pip install virtualenv` to globally install the [virtualenv](https://virtualenv.pypa.io/en/stable/) tool
-3. From a command line in the VireoSDK directory run `virtualenv env`. This will create a directory named `env` in the VireoSDK directory
-4. Depending on your platform activate the virtualenv `env` that was created. For Windows this means running the command `.\env\Scripts\activate` from the VireoSDK directory.
-5. With the env activated you can now install httpbin using the command `npm run httpbin-install` for the VireoSDK directory
+2. From a command line in the VireoSDK directory or elsewhere do `pip install tox` to globally install the [tox](http://tox.readthedocs.io/en/latest/) tool
 
 ### Starting the Server
 1. Open a command prompt in the VireoSDK directory
-2. On Windows you can execute `npm run httpbin-win` to start the httpbin server in a new window. The command will start a virtualenv for you based on the `env` directory on the windows platform.
-3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run karma`)
+2. Run the `npm run httpbin` command. This will install dependencies of httpbin if necessary and start the httpbin server locally.
 
-If you used a different name for the virtualenv directory or are running on a different platform you can reference the `httpbin` script in package.json to see how the httpbin server is launched (port configuration, etc) 
+   Note: On Windows you can alternatively execute `npm run httpbin-start` to start the httpbin server in a new console window.
+3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run karma` and `make testhttpbin`)
 
 # Updating Vireo Documentation
 We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version *1.8.6*.
@@ -179,4 +176,3 @@ The main html file in the `gh-pages` is called: index.html
 
 # Legal
 Features beyond that core set, that can be accessed directly from VIA source written by hand, should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt
-

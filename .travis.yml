@@ -24,7 +24,8 @@ before_install:
 - doxygen --version
 install:
 - npm install
-- pip install --user -r requirements.txt
+- pip install tox
+- nohup npm run httpbin &
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
@@ -33,7 +34,6 @@ install:
 - emcc -v
 - gcc -v
 before_script:
-- nohup npm run httpbin &
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
 - make lint
