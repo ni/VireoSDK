@@ -34,10 +34,9 @@
     "karma-coverage": "karma start karma.coverage.conf.js",
     "karma-chrome": "karma start --single-run --browsers Chrome --skip-tags Slow",
     "karma-phantomjs-debug": "karma start --single-run --browsers PhantomJS_Debug",
-    "prehttpbin-install": "python -V && pip -V && virtualenv --version",
-    "httpbin-install": "pip install --require-virtualenv -r requirements.txt",
-    "httpbin": "python -m httpbin.core --port 64526 --host 0.0.0.0",
-    "httpbin-win": "start cmd /c \"env\\Scripts\\activate && npm run httpbin\"",
+    "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
+    "httpbin": "tox",
+    "httpbin-start": "start cmd /c npm run httpbin",
     "doxygen": "cd source && doxygen",
     "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages"
   },
