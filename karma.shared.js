@@ -19,6 +19,7 @@
             'node_modules/core-js/client/core.js',
             'node_modules/whatwg-fetch/fetch.js',
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
+            'node_modules/diff/dist/diff.js',
             'dist/asmjs-unknown-emscripten/release/vireo.js',
             'source/core/module_*.js',
             'source/io/module_*.js',

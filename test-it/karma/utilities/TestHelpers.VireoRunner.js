@@ -65,9 +65,11 @@
         toMatchVtrText: function () {
             return {
                 compare: function (actual, expected) {
-                    // TODO mraj maybe we can implement the diff here for cleaner results
+                    var result = {
+                        pass: undefined,
+                        message: undefined
+                    };
 
-                    var result = {};
                     var actualNormalized = window.testHelpers.textFormat.normalizeLineEndings(actual);
                     var actualNoComments = window.testHelpers.textFormat.removeInlineComments(actualNormalized);
 
@@ -75,6 +77,15 @@
                     var expectedNoComments = window.testHelpers.textFormat.removeInlineComments(expectedNormalized);
 
                     result.pass = actualNoComments === expectedNoComments;
+                    if (result.pass) {
+                        // Result is they are equal, but should be not equal (the .not case)
+                        result.message = 'Expected Vireo output to not match the VTR text, but they are identical. VTR text:\n' + expectedNoComments;
+                    } else {
+                        // Result is they are not equal, but should be equal (normal case)
+                        result.message = 'Expected Vireo output to match VTR text, instead saw:\n';
+                        result.message += window.JsDiff.createTwoFilesPatch('VTR Text', 'Vireo Output', expectedNoComments, actualNoComments);
+                    }
+
                     return result;
                 }
             };
