@@ -49,10 +49,19 @@
     var moduleBuilders = Array.prototype.slice.call(arguments, 1);
 
     // Vireo Class
-    var Vireo = function () {
+    var Vireo = function (config) {
         var that = this;
 
-        var Module = {};
+        var isObject = function (obj) {
+            return typeof obj === 'object' && obj !== null;
+        };
+
+        var Module;
+        if (isObject(config) && isObject(config.customModule)) {
+            Module = config.customModule;
+        } else {
+            Module = {};
+        }
 
         // Functions that must be on Module prior to construction
         var ttyout = [];
