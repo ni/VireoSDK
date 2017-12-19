@@ -1813,7 +1813,10 @@ struct StringFormatParamBlock : public VarArgInstruction
 VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatParamBlock) {
     Int32 count = (_ParamVarArgCount() -3)/2;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    SubString format;
+    if (_ParamPointer(StringFormat)) {
+        format = _Param(StringFormat)->MakeSubStringAlias();
+    }
     TempStackCString tempformat;
     if (format.Length() == 0) {
         DefaultFormatCode(count, arguments, &tempformat);
@@ -1862,7 +1865,7 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     return _NextInstruction();
 }
 
-void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, StaticTypeAndData arguments[])
+static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, StaticTypeAndData arguments[])
 {
     for (Int32 i = 0; i < argCount; i++) {
         TypeRef argType = arguments[i]._paramType;
@@ -1876,18 +1879,18 @@ void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCount, Sta
             }
         } else if (argType->IsTimestamp()) {
             format->AppendCStr("%T ");
-        } else {
+        } else if (error) {
             error->code = -1;  // TODO(sanmut): ErrorCluster fix error codes
             error->status = true;
             break;
         }
-        if (error->status == false && format->Length() > 255) {
+        if (error && error->status == false && format->Length() > 255) {
             error->code = -1;  // TODO(sanmut): ErrorCluster fix error codes
             error->status = true;
             break;
         }
     }
-    if (!error->status) {
+    if (error && !error->status) {
         int len = format->Length();
         if (len > 0) {
             format->Remove1D(len - 1, 1);
@@ -1925,7 +1928,7 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
     if (!errPtr || !errPtr->status) {
         if (format.Length() == 0) {
             MakeFormatString(tempFormat.Value, errPtr, argCount, arguments);
-            format.AliasAssignCStr(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()));
+            format.AliasAssignCStrLen(reinterpret_cast<ConstCStr>(tempFormat.Value->Begin()), tempFormat.Value->Capacity());
         }
         newOffset += FormatScan(&input, &format, argCount, arguments, errPtr);
     }
@@ -2320,7 +2323,12 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
 // DateTimeString(0), FormatString(1), Timestamp(2), isUTC(3)
 VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp, Boolean)
 {
-    SubString format = _Param(1)->MakeSubStringAlias();
+    SubString format;
+    if (_ParamPointer(1)) {
+        format = _Param(1)->MakeSubStringAlias();
+    } else {
+        format.AliasAssignCStr("%c");
+    }
     Timestamp timestamp;
     if (_ParamPointer(2))
         timestamp = _Param(2);

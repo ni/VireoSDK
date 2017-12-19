@@ -365,6 +365,7 @@
                 "WaitUntilMultiple.via",
                 "Waveform.via",
                 "WaveformAnalogBuildMissingArgs.via",
+                "WildcardArguments.via",
                 "ZDACrash1.via"
             ]
         }

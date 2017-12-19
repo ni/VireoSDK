@@ -21,7 +21,7 @@ define(HelloWorld dv(.VirtualInstrument (
         it need to be escaped. How.
 */
 
-        StringToUpper(* str)
+        StringToUpper(str str)
         Printf("passing default value <%s>\n" str)
         StringToUpper("Hello, World" str)
         Printf("passing inline double quoted constant value <%s>\n" str)
