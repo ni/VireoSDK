@@ -1,0 +1,54 @@
+define (g0 dv(.String ''))
+define (g1 dv(.String '1'))
+define (c2 dv(.UInt32 0))
+define (c3 dv(.Int32 0))
+//---------------------------------------------------
+define (TopLevelVI dv(.VirtualInstrument (
+    Locals: c(   // Data Space1
+        e(.Int32 local_1)
+        e(.Int32 local_2)
+        e(.String local18)
+        e(.String local19)
+        e(.String local20)
+        e(.UInt32 local21)
+        e(.Int32 local24)
+        e(.Int32 local25)
+    )
+        clump(1
+           Copy(c3 local24)
+           StringScan(g0 local20 local19 c2 local21 * local24)
+           Printf("String=[%s] Scanned Value=[%d]\n" g0 local24)
+           Copy(c3 local24)
+           StringScan(g1 local20 local19 c2 local21 * local24)
+           Printf("String=[%s] Scanned Value=[%d]\n" g1 local24)
+           SubVI1(g0 local_1)
+           SubVI1(g1 local_2)
+           Printf("String=[%s] Scanned Value=[%d]\n" g0 local_1)
+           Printf("String=[%s] Scanned Value=[%d]\n" g1 local_2)
+
+/* Clump Ended. */    )
+)))
+
+//---------------------------------------------------
+define (SubVI1 dv(.VirtualInstrument (
+    Params: c(  //param block
+        i(dv(.String '')dataItem_InputString)
+        o(dv(.Int32 0)dataItem_Value)
+    )
+    Locals: c(   // Data Space1
+        e(.String local18)
+        e(.String local19)
+        e(.String local20)
+        e(.UInt32 local21)
+        e(.Int32 local24)
+        e(.Int32 local25)
+    )
+        clump(1
+        Copy(dataItem_InputString local18)
+        Copy(c3 local24)
+        StringScan(local18 local20 local19 c2 local21 * local24 )
+        Copy(local24 dataItem_Value)
+/* Clump Ended. */    )
+)))
+enqueue (TopLevelVI)
+//Finished!! :D

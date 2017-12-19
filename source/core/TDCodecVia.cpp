@@ -2400,7 +2400,14 @@ VIREO_FUNCTION_SIGNATURE4(FromString, StringRef, StaticType, void, StringRef)
     TypeRef type = _ParamPointer(1);
 
     SubString str = _Param(0)->MakeSubStringAlias();
-    EventLog log(_Param(3));
+
+    StringRef strRef;
+    if (_ParamPointer(3)) {
+        strRef = _Param(3);
+    } else {
+        strRef = EventLog::DevNull;
+    }
+    EventLog log(strRef);
 
     TDViaParser parser(THREAD_TADM(), &str, &log, 1);
     parser._loadVIsImmediately = true;

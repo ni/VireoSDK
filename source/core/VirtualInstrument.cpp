@@ -531,18 +531,8 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     // See if actual argument is '*' meaning use the default/unwired behavior.
     if (argument->CompareCStr(tsWildCard)) {
         _actualArgumentType = FormalParameterType();
-        if (!_actualArgumentType->IsFlat()) {
-            // Define a DefaultValue type. As a DV it will never merge to another instance.
-            // Since it has no name it cannot be looked up, but it will be freed once the TADM/ExecutionContext is freed up.
-            DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-            cdt = cdt->FinalizeDVT();
-            if (needsAddress) {
-                *ppData = (AQBlock1*)cdt->Begin(kPARead);  // * passed as a param means null
-            }
-        } else {
-            // For flat data, the call instruction logic for VIs will initialize the callee parameter
-            // to the default value. For native instructions a null parameter value is passed.
-        }
+        // Regardless of whether the optional argument is flat or not, do not allocate data value
+        // and use null-pointer and let the prims handle the optional arguments correctly
         _argumentState = kArgumentResolvedToDefault;
         return;
     }
