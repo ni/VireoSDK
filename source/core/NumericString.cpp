@@ -1890,7 +1890,7 @@ static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCou
             break;
         }
     }
-    if (error && !error->status) {
+    if (!error || !error->status) {
         int len = format->Length();
         if (len > 0) {
             format->Remove1D(len - 1, 1);
@@ -1915,7 +1915,10 @@ struct StringScanParamBlock : public VarArgInstruction
 VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
 {
     SubString input = _Param(StringInput)->MakeSubStringAlias();
-    SubString format = _Param(StringFormat)->MakeSubStringAlias();
+    SubString format;
+    if (_ParamPointer(StringFormat)) {
+        format = _Param(StringFormat)->MakeSubStringAlias();
+    }
     input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
     UInt32 newOffset = _Param(InitialPos);
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
