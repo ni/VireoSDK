@@ -1,0 +1,85 @@
+define (g0 dv(.String 'aaaaa'))
+define (g1 dv(.String 'bbbbb'))
+define (c2 dv(.UInt32 0))
+define (c3 dv(.Int32 0))
+//---------------------------------------------------
+define (TopLevelVI dv(.VirtualInstrument (
+    Locals: c(   // Data Space1
+        e(dv(.String 'aaaaa') str1)
+        e(dv(.String 'bbbbb') str2)
+        e(dv(.Int32 11111) int1)
+        e(dv(.Int32 22222) int2)
+    )
+        clump(1
+           Printf("------- SubVI_Input -------------\n")
+           SubVI_Input(* *)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_Input(str1 int1)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_Input(* *)
+           Printf("------- SubVI_Output -------------\n")
+           SubVI_Output(* *)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_Output(str1 int1)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_Output(* *)
+           Printf("------- SubVI_InputOutput -------------\n")
+           Copy('aaaaa' str1)
+           Copy(11111 int1)
+           SubVI_InputOutput(* *)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_InputOutput(str1 int1)
+           Printf("str1 = %s, int1 = %d\n" str1 int1)
+           SubVI_InputOutput(* *)
+/* Clump Ended. */    )
+)))
+
+define (SubVI_Input dv(.VirtualInstrument (
+    Params: c(  //param block
+        i(dv(.String 'xxxxx')inputString)
+        i(dv(.Int32 88888)inputInt)
+    )
+    Locals: c(   // Data Space1
+        e(.String local18)
+        e(.ErrorCluster local28)
+    )
+        clump(1
+        Printf("inputString = %s inputInt=%d\n" inputString inputInt)
+        Copy('yyyyy' inputString)
+        Copy(99999 inputInt)
+/* Clump Ended. */    )
+)))
+
+define (SubVI_Output dv(.VirtualInstrument (
+    Params: c(  //param block
+        o(dv(.String 'xxxxx')outputString)
+        o(dv(.Int32 88888)outputInt)
+    )
+    Locals: c(   // Data Space1
+        e(.String local18)
+        e(.ErrorCluster local28)
+    )
+        clump(1
+        Printf("outputString = %s outputInt=%d\n" outputString outputInt)
+        Copy('yyyyy' outputString)
+        Copy(99999 outputInt)
+/* Clump Ended. */    )
+)))
+
+define (SubVI_InputOutput dv(.VirtualInstrument (
+    Params: c(  //param block
+        io(dv(.String 'xxxxx')ioString)
+        io(dv(.Int32 88888)ioInt)
+    )
+    Locals: c(   // Data Space1
+        e(.String local18)
+        e(.ErrorCluster local28)
+    )
+        clump(1
+        Printf("ioString = %s ioInt=%d\n" ioString ioInt)
+        Copy('yyyyy' ioString)
+        Copy(99999 ioInt)
+/* Clump Ended. */    )
+)))
+enqueue (TopLevelVI)
+//Finished!! :D

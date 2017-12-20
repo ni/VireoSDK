@@ -1,0 +1,18 @@
+------- SubVI_Input -------------
+inputString = xxxxx inputInt=88888
+str1 = aaaaa, int1 = 11111
+inputString = aaaaa inputInt=11111
+str1 = aaaaa, int1 = 11111
+inputString = xxxxx inputInt=88888
+------- SubVI_Output -------------
+outputString = xxxxx outputInt=88888
+str1 = aaaaa, int1 = 11111
+outputString = xxxxx outputInt=88888
+str1 = yyyyy, int1 = 99999
+outputString = xxxxx outputInt=88888
+------- SubVI_InputOutput -------------
+ioString = xxxxx ioInt=88888
+str1 = aaaaa, int1 = 11111
+ioString = xxxxx ioInt=88888
+str1 = yyyyy, int1 = 99999
+ioString = xxxxx ioInt=88888
