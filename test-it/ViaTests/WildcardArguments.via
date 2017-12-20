@@ -2,6 +2,7 @@ define (g0 dv(.String ''))
 define (g1 dv(.String '1'))
 define (c2 dv(.UInt32 0))
 define (c3 dv(.Int32 0))
+define (g26 dv(.String '%.3c'))
 //---------------------------------------------------
 define (TopLevelVI dv(.VirtualInstrument (
     Locals: c(   // Data Space1
@@ -13,8 +14,15 @@ define (TopLevelVI dv(.VirtualInstrument (
         e(.UInt32 local21)
         e(.Int32 local24)
         e(.Int32 local25)
+        e(dv(.String '')dateTimeStr1)
+        e(dv(.String '')dateTimeStr2)
+        e(dv(.Boolean true)isEqual)
     )
         clump(1
+           // Test non-flat datatype
+           // Error input is made an optional argument. First call to StringScan causes an error.
+           // Second call to StringScan must see the input unwired optional error argument as no error.
+           // The test ensures that a data value is not allocated for error argument and reused by Vireo.
            Copy(c3 local24)
            StringScan(g0 local20 local19 c2 local21 * local24)
            Printf("String=[%s] Scanned Value=[%d]\n" g0 local24)
@@ -25,6 +33,16 @@ define (TopLevelVI dv(.VirtualInstrument (
            SubVI1(g1 local_2)
            Printf("String=[%s] Scanned Value=[%d]\n" g0 local_1)
            Printf("String=[%s] Scanned Value=[%d]\n" g1 local_2)
+
+           // Test flat datatype
+           // If timestamp (flat) argument is made optional argument, FormatDateTimeString uses current timestamp.
+           // Make sure timestamps are different when called second time after a wait to ensure a data value is not allocated
+           // and reused by Vireo.
+           FormatDateTimeString(dateTimeStr1 g26 * true )
+           WaitMilliseconds(1005)
+           FormatDateTimeString(dateTimeStr2 g26 * true )
+           IsEQ(dateTimeStr1 dateTimeStr2 isEqual)
+           Printf("Timestamps equal = %z\n" isEqual)
 
 /* Clump Ended. */    )
 )))
