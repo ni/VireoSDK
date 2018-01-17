@@ -16,7 +16,7 @@ The Vireo project provides a subset of LabVIEW runtime functionality for smaller
 Requirements:
 - [Node](https://nodejs.org/en/) (> v4.4.7)
 - [Emscripten](https://github.com/kripken/emscripten) (v1.36.0)
-- make -- DELETE ME!
+- make -- DELETE!
 
 Setup:
 - `npm install`
