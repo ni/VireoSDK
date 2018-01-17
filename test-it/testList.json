@@ -313,6 +313,7 @@
                 "TestVI_MultipleDelimiters.via",
                 "TestVI_SimpleArrayOfRefs.via",
                 "TestVI_SpreadSheetStringToArray.via",
+                "TestVI_UnflattenFromJSONInvalidCluster.via",
                 "TestVI_VectorMaxMinOp.via",
                 "TestVI_VectorScalarBinaryOp.via",
                 "TestVI_VectorUnaryOp.via",

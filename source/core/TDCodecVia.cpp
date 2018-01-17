@@ -916,7 +916,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             Int32 errCode = kLVError_NoError;
 
-            while ((_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
+            while (!errCode && (_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 _string.EatLeadingSpaces();
