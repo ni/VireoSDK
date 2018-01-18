@@ -936,8 +936,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                     // For nested dimensions just parse the next inner dimension using the array type.
                     subErr = ParseArrayData(pArray, pElement, level + 1);
                 }
-                if (subErr && !errCode)
-                {
+                if (subErr && !errCode) {
                     errCode = subErr;
                     if (Fmt().StopArrayParseOnFirstError())
                         break;
