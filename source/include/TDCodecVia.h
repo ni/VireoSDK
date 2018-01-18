@@ -35,7 +35,8 @@ enum ViaFormat {
     kViaFormat_UseLongNameInfNaN = 8,  // mask,  clear == use inf,nan, set == use Infinity/NaN
     kViaFormat_SuppressInfNaN = 16,    // use neither,
     kViaFormat_JSONStrictValidation = 32,
-    kViaFormat_QuoteInfNanNames = 64
+    kViaFormat_QuoteInfNanNames = 64,
+    kViaFormat_StopArrayParseOnFirstError = 128
 };
 
 #define kJSONEncoding "JSON"
@@ -62,6 +63,7 @@ struct ViaFormatChars
     Boolean QuotedNameInfNaN()     { return (_fieldNameFormat & kViaFormat_QuoteInfNanNames) ? true : false; }
     Boolean JSONStrictValidation() { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
     Boolean GenerateJSON()         { return strcmp(_name, kJSONEncoding) == 0; }
+    Boolean StopArrayParseOnFirstError() { return (_fieldNameFormat & kViaFormat_StopArrayParseOnFirstError) ? true : false; }
 };
 
 struct ViaFormatOptions
