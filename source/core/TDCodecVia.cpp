@@ -916,7 +916,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             Int32 errCode = kLVError_NoError;
 
-            while (!errCode && (_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
+            while ((_string.Length() > 0) && !_string.EatChar(Fmt()._arrayPost)) {
                 // Only read as many elements as there was room allocated for,
                 // ignore extra ones.
                 _string.EatLeadingSpaces();
@@ -937,7 +937,11 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                     subErr = ParseArrayData(pArray, pElement, level + 1);
                 }
                 if (subErr && !errCode)
+                {
                     errCode = subErr;
+                    if (Fmt().StopArrayParseOnFirstError())
+                        break;
+                }
                 if (pFirstEltInSlice) {
                     pEltData += step;
                 }
@@ -1909,11 +1913,11 @@ char TDViaFormatter::LocaleDefaultDecimalSeparator = '.';
 // the format const used in Formatter and Parser
 ViaFormatChars TDViaFormatter::formatVIA =       { kVIAEncoding, '(', ')', '(', ')', ' ', '\'',  kViaFormat_NoFieldNames};
 ViaFormatChars TDViaFormatter::formatJSON =      { kJSONEncoding, '[', ']', '{', '}', ',', '\"',
-    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_SuppressInfNaN) };
+    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_StopArrayParseOnFirstError | kViaFormat_SuppressInfNaN) };
 ViaFormatChars TDViaFormatter::formatJSONLVExt = { kJSONEncoding, '[', ']', '{', '}', ',', '\"',
-    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN) };
+    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_StopArrayParseOnFirstError | kViaFormat_UseLongNameInfNaN) };
 ViaFormatChars TDViaFormatter::formatJSONEggShell = { kJSONEncoding, '[', ']', '{', '}', ',', '\"',
-    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_UseLongNameInfNaN | kViaFormat_QuoteInfNanNames) };
+    ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_StopArrayParseOnFirstError | kViaFormat_UseLongNameInfNaN | kViaFormat_QuoteInfNanNames) };
 ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{', '}', '{', '}', ',', '\"', kViaFormat_NoFieldNames};
 
 //------------------------------------------------------------
