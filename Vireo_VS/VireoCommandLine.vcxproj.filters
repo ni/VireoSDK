@@ -121,6 +121,9 @@
     <ClCompile Include="..\source\core\MatchPat.cpp" />
     <ClCompile Include="..\source\core\RefNum.cpp" />
     <ClCompile Include="..\source\core\UnitTest.cpp" />
+    <ClCompile Include="..\source\io\JavaScriptInvoke.cpp">
+      <Filter>VireoSource\IO</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">
@@ -133,6 +136,12 @@
       <Filter>VireoSource\IO</Filter>
     </None>
     <None Include="..\source\io\library_webSocketClient.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\io\library_javaScriptInvoke.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\io\module_javaScriptInvoke.js">
       <Filter>VireoSource\IO</Filter>
     </None>
   </ItemGroup>
