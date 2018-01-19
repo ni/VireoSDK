@@ -299,6 +299,7 @@
                 "SubVIParameters.via",
                 "SubVISimple.via",
                 "TemplateBasics.via",
+                "TestVI_ArrayDelete.via",
                 "TestVI_ArrayInsertPartial.via",
                 "TestVI_ArrayNonFlatInflate.via",
                 "TestVI_ArrayOfRefs.via",
