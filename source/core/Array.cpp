@@ -1211,8 +1211,11 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
 
     IntIndex startIndex = offset > 0 ? offset : 0;
     IntIndex endIndex = offset +
-        deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ?
+        deletedPortionLength > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - startIndex ?
         arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
+    if (endIndex - startIndex < deletedPortionLength) {
+        deletedPortionLength = endIndex - startIndex;
+    }
 
     if (endIndex <= 0) {
         endIndex = 0;
