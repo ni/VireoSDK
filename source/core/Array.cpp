@@ -1313,7 +1313,9 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     TypedArrayCoreRef arrayIn = _Param(3);
     TypeRef deletedPartType = _ParamPointer(1);
     IntIndex length = (_ParamPointer(4) == NULL)? 1 : _Param(4);
-    IntIndex offset = (_ParamPointer(5) == NULL)? arrayIn->Length() - 1 : _Param(5);;
+    IntIndex offset = (_ParamPointer(5) == NULL)? arrayIn->Length() - length : _Param(5);
+    if (offset > arrayIn->Length())
+        offset = arrayIn->Length();
 
     IntIndex startIndex = offset > 0? offset : 0;
     IntIndex endIndex = offset + length > arrayIn->Length()? arrayIn->Length() : offset + length;
@@ -1322,8 +1324,8 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
         return THREAD_EXEC()->Stop();
     }
 
-    if (endIndex <= 0) {
-        endIndex = 0;
+    if (endIndex < startIndex) {
+        endIndex = startIndex;
     }
     IntIndex arrayOutLength = arrayIn->Length() - (endIndex - startIndex);
     arrayOut->Resize1D(arrayOutLength);
