@@ -1206,7 +1206,10 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
     }
 
     IntIndex offset = (_ParamPointer(5) == NULL) ?
-        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);;
+        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);
+    if (offset > arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete)){
+        offset = arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete);
+    }
     Int32 rank = arrayIn->Rank();
 
     IntIndex startIndex = offset > 0 ? offset : 0;
@@ -1217,8 +1220,8 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
         deletedPortionLength = endIndex - startIndex;
     }
 
-    if (endIndex <= 0) {
-        endIndex = 0;
+    if (endIndex < startIndex) {
+        endIndex = startIndex;
     }
     IntIndex arrayOutLength = arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - (endIndex - startIndex);
     if (rank == 1) {
@@ -1306,6 +1309,7 @@ Int32 currentDimension;
     return _NextInstruction();
 }
 
+// [unused]
 // ArrayDelete function, can delete single element or multiple elements in 1d Array
 VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, TypedArrayCoreRef, IntIndex, IntIndex)
 {
