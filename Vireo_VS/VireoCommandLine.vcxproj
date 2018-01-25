@@ -45,13 +45,16 @@
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
     <ClCompile Include="..\source\io\FileIO.cpp" />
     <ClCompile Include="..\source\io\HttpClient.cpp" />
+    <ClCompile Include="..\source\io\JavaScriptInvoke.cpp" />
     <ClCompile Include="..\source\io\WebSocketClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def" />
     <None Include="..\source\io\library_canvas2d.js" />
     <None Include="..\source\io\library_httpClient.js" />
+    <None Include="..\source\io\library_javaScriptInvoke.js" />
     <None Include="..\source\io\library_webSocketClient.js" />
+    <None Include="..\source\io\module_javaScriptInvoke.js" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\Array.h" />

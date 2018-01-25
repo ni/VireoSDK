@@ -93,7 +93,10 @@ EMCC= emcc
 EM_OPTFLAG = -Os
 EM_OPT= $(EM_OPT_FLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memory-init-file 0
 EMFLAGS= -I$(INCDIR) -DkVireoOS_emscripten -DVIREO_LEAN $(EM_OPT)
-EMLIBRARY= --js-library $(IOSOURCEDIR)/library_canvas2d.js --js-library $(IOSOURCEDIR)/library_httpClient.js
+EMLIBRARY= --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
+           --js-library $(IOSOURCEDIR)/library_canvas2d.js \
+           --js-library $(IOSOURCEDIR)/library_httpClient.js \
+           --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js
 EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js
  
 EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
@@ -109,7 +112,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
 	"_Occurrence_Set",\
 	"_Data_WriteString",\
 	"_Data_WriteInt32",\
-	"_Data_WriteUInt32"\
+	"_Data_WriteUInt32",\
+	"_Data_GetParameterType",\
+	"_Data_GetParameterPointer"\
 	]' -s RESERVED_FUNCTION_POINTERS=10
  
 EM_BC_FILES = $(OBJS)/VireoMerged.bc\
@@ -120,6 +125,7 @@ EM_BC_FILES = $(OBJS)/VireoMerged.bc\
 	$(OBJS)/TimeFunctions.bc\
 	$(OBJS)/Canvas2d.bc\
 	$(OBJS)/HttpClient.bc\
+	$(OBJS)/JavaScriptInvoke.bc\
 	$(OBJS)/FileIO.bc\
 	$(OBJS)/Emscripten.bc\
 	$(OBJS)/CEntryPoints.bc\

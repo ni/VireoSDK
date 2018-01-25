@@ -17,7 +17,8 @@
             'NationalInstruments.Vireo.Core.createVireoCore',
             'NationalInstruments.Vireo.Core.assignCoreHelpers',
             'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
-            'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient'
+            'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient',
+            'NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke'
         ], factory);
     } else if (typeof module === 'object' && module.exports) {
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
@@ -31,7 +32,8 @@
             vireoCore,
             require('../../source/core/module_coreHelpers.js'),
             require('../../source/io/module_eggShell.js'),
-            require('../../source/io/module_httpClient.js')
+            require('../../source/io/module_httpClient.js'),
+            require('../../source/io/module_javaScriptInvoke.js')
         );
     } else {
         // Browser globals (root is window)
@@ -39,7 +41,8 @@
             root.NationalInstruments.Vireo.Core.createVireoCore,
             root.NationalInstruments.Vireo.Core.assignCoreHelpers,
             root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient
+            root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient,
+            root.NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke
         );
     }
 }(this, 'NationalInstruments.Vireo.Vireo', function () {
