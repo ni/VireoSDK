@@ -91,7 +91,8 @@ EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -fno-exceptions --memo
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(IOSOURCEDIR)/library_canvas2d.js \
-            --js-library $(IOSOURCEDIR)/library_httpClient.js
+            --js-library $(IOSOURCEDIR)/library_httpClient.js \
+            --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js
 PREJS = $(OBJS)/vireo.preamble.js
 POSTJS = $(OBJS)/vireo.postamble.js
 EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
@@ -117,7 +118,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_ReadBoolean',\
     '_Data_WriteBoolean',\
     '_Data_WriteInt32',\
-    '_Data_WriteUInt32'\
+    '_Data_WriteUInt32',\
+    '_Data_GetParameterType',\
+    '_Data_GetParameterPointer'\
     ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
@@ -151,7 +154,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Canvas2d.bc\
 	$(OBJS)/FileIO.bc\
 	$(OBJS)/HttpClient.bc\
-	$(OBJS)/Waveform.bc
+	$(OBJS)/Waveform.bc\
+	$(OBJS)/JavaScriptInvoke.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
