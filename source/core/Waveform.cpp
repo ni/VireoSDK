@@ -19,16 +19,8 @@ SDG
 #include <cmath>
 #include "Waveform.h"
 
-namespace Vireo {
-
 #ifdef VIREO_TYPE_Waveform
-DEFINE_VIREO_BEGIN(Waveform)
-DEFINE_VIREO_REQUIRE(IEEE754Math)
-DEFINE_VIREO_REQUIRE(Timestamp)
-DEFINE_VIREO_TYPE(AnalogWaveform, "c( e(Timestamp t0) e(Double dt) e(a($0 $1)Y) )")
-DEFINE_VIREO_TYPE(DigitalWaveform, "c(e(a(UInt8 * *) data)e(a(UInt32 *) transitions))")
-DEFINE_VIREO_END()
-#endif
+namespace Vireo {
 
 VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double, TypedArrayCoreRef)
 {
@@ -50,7 +42,12 @@ VIREO_FUNCTION_SIGNATURE4(AnalogWaveformBuild, AnalogWaveform, Timestamp, Double
 }
 
 DEFINE_VIREO_BEGIN(Waveform)
-DEFINE_VIREO_FUNCTION(AnalogWaveformBuild, "p(o(AnalogWaveform) i(Timestamp) i(Double) i(Array))")
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
+    DEFINE_VIREO_REQUIRE(Timestamp)
+    DEFINE_VIREO_TYPE(AnalogWaveform, "c( e(Timestamp t0) e(Double dt) e(a($0 $1)Y) )")
+    DEFINE_VIREO_TYPE(DigitalWaveform, "c(e(a(UInt8 * *) data)e(a(UInt32 *) transitions))")
+    DEFINE_VIREO_FUNCTION(AnalogWaveformBuild, "p(o(AnalogWaveform) i(Timestamp) i(Double) i(Array))")
 DEFINE_VIREO_END()
 
 }  // namespace Vireo
+#endif  // VIREO_TYPE_Waveform
