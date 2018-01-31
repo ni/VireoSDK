@@ -1,11 +1,11 @@
 /* global Module, mergeInto, LibraryManager */
 (function () {
     'use strict';
-    var javaScriptCallCAPI = {
+    var javaScriptInvokeCAPI = {
         jsJavaScriptInvoke: function () {
             Module.javaScriptInvoke.jsJavaScriptInvoke.apply(undefined, arguments);
         }
     };
 
-    mergeInto(LibraryManager.library, javaScriptCallCAPI);
+    mergeInto(LibraryManager.library, javaScriptInvokeCAPI);
 }());
