@@ -660,6 +660,7 @@ VIREO_FUNCTION_SIGNATURE3(RotateInt32, Int32, Int32, Int32)
 }  // extern "C"
 
 DEFINE_VIREO_BEGIN(IEEE754Math)
+    DEFINE_VIREO_REQUIRE(GenericsConvert)
 
   // Floating-point Single
   #if defined(VIREO_TYPE_Single)
@@ -989,6 +990,7 @@ DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexSingle, ComplexSingle, Boolea
     (_Param(1) = ::isnan((Single)_Param(0).real()) || ::isnan((Single)_Param(0).imag())))
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
     DEFINE_VIREO_TYPE(ComplexSingle, "c(e(Single real) e(Single imaginary))");
     DEFINE_VIREO_TYPE(UnOpComplexSingle, "p(i(ComplexSingle x) o(ComplexSingle result))")
     DEFINE_VIREO_TYPE(BinOpComplexSingle, "p(i(ComplexSingle x) i(ComplexSingle y) o(ComplexSingle result))")
@@ -1136,6 +1138,7 @@ DECLARE_VIREO_PRIMITIVE3(ReOrImToComplexDouble, Double, Double, ComplexDouble,
 DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = ::isnan(_Param(0).real()) || ::isnan(_Param(0).imag())) )
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
+    DEFINE_VIREO_REQUIRE(IEEE754Math)
     DEFINE_VIREO_TYPE(ComplexDouble, "c(e(Double real) e(Double imaginary))");
     DEFINE_VIREO_TYPE(UnOpComplexDouble, "p(i(ComplexDouble x) o(ComplexDouble result))")
     DEFINE_VIREO_TYPE(BinOpComplexDouble, "p(i(ComplexDouble x) i(ComplexDouble y) o(ComplexDouble result))")
