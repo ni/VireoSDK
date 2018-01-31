@@ -2660,7 +2660,16 @@ VIREO_FUNCTION_SIGNATURE3(CopyAndReset, Boolean, Boolean, Boolean)
 }
 
 //------------------------------------------------------------
+DEFINE_VIREO_BEGIN(GenericsConvert)
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
+    // Issue: Remove instruction and use error.status directly in generated VIA code:  https://github.com/ni/VireoSDK/issues/338
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertErrorClusterToBoolean, "p(i(ErrorCluster errorCluster) o(Boolean output))")
+DEFINE_VIREO_END()
+
 DEFINE_VIREO_BEGIN(Generics)
+    DEFINE_VIREO_REQUIRE(IEEE754ComplexSingleMath)
+    DEFINE_VIREO_REQUIRE(IEEE754ComplexDoubleMath)
+    DEFINE_VIREO_REQUIRE(Timestamp)
     DEFINE_VIREO_FUNCTION(Init, "p(i(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(Clear, "p(i(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(ZeroOutTop, "p(i(StaticTypeAndData))")
