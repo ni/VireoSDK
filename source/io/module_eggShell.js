@@ -41,11 +41,20 @@
             'Data_GetStringBegin',
             'Data_GetStringLength',
             'Data_ReadBoolean',
+            'Data_ReadUInt8',
+            'Data_ReadUInt16',
+            'Data_ReadUInt32',
             'Data_WriteBoolean',
             'Data_WriteString',
             'Data_WriteStringFromArray',
+            'Data_WriteInt8',
+            'Data_WriteInt16',
             'Data_WriteInt32',
+            'Data_WriteUInt8',
+            'Data_WriteUInt16',
             'Data_WriteUInt32',
+            'Data_WriteSingle',
+            'Data_WriteDouble',
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
             'Occurrence_Set',
@@ -71,9 +80,18 @@
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
         var Data_ReadBoolean = Module.cwrap('Data_ReadBoolean', 'number', ['number']);
+        var Data_ReadUInt8 = Module.cwrap('Data_ReadUInt8', 'number', ['number']);
+        var Data_ReadUInt16 = Module.cwrap('Data_ReadUInt16', 'number', ['number']);
+        var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
+        var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
+        var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
         var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
+        var Data_WriteUInt8 = Module.cwrap('Data_WriteUInt8', 'void', ['number', 'number']);
+        var Data_WriteUInt16 = Module.cwrap('Data_WriteUInt16', 'void', ['number', 'number']);
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
+        var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
+        var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -360,21 +378,71 @@
             Data_WriteBoolean(booleanPointer, numericValue);
         };
 
+        Module.eggShell.dataReadInt8 = function (intPointer) {
+            return Module.getValue(intPointer, 'i8');
+        };
+
+        Module.eggShell.dataReadInt16 = function (intPointer) {
+            return Module.getValue(intPointer, 'i16');
+        };
+
         Module.eggShell.dataReadInt32 = function (intPointer) {
             return Module.getValue(intPointer, 'i32');
+        };
+
+        Module.eggShell.dataWriteInt8 = function (destination, value) {
+            Data_WriteInt8(destination, value);
+        };
+
+        Module.eggShell.dataWriteInt16 = function (destination, value) {
+            Data_WriteInt16(destination, value);
         };
 
         Module.eggShell.dataWriteInt32 = function (destination, value) {
             Data_WriteInt32(destination, value);
         };
 
-        // TODO mraj we need to validate both of these unsigned functions are working correctly
+        Module.eggShell.dataReadUInt8 = function (intPointer) {
+            var numericValue = Data_ReadUInt8(intPointer);
+            return numericValue;
+        };
+
+        Module.eggShell.dataReadUInt16 = function (intPointer) {
+            var numericValue = Data_ReadUInt16(intPointer);
+            return numericValue;
+        };
+
         Module.eggShell.dataReadUInt32 = function (intPointer) {
-            return Module.getValue(intPointer, 'i32');
+            var numericValue = Data_ReadUInt32(intPointer);
+            return numericValue;
+        };
+
+        Module.eggShell.dataWriteUInt8 = function (destination, value) {
+            Data_WriteUInt8(destination, value);
+        };
+
+        Module.eggShell.dataWriteUInt16 = function (destination, value) {
+            Data_WriteUInt16(destination, value);
         };
 
         Module.eggShell.dataWriteUInt32 = function (destination, value) {
             Data_WriteUInt32(destination, value);
+        };
+
+        Module.eggShell.dataReadSingle = function (singlePointer) {
+            return Module.getValue(singlePointer, 'float');
+        };
+
+        Module.eggShell.dataReadDouble = function (doublePointer) {
+            return Module.getValue(doublePointer, 'double');
+        };
+
+        Module.eggShell.dataWriteSingle = function (destination, value) {
+            Data_WriteSingle(destination, value);
+        };
+
+        Module.eggShell.dataWriteDouble = function (destination, value) {
+            Data_WriteDouble(destination, value);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

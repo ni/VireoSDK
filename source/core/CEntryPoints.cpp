@@ -316,7 +316,32 @@ VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer)
     return *booleanPointer;
 }
 //------------------------------------------------------------
+VIREO_EXPORT UInt32 Data_ReadUInt8(UInt8* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT UInt32 Data_ReadUInt16(UInt16* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double Data_ReadUInt32(UInt32* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteInt8(Int8* destination, Int32 value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteInt16(Int16* destination, Int32 value)
 {
     *destination = value;
 }
@@ -326,7 +351,27 @@ VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value)
     *destination = value;
 }
 //------------------------------------------------------------
+VIREO_EXPORT void Data_WriteUInt8(UInt8* destination, Int32 value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteUInt16(UInt16* destination, Int32 value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteSingle(Single* destination, Single value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 {
     *destination = value;
 }

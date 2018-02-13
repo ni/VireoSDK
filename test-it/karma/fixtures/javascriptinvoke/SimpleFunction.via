@@ -1,0 +1,14 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+    )
+    clump (
+        JavaScriptInvoke(false error 'NI_SimpleFunction' *)
+    )
+) ) )
+
+enqueue(MyVI)
