@@ -114,13 +114,22 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Occurrence_Set',\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
-    '_Data_WriteString',\
     '_Data_ReadBoolean',\
+    '_Data_ReadUInt8',\
+    '_Data_ReadUInt16',\
+    '_Data_ReadUInt32',\
+    '_Data_WriteString',\
     '_Data_WriteBoolean',\
+    '_Data_WriteInt8',\
+    '_Data_WriteInt16',\
     '_Data_WriteInt32',\
+    '_Data_WriteUInt8',\
+    '_Data_WriteUInt16',\
     '_Data_WriteUInt32',\
-    '_Data_GetParameterType',\
-    '_Data_GetParameterPointer'\
+    '_Data_WriteSingle',\
+    '_Data_WriteDouble',\
+    '_JavaScriptInvoke_GetParameterType',\
+    '_JavaScriptInvoke_GetParameterPointer'\
     ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
