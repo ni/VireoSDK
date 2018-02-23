@@ -90,10 +90,9 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 #if kVireoOS_emscripten
     StringRef functionName = _Param(functionName);
     Boolean errorCheckingEnabled = _Param(errorCheckingEnabled);
-    const Int32 configurationParameters = 3;  // functionName, errorCheckingEnabled & errorCluster
-    const Int32 staticTypeAndDataReturnValue = 2;
-    const Int32 staticTypeAndDataElements = 2;  // Two elements, one for type another for data. See StaticTypeAndData definition.
-    Int32 parametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataReturnValue) / staticTypeAndDataElements;
+    const Int32 configurationParameters = 3;  // errorCheckingEnabled, errorCluster and functionName
+    const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
+    Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
     StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
     StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
 
@@ -102,7 +101,7 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
             functionName,
             returnValuePtr,
             parametersPtr,
-            parametersCount,
+            userParametersCount,
             errorCheckingEnabled,
             &errorClusterPtr->status,
             &errorClusterPtr->code,
