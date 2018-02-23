@@ -316,6 +316,21 @@ VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer)
     return *booleanPointer;
 }
 //------------------------------------------------------------
+VIREO_EXPORT Int32 Data_ReadInt8(Int8* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Int32 Data_ReadInt16(Int16* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double Data_ReadInt32(Int32* intPointer)
+{
+    return *intPointer;
+}
+//------------------------------------------------------------
 VIREO_EXPORT UInt32 Data_ReadUInt8(UInt8* intPointer)
 {
     return *intPointer;
@@ -329,6 +344,16 @@ VIREO_EXPORT UInt32 Data_ReadUInt16(UInt16* intPointer)
 VIREO_EXPORT Double Data_ReadUInt32(UInt32* intPointer)
 {
     return *intPointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double Data_ReadSingle(Single* singlePointer)
+{
+    return *singlePointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
+{
+    return *doublePointer;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)

@@ -145,7 +145,10 @@
 
         var findJavaScriptFunctionToCall = function (functionNameString) {
             var names = functionNameString.split('.');
-            var functionToCall = window[names[0]];
+            var jsSelfScope = typeof self !== 'undefined' ? self : {};
+            var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
+            var jsWindowScope = typeof window !== 'undefined' ? window : jsGlobalScope;
+            var functionToCall = jsWindowScope[names[0]];
             for (var namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
                 if (functionToCall === undefined) {
                     break;
