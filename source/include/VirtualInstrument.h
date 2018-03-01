@@ -34,12 +34,19 @@ class VIClump;
 "    e(TypeManager TypeManager)     \n" \
 "    e(a(*) Params)                 \n" \
 "    e(a(*) Locals)                 \n" \
+"    e(a(*) EventSpecs)             \n" \
+"    e(DataPointer EventInfo)       \n" \
 "    e(a(Clump *) Clumps)           \n" \
 "    e(Int32 LineNumberBase)        \n" \
 "    e(DataPointer VIName)          \n" \
 "    e(SubString ClumpSource)       \n" \
 "))"
 
+class EventInfo {
+ public:
+    OccurrenceCore eventOccurrence;
+    Int32 setCount;
+};
 //------------------------------------------------------------
 //!
 class VirtualInstrument
@@ -49,6 +56,8 @@ class VirtualInstrument
     TypeManagerRef          _typeManager;
     TypedObjectRef          _params;        // All clumps in subVI share the same param block
     TypedObjectRef          _locals;        // All clumps in subVI share the same locals
+    TypedObjectRef          _eventSpecs;    // All clumps in subVI share the same event specs
+    EventInfo              *_eventInfo;     // Holds occurrences used to wake event structures
     TypedArray1D<VIClump>*  _clumps;
     void InitParamBlock();
     void ClearTopVIParamBlock();
@@ -58,18 +67,20 @@ class VirtualInstrument
     SubString               _clumpSource;  // For now, this is tied to the VIA codec.
                                            // It has a Begin and End pointer
  public:
-    NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType,
+    NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, TypeRef eventSpecsType,
                  Int32 lineNumberBase, SubString* source);
     void PressGo();
     void GoIsDone();
     TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
 
  public:
-    VirtualInstrument(ExecutionContextRef context, int clumps, TypeRef paramsType, TypeRef localsType);
-    ~VirtualInstrument()               { if (_viName) delete[] _viName; }
+    ~VirtualInstrument();
     TypeManagerRef TheTypeManager()     { return _typeManager; }
     TypedObjectRef Params()             { return _params; }
     TypedObjectRef Locals()             { return _locals; }
+    TypedObjectRef EventSpecs()         { return _eventSpecs; }
+    EventInfo *GetEventInfo() const     { return _eventInfo; }
+    void SetEventInfo(EventInfo *ei)    { _eventInfo = ei; }
     TypedArray1D<VIClump>* Clumps()     { return _clumps; }
     SubString VIName()                  {
         SubString s;
@@ -313,6 +324,7 @@ class ClumpParseState
     Int32           _perchIndexToRecordNextInstrAddr;
 
     Int32           _varArgCount;
+    Int32           _varArgRepeatStart;
     Boolean         _bIsVI;
 
     //------------------------------------------------------------
@@ -335,6 +347,8 @@ class ClumpParseState
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek);
     Boolean         VarArgParameterDetected()   { return _varArgCount >= 0; }
     void            AddVarArgCount();
+    void            SetVarArgRepeat()            { _varArgRepeatStart = _formalParameterIndex-1; }
+
     void            MarkPerch(SubString* perchToken);
     void            AddBranchTargetArgument(SubString* branchTargetToken);
     void            AddClumpTargetArgument(SubString* clumpIndexToken);
