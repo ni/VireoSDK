@@ -255,6 +255,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     // VarArgCount - Used in prototypes for vararg functions.
     // This parameter will be constant number, not a pointer to a number
     Define(tm, "VarArgCount", "DataPointer");
+    Define(tm, "VarArgRepeat", "DataPointer");
 
     // StaticType - describes type determined at load/compile time. Not found on user diagrams (e.g. A TypeRef)
     Define(tm, "StaticType", "DataPointer");

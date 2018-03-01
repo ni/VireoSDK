@@ -125,7 +125,6 @@ class TDViaParser
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
-    void    ParseInstructionArguments(VIClump* clump);
     SubString* TheString() {return &_string;}
 
  public:
@@ -239,6 +238,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsVolatileToken         "x"   // volatile parameter, not explicitly passed or allocated in the param block
 #define tsEquivalenceTypeToken  "eq"  // for alternate views on the same set of bits.
 #define tsNamedTypeToken        "."
+
 #define tsParamBlockTypeToken   "p"   // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
 #define tsRefNumTypeToken       "refnum"
