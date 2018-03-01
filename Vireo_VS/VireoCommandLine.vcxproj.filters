@@ -40,6 +40,9 @@
     <ClCompile Include="..\source\core\EventLog.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\Events.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\core\ExecutionContext.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -156,6 +159,9 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\EventLog.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\Events.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\ExecutionContext.h">

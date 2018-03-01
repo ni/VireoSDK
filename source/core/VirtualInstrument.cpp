@@ -47,6 +47,7 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
         pElt->_owningVI = this;
         pElt++;
     }
+    RegisterForStaticEvents(this);
     return kNIError_Success;
 }
 VirtualInstrument::~VirtualInstrument()
@@ -313,6 +314,7 @@ void ClumpParseState::Construct(VIClump* clump, InstructionAllocator *cia, Int32
     _argPatchCount = 0;
     _patchInfoCount = 0;
     _varArgCount = -1;
+    _varArgRepeatStart = 0;
     _clump = clump;
     _vi = clump->OwningVI();
     _pLog = pLog;
@@ -451,6 +453,7 @@ TypeRef ClumpParseState::StartNextOverload()
     _formalParameterType = null;
     _instructionPointerType = null;
     _varArgCount = -1;
+    _varArgRepeatStart = 0;
     _argCount = 0;
     _argPointers.clear();
     _argTypes.clear();
@@ -1068,6 +1071,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
 {
     if (!_instructionType) {
         _varArgCount = -1;
+        _varArgRepeatStart = 0;
         return null;
         }
 
@@ -1109,6 +1113,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     }
 
     _varArgCount = -1;
+    _varArgRepeatStart = 0;
     _totalInstructionCount++;
     _totalInstructionPointerCount += (sizeof(InstructionCore) / sizeof(void*)) + _argCount;
 
