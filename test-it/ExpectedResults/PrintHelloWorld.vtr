@@ -1,4 +1,4 @@
 Hello, world. I can fly.
 42
 (^TypeManager_null * * * ^DataPointer_null () 0 ^DataPointer_null (^DataPointer_null ^DataPointer_null))
-(^TypeManager () ('Hello, world. I can fly.') () ^DataPointer_null ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 0 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 12 ^DataPointer (^DataPointer ^DataPointer))
+(^TypeManager () ('Hello, world. I can fly.') () ^DataPointer ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 0 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 12 ^DataPointer (^DataPointer ^DataPointer))

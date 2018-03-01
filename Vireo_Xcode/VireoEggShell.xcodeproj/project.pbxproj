@@ -15,6 +15,7 @@
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
 		44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B71BD21EC65368008683F6 /* WebSocketClient.cpp */; };
+		44C2350E20428CD50064583B /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44C2350D20428CD50064583B /* Events.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
@@ -264,6 +265,8 @@
 		44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayInterpolate.via; path = "../test-it/ArrayInterpolate.via"; sourceTree = "<group>"; };
 		44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFunctions.via; path = "../test-it/ComplexMathFunctions.via"; sourceTree = "<group>"; };
 		44B71BD21EC65368008683F6 /* WebSocketClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebSocketClient.cpp; path = ../source/io/WebSocketClient.cpp; sourceTree = "<group>"; };
+		44C2350D20428CD50064583B /* Events.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Events.cpp; path = core/Events.cpp; sourceTree = "<group>"; };
+		44C2350F2045FAD70064583B /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Events.h; path = include/Events.h; sourceTree = "<group>"; };
 		44C295D51F8C037A001877B4 /* library_webSocketClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_webSocketClient.js; path = ../source/io/library_webSocketClient.js; sourceTree = "<group>"; };
 		44C295D61F8C037A001877B4 /* module_httpClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_httpClient.js; path = ../source/io/module_httpClient.js; sourceTree = "<group>"; };
 		44C295D71F8C037A001877B4 /* module_other.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_other.js; path = ../source/io/module_other.js; sourceTree = "<group>"; };
@@ -832,6 +835,7 @@
 				444C46821E1C5A540037FA98 /* Date.cpp */,
 				472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */,
 				470F626B1886F53F003146BF /* EventLog.cpp */,
+				44C2350D20428CD50064583B /* Events.cpp */,
 				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
 				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
 				47D84DDF17C2A271009053DB /* Math.cpp */,
@@ -866,29 +870,30 @@
 			isa = PBXGroup;
 			children = (
 				44026BAA1EFAEFC600DB51B4 /* Array.h */,
-				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 				444C46871E1C5ABC0037FA98 /* Date.h */,
-				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
+				44C2350F2045FAD70064583B /* Events.h */,
 				47B76CD71B28DACA0083AEEB /* Platform.h */,
 				475DCFA918654336003810C0 /* ConversionTable.def */,
 				4797A38E1862265B00E643D7 /* CEntryPoints.h */,
+				47D84DC417C2A258009053DB /* BuildConfig.h */,
+				47D84DC917C2A258009053DB /* DataTypes.h */,
+				470F626A1886F522003146BF /* EventLog.h */,
+				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
+				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
+				444C468D1E26D9A10037FA98 /* RefNum.h */,
+				47D84DCF17C2A258009053DB /* StringUtilities.h */,
+				478BB8031AEFDEEF00BF9DB6 /* Synchronization.h */,
 				4744A9DE1818599100E1F7D9 /* TypeDefiner.h */,
 				47D84DD017C2A258009053DB /* TypeAndDataManager.h */,
 				4797A38F1862265B00E643D7 /* TDCodecLVFlat.h */,
 				472B7BE917D0E43D00201196 /* TDCodecVia.h */,
 				472B7BEA17D0E43D00201196 /* TDCodecVib.h */,
-				476CE4EB18F590DF00399E88 /* Timestamp.h */,
-				47D84DC417C2A258009053DB /* BuildConfig.h */,
-				47D84DC917C2A258009053DB /* DataTypes.h */,
-				470F626A1886F522003146BF /* EventLog.h */,
-				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
-				444C468D1E26D9A10037FA98 /* RefNum.h */,
-				478BB8031AEFDEEF00BF9DB6 /* Synchronization.h */,
 				47D84DD217C2A258009053DB /* VirtualInstrument.h */,
 				47D84DCC17C2A258009053DB /* Instruction.h */,
 				47D84DCE17C2A258009053DB /* Thread.h */,
-				47D84DCF17C2A258009053DB /* StringUtilities.h */,
+				476CE4EB18F590DF00399E88 /* Timestamp.h */,
 				444C46911E2D69ED0037FA98 /* UnitTest.h */,
+				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 			);
 			name = include;
 			path = ../source;
@@ -1126,6 +1131,7 @@
 				472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */,
 				444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */,
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
+				44C2350E20428CD50064583B /* Events.cpp in Sources */,
 				444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,

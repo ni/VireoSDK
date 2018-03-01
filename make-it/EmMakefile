@@ -141,6 +141,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Assert.bc\
 	$(OBJS)/CEntryPoints.bc\
 	$(OBJS)/EventLog.bc\
+	$(OBJS)/Events.bc\
 	$(OBJS)/ExecutionContext.bc\
 	$(OBJS)/GenericFunctions.bc\
 	$(OBJS)/MatchPat.bc\

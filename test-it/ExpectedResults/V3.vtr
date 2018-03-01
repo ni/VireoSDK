@@ -1,5 +1,5 @@
-(^TypeManager (null) ('Hello') () ^DataPointer_null ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 1 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 29 ^DataPointer (^DataPointer ^DataPointer))
+(^TypeManager (null) ('Hello') () ^DataPointer ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 1 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 29 ^DataPointer (^DataPointer ^DataPointer))
 Convert <
-(^TypeManager (null) ('Hello') () ^DataPointer_null ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 1 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 29 ^DataPointer (^DataPointer ^DataPointer))
+(^TypeManager (null) ('Hello') () ^DataPointer ((^InstructionBlock ^DataPointer_null 0 ^DataPointer ^DataPointer_null ^DataPointer_null ^Instruction 1 1 0 (^DataPointer_null ^DataPointer_null ^DataPointer_null 0) (^DataPointer_null ^DataPointer_null ^DataPointer_null 0))) 29 ^DataPointer (^DataPointer ^DataPointer))
 Convert >
 Hello
