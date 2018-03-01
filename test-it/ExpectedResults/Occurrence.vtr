@@ -1,10 +1,25 @@
- Clump0: About to wait on occurence - 1
- Clump1: About to wait 50ms.
- Clump1: About to SetOccurrece - A
- Clump0: Back from wait on occurence - 1 
- Clump0: About to wait on occurence - 2
- Clump1: About to SetOccurrece - B
+ Clump0: About to SetOccurrence - pre
+Clump 0 - Loop Count 0
+ Clump0: About to wait on occurrence (ignore prev=false) - 1
+ Clump0: Back from wait on occurrence - 1 timedOut:false
+Clump 0 - Loop Count 1
+ Clump0: About to wait on occurrence (ignore prev=false) - 1
+ Clump1: Delaying 50ms.
+ Clump1: About to SetOccurrence - A
+ Clump1: Delaying 150ms.
+ Clump0: Back from wait on occurrence - 1 timedOut:false
+Clump 0 - Loop Count 2
+ Clump0: About to wait on occurrence (ignore prev=false) - 1
+ Clump0: Back from wait on occurrence - 1 timedOut:true
+Clump 0 - Loop Count 3
+ Clump0: About to wait on occurrence (ignore prev=false) - 1
+ Clump1: About to SetOccurrence - B
+ Clump1: Delaying 150ms.
+ Clump0: Back from wait on occurrence - 1 timedOut:false
+Clump 0 - End Loop
+ Clump0: About to wait on occurrence - 2
+ Clump1: About to SetOccurrence - C
  Clump1: Occurrence set.
- Clump0: Back from wait on occurence - 2 
- Clump0: About to wait on occurence - 3
- Clump0: Back from wait on occurence - 3
+ Clump0: Back from wait on occurrence - 2 timedOut:false
+ Clump0: About to wait on occurrence - 3
+ Clump0: Back from wait on occurrence - 3 timedOut:true
