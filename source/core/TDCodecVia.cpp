@@ -1413,6 +1413,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     TypeRef emptyVIParamList =  _typeManager->FindType("EmptyParameterList");
     TypeRef paramsType = emptyVIParamList;
     TypeRef localsType = emptyVIParamList;
+    TypeRef eventSpecsType = emptyVIParamList;
 
     SubString name;
     Boolean hasName = _string.ReadNameToken(&name);
@@ -1424,6 +1425,8 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
                 localsType = type;
             } else if (name.CompareCStr("Params")) {
                 paramsType = type;
+            } else if (name.CompareCStr("Events")) {
+                    eventSpecsType = type;
             } else {
                 LOG_EVENTV(kSoftDataError, "Field does not exist '%.*s'", FMT_LEN_BEGIN(&name));
             }
@@ -1479,7 +1482,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
 
-    vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, lineNumberBase, &clumpSource);
+    vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, eventSpecsType, lineNumberBase, &clumpSource);
 
     if (_loadVIsImmediately) {
         TDViaParser::FinalizeVILoad(vi, _pLog);
@@ -1671,6 +1674,11 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             i--;
                             continue;
                         }
+                        if (formalParameterTypeName.CompareCStr("VarArgRepeat")) {
+                            state.SetVarArgRepeat();
+                            i--;
+                            continue;
+                        }
 
                         if (formalParameterTypeName.CompareCStr("BranchTarget")) {  // unadorned number
                             state.AddBranchTargetArgument(&token);
@@ -1684,7 +1692,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         } else if (formalParameterTypeName.CompareCStr("EnumTypeAndData")) {
                             state.AddDataTargetArgument(&token, true, true);
                         } else if (formalType->IsStaticParam()) {
-                            LOG_EVENT(kSoftDataError, "unexpected static parameter");
+                            if (!state.HasMultipleDefinitions())
+                                LOG_EVENT(kSoftDataError, "unexpected static parameter");
                         } else {
                             // The most common case is a data value
                             state.AddDataTargetArgument(&token, false, true);  // For starters
@@ -1985,6 +1994,8 @@ void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
         format = "%*lld";
     } else if (encoding == kEncoding_UInt || encoding == kEncoding_Enum) {
         format = "%*llu";
+    } else if (encoding == kEncoding_RefNum) {
+        format = "0x%*llx";
     } else if (encoding == kEncoding_DimInt) {
         if (value == kArrayVariableLengthSentinel) {
             format = tsWildCard;
@@ -2248,10 +2259,13 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
                 RefNumVal *refType = (RefNumVal*)pData;
                 SubString name = refType->Type()->Name();
                 UInt32 refnum = refType->GetRefNum();
-                _string->AppendCStr("refnum ");
-                FormatInt(kEncoding_UInt, refnum);
-                _string->Append(' ');
-                _string->Append(name.Length(), (Utf8Char*)name.Begin());
+                if (name.Length() > 0)
+                    _string->Append(name.Length(), (Utf8Char*)name.Begin());
+                else
+                    _string->AppendCStr("refnum");
+                _string->Append('(');
+                FormatInt(kEncoding_RefNum, refnum);
+                _string->Append(')');
             }
             break;
         default:

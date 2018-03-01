@@ -14,6 +14,7 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
+#include "Events.h"
 
 namespace Vireo
 {
@@ -21,7 +22,8 @@ namespace Vireo
 //------------------------------------------------------------
 // VirtualInstrument
 //------------------------------------------------------------
-NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, Int32 lineNumberBase, SubString* clumpSource)
+NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, TypeRef eventSpecsType,
+                              Int32 lineNumberBase, SubString* clumpSource)
 {
     VIREO_ASSERT(_typeManager == null)
     VIREO_ASSERT( sizeof(VIClump) == _clumps->ElementType()->TopAQSize() )
@@ -30,8 +32,10 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     // finish it out by defining its type.
     _typeManager = tm;
     _viName = NULL;
+    _eventInfo = NULL;
     _params->SetElementType(paramsType, false);
     _locals->SetElementType(localsType, false);
+    _eventSpecs->SetElementType(eventSpecsType, false);
     _clumps->Resize1D(clumpCount);
     _lineNumberBase = lineNumberBase;
     _clumpSource = *clumpSource;
@@ -45,6 +49,14 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
     }
     return kNIError_Success;
 }
+VirtualInstrument::~VirtualInstrument()
+{
+    if (_viName)
+        delete[] _viName;
+    if (_eventInfo)
+        delete [] _eventInfo;
+}
+
 //------------------------------------------------------------
 void VirtualInstrument::InitParamBlock()
 {
@@ -386,6 +398,12 @@ TypeRef ClumpParseState::ReadFormalParameterType()
     if (type) {
         _formalParameterType = type;
     } else if (_varArgCount >= 0) {
+        if (_varArgRepeatStart > 0) {
+            _formalParameterIndex = _varArgRepeatStart;
+            type = _instructionType->GetSubElement(_formalParameterIndex++);
+            if (type)
+                _formalParameterType = type;
+        }
         // Reading past the end is OK for VarArg functions, the last parameter type will be re-used.
     } else {
         // read past end, and no var arg
