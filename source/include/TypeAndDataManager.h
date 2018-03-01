@@ -609,6 +609,7 @@ class TypeCommon
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {
         return _topAQSize * _typeManager->AQBitLength(); }  // TODO(PaulAustin): defer to type manager for scale factor
+    void Dump(void *pData);  // Debugging aid
 };
 
 //------------------------------------------------------------

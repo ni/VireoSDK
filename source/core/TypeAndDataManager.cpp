@@ -12,6 +12,7 @@ SDG
 
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
+#include "TDCodecVia.h"  // for TDViaFormatter
 #include <math.h>
 #include <limits>
 #if defined(VIREO_INSTRUCTION_REFLECTION)
@@ -1054,6 +1055,24 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
 
     return subType;
 }
+
+// Function for ease of debugging; call from debugger to print type/data
+void TypeCommon::Dump(void *pData) {
+    STACK_VAR(String, tempString);
+    if (tempString.Value) {
+        TDViaFormatter formatter(tempString.Value, false);
+        formatter.FormatType(this);
+        if (pData) {
+            tempString.Value->Append(':');
+            formatter.FormatData(this, pData);
+            tempString.Value->Append('\n');
+            gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
+        } else {
+            tempString.Value->Append('\n');
+        }
+    }
+}
+
 //------------------------------------------------------------
 // WrappedType
 //------------------------------------------------------------
