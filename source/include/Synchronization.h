@@ -49,6 +49,7 @@ class ObservableCore
     Observer* _observerList;
 
  public:
+    ObservableCore() : _observerList(NULL) { }
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
     void ObserveStateChange(IntMax info, Boolean wakeAll);
@@ -63,6 +64,7 @@ class OccurrenceCore : public ObservableCore
  private:
     Int32 _setCount;
  public:
+    OccurrenceCore() : _setCount(0) { }
     Int32 Count() {return _setCount;}
     void SetOccurrence();
     Boolean HasOccurred(Int32 count, Boolean ignorePrevious);
@@ -126,6 +128,7 @@ typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 // Queue prim LV error return codes
 enum { kQueueArgErr = 1, kQueueMemFull = 2, kQueueNameTypeMismatch = 1094, kQueueNoSuchName = 1100,
     kQueueDestroyedWhileWaiting = 1122, kQueueWrongContext = 1491, kQueueZeroSize = 1548 };
+enum { kUserEventArgErr = 1 };
 
 }  // namespace Vireo
 

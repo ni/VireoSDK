@@ -1,3 +1,4 @@
+
 /**
 
  Copyright (c) 2014-2015 National Instruments Corp.
@@ -16,6 +17,7 @@
 #include "VirtualInstrument.h"
 #include "RefNum.h"
 #include <map>
+#include <deque>
 
 namespace Vireo {
 
@@ -400,7 +402,7 @@ void OccurrenceCore::SetOccurrence()
 //------------------------------------------------------------
 Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
 {
-    if ((count - _setCount) > 0) {
+    if ((_setCount - count) > 0) {
         return true;
     } else if (ignorePrevious && count != _setCount) {
         return true;
@@ -409,29 +411,36 @@ Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
     }
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Int32)
+static InstructionCore *WaitOnOccurrenceCore(OccurrenceRef *ref, Boolean bIgnorePrevious, UInt32 msTimeout, Boolean *pTimedOut,
+                                             Int32 *sCountP, InstructionCore *_this, InstructionCore *_next)
 {
-    OccurrenceCore *pOcc = _Param(0)->ObjBegin();
-    Boolean bIgnorePrevious = _Param(1);
-    UInt32 msTimeout = _ParamPointer(2) ? _Param(2) : -1;
-
-    if (!bIgnorePrevious && pOcc->HasOccurred(_Param(3), bIgnorePrevious)) {
-        _Param(3) = pOcc->Count();
-        return _NextInstruction();
-    }
-
+    OccurrenceCore *pOcc = (*ref)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
-    if (!pObserver) {
+
+    if (!bIgnorePrevious && pOcc->HasOccurred(*sCountP, bIgnorePrevious)) {
+        // We don't need to allocate an observer if the occurrence already went off (and we care)
+    } else if (!pObserver) {
         PlatformTickType future = msTimeout > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
         pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
         pOcc->InsertObserver(pObserver+1, pOcc->Count()+1);
         return clump->WaitOnObservableObject(_this);
-    } else {
-        // If it woke up because of timeout or occurrence..
-        clump->ClearObservationStates();
-        return _NextInstruction();
     }
+    // If it woke up because of timeout or occurrence..
+    *sCountP = pOcc->Count();
+    if (pTimedOut)
+        *pTimedOut = (pOcc->_observerList != NULL);  // observer has been cleared if occurrence actually went off
+    clump->ClearObservationStates();
+    return _next;
+}
+//------------------------------------------------------------
+VIREO_FUNCTION_SIGNATURE5(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Boolean, Int32)
+{
+    return WaitOnOccurrenceCore(_ParamPointer(0), _Param(1), _ParamPointer(2) ? _Param(2) : -1, _ParamPointer(3), _ParamPointer(4), _this, _NextInstruction());
+}
+VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence_, OccurrenceRef, Boolean, Int32, Int32)  // version with no timed out output
+{
+    return WaitOnOccurrenceCore(_ParamPointer(0), _Param(1), _ParamPointer(2) ? _Param(2) : -1, NULL, _ParamPointer(3), _this, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
@@ -682,10 +691,10 @@ static void CleanUpQueueRefNum(intptr_t arg) {
             pQV->Type()->ClearData(&queueRef);
     }
 }
+
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean, Boolean, ErrorCluster)
 {
-    // ??? do nothing if error in
     Int32 maxSize = _ParamPointer(1) && _Param(1) >= 0 ? _Param(1) : -1;
     Int32 errCode = 0;
     Boolean create = _ParamPointer(3) ? _Param(3) : true;
@@ -1051,7 +1060,7 @@ VIREO_FUNCTION_SIGNATURE5(QueueRef_PeekQueue, RefNumVal, void, Int32, Boolean, E
     return QueueRef_DequeueCore(_this, true);
 }
 
-VIREO_FUNCTION_SIGNATURE3(IsEQQueueRefnum, RefNumVal, RefNumVal, Boolean) {
+VIREO_FUNCTION_SIGNATURE3(IsEQRefnum, RefNumVal, RefNumVal, Boolean) {
     RefNumVal* refnumPtrA = _ParamPointer(0);
     RefNumVal* refnumPtrB = _ParamPointer(1);
     UInt32 refA = refnumPtrA ? refnumPtrA->GetRefNum() : 0;
@@ -1060,7 +1069,7 @@ VIREO_FUNCTION_SIGNATURE3(IsEQQueueRefnum, RefNumVal, RefNumVal, Boolean) {
     return _NextInstruction();
 }
 
-VIREO_FUNCTION_SIGNATURE3(IsNEQueueRefnum, RefNumVal, RefNumVal, Boolean) {
+VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean) {
     RefNumVal* refnumPtrA = _ParamPointer(0);
     RefNumVal* refnumPtrB = _ParamPointer(1);
     UInt32 refA = refnumPtrA ? refnumPtrA->GetRefNum() : 0;
@@ -1069,7 +1078,7 @@ VIREO_FUNCTION_SIGNATURE3(IsNEQueueRefnum, RefNumVal, RefNumVal, Boolean) {
     return _NextInstruction();
 }
 
-VIREO_FUNCTION_SIGNATURE2(IsNotARefnum, RefNumVal, Boolean)
+VIREO_FUNCTION_SIGNATURE2(IsNotAQueueRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     QueueRef queueRef = NULL;
@@ -1115,6 +1124,7 @@ VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
     return HandleQueueReschedule(kQueueDequeueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
 }
 
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Synchronization)
 
     // Wait Timers
@@ -1147,9 +1157,10 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_TYPE(Observer, "c(e(DataPointer object)e(DataPointer next)e(DataPointer clump)e(Int64 info))");
 
     // Occurrences
-    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(DataPointer firstState)e(Int32 setCount)")
+    DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(DataPointer firstState)e(Int32 setCount))")
     DEFINE_VIREO_TYPE(Occurrence, "a(OccurrenceValue)")
-    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)s(Int32 staticCount))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(WaitOnOccurrence, WaitOnOccurrence_, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)s(Int32 staticCount))")
+    DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)o(Boolean timedout)s(Int32 staticCount))")
     DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
     // Queues
@@ -1172,9 +1183,9 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)"
         "o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotARefnum, "p(i(QueueRefNum) o(Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQQueueRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNEQueueRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAQueueRefnum, "p(i(QueueRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
 
 
     // Static queues
@@ -1183,6 +1194,7 @@ DEFINE_VIREO_BEGIN(Synchronization)
 
     // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue<.$1> queue)i($1 element)i(Int32 timeOut)o(Boolean timedOut))")
     // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue<.$1> queue)o($1 element)i(Int32 timeOut)o(Boolean timedOut))")
+
 DEFINE_VIREO_END()
 
 }  // namespace Vireo
