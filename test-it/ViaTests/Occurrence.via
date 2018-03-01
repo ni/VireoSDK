@@ -2,28 +2,50 @@
 define(HelloOccurrence dv(.VirtualInstrument (
     Locals: c(
         e(.Occurrence occ1)
+        e(.Int32 count)
+        e(.Boolean timedOut)
     )
 
     clump (
         Trigger(1)
-        Printf(" Clump0: About to wait on occurence - 1\n")
-        WaitOnOccurrence(occ1 true 10000)
-        Printf(" Clump0: Back from wait on occurence - 1 \n")
-        Printf(" Clump0: About to wait on occurence - 2\n")
-        WaitOnOccurrence(occ1 true 10000)
-        Printf(" Clump0: Back from wait on occurence - 2 \n")
-        Printf(" Clump0: About to wait on occurence - 3\n")
-        WaitOnOccurrence(occ1 true 50)
-        Printf(" Clump0: Back from wait on occurence - 3\n")
+        Printf(" Clump0: About to SetOccurrence - pre\n")
+        SetOccurrence(occ1)
+
+	Perch(1)  // Loop to test ignorePrevious:
+	// Should return immediately on iteration 0 (because of 'pre' set above)
+	// wakeup after the SetOcurrence A in the other clump  on iter 1,
+	// timeout on iter 2 (because of 150 ms delay before SetOcc B), 
+	// and then wake up on iter 3 because of SetOcc B.
+	Printf("Clump 0 - Loop Count %d\n" count)
+        Printf(" Clump0: About to wait on occurrence (ignore prev=false) - 1\n")
+        WaitOnOccurrence(occ1 false 100 timedOut)
+        Printf(" Clump0: Back from wait on occurrence - 1 timedOut:%z\n" timedOut)
+	BranchIfGE(2 count 3)
+	Add(count 1 count)
+	Branch(1)
+
+	Perch(2)
+	Printf("Clump 0 - End Loop\n")
+        Printf(" Clump0: About to wait on occurrence - 2\n")
+        WaitOnOccurrence(occ1 true 10000 timedOut)  // should not timeout, matching SetOcc C
+        Printf(" Clump0: Back from wait on occurrence - 2 timedOut:%z\n" timedOut)
+        Printf(" Clump0: About to wait on occurrence - 3\n")
+        WaitOnOccurrence(occ1 true 50 timedOut) // should time out
+        Printf(" Clump0: Back from wait on occurrence - 3 timedOut:%z\n" timedOut)
     )
 
     clump (
-        Printf(" Clump1: About to wait 50ms.\n")
+        Printf(" Clump1: Delaying 50ms.\n")
         WaitMilliseconds(50)
-        Printf(" Clump1: About to SetOccurrece - A\n")
+        Printf(" Clump1: About to SetOccurrence - A\n")
         SetOccurrence(occ1)
-        WaitMilliseconds(50)
-        Printf(" Clump1: About to SetOccurrece - B\n")
+        Printf(" Clump1: Delaying 150ms.\n")
+        WaitMilliseconds(150)
+        Printf(" Clump1: About to SetOccurrence - B\n")
+        SetOccurrence(occ1)
+        Printf(" Clump1: Delaying 150ms.\n")
+        WaitMilliseconds(150)
+        Printf(" Clump1: About to SetOccurrence - C\n")
         SetOccurrence(occ1)
         Printf(" Clump1: Occurrence set.\n")
     )
