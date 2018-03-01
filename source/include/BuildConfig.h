@@ -30,7 +30,7 @@ SDG
 
 // Definitions common for most platforms
 // Platform specific overrides are found in the sections below
-#define VIVM_UNROLL_EXEC
+#define VIVM_UNROLL_EXEC 1
 
 #define VIREO_MAIN main
 

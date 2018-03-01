@@ -308,6 +308,9 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
         return _runningQueueElt->_savePc;
     }
 }
+
+#define VIREO_DEBUG_EXEC 0  // Turn on to print each instruction as it is executed to console
+
 //------------------------------------------------------------
 // ExecuteSlices - execute instructions in run queue repeatedly (numSlices at a time before breaking out and checking
 // timers), until all clumps are finished or tickCount time is reached.
@@ -330,8 +333,13 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
         VIREO_ASSERT((null == _runningQueueElt->_next))     // Should not be on queue
         VIREO_ASSERT((0 == _runningQueueElt->_shortCount))  // Should not be running if triggers > 0
         do {
+#if VIREO_DEBUG_EXEC
+            SubString cName;
+            THREAD_TADM()->FindCustomPointerTypeFromValue((void*)currentInstruction->_function, &cName);
+            gPlatform.IO.Printf("Exec: %s\n", cName.Begin());
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-#ifdef VIVM_UNROLL_EXEC
+#endif
+#if VIVM_UNROLL_EXEC && !VIREO_DEBUG_EXEC
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
