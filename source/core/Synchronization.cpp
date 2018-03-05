@@ -724,23 +724,6 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
     else if (maxSize == 0)
         errCode = kQueueZeroSize;
 
-    // Set embedded array in Queue to be variable or fixed
-    IntIndex *dimLengths = queueType && queueType->Rank() == 1 ? queueType->DimensionLengths() : NULL;
-    if (dimLengths) {
-        if (_ParamPointer(1)) {  // maxSize wired
-            IntIndex newDimLength = maxSize > 0 ? maxSize : kArrayVariableLengthSentinel;
-            // It's okay to dynamically modify the type's dimSize here because the RefNumValType's
-            // TypeVisitor which created it ensured it was not shared/unique'd with other existing types
-            // (TODO The Type system should have getters/setters for setting dim lengths and not return
-            // the raw dim array, allowing us to modify it this way. But fixing this also entails making
-            // Vireo type methods const-correct.)
-            dimLengths[0] = newDimLength;  // e.g. queueType->SetDimensionLength(0, newDimLength)
-        }
-        if (refnumPtr)
-            refnumPtr->SetMaxSize(maxSize);
-    } else {
-        errCode = kQueueArgErr;
-    }
     if (!errCode) {
         NIError status = type->InitData((void*)&queueRef, (TypeRef)NULL);
         if (status == kNIError_Success) {
@@ -749,6 +732,17 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
                 if (!refnumVal) {
                     errCode = kQueueMemFull;
                 } else {
+                    if (_ParamPointer(1)) {  // maxSize wired
+                        // NOTE:  This actually sets the underlying array type of the Queue to be a fixed size.
+                        // It's okay to dynamically modify the type's dimSize here because the RefNumValType's
+                        // TypeVisitor which created it ensured it was not shared/unique'd with other existing types.
+                        // TODO(spathiwa) - move maxSize directly into QueueCore and re-enable unique'ing of qeueue array types.
+                        QueueCore *pQV = queueRef->ObjBegin();
+                        if (!pQV->SetMaxSize(maxSize)) {
+                            errCode = kQueueArgErr;
+                            QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumVal, &queueRef);
+                        }
+                    }
                     if (createdPtr)
                         *createdPtr = true;
                     if (name) {
@@ -896,7 +890,7 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumVal, Boolean, Int32, St
             errPtr->SetError(true, kQueueArgErr, "GetQueueStatus", true);
     } else {
         pQV = queueRef->ObjBegin();
-        maxSize = refnumPtr->GetMaxSize();
+        maxSize = pQV->MaxSize();
         count = pQV->Count();
     }
     if (_ParamPointer(2))
@@ -980,8 +974,9 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumVal, void, void,
         }
         return _NextInstruction();
     }
-    Int32 maxSize = refnumPtr->GetMaxSize();
+
     QueueCore *pQV = queueRef->ObjBegin();
+    Int32 maxSize = pQV->MaxSize();
 
     if (lossy) {
         TypeRef eltType = pQV->EltType();

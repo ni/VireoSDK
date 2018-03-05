@@ -1950,17 +1950,15 @@ NIError RefNumValType::InitData(void* pData, TypeRef pattern) {
     pRefnumData->SetType(pattern);
 
     pRefnumData->SetRefNum(0);
-    pRefnumData->SetMaxSize(-1);
     return kNIError_Success;
 }
 NIError RefNumValType::CopyData(const void* pData, void* pDataCopy)  {
-    *(RefNumVal*)pDataCopy = *(RefNumVal*)pData;
+    ((RefNumVal*)pDataCopy)->SetRefNum(((RefNumVal*)pData)->GetRefNum());
     return kNIError_Success;
 }
 NIError RefNumValType::ClearData(void* pData) {
     RefNumVal* pRefnumData = (RefNumVal*)pData;
     pRefnumData->SetRefNum(0);
-    pRefnumData->SetMaxSize(-1);
     return kNIError_Success;
 }
 //------------------------------------------------------------

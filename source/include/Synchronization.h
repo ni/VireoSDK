@@ -108,6 +108,19 @@ class QueueCore : public ObservableCore
     Boolean HasRoom(IntIndex count);
     IntIndex Count() const { return _count; }
     TypeRef EltType() const { return _elements->ElementType(); }
+    IntDim MaxSize() const {
+        IntDim maxSize = _elements->Type()->DimensionLengths()[0];
+        return maxSize > 0 ? maxSize : -1;
+    }
+    bool SetMaxSize(IntDim maxSize) {
+        IntIndex newDimLength = maxSize > 0 ? maxSize : kArrayVariableLengthSentinel;
+        IntDim* dimLengths = _elements->Type()->DimensionLengths();
+        if (_elements->Type()->Rank() == 1 && dimLengths != NULL) {
+            dimLengths[0] = newDimLength;
+            return true;
+        }
+        return false;
+    }
     TypeRef Type() const { return _elements->Type(); }
 };
 typedef TypedObject<QueueCore> QueueObject, *QueueRef;
