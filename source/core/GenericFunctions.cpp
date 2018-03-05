@@ -79,6 +79,8 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                     pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Unsupported enum size");
                 }
                 extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
+            } else if (destType->BitEncoding() == kEncoding_RefNum) {
+                    copyOpName = "CopyRefnum";
             } else {
                 copyOpName = CopyProcName(pSource, pDest, sourceType);
                 if (!copyOpName) {
@@ -170,6 +172,8 @@ DECLARE_VIREO_PRIMITIVE3(CopyEnum4, UInt32, UInt32, void, (_Param(1) = _Param(0)
     _Param(0) : UInt32(uintptr_t(_ParamPointer(2)))-1))
 DECLARE_VIREO_PRIMITIVE3(CopyEnum8, UInt64, UInt64, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ?
     _Param(0) : uintptr_t(_ParamPointer(2))-1))
+
+DECLARE_VIREO_PRIMITIVE2(CopyRefnum, RefNumVal, RefNumVal, (_Param(1).SetRefNum(_Param(0).GetRefNum())))
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(CopyN, void, void, void)
@@ -2694,6 +2698,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(CopyEnum2, "p(i(UInt16)  o(UInt16) i(UInt16))");
     DEFINE_VIREO_FUNCTION(CopyEnum4, "p(i(UInt32)  o(UInt32) i(UInt32))");
     DEFINE_VIREO_FUNCTION(CopyEnum8, "p(i(UInt64)  o(UInt64) i(UInt64))");
+    DEFINE_VIREO_FUNCTION(CopyRefnum, "p(i(DataPointer)  o(DataPointer))");
 
     // Instruction to copy boolean value and reset it to another value
     DEFINE_VIREO_FUNCTION(CopyAndReset, "p(io(Boolean source)  o(Boolean destination) i(Boolean sourceNewValue))");
