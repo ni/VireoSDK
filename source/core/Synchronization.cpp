@@ -477,6 +477,8 @@ Boolean QueueCore::TryMakeRoom(IntIndex additionalCount, IntIndex insert)
         return true;
     } else {
         // Not enough room, grow (if possible)
+        if (_maxSize > 0 && length + additionalCount > _maxSize)
+            return false;
         NIError err = _elements->Insert1D(insert, additionalCount);
         return (err == kNIError_Success);
     }
@@ -733,15 +735,8 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
                     errCode = kQueueMemFull;
                 } else {
                     if (_ParamPointer(1)) {  // maxSize wired
-                        // NOTE:  This actually sets the underlying array type of the Queue to be a fixed size.
-                        // It's okay to dynamically modify the type's dimSize here because the RefNumValType's
-                        // TypeVisitor which created it ensured it was not shared/unique'd with other existing types.
-                        // TODO(spathiwa) - move maxSize directly into QueueCore and re-enable unique'ing of qeueue array types.
                         QueueCore *pQV = queueRef->ObjBegin();
-                        if (!pQV->SetMaxSize(maxSize)) {
-                            errCode = kQueueArgErr;
-                            QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumVal, &queueRef);
-                        }
+                        pQV->SetMaxSize(maxSize);  // maxSize non-zero, checked above
                     }
                     if (createdPtr)
                         *createdPtr = true;
@@ -1156,7 +1151,7 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
     // Queues
-    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count))")  // Queue internval representation
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count)e(Int32 maxSize))")  // Queue internval rep.
     DEFINE_VIREO_TYPE(Queue, "a(QueueValue)")  // ZDA
 
     // Dynamic, refnum-based queues
