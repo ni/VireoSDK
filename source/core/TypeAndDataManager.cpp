@@ -1582,13 +1582,11 @@ NIError EquivalenceType::ClearData(void* pData)
 //------------------------------------------------------------
 // ArrayType
 //------------------------------------------------------------
-ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths, Boolean inhibitUniq)
+ArrayType* ArrayType::New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank, IntIndex* dimensionLengths)
 {
     ArrayType* type = TADM_NEW_PLACEMENT_DYNAMIC(ArrayType, rank)(typeManager, elementType, rank, dimensionLengths);
 
     SubString binaryName((AQBlock1*)&type->_topAQSize, (AQBlock1*)(&type->_dimensionLengths[0] + rank));
-    if (inhibitUniq)
-        return type;
     return (ArrayType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------

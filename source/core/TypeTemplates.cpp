@@ -215,8 +215,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
     // not strictly true any longer.
     VIREO_ASSERT(subType != type->GetSubElement(0));
 
-    Boolean inhibitUniq = type->Rank() > 0 && _inhibitTypeUniqueness;
-    _newType = ArrayType::New(_typeManager, subType, type->Rank(), newDimensions, inhibitUniq);
+    _newType = ArrayType::New(_typeManager, subType, type->Rank(), newDimensions);
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------
