@@ -6,3 +6,4 @@ PeekQueue y=2 to=0
 Dequeue y=2 to=0
 Dequeue y=1 to=0
 FlushQueue remainingElts=(0 5)
+Queue MaxSize aliasing bug test: Pass: true

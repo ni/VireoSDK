@@ -2,17 +2,24 @@
 define(TestProgram dv(.VirtualInstrument (
     c(
         e(.QueueRefNum<.Double> q)
+        e(.QueueRefNum<.Double> q2)
         e(.Double y)
         e(.Int32 maxsize)
         e(.Int32 ne)
         e(.Boolean timedOut)
         e(.Boolean overflowed)
+        e(.Boolean badAliasingTestPass)
         e(a(.Double *) remainingElts)
         e(.ErrorCluster err)
     )
 
     clump (
+        ObtainQueue(q2 1 * * * err)
+	Copy(q2 q)  // before bug fix, this would alias q2 and q's queue type (including maxSize)
         ObtainQueue(q 4 * * * err)
+        Enqueue(q2 0.0 1000 timedOut err)
+        Enqueue(q2 0.0 0 timedOut err)
+	Copy(timedOut badAliasingTestPass)
         Enqueue(q 0.0 1000 timedOut err)
         EnqueueFront(q 1.0 1000 timedOut err)
         EnqueueFront(q 2.0 1000 timedOut err)
@@ -34,6 +41,7 @@ define(TestProgram dv(.VirtualInstrument (
 	FlushQueue(q remainingElts err)
         Printf("FlushQueue remainingElts=%z\n" remainingElts)
         ReleaseQueue(q * * err)
+        Printf("Queue MaxSize aliasing bug test: Pass: %z\n" badAliasingTestPass)
     )
 
 ) ) )
