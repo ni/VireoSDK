@@ -409,11 +409,7 @@ class InlineArray
 //! Visitor class for types.
 class TypeVisitor
 {
- protected:
-    Boolean _inhibitTypeUniqueness;
  public:
-    TypeVisitor() { _inhibitTypeUniqueness = false; }
-
     virtual void VisitBad(TypeRef type) = 0;
     virtual void VisitBitBlock(BitBlockType* type) = 0;
     virtual void VisitBitCluster(BitClusterType* type) = 0;
@@ -429,8 +425,6 @@ class TypeVisitor
     virtual void VisitDefaultValue(DefaultValueType* type) = 0;
     virtual void VisitDefaultPointer(DefaultPointerType* type) = 0;
     virtual void VisitCustomDataProc(CustomDataProcType* type) = 0;
-    virtual Boolean GetInhibitTypeUniqueness() const { return _inhibitTypeUniqueness; }
-    virtual void SetInhibitTypeUniqueness(Boolean t) { _inhibitTypeUniqueness = t; }
 };
 
 //------------------------------------------------------------
@@ -874,7 +868,7 @@ class ArrayType : public WrappedType
 
  public:
     static ArrayType* New(TypeManagerRef typeManager, TypeRef elementType, IntIndex rank,
-                          IntIndex* dimensionLengths, Boolean inhibitUniq = false);
+                          IntIndex* dimensionLengths);
 
     // _pDefault is a singleton for each instance of an ArrayType used as the default
     // value, allocated on demand
@@ -954,10 +948,7 @@ class RefNumValType : public WrappedType
     RefNumValType(TypeManagerRef typeManager, TypeRef type);
  public:
     static RefNumValType* New(TypeManagerRef typeManager, TypeRef type);
-    virtual void    Accept(TypeVisitor *tv)     {
-        tv->VisitRefNumVal(this);  // TODO(spathiwa) This no longer calls SetInhibitTypeUniqueness since a refnum
-        // queue's maxSize is no longer in type, and it was the only caller; consider removing SetInhibitTypeUniqueness API altogether.
-    }
+    virtual void    Accept(TypeVisitor *tv)             { tv->VisitRefNumVal(this); }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                  { return 1; }
     virtual NIError InitData(void* pData, TypeRef pattern = null);
