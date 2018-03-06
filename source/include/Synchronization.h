@@ -97,6 +97,8 @@ class QueueCore : public ObservableCore
     //! How many elements are in the queue
     IntIndex   _count;
 
+    IntIndex   _maxSize;
+
     IntIndex RemoveIndex();
  public:
     Boolean Compress();
@@ -109,17 +111,13 @@ class QueueCore : public ObservableCore
     IntIndex Count() const { return _count; }
     TypeRef EltType() const { return _elements->ElementType(); }
     IntDim MaxSize() const {
+        if (_maxSize)  // if dynamic (refnum-based queue), return dynamic maxSize
+            return _maxSize > 0 ? _maxSize : -1;
         IntDim maxSize = _elements->Type()->DimensionLengths()[0];
         return maxSize > 0 ? maxSize : -1;
     }
-    bool SetMaxSize(IntDim maxSize) {
-        IntIndex newDimLength = maxSize > 0 ? maxSize : kArrayVariableLengthSentinel;
-        IntDim* dimLengths = _elements->Type()->DimensionLengths();
-        if (_elements->Type()->Rank() == 1 && dimLengths != NULL) {
-            dimLengths[0] = newDimLength;
-            return true;
-        }
-        return false;
+    void SetMaxSize(IntDim maxSize) {
+        _maxSize = maxSize >= 0 ? maxSize : -1;  // (setting to zero would revert to static size, checked in caller QueueRef_Obtain to prevent)
     }
     TypeRef Type() const { return _elements->Type(); }
 };

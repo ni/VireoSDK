@@ -955,11 +955,8 @@ class RefNumValType : public WrappedType
  public:
     static RefNumValType* New(TypeManagerRef typeManager, TypeRef type);
     virtual void    Accept(TypeVisitor *tv)     {
-        Boolean tUniq = tv->GetInhibitTypeUniqueness();
-        tv->SetInhibitTypeUniqueness(true);
-        tv->VisitRefNumVal(this);  // make sure refnum's Queue Array is independent (not unique'd)
-                                  // so its dimSize can be changed dynamically
-        tv->SetInhibitTypeUniqueness(tUniq);
+        tv->VisitRefNumVal(this);  // TODO(spathiwa) This no longer calls SetInhibitTypeUniqueness since a refnum
+        // queue's maxSize is no longer in type, and it was the only caller; consider removing SetInhibitTypeUniqueness API altogether.
     }
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
     virtual Int32   SubElementCount()                  { return 1; }
