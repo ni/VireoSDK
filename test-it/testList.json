@@ -123,6 +123,7 @@
                 "ClusterComparison.via",
                 "clusterInitializer.via",
                 "Clusters.via",
+                "ClusterTypeCompareBug.via",
                 "ClusterVectorOp.via",
                 "Coercion.via",
                 "ComplexConversions.via",

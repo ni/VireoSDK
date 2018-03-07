@@ -798,11 +798,13 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
                 }
             } else if (!isThisIntrinsicClusterType && !isOtherIntrinsicClusterType) {
                 if (this->SubElementCount() == otherType->SubElementCount()) {
-                    for (Int32 i = 0; i < this->SubElementCount(); i++) {
+                    Int32 i = 0;
+                    for (; i < this->SubElementCount(); i++) {
                         if (!this->GetSubElement(i)->CompareType(otherType->GetSubElement(i)))
                             break;
                     }
-                    bMatch = true;
+                    if (i == this->SubElementCount())
+                        bMatch = true;
                 }
             }
         }
@@ -816,6 +818,9 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
 
     if (!bMatch && (otherType->Name().Length() > 0)) {
         bMatch = IsA(otherType);
+        if (_encoding == kEncoding_RefNum) {
+            return otherType->BitEncoding() == kEncoding_RefNum && bMatch && GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
+        }
     }
 
     return bMatch;
