@@ -1,0 +1,15 @@
+
+define(ClusterTest dv(.VirtualInstrument (
+    Locals:c(
+        e( c(e(Int32 int)e(String str)) clust1)
+        e( c(e(String int)e(String str)) clust2)
+    )
+
+    clump (1 // top level
+	// Should generate Type mismatch.  (Before bug fix, would crash)
+	Copy(clust1 clust2)
+    )
+) ) )
+
+
+enqueue(ClusterTest)
