@@ -1,4 +1,4 @@
-describe('Tests that perform multiple serial requests #FailsPhantomJS #Slow', function () {
+describe('Tests that perform multiple serial requests #Slow', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;

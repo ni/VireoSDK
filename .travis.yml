@@ -47,8 +47,7 @@ script:
 - make testjs
 - make testnative
 - make testhttpbin
-- npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
-- npm run karma -- --browsers Firefox
+- npm run test
 before_deploy:
 - npm run doxygen
 - export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"

@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    process.env.CHROME_BIN = require('puppeteer').executablePath();
+
     module.exports = {
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '',
@@ -14,9 +16,6 @@
             // 3rd party resources
             // None
             // source files
-
-            // TODO mraj So far core.js is only used for es6 Map support for PhantomJS, can remove with PhantomJS 2.5
-            'node_modules/core-js/client/core.js',
             'node_modules/whatwg-fetch/fetch.js',
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
             'node_modules/diff/dist/diff.js',
@@ -75,16 +74,17 @@
         hostname: '127.0.0.1',
 
         // Aliases for launchers that provide custom settings
+        // No Sandbox mode needed to run in Travis container https://docs.travis-ci.com/user/chrome#Sandboxing
         customLaunchers: {
-            PhantomJS_Debug: {
-                base: 'PhantomJS',
-                debug: true
+            ChromeHeadlessNoSandbox: {
+                base: 'ChromeHeadless',
+                flags: ['--no-sandbox']
             }
         },
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: false,
+        singleRun: true,
 
         // How long will Karma wait for a message from a browser before disconnecting from it (in ms).
         // default: 10000
