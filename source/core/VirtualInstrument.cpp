@@ -974,12 +974,12 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     //-----------------
     for (IntIndex i = 0; i < viArgCount; i++) {
         TypeRef paramType = viParamType->GetSubElement(i);
+        IntIndex offset = paramType->ElementOffset();
 
         // Copy out if there is place to put it. No need to copy out simple arrays
         // If arrays are inside clusters they will be copied out, tough the top pointer should be the same
         if (paramType->IsOutputParam() && (!paramType->IsArray()) && viArgPointers[i] != null) {
             // If ArgPointer is null no output provided, don't copy out, it was a temporary allocation.
-            IntIndex offset = paramType->ElementOffset();
             snippetBuilder.StartInstruction(&copyTopOpName);
             // Reverse direction for output parameters
             snippetBuilder.InternalAddArg(paramType, pParamData + offset);
@@ -987,12 +987,19 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             snippetBuilder.EmitInstruction();
         }
 
-        if (!paramType->IsFlat()) {
+        if (!paramType->IsFlat() && viArgPointers[i] != null) {
             // If it is non flat then it has to be owned. Unwired parameters should have been allocated a private copy.
-            VIREO_ASSERT(viArgPointers[i] != null)
             // Zero out all traces of the non flat value passed in
-            IntIndex offset = paramType->ElementOffset();
             snippetBuilder.StartInstruction(&zeroOutTopOpName);
+            snippetBuilder.InternalAddArg(null, paramType);
+            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+            snippetBuilder.EmitInstruction();
+        }
+
+        if (!paramType->IsFlat() && viArgPointers[i] == null && paramType->IsInputParam()) {
+            // If source location is null, wild card argument was passed. We should clear the data.
+            // Generate instruction to Clear the data.
+            snippetBuilder.StartInstruction(&clearOpName);
             snippetBuilder.InternalAddArg(null, paramType);
             snippetBuilder.InternalAddArg(paramType, pParamData + offset);
             snippetBuilder.EmitInstruction();
