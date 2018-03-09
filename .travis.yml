@@ -33,6 +33,8 @@ install:
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
+- node -v
+- npm -v
 before_script:
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
