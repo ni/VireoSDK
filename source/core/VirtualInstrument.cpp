@@ -988,20 +988,21 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             snippetBuilder.InternalAddArg(viArgTypes[i], viArgPointers[i]);
             snippetBuilder.EmitInstruction();
         }
-        if (!paramType->IsFlat() && viArgPointers[i] != null) {
-            // If it is non flat then it has to be owned. Unwired parameters should have been allocated a private copy.
-            // Zero out all traces of the non flat value passed in
-            snippetBuilder.StartInstruction(&zeroOutTopOpName);
-            snippetBuilder.InternalAddArg(null, paramType);
-            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
-            snippetBuilder.EmitInstruction();
-        }
-        if (!paramType->IsFlat() && viArgPointers[i] == null && !paramType->IsOutputParam()) {
-            // Wild card argument was passed, so it was allocated in param block. We should clear the data.
-            snippetBuilder.StartInstruction(&clearOpName);
-            snippetBuilder.InternalAddArg(null, paramType);
-            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
-            snippetBuilder.EmitInstruction();
+        if (!paramType->IsFlat()) {
+            if (viArgPointers[i] != null) {
+                // If it is non flat then it has to be owned. (Unwired parameters should have been allocated a private copy, handled in else)
+                // Zero out all traces of the non flat value passed in
+                snippetBuilder.StartInstruction(&zeroOutTopOpName);
+                snippetBuilder.InternalAddArg(null, paramType);
+                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.EmitInstruction();
+            } else {
+                // Wild card argument was passed, so it was locally allocated in param block. We should clear the data.
+                snippetBuilder.StartInstruction(&clearOpName);
+                snippetBuilder.InternalAddArg(null, paramType);
+                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.EmitInstruction();
+            }
         }
     }
     EndEmitSubSnippet(&snippetBuilder);
