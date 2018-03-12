@@ -157,18 +157,6 @@ SDG
     #define VIREO_PERF_COUNTERS
 
 #endif
-
-// TODO(PaulAustin): allow for thread locals on linux/unix
-#define VIVM_THREAD_LOCAL
-
-#ifdef VIREO_DEBUG
-#define VIREO_TRACK_MEMORY_QUANTITY
-#define VIREO_USING_ASSERTS
-#endif
-
-#define VIREO_ISR_DISABLE
-#define VIREO_ISR_ENABLE
-
 #define VIREO_EXPORT extern "C"
 
 //------------------------------------------------------------
@@ -242,6 +230,22 @@ SDG
     #undef VIREO_FILESYSTEM
 
 #endif
+
+// TODO(PaulAustin): allow for thread locals on linux/unix
+#define VIVM_THREAD_LOCAL
+
+#ifdef VIREO_DEBUG
+#define VIREO_TRACK_MEMORY_QUANTITY
+#define VIREO_USING_ASSERTS
+#else
+#if (kVireoOS_macosxU || kVireoOS_linuxU || kVireoOS_windows)
+#define VIREO_USING_ASSERTS  // use asserts for native builds
+#endif
+#endif
+
+#define VIREO_ISR_DISABLE
+#define VIREO_ISR_ENABLE
+
 
 #define VIREO_32_BIT_LONGLONGWORD_ALIGNMENT  (!__amd64__ && !_WIN32 && !_WIN64 && !kVireoOS_emscripten)
 
