@@ -291,6 +291,8 @@
                 "StringToLowercase.via",
                 "StringTrim.via",
                 "SubVIDefaultParameter.via",
+                "SubVIDefaultParameterLeak.via",
+                "SubVIInvalidWriteToInputParm.via",
                 "SubVIMultiForwardDeclaration.via",
                 "SubVIMultiMultiCall.via",
                 "SubVIMulti.via",
