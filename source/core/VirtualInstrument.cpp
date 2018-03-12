@@ -564,7 +564,10 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     // See if it is in the VI's locals or paramblock
     _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
     if (_actualArgumentType) {
-        _argumentState = kArgumentResolvedToVIElement;
+        if (_actualArgumentType->ElementUsageType() == kUsageTypeInput && _formalParameterType->ElementUsageType() != kUsageTypeInput)
+            _argumentState = kArgumentNotMutable;  // can't write to an subVI's input parameter
+        else
+            _argumentState = kArgumentResolvedToVIElement;
         return;
     }
 
@@ -974,25 +977,28 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     //-----------------
     for (IntIndex i = 0; i < viArgCount; i++) {
         TypeRef paramType = viParamType->GetSubElement(i);
-
+        IntIndex offset = paramType->ElementOffset();
         // Copy out if there is place to put it. No need to copy out simple arrays
         // If arrays are inside clusters they will be copied out, tough the top pointer should be the same
         if (paramType->IsOutputParam() && (!paramType->IsArray()) && viArgPointers[i] != null) {
             // If ArgPointer is null no output provided, don't copy out, it was a temporary allocation.
-            IntIndex offset = paramType->ElementOffset();
             snippetBuilder.StartInstruction(&copyTopOpName);
             // Reverse direction for output parameters
             snippetBuilder.InternalAddArg(paramType, pParamData + offset);
             snippetBuilder.InternalAddArg(viArgTypes[i], viArgPointers[i]);
             snippetBuilder.EmitInstruction();
         }
-
-        if (!paramType->IsFlat()) {
+        if (!paramType->IsFlat() && viArgPointers[i] != null) {
             // If it is non flat then it has to be owned. Unwired parameters should have been allocated a private copy.
-            VIREO_ASSERT(viArgPointers[i] != null)
             // Zero out all traces of the non flat value passed in
-            IntIndex offset = paramType->ElementOffset();
             snippetBuilder.StartInstruction(&zeroOutTopOpName);
+            snippetBuilder.InternalAddArg(null, paramType);
+            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+            snippetBuilder.EmitInstruction();
+        }
+        if (!paramType->IsFlat() && viArgPointers[i] == null && !paramType->IsOutputParam()) {
+            // Wild card argument was passed, so it was allocated in param block. We should clear the data.
+            snippetBuilder.StartInstruction(&clearOpName);
             snippetBuilder.InternalAddArg(null, paramType);
             snippetBuilder.InternalAddArg(paramType, pParamData + offset);
             snippetBuilder.EmitInstruction();

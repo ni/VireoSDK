@@ -88,7 +88,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 }
             }
         } else if (sourceType->IsArray()) {
-            VIREO_ASSERT(!destType->IsInputParam());
+            VIREO_ASSERT(!destType->IsInputParam() || destType->IsOutputParam());
             if (destType->IsAlias() && !destType->IsOutputParam()) {
                 // If its a local alias then just copy the pointer.
                 // Outputs are alias to the callers params, so that still needs a deep copy
