@@ -127,7 +127,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VIREO_USING_ASSERTS;VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
