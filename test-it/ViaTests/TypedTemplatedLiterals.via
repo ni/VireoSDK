@@ -19,7 +19,7 @@ start( dv(VirtualInstrument (
         Println(TestPointGeneric)
         Println(TestPointInt8)
         Println(TestPointInt32)
-        Println(TestPointComplexDouble)
+        Println(TestPointComplexDouble<()>)  // !!! without the <()> arg, this leaks! TODO(spathiwa) investigate
 
         Println(TestPointInt8_2_3)
         Println(TestPointInt8<(2 3)>)
