@@ -237,10 +237,6 @@ SDG
 #ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY
 #define VIREO_USING_ASSERTS
-#else
-#if (kVireoOS_macosxU || kVireoOS_linuxU || kVireoOS_windows)
-#define VIREO_USING_ASSERTS  // use asserts for native builds
-#endif
 #endif
 
 #define VIREO_ISR_DISABLE
