@@ -50,6 +50,9 @@ else
         else
             CCOPT = -O3
         endif
+        ifndef RELEASE
+            CFLAGS += -DVIREO_USING_ASSERTS
+        endif
         STRIP = strip $(OUTPUT_EXE)
     endif
 
@@ -207,7 +210,12 @@ help:
 	@echo ''
 	@echo '        "make clean simple install"'
 	@echo ''
-	@echo 'To build debug versions with symbols and extra asserts, define the DEBUG flag:'
+	@echo 'The default build is optimized, but with asserts enabled.'
+	@echo 'To build release versions without asserts, define the RELEASE flag:'
+	@echo ''
+	@echo '        "make clean simple install RELEASE=1"'
+	@echo ''
+	@echo 'To build debug versions with symbols and asserts, define the DEBUG flag:'
 	@echo ''
 	@echo '        "make clean simple install DEBUG=1"'
 	@echo ''
