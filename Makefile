@@ -9,7 +9,7 @@ native:	simple
 lint:
 	@cd make-it/cpplint && make $@
 
-simple v32 v64:
+simple v32 v64 help:
 	cd make-it && make $@
 
 vjs js:
