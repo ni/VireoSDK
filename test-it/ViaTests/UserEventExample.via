@@ -39,8 +39,9 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	    )> eventRegRef)
 
 	e(dv(MyEventData ("Hello" 1.0)) myData)  // actual event data to be fired
+	e(dv(MyEventData ("Goodbye" 2.0)) myData2)  // actual event data to be fired
         e(.ErrorCluster errorIO)
-        e(dv(Int32 500) timeOut)
+        e(dv(Int32 300) timeOut)
 
 	e(c(  // Storage for event data node on left border of event case 1 (user event)
 	    e(Int32 eventSource)
@@ -104,7 +105,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     clump (1 // background clump
 	WaitMilliseconds(100)
 	Printf("(Generating User Event in background)\n")
-	GenerateUserEvent(userEventRef myData errorIO)
+	GenerateUserEvent(userEventRef myData2 errorIO)
     )
 
 ) ) )
