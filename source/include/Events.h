@@ -58,33 +58,57 @@ enum {
     kEventTypeUserEvent = 1000
 };
 
+typedef UInt32 EventSource;
+typedef UInt32 EventType;
+
+typedef UInt32 EventControlUID;  // TBD
+enum { kNotAnEventControlUID = 0 };
+
 struct EventCommonData {
     // Common fields
-    UInt32 eventSource;  // Event source and type are used internally but not visible in Event structure in NXG
-    UInt32 eventType;
+    EventSource eventSource;  // Event source and type are used internally but not visible in Event structure in NXG
+    EventType eventType;
     UInt32 eventTime;
     // UInt32 eventIndex  -- computed by event structure, not included in actual event data
     RefNumVal eventRef;
 
+    void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
+    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type) {
+        InitEventTime();
+    }
     EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventRef(ref) {
-        eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount()));
+        InitEventTime();
     }
 };
 
-struct  EventData {
+struct EventData {
     EventCommonData common;
 
+    EventControlUID controlUID;
     // Varies by event type, out-of-line
     TypeRef eventDataType;
     void *pEventData;
 
-    EventData() : common(0, 0, RefNumVal()), eventDataType(NULL), pEventData(NULL) { }
-    EventData(UInt32 source, UInt32 type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) :
-    common(source, type, ref), eventDataType(edtype), pEventData(pData) {
+    EventData() : common(0, 0, RefNumVal()), controlUID(kNotAnEventControlUID), eventDataType(NULL), pEventData(NULL) { }
+    EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) :
+        common(source, type, ref), controlUID(kNotAnEventControlUID), eventDataType(edtype), pEventData(pData) { }
+    EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = NULL, void *pData = NULL) :
+    common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
+    EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) {
+        common.eventSource = source;
+        common.eventType = type;
+        common.InitEventTime();
+        common.eventRef = ref;
+        controlUID = kNotAnEventControlUID;
+        eventDataType = edtype;
+        pEventData = pData;
+        return *this;
     }
 };
 
 void RegisterForStaticEvents(VirtualInstrument *vi);
+
+enum { kEventArgErr = 1 };
 
 }  // namespace Vireo
 

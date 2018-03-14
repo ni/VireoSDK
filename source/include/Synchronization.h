@@ -128,7 +128,6 @@ typedef TypedObject<QueueCore> QueueObject, *QueueRef;
 // Queue prim LV error return codes
 enum { kQueueArgErr = 1, kQueueMemFull = 2, kQueueNameTypeMismatch = 1094, kQueueNoSuchName = 1100,
     kQueueDestroyedWhileWaiting = 1122, kQueueWrongContext = 1491, kQueueZeroSize = 1548 };
-enum { kUserEventArgErr = 1 };
 
 }  // namespace Vireo
 
