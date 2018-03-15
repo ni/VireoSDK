@@ -558,7 +558,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         EventSource eSource = GetEventSourceForEventType(eventType);
         regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
         EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
-        gPlatform.IO.Printf("RegisterForEvents event %d, ref 0x%x\n", eventType, refData->GetRefNum());
+        // gPlatform.IO.Printf("RegisterForEvents event %d, ref 0x%x\n", eventType, refData->GetRefNum());
     }
     return _NextInstruction();
 }

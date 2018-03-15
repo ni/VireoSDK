@@ -1,0 +1,9 @@
+Generating User Event (before event wait)
+Waiting on events
+Event case 1, User Event Fired data:<('Hello' 1)>
+Waiting on events
+(Generating User Event in background)
+Event case 1, User Event Fired data:<('Goodbye' 2)>
+Waiting on events
+Event case 2, Timeout case
+Done
