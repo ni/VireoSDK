@@ -16,6 +16,7 @@ Craig S.
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 #include <vector>
+#include <algorithm>
 
 namespace Vireo {
 
@@ -282,20 +283,21 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
 RefNumManager::CleanupMap RefNumManager::_s_CleanupMap;  // Singleton for refnum cleanup procs
 
 void RefNumManager::AddCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg) {
-    _s_CleanupMap[vi].push_back(CleanupRecord(proc, arg));
+    CleanupRecord cleanupRec(proc, arg);
+    std::vector<CleanupRecord> &cleanupVec = _s_CleanupMap[vi];
+    if (std::find(cleanupVec.begin(), cleanupVec.end(), cleanupRec) == cleanupVec.end())
+        cleanupVec.push_back(cleanupRec);
 }
 
 void RefNumManager::RemoveCleanupProc(VirtualInstrument *vi, CleanupProc proc, intptr_t arg) {
     CleanupMap::iterator viIter = _s_CleanupMap.find(vi);
     if (viIter != _s_CleanupMap.end()) {
-        std::vector<CleanupRecord>::iterator it = viIter->second.begin(), nit, ite = viIter->second.end();
-        while (it != ite) {
-            if (it->proc == proc && it->arg == arg) {
-                // just leave holes, whole vector will be deallocated when VI finishes
-                it->proc = NULL;
-                it->arg = 0;
-            }
-            ++it;
+        CleanupRecord cleanupRec(proc, arg);
+        std::vector<CleanupRecord>::iterator it = viIter->second.begin(), itEnd = viIter->second.end();
+        if ((it = std::find(it, itEnd, cleanupRec)) != itEnd) {
+            // don't erase, just leave holes, whole vector will be deallocated when VI finishes
+            it->proc = NULL;
+            it->arg = 0;
         }
     }
 }
