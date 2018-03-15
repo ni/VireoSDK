@@ -69,17 +69,22 @@ struct EventCommonData {
     EventSource eventSource;  // Event source and type are used internally but not visible in Event structure in NXG
     EventType eventType;
     UInt32 eventTime;
-    // UInt32 eventIndex  -- computed by event structure, not included in actual event data
+    UInt32 eventIndex;  //  placeholder -- computed by WaitForEvent per event case, not set in actual event data
     RefNumVal eventRef;
 
     void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
-    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type) {
+    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventIndex(0) {
         InitEventTime();
     }
-    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventRef(ref) {
+    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventIndex(0), eventRef(ref) {
         InitEventTime();
     }
 };
+
+inline UInt32 *EventIndexFieldPtr(void *rawEventDataPtr) {
+    EventCommonData *eventDataPtr = (EventCommonData*)rawEventDataPtr;
+    return &eventDataPtr->eventIndex;
+}
 
 struct EventData {
     EventCommonData common;
@@ -93,10 +98,11 @@ struct EventData {
     EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) :
         common(source, type, ref), controlUID(kNotAnEventControlUID), eventDataType(edtype), pEventData(pData) { }
     EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = NULL, void *pData = NULL) :
-    common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
+        common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
     EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) {
         common.eventSource = source;
         common.eventType = type;
+        common.eventIndex = 0;
         common.InitEventTime();
         common.eventRef = ref;
         controlUID = kNotAnEventControlUID;

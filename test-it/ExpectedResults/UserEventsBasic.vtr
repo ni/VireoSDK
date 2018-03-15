@@ -1,9 +1,9 @@
 Generating User Event (before event wait)
 Waiting on events
-Event case 1, User Event Fired data:<('Hello' 1)>
+Event case 1, User Event Fired, EventType:1000 Index:0 data:<('Hello' 1)>
 Waiting on events
 (Generating User Event in background)
-Event case 1, User Event Fired data:<('Goodbye' 2)>
+Event case 1, User Event Fired, EventType:1000 Index:0 data:<('Goodbye' 2)>
 Waiting on events
-Event case 2, Timeout case
+Event case 2, Timeout case, EventType:1 Index:0
 Done
