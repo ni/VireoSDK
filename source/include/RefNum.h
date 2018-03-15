@@ -161,6 +161,7 @@ class RefNumManager {
         CleanupProc proc;
         intptr_t arg;
         CleanupRecord(CleanupProc p, intptr_t a) : proc(p), arg(a) { }
+        bool operator==(const CleanupRecord& that) const { return proc == that.proc && arg == that.arg; }
     };
  private:
     // Move this to a data structure hanging off of the VirtualInstrument?
