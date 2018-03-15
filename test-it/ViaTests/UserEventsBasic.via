@@ -11,9 +11,9 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	// target) is not included here; instead, the WaitForEvents instruction will refer
 	// to these specs and correlate them with diagrams (many:1)
        e(c(  // Event spec 0
-           e(dv(Int32 25) eventSource)  // event source enum (CHANGED, eventSource is new)
+           e(dv(Int32 25) eventSource)  // event source enum
            e(dv(Int32 1000) eventType)  // (1000=UserEventFired)
-           e(dv(Int32 0) controlUID)  // ??? not sure how to represent statically registered controls
+           e(dv(Int32 0) controlUID)  // for static control refs
            e(dv(Int32 1) dynIndex)    // non-zero = dynamically registered, index into event reg ref
        ))
        e(dv(c(  // Event spec 1 (more compact equivalent representation)
@@ -29,7 +29,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     )
     Locals:c(
         e(UserEventRefNum<MyEventData> userEventRef)
-        e(EventRegRefNum<c(  // (CHANGED, now has top-level cluster)
+        e(EventRegRefNum<c(
 	    // Each level in top level cluster is one registration entry, corresponding to
 	    // inputs to the RegisterForEvents node which created the registration.
 	    // Each entry is a cluster of an Int32 for the eventType code, and a polymorphic
@@ -97,10 +97,12 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	Printf ("Done\n")
     )
     clump (1 // event case 1
-	Printf ("Event case 1, User Event Fired time:%u ref:%z data:<%z>\n" localEventData1.eventTime localEventData1.eventRef localEventData1.data)
+	Printf ("Event case 1, User Event Fired data:<%z>\n" localEventData1.data)
+	Printf ("// time:%u ref:%z\n" localEventData1.eventTime localEventData1.eventRef)
     )
     clump (1 // event case 2
-	Printf ("Event case 2, Timeout time:%u\n" localEventData2.eventTime)
+	Printf ("Event case 2, Timeout case\n")
+	Printf ("// time:%u\n" localEventData1.eventTime)
     )
     clump (1 // background clump
 	WaitMilliseconds(100)
