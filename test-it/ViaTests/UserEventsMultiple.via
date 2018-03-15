@@ -1,0 +1,130 @@
+
+define (MyEventDataA c(e(String str) e(Double val) ))
+define (MyEventDataB c(e(String str) e(String str2) e(Int32 val) ))
+
+// Event enum:  1=Timeout, 2=Value Change, 1000=User Event Fired
+define(UserEventTestProgram dv(.VirtualInstrument (
+    Events:c( // Each entry in the top level cluster here represents Event config for a unique Event structure;
+      e(c( // Event Struct 1
+       e(dv(c(  // Event spec 0
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (25 1000 0 1)
+       ))
+       e(dv(c(  // Event spec 1 (more compact equivalent representation)
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (0 1 0 0)
+       ))
+       e(dv(c(  // Event spec 2
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (25 1000 0 2)
+       ))
+     )) // End Event Struct 1
+     //e(c( // Event Struct 2
+     //  e(c(  // Event spec 1 ...
+     //    e(...)
+     //  ))
+     //)) // End Event Struct 2
+    )
+    Locals:c(
+        e(UserEventRefNum<MyEventDataA> userEventRefA)
+        e(UserEventRefNum<MyEventDataB> userEventRefB)
+        e(EventRegRefNum<c(
+	        e(c(e(Int32 eventType)e(UserEventRefNum<MyEventDataA>)))
+	        e(c(e(Int32 eventType)e(UserEventRefNum<MyEventDataB>)))
+	    )> eventRegRef)
+
+	e(dv(MyEventDataA ("Hello" 1.0)) myDataA1)
+	e(dv(MyEventDataA ("Goodbye" 2.0)) myDataA2)
+	e(dv(MyEventDataB ("Bonjour" "Aloha" 123)) myDataB)
+        e(.ErrorCluster errorIO)
+        e(dv(Int32 300) timeOut)
+
+	e(c(  // Storage for event data node on left border of event case 1 (user event A)
+	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
+	    e(UserEventRefNum<MyEventDataA> eventRef)
+	    e(MyEventDataA data)
+        ) localEventDataA)
+	e(c(  // Storage for event data node on left border of event case 2 (timeout event)
+	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
+        ) localEventDataTO)
+	e(c(  // Storage for event data node on left border of event case 3 (user event B)
+	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
+	    e(UserEventRefNum<MyEventDataB> eventRef)
+	    e(MyEventDataB data)
+        ) localEventDataB)
+	e(Boolean bool)
+    )
+
+    clump (1 // top level
+	CreateUserEvent(userEventRefA errorIO)
+	CreateUserEvent(userEventRefB errorIO)
+
+	// Generate 1 of each before registration (should be discarded and not leak)
+	GenerateUserEvent(userEventRefA myDataA1 errorIO)
+	GenerateUserEvent(userEventRefB myDataB errorIO)
+
+	RegisterForEvents(eventRegRef errorIO 1000 userEventRefA 1000 userEventRefB)
+
+	Trigger(4)  // start bg clump
+
+
+	Printf("Generating User Events [A,B,B] (before event wait)\n")
+	GenerateUserEvent(userEventRefA myDataA1 errorIO)
+
+	GenerateUserEvent(userEventRefB myDataB errorIO)
+	Printf("Short delay (50ms)\n")
+	WaitMilliseconds(50)
+	GenerateUserEvent(userEventRefB myDataB errorIO)
+
+	Perch(5)
+	Printf("Waiting on events\n")
+	WaitForEventsAndDispatch(timeOut eventRegRef 0
+				0 localEventDataA 10 // e.g. event spec 0 fills into localEventDataA and branches to perch 10
+				1 localEventDataTO 20
+				2 localEventDataB 30
+				)
+	Branch(5)
+
+	Perch(10)  // Event case 1
+	Trigger(1)  // Trigger actual subdiagram code clump
+	Wait(1)
+
+	Branch(5)  // User Event A waits again
+
+	Perch(20) // Event case 2
+	Trigger(2)
+	Wait(2)
+	Branch(100) // Timeout event finishes
+
+	Perch(30) // Event case 3
+	Trigger(3)
+	Wait(3)
+	Branch(5)  // User Event B waits again
+
+	Perch(100) // End of Event structure
+
+	UnregisterForEvents(eventRegRef errorIO)
+	DestroyUserEvent(userEventRefA errorIO)
+
+	Printf ("Done\n")
+    )
+    clump (1 // event case 1
+	Printf ("Event case 1, User Event A Fired, EventType:%u Index:%u data:<%z>\n" localEventDataA.eventType localEventDataA.eventIndex localEventDataA.data)
+	Printf ("// time:%u ref:%z\n" localEventDataA.eventTime localEventDataA.eventRef)
+    )
+    clump (1 // event case 2
+	Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex)
+	Printf ("// time:%u\n" localEventDataTO.eventTime)
+    )
+    clump (1 // event case 3
+	Printf ("Event case 3, User Event B Fired, EventType:%u Index:%u data:<%z>\n" localEventDataB.eventType localEventDataB.eventIndex localEventDataB.data)
+	Printf ("// time:%u ref:%z\n" localEventDataB.eventTime localEventDataB.eventRef)
+    )
+    clump (1 // background clump
+	WaitMilliseconds(100)
+	Printf("(Generating User Events [B,A] in background)\n")
+	GenerateUserEvent(userEventRefB myDataB errorIO)
+	GenerateUserEvent(userEventRefA myDataA2 errorIO)
+    )
+
+) ) )
+
+
+enqueue(UserEventTestProgram)

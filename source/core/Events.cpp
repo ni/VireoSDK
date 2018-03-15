@@ -81,6 +81,13 @@ class EventQueueObject {
     size_t size() const { return _eventQueue.size(); }
     void OccurEvent(const EventData &eData) {
         _eventQueue.push_back(eData);
+        if (eData.pEventData) {  // make a unique copy of the event data for each event queue
+            Int32 topSize = eData.eventDataType->TopAQSize();
+            void *pEvent = THREAD_TADM()->Malloc(topSize);
+            eData.eventDataType->InitData(pEvent, (TypeRef)NULL);
+            eData.eventDataType->CopyData(eData.pEventData, pEvent);
+            _eventQueue.back().pEventData = pEvent;
+        }
         if (_wakeUpOccur)
             _wakeUpOccur->SetOccurrence();
     }
@@ -422,7 +429,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
 VIREO_FUNCTION_SIGNATURE3(UserEventRef_Generate, RefNumVal, void, ErrorCluster)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
-    const void *pSourceData = _ParamPointer(1);
+    void *pSourceData = _ParamPointer(1);
     ErrorCluster *errPtr = _ParamPointer(2);
     TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : NULL;
     void *userEventRef = NULL;
@@ -433,13 +440,9 @@ VIREO_FUNCTION_SIGNATURE3(UserEventRef_Generate, RefNumVal, void, ErrorCluster)
             if (errPtr)
                 errPtr->SetError(true, kEventArgErr, "GenerateUserEvent", true);
         } else {
-            Int32 topSize = type->TopAQSize();
-            void *pEvent = THREAD_TADM()->Malloc(topSize);
-            NIError status = type->InitData(pEvent, (TypeRef)NULL);
-            if (status == kNIError_Success) {
-                type->CopyData(pSourceData, pEvent);
-                EventOracle::TheEventOracle().OccurEvent(kAppEventOracleIdx, EventData(kEventSourceUserEvent, kEventTypeUserEvent, *refnumPtr, type, pEvent));
-            }
+            // TODO(spathiwa) make a custom emitter for this prim so we can check the type of the data against the refnum's contained type
+            // without incurring runtime performance penalty
+            EventOracle::TheEventOracle().OccurEvent(kAppEventOracleIdx, EventData(kEventSourceUserEvent, kEventTypeUserEvent, *refnumPtr, type, pSourceData));
         }
     }
     return _NextInstruction();
@@ -506,8 +509,8 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     RefNumVal* eventRegRefnumPtr = _ParamPointer(regRef);
     DynamicEventRegInfo *regInfo = NULL;
 
-    const Int32 numberOfFixedArgs = 3;  // varArgCount, eventRegRef, errorIO
-    const Int32 numArgsPerTuple = 2;    // <eventType, user/control ref> pairs
+    const Int32 numberOfFixedArgs = 2;  // eventRegRef, errorIO
+    const Int32 numArgsPerTuple = 3;    // <eventType, user/control ref (STAD)> pairs
     Int32 numVarArgs = (_ParamVarArgCount() - numberOfFixedArgs);
     Int32 numTuples = numVarArgs / numArgsPerTuple;
     if (eventRegRefnumPtr->Type()->SubElementCount() != 1 || !eventRegRefnumPtr->Type()->GetSubElement(0)->IsCluster()) {
