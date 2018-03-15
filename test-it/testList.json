@@ -358,6 +358,7 @@
                 "UnOpFunctions.via",
                 "UsageType.via",
                 "UserEventsBasic.via",
+                "UserEventsMultiple.via",
                 "UserTypes.via",
                 "UTF-8CodePoints.via",
                 "UTF-8HelloWorld.via",
