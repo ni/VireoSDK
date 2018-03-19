@@ -1,6 +1,8 @@
 
 // Measure UserEvent throughput.
-// On my dev machine, I get about 2500K events/sec on my machine native, and ~330K events/sec w/node.JS
+// On my dev machine, I get about 2100K events/sec on my machine native, and ~52K events/sec w/node.JS
+// Note: If you remove the clump triggers in the event cases, the JS performance is much
+// faster (320K e/s), but that doesn't match what DFIR would generate for an empty event case.
 
 define (MyEventDataA c(e(Int32 val) ))
 
@@ -29,13 +31,13 @@ define(UserEventTestProgram dv(.VirtualInstrument (
         e(.ErrorCluster errorIO)
         e(dv(Int32 0) receivedCount)
         e(dv(Int32 0) sentCount)
-        e(dv(Int32 300000) max)
+        e(dv(Int32 100000) max)
         e(dv(UInt32 0) timeBegin)
         e(dv(UInt32 0) timeEnd)
         e(dv(UInt32 0) timeElapsed)
         e(dv(Double 0) temp)
         e(dv(Double 0) throughput)
-        e(dv(Int32 5) timeOut)
+        e(dv(Int32 100) timeOut)
 
 	e(c(  // Storage for event data node on left border of event case 1 (user event A)
 	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
@@ -53,10 +55,15 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 
 	RegisterForEvents(eventRegRef errorIO 1000 userEventRefA)
 
-	Trigger(2)  // start bg clump
+	Trigger(2)  // start background Producer loop clump
+	WaitMilliseconds(10)
 
 	GetMillisecondTickCount(timeBegin)
+
+	// Consumer Loop
 	Perch(5)
+	BranchIfGE(100 receivedCount max)
+
 	WaitForEventsAndDispatch(timeOut eventRegRef 0
 				0 localEventDataA 10 // e.g. event spec 0 fills into localEventDataA and branches to perch 10
 				1 localEventDataTO 20
@@ -65,6 +72,9 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 
 	Perch(10)  // Event case 1
 
+	Trigger(3)  // Trigger an empty diagram clump since NG DFIR will always do this
+	Wait(3)	    // Unfortunately, this slows down how fast events can be processed by 10x in VireoJS
+	// (The penalty on native is much less.  TODO(spathiwa) Investigate descrepancy.)
 	Add(1 receivedCount receivedCount)
 	Branch(5)  // User Event A waits again
 
@@ -93,17 +103,24 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	Printf ("Done\n")
     )
     clump (1 // event timeout case
-	//Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex)
+	Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex)
 	//Printf ("// time:%u\n" localEventDataTO.eventTime)
     )
-    clump (1 // background clump
+    clump (1 // background clump Producer Loop
 	Perch(200)
 	BranchIfGE(250 sentCount max)
 	Copy(sentCount myDataA1.val)
 	GenerateUserEvent(userEventRefA myDataA1 errorIO)
-        Add(sentCount 1 sentCount)
+	Add(1 sentCount sentCount)
+
+        Trigger(4)  // Trigger an empty clump in producer loop as well, so it doesn't greatly outperform
+        Wait(4)     // consumer loop and run out of memory by growing the event queue too large
 	Branch(200)
 	Perch(250)
+    )
+    clump (1 // empty clump, Event case 1
+    )
+    clump (1 // empty clump
     )
 
 ) ) )
