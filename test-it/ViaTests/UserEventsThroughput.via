@@ -1,0 +1,112 @@
+
+// Measure UserEvent throughput.
+// On my dev machine, I get about 2500K events/sec on my machine native, and ~330K events/sec w/node.JS
+
+define (MyEventDataA c(e(Int32 val) ))
+
+// Event enum:  1=Timeout, 2=Value Change, 1000=User Event Fired
+define(UserEventTestProgram dv(.VirtualInstrument (
+    Events:c( // Each entry in the top level cluster here represents Event config for a unique Event structure;
+      e(c( // Event Struct 1
+       e(dv(c(  // Event spec 0
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (25 1000 0 1)
+       ))
+       e(dv(c(  // Event spec 1 
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (0 1 0 0)
+       ))
+       e(dv(c(  // Event spec 2
+            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (25 1000 0 2)
+       ))
+     )) // End Event Struct 1
+    )
+    Locals:c(
+        e(UserEventRefNum<MyEventDataA> userEventRefA)
+        e(EventRegRefNum<c(
+	        e(c(e(Int32 eventType)e(UserEventRefNum<MyEventDataA>)))
+	    )> eventRegRef)
+
+	e(dv(MyEventDataA (1)) myDataA1)
+        e(.ErrorCluster errorIO)
+        e(dv(Int32 0) receivedCount)
+        e(dv(Int32 0) sentCount)
+        e(dv(Int32 300000) max)
+        e(dv(UInt32 0) timeBegin)
+        e(dv(UInt32 0) timeEnd)
+        e(dv(UInt32 0) timeElapsed)
+        e(dv(Double 0) temp)
+        e(dv(Double 0) throughput)
+        e(dv(Int32 5) timeOut)
+
+	e(c(  // Storage for event data node on left border of event case 1 (user event A)
+	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
+	    e(UserEventRefNum<MyEventDataA> eventRef)
+	    e(MyEventDataA data)
+        ) localEventDataA)
+	e(c(  // Storage for event data node on left border of event case 2 (timeout event)
+	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
+        ) localEventDataTO)
+	e(Boolean bool)
+    )
+
+    clump (1 // top level
+	CreateUserEvent(userEventRefA errorIO)
+
+	RegisterForEvents(eventRegRef errorIO 1000 userEventRefA)
+
+	Trigger(2)  // start bg clump
+
+	GetMillisecondTickCount(timeBegin)
+	Perch(5)
+	WaitForEventsAndDispatch(timeOut eventRegRef 0
+				0 localEventDataA 10 // e.g. event spec 0 fills into localEventDataA and branches to perch 10
+				1 localEventDataTO 20
+				)
+	Branch(5)
+
+	Perch(10)  // Event case 1
+
+	Add(1 receivedCount receivedCount)
+	Branch(5)  // User Event A waits again
+
+	Perch(20) // Event case 2
+	Trigger(1)
+	Wait(1)
+	Branch(100) // Timeout event finishes
+
+	Perch(100) // End of Event structure
+
+	Wait(2)
+	GetMillisecondTickCount(timeEnd)
+	Sub(timeEnd timeBegin timeElapsed)
+	Convert(receivedCount throughput)
+	Div(throughput timeElapsed throughput)
+	Mul(throughput 1000.0 throughput)
+
+	UnregisterForEvents(eventRegRef errorIO)
+	DestroyUserEvent(userEventRefA errorIO)
+
+	Printf ("Final Event, User Event A Fired, EventType:%u Index:%u data:<%z>\n" localEventDataA.eventType localEventDataA.eventIndex localEventDataA.data)
+	Printf ("Sent: %d Received: %d\n" sentCount receivedCount)
+	Printf ("//Elapsed time: %u ms\n" timeElapsed)
+	Printf ("//Throughput: %.0f events/sec\n" throughput)
+
+	Printf ("Done\n")
+    )
+    clump (1 // event timeout case
+	//Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex)
+	//Printf ("// time:%u\n" localEventDataTO.eventTime)
+    )
+    clump (1 // background clump
+	Perch(200)
+	BranchIfGE(250 sentCount max)
+	Copy(sentCount myDataA1.val)
+	GenerateUserEvent(userEventRefA myDataA1 errorIO)
+        Add(sentCount 1 sentCount)
+	Branch(200)
+	Perch(250)
+    )
+
+) ) )
+
+
+enqueue(UserEventTestProgram)
