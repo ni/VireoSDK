@@ -92,7 +92,8 @@ EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(IOSOURCEDIR)/library_canvas2d.js \
             --js-library $(IOSOURCEDIR)/library_httpClient.js \
-            --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js
+            --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js \
+            --js-library $(IOSOURCEDIR)/library_propertyNode.js
 PREJS = $(OBJS)/vireo.preamble.js
 POSTJS = $(OBJS)/vireo.postamble.js
 EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
@@ -169,7 +170,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/FileIO.bc\
 	$(OBJS)/HttpClient.bc\
 	$(OBJS)/Waveform.bc\
-	$(OBJS)/JavaScriptInvoke.bc
+	$(OBJS)/JavaScriptInvoke.bc\
+	$(OBJS)/PropertyNode.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
