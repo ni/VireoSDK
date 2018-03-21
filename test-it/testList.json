@@ -310,6 +310,7 @@
                 "TestVI_Compare_Aggregates_InRange.via",
                 "TestVIDeleteFromArray.via",
                 "TestVI_ErrorClusters.via",
+                "TestVIInitializeArray.via",
                 "TestVI_InRangeAndCoerce.via",
                 "TestVI_InRangeAndCoerce_Arrays.via",
                 "TestVIInRangeAndCoerceClusters.via",
