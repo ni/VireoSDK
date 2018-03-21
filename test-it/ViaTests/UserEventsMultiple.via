@@ -57,8 +57,8 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	CreateUserEvent(userEventRefB errorIO)
 
 	// Generate 1 of each before registration (should be discarded and not leak)
-	GenerateUserEvent(userEventRefA myDataA1 errorIO)
-	GenerateUserEvent(userEventRefB myDataB errorIO)
+	GenerateUserEvent(userEventRefA myDataA1 false errorIO)
+	GenerateUserEvent(userEventRefB myDataB false errorIO)
 
 	RegisterForEvents(eventRegRef errorIO 1000 userEventRefA 1000 userEventRefB)
 
@@ -66,12 +66,12 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 
 
 	Printf("Generating User Events [A,B,B] (before event wait)\n")
-	GenerateUserEvent(userEventRefA myDataA1 errorIO)
+	GenerateUserEvent(userEventRefA myDataA1 false errorIO)
 
-	GenerateUserEvent(userEventRefB myDataB errorIO)
+	GenerateUserEvent(userEventRefB myDataB false errorIO)
 	Printf("Short delay (50ms)\n")
 	WaitMilliseconds(50)
-	GenerateUserEvent(userEventRefB myDataB errorIO)
+	GenerateUserEvent(userEventRefB myDataB false errorIO)
 
 	Perch(5)
 	Printf("Waiting on events\n")
@@ -120,8 +120,8 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     clump (1 // background clump
 	WaitMilliseconds(100)
 	Printf("(Generating User Events [B,A] in background)\n")
-	GenerateUserEvent(userEventRefB myDataB errorIO)
-	GenerateUserEvent(userEventRefA myDataA2 errorIO)
+	GenerateUserEvent(userEventRefB myDataB false errorIO)
+	GenerateUserEvent(userEventRefA myDataA2 false errorIO)
     )
 
 ) ) )

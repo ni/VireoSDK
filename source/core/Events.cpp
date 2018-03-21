@@ -426,14 +426,16 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
 }
 
 // GenerateUserEvent(userEventRef<typed_data> data errorIO) -- fire event, copying data into event queues of all registered observers
-VIREO_FUNCTION_SIGNATURE3(UserEventRef_Generate, RefNumVal, void, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE4(UserEventRef_Generate, RefNumVal, void, Boolean, ErrorCluster)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     void *pSourceData = _ParamPointer(1);
-    ErrorCluster *errPtr = _ParamPointer(2);
+    // Boolean highPro = _ParamPointer(2) ? _Param(2) : false;
+    ErrorCluster *errPtr = _ParamPointer(3);
     TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : NULL;
     void *userEventRef = NULL;
 
+    // TODO(spathiwa) implement high-priority User Events
     if (!errPtr || !errPtr->status) {
         if (!refnumPtr
             || UserEventRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
@@ -727,7 +729,7 @@ DEFINE_VIREO_BEGIN(Events)
     // User Events
     DEFINE_VIREO_TYPE(UserEventRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION_CUSTOM(CreateUserEvent, UserEventRef_Create, "p(o(UserEventRefNum ue) io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(io(UserEventRefNum ue) i(* element) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(io(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(DestroyUserEvent, UserEventRef_Destroy, "p(i(UserEventRefNum ue) io(ErrorCluster err))")
 
     // Event registration

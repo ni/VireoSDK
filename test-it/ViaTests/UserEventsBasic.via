@@ -67,7 +67,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	Trigger(3)  // start bg clump
 
 	Printf("Generating User Event (before event wait)\n")
-	GenerateUserEvent(userEventRef myData errorIO)
+	GenerateUserEvent(userEventRef myData false errorIO)
 	WaitMilliseconds(50)
 
 	Perch(5)
@@ -109,7 +109,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     clump (1 // background clump
 	WaitMilliseconds(100)
 	Printf("(Generating User Event in background)\n")
-	GenerateUserEvent(userEventRef myData2 errorIO)
+	GenerateUserEvent(userEventRef myData2 false errorIO)
     )
 
 ) ) )

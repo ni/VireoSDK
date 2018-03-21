@@ -110,7 +110,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	Perch(200)
 	BranchIfGE(250 sentCount max)
 	Copy(sentCount myDataA1.val)
-	GenerateUserEvent(userEventRefA myDataA1 errorIO)
+	GenerateUserEvent(userEventRefA myDataA1 false errorIO)
 	Add(1 sentCount sentCount)
 
         Trigger(4)  // Trigger an empty clump in producer loop as well, so it doesn't greatly outperform
