@@ -1499,7 +1499,6 @@ VIREO_FUNCTION_SIGNATURET(VectorOpInternal, VectorOpInstruction)
     Instruction3<AQBlock1, AQBlock1, AQBlock1>* scalarOpSnippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
     Boolean isIdentityOne = _ParamImmediate(IsIdentityOne);
 
-    VIREO_ASSERT(array->Rank() == 1);
     IntIndex arrayLength = array->Length();
     IntIndex elementSize = array->ElementType()->TopAQSize();
 
