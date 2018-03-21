@@ -456,6 +456,8 @@ Boolean QueueCore::HasRoom(IntIndex additionalCount) {
     IntIndex length = _elements->Length();
     IntIndex space = length - _count;
 
+    if (_maxSize > 0 && length + additionalCount <= _maxSize)
+        return true;
     return (space >= additionalCount);
 }
 //------------------------------------------------------------

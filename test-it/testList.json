@@ -314,6 +314,7 @@
                 "TestVI_InRangeAndCoerce_Arrays.via",
                 "TestVIInRangeAndCoerceClusters.via",
                 "TestVI_LargeArray.via",
+                "TestVI_LossyEnqueueElement.via",
                 "TestVI_MultipleDelimiters.via",
                 "TestVI_SimpleArrayOfRefs.via",
                 "TestVI_SpreadSheetStringToArray.via",
