@@ -1,0 +1,10 @@
+TestResult3DSizeDimensionsNotWired true
+TestResult3DSizeDimensionsWired true
+TestResult2DSizeDimensionsNotWired true
+TestResult2DSizeDimensionsWired true
+TestResult1DSizeDimensionsNotWired true
+TestResult1DSizeDimensionsWired true
+TestResultNegativeDim true
+TestResultStringArrayWithZeroDim true
+TestResultBooleanArray2D true
+TestResultDoubleArray1D true
