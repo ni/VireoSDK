@@ -12,6 +12,7 @@
 (Line 88 Error "Instruction not generated 'SubVI3'.")
 (Line 88 Error "Data encoding not formatted correctly.")
 (Line 88 Error "Data encoding not formatted correctly.")
+(Line 88 Error "Type mismatch.")
 (Line 94 Error "Type mismatch, argument should be 'Array'.")
 (Line 94 Error "Instruction not generated 'SubVI1'.")
 (Line 99 Error "Argument not mutable 'Ten'.")
