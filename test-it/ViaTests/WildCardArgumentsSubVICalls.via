@@ -45,8 +45,8 @@ define (SubVI_Input dv(.VirtualInstrument (
     )
         clump(1
         Printf("inputString = %s inputInt=%d\n" inputString inputInt)
-        Copy('yyyyy' inputString)
-        Copy(99999 inputInt)
+        //Copy('yyyyy' inputString)  // it's now disallowed to write to inputs
+        //Copy(99999 inputInt)
 /* Clump Ended. */    )
 )))
 

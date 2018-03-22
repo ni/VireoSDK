@@ -45,15 +45,16 @@ int VIREO_MAIN(int argc, const char * argv[])
     }
 
     if (argc >= 2) {
+        gShells._pRootShell = TypeManager::New(null);
+
         for (Int32 arg = 1; arg < argc; ++arg) {
-            gShells._pRootShell = TypeManager::New(null);
-            if (strcmp(argv[arg], "-d") == 0)
+            if (strcmp(argv[arg], "-D") == 0) {
                 gShells._pRootShell->DumpPrimitiveDictionary();
-
+                continue;
+            }
             gShells._pUserShell = TypeManager::New(gShells._pRootShell);
-
-            {   // Braces scope STACK_VAR buffer so its destructor runs before the shells are deleted below.
-                TypeManagerScope scope(gShells._pUserShell);
+            TypeManagerScope scope(gShells._pUserShell);
+            {   // Nested scope so that buffer is cleaned up before userShell
                 STACK_VAR(String, buffer);
                 fileName.AliasAssignCStr(argv[arg]);
                 if (fileName.Length() && argv[arg][0] != '-') {
@@ -80,9 +81,9 @@ int VIREO_MAIN(int argc, const char * argv[])
             }
             LOG_PLATFORM_MEM("Mem after execution")
             gShells._pUserShell->Delete();
-            gShells._pRootShell->Delete();
-            LOG_PLATFORM_MEM("Mem after cleanup")
         }
+        gShells._pRootShell->Delete();
+        LOG_PLATFORM_MEM("Mem after cleanup")
     } else {
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program

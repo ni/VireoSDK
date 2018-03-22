@@ -266,7 +266,7 @@
         } catch (e) {
             // If Vireo detects an error it will return non zero
             // and exec will throw an exception, so catch the results.
-            newResults = e.stdout.toString();
+            newResults = e.stdout.toString() + e.stderr.toString();
         }
         testFinishedCB(newResults);
     };
