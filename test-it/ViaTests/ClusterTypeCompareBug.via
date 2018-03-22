@@ -3,11 +3,23 @@ define(ClusterTest dv(.VirtualInstrument (
     Locals:c(
         e( c(e(Int32 int)e(String str)) clust1)
         e( c(e(String int)e(String str)) clust2)
+
+        e( c(e(Int32 int)e(c(e(String str)) f)) clust3)
+        e( c(e(Int32 int)e(c(e(String str)e(Double d)) f)) clust4)
+
+        e( c(e(Int32 int)e(a(String *) strArr)) clust5)
+        e( c(e(Int32 int)e(a(String * *) strArr)) clust6)
+
+        e(dv(a( c(e(Int32 int)e(String str)) *)  ((3 'a') ))  arr1)
+        e(dv(a( c(e(String int)e(String str)) *) (('a' 'b')))  arr2)
     )
 
     clump (1 // top level
-	// Should generate Type mismatch.  (Before bug fix, would crash)
+	// These should all generate Type mismatch.  (Before bug fix, would crash)
 	Copy(clust1 clust2)
+	Copy(clust3 clust4)
+	Copy(clust5 clust6)
+	Copy(arr1 arr2)
     )
 ) ) )
 

@@ -1,4 +1,4 @@
-define(c0 dv(a(.Int32 *) () ) )
+define(c0 dv(a(.String *) () ) )
 define(c1 dv(.Int32 1) )
 define(c2 dv(.Int32 0) )
 //---------------------------------------------------
