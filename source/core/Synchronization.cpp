@@ -411,14 +411,18 @@ Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
     }
 }
 //------------------------------------------------------------
-static InstructionCore *WaitOnOccurrenceCore(OccurrenceRef *ref, Boolean bIgnorePrevious, UInt32 msTimeout, Boolean *pTimedOut,
-                                             Int32 *sCountP, InstructionCore *_this, InstructionCore *_next)
+VIREO_FUNCTION_SIGNATURE5(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Boolean, Int32)
 {
+    OccurrenceRef *ref = _ParamPointer(0);
+    Boolean bIgnorePrevious = _Param(1);
+    UInt32 msTimeout = _ParamPointer(2) ? _Param(2) : -1;
+    Boolean *pTimedOut = _ParamPointer(3);
+    Int32 *pStaticCount = _ParamPointer(4);
     OccurrenceCore *pOcc = (*ref)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
 
-    if (!bIgnorePrevious && pOcc->HasOccurred(*sCountP, bIgnorePrevious)) {
+    if (!bIgnorePrevious && pOcc->HasOccurred(*pStaticCount, bIgnorePrevious)) {
         // We don't need to allocate an observer if the occurrence already went off (and we care)
     } else if (!pObserver) {
         PlatformTickType future = msTimeout > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
@@ -427,20 +431,11 @@ static InstructionCore *WaitOnOccurrenceCore(OccurrenceRef *ref, Boolean bIgnore
         return clump->WaitOnObservableObject(_this);
     }
     // If it woke up because of timeout or occurrence..
-    *sCountP = pOcc->Count();
+    *pStaticCount = pOcc->Count();
     if (pTimedOut)
         *pTimedOut = (pOcc->_observerList != NULL);  // observer has been cleared if occurrence actually went off
     clump->ClearObservationStates();
-    return _next;
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE5(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Boolean, Int32)
-{
-    return WaitOnOccurrenceCore(_ParamPointer(0), _Param(1), _ParamPointer(2) ? _Param(2) : -1, _ParamPointer(3), _ParamPointer(4), _this, _NextInstruction());
-}
-VIREO_FUNCTION_SIGNATURE4(WaitOnOccurrence_, OccurrenceRef, Boolean, Int32, Int32)  // version with no timed out output
-{
-    return WaitOnOccurrenceCore(_ParamPointer(0), _Param(1), _ParamPointer(2) ? _Param(2) : -1, NULL, _ParamPointer(3), _this, _NextInstruction());
+    return _NextInstruction();
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
@@ -1157,7 +1152,6 @@ DEFINE_VIREO_BEGIN(Synchronization)
     // Occurrences
     DEFINE_VIREO_TYPE(OccurrenceValue, "c(e(DataPointer firstState)e(Int32 setCount))")
     DEFINE_VIREO_TYPE(Occurrence, "a(OccurrenceValue)")
-    DEFINE_VIREO_FUNCTION_CUSTOM(WaitOnOccurrence, WaitOnOccurrence_, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)s(Int32 staticCount))")
     DEFINE_VIREO_FUNCTION(WaitOnOccurrence, "p(i(Occurrence)i(Boolean ignorePrevious)i(Int32 timeout)o(Boolean timedout)s(Int32 staticCount))")
     DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
