@@ -12,6 +12,8 @@ define(ClusterTest dv(.VirtualInstrument (
 
         e(dv(a( c(e(Int32 int)e(String str)) *)  ((3 'a') ))  arr1)
         e(dv(a( c(e(String int)e(String str)) *) (('a' 'b')))  arr2)
+	e(dv(a(Int32 *) (1 2 3)) arr3)
+	e(dv(a(String *) ('a' 'b' 'c')) arr4)
     )
 
     clump (1 // top level
@@ -20,6 +22,7 @@ define(ClusterTest dv(.VirtualInstrument (
 	Copy(clust3 clust4)
 	Copy(clust5 clust6)
 	Copy(arr1 arr2)
+	Copy(arr3 arr4)
     )
 ) ) )
 
