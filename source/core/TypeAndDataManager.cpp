@@ -819,7 +819,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
     if (!bMatch && (otherType->Name().Length() > 0)) {
         bMatch = IsA(otherType);
         if (_encoding == kEncoding_RefNum) {
-            return otherType->BitEncoding() == kEncoding_RefNum && bMatch && GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
+            return otherType->BitEncoding() == kEncoding_RefNum && bMatch
+                && (SubElementCount() == 0 || GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure));
         }
     }
 
@@ -1061,6 +1062,7 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
     return subType;
 }
 
+#ifdef VIREO_DEBUG
 // Function for ease of debugging; call from debugger to print type/data
 void TypeCommon::Dump(void *pData) {
     STACK_VAR(String, tempString);
@@ -1071,12 +1073,13 @@ void TypeCommon::Dump(void *pData) {
             tempString.Value->Append(':');
             formatter.FormatData(this, pData);
             tempString.Value->Append('\n');
-            gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
         } else {
             tempString.Value->Append('\n');
         }
+        gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     }
 }
+#endif
 
 //------------------------------------------------------------
 // WrappedType
