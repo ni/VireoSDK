@@ -18,6 +18,8 @@ SDG
 #include <emscripten.h>
 #endif
 
+#define VIREO_DEBUG_EXEC_PRINT_INSTRS 0  // Turn on to print each instruction as it is executed to console
+
 namespace Vireo {
 
 #if kVireoOS_emscripten
@@ -309,7 +311,6 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
     }
 }
 
-#define VIREO_DEBUG_EXEC 0  // Turn on to print each instruction as it is executed to console
 
 //------------------------------------------------------------
 // ExecuteSlices - execute instructions in run queue repeatedly (numSlices at a time before breaking out and checking
@@ -333,22 +334,24 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
         VIREO_ASSERT((null == _runningQueueElt->_next))     // Should not be on queue
         VIREO_ASSERT((0 == _runningQueueElt->_shortCount))  // Should not be running if triggers > 0
         do {
-#if VIREO_DEBUG_EXEC
+#if VIREO_DEBUG_EXEC_PRINT_INSTRS
             SubString cName;
             THREAD_TADM()->FindCustomPointerTypeFromValue((void*)currentInstruction->_function, &cName);
             gPlatform.IO.Printf("Exec: %s\n", cName.Begin());
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+#else
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+#if VIVM_UNROLL_EXEC
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
 #endif
-#if VIVM_UNROLL_EXEC && !VIREO_DEBUG_EXEC
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
-            currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
 #endif
         } while (_breakoutCount-- > 0);
 
