@@ -704,10 +704,11 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                 if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
                     // TODO(spathiwa) Should we also verify type of event data node matches event at run-time?
                     // When we support multiple events with a shared event case, this needs to be smarter
-                    // and copy only common data.
+                    // and copy only common data, using a custom emit proc (which could verify types) and
+                    // generate custom snippets for each event data node cluster.
                     eventData.eventDataType->CopyData(eventData.pEventData, (AQBlock1*)esEventDataNode + commonDataSize);
                 }
-            } else {
+            } else {  // Timeout case eventData node has no ref, so falls through this case.
                 memcpy(esEventDataNode, &eventData, dataNodeSize);
             }
             next = esBranchTarget;
