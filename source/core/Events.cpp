@@ -420,7 +420,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
     }
     if (errCode) {
         if (errPtr)
-            errPtr->SetError(true, errCode, "CreateUserEvent", true);
+            errPtr->SetError(true, errCode, "CreateUserEvent");
     }
     return _NextInstruction();
 }
@@ -440,7 +440,7 @@ VIREO_FUNCTION_SIGNATURE4(UserEventRef_Generate, RefNumVal, void, Boolean, Error
         if (!refnumPtr
             || UserEventRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
             if (errPtr)
-                errPtr->SetError(true, kEventArgErr, "GenerateUserEvent", true);
+                errPtr->SetError(true, kEventArgErr, "GenerateUserEvent");
         } else {
             // TODO(spathiwa) make a custom emitter for this prim so we can check the type of the data against the refnum's contained type
             // without incurring runtime performance penalty
@@ -459,7 +459,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Destroy, RefNumVal, ErrorCluster)
 
     if (!refnumPtr || UserEventRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kEventArgErr, "DestroyUserEvent", true);
+            errPtr->SetError(true, kEventArgErr, "DestroyUserEvent");
     }
     return _NextInstruction();
 }
@@ -472,7 +472,7 @@ struct RegistertForEventArgs {
 struct RegisterForEventsParamBlock : public VarArgInstruction
 {
     _ParamDef(RefNumVal, regRef);
-    _ParamDef(ErrorCluster, ErrClust);
+    _ParamDef(ErrorCluster, errorClust);
     _ParamImmediateDef(RegistertForEventArgs, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
@@ -515,8 +515,13 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     const Int32 numArgsPerTuple = 3;    // <eventType, user/control ref (STAD)> pairs
     Int32 numVarArgs = (_ParamVarArgCount() - numberOfFixedArgs);
     Int32 numTuples = numVarArgs / numArgsPerTuple;
+    ErrorCluster *errPtr = _ParamPointer(errorClust);
+
+    if (errPtr && errPtr->status)
+        return _NextInstruction();
+
     if (eventRegRefnumPtr->Type()->SubElementCount() != 1 || !eventRegRefnumPtr->Type()->GetSubElement(0)->IsCluster()) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: malfromed ref ref type, doesn't contain cluster");
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: malformed ref ref type, doesn't contain cluster");
         return THREAD_EXEC()->Stop();
     }
     Int32 regCount = eventRegRefnumPtr->Type()->GetSubElement(0)->SubElementCount();
@@ -525,17 +530,21 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                                 " per item in the event reg refnum output type");
         return THREAD_EXEC()->Stop();
     }
-    if (EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(eventRegRefnumPtr->GetRefNum(), &regInfo) == kNIError_Success) {
+    RefNum erRefNum = eventRegRefnumPtr->GetRefNum();
+    if (erRefNum && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(erRefNum, &regInfo) == kNIError_Success) {
         // TODO(spathiwa) implement re-registeration, sanity check count
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: re-registration not yet supported");
         return THREAD_EXEC()->Stop();
+    } else if (erRefNum) {  // event reg. ref passed, but invalid
+        if (errPtr && !errPtr->status)
+            errPtr->SetError(true, kEventArgErr, "RegisterForEvents");
     }
 
     // Allocate a new Event Queue and associate it with the event reg. refnum
     EventQueueID qID = kNotAQueueID;
     EventOracle::TheEventOracle().GetNewQueueObject(&qID, NULL);
     regInfo = new DynamicEventRegInfo(qID, regCount);
-    RefNum erRefNum = EventRegistrationRefNumManager::RefNumStorage().NewRefNum(&regInfo);
+    erRefNum = EventRegistrationRefNumManager::RefNumStorage().NewRefNum(&regInfo);
     eventRegRefnumPtr->SetRefNum(erRefNum);
 
     // Set cleanup proc to unregister if VI doesn't do it explicitly
@@ -559,6 +568,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
             return THREAD_EXEC()->Stop();
         }
         RefNumVal *refData = (RefNumVal*)arguments[refInput].ref._pData;
+        // TO-DO(spathiwa) for control events, make sure ref is valid and return error if not
 
         EventSource eSource = GetEventSourceForEventType(eventType);
         regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
@@ -574,7 +584,7 @@ VIREO_FUNCTION_SIGNATURE2(UnregisterForEvents, RefNumVal, ErrorCluster)
     ErrorCluster *errPtr = _ParamPointer(1);
     if (!refnumPtr || !UnregisterForEventsAux(refnumPtr->GetRefNum())) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kEventArgErr, "UnregisterForEvents", true);
+            errPtr->SetError(true, kEventArgErr, "UnregisterForEvents");
     }
     return _NextInstruction();
 }
@@ -720,6 +730,18 @@ VIREO_FUNCTION_SIGNATURE2(IsNotAUserEventRefnum, RefNumVal, Boolean)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsNotAnEventRegRefnum, RefNumVal, Boolean)
+{
+    RefNumVal* eventRegRefnumPtr = _ParamPointer(0);
+    DynamicEventRegInfo *regInfo = NULL;
+    if (!eventRegRefnumPtr
+        || EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(eventRegRefnumPtr->GetRefNum(), &regInfo) != kNIError_Success)
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE3(IsEQRefnum, RefNumVal, RefNumVal, Boolean);
 VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean);
 
@@ -729,14 +751,14 @@ DEFINE_VIREO_BEGIN(Events)
     // User Events
     DEFINE_VIREO_TYPE(UserEventRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION_CUSTOM(CreateUserEvent, UserEventRef_Create, "p(o(UserEventRefNum ue) io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(io(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(i(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(DestroyUserEvent, UserEventRef_Destroy, "p(i(UserEventRefNum ue) io(ErrorCluster err))")
 
     // Event registration
     DEFINE_VIREO_TYPE(EventRegRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION(RegisterForEvents, "p(i(VarArgCount) io(EventRegRefNum ref) io(ErrorCluster err)"
                           "i(VarArgRepeat) i(Int32 eventType)i(StaticTypeAndData))")
-    DEFINE_VIREO_FUNCTION(UnregisterForEvents, "p(io(EventRegRefNum ref) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION(UnregisterForEvents, "p(i(EventRegRefNum ref) io(ErrorCluster err))")
 
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(EventRegRefNum ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
@@ -744,6 +766,10 @@ DEFINE_VIREO_BEGIN(Events)
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAUserEventRefnum, "p(i(UserEventRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(UserEventRefNum) i(UserEventRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(UserEventRefNum) i(UserEventRefNum) o(Boolean))")
+
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAnEventRegRefnum, "p(i(EventRegRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(EventRegRefNum) i(EventRegRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(EventRegRefNum) i(EventRegRefNum) o(Boolean))")
 
 DEFINE_VIREO_END()
 
