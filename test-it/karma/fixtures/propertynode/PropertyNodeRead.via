@@ -1,0 +1,27 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(.Boolean booleanLocal)
+        e(.String stringLocal)
+        e(.Double doubleLocal)
+        e(.Int32 int32Local)
+        e(.UInt32 uint32Local)
+        e(.ComplexDouble complexDoubleLocal)
+        e(.Timestamp timestampLocal)
+
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+    )
+        clump(1
+            PropertyNodeRead("MyVI" "123" "value" booleanLocal error)
+            PropertyNodeRead("MyVI" "123" "value" stringLocal error)
+            PropertyNodeRead("MyVI" "123" "value" doubleLocal error)
+            PropertyNodeRead("MyVI" "123" "value" int32Local error)
+            PropertyNodeRead("MyVI" "123" "value" uint32Local error)
+            PropertyNodeRead("MyVI" "123" "value" complexDoubleLocal error)
+            PropertyNodeRead("MyVI" "123" "value" timestampLocal error)
+        )
+)))
+enqueue(MyVI)
