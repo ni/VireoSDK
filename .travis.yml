@@ -30,7 +30,7 @@ install:
 - if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
 - cat ~/.emscripten
-- emcc -v
+- emscripten-sdk/emsdk_env.sh && emcc -v
 - gcc -v
 - node -v
 - npm -v
