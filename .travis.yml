@@ -26,6 +26,7 @@ install:
 - npm install
 - pip install --user tox
 - nohup npm run httpbin &
+- PATH=$(dirname $(which node)):$PATH
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
