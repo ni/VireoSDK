@@ -10,6 +10,7 @@ init:
 - cmd: pip -V
 - ps: $PSVersionTable
 install:
+  - ps: Install-Product node 8
   - chocolatey install make
   - chocolatey install gnuwin32-coreutils.portable
   - npm install
@@ -20,6 +21,7 @@ install:
   - emsdk\emsdk install sdk-1.37.9-64bit
   - emsdk\emsdk activate sdk-1.37.9-64bit
   - emcc -v
+  - node -v
 platform:
   - Win32
 configuration:
