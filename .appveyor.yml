@@ -19,7 +19,8 @@ install:
   - git clone https://github.com/juj/emsdk.git
   - cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
   - ps: emsdk\emsdk install sdk-1.37.9-64bit
-  - ps: . emsdk\emsdk activate sdk-1.37.9-64bit; emcc -v
+  - ps: emsdk\emsdk activate sdk-1.37.9-64bit
+  - cmd /c 'call emsdk\emsdk_env.bat && emcc'
   - node -v
 platform:
   - Win32
