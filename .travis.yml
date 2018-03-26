@@ -1,6 +1,7 @@
 dist: trusty
 sudo: false
 addons:
+  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -12,9 +13,7 @@ cache:
     - node_modules
     - emscripten-sdk
 before_install:
-- export DISPLAY=:99.0
 - export TZ=CST6CDT
-- sh -e /etc/init.d/xvfb start
 - npm install npm@latest -g
 - node -v
 - npm -v
