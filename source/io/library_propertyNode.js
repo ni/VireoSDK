@@ -3,10 +3,10 @@
     'use strict';
     var propertyNodeCAPI = {
         jsPropertyNodeWrite: function () {
-            Module.property.jsPropertyNodeWrite.apply(undefined, arguments);
+            Module.propertyNode.jsPropertyNodeWrite.apply(undefined, arguments);
         },
         jsPropertyNodeRead: function () {
-            Module.property.jsPropertyNodeRead.apply(undefined, arguments);
+            Module.propertyNode.jsPropertyNodeRead.apply(undefined, arguments);
         }
     };
 
