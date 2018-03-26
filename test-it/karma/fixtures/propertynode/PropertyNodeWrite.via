@@ -1,0 +1,27 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(dv(.Boolean false) myBoolValue)
+        e(dv(.String 'Dolor amet sit amet') stringLocal)
+        e(dv(.Double 1234.5678) doubleLocal)
+        e(dv(.Int32 -1000) int32Local)
+        e(dv(.UInt32 9876543) uint32Local)
+        e(dv(.ComplexDouble (5.045 -5.67)) complexDoubleLocal)
+        e(dv(.Timestamp (3564057536 7811758927381448193)) timestampLocal)
+
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+    )
+        clump(1
+            PropertyNodeWrite("MyVI" "123" "value" myBoolValue error)
+            PropertyNodeWrite("MyVI" "123" "value" stringLocal error)
+            PropertyNodeWrite("MyVI" "123" "value" doubleLocal error)
+            PropertyNodeWrite("MyVI" "123" "value" int32Local error)
+            PropertyNodeWrite("MyVI" "123" "value" uint32Local error)
+            PropertyNodeWrite("MyVI" "123" "value" complexDoubleLocal error)
+            PropertyNodeWrite("MyVI" "123" "value" timestampLocal error)
+        )
+)))
+enqueue(MyVI)
