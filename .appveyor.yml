@@ -19,8 +19,7 @@ install:
   - git clone https://github.com/juj/emsdk.git
   - cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
   - ps: emsdk\emsdk install sdk-1.37.9-64bit
-  - ps: emsdk\emsdk activate sdk-1.37.9-64bit
-  - ps: emsdk\emsdk activate sdk-1.37.9-64bit; emcc -v
+  - ps: . emsdk\emsdk activate sdk-1.37.9-64bit && emcc -v
   - node -v
 platform:
   - Win32
@@ -34,7 +33,7 @@ before_build:
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
-  - ps: emsdk\emsdk activate sdk-1.37.9-64bit; make vjs
+  - ps: . emsdk\emsdk activate sdk-1.37.9-64bit && make vjs
 test_script:
   - make testjs
   - make testnative
