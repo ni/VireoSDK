@@ -1,4 +1,1 @@
-.\emsdk\emsdk_env.bat & emcc -v
-emcc -v
-call emcc -v
-
+.\emsdk\emsdk_env.bat & make vjs
