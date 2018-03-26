@@ -26,11 +26,9 @@ install:
 - npm install
 - pip install --user tox
 - nohup npm run httpbin &
-- PATH=$(dirname $(which node)):$PATH
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
-- source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
 - emcc -v
 - gcc -v
@@ -41,10 +39,15 @@ before_script:
 - curl http://127.0.0.1:64526/get?show_env=1
 - make lint
 - npm run lint
-- make
-- make vjs BUILD=debug
-- make vjs BUILD=profile
+- make native
 - make unittest
+- node -v
+- npm -v
+- emscripten-sdk/emsdk_env.sh && make vjs
+- emscripten-sdk/emsdk_env.sh && make vjs BUILD=debug
+- emscripten-sdk/emsdk_env.sh && make vjs BUILD=profile
+- node -v
+- npm -v
 - tar -tf $(npm pack)
 script:
 - make testjs
