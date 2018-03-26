@@ -20,7 +20,6 @@ install:
   - cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
   - ps: emsdk\emsdk install sdk-1.37.9-64bit
   - ps: emsdk\emsdk activate sdk-1.37.9-64bit
-  - cmd /c 'emsdk\emsdk_env.bat && call emcc'
   - node -v
 platform:
   - Win32
@@ -34,7 +33,7 @@ before_build:
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
-  - ps: . emsdk\emsdk activate sdk-1.37.9-64bit; make vjs
+  - ps: .\make-it\appveyor-vjs.ps1
 test_script:
   - make testjs
   - make testnative
