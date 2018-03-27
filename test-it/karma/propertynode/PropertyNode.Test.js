@@ -52,7 +52,7 @@ describe('The Vireo PropertyNode', function () {
         });
     });
 
-    it('propertyRead writes an error when external function throws', function () {
+    it('propertyRead writes an error when external function throws', function (done) {
         var readFunction = function () {
             throw new Error('This is not good');
         };
@@ -68,6 +68,7 @@ describe('The Vireo PropertyNode', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(1055);
             expect(viPathParser('error.source')).toMatch(/PropertyNodeRead in MyVI/);
+            done();
         });
     });
 
@@ -103,7 +104,7 @@ describe('The Vireo PropertyNode', function () {
         });
     });
 
-    it('propertyWrite writes an error when external function throws', function () {
+    it('propertyWrite writes an error when external function throws', function (done) {
         var writeFunction = function () {
             throw new Error('This is not good');
         };
@@ -119,6 +120,7 @@ describe('The Vireo PropertyNode', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(1055);
             expect(viPathParser('error.source')).toMatch(/PropertyNodeWrite in MyVI/);
+            done();
         });
     });
 });
