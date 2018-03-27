@@ -13,19 +13,22 @@
 
         // list of files / patterns to load in the browser
         files: [
-            // 3rd party resources
-            // None
-            // source files
-            'node_modules/es6-promise/dist/es6-promise.js',
-            'node_modules/es6-promise/dist/es6-promise.auto.js',
+            // Polyfills
+            // core.js and fetch.js are used for IE11 testing
+            'node_modules/core-js/client/core.js',
             'node_modules/whatwg-fetch/fetch.js',
+
+            // Test infrastructure
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
             'node_modules/diff/dist/diff.js',
+
+            // Source files
             'dist/asmjs-unknown-emscripten/release/vireo.js',
             'source/core/module_*.js',
             'source/io/module_*.js',
             'source/core/vireo.loader.js',
-            // test assets
+
+            // Test specs and assets
             'test-it/karma/utilities/TestHelpers.*.js',
             {
                 pattern: 'test-it/ViaTests/*.via',
