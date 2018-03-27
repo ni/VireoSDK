@@ -31,7 +31,8 @@ describe('Performing a GET request', function () {
             httpUtf8DemoUrl,
             httpGetOpenMethodCloseViaUrl,
             httpGetOpenAddMethodCloseViaUrl,
-            httpGetParallelViaUrl
+            httpGetParallelViaUrl,
+            httpGetOpenAddMethodAddMethodCloseViaUrl
         ], done);
     });
 
