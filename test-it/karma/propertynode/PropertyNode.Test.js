@@ -1,4 +1,4 @@
-fdescribe('The Vireo PropertyNode', function () {
+describe('The Vireo PropertyNode', function () {
     'use strict';
 
     var Vireo = window.NationalInstruments.Vireo.Vireo;
