@@ -1,4 +1,4 @@
-describe('Performing a GET request', function () {
+describe('Performing a GET request #FailsIE', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -94,7 +94,7 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('errors with a bad url #FailsIE', function (done) {
+    it('errors with a bad url', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -211,7 +211,7 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('validating a 404 response with empty response body #FailsIE', function (done) {
+    it('validating a 404 response with empty response body', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -776,7 +776,7 @@ describe('Performing a GET request', function () {
     });
 
     // Tests with serial connections to the same endpoint run slowly sometimes, not sure what conditions
-    it('with multiple serial requests doing open, add header, get, add header, get, close and validates a 200 response #Slow #FailsIE', function (done) {
+    it('with multiple serial requests doing open, add header, get, add header, get, close and validates a 200 response #Slow', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetOpenAddMethodAddMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
