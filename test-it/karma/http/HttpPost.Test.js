@@ -164,6 +164,43 @@ describe('Performing a POST request', function () {
         });
     });
 
+    it('validating a 404 response with empty response body', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('status/404');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(404);
+            expect(responseHeader.reasonPhrase).toBe('NOT FOUND');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            expect(viPathParser('body')).toBeEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(404);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
     it('validating a simple 200 response with empty buffer', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
@@ -414,7 +451,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('with open, post, close and validates a 200 response', function (done) {
+    it('with open, post, close and validates a 200 response #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostOpenMethodCloseViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
