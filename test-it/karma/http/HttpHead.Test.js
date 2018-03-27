@@ -84,7 +84,7 @@ describe('Performing a HEAD request', function () {
         });
     });
 
-    it('errors with a bad url', function (done) {
+    it('errors with a bad url #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpHeadMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');

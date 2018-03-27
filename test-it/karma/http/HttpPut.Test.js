@@ -88,7 +88,7 @@ describe('Performing a PUT request', function () {
         });
     });
 
-    it('errors with a bad url during put', function (done) {
+    it('errors with a bad url #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -164,7 +164,7 @@ describe('Performing a PUT request', function () {
         });
     });
 
-    it('validating a 404 response with empty response body', function (done) {
+    it('validating a 404 response with empty response body #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPutMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');

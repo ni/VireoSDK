@@ -88,7 +88,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('errors with a bad url', function (done) {
+    it('errors with a bad url #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -164,7 +164,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('validating a 404 response with empty response body', function (done) {
+    it('validating a 404 response with empty response body #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -244,7 +244,7 @@ describe('Performing a POST request', function () {
         });
     });
 
-    it('validating a simple 200 response with simple buffer', function (done) {
+    it('validating a simple 200 response with simple buffer #FailsIE', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpPostMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
