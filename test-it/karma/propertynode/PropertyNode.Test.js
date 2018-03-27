@@ -23,7 +23,7 @@ describe('The Vireo PropertyNode', function () {
 
     it('setPropertyReadFunction throws when trying to set not a function', function () {
         var notFunctions = [{}, [], '', 234, undefined, null];
-        notFunctions.forEach(element => {
+        notFunctions.forEach(function (element) {
             var setPropertyReadFunction = function () {
                 vireo.propertyNode.setPropertyReadFunction(element);
             };
@@ -73,7 +73,7 @@ describe('The Vireo PropertyNode', function () {
 
     it('setPropertyWriteFunction throws when trying to set not a function', function () {
         var notFunctions = [{}, [], '', 234, undefined, null];
-        notFunctions.forEach(element => {
+        notFunctions.forEach(function (element) {
             var setPropertyReadFunction = function () {
                 vireo.propertyNode.setPropertyWriteFunction(element);
             };
