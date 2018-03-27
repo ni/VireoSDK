@@ -17,6 +17,7 @@
             // None
             // source files
             'node_modules/es6-promise/dist/es6-promise.js',
+            'node_modules/es6-promise/dist/es6-promise.auto.js',
             'node_modules/whatwg-fetch/fetch.js',
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
             'node_modules/diff/dist/diff.js',
