@@ -38,13 +38,13 @@
         }
     };
 
-    /* var formatMessageWithException = function (messageText, exception) {
+    var formatMessageWithException = function (messageText, exception) {
         if (typeof exception.message === 'string' && exception.message.length !== 0) {
             return messageText + ', Additional information: ' + exception.message;
         }
 
         return messageText;
-    }; */
+    };
 
     // Vireo Core Mixin Function
     var assignPropertyNode = function (Module, publicAPI) {
@@ -66,16 +66,6 @@
         };
 
         // Private Instance Variables (per vireo instance)
-        var formatMessageWithException = function (messageText, exception) {
-            if (typeof exception.message === 'string' && exception.message.length !== 0) {
-                return messageText + ', Additional information: ' + exception.message;
-            }
-
-            return messageText;
-        };
-
-        // Private Instance Variables (per vireo instance)
-
         Module.propertyNode.jsPropertyNodeWrite = function (
             viNamePointer,
             controlIdPointer,
