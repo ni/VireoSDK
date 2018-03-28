@@ -40,7 +40,7 @@
 
     var formatMessageWithException = function (messageText, exception) {
         if (typeof exception.message === 'string' && exception.message.length !== 0) {
-            return messageText + ', Additional information: ' + exception.message;
+            return messageText + ', <APPEND>\n ' + exception.message;
         }
 
         return messageText;
@@ -68,7 +68,7 @@
         // Private Instance Variables (per vireo instance)
         Module.propertyNode.jsPropertyNodeWrite = function (
             viNamePointer,
-            controlIdPointer,
+            dataItemIdPointer,
             propertyNamePointer,
             propertyTypePointer,
             propertyPathPointer,
@@ -81,14 +81,14 @@
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
             var viName = Module.eggShell.dataReadString(viNamePointer);
-            var controlId = Module.eggShell.dataReadString(controlIdPointer);
+            var dataItemId = Module.eggShell.dataReadString(dataItemIdPointer);
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
 
             var context = undefined;
             try {
-                writeProperty.call(context, viName, controlId, propertyName, propertyType, propertyPath);
+                writeProperty.call(context, viName, dataItemId, propertyName, propertyType, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
@@ -100,7 +100,7 @@
 
         Module.propertyNode.jsPropertyNodeRead = function (
             viNamePointer,
-            controlIdPointer,
+            dataItemIdPointer,
             propertyNamePointer,
             propertyTypePointer,
             propertyPathPointer,
@@ -112,14 +112,14 @@
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
             var viName = Module.eggShell.dataReadString(viNamePointer);
-            var controlId = Module.eggShell.dataReadString(controlIdPointer);
+            var dataItemId = Module.eggShell.dataReadString(dataItemIdPointer);
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
 
             var context = undefined;
             try {
-                readProperty.call(context, viName, controlId, propertyName, propertyType, propertyPath);
+                readProperty.call(context, viName, dataItemId, propertyName, propertyType, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
