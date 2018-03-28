@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\core\Array.cpp" />
     <ClCompile Include="..\source\core\Assert.cpp" />
     <ClCompile Include="..\source\core\CEntryPoints.cpp" />
+    <ClCompile Include="..\source\core\ControlRef.cpp" />
     <ClCompile Include="..\source\core\DataQueue.cpp" />
     <ClCompile Include="..\source\core\Date.cpp" />
     <ClCompile Include="..\source\core\EventLog.cpp" />
@@ -64,6 +65,7 @@
     <ClInclude Include="..\source\include\Array.h" />
     <ClInclude Include="..\source\include\BuildConfig.h" />
     <ClInclude Include="..\source\include\CEntryPoints.h" />
+    <ClInclude Include="..\source\include\ControlRef.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
     <ClInclude Include="..\source\include\Date.h" />
     <ClInclude Include="..\source\include\EventLog.h" />
