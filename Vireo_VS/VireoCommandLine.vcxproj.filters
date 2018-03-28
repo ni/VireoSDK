@@ -34,6 +34,9 @@
     <ClCompile Include="..\source\core\CEntryPoints.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\ControlRef.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\core\DataQueue.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -162,6 +165,9 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\CEntryPoints.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\ControlRef.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\DataTypes.h">

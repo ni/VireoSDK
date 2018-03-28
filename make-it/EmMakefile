@@ -141,6 +141,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
 EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Assert.bc\
 	$(OBJS)/CEntryPoints.bc\
+	$(OBJS)/ControlRef.bc\
 	$(OBJS)/EventLog.bc\
 	$(OBJS)/Events.bc\
 	$(OBJS)/ExecutionContext.bc\
