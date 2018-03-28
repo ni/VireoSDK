@@ -19,9 +19,9 @@ SDG
 #include <stdio.h>
 
 
-#define VIREO_TYPE_PropertyNode 1
+#define VIREO_MODULE_PropertyNode 1
 
-#if defined (VIREO_TYPE_PropertyNode)
+#if defined (VIREO_MODULE_PropertyNode)
 namespace Vireo {
 
 #if kVireoOS_emscripten
@@ -144,4 +144,4 @@ DEFINE_VIREO_BEGIN(Property)
 DEFINE_VIREO_END()
 
 }  // namespace Vireo
-#endif  // VIREO_TYPE_PropertyNode
+#endif  // VIREO_MODULE_PropertyNode
