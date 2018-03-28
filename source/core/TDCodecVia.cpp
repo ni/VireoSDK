@@ -1415,6 +1415,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     TypeRef paramsType = emptyVIParamList;
     TypeRef localsType = emptyVIParamList;
     TypeRef eventSpecsType = emptyVIParamList;
+    TypeRef controlRefsType = emptyVIParamList;
 
     SubString name;
     Boolean hasName = _string.ReadNameToken(&name);
@@ -1427,7 +1428,9 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             } else if (name.CompareCStr("Params")) {
                 paramsType = type;
             } else if (name.CompareCStr("Events")) {
-                    eventSpecsType = type;
+                eventSpecsType = type;
+            } else if (name.CompareCStr("ControlRefs")) {
+                controlRefsType = type;
             } else {
                 LOG_EVENTV(kSoftDataError, "Field does not exist '%.*s'", FMT_LEN_BEGIN(&name));
             }
