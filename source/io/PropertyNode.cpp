@@ -27,9 +27,9 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: viName, controlId, propertyName, propertyType, propertyPath, errorStatus*, errorCode*, errorSource*
+    // Parameters: viName, dataItemId, propertyName, propertyType, propertyPath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    // Parameters: viName, controlId, propertyName, propertyType, propertyPath, errorStatus*, errorCode*, errorSource*
+    // Parameters: viName, dataItemId, propertyName, propertyType, propertyPath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
 }
 #endif
@@ -41,7 +41,7 @@ extern void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, Cons
 struct PropertyNodeWriteParamBlock : public VarArgInstruction
 {
     _ParamDef(StringRef, viName);
-    _ParamDef(StringRef, controlId);
+    _ParamDef(StringRef, dataItemId);
     _ParamDef(StringRef, propertyName);
     _ParamImmediateDef(StaticTypeAndData, value[1]);
     _ParamDef(ErrorCluster, errorCluster);
@@ -55,14 +55,11 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
 #if kVireoOS_emscripten
     StringRef viName = _Param(viName);
-    StringRef controlId = _Param(controlId);
+    StringRef dataItemId = _Param(dataItemId);
     StringRef propertyName = _Param(propertyName);
     StaticTypeAndData *value = _ParamImmediate(value);
 
-    ExecutionContextRef exec = THREAD_EXEC();
-    VIClump* runningQueueElt = exec->_runningQueueElt;
-    VirtualInstrument* vi = runningQueueElt->OwningVI();
-    TypeManagerRef typeManager = vi->TheTypeManager();
+    TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
     STACK_VAR(String, pathRef);
     typeManager->PointerToSymbolPath(value->_paramType, value->_pData, pathRef.Value);
@@ -74,7 +71,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             viName,
-            controlId,
+            dataItemId,
             propertyName,
             typeRef.Value,
             pathRef.Value,
@@ -93,7 +90,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 struct PropertyNodeReadParamBlock : public VarArgInstruction
 {
     _ParamDef(StringRef, viName);
-    _ParamDef(StringRef, controlId);
+    _ParamDef(StringRef, dataItemId);
     _ParamDef(StringRef, propertyName);
     _ParamImmediateDef(StaticTypeAndData, value[1]);
     _ParamDef(ErrorCluster, errorCluster);
@@ -107,14 +104,11 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
 #if kVireoOS_emscripten
     StringRef viName = _Param(viName);
-    StringRef controlId = _Param(controlId);
+    StringRef dataItemId = _Param(dataItemId);
     StringRef propertyName = _Param(propertyName);
     StaticTypeAndData *value = _ParamImmediate(value);
 
-    ExecutionContextRef exec = THREAD_EXEC();
-    VIClump* runningQueueElt = exec->_runningQueueElt;
-    VirtualInstrument* vi = runningQueueElt->OwningVI();
-    TypeManagerRef typeManager = vi->TheTypeManager();
+    TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
     STACK_VAR(String, pathRef);
     typeManager->PointerToSymbolPath(value->_paramType, value->_pData, pathRef.Value);
@@ -126,7 +120,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
             viName,
-            controlId,
+            dataItemId,
             propertyName,
             typeRef.Value,
             pathRef.Value,
