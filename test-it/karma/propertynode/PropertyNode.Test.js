@@ -41,13 +41,13 @@ describe('The Vireo PropertyNode', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(spy.calls.argsFor(0)).toEqual(['MyVI', '123', 'value', 'Boolean', 'MyVI.Locals.booleanLocal']);
-            expect(spy.calls.argsFor(1)).toEqual(['MyVI', '123', 'value', 'String', 'MyVI.Locals.stringLocal']);
-            expect(spy.calls.argsFor(2)).toEqual(['MyVI', '123', 'value', 'Double', 'MyVI.Locals.doubleLocal']);
-            expect(spy.calls.argsFor(3)).toEqual(['MyVI', '123', 'value', 'Int32', 'MyVI.Locals.int32Local']);
-            expect(spy.calls.argsFor(4)).toEqual(['MyVI', '123', 'value', 'UInt32', 'MyVI.Locals.uint32Local']);
-            expect(spy.calls.argsFor(5)).toEqual(['MyVI', '123', 'value', 'ComplexDouble', 'MyVI.Locals.complexDoubleLocal']);
-            expect(spy.calls.argsFor(6)).toEqual(['MyVI', '123', 'value', 'Timestamp', 'MyVI.Locals.timestampLocal']);
+            expect(spy.calls.argsFor(0)).toEqual(['MyVI', 'dataItem_Boolean', 'value', 'Boolean', 'MyVI.Locals.booleanLocal']);
+            expect(spy.calls.argsFor(1)).toEqual(['MyVI', 'dataItem_String', 'value', 'String', 'MyVI.Locals.stringLocal']);
+            expect(spy.calls.argsFor(2)).toEqual(['MyVI', 'dataItem_Double', 'value', 'Double', 'MyVI.Locals.doubleLocal']);
+            expect(spy.calls.argsFor(3)).toEqual(['MyVI', 'dataItem_Int32', 'value', 'Int32', 'MyVI.Locals.int32Local']);
+            expect(spy.calls.argsFor(4)).toEqual(['MyVI', 'dataItem_UInt32', 'value', 'UInt32', 'MyVI.Locals.uint32Local']);
+            expect(spy.calls.argsFor(5)).toEqual(['MyVI', 'dataItem_ComplexDouble', 'value', 'ComplexDouble', 'MyVI.Locals.complexDoubleLocal']);
+            expect(spy.calls.argsFor(6)).toEqual(['MyVI', 'dataItem_Timestamp', 'value', 'Timestamp', 'MyVI.Locals.timestampLocal']);
             done();
         });
     });
@@ -93,13 +93,13 @@ describe('The Vireo PropertyNode', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(spy.calls.argsFor(0)).toEqual(['MyVI', '123', 'value', 'Boolean', 'MyVI.Locals.myBoolValue']);
-            expect(spy.calls.argsFor(1)).toEqual(['MyVI', '123', 'value', 'String', 'MyVI.Locals.stringLocal']);
-            expect(spy.calls.argsFor(2)).toEqual(['MyVI', '123', 'value', 'Double', 'MyVI.Locals.doubleLocal']);
-            expect(spy.calls.argsFor(3)).toEqual(['MyVI', '123', 'value', 'Int32', 'MyVI.Locals.int32Local']);
-            expect(spy.calls.argsFor(4)).toEqual(['MyVI', '123', 'value', 'UInt32', 'MyVI.Locals.uint32Local']);
-            expect(spy.calls.argsFor(5)).toEqual(['MyVI', '123', 'value', 'ComplexDouble', 'MyVI.Locals.complexDoubleLocal']);
-            expect(spy.calls.argsFor(6)).toEqual(['MyVI', '123', 'value', 'Timestamp', 'MyVI.Locals.timestampLocal']);
+            expect(spy.calls.argsFor(0)).toEqual(['MyVI', 'dataItem_Boolean', 'value', 'Boolean', 'MyVI.Locals.myBoolValue']);
+            expect(spy.calls.argsFor(1)).toEqual(['MyVI', 'dataItem_String', 'value', 'String', 'MyVI.Locals.stringLocal']);
+            expect(spy.calls.argsFor(2)).toEqual(['MyVI', 'dataItem_Double', 'value', 'Double', 'MyVI.Locals.doubleLocal']);
+            expect(spy.calls.argsFor(3)).toEqual(['MyVI', 'dataItem_Int32', 'value', 'Int32', 'MyVI.Locals.int32Local']);
+            expect(spy.calls.argsFor(4)).toEqual(['MyVI', 'dataItem_UInt32', 'value', 'UInt32', 'MyVI.Locals.uint32Local']);
+            expect(spy.calls.argsFor(5)).toEqual(['MyVI', 'dataItem_ComplexDouble', 'value', 'ComplexDouble', 'MyVI.Locals.complexDoubleLocal']);
+            expect(spy.calls.argsFor(6)).toEqual(['MyVI', 'dataItem_Timestamp', 'value', 'Timestamp', 'MyVI.Locals.timestampLocal']);
             done();
         });
     });
