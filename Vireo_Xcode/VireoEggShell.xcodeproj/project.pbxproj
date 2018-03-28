@@ -12,6 +12,9 @@
 		444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468B1E26D73C0037FA98 /* RefNum.cpp */; };
 		444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468F1E299A390037FA98 /* RefNumTest.cpp */; };
 		444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46921E2D70AB0037FA98 /* UnitTest.cpp */; };
+		446506D8206AC83700B0CD8E /* JavaScriptInvoke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */; };
+		446506D9206AC83700B0CD8E /* PropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506D7206AC83700B0CD8E /* PropertyNode.cpp */; };
+		446506DC206ACCCA00B0CD8E /* ControlRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506DB206ACCCA00B0CD8E /* ControlRef.cpp */; };
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
 		44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B71BD21EC65368008683F6 /* WebSocketClient.cpp */; };
@@ -252,6 +255,14 @@
 		444C468F1E299A390037FA98 /* RefNumTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RefNumTest.cpp; path = ../source/unittest/RefNumTest.cpp; sourceTree = "<group>"; };
 		444C46911E2D69ED0037FA98 /* UnitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnitTest.h; path = include/UnitTest.h; sourceTree = "<group>"; };
 		444C46921E2D70AB0037FA98 /* UnitTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnitTest.cpp; path = core/UnitTest.cpp; sourceTree = "<group>"; };
+		446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_javaScriptInvoke.js; path = ../source/io/library_javaScriptInvoke.js; sourceTree = "<group>"; };
+		446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptInvoke.cpp; path = ../source/io/JavaScriptInvoke.cpp; sourceTree = "<group>"; };
+		446506D4206AC83600B0CD8E /* module_propertyNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_propertyNode.js; path = ../source/io/module_propertyNode.js; sourceTree = "<group>"; };
+		446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_javaScriptInvoke.js; path = ../source/io/module_javaScriptInvoke.js; sourceTree = "<group>"; };
+		446506D6206AC83600B0CD8E /* library_propertyNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_propertyNode.js; path = ../source/io/library_propertyNode.js; sourceTree = "<group>"; };
+		446506D7206AC83700B0CD8E /* PropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyNode.cpp; path = ../source/io/PropertyNode.cpp; sourceTree = "<group>"; };
+		446506DA206ACB3400B0CD8E /* ControlRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlRef.h; path = include/ControlRef.h; sourceTree = "<group>"; };
+		446506DB206ACCCA00B0CD8E /* ControlRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControlRef.cpp; path = core/ControlRef.cpp; sourceTree = "<group>"; };
 		4466C7971E4F08EE004B5E31 /* MatchPat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MatchPat.cpp; path = core/MatchPat.cpp; sourceTree = "<group>"; };
 		4466C7981E4F08EE004B5E31 /* Waveform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Waveform.cpp; path = core/Waveform.cpp; sourceTree = "<group>"; };
 		4466C79B1E4FEDFB004B5E31 /* Waveform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Waveform.h; path = include/Waveform.h; sourceTree = "<group>"; };
@@ -762,6 +773,8 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
+				446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */,
+				446506D7206AC83700B0CD8E /* PropertyNode.cpp */,
 				4786297D1927064300141666 /* Canvas2d.cpp */,
 				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
@@ -774,6 +787,10 @@
 				44C295D61F8C037A001877B4 /* module_httpClient.js */,
 				44C295D71F8C037A001877B4 /* module_other.js */,
 				44C295D81F8C037A001877B4 /* module_webSocketClient.js */,
+				446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */,
+				446506D6206AC83600B0CD8E /* library_propertyNode.js */,
+				446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */,
+				446506D4206AC83600B0CD8E /* module_propertyNode.js */,
 			);
 			name = IO;
 			sourceTree = "<group>";
@@ -832,6 +849,7 @@
 				47D84DD317C2A271009053DB /* Array.cpp */,
 				47E220B01950C1F700988185 /* Assert.cpp */,
 				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
+				446506DB206ACCCA00B0CD8E /* ControlRef.cpp */,
 				444C46821E1C5A540037FA98 /* Date.cpp */,
 				472B24CF180F0FEB00C08186 /* GenericFunctions.cpp */,
 				470F626B1886F53F003146BF /* EventLog.cpp */,
@@ -875,6 +893,7 @@
 				47B76CD71B28DACA0083AEEB /* Platform.h */,
 				475DCFA918654336003810C0 /* ConversionTable.def */,
 				4797A38E1862265B00E643D7 /* CEntryPoints.h */,
+				446506DA206ACB3400B0CD8E /* ControlRef.h */,
 				47D84DC417C2A258009053DB /* BuildConfig.h */,
 				47D84DC917C2A258009053DB /* DataTypes.h */,
 				470F626A1886F522003146BF /* EventLog.h */,
@@ -1122,6 +1141,7 @@
 				47D84DF417C2A271009053DB /* Thread.cpp in Sources */,
 				47D84DF517C2A271009053DB /* Queue.cpp in Sources */,
 				47D84DF617C2A271009053DB /* String.cpp in Sources */,
+				446506D9206AC83700B0CD8E /* PropertyNode.cpp in Sources */,
 				444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */,
 				47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */,
 				444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */,
@@ -1141,9 +1161,11 @@
 				4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,
 				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
+				446506D8206AC83700B0CD8E /* JavaScriptInvoke.cpp in Sources */,
 				47E220B11950C1F700988185 /* Assert.cpp in Sources */,
 				470F626C1886F53F003146BF /* EventLog.cpp in Sources */,
 				4786297E19270C9900141666 /* Canvas2d.cpp in Sources */,
+				446506DC206ACCCA00B0CD8E /* ControlRef.cpp in Sources */,
 				4744A9DD1818594D00E1F7D9 /* TypeDefiner.cpp in Sources */,
 				47C554E418452E4A001DDC46 /* TDCodecLVFlat.cpp in Sources */,
 			);
