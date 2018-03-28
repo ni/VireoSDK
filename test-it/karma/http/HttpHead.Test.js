@@ -1,4 +1,4 @@
-describe('Performing a HEAD request', function () {
+describe('Performing a HEAD request #FailsIE', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;

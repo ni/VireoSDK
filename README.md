@@ -157,7 +157,7 @@ Vireo utilizes [httpbin](https://httpbin.org/) for testing the HTTP Client funct
 2. Run the `npm run httpbin` command. This will install dependencies of httpbin if necessary and start the httpbin server locally.
 
    Note: On Windows you can alternatively execute `npm run httpbin-start` to start the httpbin server in a new console window.
-3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run karma` and `make testhttpbin`)
+3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run test` and `make testhttpbin`)
 
 # Updating Vireo Documentation
 We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. The tool allows to annotate our source code and generate documents from there. We are currently using version *1.8.6*.

@@ -1,6 +1,7 @@
 dist: trusty
 sudo: false
 addons:
+  firefox: latest
   apt:
     sources:
     - ubuntu-toolchain-r-test
@@ -12,9 +13,7 @@ cache:
     - node_modules
     - emscripten-sdk
 before_install:
-- export DISPLAY=:99.0
 - export TZ=CST6CDT
-- sh -e /etc/init.d/xvfb start
 - npm install npm@latest -g
 - node -v
 - npm -v
@@ -27,28 +26,27 @@ install:
 - pip install --user tox
 - nohup npm run httpbin &
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+- gcc -v
 - if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
 - emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
-- source emscripten-sdk/emsdk_env.sh
 - cat ~/.emscripten
-- emcc -v
-- gcc -v
+- bash -c 'source emscripten-sdk/emsdk_env.sh && emcc -v'
 before_script:
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
 - make lint
 - npm run lint
-- make
-- make vjs BUILD=debug
-- make vjs BUILD=profile
+- make native
 - make unittest
+- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs'
+- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs BUILD=debug'
+- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs BUILD=profile'
 - tar -tf $(npm pack)
 script:
 - make testjs
 - make testnative
 - make testhttpbin
-- npm run karma -- --browsers PhantomJS --skip-tags FailsPhantomJS
-- npm run karma -- --browsers Firefox
+- npm run test
 before_deploy:
 - npm run doxygen
 - export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"

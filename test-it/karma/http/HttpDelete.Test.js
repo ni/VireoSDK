@@ -1,4 +1,4 @@
-describe('Performing a DELETE request', function () {
+describe('Performing a DELETE request #FailsIE', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -11,6 +11,7 @@ describe('Performing a DELETE request', function () {
     var kNIHttpResultInternalUndefinedError = 363798;
     var WEBVI_RECEIVE_INVALID_HANDLE = 1;
     var WEBVI_INVALID_HEADER = 363651;
+    var WEBVI_INVALID_URL = 363500;
     var WEBVI_NETWORK_ERROR = 363650;
     var ncTimeOutErr = 56;
     var vireo;
@@ -82,6 +83,30 @@ describe('Performing a DELETE request', function () {
             expect(viPathParser('statusCode')).toBe(0);
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(WEBVI_RECEIVE_INVALID_HANDLE);
+            expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
+            done();
+        });
+    });
+
+    it('errors with a bad url', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        viPathWriter('url', 'http://bad:-90');
+        viPathWriter('headers', 'Bad Value');
+        viPathWriter('body', 'Bad Value');
+        viPathWriter('statusCode', 1337);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('handle')).toBe(0);
+            expect(viPathParser('headers')).toBeEmptyString();
+            expect(viPathParser('body')).toBeEmptyString();
+            expect(viPathParser('statusCode')).toBe(0);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect([WEBVI_INVALID_URL, WEBVI_NETWORK_ERROR]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientDelete in MyVI/);
             done();
         });
@@ -170,6 +195,43 @@ describe('Performing a DELETE request', function () {
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
+
+            // error
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+
+            done();
+        });
+    });
+
+    it('validating a 404 response with empty response body', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpDeleteMethodViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
+
+        var url = httpBinHelpers.convertToAbsoluteUrl('status/404');
+        viPathWriter('url', url);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            // handle
+            expect(viPathParser('handle')).toBe(0);
+
+            // header
+            var responseHeader = httpParser.parseResponseHeader(viPathParser('headers'));
+            expect(responseHeader.httpVersion).toBe('HTTP/1.1');
+            expect(responseHeader.statusCode).toBe(404);
+            expect(responseHeader.reasonPhrase).toBe('NOT FOUND');
+            expect(responseHeader.headers).toBeNonEmptyObject();
+
+            // body
+            expect(viPathParser('body')).toBeEmptyString();
+
+            // status code
+            expect(viPathParser('statusCode')).toBe(404);
 
             // error
             expect(viPathParser('error.status')).toBeFalse();
