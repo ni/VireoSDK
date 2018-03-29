@@ -73,6 +73,19 @@ RefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, cons
     return refnum;
 }
 
+NIError ControlReferenceLookup(RefNum refnum, VirtualInstrument **pVI, SubString *pControlTag) {
+    ControlRefInfo controlRefInfo;
+    NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
+    if (err == kNIError_Success) {
+        *pVI = controlRefInfo.vi;
+        *pControlTag = controlRefInfo.controlTag;
+    } else {
+        *pVI = NULL;
+        *pControlTag = SubString();
+    }
+    return err;
+}
+
 // ControlReferenceAppendDescription -- output the VI and control a refnum is linked to (for test validation)
 NIError ControlReferenceAppendDescription(StringRef str, RefNum refnum) {
     ControlRefInfo controlRefInfo;
