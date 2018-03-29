@@ -47,33 +47,33 @@ ControlRefNumManager ControlRefNumManager::_s_singleton;
 
 // ControlReferenceDestroy -- deallocate control ref
 // (The VI and string tag are weak references into the owning VI, so do not have to be deallocated.)
-NIError ControlReferenceDestroy(RefNum refnum) {
+NIError ControlReferenceDestroy(ControlRefNum refnum) {
     return ControlRefNumManager::RefNumStorage().DisposeRefNum(refnum, NULL);
 }
 
 // Clean-up Proc, run when top level VI finishes, disposing control reference.
 static void CleanUpControlReference(intptr_t arg) {
-    RefNum refnum = RefNum(arg);
+    ControlRefNum refnum = ControlRefNum(arg);
     ControlReferenceDestroy(refnum);
 }
 
 // ControlReferenceCreate -- create a control ref linked to control associated with controlTag on given VI.
-RefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag) {
+ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag) {
     ControlRefInfo controlRefInfo(vi, controlTag);
-    RefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
+    ControlRefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
 
     ControlRefNumManager::AddCleanupProc(null, CleanUpControlReference, refnum);
     return refnum;
 }
 
 // ControlReferenceCreate -- RefNumVal version
-RefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag) {
-    RefNum refnum = ControlReferenceCreate(vi, controlTag);
+ControlRefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag) {
+    ControlRefNum refnum = ControlReferenceCreate(vi, controlTag);
     pRefNumVal->SetRefNum(refnum);
     return refnum;
 }
 
-NIError ControlReferenceLookup(RefNum refnum, VirtualInstrument **pVI, SubString *pControlTag) {
+NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, SubString *pControlTag) {
     ControlRefInfo controlRefInfo;
     NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
     if (err == kNIError_Success) {
@@ -87,7 +87,7 @@ NIError ControlReferenceLookup(RefNum refnum, VirtualInstrument **pVI, SubString
 }
 
 // ControlReferenceAppendDescription -- output the VI and control a refnum is linked to (for test validation)
-NIError ControlReferenceAppendDescription(StringRef str, RefNum refnum) {
+NIError ControlReferenceAppendDescription(StringRef str, ControlRefNum refnum) {
     ControlRefInfo controlRefInfo;
     NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
     if (err == kNIError_Success) {
