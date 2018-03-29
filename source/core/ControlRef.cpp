@@ -109,6 +109,7 @@ DEFINE_VIREO_BEGIN(ControlRefs)
 
     DEFINE_VIREO_TYPE(ControlRefNumInfo, "c(e(VirtualInstrument vi) e(String controlTag))")
     DEFINE_VIREO_TYPE(ControlRefNum, "refnum(ControlRefNumInfo)")
+    // TODO(spathiwa) Add IsNotARefNum, IsEQ,IsNE support (and tests)
 
 DEFINE_VIREO_END()
 }  // namespace Vireo
