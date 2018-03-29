@@ -42,8 +42,11 @@
 namespace Vireo
 {
 
+// Control RefNum API: create, lookup, and destroy control refnums
 RefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag);
 RefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag);
+
+NIError ControlReferenceLookup(RefNum refnum, VirtualInstrument **pVI, SubString *pControlTag);
 
 NIError ControlReferenceDestroy(RefNum refnum);
 NIError ControlReferenceAppendDescription(StringRef str, RefNum refnum);
