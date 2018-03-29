@@ -103,13 +103,29 @@ NIError ControlReferenceAppendDescription(StringRef str, ControlRefNum refnum) {
     return err;
 }
 
+VIREO_FUNCTION_SIGNATURE2(IsNotAControlRefnum, RefNumVal, Boolean)
+{
+    RefNumVal* refnumPtr = _ParamPointer(0);
+    if (!refnumPtr || ControlRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), NULL) != kNIError_Success)
+        _Param(1) = true;
+    else
+        _Param(1) = false;
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE3(IsEQRefnum, RefNumVal, RefNumVal, Boolean);
+VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean);
+
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(ControlRefs)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
 
     DEFINE_VIREO_TYPE(ControlRefNumInfo, "c(e(VirtualInstrument vi) e(String controlTag))")
     DEFINE_VIREO_TYPE(ControlRefNum, "refnum(ControlRefNumInfo)")
-    // TODO(spathiwa) Add IsNotARefNum, IsEQ,IsNE support (and tests)
+
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAControlRefnum, "p(i(ControlRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(ControlRefNum) i(ControlRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(ControlRefNum) i(ControlRefNum) o(Boolean))")
 
 DEFINE_VIREO_END()
 }  // namespace Vireo

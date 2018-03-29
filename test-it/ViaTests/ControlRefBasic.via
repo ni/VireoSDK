@@ -1,6 +1,7 @@
 
 define(PrintControlRef dv(.VirtualInstrument (
     Params:c(
+        i(String refName)
         i(ControlRefNum ref)
     )
     Locals:c(
@@ -13,7 +14,7 @@ define(PrintControlRef dv(.VirtualInstrument (
         // its own line after a // comment, so test runners will ignore it
         StringFormat(refString "%z" * ref)
 	MatchPattern(refString "(0x.*" * out refvalString * *)
-        Printf("Ref: %s\n// %s\n" out refvalString)
+        Printf("Ref %s: %s\n// %s\n" refName out refvalString)
     )
 )))
 
@@ -27,13 +28,13 @@ define(subVI dv(.VirtualInstrument (
         // Define a nested local VI with a control ref, to make sure binding works
 	e(define(subSubVI dv(.VirtualInstrument (
              Locals:c(e(ControlReference("nestedRef") subsubref))
-             clump(1 Printf("SubSubVI ") PrintControlRef(subsubref))) ) ) foo)
+             clump(1 Printf("In SubSubVI:\n") PrintControlRef("subsubref" subsubref))) ) ) foo)
     )
     clump (1 // top level
         Println("In SubVI:")
+        PrintControlRef("refarg" refarg)
+        PrintControlRef("subref" subref)
 	subSubVI()
-        PrintControlRef(refarg)
-        PrintControlRef(subref)
     )
 )))
 
@@ -58,14 +59,26 @@ define(ControlRefTestProgram dv(.VirtualInstrument (
         e(dv(ControlReference("dataItem2")) ref2)  // static control ref linked to dataItem2
         e(dv(ControlRefNum ControlReference("dataItem3")) ref3)  // more verbose with explicit type and dv definition
 	e(ControlRefNum ref4)  // variable control refnum wire
+	e(Boolean bool)
     )
 
     clump (1 // top level
-        PrintControlRef(ref1)
-        PrintControlRef(ref2)
+        PrintControlRef("ref1" ref1)
+        PrintControlRef("ref2" ref2)
+        IsEQ(ref1 ref2 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+        IsNE(ref1 ref2 bool)
+        Printf("IsNE ref1 ref2: %z\n" bool)
+        PrintControlRef("ref4" ref4)
+        IsNotANumPathRefnum(ref4 bool)
+        Printf("IsNotARefNum: %z\n" bool)
         Copy(ref1 ref4)
-        PrintControlRef(ref4)
-        PrintControlRef(ref3)
+        PrintControlRef("ref4" ref4)
+        IsNotANumPathRefnum(ref4 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        IsEQ(ref1 ref4 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+        PrintControlRef("ref3 "ref3)
         subVI(ref4)
         subVI(ref2)
     )
