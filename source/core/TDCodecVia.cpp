@@ -649,7 +649,7 @@ TypeRef TDViaParser::ParseRefNumType()
     return refnum;
 }
 //------------------------------------------------------------
-TypeRef TDViaParser::ParseControlReference() {
+TypeRef TDViaParser::ParseControlReference(void *pData) {
     SubString controlTagToken;
     TypeRef ctrlRefType = null;
 
@@ -663,9 +663,13 @@ TypeRef TDViaParser::ParseControlReference() {
     }
     if (!ctrlRefType)
         return BadType();
+    if (pData) {
+        ControlReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, controlTagToken);
+        return ((RefNumVal*)pData)->Type();
+    }
 
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, ctrlRefType, true);
-    void *pData = cdt->Begin(kPAInit);
+    pData = cdt->Begin(kPAInit);
 
     ControlReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, controlTagToken);
 
@@ -1335,6 +1339,12 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         }
                     }
                 }
+            }
+            break;
+        case kEncoding_RefNum: {
+            TokenTraits tt = _string.ReadToken(&token);
+            if (tt == TokenTraits_SymbolName && token.CompareCStr(tsControlReferenceToken))
+                ParseControlReference(pData);
             }
             break;
         default:

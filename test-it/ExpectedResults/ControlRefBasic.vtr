@@ -1,6 +1,7 @@
 Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
 Ref: ControlRefNum<ControlRefTestProgram,dataItem2>
 Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
+Ref: ControlRefNum<ControlRefTestProgram,dataItem3>
 In SubVI:
 SubSubVI Ref: ControlRefNum<subSubVI,nestedRef>
 Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
