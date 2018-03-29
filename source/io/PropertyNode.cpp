@@ -16,6 +16,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
+#include "ControlRef.h"
 #include <stdio.h>
 
 
@@ -23,6 +24,8 @@ SDG
 
 #if defined (VIREO_MODULE_PropertyNode)
 namespace Vireo {
+
+enum { kNIError_ObjectReferenceIsInvalid = 1055 };  // TODO(spathiwa) move to common error header file when issue #384 fixed
 
 #if kVireoOS_emscripten
 extern "C" {
@@ -40,24 +43,46 @@ extern void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, Cons
 //------------------------------------------------------------
 struct PropertyNodeWriteParamBlock : public VarArgInstruction
 {
-    _ParamDef(StringRef, viName);
-    _ParamDef(StringRef, dataItemId);
+    _ParamDef(RefNumVal, refNum);
     _ParamDef(StringRef, propertyName);
     _ParamImmediateDef(StaticTypeAndData, value[1]);
     _ParamDef(ErrorCluster, errorCluster);
     NEXT_INSTRUCTION_METHODV()
 };
 
+#if kVireoOS_emscripten
+static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *errorClusterPtr,
+                                           StringRef viName, StringRef dataItemId, ConstCStr propNodeName) {
+    VirtualInstrument *vi;
+    SubString dataItemIdSubString;
+    if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, &dataItemIdSubString) != kNIError_Success) {
+        errorClusterPtr->SetError(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
+        AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
+        return false;
+    }
+    viName->AppendCStr(vi->VINameCStr());
+    dataItemId->AppendSubString(&dataItemIdSubString);
+    return true;
+}
+#endif
+
 //------------------------------------------------------------
 // Function for setting a property in a control
 VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
+    const char *propNodeWriteName = "PropertyNodeWrite";
 #if kVireoOS_emscripten
-    StringRef viName = _Param(viName);
-    StringRef dataItemId = _Param(dataItemId);
+    RefNumVal *refNumPtr = _ParamPointer(refNum);
     StringRef propertyName = _Param(propertyName);
     StaticTypeAndData *value = _ParamImmediate(value);
+
+    STACK_VAR(String, viNameVar);
+    StringRef viName = viNameVar.Value;
+    STACK_VAR(String, dataItemIdVar);
+    StringRef dataItemId = dataItemIdVar.Value;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, viName, dataItemId, propNodeWriteName))
+        return _NextInstruction();  // control refnum lookup failed and set errorCluter
 
     TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
@@ -78,10 +103,10 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);
-        AddCallChainToSourceIfErrorPresent(errorClusterPtr, "PropertyNodeWrite");
+        AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeWriteName);
     }
 #else
-    GenerateNotSupportedOnPlatformError(errorClusterPtr, "PropertyNodeWrite");
+    GenerateNotSupportedOnPlatformError(errorClusterPtr, propNodeWriteName);
 #endif
     return _NextInstruction();
 }
@@ -89,8 +114,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 //------------------------------------------------------------
 struct PropertyNodeReadParamBlock : public VarArgInstruction
 {
-    _ParamDef(StringRef, viName);
-    _ParamDef(StringRef, dataItemId);
+    _ParamDef(RefNumVal, refNum);
     _ParamDef(StringRef, propertyName);
     _ParamImmediateDef(StaticTypeAndData, value[1]);
     _ParamDef(ErrorCluster, errorCluster);
@@ -102,11 +126,18 @@ struct PropertyNodeReadParamBlock : public VarArgInstruction
 VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
+    const char *propNodeReadName = "PropertyNodeRead";
 #if kVireoOS_emscripten
-    StringRef viName = _Param(viName);
-    StringRef dataItemId = _Param(dataItemId);
+    RefNumVal *refNumPtr = _ParamPointer(refNum);
     StringRef propertyName = _Param(propertyName);
     StaticTypeAndData *value = _ParamImmediate(value);
+
+    STACK_VAR(String, viNameVar);
+    StringRef viName = viNameVar.Value;
+    STACK_VAR(String, dataItemIdVar);
+    StringRef dataItemId = dataItemIdVar.Value;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, viName, dataItemId, propNodeReadName))
+        return _NextInstruction();  // control refnum lookup failed and set errorCluter
 
     TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
@@ -127,20 +158,23 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);
-        AddCallChainToSourceIfErrorPresent(errorClusterPtr, "PropertyNodeRead");
+        AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeReadName);
     }
 #else
-    GenerateNotSupportedOnPlatformError(errorClusterPtr, "PropertyNodeRead");
+    GenerateNotSupportedOnPlatformError(errorClusterPtr, propNodeReadName);
 #endif
     return _NextInstruction();
 }
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Property)
-    DEFINE_VIREO_FUNCTION(PropertyNodeWrite, "p(i(VarArgCount argumentCount) i(String viName) i(String controlId) i(String propertyName) "
-        "i(StaticTypeAndData value) io(ErrorCluster errorCluster))")
-    DEFINE_VIREO_FUNCTION(PropertyNodeRead, "p(i(VarArgCount argumentCount) i(String viName) i(String controlId) i(String propertyName) "
-        "o(StaticTypeAndData value) io(ErrorCluster errorCluster))")
+    DEFINE_VIREO_REQUIRE(ControlRefs)
+
+    DEFINE_VIREO_FUNCTION(PropertyNodeWrite, "p(i(VarArgCount argumentCount) i(ControlRefNum controlRef) i(String propertyName) "
+                          "i(StaticTypeAndData value) io(ErrorCluster errorCluster))")
+    DEFINE_VIREO_FUNCTION(PropertyNodeRead, "p(i(VarArgCount argumentCount) i(ControlRefNum controlRef) i(String propertyName) "
+                          "o(StaticTypeAndData value) io(ErrorCluster errorCluster))")
+
 DEFINE_VIREO_END()
 
 }  // namespace Vireo
