@@ -82,6 +82,7 @@ class VirtualInstrument
     EventInfo *GetEventInfo() const     { return _eventInfo; }
     void SetEventInfo(EventInfo *ei)    { _eventInfo = ei; }
     TypedArray1D<VIClump>* Clumps()     { return _clumps; }
+    ConstCStr VINameCStr() const        { return ConstCStr(_viName); }
     SubString VIName()                  {
         SubString s;
         if (_viName)
