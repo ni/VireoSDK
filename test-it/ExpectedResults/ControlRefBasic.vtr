@@ -1,12 +1,20 @@
-Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
-Ref: ControlRefNum<ControlRefTestProgram,dataItem2>
-Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
-Ref: ControlRefNum<ControlRefTestProgram,dataItem3>
+Ref ref1: ControlRefNum<ControlRefTestProgram,dataItem1>
+Ref ref2: ControlRefNum<ControlRefTestProgram,dataItem2>
+IsEQ ref1 ref2: false
+IsNE ref1 ref2: true
+Ref ref4: ControlRefNum
+IsNotARefNum: true
+Ref ref4: ControlRefNum<ControlRefTestProgram,dataItem1>
+IsNotARefNum: false
+IsEQ ref1 ref2: true
+Ref ref3 : ControlRefNum<ControlRefTestProgram,dataItem3>
 In SubVI:
-SubSubVI Ref: ControlRefNum<subSubVI,nestedRef>
-Ref: ControlRefNum<ControlRefTestProgram,dataItem1>
-Ref: ControlRefNum<subVI,myItem>
+Ref refarg: ControlRefNum<ControlRefTestProgram,dataItem1>
+Ref subref: ControlRefNum<subVI,myItem>
+In SubSubVI:
+Ref subsubref: ControlRefNum<subSubVI,nestedRef>
 In SubVI:
-SubSubVI Ref: ControlRefNum<subSubVI,nestedRef>
-Ref: ControlRefNum<ControlRefTestProgram,dataItem2>
-Ref: ControlRefNum<subVI,myItem>
+Ref refarg: ControlRefNum<ControlRefTestProgram,dataItem2>
+Ref subref: ControlRefNum<subVI,myItem>
+In SubSubVI:
+Ref subsubref: ControlRefNum<subSubVI,nestedRef>
