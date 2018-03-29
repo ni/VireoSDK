@@ -1931,7 +1931,7 @@ void* DefaultValueType::Begin(PointerAccessEnum mode)
 //------------------------------------------------------------
 NIError DefaultValueType::InitData(void* pData, TypeRef pattern)
 {
-    if (!IsFlat()) {
+    if (!IsFlat() || IsRefnum()) {  // RefNumVals carry their type, which must be initialized
         _wrapped->InitData(pData, pattern);
     }
     return CopyData(Begin(kPARead), pData);

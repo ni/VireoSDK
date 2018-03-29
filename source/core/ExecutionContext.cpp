@@ -425,6 +425,9 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
         reply = kExecSlices_ClumpsFinished;
     }
 #endif
+    if (reply == kExecSlices_ClumpsFinished)
+        RunCleanupProcs(null);  // Cleans up all control refs when top VI finishes (refs not associated with the completion of the VI they are linked to).
+
     return reply;
 }
 //------------------------------------------------------------

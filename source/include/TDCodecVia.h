@@ -94,6 +94,7 @@ class TDViaParser
     TypeManagerRef  _typeManager;
     SubString       _string;      // "Begin()" moves through string as it is parsed.
     const Utf8Char* _originalStart;
+    VirtualInstrument *_virtualInstrumentScope;  // holds the current (innermost) VI during parsing
     Int32           _lineNumberBase;
 
  public:
@@ -126,6 +127,7 @@ class TDViaParser
     void    ParseClump(VIClump* clump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
+    VirtualInstrument *CurrentVIScope() { return _virtualInstrumentScope; }
 
  public:
     static NIError StaticRepl(TypeManagerRef typeManager, SubString *replStream);
@@ -148,6 +150,7 @@ class TDViaParser
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
+    TypeRef ParseControlReference();
     TypeRef ParseEnumType(SubString *token);
     EncodingEnum ParseEncoding(SubString* str);
 };
@@ -242,6 +245,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsParamBlockTypeToken   "p"   // Used for defining param blocks used by native functions.
 #define tsPointerTypeToken      "ptr"
 #define tsRefNumTypeToken       "refnum"
+
+#define tsControlReferenceToken "ControlReference"
+#define tsControlRefNumToken    "ControlRefNum"
 
 #define tsEnumTypeToken         "Enum"
 #define tsEnumTypeTokenLen      4     // strlen of above

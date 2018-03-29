@@ -129,6 +129,7 @@
                 "ComplexConversions.via",
                 "ComplexMathFunctions.via",
                 "Conjugate.via",
+                "ControlRefBasic.via",
                 "ConvertStringNumber.via",
                 "CopyAlignmentError.via",
                 "CopyAndReset.via",
