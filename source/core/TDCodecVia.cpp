@@ -21,6 +21,7 @@ SDG
 #include "TypeAndDataManager.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include "ControlRef.h"
 #include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
@@ -49,6 +50,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediately = false;
     _options._allowNulls = allowJSONNulls;
+    _virtualInstrumentScope = null;
 
     if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
         _options._bEscapeStrings = false;
@@ -329,6 +331,8 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         type = ParseRefNumType();
     } else if (typeFunction.CompareCStr(tsEnqueueTypeToken) || typeFunction.CompareCStr("start")) {
         type = ParseEnqueue();
+    } else if (typeFunction.CompareCStr(tsControlReferenceToken)) {
+        type = ParseControlReference();
     } else {
         _string = save;
         type = ParseLiteral(patternType);
@@ -394,9 +398,9 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
         } else if ((tt == TokenTraits_String) || (tt == TokenTraits_VerbatimString)) {
             tName = tsStringType;
         } else if (tt == TokenTraits_NestedExpression) {
-            printf("compound value\n");
+            // TODO(spathiwa) Figure out what this was intended for and either finish it or remove it
 
-            // Sniff the expression to determin what type it is.
+            // Sniff the expression to determine what type it is.
             // 1. nda array of a single type.
             // 2. ndarray of mixed numeric type, use widest
             // 3. mixed type, cluster. some field may have named.
@@ -643,6 +647,30 @@ TypeRef TDViaParser::ParseRefNumType()
     if (!_string.EatChar(')'))
         return BadType();
     return refnum;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseControlReference() {
+    SubString controlTagToken;
+    TypeRef ctrlRefType = null;
+
+    if (_string.EatChar('(')) {
+        TokenTraits tt = _string.ReadToken(&controlTagToken);
+        if (tt == TokenTraits_String) {
+            controlTagToken.TrimQuotedString(tt);
+            if (_string.EatChar(')'))
+                ctrlRefType = _typeManager->FindType(tsControlRefNumToken);
+        }
+    }
+    if (!ctrlRefType)
+        return BadType();
+
+    DefaultValueType *cdt = DefaultValueType::New(_typeManager, ctrlRefType, true);
+    void *pData = cdt->Begin(kPAInit);
+
+    ControlReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, controlTagToken);
+
+    cdt = cdt->FinalizeDVT();
+    return cdt;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseEnumType(SubString *token)
@@ -1415,7 +1443,12 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     TypeRef paramsType = emptyVIParamList;
     TypeRef localsType = emptyVIParamList;
     TypeRef eventSpecsType = emptyVIParamList;
-    TypeRef controlRefsType = emptyVIParamList;
+
+    VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)pData;
+    VirtualInstrument *vi = vio->ObjBegin();
+
+    VirtualInstrument *savedVIScope = _virtualInstrumentScope;
+    _virtualInstrumentScope = vi;  // Allow sub-objects parsed inside this VI to know what VI they are
 
     SubString name;
     Boolean hasName = _string.ReadNameToken(&name);
@@ -1429,8 +1462,6 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
                 paramsType = type;
             } else if (name.CompareCStr("Events")) {
                 eventSpecsType = type;
-            } else if (name.CompareCStr("ControlRefs")) {
-                controlRefsType = type;
             } else {
                 LOG_EVENTV(kSoftDataError, "Field does not exist '%.*s'", FMT_LEN_BEGIN(&name));
             }
@@ -1482,8 +1513,6 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
 
     // Preliminary initialization has already been done.
     // from the generic VirtualInstrument definition.
-    VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)pData;
-    VirtualInstrument *vi = vio->ObjBegin();
     SubString clumpSource(beginClumpSource, endClumpSource);
 
     vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, eventSpecsType, lineNumberBase, &clumpSource);
@@ -1491,6 +1520,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     if (_loadVIsImmediately) {
         TDViaParser::FinalizeVILoad(vi, _pLog);
     }
+    _virtualInstrumentScope = savedVIScope;
     // The clumps code will be loaded once the module is finalized.
 }
 //------------------------------------------------------------
@@ -2266,7 +2296,9 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
                 if (name.Length() > 0)
                     _string->Append(name.Length(), (Utf8Char*)name.Begin());
                 else
-                    _string->AppendCStr("refnum");
+                    _string->AppendCStr(tsRefNumTypeToken);
+                if (name.CompareCStr(tsControlRefNumToken))
+                    ControlReferenceAppendDescription(_string, refnum);
                 _string->Append('(');
                 FormatInt(kEncoding_RefNum, refnum);
                 _string->Append(')');
