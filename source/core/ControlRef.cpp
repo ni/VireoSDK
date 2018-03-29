@@ -20,7 +20,75 @@
 
 namespace Vireo {
 
+// ControlRefInfo -- Storage for static control references.
+struct ControlRefInfo {
+    VirtualInstrument *vi;  // VI containing control
+    SubString controlTag;  // Unique identifying tag (data item name) for control
+
+    ControlRefInfo() : vi(NULL), controlTag() { }
+    ControlRefInfo(VirtualInstrument *aVi, SubString aControlTag) : vi(aVi), controlTag(aControlTag) { }
+};
+
+// ControlRefNumManager -- Allocation, deallocation, and lookup of control references
+class ControlRefNumManager : public RefNumManager {
+ private:
+    typedef TypedRefNum<ControlRefInfo, true> ControlRefNumType;
+    ControlRefNumType _refStorage;  // manages refnum storage
+
+    static ControlRefNumManager _s_singleton;
+ public:
+    static ControlRefNumManager &ControlRefManager() { return _s_singleton; }
+    static ControlRefNumType &RefNumStorage() { return _s_singleton.RefNumManager(); }
+
+    ControlRefNumType &RefNumManager() { return _refStorage; }
+};
+
 ControlRefNumManager ControlRefNumManager::_s_singleton;
+
+// ControlReferenceDestroy -- deallocate control ref
+// (The VI and string tag are weak references into the owning VI, so do not have to be deallocated.)
+NIError ControlReferenceDestroy(RefNum refnum) {
+    return ControlRefNumManager::RefNumStorage().DisposeRefNum(refnum, NULL);
+}
+
+// Clean-up Proc, run when top level VI finishes, disposing control reference.
+static void CleanUpControlReference(intptr_t arg) {
+    RefNum refnum = RefNum(arg);
+    ControlReferenceDestroy(refnum);
+}
+
+// ControlReferenceCreate -- create a control ref linked to control associated with controlTag on given VI.
+RefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag) {
+    ControlRefInfo controlRefInfo(vi, controlTag);
+    RefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
+
+    ControlRefNumManager::AddCleanupProc(null, CleanUpControlReference, refnum);
+    return refnum;
+}
+
+// ControlReferenceCreate -- RefNumVal version
+RefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag) {
+    RefNum refnum = ControlReferenceCreate(vi, controlTag);
+    pRefNumVal->SetRefNum(refnum);
+    return refnum;
+}
+
+// ControlReferenceAppendDescription -- output the VI and control a refnum is linked to (for test validation)
+NIError ControlReferenceAppendDescription(StringRef str, RefNum refnum) {
+    ControlRefInfo controlRefInfo;
+    NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
+    if (err == kNIError_Success) {
+        SubString viName;
+        if (controlRefInfo.vi)
+            viName = controlRefInfo.vi->VIName();
+        str->Append('<');
+        str->AppendSubString(&viName);
+        str->Append(',');
+        str->AppendSubString(&controlRefInfo.controlTag);
+        str->Append('>');
+    }
+    return err;
+}
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(ControlRefs)

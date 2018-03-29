@@ -316,7 +316,7 @@ void RefNumManager::RunCleanupProcs(VirtualInstrument *vi) {
 }
 
 void RunCleanupProcs(VirtualInstrument *vi) {
-    return RefNumManager::RunCleanupProcs(vi);
+    RefNumManager::RunCleanupProcs(vi);
 }
 
 }  // namespace Vireo
