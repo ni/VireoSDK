@@ -56,16 +56,17 @@ define(ControlRefTestProgram dv(.VirtualInstrument (
     Locals:c(
         e(ControlReference("dataItem1") ref1)  // static control ref linked to dataItem1
         e(dv(ControlReference("dataItem2")) ref2)  // static control ref linked to dataItem2
-	e(ControlRefNum ref3)  // variable control refnum wire
-        // e(dv(ControlRefNum ControlReference("dataItem3")) ref4)  // make this syntax work too?
+        e(dv(ControlRefNum ControlReference("dataItem3")) ref3)  // more verbose with explicit type and dv definition
+	e(ControlRefNum ref4)  // variable control refnum wire
     )
 
     clump (1 // top level
         PrintControlRef(ref1)
         PrintControlRef(ref2)
-        Copy(ref1 ref3)
+        Copy(ref1 ref4)
+        PrintControlRef(ref4)
         PrintControlRef(ref3)
-        subVI(ref3)
+        subVI(ref4)
         subVI(ref2)
     )
 

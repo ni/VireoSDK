@@ -18,6 +18,8 @@
  define(MyVI dv(.VirtualInstrument (
  Locals: c(
  e(ControlReference("dataItem_Foo") ctlref1)  // static control ref linked to dataItem_Foo
+ // -or-
+ e(dv(ControlRefNum ControlReference("dataItem_Bar")) ctlref2)  // more explicit syntax
  ) ...
  
  The actual Type of ctlref1 is ControlRefNum and stores a refnum (cookie) which
