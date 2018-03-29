@@ -150,7 +150,7 @@ class TDViaParser
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
-    TypeRef ParseControlReference();
+    TypeRef ParseControlReference(void *pData = null);
     TypeRef ParseEnumType(SubString *token);
     EncodingEnum ParseEncoding(SubString* str);
 };
