@@ -117,3 +117,4 @@ coverage/
 emscripten-sdk/
 emsdk/
 nohup.out
+emsdk-tools/
