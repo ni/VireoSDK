@@ -32,7 +32,7 @@ before_build:
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
-  - cmd /c make-it\appveyor-vjs.bat
+  - cmd /c make-it\appveyor-support\setup-env-and-make-vjs.bat
 test_script:
   - make testjs
   - make testnative

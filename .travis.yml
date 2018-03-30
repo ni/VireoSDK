@@ -11,7 +11,6 @@ addons:
 cache:
   directories:
     - node_modules
-    - emscripten-sdk
 before_install:
 - export TZ=CST6CDT
 - npm install npm@latest -g
@@ -27,10 +26,16 @@ install:
 - nohup npm run httpbin &
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 - gcc -v
-- if ! git clone --depth 1 https://github.com/ni-kismet/emscripten-sdk.git; then cd emscripten-sdk && git remote update -p && git merge --ff-only origin/master && cd ..; fi
-- emscripten-sdk/emsdk activate --build=Release sdk-master-64bit
+- mkdir -p emsdk-tools
+- cp make-it/travis-support/libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb emsdk-tools/
+- cd emsdk-tools && ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb && cd ..
+- tar -xzf emsdk-tools/data.tar.gz -C emsdk-tools
+- git clone https://github.com/juj/emsdk.git
+- cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
+- emsdk/emsdk install sdk-1.37.9-64bit
+- emsdk/emsdk activate sdk-1.37.9-64bit
 - cat ~/.emscripten
-- bash -c 'source emscripten-sdk/emsdk_env.sh && emcc -v'
+- bash -c 'source make-it/travis-support/setup-env.sh && emcc -v'
 before_script:
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
@@ -38,9 +43,9 @@ before_script:
 - npm run lint
 - make native
 - make unittest
-- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs'
-- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs BUILD=debug'
-- bash -c 'source emscripten-sdk/emsdk_env.sh && make vjs BUILD=profile'
+- bash -c 'source make-it/travis-support/setup-env.sh && make vjs'
+- bash -c 'source make-it/travis-support/setup-env.sh && make vjs BUILD=debug'
+- bash -c 'source make-it/travis-support/setup-env.sh && make vjs BUILD=profile'
 - tar -tf $(npm pack)
 script:
 - make testjs
