@@ -28,14 +28,14 @@ install:
 - gcc -v
 - mkdir -p emsdk-tools
 - cp make-it/travis-support/libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb emsdk-tools/
-- cd emsdk-tools && ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb && cd ..
+- (cd emsdk-tools && ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb)
 - tar -xzf emsdk-tools/data.tar.gz -C emsdk-tools
 - git clone https://github.com/juj/emsdk.git
-- cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
+- (cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda)
 - emsdk/emsdk install sdk-1.37.9-64bit > emsdk-tools/emsdk_install_log.txt
 - emsdk/emsdk activate sdk-1.37.9-64bit
 - cat ~/.emscripten
-- bash -c 'source make-it/travis-support/setup-env.sh && emcc -v'
+- (source make-it/travis-support/setup-env.sh && emcc -v)
 before_script:
 - while ! nc -q 1 127.0.0.1 64526 </dev/null; do sleep 2; done
 - curl http://127.0.0.1:64526/get?show_env=1
@@ -43,9 +43,9 @@ before_script:
 - npm run lint
 - make native
 - make unittest
-- bash -c 'source make-it/travis-support/setup-env.sh && make vjs'
-- bash -c 'source make-it/travis-support/setup-env.sh && make vjs BUILD=debug'
-- bash -c 'source make-it/travis-support/setup-env.sh && make vjs BUILD=profile'
+- (source make-it/travis-support/setup-env.sh && make vjs)
+- (source make-it/travis-support/setup-env.sh && make vjs BUILD=debug)
+- (source make-it/travis-support/setup-env.sh && make vjs BUILD=profile)
 - tar -tf $(npm pack)
 script:
 - make testjs
