@@ -32,7 +32,7 @@ install:
 - tar -xzf emsdk-tools/data.tar.gz -C emsdk-tools
 - git clone https://github.com/juj/emsdk.git
 - cd emsdk && git checkout b2ebcffbbbc2ba64d5697dc5c37fed530bafecda && cd ..
-- emsdk/emsdk install sdk-1.37.9-64bit
+- emsdk/emsdk install sdk-1.37.9-64bit > emsdk-tools/emsdk_install_log.txt
 - emsdk/emsdk activate sdk-1.37.9-64bit
 - cat ~/.emscripten
 - bash -c 'source make-it/travis-support/setup-env.sh && emcc -v'
@@ -52,6 +52,8 @@ script:
 - make testnative
 - make testhttpbin
 - npm run test
+after_failure:
+- cat emsdk-tools/emsdk_install_log.txt
 before_deploy:
 - npm run doxygen
 - export ESH_64_RELEASE="esh_"$TRAVIS_TAG"_x86_64-unknown-linux-gnu_release.zip"
