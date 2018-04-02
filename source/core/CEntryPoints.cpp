@@ -250,6 +250,48 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 
     return kEggShellResult_Success;
 }
+
+////------------------------------------------------------------
+////! Get information about an Array such as the type of its subtype, the array rank,
+////! and the memory location of the first element (or null if there are zero elements)
+//VIREO_EXPORT EggShellResult EggShell_GetTypedArrayMetadata(TypeManagerRef tm,
+//        char** arrayTypeName, unsigned char** arrayBegin)
+//{
+//    TypeManagerScope scope(tm);
+//    void *pData = null;
+//
+//    if (arrayTypeName == null || arrayBegin == null)
+//        return kEggShellResult_InvalidResultPointer;
+//
+//    static StringRef arrayTypeNameBuffer = null;
+//    if (arrayTypeNameBuffer == null) {
+//        // Allocate a string the first time it is used.
+//        // After that it will be resized as needed.
+//        STACK_VAR(String, tempReturn);
+//        arrayTypeNameBuffer = tempReturn.DetachValue();
+//    } else {
+//        arrayTypeNameBuffer->Resize1D(0);
+//    }
+//
+//    if (arrayTypeNameBuffer == null) {
+//        return kEggShellResult_UnableToCreateReturnBuffer;
+//    }
+//
+//    SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
+//    arrayTypeNameBuffer->Append(arrayTypeNameSubString.Length(), (Utf8Char*)arrayTypeNameSubString.Begin());
+//    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+//    *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
+//
+//    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+//    if (actualArray->GetLength(0) <= 0) {
+//        *arrayBegin = null;
+//    } else {
+//        *arrayBegin = actualArray->BeginAt(0);
+//    }
+//
+//    return kEggShellResult_Success;
+//}
+
 //------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
 //! an Array or dimension requested is out of the bounds of the rank.
@@ -301,6 +343,16 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));
     return stringObject->Length();
+}
+//------------------------------------------------------------
+VIREO_EXPORT void* Data_GetTypedArrayBegin(TypedArrayCoreRef arrayObject)
+{
+	return arrayObject->BeginAt(0);
+}
+//------------------------------------------------------------
+VIREO_EXPORT Int32 Data_GetTypedArrayLength(TypedArrayCoreRef arrayObject)
+{
+	return arrayObject->Length();
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
@@ -356,6 +408,11 @@ VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
     return *doublePointer;
 }
 //------------------------------------------------------------
+VIREO_EXPORT TypedArrayCoreRef Data_ReadArray(TypedArrayCoreRef* arrayPointer)
+{
+    return *arrayPointer;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
 {
     *destination = value;
@@ -399,6 +456,14 @@ VIREO_EXPORT void Data_WriteSingle(Single* destination, Single value)
 VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 {
     *destination = value;
+}
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, const Int32* buffer, Int32 length)
+{
+	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    // Scope needs to be setup for allocations
+    TypeManagerScope scope(tm);
+	arrayObject->Replace1D(0, length, buffer, true);
 }
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)

@@ -40,6 +40,8 @@
             'EggShell_ResizeArray',
             'Data_GetStringBegin',
             'Data_GetStringLength',
+            'Data_GetTypedArrayBegin',
+            'Data_GetTypedArrayLength',
             'Data_ReadBoolean',
             'Data_ReadInt8',
             'Data_ReadInt16',
@@ -79,6 +81,7 @@
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetArrayMetadata = Module.cwrap('EggShell_GetArrayMetadata', 'number', ['number', 'string', 'string', 'number', 'number', 'number', 'number']);
+        //var EggShell_GetTypedArrayMetadata = Module.cwrap('EggShell_GetTypedArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
@@ -93,6 +96,8 @@
         var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
+        var Data_GetTypedArrayBegin = Module.cwrap('Data_GetTypedArrayBegin', 'number', ['number']);
+        var Data_GetTypedArrayLength = Module.cwrap('Data_GetTypedArrayLength', 'number', ['number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
         var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
@@ -102,6 +107,7 @@
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
+        var Data_WriteArray = Module.cwrap('Data_WriteArray', 'void', ['number', 'number', 'number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -330,6 +336,32 @@
             return returnArray;
         };
 
+        /* Module.eggShell.getNumericTypedArray = publicAPI.eggShell.getNumericTypedArray = function () {
+            var eggShellResult = EggShell_GetTypedArrayMetadata(v_userShell, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+
+            if (eggShellResult !== 0) {
+                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')');
+            }
+
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            // The following use of Pointer_stringify is safe as long as arrayTypeNamePointer is a valid C string
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
+            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
+
+            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
+            if (arrayTypeConfig === undefined) {
+                throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
+            }
+
+            // Handle empty arrays
+            if (arrayBegin === NULL) {
+                return new Int32Array(0);
+            }
+
+            return new Int32Array(arrayTypeConfig);
+        }; */
+
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
             return EggShell_GetArrayDimLength(v_userShell, vi, path, dim);
         };
@@ -423,6 +455,12 @@
             return numericValue;
         };
 
+        Module.eggShell.dataReadInt32Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP32.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Int32Array(Module.HEAP32.subarray(begin, begin + length));
+        };
+
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
             var numericValue = booleanValue ? 1 : 0;
             Data_WriteBoolean(booleanPointer, numericValue);
@@ -458,6 +496,10 @@
 
         Module.eggShell.dataWriteDouble = function (destination, value) {
             Data_WriteDouble(destination, value);
+        };
+
+        Module.eggShell.dataWriteArray = function (destination, value) {
+            Data_WriteArray(v_userShell, destination, value, value.length);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

@@ -134,6 +134,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32',\
     '_Data_WriteSingle',\
     '_Data_WriteDouble',\
+	'_Data_GetTypedArrayBegin',\
+	'_Data_GetTypedArrayLength',\
+	'_Data_WriteArray',\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer'\
     ]"

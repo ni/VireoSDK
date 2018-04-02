@@ -127,6 +127,9 @@
                 case 'Boolean':
                     parameterValue = Module.eggShell.dataReadBoolean(parameterPointer);
                     break;
+                case 'Array':
+                    parameterValue = Module.eggShell.dataReadInt32Array(parameterPointer);
+                    break;
                 default:
                     throw new Error(' Unsupported type for parameter with index = ' + index);
                 }
@@ -263,6 +266,17 @@
             return true;
         };
 
+        var updateTypedArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Int32Array) {
+                Module.eggShell.dataWriteArray(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
         var updateReturnValue = function (
             functionNameString,
             returnPointer,
@@ -279,7 +293,8 @@
                 (javaScriptReturnTypeName === 'number') ||
                 (javaScriptReturnTypeName === 'boolean') ||
                 (javaScriptReturnTypeName === 'string') ||
-                (javaScriptReturnTypeName === 'undefined');
+                (javaScriptReturnTypeName === 'undefined') ||
+                (returnValue instanceof Int32Array);
             if (!validJavaScriptReturnType) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
@@ -325,6 +340,9 @@
                 break;
             case 'Boolean':
                 returnTypeMistmatch = updateBooleanReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Array':
+                returnTypeMistmatch = updateTypedArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
                 break;
             case 'StaticTypeAndData': {
                 break;
