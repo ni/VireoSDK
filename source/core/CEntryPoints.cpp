@@ -17,6 +17,9 @@ SDG
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
+#if kVireoOS_emscripten
+#include <emscripten.h>
+#endif
 
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
@@ -347,11 +350,13 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetTypedArrayBegin(TypedArrayCoreRef arrayObject)
 {
+	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 	return arrayObject->BeginAt(0);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_GetTypedArrayLength(TypedArrayCoreRef arrayObject)
 {
+	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 	return arrayObject->Length();
 }
 //------------------------------------------------------------
@@ -408,11 +413,6 @@ VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
     return *doublePointer;
 }
 //------------------------------------------------------------
-VIREO_EXPORT TypedArrayCoreRef Data_ReadArray(TypedArrayCoreRef* arrayPointer)
-{
-    return *arrayPointer;
-}
-//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
 {
     *destination = value;
@@ -458,13 +458,42 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
     *destination = value;
 }
 //------------------------------------------------------------
-VIREO_EXPORT void Data_WriteArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, const Int32* buffer, Int32 length)
+VIREO_EXPORT void Data_WriteArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, const void* buffer, Int32 length)
 {
+	// check what data type we are storing - should be int 32.
 	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     // Scope needs to be setup for allocations
     TypeManagerScope scope(tm);
+
+	Int32 firstElement = ((const Int32*)buffer)[0];
+	/*EM_ASM_({
+		console.log('firstElement: ' + $0);
+	}, firstElement);*/
+	// check the existing length and contents of the buffer
 	arrayObject->Replace1D(0, length, buffer, true);
 }
+
+VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length)
+{
+	TypeManagerScope scope(tm);
+
+	Int32 rank = 1;
+	/*IntIndex lengths[1];
+	lengths[0] = length;*/
+
+    if (!arrayObject->ResizeDimensions(rank, &length, true, false)) {
+        return kLVError_MemFull;
+    }
+
+	int actualLength = arrayObject->GetLength(0);
+
+	EM_ASM_({
+		console.log('length: ' + $0);
+	}, actualLength);
+
+    return 0;
+}
+
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {

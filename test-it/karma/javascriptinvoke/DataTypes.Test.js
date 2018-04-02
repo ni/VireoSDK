@@ -8,7 +8,7 @@ fdescribe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsDataTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/DataTypes.via');
-    var jsArrayViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ArrayDataTypes.via');
+    var jsArrayViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ArrayDataTypes2.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -118,7 +118,7 @@ fdescribe('A JavaScript function invoke', function () {
             // expect(window.NI_SingleFunction).toHaveBeenCalledWith(3.0);
             // expect(window.NI_DoubleFunction).toHaveBeenCalledWith(6.0);
             // expect(window.NI_StringFunction).toHaveBeenCalledWith('National Instruments');
-            // expect(window.NI_ArrayFunction).toHaveBeenCalledWith([1, 2, 3]);
+            // expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Int32Array.from([1, 2, 3]));
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();

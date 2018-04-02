@@ -62,6 +62,7 @@
             'Data_WriteUInt32',
             'Data_WriteSingle',
             'Data_WriteDouble',
+            'Data_ResizeArray',
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
             'Occurrence_Set',
@@ -81,7 +82,6 @@
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetArrayMetadata = Module.cwrap('EggShell_GetArrayMetadata', 'number', ['number', 'string', 'string', 'number', 'number', 'number', 'number']);
-        //var EggShell_GetTypedArrayMetadata = Module.cwrap('EggShell_GetTypedArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
@@ -108,6 +108,7 @@
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var Data_WriteArray = Module.cwrap('Data_WriteArray', 'void', ['number', 'number', 'number', 'number']);
+        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -499,7 +500,21 @@
         };
 
         Module.eggShell.dataWriteArray = function (destination, value) {
-            Data_WriteArray(v_userShell, destination, value, value.length);
+            //var sourceHeapPointer = Module._malloc(value.length * Module.HEAP32.BYTES_PER_ELEMENT);
+            //Module.writeArrayToMemory(value, sourceHeapPointer);
+            //Module.HEAP32.set(value, sourceHeapPointer);
+            //Module.setValue(sourceHeapPointer, value, "i32*");
+            var error = Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP32.BYTES_PER_ELEMENT;
+            //var length = Data_GetTypedArrayLength(destination);
+            // for (var i = 0; i < value.length; i += 1) {
+            //     Module.HEAP32[arrayBegin + i] = value[i];
+            // }
+
+            var a = Module.HEAP32.subarray(arrayBegin, arrayBegin + value.length);
+            a[0] = 2;
+            a[1] = 4;
+            a[2] = 6;
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

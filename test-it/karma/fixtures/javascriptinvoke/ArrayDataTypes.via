@@ -6,7 +6,7 @@ define (MyVI dv(.VirtualInstrument (
         e(a(.Int32 *) dataItem_Return)
         e(a(.Int32 *) local4)
     )
-        clump(1
+    clump(1
         SubVI(g0 * local1 *)
         Copy(local1 dataItem_Return)
     )
@@ -35,4 +35,4 @@ define (SubVI dv(.ReentrantVirtualInstrument (
         Copy(local11 dataItem_ErrorOut)
     )
 )))
-enqueue (MyVI)
+enqueue ( )
