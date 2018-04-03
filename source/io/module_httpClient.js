@@ -109,22 +109,6 @@
     var DEFAULT_TIMEOUT_MS = 10000;
     var TIMEOUT_IMMEDIATELY_MS = 1;
 
-    var createSourceFromMessage = function (additionalInformation) {
-        if (typeof additionalInformation === 'string' && additionalInformation.length !== 0) {
-            return '<APPEND>\n' + additionalInformation;
-        }
-
-        return '';
-    };
-
-    var formatMessageWithException = function (messageText, exception) {
-        if (typeof exception.message === 'string' && exception.message.length !== 0) {
-            return messageText + ', Additional information: ' + exception.message;
-        }
-
-        return messageText;
-    };
-
     var RunningRequestsTracker;
     (function () {
         // Static private reference aliases
@@ -292,7 +276,8 @@
                         body: [],
                         status: 0,
                         labviewCode: ERRORS.kNIHttpResultInternalUndefinedError.CODE,
-                        errorMessage: ERRORS.kNIHttpResultInternalUndefinedError.MESSAGE
+                        errorMessage: ERRORS.kNIHttpResultInternalUndefinedError.MESSAGE,
+                        requestException: undefined
                     });
                     return;
                 }
@@ -309,7 +294,8 @@
                     body: body,
                     status: request.status,
                     labviewCode: ERRORS.NO_ERROR.CODE,
-                    errorMessage: ERRORS.NO_ERROR.MESSAGE
+                    errorMessage: ERRORS.NO_ERROR.MESSAGE,
+                    requestException: undefined
                 });
             };
 
@@ -319,7 +305,8 @@
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
-                    errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE
+                    errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE,
+                    requestException: undefined
                 });
             };
 
@@ -330,7 +317,8 @@
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.ncTimeOutErr.CODE,
-                    errorMessage: ERRORS.ncTimeOutErr.MESSAGE
+                    errorMessage: ERRORS.ncTimeOutErr.MESSAGE,
+                    requestException: undefined
                 });
             };
 
@@ -340,7 +328,8 @@
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.kNIHttpResultAbortedByCallback.CODE,
-                    errorMessage: ERRORS.kNIHttpResultAbortedByCallback.MESSAGE
+                    errorMessage: ERRORS.kNIHttpResultAbortedByCallback.MESSAGE,
+                    requestException: undefined
                 });
             };
 
@@ -355,13 +344,13 @@
             } catch (ex) {
                 // Spec says open should throw SyntaxError but some browsers seem to throw DOMException.
                 // Instead of trying to detect, always say invalid url and add message to source
-                errorMessage = formatMessageWithException(ERRORS.kNIHttpResultCouldNotConnect.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.kNIHttpResultCouldNotConnect.CODE,
-                    errorMessage: errorMessage
+                    errorMessage: ERRORS.kNIHttpResultCouldNotConnect.MESSAGE,
+                    requestException: ex
                 });
                 return;
             }
@@ -382,13 +371,14 @@
                     }
                 });
             } catch (ex) {
-                errorMessage = formatMessageWithException(ERRORS.kNIHttpWebVIHeaderInvalid.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue, ex);
+                errorMessage = ERRORS.kNIHttpWebVIHeaderInvalid.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue;
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVIHeaderInvalid.CODE,
-                    errorMessage: errorMessage
+                    errorMessage: errorMessage,
+                    requestException: ex
                 });
                 return;
             }
@@ -420,13 +410,13 @@
                     request.send(requestData.buffer);
                 }
             } catch (ex) {
-                errorMessage = formatMessageWithException(ERRORS.kNIHttpWebVINetworkError.MESSAGE, ex);
                 completeRequest({
                     header: '',
                     body: [],
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
-                    errorMessage: errorMessage
+                    errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE,
+                    requestException: ex
                 });
                 return;
             }
@@ -542,7 +532,7 @@
             var newErrorSource;
 
             if (httpClient === undefined) {
-                newErrorSource = createSourceFromMessage(ERRORS.mgArgErr.MESSAGE);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.mgArgErr.MESSAGE);
                 Module.coreHelpers.mergeErrors(true, ERRORS.mgArgErr.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 
@@ -568,7 +558,7 @@
             var newErrorSource;
             var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
             if (cookieFile !== '') {
-                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVICookieFileUnsupported.MESSAGE);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVICookieFileUnsupported.MESSAGE);
                 Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVICookieFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -576,7 +566,7 @@
 
             var verifyServer = verifyServerInt32 !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVIVerifyServerUnsupported.MESSAGE);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIVerifyServerUnsupported.MESSAGE);
                 Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIVerifyServerUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -594,7 +584,7 @@
             var handleExists = httpClientManager.get(handle) !== undefined;
 
             if (handleExists === false) {
-                newErrorSource = createSourceFromMessage(ERRORS.InvalidRefnum.MESSAGE);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.InvalidRefnum.MESSAGE);
                 Module.coreHelpers.mergeErrors(true, ERRORS.InvalidRefnum.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
@@ -639,7 +629,7 @@
             var header = Module.eggShell.dataReadString(headerPointer);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = createSourceFromMessage(ERRORS.kNIHttpResultRequestHeaderDoesNotExist.MESSAGE + '\nheader:' + header);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpResultRequestHeaderDoesNotExist.MESSAGE + '\nheader:' + header);
                 Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpResultRequestHeaderDoesNotExist.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 setDefaultOutputs();
                 return;
@@ -699,7 +689,7 @@
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
 
-            var newErrorSource;
+            var newErrorSource, errorMessage;
             var method = METHOD_NAMES[methodId];
 
             // Nullable input parameters: handle, outputFile, buffer
@@ -710,7 +700,7 @@
                 outputFile = Module.eggShell.dataReadString(outputFilePointer);
 
                 if (outputFile !== '') {
-                    newErrorSource = createSourceFromMessage(ERRORS.kNIHttpWebVIOutputFileUnsupported.MESSAGE);
+                    newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIOutputFileUnsupported.MESSAGE);
                     Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIOutputFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     setDefaultOutputs();
                     return;
@@ -778,7 +768,8 @@
 
                 var newErrorStatus = responseData.labviewCode !== ERRORS.NO_ERROR.CODE;
                 var newErrorCode = responseData.labviewCode;
-                var newErrorSource = createSourceFromMessage(responseData.errorMessage);
+                errorMessage = Module.coreHelpers.formatMessageWithException(responseData.errorMessage, responseData.requestException);
+                var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
