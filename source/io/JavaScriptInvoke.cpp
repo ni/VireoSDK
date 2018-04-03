@@ -16,9 +16,6 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 #include <stdio.h>
-#if kVireoOS_emscripten
-#include <emscripten.h>
-#endif
 
 #if defined(VIREO_TYPE_JavaScriptInvoke)
 namespace Vireo
