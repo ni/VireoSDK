@@ -38,22 +38,8 @@
         }
     };
 
-    var formatMessageWithException = function (messageText, exception) {
-        if (typeof exception.message === 'string' && exception.message.length !== 0) {
-            return messageText + ', <APPEND>\n ' + exception.message;
-        }
-
-        return messageText;
-    };
-
     // Vireo Core Mixin Function
     var assignPropertyNode = function (Module, publicAPI) {
-        // Disable new-cap for the cwrap functions so the names can be the same in C and JS
-        /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'NationalInstruments',
-            'DispatchMessagetToHTMLPanel'
-        ]}], */
-
         Module.propertyNode = {};
         publicAPI.propertyNode = {};
 
@@ -75,7 +61,6 @@
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
-            /* eslint-disable no-undef */
             var newErrorStatus = false;
             var newErrorCode = ERRORS.NO_ERROR.CODE;
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
@@ -86,13 +71,13 @@
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
 
-            var context = undefined;
             try {
-                writeProperty.call(context, viName, dataItemId, propertyName, propertyType, propertyPath);
+                writeProperty(viName, dataItemId, propertyName, propertyType, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                newErrorSource = formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -116,14 +101,13 @@
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
-
-            var context = undefined;
             try {
-                readProperty.call(context, viName, dataItemId, propertyName, propertyType, propertyPath);
+                readProperty(viName, dataItemId, propertyName, propertyType, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                newErrorSource = formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }

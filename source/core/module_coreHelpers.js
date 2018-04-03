@@ -265,6 +265,22 @@
             // Note: merge errors function ignores newErrorSource if no newError or newWarning so replicated here
             return;
         };
+
+        Module.coreHelpers.formatMessageWithException = function (messageText, exception) {
+            if (exception !== undefined && typeof exception.message === 'string' && exception.message.length !== 0) {
+                return messageText + ', Additional information: ' + exception.message;
+            }
+
+            return messageText;
+        };
+
+        Module.coreHelpers.createSourceFromMessage = function (additionalInformation) {
+            if (typeof additionalInformation === 'string' && additionalInformation.length !== 0) {
+                return '<APPEND>\n' + additionalInformation;
+            }
+
+            return '';
+        };
     };
 
     return assignCoreHelpers;
