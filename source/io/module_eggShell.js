@@ -107,8 +107,7 @@
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
-        var Data_WriteArray = Module.cwrap('Data_WriteArray', 'void', ['number', 'number', 'number', 'number']);
-        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number']);
+        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -337,32 +336,6 @@
             return returnArray;
         };
 
-        /* Module.eggShell.getNumericTypedArray = publicAPI.eggShell.getNumericTypedArray = function () {
-            var eggShellResult = EggShell_GetTypedArrayMetadata(v_userShell, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
-
-            if (eggShellResult !== 0) {
-                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')');
-            }
-
-            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
-            // The following use of Pointer_stringify is safe as long as arrayTypeNamePointer is a valid C string
-            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
-            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
-
-            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
-            if (arrayTypeConfig === undefined) {
-                throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
-            }
-
-            // Handle empty arrays
-            if (arrayBegin === NULL) {
-                return new Int32Array(0);
-            }
-
-            return new Int32Array(arrayTypeConfig);
-        }; */
-
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
             return EggShell_GetArrayDimLength(v_userShell, vi, path, dim);
         };
@@ -456,10 +429,52 @@
             return numericValue;
         };
 
+        Module.eggShell.dataReadInt8Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP8.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Int8Array(Module.HEAP8.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadInt16Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP16.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Int16Array(Module.HEAP16.subarray(begin, begin + length));
+        };
+
         Module.eggShell.dataReadInt32Array = function (arrayPointer) {
             var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP32.BYTES_PER_ELEMENT;
             var length = Data_GetTypedArrayLength(arrayPointer);
             return new Int32Array(Module.HEAP32.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadUInt8Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU8.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Uint8Array(Module.HEAPU8.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadUInt16Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU16.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Uint16Array(Module.HEAPU16.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadUInt32Array = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU32.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Uint32Array(Module.HEAPU32.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadSingleArray = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPF32.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Float32Array(Module.HEAPF32.subarray(begin, begin + length));
+        };
+
+        Module.eggShell.dataReadDoubleArray = function (arrayPointer) {
+            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPF64.BYTES_PER_ELEMENT;
+            var length = Data_GetTypedArrayLength(arrayPointer);
+            return new Float64Array(Module.HEAPF64.subarray(begin, begin + length));
         };
 
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
@@ -499,22 +514,68 @@
             Data_WriteDouble(destination, value);
         };
 
-        Module.eggShell.dataWriteArray = function (destination, value) {
-            //var sourceHeapPointer = Module._malloc(value.length * Module.HEAP32.BYTES_PER_ELEMENT);
-            //Module.writeArrayToMemory(value, sourceHeapPointer);
-            //Module.HEAP32.set(value, sourceHeapPointer);
-            //Module.setValue(sourceHeapPointer, value, "i32*");
-            var error = Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP32.BYTES_PER_ELEMENT;
-            //var length = Data_GetTypedArrayLength(destination);
-            // for (var i = 0; i < value.length; i += 1) {
-            //     Module.HEAP32[arrayBegin + i] = value[i];
-            // }
+        Module.eggShell.dataWriteInt8Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP8.BYTES_PER_ELEMENT;
 
-            var a = Module.HEAP32.subarray(arrayBegin, arrayBegin + value.length);
-            a[0] = 2;
-            a[1] = 4;
-            a[2] = 6;
+            var returnArray = Module.HEAP8.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteInt16Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP16.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAP16.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteInt32Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP32.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAP32.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteUInt8Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU8.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAPU8.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteUInt16Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU16.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAPU16.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteUInt32Array = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU32.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAPU32.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteSingleArray = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPF32.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAPF32.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
+        };
+
+        Module.eggShell.dataWriteDoubleArray = function (destination, value) {
+            Data_ResizeArray(v_userShell, destination, value.length);
+            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPF64.BYTES_PER_ELEMENT;
+
+            var returnArray = Module.HEAPF64.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

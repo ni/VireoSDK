@@ -127,8 +127,29 @@
                 case 'Boolean':
                     parameterValue = Module.eggShell.dataReadBoolean(parameterPointer);
                     break;
-                case 'Array':
+                case 'ArrayInt8':
+                    parameterValue = Module.eggShell.dataReadInt8Array(parameterPointer);
+                    break;
+                case 'ArrayInt16':
+                    parameterValue = Module.eggShell.dataReadInt16Array(parameterPointer);
+                    break;
+                case 'ArrayInt32':
                     parameterValue = Module.eggShell.dataReadInt32Array(parameterPointer);
+                    break;
+                case 'ArrayUInt8':
+                    parameterValue = Module.eggShell.dataReadUInt8Array(parameterPointer);
+                    break;
+                case 'ArrayUInt16':
+                    parameterValue = Module.eggShell.dataReadUInt16Array(parameterPointer);
+                    break;
+                case 'ArrayUInt32':
+                    parameterValue = Module.eggShell.dataReadUInt32Array(parameterPointer);
+                    break;
+                case 'ArraySingle':
+                    parameterValue = Module.eggShell.dataReadSingleArray(parameterPointer);
+                    break;
+                case 'ArrayDouble':
+                    parameterValue = Module.eggShell.dataReadDoubleArray(parameterPointer);
                     break;
                 default:
                     throw new Error(' Unsupported type for parameter with index = ' + index);
@@ -266,12 +287,89 @@
             return true;
         };
 
-        var updateTypedArrayReturnValue = function (
+        var updateInt8ArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Int8Array) {
+                Module.eggShell.dataWriteInt8Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateInt16ArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Int16Array) {
+                Module.eggShell.dataWriteInt16Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateInt32ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
             if (returnValue instanceof Int32Array) {
-                Module.eggShell.dataWriteArray(returnValuePointer, returnValue);
+                Module.eggShell.dataWriteInt32Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateUInt8ArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Uint8Array) {
+                Module.eggShell.dataWriteUInt8Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateUInt16ArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Uint16Array) {
+                Module.eggShell.dataWriteUInt16Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateUInt32ArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Uint32Array) {
+                Module.eggShell.dataWriteUInt32Array(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateSingleArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Float32Array) {
+                Module.eggShell.dataWriteSingleArray(returnValuePointer, returnValue);
+                return false;
+            }
+            return true;
+        };
+
+        var updateDoubleArrayReturnValue = function (
+            javaScriptReturnTypeName,
+            returnValuePointer,
+            returnValue) {
+            if (returnValue instanceof Float64Array) {
+                Module.eggShell.dataWriteDoubleArray(returnValuePointer, returnValue);
                 return false;
             }
             return true;
@@ -341,8 +439,29 @@
             case 'Boolean':
                 returnTypeMistmatch = updateBooleanReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
                 break;
-            case 'Array':
-                returnTypeMistmatch = updateTypedArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+            case 'ArrayInt8':
+                returnTypeMistmatch = updateInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayInt16':
+                returnTypeMistmatch = updateInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayInt32':
+                returnTypeMistmatch = updateInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt8':
+                returnTypeMistmatch = updateUInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt16':
+                returnTypeMistmatch = updateUInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt32':
+                returnTypeMistmatch = updateUInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArraySingle':
+                returnTypeMistmatch = updateSingleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayDouble':
+                returnTypeMistmatch = updateDoubleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
                 break;
             case 'StaticTypeAndData': {
                 break;

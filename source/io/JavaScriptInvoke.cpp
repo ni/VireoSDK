@@ -54,6 +54,15 @@ VIREO_EXPORT const char *JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
     {
         SubString typeName = parameterType->Name();
         returnBuffer->Append(typeName.Length(), (Utf8Char *)typeName.Begin());
+
+		if (parameterType->IsArray())
+		{
+			// also need to append the element type name
+			TypedArrayCoreRef array = *(TypedArrayCoreRef *)parameters[index]._pData;
+			SubString elementTypeName = array->ElementType()->Name();
+			returnBuffer->Append(elementTypeName.Length(), (Utf8Char *)elementTypeName.Begin());
+		}
+
         // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char *)returnBuffer->Begin();

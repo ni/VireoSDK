@@ -50,9 +50,7 @@ VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetTypedArrayBegin(TypedArrayCoreRef arrayObject);
 VIREO_EXPORT Int32 Data_GetTypedArrayLength(TypedArrayCoreRef arrayObject);
-VIREO_EXPORT void Data_WriteArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, const void* buffer, 
-	                               Int32 length);
-VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length);
+VIREO_EXPORT void Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
                                    Int32 length);
 VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer);
