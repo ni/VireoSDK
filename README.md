@@ -15,7 +15,7 @@ The Vireo project provides a subset of LabVIEW runtime functionality for smaller
 
 Requirements:
 - [Node](https://nodejs.org/en/) (> v4.4.7)
-- [Emscripten](https://github.com/kripken/emscripten) (v1.36.0)
+- [Emscripten](https://github.com/kripken/emscripten) (v1.37.9)
 - make
 
 Setup:
@@ -66,35 +66,35 @@ From within the `test-it` directory:
 
 #### Against esh target (`-n`)
 ```shell
-$ ./test.js -n
+$ node ./test.js -n
 ```
 
 #### Against vireo.js target (`-j`)
 ```shell
-$ ./test.js -j
+$ node ./test.js -j
 ```
 
 #### Running Test Suites (`-t [test suite]`)
 ```shell
-$ ./test.js -n -t <test suite>
+$ node ./test.js -n -t <test suite>
 ```
 
 #### Run Individual Tests (`[Test].via`)
 ```shell
-$ ./test.js HelloWorld.via
+$ node ./test.js HelloWorld.via
 ```
 
 #### Listing Out Tests (`-l [test suite]`)
 Since the test suites can be created recursively from other test suites in the configuration file, the `-l` command line argument will list out all of the tests to be run with the test suite name provided. Example:
 ```shell
-$ ./test.js -l native
+$ node ./test.js -l native
 ```
 Will list out all of the tests that would be run against the `native` test suite.
 
 ## Test Help
 ```shell
-$ ./test.js -h
-Usage: ./test.js [options] [via test files]
+$ node ./test.js -h
+Usage: node ./test.js [options] [via test files]
 Options:
  -n                  Run the tests against the native vireo target (esh)
  -j                  Run the tests against the JavaScript target (vireo.js)
@@ -136,7 +136,7 @@ This will be a simple example that will add the test suite `rpi` with the `RpiTe
 This will add a test suite `rpi` that will include the test `RpiTest.via` and all of the tests included in the `common` test suite.
 3. Try it out to verify it all works and your tests pass:
 ```shell
-$ ./test.js -n -t rpi
+$ node ./test.js -n -t rpi
 ```
 
 ## Running the HTTP test server
