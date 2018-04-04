@@ -91,6 +91,13 @@ class EventQueueObject {
         if (_wakeUpOccur)
             _wakeUpOccur->SetOccurrence();
     }
+    void ClearQueue() {
+        VIREO_ASSERT(!_eventLock)
+        bool keepGoing = true;
+        do {
+            keepGoing = DiscardTopEvent();
+        } while (keepGoing);
+    }
     const EventData &GetEventData() {
         if (size() > 0) {
             _eventLock = true;
@@ -111,10 +118,7 @@ class EventQueueObject {
     void RemoveObserver() { _wakeUpOccur = NULL; }
     void DoneProcessingEvent() {
         if (_eventLock) {
-            EventData &eventData = _eventQueue.front();
-            eventData.eventDataType->ClearData(eventData.pEventData);
-            THREAD_TADM()->Free(eventData.pEventData);
-            _eventQueue.pop_front();
+            DiscardTopEvent();
             _eventLock = false;
         }
     }
@@ -123,6 +127,16 @@ class EventQueueObject {
     void SetStatus(QIDStatus status) { _status = status; }
 
  private:
+    bool DiscardTopEvent() {
+        if (_eventQueue.size() > 0) {
+            EventData &eventData = _eventQueue.front();
+            eventData.eventDataType->ClearData(eventData.pEventData);
+            THREAD_TADM()->Free(eventData.pEventData);
+            _eventQueue.pop_front();
+            return true;
+        }
+        return false;
+    }
     std::deque<EventData> _eventQueue;
     OccurrenceCore *_wakeUpOccur;
     EventData _timeOutEvent;
@@ -154,6 +168,10 @@ class EventOracle {
     }
     void DoneProcessingEvent(EventQueueID qID) {
         return _qObject[qID].DoneProcessingEvent();
+    }
+    void ClearEventQueue(EventQueueID qID) {
+        if (qID < _qObject.size())
+            _qObject[qID].ClearQueue();
     }
     bool RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref,
                           EventOracleIndex *oracleIdxPtr = NULL);
@@ -490,6 +508,7 @@ static bool UnregisterForEventsAux(RefNum refnum) {
     if (EventRegistrationRefNumManager::RefNumStorage().DisposeRefNum(refnum, &regInfo) != kNIError_Success || !regInfo)
         return false;
     EventQueueID qID = regInfo->_qID;
+    EventOracle::TheEventOracle().ClearEventQueue(qID);
     std::vector<DynamicEventRegEntry>::iterator regInfoEntryIter = regInfo->_entry.begin(), regInfoEntryIterEnd = regInfo->_entry.end();
     while (regInfoEntryIter != regInfoEntryIterEnd) {
         EventOracle::TheEventOracle().UnregisterForEvent(qID, regInfoEntryIter->eventSource, regInfoEntryIter->eventType, 0, refnum);
