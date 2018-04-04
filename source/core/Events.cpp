@@ -376,8 +376,7 @@ class EventRegistrationRefNumManager : public RefNumManager {
 EventRegistrationRefNumManager EventRegistrationRefNumManager::_s_singleton;
 
 void RegisterForStaticEvents(VirtualInstrument *vi) {
-    TypeRef eventsSpecsTy = vi->EventSpecs()->Type();
-    Int32 numES = eventsSpecsTy->GetSubElement(0)->SubElementCount();
+    Int32 numES = vi->EventSpecs()->ElementType()->SubElementCount();
     EventInfo *eventInfo = new EventInfo[numES];
 
     for (Int32 esIndex = 0; esIndex < numES; ++esIndex) {
