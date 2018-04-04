@@ -362,6 +362,7 @@
                 "UsageType.via",
                 "UserEventsBasic.via",
                 "UserEventsMultiple.via",
+                "UserEventsMultUEMultES.via",
                 "UserEventsThroughput.via",
                 "UserTypes.via",
                 "UTF-8CodePoints.via",

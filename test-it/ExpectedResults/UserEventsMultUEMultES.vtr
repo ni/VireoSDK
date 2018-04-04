@@ -1,0 +1,24 @@
+Generating User Events [A,B,B] (before event wait)
+Short delay (50ms)
+Waiting on events Loop 1 [UserEvents A,B] 
+ES1: Event case 1, User Event A Fired, EventType:1000 Index:0 data:<('Hello' 1)>
+Waiting on events Loop 1 [UserEvents A,B] 
+ES1: Event case 3, User Event B Fired, EventType:1000 Index:0 data:<('Bonjour' 'Aloha' 123)>
+Waiting on events Loop 1 [UserEvents A,B] 
+Waiting on events Loop 2 [UserEvents A,C]
+ES2: Event case 1, User Event A Fired, EventType:1000 Index:0 data:<('Hello' 1)>
+Waiting on events Loop 2 [UserEvents A,C]
+ES1: Event case 3, User Event B Fired, EventType:1000 Index:0 data:<('Bonjour' 'Aloha' 123)>
+Waiting on events Loop 1 [UserEvents A,B] 
+(Generating User Events [B,A,C] in background)
+ES1: Event case 3, User Event B Fired, EventType:1000 Index:0 data:<('Bonjour' 'Aloha' 123)>
+Waiting on events Loop 1 [UserEvents A,B] 
+ES1: Event case 1, User Event A Fired, EventType:1000 Index:0 data:<('Goodbye' 2)>
+Waiting on events Loop 1 [UserEvents A,B] 
+ES2: Event case 1, User Event A Fired, EventType:1000 Index:0 data:<('Goodbye' 2)>
+Waiting on events Loop 2 [UserEvents A,C]
+ES2: Event case 2, User Event C Fired, EventType:1000 Index:0 data:<(456)>
+Waiting on events Loop 2 [UserEvents A,C]
+ES1: Event case 2, Timeout case (100ms), EventType:1 Index:0
+ES2: Event case 2, Timeout case (150ms), EventType:1 Index:0
+Done
