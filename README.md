@@ -145,7 +145,7 @@ $ node ./test.js -n -t rpi
 ## Running the HTTP test server
 
 ### Overview
-Vireo uses [httpbin](https://httpbin.org/) for testing the HTTP Client functionality. If the httpbin server is not running locally, the test suite will skip those tests that rely on it. If you would like to run the HTTP client tests locally these instructions show you how to do so.
+Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.org/) server for testing the HTTP Client functionality. If the httpbin server is not running locally, the test suite will skip tests that rely on it. If you would like to run the HTTP client tests locally these instructions show you how to do so.
 
 ### Requirements
 - Python 2.7.9 or later (primarily for pip availability)
