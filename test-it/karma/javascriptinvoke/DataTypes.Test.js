@@ -1,4 +1,4 @@
-fdescribe('A JavaScript function invoke', function () {
+describe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -8,12 +8,10 @@ fdescribe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsDataTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/DataTypes.via');
-    var jsArrayViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ArrayDataTypes2.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            jsDataTypesViaUrl,
-            jsArrayViaUrl
+            jsDataTypesViaUrl
         ], done);
     });
 
@@ -91,34 +89,41 @@ fdescribe('A JavaScript function invoke', function () {
         window.NI_ArrayFunction = undefined;
     });
 
-    fit('succesfully pass different data types', function (done) {
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsArrayViaUrl);
+    it('succesfully pass different data types', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsDataTypesViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        // spyOn(window, 'NI_BooleanFunction');
-        // spyOn(window, 'NI_Int8Function');
-        // spyOn(window, 'NI_Int16Function');
-        // spyOn(window, 'NI_Int32Function');
-        // spyOn(window, 'NI_UInt8Function');
-        // spyOn(window, 'NI_UInt16Function');
-        // spyOn(window, 'NI_UInt32Function');
-        // spyOn(window, 'NI_SingleFunction');
-        // spyOn(window, 'NI_DoubleFunction');
-        // spyOn(window, 'NI_StringFunction');
-        // spyOn(window, 'NI_ArrayFunction');
+        spyOn(window, 'NI_BooleanFunction');
+        spyOn(window, 'NI_Int8Function');
+        spyOn(window, 'NI_Int16Function');
+        spyOn(window, 'NI_Int32Function');
+        spyOn(window, 'NI_UInt8Function');
+        spyOn(window, 'NI_UInt16Function');
+        spyOn(window, 'NI_UInt32Function');
+        spyOn(window, 'NI_SingleFunction');
+        spyOn(window, 'NI_DoubleFunction');
+        spyOn(window, 'NI_StringFunction');
+        spyOn(window, 'NI_ArrayFunction');
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            // expect(window.NI_BooleanFunction).toHaveBeenCalledWith(true, false);
-            // expect(window.NI_Int8Function).toHaveBeenCalledWith(-128, 127);
-            // expect(window.NI_Int16Function).toHaveBeenCalledWith(-32768, 32767);
-            // expect(window.NI_Int32Function).toHaveBeenCalledWith(-2147483648, 2147483647);
-            // expect(window.NI_UInt8Function).toHaveBeenCalledWith(0, 255);
-            // expect(window.NI_UInt16Function).toHaveBeenCalledWith(0, 65535);
-            // expect(window.NI_UInt32Function).toHaveBeenCalledWith(0, 4294967295);
-            // expect(window.NI_SingleFunction).toHaveBeenCalledWith(3.0);
-            // expect(window.NI_DoubleFunction).toHaveBeenCalledWith(6.0);
-            // expect(window.NI_StringFunction).toHaveBeenCalledWith('National Instruments');
-            // expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Int32Array.from([1, 2, 3]));
+            expect(window.NI_BooleanFunction).toHaveBeenCalledWith(true, false);
+            expect(window.NI_Int8Function).toHaveBeenCalledWith(-128, 127);
+            expect(window.NI_Int16Function).toHaveBeenCalledWith(-32768, 32767);
+            expect(window.NI_Int32Function).toHaveBeenCalledWith(-2147483648, 2147483647);
+            expect(window.NI_UInt8Function).toHaveBeenCalledWith(0, 255);
+            expect(window.NI_UInt16Function).toHaveBeenCalledWith(0, 65535);
+            expect(window.NI_UInt32Function).toHaveBeenCalledWith(0, 4294967295);
+            expect(window.NI_SingleFunction).toHaveBeenCalledWith(3.0);
+            expect(window.NI_DoubleFunction).toHaveBeenCalledWith(6.0);
+            expect(window.NI_StringFunction).toHaveBeenCalledWith('National Instruments');
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Int8Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Int16Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Int32Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Uint8Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Uint16Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Uint32Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Float32Array.from([1, 2, 3]));
+            expect(window.NI_ArrayFunction).toHaveBeenCalledWith(Float64Array.from([1, 2, 3]));
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();

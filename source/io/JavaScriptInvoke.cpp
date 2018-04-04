@@ -52,7 +52,7 @@ VIREO_EXPORT const char *JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
         SubString typeName = parameterType->Name();
         returnBuffer->Append(typeName.Length(), (Utf8Char *)typeName.Begin());
 
-		if (parameterType->IsArray())
+		if (parameterType->IsArray() && !parameterType->IsString())
 		{
 			// also need to append the element type name
 			TypedArrayCoreRef array = *(TypedArrayCoreRef *)parameters[index]._pData;
