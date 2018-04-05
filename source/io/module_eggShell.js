@@ -98,6 +98,7 @@
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
         var Data_GetTypedArrayBegin = Module.cwrap('Data_GetTypedArrayBegin', 'number', ['number']);
         var Data_GetTypedArrayLength = Module.cwrap('Data_GetTypedArrayLength', 'number', ['number']);
+        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
         var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
@@ -107,7 +108,6 @@
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
-        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 

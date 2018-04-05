@@ -23,9 +23,9 @@ namespace Vireo
 
 #if kVireoOS_emscripten
 extern "C" {
-// JavaScript function prototypes
-// Parameters: functionName, returnValue, parameters*, parametersCount, errorCheckingEnabled, errorStatus*, errorCode*, errorSource*
-extern void jsJavaScriptInvoke(StringRef, void *, void *, Int32, Boolean, Boolean *, Int32 *, StringRef);
+    // JavaScript function prototypes
+    // Parameters: functionName, returnValue, parameters*, parametersCount, errorCheckingEnabled, errorStatus*, errorCode*, errorSource*
+    extern void jsJavaScriptInvoke(StringRef, void *, void *, Int32, Boolean, Boolean *, Int32 *, StringRef);
 }
 #endif
 
@@ -65,7 +65,7 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
 
 //------------------------------------------------------------
 //! Return parameter pointer for the given element(index) in the parameters array
-VIREO_EXPORT void *JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *parameters, Int32 index)
+VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *parameters, Int32 index)
 {
     void *pData = parameters[index]._pData;
     TypeRef parameterType = parameters[index]._paramType;
