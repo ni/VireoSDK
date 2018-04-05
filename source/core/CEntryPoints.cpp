@@ -306,14 +306,14 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetTypedArrayBegin(TypedArrayCoreRef arrayObject)
 {
-	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-	return arrayObject->BeginAt(0);
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return arrayObject->BeginAt(0);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_GetTypedArrayLength(TypedArrayCoreRef arrayObject)
 {
-	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-	return arrayObject->Length();
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return arrayObject->Length();
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
@@ -416,9 +416,9 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 
 VIREO_EXPORT void Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length)
 {
-	TypeManagerScope scope(tm);
+    TypeManagerScope scope(tm);
 
-	Int32 rank = 1;
+    Int32 rank = 1;
     arrayObject->ResizeDimensions(rank, &length, true, false);
 }
 
