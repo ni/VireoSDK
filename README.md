@@ -71,9 +71,19 @@ From within the `test-it` directory:
 $ node ./test.js -n
 ```
 
+or (from root directory)
+```console
+$ make testnative
+```
+
 #### Against vireo.js target (`-j`)
 ```console
 $ node ./test.js -j
+```
+
+or (from root directory)
+```console
+$ make testjs
 ```
 
 #### Running Test Suites (`-t [test suite]`)
@@ -84,6 +94,11 @@ $ node ./test.js -n -t <test suite>
 #### Run Individual Tests (`[Test].via`)
 ```console
 $ node ./test.js HelloWorld.via
+```
+
+#### Run Karma tests
+```console
+$ npm run test
 ```
 
 #### Listing Out Tests (`-l [test suite]`)
@@ -162,7 +177,7 @@ Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.
    Note: On Windows you can alternatively execute `npm run httpbin-start` to start the httpbin server in a new console window.
 3. With the server running in a new window now you can run the tests that rely on the HTTP client (ie `npm run test` and `make testhttpbin`)
 
-# Updating Vireo Documentation
+## Updating Vireo Documentation
 We are using the [Doxygen](http://www.stack.nl/~dimitri/doxygen/) tool to generate our documentation. This tool allows to annotate our source code and generate documentation from it. We are currently using version *1.8.6*.
 
 Installers can be found [here](http://www.stack.nl/~dimitri/doxygen/download.html). On Windows use the 64-bit version.
@@ -178,6 +193,21 @@ It will find and use the Doxyfile file in the source directory and will generate
 *`gh-pages`*
 	
 The main html file in the `gh-pages` is called: index.html
+
+## Setting up Vireo CI builds in a fork
+When you create a Vireo fork, Travis and AppVeyor CIs are not enabled in your fork by default. They are helpful because they validate your work and ensure there are not breaking changes when you do a pull request to Vireo master.
+
+Here are the steps to enable the CIs on your fork:
+
+### Travis-CI
+1. Go to [Travis-CI](https://travis-ci.org/first_sync) website and login with the github account associated with your Vireo fork
+2. (If this is your first time logging in, you can skip this step) On the left side of the page that appears click on the + sign, right next to My repositories
+3. On the page that appears, click on the repository switch to enable it
+
+### AppVeyor-CI
+1. Go to the [AppVeyor](https://www.appveyor.com/) website and login with the github account associated with your Vireo fork
+2. At the top of the page, click on "add a new project".
+3. On the page that appears, select your repository.
 
 # Legal
 Features beyond that core set, that can be accessed directly from VIA source written by hand, should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt
