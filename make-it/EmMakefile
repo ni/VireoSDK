@@ -32,14 +32,14 @@ UTSOURCEDIR=$(VIREO_SDK)/source/unittest
 .DEFAULT_GOAL=help
 
 clean:
-	rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/objs/$(CURRTARGET)/$(CURRBUILD)/* ))
-	rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/dist/$(CURRTARGET)/$(CURRBUILD)/* ))
+    rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/objs/$(CURRTARGET)/$(CURRBUILD)/* ))
+    rm -f $(foreach CURRTARGET, $(TARGETS_SUPPORTED), $(foreach CURRBUILD, $(BUILDS_SUPPORTED), $(VIREO_SDK)/dist/$(CURRTARGET)/$(CURRBUILD)/* ))
 help:
-	@echo 'Execute "make vjs"     to build vireo.js'
-	@echo '        "make clean"   to remove intermediate files'
-	@echo '        "make install" to copy files to web directory'
-	@echo '        "make"         to print this help dialogue'
-	@echo ''
+    @echo 'Execute "make vjs"     to build vireo.js'
+    @echo '        "make clean"   to remove intermediate files'
+    @echo '        "make install" to copy files to web directory'
+    @echo '        "make"         to print this help dialogue'
+    @echo ''
 
 # Instead of trying fake out make for emscripten just build it explicitly
 # To install the Emscripten SDK
@@ -134,9 +134,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32',\
     '_Data_WriteSingle',\
     '_Data_WriteDouble',\
-	'_Data_GetTypedArrayBegin',\
-	'_Data_GetTypedArrayLength',\
-	'_Data_ResizeArray',\
+    '_Data_GetTypedArrayBegin',\
+    '_Data_GetTypedArrayLength',\
+    '_Data_ResizeArray',\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer'\
     ]"
@@ -155,41 +155,41 @@ EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
     ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
-	$(OBJS)/Assert.bc\
-	$(OBJS)/CEntryPoints.bc\
-	$(OBJS)/ControlRef.bc\
-	$(OBJS)/EventLog.bc\
-	$(OBJS)/Events.bc\
-	$(OBJS)/ExecutionContext.bc\
-	$(OBJS)/GenericFunctions.bc\
-	$(OBJS)/MatchPat.bc\
-	$(OBJS)/Math.bc\
-	$(OBJS)/NumericString.bc\
-	$(OBJS)/Platform.bc\
-	$(OBJS)/RefNum.bc\
-	$(OBJS)/Queue.bc\
-	$(OBJS)/String.bc\
-	$(OBJS)/StringUtilities.bc\
-	$(OBJS)/Synchronization.bc\
-	$(OBJS)/TDCodecLVFlat.bc\
-	$(OBJS)/TDCodecVia.bc\
-	$(OBJS)/Thread.bc\
-	$(OBJS)/Date.bc\
-	$(OBJS)/Timestamp.bc\
-	$(OBJS)/TimeFunctions.bc\
-	$(OBJS)/TypeAndDataManager.bc\
-	$(OBJS)/TypeAndDataReflection.bc\
-	$(OBJS)/TypeDefiner.bc\
-	$(OBJS)/TypeTemplates.bc\
-	$(OBJS)/UnitTest.bc\
-	$(OBJS)/VirtualInstrument.bc\
-	$(OBJS)/RefNumTest.bc\
-	$(OBJS)/Canvas2d.bc\
-	$(OBJS)/FileIO.bc\
-	$(OBJS)/HttpClient.bc\
-	$(OBJS)/Waveform.bc\
-	$(OBJS)/JavaScriptInvoke.bc\
-	$(OBJS)/PropertyNode.bc
+    $(OBJS)/Assert.bc\
+    $(OBJS)/CEntryPoints.bc\
+    $(OBJS)/ControlRef.bc\
+    $(OBJS)/EventLog.bc\
+    $(OBJS)/Events.bc\
+    $(OBJS)/ExecutionContext.bc\
+    $(OBJS)/GenericFunctions.bc\
+    $(OBJS)/MatchPat.bc\
+    $(OBJS)/Math.bc\
+    $(OBJS)/NumericString.bc\
+    $(OBJS)/Platform.bc\
+    $(OBJS)/RefNum.bc\
+    $(OBJS)/Queue.bc\
+    $(OBJS)/String.bc\
+    $(OBJS)/StringUtilities.bc\
+    $(OBJS)/Synchronization.bc\
+    $(OBJS)/TDCodecLVFlat.bc\
+    $(OBJS)/TDCodecVia.bc\
+    $(OBJS)/Thread.bc\
+    $(OBJS)/Date.bc\
+    $(OBJS)/Timestamp.bc\
+    $(OBJS)/TimeFunctions.bc\
+    $(OBJS)/TypeAndDataManager.bc\
+    $(OBJS)/TypeAndDataReflection.bc\
+    $(OBJS)/TypeDefiner.bc\
+    $(OBJS)/TypeTemplates.bc\
+    $(OBJS)/UnitTest.bc\
+    $(OBJS)/VirtualInstrument.bc\
+    $(OBJS)/RefNumTest.bc\
+    $(OBJS)/Canvas2d.bc\
+    $(OBJS)/FileIO.bc\
+    $(OBJS)/HttpClient.bc\
+    $(OBJS)/Waveform.bc\
+    $(OBJS)/JavaScriptInvoke.bc\
+    $(OBJS)/PropertyNode.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
@@ -197,22 +197,22 @@ AAL_ONLY = 1
 endif
 
 $(OBJS)/%.bc: $(CORESOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
+    $(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(IOSOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
+    $(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 $(OBJS)/%.bc: $(UTSOURCEDIR)/%.cpp
-	$(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
+    $(EMCC) $(EMFLAGS) -MD -MF $(patsubst %.bc,%.bc.d,$@) -c -o $@ $<
 
 $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
-	@$(MKDIR) -p $(OBJS)
+    @$(MKDIR) -p $(OBJS)
 
 $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
-	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
+    node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
 
 vjs: $(DIST)/vireo.js
 
 $(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
-	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
+    $(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
 $(DIST):
-	@$(MKDIR) -p $(DIST)
+    @$(MKDIR) -p $(DIST)
