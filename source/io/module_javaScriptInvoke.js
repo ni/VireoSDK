@@ -62,9 +62,9 @@
             MESSAGE: 'Unsupported LabVIEW return type for JavaScript Library interface node parameter when calling: '
         },
 
-        kNITypeMistmatchForReturnTypeInJavaScriptInvoke: {
+        kNITypeMismatchForReturnTypeInJavaScriptInvoke: {
             CODE: 44306,
-            MESSAGE: 'Type mistmatch in return type for JavaScript Library interface node parameter when calling: '
+            MESSAGE: 'Type mismatch in return type for JavaScript Library interface node parameter when calling: '
         }
     };
 
@@ -159,8 +159,8 @@
             return parameters;
         };
 
-        var findJavaScriptFunctionToCall = function (functionNameString) {
-            var names = functionNameString.split('.');
+        var findJavaScriptFunctionToCall = function (functionName) {
+            var names = functionName.split('.');
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
             var jsWindowScope = typeof window !== 'undefined' ? window : jsGlobalScope;
@@ -177,202 +177,208 @@
             return functionToCall;
         };
 
+        var throwTypeMismatchException = function () {
+            var e = new Error(ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE);
+            e.name = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
+            throw e;
+        };
+
         var updateInt8ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteInt8(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt8(returnValuePointer, returnValue);
         };
 
         var updateInt16ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteInt16(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt16(returnValuePointer, returnValue);
         };
 
         var updateInt32ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteInt32(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt32(returnValuePointer, returnValue);
         };
 
         var updateUInt8ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteUInt8(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt8(returnValuePointer, returnValue);
         };
 
         var updateUInt16ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteUInt16(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt16(returnValuePointer, returnValue);
         };
 
         var updateUInt32ReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteUInt32(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt32(returnValuePointer, returnValue);
         };
 
         var updateSingleReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteSingle(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteSingle(returnValuePointer, returnValue);
         };
 
         var updateDoubleReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'number') {
-                Module.eggShell.dataWriteDouble(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'number') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteDouble(returnValuePointer, returnValue);
         };
 
         var updateStringReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'string') {
-                Module.eggShell.dataWriteString(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'string') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteString(returnValuePointer, returnValue);
         };
 
         var updateBooleanReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (javaScriptReturnTypeName === 'boolean') {
-                Module.eggShell.dataWriteBoolean(returnValuePointer, returnValue);
-                return false;
+            if (javaScriptReturnTypeName !== 'boolean') {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteBoolean(returnValuePointer, returnValue);
         };
 
         var updateInt8ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Int8Array) {
-                Module.eggShell.dataWriteInt8Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Int8Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt8Array(returnValuePointer, returnValue);
         };
 
         var updateInt16ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Int16Array) {
-                Module.eggShell.dataWriteInt16Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Int16Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt16Array(returnValuePointer, returnValue);
         };
 
         var updateInt32ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Int32Array) {
-                Module.eggShell.dataWriteInt32Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Int32Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteInt32Array(returnValuePointer, returnValue);
         };
 
         var updateUInt8ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Uint8Array) {
-                Module.eggShell.dataWriteUInt8Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Uint8Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt8Array(returnValuePointer, returnValue);
         };
 
         var updateUInt16ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Uint16Array) {
-                Module.eggShell.dataWriteUInt16Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Uint16Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt16Array(returnValuePointer, returnValue);
         };
 
         var updateUInt32ArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Uint32Array) {
-                Module.eggShell.dataWriteUInt32Array(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Uint32Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteUInt32Array(returnValuePointer, returnValue);
         };
 
         var updateSingleArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Float32Array) {
-                Module.eggShell.dataWriteSingleArray(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Float32Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteSingleArray(returnValuePointer, returnValue);
         };
 
         var updateDoubleArrayReturnValue = function (
             javaScriptReturnTypeName,
             returnValuePointer,
             returnValue) {
-            if (returnValue instanceof Float64Array) {
-                Module.eggShell.dataWriteDoubleArray(returnValuePointer, returnValue);
-                return false;
+            if (!(returnValue instanceof Float64Array)) {
+                throwTypeMismatchException();
             }
-            return true;
+
+            Module.eggShell.dataWriteDoubleArray(returnValuePointer, returnValue);
         };
 
         var isTypedArray = function (
@@ -391,8 +397,89 @@
             return false;
         };
 
+        var isValidJavaScriptReturnType = function (
+            returnValue) {
+            var returnTypeName = typeof returnValue;
+            return (returnTypeName === 'number') ||
+            (returnTypeName === 'boolean') ||
+            (returnTypeName === 'string') ||
+            (returnTypeName === 'undefined') ||
+            (isTypedArray(returnValue));
+        };
+
+        var updateReturnValueGivenType = function (
+            returnTypeName,
+            returnValuePointer,
+            returnValue) {
+            var javaScriptReturnTypeName = typeof returnValue;
+            switch (returnTypeName) {
+            case 'Int8':
+                updateInt8ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Int16':
+                updateInt16ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Int32':
+                updateInt32ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'UInt8':
+                updateUInt8ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'UInt16':
+                updateUInt16ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'UInt32':
+                updateUInt32ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Single':
+                updateSingleReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Double':
+                updateDoubleReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'String':
+                updateStringReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'Boolean':
+                updateBooleanReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayInt8':
+                updateInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayInt16':
+                updateInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayInt32':
+                updateInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt8':
+                updateUInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt16':
+                updateUInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayUInt32':
+                updateUInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArraySingle':
+                updateSingleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'ArrayDouble':
+                updateDoubleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
+                break;
+            case 'StaticTypeAndData': {
+                break;
+            }
+            default: {
+                var e = new Error(ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE);
+                e.name = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
+                throw e;
+            }
+            }
+        };
+
         var updateReturnValue = function (
-            functionNameString,
+            functionName,
             returnPointer,
             returnValue,
             errorStatusPointer,
@@ -402,102 +489,27 @@
             var newErrorCode = ERRORS.NO_ERROR.CODE;
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
-            var javaScriptReturnTypeName = typeof returnValue;
-            var validJavaScriptReturnType =
-                (javaScriptReturnTypeName === 'number') ||
-                (javaScriptReturnTypeName === 'boolean') ||
-                (javaScriptReturnTypeName === 'string') ||
-                (javaScriptReturnTypeName === 'undefined') ||
-                (isTypedArray(returnValue));
-            if (!validJavaScriptReturnType) {
+            if (!isValidJavaScriptReturnType(returnValue)) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
-                newErrorSource = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.';
+                newErrorSource = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             var returnValueIndex = 0;
             var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
-            var returnTypeMistmatch = false;
             var returnValuePointer = undefined;
+
             if (returnTypeName !== 'StaticTypeAndData') { // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
                 returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
             }
-            switch (returnTypeName) {
-            case 'Int8':
-                returnTypeMistmatch = updateInt8ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'Int16':
-                returnTypeMistmatch = updateInt16ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'Int32':
-                returnTypeMistmatch = updateInt32ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'UInt8':
-                returnTypeMistmatch = updateUInt8ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'UInt16':
-                returnTypeMistmatch = updateUInt16ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'UInt32':
-                returnTypeMistmatch = updateUInt32ReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'Single':
-                returnTypeMistmatch = updateSingleReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'Double':
-                returnTypeMistmatch = updateDoubleReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'String':
-                returnTypeMistmatch = updateStringReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'Boolean':
-                returnTypeMistmatch = updateBooleanReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayInt8':
-                returnTypeMistmatch = updateInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayInt16':
-                returnTypeMistmatch = updateInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayInt32':
-                returnTypeMistmatch = updateInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayUInt8':
-                returnTypeMistmatch = updateUInt8ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayUInt16':
-                returnTypeMistmatch = updateUInt16ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayUInt32':
-                returnTypeMistmatch = updateUInt32ArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArraySingle':
-                returnTypeMistmatch = updateSingleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'ArrayDouble':
-                returnTypeMistmatch = updateDoubleArrayReturnValue(javaScriptReturnTypeName, returnValuePointer, returnValue);
-                break;
-            case 'StaticTypeAndData': {
-                break;
-            }
-            default: {
-                newErrorStatus = true;
-                newErrorCode = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
-                newErrorSource = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.';
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                return;
-            }
-            }
 
-            if (returnTypeMistmatch) {
-                newErrorStatus = true;
-                newErrorCode = ERRORS.kNITypeMistmatchForReturnTypeInJavaScriptInvoke.CODE;
-                newErrorSource = ERRORS.kNITypeMistmatchForReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionNameString +
-                    '\'. JavaScript return type is \'' + javaScriptReturnTypeName +
-                    '\'. LabVIEW return type is \'' + returnTypeName + '\'';
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            try {
+                updateReturnValueGivenType(returnTypeName, returnValuePointer, returnValue);
+            } catch (e) {
+                var errorSource = e.message + '\'' + functionName + '\'.';
+                Module.coreHelpers.mergeErrors(true, e.name, errorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
         };
 
@@ -514,23 +526,23 @@
             var newErrorCode = ERRORS.NO_ERROR.CODE;
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
-            var functionNameString = Module.eggShell.dataReadString(functionNamePointer);
+            var functionName = Module.eggShell.dataReadString(functionNamePointer);
             var parameters = undefined;
             try {
                 parameters = createJavaScriptParametersArray(parametersPointer, parametersCount);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.', ex);
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
-            var functionToCall = findJavaScriptFunctionToCall(functionNameString);
+            var functionToCall = findJavaScriptFunctionToCall(functionName);
             if (functionToCall === undefined) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
-                newErrorSource = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.';
+                newErrorSource = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
@@ -542,17 +554,17 @@
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionNameString + '\'.', ex);
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
             try {
-                updateReturnValue(functionNameString, returnPointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                updateReturnValue(functionName, returnPointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.', ex);
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
             }
 

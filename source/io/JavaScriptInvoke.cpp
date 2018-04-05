@@ -31,38 +31,33 @@ extern void jsJavaScriptInvoke(StringRef, void *, void *, Int32, Boolean, Boolea
 
 //------------------------------------------------------------
 //! Return parameter type name for the given element(index) in the parameters array
-VIREO_EXPORT const char *JavaScriptInvoke_GetParameterType(StaticTypeAndData *parameters, Int32 index)
+VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *parameters, Int32 index)
 {
     TypeRef parameterType = parameters[index]._paramType;
     static StringRef returnBuffer = null;
-    if (returnBuffer == null)
-    {
+    if (returnBuffer == null) {
         // Allocate a string the first time it is used.
         // After that it will be resized as needed.
         STACK_VAR(String, tempReturn);
         returnBuffer = tempReturn.DetachValue();
-    }
-    else
-    {
+    } else {
         returnBuffer->Resize1D(0);
     }
 
-    if (returnBuffer)
-    {
+    if (returnBuffer) {
         SubString typeName = parameterType->Name();
-        returnBuffer->Append(typeName.Length(), (Utf8Char *)typeName.Begin());
+        returnBuffer->Append(typeName.Length(), (Utf8Char*)typeName.Begin());
 
-		if (parameterType->IsArray() && !parameterType->IsString())
-		{
-			// also need to append the element type name
-			TypedArrayCoreRef array = *(TypedArrayCoreRef *)parameters[index]._pData;
-			SubString elementTypeName = array->ElementType()->Name();
-			returnBuffer->Append(elementTypeName.Length(), (Utf8Char *)elementTypeName.Begin());
-		}
+        if (parameterType->IsArray() && !parameterType->IsString()) {
+            // also need to append the element type name
+            TypedArrayCoreRef array = *(TypedArrayCoreRef*)parameters[index]._pData;
+            SubString elementTypeName = array->ElementType()->Name();
+            returnBuffer->Append(elementTypeName.Length(), (Utf8Char*)elementTypeName.Begin());
+        }
 
         // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
-        return (const char *)returnBuffer->Begin();
+        return (const char*)returnBuffer->Begin();
     }
 
     return "";
@@ -74,16 +69,13 @@ VIREO_EXPORT void *JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
 {
     void *pData = parameters[index]._pData;
     TypeRef parameterType = parameters[index]._paramType;
-    if (parameterType->IsString())
-    {
+    if (parameterType->IsString()) {
         // We a have pointer to a StringRef, we just need the StringRef.
         // So we can use functions that already work with StringRef on the JavaScript side.
-        pData = *(StringRef *)pData;
+        pData = *(StringRef*)pData;
+    } else if (parameterType->IsArray()) {
+        pData = *(TypedArrayCoreRef*)pData;
     }
-	else if (parameterType->IsArray())
-	{
-		pData = *(TypedArrayCoreRef *)pData;
-	}
 
     return pData;
 }
@@ -111,14 +103,13 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 #if kVireoOS_emscripten
     StringRef functionName = _Param(functionName);
     Boolean errorCheckingEnabled = _Param(errorCheckingEnabled);
-    const Int32 configurationParameters = 3;     // errorCheckingEnabled, errorCluster and functionName
-    const Int32 staticTypeAndDataParameters = 2; // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
+    const Int32 configurationParameters = 3;  // errorCheckingEnabled, errorCluster and functionName
+    const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
     Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
     StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
     StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
 
-    if (!errorClusterPtr->status)
-    {
+    if (!errorClusterPtr->status) {
         jsJavaScriptInvoke(
             functionName,
             returnValuePtr,
@@ -138,9 +129,10 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(JavaScriptInvoke)
-DEFINE_VIREO_FUNCTION(JavaScriptInvoke, "p(i(VarArgCount argumentCount) i(Boolean errorCheckingEnabled) io(ErrorCluster errorCluster)"
-                                        "i(String functionName) o(StaticTypeAndData returnValue) io(StaticTypeAndData functionParameters))")
+    DEFINE_VIREO_FUNCTION(JavaScriptInvoke, "p(i(VarArgCount argumentCount) i(Boolean errorCheckingEnabled) io(ErrorCluster errorCluster)"
+        "i(String functionName) o(StaticTypeAndData returnValue) io(StaticTypeAndData functionParameters))")
 DEFINE_VIREO_END()
 
-} // namespace Vireo
-#endif // VIREO_TYPE_JavaScriptInvoke
+
+}  // namespace Vireo
+#endif  // VIREO_TYPE_JavaScriptInvoke
