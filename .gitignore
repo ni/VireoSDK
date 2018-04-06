@@ -39,6 +39,7 @@ Vireo_VS/_Resharper.Caches/*
 **.VC.db
 **.opendb
 **.suo
+.vscode/
 
 # Other
 c_cpp_properties.json
