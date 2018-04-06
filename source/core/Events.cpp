@@ -510,7 +510,8 @@ static bool UnregisterForEventsAux(RefNum refnum) {
     EventOracle::TheEventOracle().ClearEventQueue(qID);
     std::vector<DynamicEventRegEntry>::iterator regInfoEntryIter = regInfo->_entry.begin(), regInfoEntryIterEnd = regInfo->_entry.end();
     while (regInfoEntryIter != regInfoEntryIterEnd) {
-        EventOracle::TheEventOracle().UnregisterForEvent(qID, regInfoEntryIter->eventSource, regInfoEntryIter->eventType, 0, refnum);
+        EventOracle::TheEventOracle().UnregisterForEvent(qID, regInfoEntryIter->eventSource, regInfoEntryIter->eventType, 0,
+                                                         regInfoEntryIter->refVal.GetRefNum());
         ++regInfoEntryIter;
     }
     delete regInfo;
