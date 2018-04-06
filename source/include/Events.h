@@ -110,6 +110,12 @@ struct EventData {
         pEventData = pData;
         return *this;
     }
+    void Destroy() {
+        if (eventDataType && pEventData) {
+            eventDataType->ClearData(pEventData);
+            THREAD_TADM()->Free(pEventData);
+        }
+    }
 };
 
 void RegisterForStaticEvents(VirtualInstrument *vi);

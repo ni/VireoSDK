@@ -130,8 +130,7 @@ class EventQueueObject {
     bool DiscardTopEvent() {
         if (_eventQueue.size() > 0) {
             EventData &eventData = _eventQueue.front();
-            eventData.eventDataType->ClearData(eventData.pEventData);
-            THREAD_TADM()->Free(eventData.pEventData);
+            eventData.Destroy();
             _eventQueue.pop_front();
             return true;
         }
