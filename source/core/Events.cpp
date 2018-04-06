@@ -590,7 +590,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
             return THREAD_EXEC()->Stop();
         }
         RefNumVal *refData = (RefNumVal*)arguments[refInput].ref._pData;
-        // TO-DO(spathiwa) for control events, make sure ref is valid and return error if not
+        // TODO(spathiwa) for control events, make sure ref is valid and return error if not
 
         EventSource eSource = GetEventSourceForEventType(eventType);
         regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
