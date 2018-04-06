@@ -98,6 +98,10 @@ class EventQueueObject {
             keepGoing = DiscardTopEvent();
         } while (keepGoing);
     }
+    void DeleteQueue() {
+        ClearQueue();
+        SetStatus(kQIDFree);
+    }
     const EventData &GetEventData() {
         if (size() > 0) {
             _eventLock = true;
@@ -168,9 +172,9 @@ class EventOracle {
     void DoneProcessingEvent(EventQueueID qID) {
         return _qObject[qID].DoneProcessingEvent();
     }
-    void ClearEventQueue(EventQueueID qID) {
+    void DeleteEventQueue(EventQueueID qID) {  // marks unallocated
         if (qID < _qObject.size())
-            _qObject[qID].ClearQueue();
+            _qObject[qID].DeleteQueue();
     }
     bool RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref,
                           EventOracleIndex *oracleIdxPtr = NULL);
@@ -507,7 +511,7 @@ static bool UnregisterForEventsAux(RefNum refnum) {
     if (EventRegistrationRefNumManager::RefNumStorage().DisposeRefNum(refnum, &regInfo) != kNIError_Success || !regInfo)
         return false;
     EventQueueID qID = regInfo->_qID;
-    EventOracle::TheEventOracle().ClearEventQueue(qID);
+    EventOracle::TheEventOracle().DeleteEventQueue(qID);
     std::vector<DynamicEventRegEntry>::iterator regInfoEntryIter = regInfo->_entry.begin(), regInfoEntryIterEnd = regInfo->_entry.end();
     while (regInfoEntryIter != regInfoEntryIterEnd) {
         EventOracle::TheEventOracle().UnregisterForEvent(qID, regInfoEntryIter->eventSource, regInfoEntryIter->eventType, 0,
