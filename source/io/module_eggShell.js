@@ -169,7 +169,7 @@
         };
 
         Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (vi, path) {
-            var stack = Module.Runtime.stackSave(); // Stack save only needed for input parameter string or array
+            var stack = Module.stackSave(); // Stack save only needed for input parameter string or array
 
             var type = 'JSON';
             var viStackPointer = Module.coreHelpers.writeJSStringToStack(vi);
@@ -180,7 +180,7 @@
             var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, responsePointer);
             var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, responsePointer, responseLength);
 
-            Module.Runtime.stackRestore(stack);
+            Module.stackRestore(stack);
             return response;
         };
 

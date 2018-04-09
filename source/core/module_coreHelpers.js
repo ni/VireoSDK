@@ -74,7 +74,7 @@
             // See https://github.com/kripken/emscripten/blob/6dc4ac5f9e4d8484e273e4dcc554f809738cedd6/src/preamble.js#L155
             // at most 4 bytes per UTF-8 code point, +1 for the trailing '\0'
             var strMaxStackLength = (str.length << 2) + 1;
-            var strStackPointer = Module.Runtime.stackAlloc(strMaxStackLength);
+            var strStackPointer = Module.stackAlloc(strMaxStackLength);
             Module.stringToUTF8(str, strStackPointer, strMaxStackLength);
             return strStackPointer;
         };
