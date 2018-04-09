@@ -186,7 +186,7 @@
                 isValidReturnType: isJavaScriptBoolean
             },
             ArrayInt8: {
-                reader: Module.eggShell.dataReadInt8Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteInt8Array,
                 isValidReturnType: isInt8Array
             },

@@ -1,4 +1,4 @@
-describe('A JavaScript function invoke', function () {
+fdescribe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;

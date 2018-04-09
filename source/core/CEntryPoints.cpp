@@ -18,6 +18,8 @@ SDG
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
 
+#include <emscripten.h>
+
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
 
@@ -365,7 +367,10 @@ VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef a
 {
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
-    void *pData = null;
+
+    EM_ASM_({
+        console.log('Rank: ' + $0);
+    }, arrayObject->Rank());
 
     if (dim >= arrayObject->Rank() || dim < 0)
         return -1;

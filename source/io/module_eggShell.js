@@ -51,6 +51,8 @@
             'Data_ReadUInt32',
             'Data_ReadSingle',
             'Data_ReadDouble',
+            'Data_GetArrayMetadata',
+            'Data_GetArrayDimLength',
             'Data_WriteBoolean',
             'Data_WriteString',
             'Data_WriteStringFromArray',
@@ -98,6 +100,8 @@
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
         var Data_GetTypedArrayBegin = Module.cwrap('Data_GetTypedArrayBegin', 'number', ['number']);
         var Data_GetTypedArrayLength = Module.cwrap('Data_GetTypedArrayLength', 'number', ['number']);
+        var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
+        var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
         var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
@@ -427,6 +431,33 @@
         Module.eggShell.dataReadDouble = function (doublePointer) {
             var numericValue = Data_ReadDouble(doublePointer);
             return numericValue;
+        };
+
+        var io_types = {
+            Int8: {
+                heap: supportedArrayTypeConfig.Int8,
+                constructor: Int8Array
+            }
+        };
+
+        Module.eggShell.dataReadTypedArray = function (arrayPointer) {
+            var eggShellResult = Data_GetArrayMetadata(v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+
+            if (eggShellResult !== 0) {
+                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')');
+            }
+
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
+            //var arrayRank = Module.getValue(arrayRankPointer, 'i32');
+            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
+
+            // just get the first length - later I will generalize this??
+            var length = Data_GetArrayDimLength(v_userShell, arrayPointer, 0);
+            var constructor = io_types[arrayTypeName].constructor;
+            var heap = io_types[arrayTypeName].heap;
+            return new constructor(heap.subarray(arrayBegin, arrayBegin + length));
         };
 
         Module.eggShell.dataReadInt8Array = function (arrayPointer) {
