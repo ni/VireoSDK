@@ -138,6 +138,19 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_JavaScriptInvoke_GetParameterPointer'\
     ]"
 
+EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
+    'cwrap', \
+	'lengthBytesUTF8', \
+	'stackAlloc', \
+	'stackSave', \
+	'stackRestore', \
+	'stringToUTF8', \
+	'getValue', \
+	'setValue', \
+	'Pointer_stringify', \
+	'writeArrayToMemory', \
+    ]"
+
 EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Assert.bc\
 	$(OBJS)/CEntryPoints.bc\
@@ -197,6 +210,6 @@ $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 vjs: $(DIST)/vireo.js
 
 $(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
-	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) -o $@
+	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
 $(DIST):
 	@$(MKDIR) -p $(DIST)
