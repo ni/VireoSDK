@@ -18,8 +18,6 @@ SDG
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
 
-#include <emscripten.h>
-
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
 
