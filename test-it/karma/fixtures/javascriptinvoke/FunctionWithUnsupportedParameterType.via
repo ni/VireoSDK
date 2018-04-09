@@ -9,9 +9,10 @@ define(MyVI dv(VirtualInstrument (
         e(c(
             e(.Boolean state)
         ) system)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(false error 'NI_FunctionWithInvalidParameterType' * system)
+        JavaScriptInvoke(occurrence false error 'NI_FunctionWithInvalidParameterType' * system)
     )
 ) ) )
 
