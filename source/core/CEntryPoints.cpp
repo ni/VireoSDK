@@ -201,6 +201,20 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     }
     return "";
 }
+void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
+{
+    arrayTypeNameBuffer->Append(arrayTypeName.Length(), (Utf8Char*)arrayTypeName.Begin());
+    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+}
+
+unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
+{
+    if (arrayObject->GetLength(0) <= 0) {
+        return null;
+    } else {
+        return arrayObject->BeginAt(0);
+    }
+}
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank,
 //! and the memory location of the first element (or null if there are zero elements)
@@ -237,18 +251,14 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     }
 
     SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
-    arrayTypeNameBuffer->Append(arrayTypeNameSubString.Length(), (Utf8Char*)arrayTypeNameSubString.Begin());
+    CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayTypeNameSubString);
     arrayTypeNameBuffer->Append((Utf8Char)'\0');
     *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
     *arrayRank = pathType->Rank();
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if (actualArray->GetLength(0) <= 0) {
-        *arrayBegin = null;
-    } else {
-        *arrayBegin = actualArray->BeginAt(0);
-    }
+    *arrayBegin = GetArrayBeginAt(actualArray);
 
     return kEggShellResult_Success;
 }
@@ -345,9 +355,7 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
     }
 
     TypeRef arrayElementType = arrayObject->ElementType();
-    SubString arrayTypeNameSubString = arrayElementType->Name();
-    arrayTypeNameBuffer->Append(arrayTypeNameSubString.Length(), (Utf8Char*)arrayTypeNameSubString.Begin());
-    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+    CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayElementType->Name());
     *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
     *arrayRank = arrayObject->Rank();
@@ -367,10 +375,6 @@ VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef a
 {
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
-
-    EM_ASM_({
-        console.log('Rank: ' + $0);
-    }, arrayObject->Rank());
 
     if (dim >= arrayObject->Rank() || dim < 0)
         return -1;

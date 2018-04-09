@@ -335,7 +335,7 @@
             var arrayRank = Module.getValue(arrayRankPointer, 'i32');
             var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
 
-            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName].heap;
+            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
             if (arrayTypeConfig === undefined) {
                 throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
             }
@@ -352,13 +352,13 @@
                 return returnArray;
             }
 
-            var arrayStartIndex = arrayBegin / arrayTypeConfig.BYTES_PER_ELEMENT;
+            var arrayStartIndex = arrayBegin / arrayTypeConfig.heap.BYTES_PER_ELEMENT;
             var dimensionLengths = [];
             for (i = 0; i < arrayRank; i += 1) {
                 dimensionLengths[i] = Module.eggShell.getArrayDimLength(vi, path, i);
             }
 
-            returnArray = convertFlatArraytoNArray(arrayTypeConfig, arrayStartIndex, dimensionLengths);
+            returnArray = convertFlatArraytoNArray(arrayTypeConfig.heap, arrayStartIndex, dimensionLengths);
             return returnArray;
         };
 
@@ -511,67 +511,21 @@
             Data_WriteDouble(destination, value);
         };
 
-        Module.eggShell.dataWriteInt8Array = function (destination, value) {
+        Module.eggShell.dataWriteTypedArray = function (destination, value) {
             Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP8.BYTES_PER_ELEMENT;
+            var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
-            var returnArray = Module.HEAP8.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
+            if (eggShellResult !== 0) {
+                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')');
+            }
 
-        Module.eggShell.dataWriteInt16Array = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP16.BYTES_PER_ELEMENT;
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
+            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
+            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32') / heap.BYTES_PER_ELEMENT;
 
-            var returnArray = Module.HEAP16.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteInt32Array = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAP32.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAP32.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteUInt8Array = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU8.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAPU8.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteUInt16Array = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU16.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAPU16.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteUInt32Array = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPU32.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAPU32.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteSingleArray = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPF32.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAPF32.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
-        };
-
-        Module.eggShell.dataWriteDoubleArray = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
-            var arrayBegin = Data_GetTypedArrayBegin(destination) / Module.HEAPF64.BYTES_PER_ELEMENT;
-
-            var returnArray = Module.HEAPF64.subarray(arrayBegin, arrayBegin + value.length);
+            var returnArray = heap.subarray(arrayBegin, arrayBegin + value.length);
             returnArray.set(value);
         };
 
