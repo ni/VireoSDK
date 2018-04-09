@@ -191,37 +191,37 @@
                 isValidReturnType: isInt8Array
             },
             ArrayInt16: {
-                reader: Module.eggShell.dataReadInt16Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteInt16Array,
                 isValidReturnType: isInt16Array
             },
             ArrayInt32: {
-                reader: Module.eggShell.dataReadInt32Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteInt32Array,
                 isValidReturnType: isInt32Array
             },
             ArrayUInt8: {
-                reader: Module.eggShell.dataReadUInt8Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteUInt8Array,
                 isValidReturnType: isUInt8Array
             },
             ArrayUInt16: {
-                reader: Module.eggShell.dataReadUInt16Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteUInt16Array,
                 isValidReturnType: isUInt16Array
             },
             ArrayUInt32: {
-                reader: Module.eggShell.dataReadUInt32Array,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteUInt32Array,
                 isValidReturnType: isUInt32Array
             },
             ArraySingle: {
-                reader: Module.eggShell.dataReadSingleArray,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteSingleArray,
                 isValidReturnType: isSingleArray
             },
             ArrayDouble: {
-                reader: Module.eggShell.dataReadDoubleArray,
+                reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteDoubleArray,
                 isValidReturnType: isDoubleArray
             }

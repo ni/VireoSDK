@@ -437,6 +437,34 @@
             Int8: {
                 heap: supportedArrayTypeConfig.Int8,
                 constructor: Int8Array
+            },
+            Int16: {
+                heap: supportedArrayTypeConfig.Int16,
+                constructor: Int16Array
+            },
+            Int32: {
+                heap: supportedArrayTypeConfig.Int32,
+                constructor: Int32Array
+            },
+            UInt8: {
+                heap: supportedArrayTypeConfig.UInt8,
+                constructor: Uint8Array
+            },
+            UInt16: {
+                heap: supportedArrayTypeConfig.UInt16,
+                constructor: Uint16Array
+            },
+            UInt32: {
+                heap: supportedArrayTypeConfig.UInt32,
+                constructor: Uint32Array
+            },
+            Single: {
+                heap: supportedArrayTypeConfig.Single,
+                constructor: Float32Array
+            },
+            Double: {
+                heap: supportedArrayTypeConfig.Double,
+                constructor: Float64Array
             }
         };
 
@@ -451,61 +479,13 @@
             var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
             var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
             //var arrayRank = Module.getValue(arrayRankPointer, 'i32');
-            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
+            var heap = io_types[arrayTypeName].heap;
+            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32') / heap.BYTES_PER_ELEMENT;
 
             // just get the first length - later I will generalize this??
             var length = Data_GetArrayDimLength(v_userShell, arrayPointer, 0);
             var constructor = io_types[arrayTypeName].constructor;
-            var heap = io_types[arrayTypeName].heap;
             return new constructor(heap.subarray(arrayBegin, arrayBegin + length));
-        };
-
-        Module.eggShell.dataReadInt8Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP8.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Int8Array(Module.HEAP8.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadInt16Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP16.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Int16Array(Module.HEAP16.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadInt32Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAP32.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Int32Array(Module.HEAP32.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadUInt8Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU8.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Uint8Array(Module.HEAPU8.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadUInt16Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU16.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Uint16Array(Module.HEAPU16.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadUInt32Array = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPU32.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Uint32Array(Module.HEAPU32.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadSingleArray = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPF32.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Float32Array(Module.HEAPF32.subarray(begin, begin + length));
-        };
-
-        Module.eggShell.dataReadDoubleArray = function (arrayPointer) {
-            var begin = Data_GetTypedArrayBegin(arrayPointer) / Module.HEAPF64.BYTES_PER_ELEMENT;
-            var length = Data_GetTypedArrayLength(arrayPointer);
-            return new Float64Array(Module.HEAPF64.subarray(begin, begin + length));
         };
 
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
