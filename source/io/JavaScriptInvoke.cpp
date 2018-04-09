@@ -18,8 +18,7 @@ SDG
 #include <stdio.h>
 
 #if defined(VIREO_TYPE_JavaScriptInvoke)
-namespace Vireo
-{
+namespace Vireo {
 
 #if kVireoOS_emscripten
 extern "C" {
