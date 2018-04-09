@@ -98,8 +98,6 @@
         var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
-        var Data_GetTypedArrayBegin = Module.cwrap('Data_GetTypedArrayBegin', 'number', ['number']);
-        var Data_GetTypedArrayLength = Module.cwrap('Data_GetTypedArrayLength', 'number', ['number']);
         var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
         var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
@@ -199,14 +197,38 @@
         };
 
         var supportedArrayTypeConfig = {
-            Int8: Module.HEAP8,
-            Int16: Module.HEAP16,
-            Int32: Module.HEAP32,
-            UInt8: Module.HEAPU8,
-            UInt16: Module.HEAPU16,
-            UInt32: Module.HEAPU32,
-            Single: Module.HEAPF32,
-            Double: Module.HEAPF64
+            Int8: {
+                heap: Module.HEAP8,
+                constructor: Int8Array
+            },
+            Int16: {
+                heap: Module.HEAP16,
+                constructor: Int16Array
+            },
+            Int32: {
+                heap: Module.HEAP32,
+                constructor: Int32Array
+            },
+            UInt8: {
+                heap: Module.HEAPU8,
+                constructor: Uint8Array
+            },
+            UInt16: {
+                heap: Module.HEAPU16,
+                constructor: Uint16Array
+            },
+            UInt32: {
+                heap: Module.HEAPU32,
+                constructor: Uint32Array
+            },
+            Single: {
+                heap: Module.HEAPF32,
+                constructor: Float32Array
+            },
+            Double: {
+                heap: Module.HEAPF64,
+                constructor: Float64Array
+            }
         };
 
         // Keep in sync with EggShellResult in CEntryPoints.h
@@ -313,7 +335,7 @@
             var arrayRank = Module.getValue(arrayRankPointer, 'i32');
             var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
 
-            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
+            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName].heap;
             if (arrayTypeConfig === undefined) {
                 throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
             }
@@ -433,41 +455,6 @@
             return numericValue;
         };
 
-        var io_types = {
-            Int8: {
-                heap: supportedArrayTypeConfig.Int8,
-                constructor: Int8Array
-            },
-            Int16: {
-                heap: supportedArrayTypeConfig.Int16,
-                constructor: Int16Array
-            },
-            Int32: {
-                heap: supportedArrayTypeConfig.Int32,
-                constructor: Int32Array
-            },
-            UInt8: {
-                heap: supportedArrayTypeConfig.UInt8,
-                constructor: Uint8Array
-            },
-            UInt16: {
-                heap: supportedArrayTypeConfig.UInt16,
-                constructor: Uint16Array
-            },
-            UInt32: {
-                heap: supportedArrayTypeConfig.UInt32,
-                constructor: Uint32Array
-            },
-            Single: {
-                heap: supportedArrayTypeConfig.Single,
-                constructor: Float32Array
-            },
-            Double: {
-                heap: supportedArrayTypeConfig.Double,
-                constructor: Float64Array
-            }
-        };
-
         Module.eggShell.dataReadTypedArray = function (arrayPointer) {
             var eggShellResult = Data_GetArrayMetadata(v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
@@ -478,13 +465,12 @@
 
             var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
             var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
-            //var arrayRank = Module.getValue(arrayRankPointer, 'i32');
-            var heap = io_types[arrayTypeName].heap;
+            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
             var arrayBegin = Module.getValue(arrayBeginPointer, 'i32') / heap.BYTES_PER_ELEMENT;
 
-            // just get the first length - later I will generalize this??
-            var length = Data_GetArrayDimLength(v_userShell, arrayPointer, 0);
-            var constructor = io_types[arrayTypeName].constructor;
+            var rank = 0; // TypedArrays are always one dimension.
+            var length = Data_GetArrayDimLength(v_userShell, arrayPointer, rank);
+            var constructor = supportedArrayTypeConfig[arrayTypeName].constructor;
             return new constructor(heap.subarray(arrayBegin, arrayBegin + length));
         };
 
