@@ -219,10 +219,10 @@ unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
 VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
         const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
-    void *pData = null;
-
     SubString objectName(viName);
     SubString path(eltName);
+    void *pData = null;
+
     TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (pathType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
@@ -239,10 +239,10 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 //! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
 {
-    void *pData = null;
-
     SubString objectName(viName);
     SubString path(eltName);
+    void *pData = null;
+
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
     if (actualType == null || !actualType->IsArray())
         return -1;
@@ -255,8 +255,6 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 //! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
 VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
 {
-    TypeManagerScope scope(tm);
-
     SubString objectName(viName);
     SubString path(eltName);
     void *pData = null;
@@ -267,11 +265,7 @@ VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, c
     }
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if (!actualArray->ResizeDimensions(rank, newLengths, true, false)) {
-        return kLVError_MemFull;
-    }
-
-    return 0;
+	return Data_ResizeArray(tm, actualArray, rank, newLengths);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
@@ -432,12 +426,16 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
     *destination = value;
 }
 
-VIREO_EXPORT void Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length)
+VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths)
 {
+	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
 
-    Int32 rank = 1;
-    arrayObject->ResizeDimensions(rank, &length, true, false);
+    if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
+        return kLVError_MemFull;
+    }
+
+    return 0;
 }
 
 //------------------------------------------------------------

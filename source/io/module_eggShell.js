@@ -98,7 +98,7 @@
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
         var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
-        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'void', ['number', 'number', 'number']);
+        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number', 'number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
         var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
@@ -510,7 +510,12 @@
         };
 
         Module.eggShell.dataWriteTypedArray = function (destination, value) {
-            Data_ResizeArray(v_userShell, destination, value.length);
+            var int32Byte = 4;
+            var rank = 1;
+            var newLengths = Module._malloc(rank * int32Byte);
+            Module.setValue(newLengths, value.length, 'i32');
+
+            Data_ResizeArray(v_userShell, destination, rank, newLengths);
             var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {

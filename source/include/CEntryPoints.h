@@ -51,7 +51,7 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
         TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
 VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim);
-VIREO_EXPORT void Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 length);
+VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
                                    Int32 length);
 VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer);
