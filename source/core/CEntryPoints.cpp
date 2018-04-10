@@ -250,7 +250,6 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 
     SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
     CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayTypeNameSubString);
-    arrayTypeNameBuffer->Append((Utf8Char)'\0');
     *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
     *arrayRank = pathType->Rank();
@@ -314,18 +313,6 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
     return stringObject->Length();
 }
 //------------------------------------------------------------
-VIREO_EXPORT void* Data_GetTypedArrayBegin(TypedArrayCoreRef arrayObject)
-{
-    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    return arrayObject->BeginAt(0);
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_GetTypedArrayLength(TypedArrayCoreRef arrayObject)
-{
-    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    return arrayObject->Length();
-}
-//------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank,
 //! and the memory location of the first element (or null if there are zero elements)
 VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
@@ -357,12 +344,7 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
     *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
     *arrayRank = arrayObject->Rank();
-
-    if (arrayObject->GetLength(0) <= 0) {
-        *arrayBegin = null;
-    } else {
-        *arrayBegin = arrayObject->BeginAt(0);
-    }
+    *arrayBegin = GetArrayBeginAt(arrayObject);
 
     return kEggShellResult_Success;
 }

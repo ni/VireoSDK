@@ -40,8 +40,6 @@
             'EggShell_ResizeArray',
             'Data_GetStringBegin',
             'Data_GetStringLength',
-            'Data_GetTypedArrayBegin',
-            'Data_GetTypedArrayLength',
             'Data_ReadBoolean',
             'Data_ReadInt8',
             'Data_ReadInt16',

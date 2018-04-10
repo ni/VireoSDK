@@ -264,57 +264,6 @@
             return functionToCall;
         };
 
-        var isTypedArray = function (
-            value) {
-            if (value instanceof Int8Array ||
-                value instanceof Int16Array ||
-                value instanceof Int32Array ||
-                value instanceof Uint8Array ||
-                value instanceof Uint16Array ||
-                value instanceof Uint32Array ||
-                value instanceof Float32Array ||
-                value instanceof Float64Array) {
-                return true;
-            }
-
-            return false;
-        };
-
-        var isValidJavaScriptReturnType = function (
-            returnValue) {
-            var returnTypeName = typeof returnValue;
-            return (returnTypeName === 'number') ||
-            (returnTypeName === 'boolean') ||
-            (returnTypeName === 'string') ||
-            (returnTypeName === 'undefined') ||
-            (isTypedArray(returnValue));
-        };
-
-        var updateReturnValueGivenType = function (
-            returnTypeName,
-            returnValuePointer,
-            returnValue) {
-            if (returnTypeName === 'StaticTypeAndData') {
-                return;
-            }
-
-            var typeConfig = typeFunctions[returnTypeName];
-
-            var exception;
-            if (typeConfig === undefined) {
-                exception = new Error(ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE);
-                exception.name = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
-                throw exception;
-            } else if (typeConfig.isValidReturnType(returnValue) === false) {
-                exception = new Error(ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE);
-                exception.name = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
-                throw exception;
-            }
-
-            var writer = typeFunctions[returnTypeName].writer;
-            writer(returnValuePointer, returnValue);
-        };
-
         var updateReturnValue = function (
             functionName,
             returnPointer,
@@ -323,27 +272,31 @@
             errorCodePointer,
             errorSourcePointer) {
             var returnValueIndex = 0;
+            var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
 
-            if (!isValidJavaScriptReturnType(returnValue)) {
-                var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
-                var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
-                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            if (returnTypeName === 'StaticTypeAndData') {
+                // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;
             }
 
-            var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
+            var typeConfig = typeFunctions[returnTypeName];
+
+            if (typeConfig === undefined) {
+                var source2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE;
+                var code2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code2, source2, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                return;
+            } else if (!typeConfig.isValidReturnType(returnValue)) {
+                var source3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE;
+                var code3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                return;
+            }
 
             var returnValuePointer = undefined;
-            if (returnTypeName !== 'StaticTypeAndData') { // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
-                returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
-            }
+            returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
 
-            try {
-                updateReturnValueGivenType(returnTypeName, returnValuePointer, returnValue);
-            } catch (e) {
-                var errorSource = e.message + '\'' + functionName + '\'.';
-                Module.coreHelpers.mergeErrors(true, e.name, errorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-            }
+            typeConfig.writer(returnValuePointer, returnValue);
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
