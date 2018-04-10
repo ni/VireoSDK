@@ -528,6 +528,12 @@ static void CleanUpEventRegRefNum(intptr_t arg) {
     UnregisterForEventsAux(refnum);
 }
 
+// Return an error message for a particular RegisterForEvents input
+static inline InstructionCore *ReturnRegForEventsError(const char *errorMessage, Int32 refInput) {
+    THREAD_EXEC()->LogEvent(EventLog::kHardDataError, errorMessage, refInput);
+    return THREAD_EXEC()->Stop();
+}
+
 VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
 {
     RefNumVal* eventRegRefnumPtr = _ParamPointer(regRef);
@@ -543,20 +549,18 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         return _NextInstruction();
 
     if (eventRegRefnumPtr->Type()->SubElementCount() != 1 || !eventRegRefnumPtr->Type()->GetSubElement(0)->IsCluster()) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: malformed ref ref type, doesn't contain cluster");
-        return THREAD_EXEC()->Stop();
+        return ReturnRegForEventsError("RegisterForEvents: malformed ref ref type, doesn't contain cluster", 0);
     }
     Int32 regCount = eventRegRefnumPtr->Type()->GetSubElement(0)->SubElementCount();
     if (numVarArgs % numArgsPerTuple != 0 || regCount != numTuples) {
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: Wrong number of arguments.  Should be one <event code, ref> input pair"
-                                " per item in the event reg refnum output type");
-        return THREAD_EXEC()->Stop();
+        return ReturnRegForEventsError("RegisterForEvents: Wrong number of arguments.  Should be one <event code, ref> input pair"
+                                " per item in the event reg refnum output type", 0);
     }
     RefNum erRefNum = eventRegRefnumPtr->GetRefNum();
     if (erRefNum && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(erRefNum, &regInfo) == kNIError_Success) {
         // TODO(spathiwa) implement re-registeration, sanity check count
-        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: re-registration not yet supported");
-        return THREAD_EXEC()->Stop();
+        // THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: re-registration not yet supported");
+        // return THREAD_EXEC()->Stop();
     } else if (erRefNum) {  // event reg. ref passed, but invalid
         if (errPtr && !errPtr->status)
             errPtr->SetError(true, kEventArgErr, "RegisterForEvents");
@@ -564,11 +568,19 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
 
     // Allocate a new Event Queue and associate it with the event reg. refnum
     EventQueueID qID = kNotAQueueID;
-    EventOracle::TheEventOracle().GetNewQueueObject(&qID, NULL);
-    regInfo = new DynamicEventRegInfo(qID, regCount);
-    erRefNum = EventRegistrationRefNumManager::RefNumStorage().NewRefNum(&regInfo);
-    eventRegRefnumPtr->SetRefNum(erRefNum);
-
+    bool isRereg = false;
+    if (regInfo) {
+        if (regInfo->_entry.size() != regCount) {
+            return ReturnRegForEventsError("RegisterForEvents: re-registration number of params doesn't match original registration (%d)",
+                                           regInfo->_entry.size());
+        }
+        isRereg = true;
+    } else {
+        EventOracle::TheEventOracle().GetNewQueueObject(&qID, NULL);
+        regInfo = new DynamicEventRegInfo(qID, regCount);
+        erRefNum = EventRegistrationRefNumManager::RefNumStorage().NewRefNum(&regInfo);
+        eventRegRefnumPtr->SetRefNum(erRefNum);
+    }
     // Set cleanup proc to unregister if VI doesn't do it explicitly
     VirtualInstrument* vi = THREAD_CLUMP()->TopVI();
     EventRegistrationRefNumManager::AddCleanupProc(vi, CleanUpEventRegRefNum, erRefNum);
@@ -577,24 +589,59 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     TypeRef regRefClusterType = eventRegRefnumPtr->Type()->GetSubElement(0);
     RegistertForEventArgs *arguments =  _ParamImmediate(argument1);
     for (Int32 refInput = 0; refInput < numTuples; ++refInput) {
-        EventType eventType = *arguments[refInput].eventType;
+        if (!arguments[refInput].ref._pData) {  // wildcard argument, for re-registration, skip argument and leave previous registration
+            if (isRereg)
+                continue;
+            return ReturnRegForEventsError("RegisterForEvents: wildcard only allowed for re-registration (element %d)", refInput);
+        }
+        EventType eventType = arguments[refInput].eventType ? *arguments[refInput].eventType : kEventTypeNull;
+        if (eventType == kEventTypeNull) {
+            if (isRereg) {
+                eventType = regInfo->_entry[refInput].eventType;
+            } else {
+                return ReturnRegForEventsError("RegisterForEvents: event type required (element %d)", refInput);
+            }
+        } else if (isRereg && eventType != regInfo->_entry[refInput].eventType) {
+            return ReturnRegForEventsError("RegisterForEvents: event type doesn't match orig registration (element %d)", refInput);
+        }
+        EventSource eSource = GetEventSourceForEventType(eventType);
         TypeRef refType = arguments[refInput].ref._paramType;
         TypeRef regType = regRefClusterType->GetSubElement(refInput);
         if (!regType->IsCluster() || regType->SubElementCount() != 2 || regType->GetSubElement(0)->BitEncoding() != kEncoding_S2CInt) {
-            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: Malformed event reg ref type (element %d)", refInput);
-            return THREAD_EXEC()->Stop();
+            return ReturnRegForEventsError("RegisterForEvents: Malformed event reg ref type (element %d)", refInput);
         }
         TypeRef regRefType = regType->GetSubElement(1);
+        void *pData = arguments[refInput].ref._pData;
         if (!refType->CompareType(regRefType)) {
-            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents: Input %d type doesn't match event reg ref element type", refInput);
-            return THREAD_EXEC()->Stop();
+            if (regRefType->BitEncoding() == kEncoding_RefNum && refType->BitEncoding() == kEncoding_S2CInt && refType->TopAQSize() == sizeof(Int32)) {
+                if (*(Int32*)pData == 0) {  // special case: constant 0 allowed, treated as not-a-refnum
+                    // TODO(spathiwa) - figure out what DFIR does/should generate for the generic not-a-refnum constant.
+                    // Should there be a special refnum type for this in Vireo?  For now, allow '0' in via.
+                    pData = null;
+                }
+            } else {
+                return ReturnRegForEventsError("RegisterForEvents: Input %d type doesn't match event reg ref element type", refInput);
+            }
         }
-        RefNumVal *refData = (RefNumVal*)arguments[refInput].ref._pData;
+
+        RefNumVal *refData = (RefNumVal*)pData;
         // TODO(spathiwa) for control events, make sure ref is valid and return error if not
 
-        EventSource eSource = GetEventSourceForEventType(eventType);
-        regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
-        EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
+        if (isRereg) {
+            DynamicEventRegEntry &regEntry =  regInfo->_entry[refInput];
+            if (refData && regEntry.refVal.GetRefNum() == refData->GetRefNum())
+                continue;  // refnum is same as last time, no reason to unreg and rereg.
+            EventOracle::TheEventOracle().UnregisterForEvent(qID, regEntry.eventSource, regEntry.eventType, 0,
+                                                             regEntry.refVal.GetRefNum());
+            if (refData)
+                regEntry.refVal = *refData;
+            else
+                regEntry.refVal.SetRefNum(0);
+        } else {
+            regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
+        }
+        if (refData && refData->GetRefNum())
+            EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
         // gPlatform.IO.Printf("RegisterForEvents event %d, ref 0x%x\n", eventType, refData->GetRefNum());
     }
     return _NextInstruction();
