@@ -219,7 +219,6 @@ unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
 VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
         const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
-    TypeManagerScope scope(tm);
     void *pData = null;
 
     SubString objectName(viName);
@@ -228,36 +227,11 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
     if (pathType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
 
-    if (!pathType->IsArray() || pathType->Rank() <= 0)
+    if (!pathType->IsArray())
         return kEggShellResult_UnexpectedObjectType;
 
-    if (arrayTypeName == null || arrayRank == null || arrayBegin == null)
-        return kEggShellResult_InvalidResultPointer;
-
-    static StringRef arrayTypeNameBuffer = null;
-    if (arrayTypeNameBuffer == null) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        arrayTypeNameBuffer = tempReturn.DetachValue();
-    } else {
-        arrayTypeNameBuffer->Resize1D(0);
-    }
-
-    if (arrayTypeNameBuffer == null) {
-        return kEggShellResult_UnableToCreateReturnBuffer;
-    }
-
-    SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
-    CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayTypeNameSubString);
-    *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
-
-    *arrayRank = pathType->Rank();
-
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    *arrayBegin = GetArrayBeginAt(actualArray);
-
-    return kEggShellResult_Success;
+	return Data_GetArrayMetadata(tm, actualArray, arrayTypeName, arrayRank, arrayBegin);
 }
 
 //------------------------------------------------------------
@@ -265,7 +239,17 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 //! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
 {
-    TypeManagerScope scope(tm);
+    /*void *pData = null;
+
+    SubString objectName(viName);
+    SubString path(eltName);
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (actualType == null || !actualType->IsArray())
+        return -1;
+
+    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+	return Data_GetArrayDimLength(tm, actualArray, dim);*/
+	TypeManagerScope scope(tm);
     void *pData = null;
 
     SubString objectName(viName);
@@ -320,7 +304,6 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
 {
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
-    void *pData = null;
 
     if (arrayTypeName == null || arrayRank == null || arrayBegin == null)
         return kEggShellResult_InvalidResultPointer;
