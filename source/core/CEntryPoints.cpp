@@ -239,7 +239,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 //! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
 {
-    /*void *pData = null;
+    void *pData = null;
 
     SubString objectName(viName);
     SubString path(eltName);
@@ -248,18 +248,7 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
         return -1;
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-	return Data_GetArrayDimLength(tm, actualArray, dim);*/
-	TypeManagerScope scope(tm);
-    void *pData = null;
-
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray() || dim >= actualType->Rank() || dim < 0)
-        return -1;
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return actualArray->GetLength(dim);
+	return Data_GetArrayDimLength(tm, actualArray, dim);
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
