@@ -186,42 +186,42 @@
                 isValidReturnType: isJavaScriptBoolean
             },
             ArrayInt8: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isInt8Array
             },
             ArrayInt16: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isInt16Array
             },
             ArrayInt32: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isInt32Array
             },
             ArrayUInt8: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isUInt8Array
             },
             ArrayUInt16: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isUInt16Array
             },
             ArrayUInt32: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isUInt32Array
             },
             ArraySingle: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isSingleArray
             },
             ArrayDouble: {
-                reader: Module.eggShell.dataReadTypedArray,
+                reader: Module.eggShell.dataReadNumericArrayAsTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
                 isValidReturnType: isDoubleArray
             }

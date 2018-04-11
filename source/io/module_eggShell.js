@@ -197,35 +197,35 @@
         var supportedArrayTypeConfig = {
             Int8: {
                 heap: Module.HEAP8,
-                constructor: Int8Array
+                constructorFunction: Int8Array
             },
             Int16: {
                 heap: Module.HEAP16,
-                constructor: Int16Array
+                constructorFunction: Int16Array
             },
             Int32: {
                 heap: Module.HEAP32,
-                constructor: Int32Array
+                constructorFunction: Int32Array
             },
             UInt8: {
                 heap: Module.HEAPU8,
-                constructor: Uint8Array
+                constructorFunction: Uint8Array
             },
             UInt16: {
                 heap: Module.HEAPU16,
-                constructor: Uint16Array
+                constructorFunction: Uint16Array
             },
             UInt32: {
                 heap: Module.HEAPU32,
-                constructor: Uint32Array
+                constructorFunction: Uint32Array
             },
             Single: {
                 heap: Module.HEAPF32,
-                constructor: Float32Array
+                constructorFunction: Float32Array
             },
             Double: {
                 heap: Module.HEAPF64,
-                constructor: Float64Array
+                constructorFunction: Float64Array
             }
         };
 
@@ -453,7 +453,7 @@
             return numericValue;
         };
 
-        Module.eggShell.dataReadTypedArray = function (arrayPointer) {
+        Module.eggShell.dataReadNumericArrayAsTypedArray = function (arrayPointer) {
             var eggShellResult = Data_GetArrayMetadata(v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {
@@ -468,8 +468,8 @@
 
             var rank = 0; // TypedArrays are always one dimension.
             var length = Data_GetArrayDimLength(v_userShell, arrayPointer, rank);
-            var constructor = supportedArrayTypeConfig[arrayTypeName].constructor;
-            return new constructor(heap.subarray(arrayBegin, arrayBegin + length));
+            var TypedArrayConstructor = supportedArrayTypeConfig[arrayTypeName].constructorFunction;
+            return new TypedArrayConstructor(heap.subarray(arrayBegin, arrayBegin + length));
         };
 
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
