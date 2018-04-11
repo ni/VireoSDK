@@ -231,7 +231,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
         return kEggShellResult_UnexpectedObjectType;
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-	return Data_GetArrayMetadata(tm, actualArray, arrayTypeName, arrayRank, arrayBegin);
+    return Data_GetArrayMetadata(tm, actualArray, arrayTypeName, arrayRank, arrayBegin);
 }
 
 //------------------------------------------------------------
@@ -248,7 +248,7 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
         return -1;
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-	return Data_GetArrayDimLength(tm, actualArray, dim);
+    return Data_GetArrayDimLength(tm, actualArray, dim);
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
@@ -265,7 +265,7 @@ VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, c
     }
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-	return Data_ResizeArray(tm, actualArray, rank, newLengths);
+    return Data_ResizeArray(tm, actualArray, rank, newLengths);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
@@ -428,7 +428,7 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 
 VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths)
 {
-	VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
 
     if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
