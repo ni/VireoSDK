@@ -94,46 +94,6 @@
             return typeof value === 'number';
         };
 
-        var isJavaScriptString = function (value) {
-            return typeof value === 'string';
-        };
-
-        var isJavaScriptBoolean = function (value) {
-            return typeof value === 'boolean';
-        };
-
-        var isInt8Array = function (value) {
-            return value instanceof Int8Array;
-        };
-
-        var isInt16Array = function (value) {
-            return value instanceof Int16Array;
-        };
-
-        var isInt32Array = function (value) {
-            return value instanceof Int32Array;
-        };
-
-        var isUInt8Array = function (value) {
-            return value instanceof Uint8Array;
-        };
-
-        var isUInt16Array = function (value) {
-            return value instanceof Uint16Array;
-        };
-
-        var isUInt32Array = function (value) {
-            return value instanceof Uint32Array;
-        };
-
-        var isSingleArray = function (value) {
-            return value instanceof Float32Array;
-        };
-
-        var isDoubleArray = function (value) {
-            return value instanceof Float64Array;
-        };
-
         var typeFunctions = {
             Int8: {
                 reader: Module.eggShell.dataReadInt8,
@@ -178,52 +138,72 @@
             String: {
                 reader: Module.eggShell.dataReadString,
                 writer: Module.eggShell.dataWriteString,
-                isValidReturnType: isJavaScriptString
+                isValidReturnType: function (value) {
+                    return typeof value === 'string';
+                }
             },
             Boolean: {
                 reader: Module.eggShell.dataReadBoolean,
                 writer: Module.eggShell.dataWriteBoolean,
-                isValidReturnType: isJavaScriptBoolean
+                isValidReturnType: function (value) {
+                    return typeof value === 'boolean';
+                }
             },
             ArrayInt8: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isInt8Array
+                isValidReturnType: function (value) {
+                    return value instanceof Int8Array;
+                }
             },
             ArrayInt16: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isInt16Array
+                isValidReturnType: function (value) {
+                    return value instanceof Int16Array;
+                }
             },
             ArrayInt32: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isInt32Array
+                isValidReturnType: function (value) {
+                    return value instanceof Int32Array;
+                }
             },
             ArrayUInt8: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isUInt8Array
+                isValidReturnType: function (value) {
+                    return value instanceof Uint8Array;
+                }
             },
             ArrayUInt16: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isUInt16Array
+                isValidReturnType: function (value) {
+                    return value instanceof Uint16Array;
+                }
             },
             ArrayUInt32: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isUInt32Array
+                isValidReturnType: function (value) {
+                    return value instanceof Uint32Array;
+                }
             },
             ArraySingle: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isSingleArray
+                isValidReturnType: function (value) {
+                    return value instanceof Float32Array;
+                }
             },
             ArrayDouble: {
                 reader: Module.eggShell.dataReadTypedArray,
                 writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: isDoubleArray
+                isValidReturnType: function (value) {
+                    return value instanceof Float64Array;
+                }
             }
         };
 
