@@ -139,7 +139,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
-    'cwrap', \
+	'cwrap', \
 	'lengthBytesUTF8', \
 	'stackAlloc', \
 	'stackSave', \
