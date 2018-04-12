@@ -98,35 +98,35 @@ describe('A JavaScript function invoke', function () {
         };
 
         window.NI_Int8ArrayFunction = function () {
-            return Int8Array.from([1, 2, 3]);
+            return Int8Array.from([-128, 0, 127]);
         };
 
         window.NI_Int16ArrayFunction = function () {
-            return Int16Array.from([1, 2, 3]);
+            return Int16Array.from([-32768, 0, 32767]);
         };
 
         window.NI_Int32ArrayFunction = function () {
-            return Int32Array.from([1, 2, 3]);
+            return Int32Array.from([-2147483648, 0, 2147483647]);
         };
 
         window.NI_UInt8ArrayFunction = function () {
-            return Uint8Array.from([1, 2, 3]);
+            return Uint8Array.from([0, 1, 255]);
         };
 
         window.NI_UInt16ArrayFunction = function () {
-            return Uint16Array.from([1, 2, 3]);
+            return Uint16Array.from([0, 1, 65535]);
         };
 
         window.NI_UInt32ArrayFunction = function () {
-            return Uint32Array.from([1, 2, 3]);
+            return Uint32Array.from([0, 1, 4294967295]);
         };
 
         window.NI_SingleArrayFunction = function () {
-            return Float32Array.from([1, 2, 3]);
+            return Float32Array.from([-1.0, 0.0, 1.0]);
         };
 
         window.NI_DoubleArrayFunction = function () {
-            return Float64Array.from([1, 2, 3]);
+            return Float64Array.from([-1.0, 0.0, 1.0]);
         };
 
         window.NI_ReturnObject = function () {
@@ -291,14 +291,14 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('returnSingle')).toBe(3.0);
             expect(viPathParser('returnDouble')).toBe(6.0);
             expect(viPathParser('returnString')).toBe('National Instruments');
-            expect(viPathParser('returnInt8Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnInt16Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnInt32Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnUInt16Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnUInt32Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnUInt8Array')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnSingleArray')).toEqual([1, 2, 3]);
-            expect(viPathParser('returnDoubleArray')).toEqual([1, 2, 3]);
+            expect(viPathParser('returnInt8Array')).toEqual([-128, 0, 127]);
+            expect(viPathParser('returnInt16Array')).toEqual([-32768, 0, 32767]);
+            expect(viPathParser('returnInt32Array')).toEqual([-2147483648, 0, 2147483647]);
+            expect(viPathParser('returnUInt8Array')).toEqual([0, 1, 255]);
+            expect(viPathParser('returnUInt16Array')).toEqual([0, 1, 65535]);
+            expect(viPathParser('returnUInt32Array')).toEqual([0, 1, 4294967295]);
+            expect(viPathParser('returnSingleArray')).toEqual([-1.0, 0.0, 1.0]);
+            expect(viPathParser('returnDoubleArray')).toEqual([-1.0, 0.0, 1.0]);
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();
