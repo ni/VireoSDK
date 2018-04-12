@@ -35,7 +35,6 @@
             'EggShell_ReadDouble',
             'EggShell_WriteDouble',
             'EggShell_WriteValueString',
-            'EggShell_GetArrayMetadata',
             'EggShell_GetArrayPointer',
             'EggShell_GetArrayDimLength',
             'EggShell_ResizeArray',
@@ -82,7 +81,6 @@
         var EggShell_ReadDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', 'string', 'string']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
-        var EggShell_GetArrayMetadata = Module.cwrap('EggShell_GetArrayMetadata', 'number', ['number', 'string', 'string', 'number', 'number', 'number', 'number']);
         var EggShell_GetArrayPointer = Module.cwrap('EggShell_GetArrayPointer', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);

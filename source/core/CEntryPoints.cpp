@@ -214,27 +214,6 @@ unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
     }
 }
 //------------------------------------------------------------
-//! Get information about an Array such as the type of its subtype, the array rank,
-//! and the memory location of the first element (or null if there are zero elements)
-VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
-        const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
-{
-    SubString objectName(viName);
-    SubString path(eltName);
-    void *pData = null;
-
-    TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (pathType == null)
-        return kEggShellResult_ObjectNotFoundAtPath;
-
-    if (!pathType->IsArray())
-        return kEggShellResult_UnexpectedObjectType;
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return Data_GetArrayMetadata(tm, actualArray, arrayTypeName, arrayRank, arrayBegin);
-}
-
-//------------------------------------------------------------
 //! Get the Vireo array pointer given a path.
 VIREO_EXPORT EggShellResult EggShell_GetArrayPointer(TypeManagerRef tm,
         const char* viName, const char* eltName, void** arrayPointer)
