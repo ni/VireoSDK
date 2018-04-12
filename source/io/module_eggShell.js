@@ -553,6 +553,8 @@
 
             var returnArray = heap.subarray(arrayBegin, arrayBegin + value.length);
             returnArray.set(value);
+
+            Module._free(newLengths);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
