@@ -226,7 +226,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayPointer(TypeManagerRef tm,
     if (pathType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
 
-    if (!pathType->IsArray())
+    if (!pathType->IsArray() || pathType->Rank() <= 0)
         return kEggShellResult_UnexpectedObjectType;
 
     *arrayPointer = *(TypedArrayCoreRef*)pData;
