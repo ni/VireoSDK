@@ -235,6 +235,27 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
 }
 
 //------------------------------------------------------------
+//! Get the Vireo array pointer given a path.
+VIREO_EXPORT EggShellResult EggShell_GetArrayPointer(TypeManagerRef tm,
+        const char* viName, const char* eltName, void** arrayPointer)
+{
+    SubString objectName(viName);
+    SubString path(eltName);
+    void *pData = null;
+
+    TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (pathType == null)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    if (!pathType->IsArray())
+        return kEggShellResult_UnexpectedObjectType;
+
+    *arrayPointer = *(TypedArrayCoreRef*)pData;
+
+	return kEggShellResult_Success;
+}
+
+//------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
 //! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
