@@ -73,7 +73,8 @@
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
             'JavaScriptInvoke_GetParameterPointer',
-            'JavaScriptInvoke_GetParameterType'
+            'JavaScriptInvoke_GetParameterType',
+            'JavaScriptInvoke_GetArrayElementType'
         ]}], */
 
         Module.javaScriptInvoke = {};
@@ -82,9 +83,17 @@
         // Private Instance Variables (per vireo instance)
         var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
+        var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
 
         var getParameterTypeString = function (parametersPointer, index) {
             var typeNamePointer = JavaScriptInvoke_GetParameterType(parametersPointer, index);
+            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, typeNamePointer);
+            var typeName = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, typeNamePointer, responseLength);
+            return typeName;
+        };
+
+        var getArrayElementTypeString = function (arrayPointer) {
+            var typeNamePointer = JavaScriptInvoke_GetArrayElementType(arrayPointer);
             var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, typeNamePointer);
             var typeName = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, typeNamePointer, responseLength);
             return typeName;
@@ -212,6 +221,10 @@
             for (var index = 0; index < parametersCount; index += 1) {
                 var typeName = getParameterTypeString(parametersPointer, index);
                 var parameterPointer = JavaScriptInvoke_GetParameterPointer(parametersPointer, index);
+                if (typeName === 'Array') {
+                    typeName += getArrayElementTypeString(parameterPointer);
+                }
+
                 var parameterValue = undefined;
                 var readFunction = typeFunctions[typeName].reader;
                 if (readFunction === undefined) {
@@ -259,6 +272,11 @@
                 return;
             }
 
+            var returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
+            if (returnTypeName === 'Array') {
+                returnTypeName += getArrayElementTypeString(returnValuePointer);
+            }
+
             var typeConfig = typeFunctions[returnTypeName];
 
             if (typeConfig === undefined) {
@@ -272,9 +290,6 @@
                 Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
-
-            var returnValuePointer = undefined;
-            returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
 
             typeConfig.writer(returnValuePointer, returnValue);
         };

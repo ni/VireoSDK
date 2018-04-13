@@ -138,7 +138,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_GetArrayDimLength',\
     '_Data_ResizeArray',\
     '_JavaScriptInvoke_GetParameterType',\
-    '_JavaScriptInvoke_GetParameterPointer'\
+    '_JavaScriptInvoke_GetParameterPointer',\
+    '_JavaScriptInvoke_GetArrayElementType'\
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
