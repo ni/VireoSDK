@@ -257,6 +257,32 @@
             return functionToCall;
         };
 
+        var isTypedArray = function (
+            value) {
+            if (value instanceof Int8Array ||
+                value instanceof Int16Array ||
+                value instanceof Int32Array ||
+                value instanceof Uint8Array ||
+                value instanceof Uint16Array ||
+                value instanceof Uint32Array ||
+                value instanceof Float32Array ||
+                value instanceof Float64Array) {
+                return true;
+            }
+
+            return false;
+        };
+
+        var isValidJavaScriptReturnType = function (
+            returnValue) {
+            var returnTypeName = typeof returnValue;
+            return (returnTypeName === 'number') ||
+            (returnTypeName === 'boolean') ||
+            (returnTypeName === 'string') ||
+            (returnTypeName === 'undefined') ||
+            (isTypedArray(returnValue));
+        };
+
         var updateReturnValue = function (
             functionName,
             returnPointer,
@@ -264,6 +290,13 @@
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
+            if (!isValidJavaScriptReturnType(returnValue)) {
+                var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
+                var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
+                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                return;
+            }
+
             var returnValueIndex = 0;
             var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
 

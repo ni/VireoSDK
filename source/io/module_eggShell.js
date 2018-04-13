@@ -539,8 +539,9 @@
             Module.setValue(newLengths, value.length, 'i32');
 
             Data_ResizeArray(v_userShell, destination, rank, newLengths);
-            var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
             Module._free(newLengths);
+
+            var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -554,7 +555,6 @@
 
             var returnArray = heap.subarray(arrayBegin, arrayBegin + value.length);
             returnArray.set(value);
-
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
