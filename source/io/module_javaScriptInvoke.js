@@ -284,28 +284,25 @@
         };
 
         var updateReturnValue = function (
-            functionName,
-            returnPointer,
-            returnValue,
-            errorStatusPointer,
-            errorCodePointer,
-            errorSourcePointer) {
-            if (!isValidJavaScriptReturnType(returnValue)) {
+        functionName,
+        returnTypeName,
+        returnValuePointer,
+        returnUserValue,
+        errorStatusPointer,
+        errorCodePointer,
+        errorSourcePointer) {
+            if (!isValidJavaScriptReturnType(returnUserValue)) {
                 var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
                 var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
-            var returnValueIndex = 0;
-            var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
-
             if (returnTypeName === 'StaticTypeAndData') {
                 // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;
             }
 
-            var returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
             if (returnTypeName === 'Array') {
                 returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
@@ -327,8 +324,27 @@
             typeConfig.writer(returnValuePointer, returnValue);
         };
 
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+            var completionCallbackInvoked = false;
+            return function (returnValue) {
+                if (completionCallbackInvoked === true) {
+                    throw new Error('The completion callback was invoked more than once.');
+                }
+                if (!(returnValue instanceof Error)) {
+                    updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                } else {
+                    var newErrorStatus = true;
+                    var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                    var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.', returnValue);
+                    Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                }
+                completionCallbackInvoked = true;
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+            };
+        };
+
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
-            occurencePointer,
+            occurrencePointer,
             functionNamePointer,
             returnPointer,
             parametersPointer,
@@ -350,6 +366,7 @@
                 newErrorCode = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
                 return;
             }
 
@@ -359,11 +376,33 @@
                 newErrorCode = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
                 newErrorSource = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
                 return;
             }
 
-            var context = undefined;
+            var returnTypeName = getParameterTypeString(returnPointer, 0);
+            var returnValuePointer = undefined;
+            if (returnTypeName !== 'StaticTypeAndData') { // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
+                returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
+            }
+
+            var asyncFlag = false;
+            var generateContext = function () {
+                var completionCallbackRetrieved = false;
+                var context = {};
+                context.getCompletionCallback = function () {
+                    if (completionCallbackRetrieved === true) {
+                        throw new Error('The completion callback was retrieved more than once.');
+                    }
+                    asyncFlag = true;
+                    completionCallbackRetrieved = true;
+                    return generateCompletionCallback(occurrencePointer, functionNameString, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                };
+                return context;
+            };
+
             var returnValue = undefined;
+            var context = generateContext();
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
@@ -371,18 +410,14 @@
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
                 return;
             }
 
-            try {
-                updateReturnValue(functionName, returnPointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
-            } catch (ex) {
-                newErrorStatus = true;
-                newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            if (!asyncFlag) {
+                updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
             }
-
             return;
         };
     };

@@ -16,6 +16,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 #include <stdio.h>
+#include "VirtualInstrument.h"
 
 #if defined(VIREO_TYPE_JavaScriptInvoke)
 namespace Vireo {
@@ -120,26 +121,39 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
 #if kVireoOS_emscripten
-    StringRef functionName = _Param(functionName);
-    Boolean errorCheckingEnabled = _Param(errorCheckingEnabled);
-    const Int32 configurationParameters = 4;  // occurence, errorCheckingEnabled, errorCluster and functionName
-    const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
-    Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
-    StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
-    StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
+    OccurrenceCore *pOcc = _Param(occurrence)->ObjBegin();
+    VIClump* clump = THREAD_CLUMP();
+    Observer* pObserver = clump->GetObservationStates(2);
+    if (!pObserver) {
+        StringRef functionName = _Param(functionName);
+        Boolean errorCheckingEnabled = _Param(errorCheckingEnabled);
+        const Int32 configurationParameters = 4;  // occurence, errorCheckingEnabled, errorCluster and functionName
+        const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
+        Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
+        StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
+        StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
 
-    if (!errorClusterPtr->status) {
-        jsJavaScriptInvoke(
-            _Param(occurrence),
-            functionName,
-            returnValuePtr,
-            parametersPtr,
-            userParametersCount,
-            errorCheckingEnabled,
-            &errorClusterPtr->status,
-            &errorClusterPtr->code,
-            errorClusterPtr->source);
-        AddCallChainToSourceIfErrorPresent(errorClusterPtr, "JavaScriptInvoke");
+        if (!errorClusterPtr->status) {
+            jsJavaScriptInvoke(
+                _Param(occurrence),
+                functionName,
+                returnValuePtr,
+                parametersPtr,
+                userParametersCount,
+                errorCheckingEnabled,
+                &errorClusterPtr->status,
+                &errorClusterPtr->code,
+                errorClusterPtr->source);
+            AddCallChainToSourceIfErrorPresent(errorClusterPtr, "JavaScriptInvoke");
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
+            return  clump->WaitOnObservableObject(_this);
+        }
+    } else {
+        // re-entering the instruction and the operation is done or it timed out.
+        // the clump should continue.
+        clump->ClearObservationStates();
+        return _NextInstruction();
     }
 #else
     GenerateNotSupportedOnPlatformError(errorClusterPtr, "JavaScriptInvoke");
