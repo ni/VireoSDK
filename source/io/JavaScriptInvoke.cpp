@@ -65,8 +65,7 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
 VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef arrayObject)
 {
     StringRef returnBuffer = AllocateReturnBuffer();
-    if (returnBuffer) 
-    {
+    if (returnBuffer) {
         SubString elementTypeName = arrayObject->ElementType()->Name();
         returnBuffer->Append(elementTypeName.Length(), (Utf8Char*)elementTypeName.Begin());
 

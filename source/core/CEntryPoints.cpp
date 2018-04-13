@@ -231,7 +231,7 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayPointer(TypeManagerRef tm,
 
     *arrayPointer = *(TypedArrayCoreRef*)pData;
 
-	return kEggShellResult_Success;
+    return kEggShellResult_Success;
 }
 
 //------------------------------------------------------------
