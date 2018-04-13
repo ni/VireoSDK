@@ -57,8 +57,8 @@ void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr me
 {
     if (errorCluster && errorCluster->status) {
         STACK_VAR(String, currentErrorString);
-		StringRef s = currentErrorString.Value;
-		s->Append(errorCluster->source);
+        StringRef s = currentErrorString.Value;
+        s->Append(errorCluster->source);
         errorCluster->source->Resize1D(0);
         errorCluster->source->AppendCStr(methodName);
         errorCluster->source->AppendCStr(" in ");
