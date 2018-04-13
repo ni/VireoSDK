@@ -59,6 +59,16 @@
                 "QueueInvalidRefnum.via"
             ]
         },
+        "events": {
+            "tests": [
+                "UserEventsBasic.via",
+                "UserEventsMultiple.via",
+                "UserEventsMultUEMultES.via",
+                "UserEventsRegClust.via",
+                "UserEventsReregister.via",
+                "UserEventsThroughput.via"
+            ]
+        },
         "manual": {
             "tests": [
                 "StringFormatTime.via",
@@ -66,7 +76,7 @@
             ]
         },
         "common": {
-            "include": ["queue"],
+            "include": ["queue", "events"],
             "tests": [
                 "2HelloWorlds.via",
                 "AllocatedDataValues.via",
@@ -360,11 +370,6 @@
                 "UnflattenStrictValidation.via",
                 "UnOpFunctions.via",
                 "UsageType.via",
-                "UserEventsBasic.via",
-                "UserEventsMultiple.via",
-                "UserEventsMultUEMultES.via",
-                "UserEventsReregister.via",
-                "UserEventsThroughput.via",
                 "UserTypes.via",
                 "UTF-8CodePoints.via",
                 "UTF-8HelloWorld.via",
