@@ -69,21 +69,27 @@ struct EventCommonData {
     EventSource eventSource;  // Event source and type are used internally but not visible in Event structure in NXG
     EventType eventType;
     UInt32 eventTime;
-    UInt32 eventIndex;  //  placeholder -- computed by WaitForEvent per event case, not set in actual event data
+    UInt32 eventSeqIndex;  // This field is a monotonically increasing event sequence number in actual generated events,
+                           // but a placeholder for the computed eventIndex event data node field on the diagram (computed by WaitForEvent per event case)
     RefNumVal eventRef;
 
     void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
-    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventIndex(0) {
+    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
         InitEventTime();
     }
-    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventIndex(0), eventRef(ref) {
+    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventSeqIndex(0), eventRef(ref) {
         InitEventTime();
     }
 };
 
+// Compare two event time stamps or sequence numbers, allowing for wrapping
+inline Int32 EventTimeSeqCompare(UInt32 t1, UInt32 t2) {
+    return Int32(t1 - t2);
+}
+
 inline UInt32 *EventIndexFieldPtr(void *rawEventDataPtr) {
     EventCommonData *eventDataPtr = (EventCommonData*)rawEventDataPtr;
-    return &eventDataPtr->eventIndex;
+    return &eventDataPtr->eventSeqIndex;
 }
 
 struct EventData {
@@ -102,7 +108,7 @@ struct EventData {
     EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) {
         common.eventSource = source;
         common.eventType = type;
-        common.eventIndex = 0;
+        common.eventSeqIndex = 0;
         common.InitEventTime();
         common.eventRef = ref;
         controlUID = kNotAnEventControlUID;
@@ -116,6 +122,8 @@ struct EventData {
             THREAD_TADM()->Free(pEventData);
         }
     }
+    static UInt32 GetNextEventSequenceNumber() { return ++_s_eventSequenceNumber; }
+    static UInt32 _s_eventSequenceNumber;
 };
 
 void RegisterForStaticEvents(VirtualInstrument *vi);
