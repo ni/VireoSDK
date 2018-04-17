@@ -214,22 +214,27 @@ unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
     }
 }
 //------------------------------------------------------------
-//! Get the Vireo array pointer given a path.
-VIREO_EXPORT EggShellResult EggShell_GetArrayPointer(TypeManagerRef tm,
-        const char* viName, const char* eltName, void** arrayPointer)
+//! Get the Vireo pointer given a path.
+VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm, const char* viName, const char* elementName, void** dataPointer, void** typePointer)
 {
     SubString objectName(viName);
-    SubString path(eltName);
+    SubString path(elementName);
     void *pData = null;
 
-    TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (pathType == null)
+    TypeRef objectType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (objectType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
 
-    if (!pathType->IsArray() || pathType->Rank() <= 0)
-        return kEggShellResult_UnexpectedObjectType;
+    if (objectType->IsString()) {
+        // We a have pointer to a StringRef, we just need the StringRef.
+        // So we can use functions that already work with StringRef on the JavaScript side.
+        pData = *(StringRef*)pData;
+    } else if (objectType->IsArray()) {
+        pData = *(TypedArrayCoreRef*)pData;
+    }
 
-    *arrayPointer = *(TypedArrayCoreRef*)pData;
+    *dataPointer = pData;
+    *typePointer = objectType;
 
     return kEggShellResult_Success;
 }
@@ -278,6 +283,15 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));
     return stringObject->Length();
+}
+//------------------------------------------------------------
+// Verify that a type is an array.
+VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef)
+{
+    if (!typeRef->IsArray() || typeRef->Rank() <= 0)
+        return kEggShellResult_UnexpectedObjectType;
+
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank,

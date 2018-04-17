@@ -35,9 +35,10 @@
             'EggShell_ReadDouble',
             'EggShell_WriteDouble',
             'EggShell_WriteValueString',
-            'EggShell_GetArrayPointer',
+            'EggShell_GetPointer',
             'EggShell_GetArrayDimLength',
             'EggShell_ResizeArray',
+            'Data_ValidateArrayType',
             'Data_GetStringBegin',
             'Data_GetStringLength',
             'Data_ReadBoolean',
@@ -81,9 +82,10 @@
         var EggShell_ReadDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', 'string', 'string']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
-        var EggShell_GetArrayPointer = Module.cwrap('EggShell_GetArrayPointer', 'number', ['number', 'string', 'string', 'number']);
+        var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
+        var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
@@ -316,10 +318,11 @@
         var arrayTypeNameDoublePointer = Module._malloc(4);
         var arrayBeginPointer = Module._malloc(4);
         var arrayRankPointer = Module._malloc(4);
-        var arrayVireoVoidPointer = Module._malloc(4);
+        var vireoObjectPointer = Module._malloc(4);
+        var vireoTypePointer = Module._malloc(4);
 
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
-            var eggShellResult = EggShell_GetArrayPointer(v_userShell, vi, path, arrayVireoVoidPointer);
+            var eggShellResult = EggShell_GetPointer(v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -328,7 +331,16 @@
                     ' (path: ' + path + ')');
             }
 
-            var arrayVireoPointer = Module.getValue(arrayVireoVoidPointer, 'i32');
+            var arrayVireoPointer = Module.getValue(vireoObjectPointer, 'i32');
+            var typePointer = Module.getValue(vireoTypePointer, 'i32');
+            eggShellResult = Data_ValidateArrayType(v_userShell, typePointer);
+
+            if (eggShellResult !== 0) {
+                throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (vi name: ' + vi + ')' +
+                    ' (path: ' + path + ')');
+            }
 
             var arrayInfo = Module.eggShell.dataReadNumericArrayAsTypedArray(arrayVireoPointer);
 
