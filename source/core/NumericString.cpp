@@ -1981,6 +1981,8 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
                 if (format->Length() == 0) {
                     bValid = false;
                 }
+            } else if (format->PeekRawChar(&c) && c == ';') {
+                // We are trying to set the separator as a dot, but on web this is always the case. Skip it.
             } else {
                 bValid = false;
             }
