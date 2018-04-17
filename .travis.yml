@@ -1,5 +1,8 @@
 dist: trusty
 sudo: false
+branches:
+  except:
+    - gh-pages
 addons:
   firefox: latest
   apt:
@@ -69,6 +72,7 @@ deploy:
       repo: ni/VireoSDK
   - provider: pages
     skip_cleanup: true
+    keep-history: true
     local_dir: gh-pages/
     email: vireobot@users.noreply.github.com
     name: Vireo Bot
