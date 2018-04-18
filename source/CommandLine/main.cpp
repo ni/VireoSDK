@@ -115,7 +115,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 void Vireo::RunExec() {
     TypeManagerRef tm = gShells._pUserShell;
     TypeManagerScope scope(tm);
-    Int32 state = tm->TheExecutionContext()->ExecuteSlices(400, 10000000);
+    Int32 state = tm->TheExecutionContext()->ExecuteSlices(10000, 4);
     Int32 delay = state > 0 ? state : 0;
     gShells._keepRunning = (state != kExecSlices_ClumpsFinished);
     if (delay)

@@ -24,7 +24,7 @@ testhttpbin:
 	cd test-it && node test.js -j -t httpbin --dots
 
 testjs:
-	cd test-it && node test.js -j --dots
+	cd test-it && node test.js -j 
 
 testnative:
 	cd test-it && node test.js -n --dots
