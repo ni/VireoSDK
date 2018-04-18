@@ -517,7 +517,7 @@
         // A good starting point for most vireo uses but can be copied and modified as needed
         // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
-            var SLICE_SETS_PER_TIME_CHECK = 100000;
+            var SLICE_SETS_PER_TIME_CHECK = 10000;
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
             var timerToken;
             var origExecuteSlicesWakeUpCallback = Module.eggShell.executeSlicesWakeUpCallback;
