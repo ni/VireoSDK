@@ -231,14 +231,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsDefineTypeToken       "define"
 #define tsEnqueueTypeToken      "enqueue"
 #define tsElementToken          "e"   // used for Cluster, BitCluster, and array aggregate types for simple elements
+#define tsConstElementToken     "ce"  // used for Cluster elements in Locals: section to indicate immutable value
 #define tsAliasToken            "al"  // alias to another element.
 #define tsInputParamToken       "i"   // input parameter
 #define tsOutputParamToken      "o"   // output parameter
 #define tsInputOutputParamToken "io"  // input-output parameter
-#define tsImmediateParamToken   "im"  // Immediate mode (not byref), only in paramblocks. size must be <= size_t
 #define tsStaticParamToken      "s"   // static not explicitly passed, allocated in param block and preserved between
 #define tsTempParamToken        "t"   // temp param, not passed, allocated in param block and can be thrown away
-#define tsVolatileToken         "x"   // volatile parameter, not explicitly passed or allocated in the param block
 #define tsEquivalenceTypeToken  "eq"  // for alternate views on the same set of bits.
 #define tsNamedTypeToken        "."
 
