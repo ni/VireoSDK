@@ -1133,6 +1133,65 @@ DecodedSubString::DecodedSubString(const SubString &s, bool decode, bool alwaysA
     Init(s, decode, alwaysAlloc);
 }
 
+const char* HEX_VALUES = "0123456789ABCDEF";
+
+void EncodedSubString::Init(const SubString &s, bool encode, bool alwaysAlloc) {
+    const Utf8Char *cp = s.Begin();
+    IntIndex len = s.Length();
+    if (_encodedStr && _encodedStr != _buffer)
+        delete[] _encodedStr;
+    if (encode) {
+        while (cp != s.End()) {
+            if (cp == s.Begin() && !SubString::IsLetterChar(*cp)) {
+                len += 2;
+                 ++cp;
+                continue;
+            }
+            if (NeedsEncoding(*cp))
+                len += 2;
+            ++cp;
+        }
+    }
+    if (alwaysAlloc || len >= kMaxInlineEncodedSize)
+        _encodedStr = new Utf8Char[len+1];
+    else
+        _encodedStr = _buffer;
+    if (encode) {
+        SubString ss = s;
+        Utf8Char c;
+        Int32 value;
+        Utf8Char *pDest = _encodedStr;
+
+        if (ss.ReadRawChar(&c)) {
+            if (SubString::IsLetterChar(c)) {
+                *pDest++ = c;
+            } else {
+                *pDest++ = '%';
+                *pDest++ = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
+                *pDest++ = (Utf8Char)(HEX_VALUES[0xF & c]);
+            }
+        }
+
+        while (ss.ReadRawChar(&c)) {
+            if (NeedsEncoding(c)) {
+                *pDest++ = '%';
+                *pDest++ = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
+                *pDest++ = (Utf8Char)(HEX_VALUES[0xF & c]);
+            }
+            else {
+                *pDest++ = c;
+            }
+        }
+    } else {
+        memcpy(_encodedStr, s.Begin(), len);
+    }
+    _encodedStr[len] = 0;
+}
+
+EncodedSubString::EncodedSubString(const SubString &s, bool encode, bool alwaysAlloc) : _encodedStr(null) {
+    Init(s, encode, alwaysAlloc);
+}
+
 #if 0
 //------------------------------------------------------------
 //! A tool for debugging UTF8 encodings

@@ -214,6 +214,9 @@ class SubString : public SubVector<Utf8Char>
     static Boolean IsPunctuationChar(Utf8Char c) {
         return  ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Punctuation);
     }
+    static Boolean IsLetterChar(Utf8Char c) {
+        return ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Letter);
+    }
     static Int32   CharLength(const Utf8Char* begin);
     static Int32   DigitValue(Utf32Char codepoint, Int32 base);
 
@@ -422,6 +425,41 @@ class DecodedSubString {
 
     Utf8Char _buffer[kMaxInlineDecodedSize];
     Utf8Char *_decodedStr;
+};
+
+//------------------------------------------------------------
+//! A class for making temporary %-code encoded SubStrings
+class EncodedSubString {
+    public:
+        EncodedSubString() : _encodedStr(null) { }
+        explicit EncodedSubString(const SubString &s, bool encode = true, bool alwaysAlloc = false);
+
+        void Init(const SubString &s, bool encode, bool alwaysAlloc = false);
+        SubString GetSubString() {
+            SubString s;
+            s.AliasAssignLen(_encodedStr, IntIndex(strlen(ConstCStr(_encodedStr))));
+            return s;
+        }
+        Boolean NeedsEncoding(Utf8Char c) {
+            return !SubString::IsNumberChar(c) && !SubString::IsLetterChar(c) && (c != '+' || c != '*' || c != '_' || c != '-' || c != '$');
+        }
+        Utf8Char *DetachValue() {
+            if (_encodedStr != _buffer) {
+                Utf8Char *ret = _encodedStr;
+                _encodedStr = null;
+                return ret;
+            }
+            return null;
+        }
+        ~EncodedSubString() {
+            if (_encodedStr && _encodedStr != _buffer)
+                delete[] _encodedStr;
+        }
+    private:
+        enum { kMaxInlineEncodedSize = 1024 } ;
+
+        Utf8Char _buffer[kMaxInlineEncodedSize];
+        Utf8Char *_encodedStr;
 };
 
 }  // namespace Vireo
