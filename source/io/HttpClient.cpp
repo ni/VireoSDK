@@ -56,12 +56,14 @@ extern "C" {
 void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName)
 {
     if (errorCluster && errorCluster->status) {
-        TempStackCStringFromString currentErrorString(errorCluster->source);
+        STACK_VAR(String, currentErrorString);
+        StringRef s = currentErrorString.Value;
+        s->Append(errorCluster->source);
         errorCluster->source->Resize1D(0);
         errorCluster->source->AppendCStr(methodName);
         errorCluster->source->AppendCStr(" in ");
         AppendCallChainString(errorCluster->source);
-        errorCluster->source->AppendCStr(currentErrorString.BeginCStr());
+        errorCluster->source->Append(s);
     }
 }
 

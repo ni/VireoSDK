@@ -139,6 +139,8 @@ describe('Performing a GET request #FailsIE', function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect([WEBVI_TIMEOUT, WEBVI_NETWORK_ERROR, kNIHttpResultInternalUndefinedError]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/HttpClientGet in MyVI/);
+            expect(viPathParser('error.source').length).toBeGreaterThan(255);
+            expect(viPathParser('error.source')).toContain('Due to browser security restrictions');
             done();
         });
     });
