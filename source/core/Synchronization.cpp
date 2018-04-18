@@ -83,6 +83,10 @@ void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
             *ppPrevious = pNext;
             pObserver->_next = null;
             pObserver->_clump->EnqueueRunQueue();
+            // Every Observable that can trigger state changes has an associated timer owned by the clump.
+            // Cancel it so it doesn't race with this and possibly Enqueue the clump a second time.
+            VIREO_ASSERT((pObserver->_clump->_observationCount == 2 && pObserver == &pObserver->_clump->_observationStates[1]))
+            pObserver->_clump->TheExecutionContext()->_timer.RemoveObserver(&pObserver->_clump->_observationStates[0]);
             if (!wakeAll)
                 break;  // only enqueue first one found
         } else {

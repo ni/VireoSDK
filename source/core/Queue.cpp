@@ -35,6 +35,7 @@ void VIClumpQueue::Enqueue(VIClump* elt)
     } else {
         // Its not empty, add to tail
         VIREO_ASSERT((null == (this->_tail)->_next))
+        VIREO_ASSERT((elt != this->_tail && elt != this->_head))
         this->_tail->_next = elt;
         // not needed elt->_next = null;
         this->_tail = elt;
