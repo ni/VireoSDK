@@ -59,7 +59,7 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
         return (const char*)returnBuffer->Begin();
     }
 
-    return "";
+    return null;
 }
 
 VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef arrayObject)
@@ -74,7 +74,7 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef 
         return (const char*)returnBuffer->Begin();
     }
 
-    return "";
+    return null;
 }
 
 //------------------------------------------------------------
@@ -89,6 +89,8 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
         pData = *(StringRef*)pData;
     } else if (parameterType->IsArray()) {
         pData = *(TypedArrayCoreRef*)pData;
+    } else if (!(parameterType->IsNumeric() || parameterType->IsString() || parameterType->IsFloat() || parameterType->IsBoolean())) {
+        return null;
     }
 
     return pData;

@@ -225,12 +225,11 @@ VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm, const char* v
     if (objectType == null)
         return kEggShellResult_ObjectNotFoundAtPath;
 
-    if (objectType->IsString()) {
-        // We a have pointer to a StringRef, we just need the StringRef.
-        // So we can use functions that already work with StringRef on the JavaScript side.
-        pData = *(StringRef*)pData;
-    } else if (objectType->IsArray()) {
+    if (objectType->IsArray()) {
         pData = *(TypedArrayCoreRef*)pData;
+    } else {
+        // calling this function for other data types has not been implemented yet.
+        return kEggShellResult_UnexpectedObjectType;
     }
 
     *dataPointer = pData;

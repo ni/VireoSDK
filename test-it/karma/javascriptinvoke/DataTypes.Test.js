@@ -68,42 +68,42 @@ describe('A JavaScript function invoke', function () {
         };
 
         window.NI_Int8ArrayFunction = function (value) {
-            expect(value instanceof Int8Array).toBeTruthy();
+            expect(value instanceof Int8Array).toBeTrue();
             return value;
         };
 
         window.NI_Int16ArrayFunction = function (value) {
-            expect(value instanceof Int16Array).toBeTruthy();
+            expect(value instanceof Int16Array).toBeTrue();
             return value;
         };
 
         window.NI_Int32ArrayFunction = function (value) {
-            expect(value instanceof Int32Array).toBeTruthy();
+            expect(value instanceof Int32Array).toBeTrue();
             return value;
         };
 
         window.NI_UInt8ArrayFunction = function (value) {
-            expect(value instanceof Uint8Array).toBeTruthy();
+            expect(value instanceof Uint8Array).toBeTrue();
             return value;
         };
 
         window.NI_UInt16ArrayFunction = function (value) {
-            expect(value instanceof Uint16Array).toBeTruthy();
+            expect(value instanceof Uint16Array).toBeTrue();
             return value;
         };
 
         window.NI_UInt32ArrayFunction = function (value) {
-            expect(value instanceof Uint32Array).toBeTruthy();
+            expect(value instanceof Uint32Array).toBeTrue();
             return value;
         };
 
         window.NI_SingleArrayFunction = function (value) {
-            expect(value instanceof Float32Array).toBeTruthy();
+            expect(value instanceof Float32Array).toBeTrue();
             return value;
         };
 
         window.NI_DoubleArrayFunction = function (value) {
-            expect(value instanceof Float64Array).toBeTruthy();
+            expect(value instanceof Float64Array).toBeTrue();
             return value;
         };
     });

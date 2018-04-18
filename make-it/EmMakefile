@@ -113,7 +113,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_GetPointer',\
     '_EggShell_GetArrayDimLength',\
     '_Occurrence_Set',\
-	'_Data_ValidateArrayType',\
+    '_Data_ValidateArrayType',\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
     '_Data_ReadBoolean',\

@@ -299,7 +299,7 @@
 
             // Perform nd array creation for rank > 1
             // TODO mraj this is O((m-1)n) for rank m. So rank 2 is O(n) and can be improved for rank > 2
-            currArr = Array.from(arr);
+            currArr = arr;
             var currStartIndex = 0;
             var currArrLength = arrLength;
             var currDimensionLength;
@@ -356,7 +356,7 @@
 
             actualArray = arrayInfo.array;
 
-            return convertFlatArraytoNArray(arrayInfo.array, arrayInfo.dimensionLengths);
+            return convertFlatArraytoNArray(actualArray, arrayInfo.dimensionLengths);
         };
 
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
