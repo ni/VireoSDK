@@ -1,8 +1,13 @@
 
 // Measure UserEvent throughput.
-// On my dev machine, I get about 2100K events/sec on my machine native, and ~52K events/sec w/node.JS
-// Note: If you remove the clump triggers in the event cases, the JS performance is much
-// faster (320K e/s), but that doesn't match what DFIR would generate for an empty event case.
+// On my dev machine, I get about 2500K events/sec on my machine native, and ~180K events/sec w/node.JS
+
+// Note: with the timeout change to 50 ms, and the tweak of ExecSlices params to (10000,4),
+// this test is also a regression test for the race condition in ObserveStateChange/CheckTimers fixed
+// in the previous commit.
+
+// Without the patch to ObserveStateChange, this test would trigger the new assert in VIClumpQueue::Enqueue,
+// which detects the corruption causes by the race condition.
 
 define (MyEventDataA c(e(Int32 val) ))
 
@@ -37,7 +42,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
         e(dv(UInt32 0) timeElapsed)
         e(dv(Double 0) temp)
         e(dv(Double 0) throughput)
-        e(dv(Int32 100) timeOut)
+        e(dv(Int32 50) timeOut)
 
 	e(c(  // Storage for event data node on left border of event case 1 (user event A)
 	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
