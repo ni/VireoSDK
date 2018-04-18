@@ -157,8 +157,8 @@ enum UsageTypeEnum {
     kUsageTypeInputOutput = 3,  // Like output, but VI uses initial value.
     kUsageTypeAlias = 4,        // Non flat value that that is owned by by another element.
     kUsageTypeStatic = 5,       // Allocated value persists from call to call
-    kUsageTypeTemp =  6,        // Storage typically carried from call to call but can be freed up.
-    kUsageTypeImmediate =  7,   // For native function value in instruction block is immed. value not a pointer
+    kUsageTypeTemp = 6,         // Storage typically carried from call to call but can be freed up.
+    kUsageTypeConst = 7,        // Constant cluster elements; VI cannot write.
 };
 
 //! PointerTypeEnum defines the type of internal pointer stored in DefaultPointer type.

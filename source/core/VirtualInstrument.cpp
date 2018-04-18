@@ -585,7 +585,8 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     // See if it is in the VI's locals or paramblock
     _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
     if (_actualArgumentType) {
-        if (_actualArgumentType->ElementUsageType() == kUsageTypeInput && _formalParameterType->ElementUsageType() != kUsageTypeInput)
+        if ((_actualArgumentType->ElementUsageType() == kUsageTypeInput || _actualArgumentType->ElementUsageType() == kUsageTypeConst)
+            && _formalParameterType->ElementUsageType() != kUsageTypeInput)
             _argumentState = kArgumentNotMutable;  // can't write to an subVI's input parameter
         else
             _argumentState = kArgumentResolvedToVIElement;

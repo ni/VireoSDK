@@ -505,6 +505,8 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
     while (!token.CompareCStr(")")) {
         if (token.CompareCStr(tsElementToken)) {
             usageType = kUsageTypeSimple;
+        } else if (token.CompareCStr(tsConstElementToken)) {
+            usageType = kUsageTypeConst;
         } else if (token.CompareCStr(tsInputParamToken)) {
             usageType = kUsageTypeInput;
         } else if (token.CompareCStr(tsOutputParamToken)) {
@@ -514,8 +516,6 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
         } else if (token.CompareCStr(tsStaticParamToken)) {
             usageType = kUsageTypeStatic;
         } else if (token.CompareCStr(tsTempParamToken)) {
-            usageType = kUsageTypeTemp;
-        } else if (token.CompareCStr(tsImmediateParamToken)) {
             usageType = kUsageTypeTemp;
         } else if (token.CompareCStr(tsAliasToken)) {
             usageType = kUsageTypeAlias;
@@ -2017,12 +2017,12 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
     ConstCStr str = null;
     switch (value) {
         case kUsageTypeSimple:          str = tsElementToken;           break;
+        case kUsageTypeConst:           str = tsConstElementToken;      break;
         case kUsageTypeInput:           str = tsInputParamToken;        break;
         case kUsageTypeOutput:          str = tsOutputParamToken;       break;
         case kUsageTypeInputOutput:     str = tsInputOutputParamToken;  break;
         case kUsageTypeStatic:          str = tsStaticParamToken;       break;
         case kUsageTypeTemp:            str = tsTempParamToken;         break;
-        case kUsageTypeImmediate:       str = tsImmediateParamToken;    break;
         case kUsageTypeAlias:           str = tsAliasToken;             break;
         default:                        str = "<TODO>";                 break;
     }
