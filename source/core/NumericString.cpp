@@ -135,7 +135,7 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
             IntMax value = 0;
             if (format->ReadInt(&value)) {
                 pOptions->Precision = (Int32)value;
-            } else {
+			} else {
                 bValid = false;
             }
         } else if (c == '_') {
@@ -1607,6 +1607,8 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
             input->AliasAssign((Utf8Char*)begin, input->End());
         } else if (c == '%') {
             FormatOptions fOptions;
+			if (ReadLocalizedDecimalSeparator(format, argCount, arguments, null, &f, &canScan, &fOptions, &canScan))
+				continue;
             ReadPercentFormatOptions(&f, &fOptions);
              // We should assign the local decimal point to DecimalSeparator.
             fOptions.DecimalSeparator = activeDecimalPoint;
