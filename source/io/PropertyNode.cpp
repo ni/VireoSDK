@@ -82,12 +82,12 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     STACK_VAR(String, dataItemIdVar);
     StringRef dataItemId = dataItemIdVar.Value;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, viName, dataItemId, propNodeWriteName))
-        return _NextInstruction();  // control refnum lookup failed and set errorCluter
+        return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
     STACK_VAR(String, pathRef);
-    typeManager->PointerToSymbolPath(value->_paramType, value->_pData, pathRef.Value);
+    typeManager->GetPathFromPointer(value->_paramType, value->_pData, pathRef.Value);
 
     STACK_VAR(String, typeRef);
     SubString typeName = value->_paramType->Name();
@@ -137,12 +137,12 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     STACK_VAR(String, dataItemIdVar);
     StringRef dataItemId = dataItemIdVar.Value;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, viName, dataItemId, propNodeReadName))
-        return _NextInstruction();  // control refnum lookup failed and set errorCluter
+        return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     TypeManagerRef typeManager = value->_paramType->TheTypeManager();
 
     STACK_VAR(String, pathRef);
-    typeManager->PointerToSymbolPath(value->_paramType, value->_pData, pathRef.Value);
+    typeManager->GetPathFromPointer(value->_paramType, value->_pData, pathRef.Value);
 
     STACK_VAR(String, typeRef);
     SubString typeName = value->_paramType->Name();
