@@ -2024,7 +2024,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     Utf8Char c = 0;
     Boolean validFormatString = true;
     Int32 hourFormat = 0;
-	char decimalSeparator = '.';
+    char decimalSeparator = '.';
     while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
@@ -2171,16 +2171,15 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                             fractionLen = fOption.Precision;
                         }
                         if (fractionLen <= 0) {
-							char buffer[2] = { decimalSeparator, '\0' };
+                            char buffer[2] = { decimalSeparator, '\0' };
                             output->AppendCStr(buffer);
                         } else {
-							// and use it here too.
+                            // and use it here too.
                             size = snprintf(fractionString, sizeof(fractionString), "%.*f", (int)fractionLen, date.FractionalSecond());
-							char* dot = strchr(fractionString, '.');
-							if (decimalSeparator == ',' && dot)
-							{
-								*dot = ',';
-							}
+                            char* dot = strchr(fractionString, '.');
+                            if (dot) {
+                                *dot = decimalSeparator;
+                            }
                             output->Append(size-1, (Utf8Char*)fractionString+1);
                         }
                     }
