@@ -626,6 +626,9 @@
         // A good starting point for most vireo uses but can be copied and modified as needed
         // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
+            // These numbers may still need tuning.  They should also match the numbers in native
+            // in CommandLine/main.cpp.  SLICE_SETS was lowered from 100000 because that was starving
+            // other clumps and running too long before checking the timer.
             var SLICE_SETS_PER_TIME_CHECK = 10000;
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
             var timerToken;
