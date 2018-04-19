@@ -2027,11 +2027,11 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
-			FormatOptions fFormatOption;
+            FormatOptions fFormatOption;
 
-			Boolean parseFinished = false;
-			if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &fFormatOption, &parseFinished))
-				continue;
+            Boolean parseFinished = false;
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &fFormatOption, &parseFinished))
+                continue;
             ReadTimeFormatOptions(&tempFormat, &fOption);
             parseFinished = !fOption.Valid;
             while (!parseFinished) {
