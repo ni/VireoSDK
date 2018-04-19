@@ -1,0 +1,8 @@
+(Line 19 Error "Argument not mutable 'constInt'.")
+(Line 19 Error "Instruction not generated 'Copy'.")
+(Line 21 Error "Argument not mutable 'constStr'.")
+(Line 21 Error "Instruction not generated 'Copy'.")
+(Line 23 Error "Argument not mutable 'constArr'.")
+(Line 23 Error "Instruction not generated 'Copy'.")
+(Line 25 Error "Argument not mutable 'constClust'.")
+(Line 25 Error "Instruction not generated 'Copy'.")
