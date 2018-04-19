@@ -115,6 +115,8 @@ int VIREO_MAIN(int argc, const char * argv[])
 void Vireo::RunExec() {
     TypeManagerRef tm = gShells._pUserShell;
     TypeManagerScope scope(tm);
+    // These numbers may need further tuning (numSlices and millisecondsToRun).
+    // They should match the values for VJS in io/module_eggShell.js
     Int32 state = tm->TheExecutionContext()->ExecuteSlices(10000, 4);
     Int32 delay = state > 0 ? state : 0;
     gShells._keepRunning = (state != kExecSlices_ClumpsFinished);

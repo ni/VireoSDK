@@ -431,7 +431,10 @@ Int32 EventOracle::GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, 
         DynamicEventRegInfo *regInfo = NULL;
         if (dynRegRefs
             && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(dynRegRefs[regIndex].GetRefNum(), &regInfo) == kNIError_Success) {
-            if (_qObject[regInfo->_qID].GetPendingEventSequenceNumber(&eventSeq) && (!eventQID || EventTimeSeqCompare(eventSeq, earliestSeq) < 0)) {
+            // For each valid dynamic reference, find the event with the earliest event sequence number in its queue.
+            if (_qObject[regInfo->_qID].GetPendingEventSequenceNumber(&eventSeq)
+                && (!eventQID  // first time through loop, take starting seq number
+                    || EventTimeSeqCompare(eventSeq, earliestSeq) < 0)) {
                 eventQID = regInfo->_qID;
                 earliestSeq = eventSeq;
                 earliestIndex = regIndex+1;
