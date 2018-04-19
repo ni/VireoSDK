@@ -235,5 +235,8 @@
     <ClInclude Include="..\source\include\Array.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\DataReflectionVisitor.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

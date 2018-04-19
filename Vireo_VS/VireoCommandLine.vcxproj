@@ -67,6 +67,7 @@
     <ClInclude Include="..\source\include\BuildConfig.h" />
     <ClInclude Include="..\source\include\CEntryPoints.h" />
     <ClInclude Include="..\source\include\ControlRef.h" />
+    <ClInclude Include="..\source\include\DataReflectionVisitor.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
     <ClInclude Include="..\source\include\Date.h" />
     <ClInclude Include="..\source\include\EventLog.h" />
