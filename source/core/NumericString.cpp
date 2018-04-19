@@ -1302,7 +1302,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 
 //----------------------------------------------------------------------------------------------------
 void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
-                      char formatChar, char* beginPointer, char** endPointer, IntIndex offset = 0)
+                      char formatChar, char decimalSeparator, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
     double doubleValue;
     IntMax intValue = 0;
@@ -1321,7 +1321,17 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
         case 'e':
         case 'g':
         case 'p': {
+                // replace comma if it exists with dot for strtold to be able to understand it.
+                char* separator = strchr(beginPointer, decimalSeparator);
+                char oldSeparator = decimalSeparator;
+                if (separator) {
+                    *separator = '.';
+                }
                 doubleValue = strtold(beginPointer, endPointer);
+                if (separator) {
+                    *separator = oldSeparator;
+                }
+
                 if (formatChar == 'p' && *endPointer != NULL && *endPointer < ConstCStr(truncateInput->End())) {
                     char siPrefixesTable[] = { 'y', 'z', 'a', 'f', 'p', 'n', 'u', 'm', '0', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
                     char prefix = **endPointer;
@@ -1377,13 +1387,13 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
 }
 
 void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
-    char formatChar, char* beginPointer, char** endPointer) {
+    char formatChar, char decimalSeparator, char* beginPointer, char** endPointer) {
     bool clusterFormat = false;
     if (*beginPointer == '(') {
         ++beginPointer;
         clusterFormat = true;
     }
-    DoubleScanString(argument, argumentType->GetSubElement(0), truncateInput, formatChar, beginPointer, endPointer);
+    DoubleScanString(argument, argumentType->GetSubElement(0), truncateInput, formatChar, decimalSeparator, beginPointer, endPointer);
     beginPointer = *endPointer;
     while (isspace(*beginPointer))
         ++beginPointer;
@@ -1391,7 +1401,7 @@ void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSt
         ++beginPointer;
     while (isspace(*beginPointer))
         ++beginPointer;
-    DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar,
+    DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar, decimalSeparator,
                      beginPointer, endPointer, argumentType->GetSubElement(1)->ElementOffset());
     beginPointer = *endPointer;
     while (isspace(*beginPointer))
@@ -1443,7 +1453,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             S2CIntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
         case kEncoding_IEEE754Binary:
-            DoubleScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, inpBegin, &endPointer);
+            DoubleScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
             break;
         case kEncoding_Array: {
             TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(argument->_pData);
@@ -1557,7 +1567,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case kEncoding_Cluster:
         {
             if (argumentType->IsComplex())
-                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, inpBegin, &endPointer);
+                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
         }
             break;
         default:
@@ -1585,7 +1595,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
 
     IntIndex argumentIndex = 0;
     IntIndex filledItems = 0;
-    //char activeDecimalPoint = '.';
+    char activeDecimalPoint = '.';
     Utf8Char c = 0;
     Utf8Char inputChar = 0;
     Boolean canScan = true;
@@ -1608,11 +1618,11 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
         } else if (c == '%') {
             FormatOptions fOptions;
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(format, argCount, arguments, null, &f, &canScan, &fOptions, &parseFinished))
+            if (ReadLocalizedDecimalSeparator(format, argCount, arguments, null, &f, &canScan, &activeDecimalPoint, &parseFinished))
                 continue;
+
             ReadPercentFormatOptions(&f, &fOptions);
-             // We should assign the local decimal point to DecimalSeparator.
-            //fOptions.DecimalSeparator = activeDecimalPoint;
+            fOptions.DecimalSeparator = activeDecimalPoint;
             if (!fOptions.Valid) {
                 parseFinished = true;
                 canScan = false;
