@@ -284,13 +284,13 @@
         };
 
         var updateReturnValue = function (
-        functionName,
-        returnTypeName,
-        returnValuePointer,
-        returnUserValue,
-        errorStatusPointer,
-        errorCodePointer,
-        errorSourcePointer) {
+            functionName,
+            returnTypeName,
+            returnValuePointer,
+            returnUserValue,
+            errorStatusPointer,
+            errorCodePointer,
+            errorSourcePointer) {
             if (!isValidJavaScriptReturnType(returnUserValue)) {
                 var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
                 var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
@@ -303,10 +303,6 @@
                 return;
             }
 
-            if (returnTypeName === 'Array') {
-                returnTypeName += getArrayElementTypeString(returnValuePointer);
-            }
-
             var typeConfig = typeFunctions[returnTypeName];
 
             if (typeConfig === undefined) {
@@ -314,14 +310,14 @@
                 var code2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
                 Module.coreHelpers.mergeErrors(true, code2, source2, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
-            } else if (!typeConfig.isValidReturnType(returnValue)) {
+            } else if (!typeConfig.isValidReturnType(returnUserValue)) {
                 var source3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE;
                 var code3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
                 Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
-            typeConfig.writer(returnValuePointer, returnValue);
+            typeConfig.writer(returnValuePointer, returnUserValue);
         };
 
         var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
@@ -335,7 +331,7 @@
                 } else {
                     var newErrorStatus = true;
                     var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                    var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionNameString + '\'.', returnValue);
+                    var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
                     Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
                 completionCallbackInvoked = true;
@@ -382,8 +378,12 @@
 
             var returnTypeName = getParameterTypeString(returnPointer, 0);
             var returnValuePointer = undefined;
-            if (returnTypeName !== 'StaticTypeAndData') { // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
+            if (returnTypeName !== 'StaticTypeAndData') {
+                // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
                 returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
+            }
+            if (returnTypeName === 'Array') {
+                returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
 
             var asyncFlag = false;
@@ -396,7 +396,7 @@
                     }
                     asyncFlag = true;
                     completionCallbackRetrieved = true;
-                    return generateCompletionCallback(occurrencePointer, functionNameString, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 };
                 return context;
             };
