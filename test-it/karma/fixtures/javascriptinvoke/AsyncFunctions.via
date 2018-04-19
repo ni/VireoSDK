@@ -53,6 +53,6 @@ define(CallCompletionCallbackMoreThanOnce dv(VirtualInstrument (
     clump (
         JavaScriptInvoke(occurrence false error 'NI_CallCompletionCallbackMoreThanOnce' returnCallCallback inputCallCallback)
         JavaScriptInvoke(occurrence false error 'NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval' returnCallCallback inputCallCallback)
-        // JavaScriptInvoke(occurrence false error 'NI_CompletionCallbackReturnsUndefined' * inputCallCallback)
+        JavaScriptInvoke(occurrence false error 'NI_CompletionCallbackReturnsUndefined' * inputCallCallback)
     )
 ) ) )

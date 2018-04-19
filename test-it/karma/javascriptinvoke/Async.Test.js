@@ -78,7 +78,10 @@ describe('A JavaScript function invoke', function () {
 
         window.NI_CompletionCallbackReturnsUndefined = function () {
             var completionCallback = this.getCompletionCallback();
-            completionCallback('foo');
+            var testCompletion = function () {
+                completionCallback(undefined);
+            };
+            expect(testCompletion).not.toThrowError();
         };
     });
 
