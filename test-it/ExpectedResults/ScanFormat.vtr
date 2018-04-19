@@ -119,3 +119,5 @@ offset_past:<8>, remaining:()
 ---test scan special------ (123.5)
 offset_past:<5>, remaining:()
 :<123.500000> err:<(false 0 '')>
+offset_past:<5>, remaining:()
+:<123.500000> err:<(false 0 '')>

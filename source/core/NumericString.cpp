@@ -1585,7 +1585,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
 
     IntIndex argumentIndex = 0;
     IntIndex filledItems = 0;
-    char activeDecimalPoint = '.';
+    //char activeDecimalPoint = '.';
     Utf8Char c = 0;
     Utf8Char inputChar = 0;
     Boolean canScan = true;
@@ -1612,7 +1612,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 continue;
             ReadPercentFormatOptions(&f, &fOptions);
              // We should assign the local decimal point to DecimalSeparator.
-            fOptions.DecimalSeparator = activeDecimalPoint;
+            //fOptions.DecimalSeparator = activeDecimalPoint;
             if (!fOptions.Valid) {
                 parseFinished = true;
                 canScan = false;
