@@ -290,7 +290,7 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
 }
 
 bool ReadLocalizedDecimalSeparator(SubString* format, Int32 count, StaticTypeAndData* arguments,
-    StringRef buffer, SubString* f, Boolean *validFormatString, FormatOptions *fOptions,
+    StringRef buffer, SubString* f, Boolean *validFormatString, char *pDecimalSeparator,
     Boolean *parseFinished) {
     Utf8Char c;
     if (f->PeekRawChar(&c) && c == ';') {
@@ -301,7 +301,7 @@ bool ReadLocalizedDecimalSeparator(SubString* format, Int32 count, StaticTypeAnd
     if (f->PeekRawChar(&c, 1) && c == ';') {
         Utf8Char decimalSeparator;
         if (f->PeekRawChar(&decimalSeparator) && (decimalSeparator == ',' || decimalSeparator == '.')) {
-            fOptions->DecimalSeparator = decimalSeparator;
+            *pDecimalSeparator = decimalSeparator;
             Utf8Char ignore;
             f->ReadRawChar(&ignore);
             f->ReadRawChar(&ignore);
@@ -400,7 +400,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             }
         } else if (c == '%') {
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(format, count, arguments, buffer, &f, &validFormatString, &fOptions, &parseFinished))
+            if (ReadLocalizedDecimalSeparator(format, count, arguments, buffer, &f, &validFormatString, &fOptions.DecimalSeparator, &parseFinished))
                 continue;
             ReadPercentFormatOptions(&f, &fOptions);
             totalArgument++;
@@ -2024,13 +2024,12 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     Utf8Char c = 0;
     Boolean validFormatString = true;
     Int32 hourFormat = 0;
+	char decimalSeparator = '.';
     while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
-            FormatOptions fFormatOption;
-
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &fFormatOption, &parseFinished))
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &decimalSeparator, &parseFinished))
                 continue;
             ReadTimeFormatOptions(&tempFormat, &fOption);
             parseFinished = !fOption.Valid;
@@ -2172,9 +2171,16 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                             fractionLen = fOption.Precision;
                         }
                         if (fractionLen <= 0) {
-                            output->AppendCStr(".");
+							char buffer[2] = { decimalSeparator, '\0' };
+                            output->AppendCStr(buffer);
                         } else {
+							// and use it here too.
                             size = snprintf(fractionString, sizeof(fractionString), "%.*f", (int)fractionLen, date.FractionalSecond());
+							char* dot = strchr(fractionString, '.');
+							if (decimalSeparator == ',' && dot)
+							{
+								*dot = ',';
+							}
                             output->Append(size-1, (Utf8Char*)fractionString+1);
                         }
                     }

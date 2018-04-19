@@ -51,9 +51,11 @@ define(HelloTime dv(.VirtualInstrument (
 	FormatDateTimeString(s1 * t4 *)
 	Printf("15:(%s)\n" s1)
 	FormatDateTimeString(s1 * * true)
-	Printf("// 16:(%s)\n" s1) // Comment result so it is ignored, everytime is going to be different
+	FormatDateTimeString(s1 "%,;%7u" t4 true)
+	Printf("16:(%s)\n" s1)
+	Printf("// 17:(%s)\n" s1) // Comment result so it is ignored, everytime is going to be different
 	FormatDateTimeString(s1 * * *)
-	Printf("// 17:(%s)\n" s1) // Same here, just exercise the function with 'default' values
+	Printf("// 18:(%s)\n" s1) // Same here, just exercise the function with 'default' values
     )
 ) ) )
 enqueue(HelloTime)
