@@ -1981,8 +1981,6 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
                 if (format->Length() == 0) {
                     bValid = false;
                 }
-            } else if (format->PeekRawChar(&c) && c == ';') {
-                // We are trying to set the separator as a dot, but on web this is always the case. Skip it.
             } else {
                 bValid = false;
             }
@@ -2029,8 +2027,13 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
     while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
+			FormatOptions fFormatOption;
+
+			Boolean parseFinished = false;
+			if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &fFormatOption, &parseFinished))
+				continue;
             ReadTimeFormatOptions(&tempFormat, &fOption);
-            Boolean parseFinished = !fOption.Valid;
+            parseFinished = !fOption.Valid;
             while (!parseFinished) {
                 parseFinished = true;
                 switch (fOption.FormatChar) {
