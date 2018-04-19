@@ -199,23 +199,107 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     }
     return "";
 }
+void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
+{
+    arrayTypeNameBuffer->Append(arrayTypeName.Length(), (Utf8Char*)arrayTypeName.Begin());
+    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+}
+
+unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
+{
+    if (arrayObject->GetLength(0) <= 0) {
+        return null;
+    } else {
+        return arrayObject->BeginAt(0);
+    }
+}
+//------------------------------------------------------------
+//! Get the Vireo pointer given a path.
+VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm, const char* viName, const char* elementName, void** dataPointer, void** typePointer)
+{
+    SubString objectName(viName);
+    SubString path(elementName);
+    void *pData = null;
+
+    TypeRef objectType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (objectType == null)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    if (objectType->IsArray()) {
+        pData = *(TypedArrayCoreRef*)pData;
+    } else {
+        // calling this function for other data types has not been implemented yet.
+        return kEggShellResult_UnexpectedObjectType;
+    }
+
+    *dataPointer = pData;
+    *typePointer = objectType;
+
+    return kEggShellResult_Success;
+}
+
+//------------------------------------------------------------
+//! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
+//! an Array or dimension requested is out of the bounds of the rank.
+VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
+{
+    SubString objectName(viName);
+    SubString path(eltName);
+    void *pData = null;
+
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (actualType == null || !actualType->IsArray())
+        return -1;
+
+    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+    return Data_GetArrayDimLength(tm, actualArray, dim);
+}
+//------------------------------------------------------------
+//! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
+//! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
+VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
+{
+    SubString objectName(viName);
+    SubString path(eltName);
+    void *pData = null;
+
+    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+    if (actualType == null || !actualType->IsArray()) {
+        return kLVError_ArgError;
+    }
+
+    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
+    return Data_ResizeArray(tm, actualArray, rank, newLengths);
+}
+//------------------------------------------------------------
+VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
+{
+    VIREO_ASSERT(String::ValidateHandle(stringObject));
+    return stringObject->Begin();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
+{
+    VIREO_ASSERT(String::ValidateHandle(stringObject));
+    return stringObject->Length();
+}
+//------------------------------------------------------------
+// Verify that a type is an array.
+VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef)
+{
+    if (!typeRef->IsArray() || typeRef->Rank() <= 0)
+        return kEggShellResult_UnexpectedObjectType;
+
+    return kEggShellResult_Success;
+}
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank,
 //! and the memory location of the first element (or null if there are zero elements)
-VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
-        const char* viName, const char* eltName, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
+VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
+        TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
-    void *pData = null;
-
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef pathType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (pathType == null)
-        return kEggShellResult_ObjectNotFoundAtPath;
-
-    if (!pathType->IsArray() || pathType->Rank() <= 0)
-        return kEggShellResult_UnexpectedObjectType;
 
     if (arrayTypeName == null || arrayRank == null || arrayBegin == null)
         return kEggShellResult_InvalidResultPointer;
@@ -234,73 +318,27 @@ VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm,
         return kEggShellResult_UnableToCreateReturnBuffer;
     }
 
-    SubString arrayTypeNameSubString = pathType->GetSubElement(0)->Name();
-    arrayTypeNameBuffer->Append(arrayTypeNameSubString.Length(), (Utf8Char*)arrayTypeNameSubString.Begin());
-    arrayTypeNameBuffer->Append((Utf8Char)'\0');
+    TypeRef arrayElementType = arrayObject->ElementType();
+    CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayElementType->Name());
     *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
 
-    *arrayRank = pathType->Rank();
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if (actualArray->GetLength(0) <= 0) {
-        *arrayBegin = null;
-    } else {
-        *arrayBegin = actualArray->BeginAt(0);
-    }
+    *arrayRank = arrayObject->Rank();
+    *arrayBegin = GetArrayBeginAt(arrayObject);
 
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
 //! an Array or dimension requested is out of the bounds of the rank.
-VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
+VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim)
 {
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
-    void *pData = null;
 
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray() || dim >= actualType->Rank() || dim < 0)
+    if (dim >= arrayObject->Rank() || dim < 0)
         return -1;
 
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return actualArray->GetLength(dim);
-}
-//------------------------------------------------------------
-//! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-//! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
-VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
-{
-    TypeManagerScope scope(tm);
-
-    SubString objectName(viName);
-    SubString path(eltName);
-    void *pData = null;
-
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray()) {
-        return kLVError_ArgError;
-    }
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    if (!actualArray->ResizeDimensions(rank, newLengths, true, false)) {
-        return kLVError_MemFull;
-    }
-
-    return 0;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
-{
-    VIREO_ASSERT(String::ValidateHandle(stringObject));
-    return stringObject->Begin();
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
-{
-    VIREO_ASSERT(String::ValidateHandle(stringObject));
-    return stringObject->Length();
+    return arrayObject->GetLength(dim);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
@@ -400,6 +438,19 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 {
     *destination = value;
 }
+
+VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths)
+{
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    TypeManagerScope scope(tm);
+
+    if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
+        return kLVError_MemFull;
+    }
+
+    return 0;
+}
+
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {

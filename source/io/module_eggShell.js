@@ -35,9 +35,10 @@
             'EggShell_ReadDouble',
             'EggShell_WriteDouble',
             'EggShell_WriteValueString',
-            'EggShell_GetArrayMetadata',
+            'EggShell_GetPointer',
             'EggShell_GetArrayDimLength',
             'EggShell_ResizeArray',
+            'Data_ValidateArrayType',
             'Data_GetStringBegin',
             'Data_GetStringLength',
             'Data_ReadBoolean',
@@ -49,6 +50,8 @@
             'Data_ReadUInt32',
             'Data_ReadSingle',
             'Data_ReadDouble',
+            'Data_GetArrayMetadata',
+            'Data_GetArrayDimLength',
             'Data_WriteBoolean',
             'Data_WriteString',
             'Data_WriteStringFromArray',
@@ -60,6 +63,7 @@
             'Data_WriteUInt32',
             'Data_WriteSingle',
             'Data_WriteDouble',
+            'Data_ResizeArray',
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
             'Occurrence_Set',
@@ -78,9 +82,10 @@
         var EggShell_ReadDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', 'string', 'string']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
-        var EggShell_GetArrayMetadata = Module.cwrap('EggShell_GetArrayMetadata', 'number', ['number', 'string', 'string', 'number', 'number', 'number', 'number']);
+        var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
+        var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
         var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
@@ -93,6 +98,9 @@
         var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
+        var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
+        var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
+        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number', 'number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
         var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
@@ -189,14 +197,38 @@
         };
 
         var supportedArrayTypeConfig = {
-            Int8: Module.HEAP8,
-            Int16: Module.HEAP16,
-            Int32: Module.HEAP32,
-            UInt8: Module.HEAPU8,
-            UInt16: Module.HEAPU16,
-            UInt32: Module.HEAPU32,
-            Single: Module.HEAPF32,
-            Double: Module.HEAPF64
+            Int8: {
+                heap: Module.HEAP8,
+                constructorFunction: Int8Array
+            },
+            Int16: {
+                heap: Module.HEAP16,
+                constructorFunction: Int16Array
+            },
+            Int32: {
+                heap: Module.HEAP32,
+                constructorFunction: Int32Array
+            },
+            UInt8: {
+                heap: Module.HEAPU8,
+                constructorFunction: Uint8Array
+            },
+            UInt16: {
+                heap: Module.HEAPU16,
+                constructorFunction: Uint16Array
+            },
+            UInt32: {
+                heap: Module.HEAPU32,
+                constructorFunction: Uint32Array
+            },
+            Single: {
+                heap: Module.HEAPF32,
+                constructorFunction: Float32Array
+            },
+            Double: {
+                heap: Module.HEAPF64,
+                constructorFunction: Float64Array
+            }
         };
 
         // Keep in sync with EggShellResult in CEntryPoints.h
@@ -246,7 +278,7 @@
             return retArr;
         };
 
-        var convertFlatArraytoNArray = function (arr, startIndex, dimensionLengths) {
+        var convertFlatArraytoNArray = function (arr, dimensionLengths) {
             var i;
             var rank = dimensionLengths.length;
             var arrLength = 1;
@@ -260,7 +292,7 @@
             if (rank === 1) {
                 currArr = [];
                 for (i = 0; i < arrLength; i += 1) {
-                    currArr[i] = arr[startIndex + i];
+                    currArr[i] = arr[i];
                 }
                 return currArr;
             }
@@ -268,7 +300,7 @@
             // Perform nd array creation for rank > 1
             // TODO mraj this is O((m-1)n) for rank m. So rank 2 is O(n) and can be improved for rank > 2
             currArr = arr;
-            var currStartIndex = startIndex;
+            var currStartIndex = 0;
             var currArrLength = arrLength;
             var currDimensionLength;
 
@@ -286,48 +318,45 @@
         var arrayTypeNameDoublePointer = Module._malloc(4);
         var arrayBeginPointer = Module._malloc(4);
         var arrayRankPointer = Module._malloc(4);
+        var vireoObjectPointer = Module._malloc(4);
+        var vireoTypePointer = Module._malloc(4);
 
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
-            var eggShellResult = EggShell_GetArrayMetadata(v_userShell, vi, path, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+            var eggShellResult = EggShell_GetPointer(v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
 
             if (eggShellResult !== 0) {
-                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (vi name: ' + vi + ')' +
                     ' (path: ' + path + ')');
             }
 
-            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
-            // The following use of Pointer_stringify is safe as long as arrayTypeNamePointer is a valid C string
-            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
-            var arrayRank = Module.getValue(arrayRankPointer, 'i32');
-            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32');
+            var arrayVireoPointer = Module.getValue(vireoObjectPointer, 'i32');
+            var typePointer = Module.getValue(vireoTypePointer, 'i32');
+            eggShellResult = Data_ValidateArrayType(v_userShell, typePointer);
 
-            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
-            if (arrayTypeConfig === undefined) {
-                throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
+            if (eggShellResult !== 0) {
+                throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (vi name: ' + vi + ')' +
+                    ' (path: ' + path + ')');
             }
 
-            var i, returnArray;
+            var arrayInfo = Module.eggShell.dataReadNumericArrayAsTypedArray(arrayVireoPointer);
 
-            // Handle empty arrays
-            if (arrayBegin === NULL) {
-                returnArray = [];
-                for (i = 0; i < arrayRank - 1; i += 1) {
-                    returnArray = [returnArray];
+            var actualArray;
+            if (arrayInfo.array === undefined || arrayInfo.array.length === 0) {
+                // handle empty array
+                actualArray = [];
+                for (var i = 0; i < arrayInfo.dimensionLengths.length - 1; i += 1) {
+                    actualArray = [actualArray];
                 }
-
-                return returnArray;
+                return actualArray;
             }
 
-            var arrayStartIndex = arrayBegin / arrayTypeConfig.BYTES_PER_ELEMENT;
-            var dimensionLengths = [];
-            for (i = 0; i < arrayRank; i += 1) {
-                dimensionLengths[i] = Module.eggShell.getArrayDimLength(vi, path, i);
-            }
+            actualArray = arrayInfo.array;
 
-            returnArray = convertFlatArraytoNArray(arrayTypeConfig, arrayStartIndex, dimensionLengths);
-            return returnArray;
+            return convertFlatArraytoNArray(actualArray, arrayInfo.dimensionLengths);
         };
 
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
@@ -423,6 +452,61 @@
             return numericValue;
         };
 
+        Module.eggShell.dataReadTypedArray = function (arrayPointer) {
+            return Module.eggShell.dataReadNumericArrayAsTypedArray(arrayPointer).array;
+        };
+
+        Module.eggShell.dataReadNumericArrayAsTypedArray = function (arrayPointer) {
+            var eggShellResult = Data_GetArrayMetadata(v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+
+            if (eggShellResult !== 0) {
+                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')');
+            }
+
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
+
+            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
+            if (arrayTypeConfig === undefined) {
+                throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
+            }
+            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
+
+            var arrayRank = Module.getValue(arrayRankPointer, 'i32');
+            var arrayBeginBytes = Module.getValue(arrayBeginPointer, 'i32');
+
+            var dimensionLengths;
+            // Handle empty arrays
+            if (arrayBeginBytes === NULL) {
+                dimensionLengths = [];
+                for (var i = 0; i < arrayRank; i += 1) {
+                    dimensionLengths[i] = 0;
+                }
+
+                return {
+                    array: [],
+                    dimensionLengths: dimensionLengths
+                };
+            }
+
+            var arrayBegin = arrayBeginBytes / heap.BYTES_PER_ELEMENT;
+
+            var arrayLength = 1;
+            dimensionLengths = [];
+            for (var j = 0; j < arrayRank; j += 1) {
+                dimensionLengths[j] = Data_GetArrayDimLength(v_userShell, arrayPointer, j);
+                arrayLength *= dimensionLengths[j];
+            }
+
+            var TypedArrayConstructor = supportedArrayTypeConfig[arrayTypeName].constructorFunction;
+            var typedArray = new TypedArrayConstructor(heap.subarray(arrayBegin, arrayBegin + arrayLength));
+            return {
+                array: typedArray,
+                dimensionLengths: dimensionLengths
+            };
+        };
+
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
             var numericValue = booleanValue ? 1 : 0;
             Data_WriteBoolean(booleanPointer, numericValue);
@@ -458,6 +542,31 @@
 
         Module.eggShell.dataWriteDouble = function (destination, value) {
             Data_WriteDouble(destination, value);
+        };
+
+        Module.eggShell.dataWriteTypedArray = function (destination, value) {
+            var int32Byte = 4;
+            var rank = 1;
+            var newLengths = Module._malloc(rank * int32Byte);
+            Module.setValue(newLengths, value.length, 'i32');
+
+            Data_ResizeArray(v_userShell, destination, rank, newLengths);
+            Module._free(newLengths);
+
+            var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+
+            if (eggShellResult !== 0) {
+                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')');
+            }
+
+            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
+            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
+            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
+            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32') / heap.BYTES_PER_ELEMENT;
+
+            var returnArray = heap.subarray(arrayBegin, arrayBegin + value.length);
+            returnArray.set(value);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

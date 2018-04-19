@@ -41,13 +41,18 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viNam
                                             const char* format, const char* value);
 VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName,
                                                   const char* format);
-VIREO_EXPORT EggShellResult EggShell_GetArrayMetadata(TypeManagerRef tm, const char* viName, const char* eltName,
-    char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
+VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
+        const char* viName, const char* elementName, void** dataPointer, void** typePointer);
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
 VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName,
                                         Int32 rank, Int32* newLengths);
+VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
+VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
+        TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
+VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim);
+VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
                                    Int32 length);
 VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer);

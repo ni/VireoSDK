@@ -17,7 +17,7 @@ SDG
 #include "TDCodecVia.h"
 #include <stdio.h>
 
-#if defined (VIREO_TYPE_JavaScriptInvoke)
+#if defined(VIREO_TYPE_JavaScriptInvoke)
 namespace Vireo {
 
 #if kVireoOS_emscripten
@@ -28,11 +28,8 @@ extern "C" {
 }
 #endif
 
-//------------------------------------------------------------
-//! Return parameter type name for the given element(index) in the parameters array
-VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *parameters, Int32 index)
+StringRef AllocateReturnBuffer()
 {
-    TypeRef parameterType = parameters[index]._paramType;
     static StringRef returnBuffer = null;
     if (returnBuffer == null) {
         // Allocate a string the first time it is used.
@@ -43,14 +40,41 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
         returnBuffer->Resize1D(0);
     }
 
+    return returnBuffer;
+}
+
+//------------------------------------------------------------
+//! Return parameter type name for the given element(index) in the parameters array
+VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *parameters, Int32 index)
+{
+    TypeRef parameterType = parameters[index]._paramType;
+    StringRef returnBuffer = AllocateReturnBuffer();
+
     if (returnBuffer) {
         SubString typeName = parameterType->Name();
         returnBuffer->Append(typeName.Length(), (Utf8Char*)typeName.Begin());
+
         // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*)returnBuffer->Begin();
     }
-    return "";
+
+    return null;
+}
+
+VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef arrayObject)
+{
+    StringRef returnBuffer = AllocateReturnBuffer();
+    if (returnBuffer) {
+        SubString elementTypeName = arrayObject->ElementType()->Name();
+        returnBuffer->Append(elementTypeName.Length(), (Utf8Char*)elementTypeName.Begin());
+
+        // Add an explicit null terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*)returnBuffer->Begin();
+    }
+
+    return null;
 }
 
 //------------------------------------------------------------
@@ -63,7 +87,14 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
         // We a have pointer to a StringRef, we just need the StringRef.
         // So we can use functions that already work with StringRef on the JavaScript side.
         pData = *(StringRef*)pData;
+    } else if (parameterType->IsArray()) {
+        pData = *(TypedArrayCoreRef*)pData;
+    } else if (!(parameterType->IsNumeric() || parameterType->IsString() || parameterType->IsFloat() || parameterType->IsBoolean())) {
+        return null;
+    } else if (parameterType->IsA(&TypeCommon::TypeInt64) || parameterType->IsA(&TypeCommon::TypeUInt64)) {
+        return null;
     }
+
     return pData;
 }
 
@@ -119,6 +150,7 @@ DEFINE_VIREO_BEGIN(JavaScriptInvoke)
     DEFINE_VIREO_FUNCTION(JavaScriptInvoke, "p(i(VarArgCount argumentCount) i(Boolean errorCheckingEnabled) io(ErrorCluster errorCluster)"
         "i(String functionName) o(StaticTypeAndData returnValue) io(StaticTypeAndData functionParameters))")
 DEFINE_VIREO_END()
+
 
 }  // namespace Vireo
 #endif  // VIREO_TYPE_JavaScriptInvoke

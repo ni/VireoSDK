@@ -110,9 +110,10 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_ReadValueString',\
     '_EggShell_WriteValueString',\
     '_EggShell_ResizeArray',\
-    '_EggShell_GetArrayMetadata',\
+    '_EggShell_GetPointer',\
     '_EggShell_GetArrayDimLength',\
     '_Occurrence_Set',\
+    '_Data_ValidateArrayType',\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
     '_Data_ReadBoolean',\
@@ -134,8 +135,12 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32',\
     '_Data_WriteSingle',\
     '_Data_WriteDouble',\
+    '_Data_GetArrayMetadata',\
+    '_Data_GetArrayDimLength',\
+    '_Data_ResizeArray',\
     '_JavaScriptInvoke_GetParameterType',\
-    '_JavaScriptInvoke_GetParameterPointer'\
+    '_JavaScriptInvoke_GetParameterPointer',\
+    '_JavaScriptInvoke_GetArrayElementType'\
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\

@@ -7,7 +7,7 @@ describe('A JavaScript function invoke', function () {
 
     var kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke = 44304;
     var kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke = 44305;
-    var kNITypeMistmatchForReturnTypeInJavaScriptInvoke = 44306;
+    var kNITypeMismatchForReturnTypeInJavaScriptInvoke = 44306;
 
     var vireo;
 
@@ -98,6 +98,38 @@ describe('A JavaScript function invoke', function () {
             return 'National Instruments';
         };
 
+        window.NI_Int8ArrayFunction = function () {
+            return Int8Array.from([-128, 0, 127]);
+        };
+
+        window.NI_Int16ArrayFunction = function () {
+            return Int16Array.from([-32768, 0, 32767]);
+        };
+
+        window.NI_Int32ArrayFunction = function () {
+            return Int32Array.from([-2147483648, 0, 2147483647]);
+        };
+
+        window.NI_UInt8ArrayFunction = function () {
+            return Uint8Array.from([0, 1, 255]);
+        };
+
+        window.NI_UInt16ArrayFunction = function () {
+            return Uint16Array.from([0, 1, 65535]);
+        };
+
+        window.NI_UInt32ArrayFunction = function () {
+            return Uint32Array.from([0, 1, 4294967295]);
+        };
+
+        window.NI_SingleArrayFunction = function () {
+            return Float32Array.from([-1.0, 0.0, 1.0]);
+        };
+
+        window.NI_DoubleArrayFunction = function () {
+            return Float64Array.from([-1.0, 0.0, 1.0]);
+        };
+
         window.NI_ReturnObject = function () {
             var myObject = {};
             myObject.value = 'value';
@@ -154,6 +186,38 @@ describe('A JavaScript function invoke', function () {
         window.NI_MismatchString = function () {
             return false;
         };
+
+        window.NI_MismatchInt8ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchInt16ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchInt32ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchUInt8ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchUInt16ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchUInt32ArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchSingleArrayFunction = function () {
+            return 'myString';
+        };
+
+        window.NI_MismatchDoubleArrayFunction = function () {
+            return 'myString';
+        };
     });
 
     afterEach(function () {
@@ -178,6 +242,14 @@ describe('A JavaScript function invoke', function () {
         window.NI_ReturnObject = undefined;
         window.NI_ReturnFunction = undefined;
         window.NI_ReturnString = undefined;
+        window.NI_Int8ArrayFunction = undefined;
+        window.NI_Int16ArrayFunction = undefined;
+        window.NI_Int32ArrayFunction = undefined;
+        window.NI_UInt8ArrayFunction = undefined;
+        window.NI_UInt16ArrayFunction = undefined;
+        window.NI_UInt32ArrayFunction = undefined;
+        window.NI_SingleArrayFunction = undefined;
+        window.NI_DoubleArrayFunction = undefined;
         window.NI_MismatchBoolean = undefined;
         window.NI_MismatchInt8 = undefined;
         window.NI_MismatchInt16 = undefined;
@@ -188,6 +260,14 @@ describe('A JavaScript function invoke', function () {
         window.NI_MismatchSingle = undefined;
         window.NI_MismatchDouble = undefined;
         window.NI_MismatchString = undefined;
+        window.NI_MismatchInt8ArrayFunction = undefined;
+        window.NI_MismatchInt16ArrayFunction = undefined;
+        window.NI_MismatchInt32ArrayFunction = undefined;
+        window.NI_MismatchUInt8ArrayFunction = undefined;
+        window.NI_MismatchUInt16ArrayFunction = undefined;
+        window.NI_MismatchUInt32ArrayFunction = undefined;
+        window.NI_MismatchSingleArrayFunction = undefined;
+        window.NI_MismatchDoubleArrayFunction = undefined;
     });
 
     it('succesfully returns different data types', function (done) {
@@ -212,6 +292,14 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('returnSingle')).toBe(3.0);
             expect(viPathParser('returnDouble')).toBe(6.0);
             expect(viPathParser('returnString')).toBe('National Instruments');
+            expect(viPathParser('returnInt8Array')).toEqual([-128, 0, 127]);
+            expect(viPathParser('returnInt16Array')).toEqual([-32768, 0, 32767]);
+            expect(viPathParser('returnInt32Array')).toEqual([-2147483648, 0, 2147483647]);
+            expect(viPathParser('returnUInt8Array')).toEqual([0, 1, 255]);
+            expect(viPathParser('returnUInt16Array')).toEqual([0, 1, 65535]);
+            expect(viPathParser('returnUInt32Array')).toEqual([0, 1, 4294967295]);
+            expect(viPathParser('returnSingleArray')).toEqual([-1.0, 0.0, 1.0]);
+            expect(viPathParser('returnDoubleArray')).toEqual([-1.0, 0.0, 1.0]);
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();
@@ -260,35 +348,59 @@ describe('A JavaScript function invoke', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('errorBoolean.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorBoolean.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorBoolean.code'));
             expect(viPathParser('errorBoolean.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorInt8.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt8.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt8.code'));
             expect(viPathParser('errorInt8.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorInt16.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt16.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt16.code'));
             expect(viPathParser('errorInt16.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorInt32.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt32.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt32.code'));
             expect(viPathParser('errorInt32.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorUInt8.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt8.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt8.code'));
             expect(viPathParser('errorUInt8.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorUInt16.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt16.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt16.code'));
             expect(viPathParser('errorUInt16.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorUInt32.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt32.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt32.code'));
             expect(viPathParser('errorUInt32.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorSingle.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorSingle.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorSingle.code'));
             expect(viPathParser('errorSingle.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorDouble.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorDouble.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorDouble.code'));
             expect(viPathParser('errorDouble.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('errorString.status')).toBeTrue();
-            expect([kNITypeMistmatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorString.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorString.code'));
             expect(viPathParser('errorString.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorInt8Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt8Array.code'));
+            expect(viPathParser('errorInt8Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorInt16Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt16Array.code'));
+            expect(viPathParser('errorInt16Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorInt32Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorInt32Array.code'));
+            expect(viPathParser('errorInt32Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorUInt8Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt8Array.code'));
+            expect(viPathParser('errorUInt8Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorUInt16Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt16Array.code'));
+            expect(viPathParser('errorUInt16Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorUInt32Array.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorUInt32Array.code'));
+            expect(viPathParser('errorUInt32Array.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorSingleArray.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorSingleArray.code'));
+            expect(viPathParser('errorSingleArray.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorDoubleArray.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorDoubleArray.code'));
+            expect(viPathParser('errorDoubleArray.source')).toMatch(/JavaScriptInvoke in MyVI/);
             done();
         });
     });
