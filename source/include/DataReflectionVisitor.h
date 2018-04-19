@@ -49,21 +49,21 @@ class DataReflectionVisitor : public TypeVisitor
     StringRef       _path;
 
  private:
-    virtual void VisitBad(TypeRef type);
-    virtual void VisitBitBlock(BitBlockType* type);
-    virtual void VisitBitCluster(BitClusterType* type);
+    virtual void VisitBad(TypeRef type)                         { }
+    virtual void VisitBitBlock(BitBlockType* type)              { }
+    virtual void VisitBitCluster(BitClusterType* type)          { }
     virtual void VisitCluster(ClusterType* type);
-    virtual void VisitParamBlock(ParamBlockType* type);
-    virtual void VisitEquivalence(EquivalenceType* type);
+    virtual void VisitParamBlock(ParamBlockType* type)          { }
+    virtual void VisitEquivalence(EquivalenceType* type)        { Accept(type->GetSubElement(0), _pHayStack); }
     virtual void VisitArray(ArrayType* type);
-    virtual void VisitElement(ElementType* type);
-    virtual void VisitNamed(NamedType* type);
-    virtual void VisitPointer(PointerType* type);
-    virtual void VisitEnum(EnumType* type);
-    virtual void VisitRefNumVal(RefNumValType* type);
-    virtual void VisitDefaultValue(DefaultValueType* type);
-    virtual void VisitDefaultPointer(DefaultPointerType* type);
-    virtual void VisitCustomDataProc(CustomDataProcType* type);
+    virtual void VisitElement(ElementType* type)                { Accept(type->BaseType(), _pHayStack); }
+    virtual void VisitNamed(NamedType* type)                    { Accept(type->BaseType(), _pHayStack); }
+    virtual void VisitPointer(PointerType* type)                { }
+    virtual void VisitEnum(EnumType* type)                      { Accept(type->BaseType(), _pHayStack); }
+    virtual void VisitRefNumVal(RefNumValType* type)            { }
+    virtual void VisitDefaultValue(DefaultValueType* type)      { Accept(type->BaseType(), _pHayStack); }
+    virtual void VisitDefaultPointer(DefaultPointerType* type)  { }
+    virtual void VisitCustomDataProc(CustomDataProcType* type)  { Accept(type->BaseType(), _pHayStack); }
 };
 #endif
 }  // namespace Vireo

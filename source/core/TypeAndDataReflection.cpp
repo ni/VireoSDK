@@ -115,18 +115,6 @@ void DataReflectionVisitor::Accept(TypeRef tHayStack, DataPointer pHayStack)
     }
 }
 //------------------------------------------------------------
-void DataReflectionVisitor::VisitBad(TypeRef type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitBitBlock(BitBlockType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitBitCluster(BitClusterType* type)
-{
-}
-//------------------------------------------------------------
 void DataReflectionVisitor::VisitCluster(ClusterType* type)
 {
     if (_pHayStack == null)
@@ -145,15 +133,6 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
             break;
         }
     }
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitParamBlock(ParamBlockType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitEquivalence(EquivalenceType* type)
-{
-    Accept(type->GetSubElement(0), _pHayStack);
 }
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitArray(ArrayType* type)
@@ -190,43 +169,6 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
         }
     }
 #endif
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitElement(ElementType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitNamed(NamedType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitPointer(PointerType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitEnum(EnumType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitRefNumVal(RefNumValType *type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitDefaultValue(DefaultValueType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitDefaultPointer(DefaultPointerType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitCustomDataProc(CustomDataProcType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
 }
 #endif
 }  // namespace Vireo
