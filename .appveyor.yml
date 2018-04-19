@@ -11,8 +11,8 @@ init:
 - ps: $PSVersionTable
 install:
   - ps: Install-Product node 8
-  - chocolatey install make
-  - chocolatey install gnuwin32-coreutils.portable
+  - appveyor-retry chocolatey install make
+  - appveyor-retry chocolatey install gnuwin32-coreutils.portable
   - appveyor-retry npm install
   - pip install tox
   - ps: Start-Process npm "run httpbin" -PassThru
