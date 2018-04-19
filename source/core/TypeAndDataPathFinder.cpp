@@ -1,6 +1,6 @@
 /**
 
-Copyright (c) 2015 National Instruments Corp.
+Copyright (c) 2018 National Instruments Corp.
 
 This software is subject to the terms described in the LICENSE.TXT file
 
@@ -20,7 +20,7 @@ namespace Vireo
 * that describes what the needle is a pointer to. The visitor will visit
 * all types in the type manger and thus ultimate all values owned by that type manager
 * and if necessary parent type managers as well.
-* initiall the hay stack is null, but when a type is visited that owns a value ( constant or var)
+* initially the hay stack is null, but when a type is visited that owns a value ( constant or var)
 * it will establish a haystack then as the type is visited the stack is narrowed.
 */
 
@@ -111,8 +111,6 @@ void PathFinderVisitor::Accept(TypeManagerRef tm)
             _path->InsertCStr(0, ".");
         }
         if (!type->IsA("VirtualInstrument")) {
-            // EncodedSubString encodedStr(rootName, true, false);
-            // SubString encSubStr = encodedStr.GetSubString();
             _path->InsertSubString(0, &rootName);
         }
     }
@@ -165,10 +163,9 @@ void PathFinderVisitor::VisitCluster(ClusterType* type)
         AQBlock1* pElementData = (AQBlock1*)_pHayStack + offset;
         Accept(elementType, pElementData);
         if (_found) {
-            
             if (!elementType->ElementName().CompareCStr("Locals")) {
                 if (!_pathEmpty) {
-                    _path->InsertCStr(0, ".");   
+                    _path->InsertCStr(0, ".");
                 }
                 SubString ss = elementType->ElementName();
                 _path->InsertSubString(0, &ss);
