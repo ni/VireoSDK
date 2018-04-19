@@ -409,7 +409,7 @@ class EventRegistrationRefNumManager : public RefNumManager {
 
 EventRegistrationRefNumManager EventRegistrationRefNumManager::_s_singleton;
 
-// GetPendingEventInfo -- given a static queue and a set of dynamic event queuse (passed via refnum), return the queue with the earliest event
+// GetPendingEventInfo -- given a static queue and a set of dynamic event queues (passed via refnum), return the queue with the earliest event
 // based on sequence number.  Returns 0 if the earliest event is in the static queue (if non-null), or a 1-based index into the dynamic queue
 // list if the earliest event is in one of the dynamic queues.
 // Also returns the base dynamic index of the returned queueID (e.g. event reg. refnum; if this event reg. refnum has multiple registered items
