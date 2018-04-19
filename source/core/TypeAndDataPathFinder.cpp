@@ -29,8 +29,8 @@ class PathFinderVisitor : public DataReflectionVisitor
     void Accept(TypeManagerRef tm);
 
  private:
-    // Used as frames are unwound
     Boolean         _pathEmpty;
+    Int32           _searchDepth;
 
  private:
     virtual void VisitCluster(ClusterType* type);
@@ -49,10 +49,10 @@ void TypeManager::GetPathFromPointer(TypeRef tNeedle, DataPointer pNeedle, Strin
     }
 }
 //------------------------------------------------------------
-PathFinderVisitor::PathFinderVisitor(TypeRef tHaystack, DataPointer pNeedle, StringRef path) :
-    DataReflectionVisitor(tHaystack, pNeedle, path)
+PathFinderVisitor::PathFinderVisitor(TypeRef tHaystack, DataPointer pNeedle, StringRef path) : DataReflectionVisitor(tHaystack, pNeedle, path)
 {
     _pathEmpty = true;
+    _searchDepth = 0;
 }
 //------------------------------------------------------------
 //! Visitor dispatch helper method that traverses all the types in a TypeManager
@@ -89,7 +89,7 @@ void PathFinderVisitor::VisitCluster(ClusterType* type)
 {
     if (_pHayStack == null)
         return;
-
+    ++_searchDepth;
     IntIndex count = type->SubElementCount();
     for (IntIndex j = 0; j < count; j++) {
         TypeRef elementType = type->GetSubElement(j);
@@ -97,7 +97,8 @@ void PathFinderVisitor::VisitCluster(ClusterType* type)
         AQBlock1* pElementData = (AQBlock1*)_pHayStack + offset;
         DataReflectionVisitor::Accept(elementType, pElementData);
         if (_found) {
-            if (!elementType->ElementName().CompareCStr("Locals")) {
+            // Prepend if it is not the top-level 'Locals' cluster
+            if (_searchDepth > 1) {
                 if (!_pathEmpty) {
                     _path->InsertCStr(0, ".");
                 }
@@ -109,6 +110,7 @@ void PathFinderVisitor::VisitCluster(ClusterType* type)
             break;
         }
     }
+    --_searchDepth;
 }
 
 }  // namespace Vireo
