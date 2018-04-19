@@ -129,6 +129,7 @@
                 "ComplexConversions.via",
                 "ComplexMathFunctions.via",
                 "Conjugate.via",
+                "ConstLocalMutabilityErrors.via",
                 "ControlRefBasic.via",
                 "ConvertStringNumber.via",
                 "CopyAlignmentError.via",
