@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		441441ED2089A08900C97FC0 /* TypeAndDataPathFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 441441EC2089A08900C97FC0 /* TypeAndDataPathFinder.cpp */; };
 		444C46841E1C5A540037FA98 /* Date.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46821E1C5A540037FA98 /* Date.cpp */; };
 		444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46831E1C5A540037FA98 /* TimeFunctions.cpp */; };
 		444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468B1E26D73C0037FA98 /* RefNum.cpp */; };
@@ -121,6 +122,8 @@
 
 /* Begin PBXFileReference section */
 		44026BAA1EFAEFC600DB51B4 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = include/Array.h; sourceTree = "<group>"; };
+		441441EB2089A07600C97FC0 /* DataReflectionVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataReflectionVisitor.h; path = include/DataReflectionVisitor.h; sourceTree = "<group>"; };
+		441441EC2089A08900C97FC0 /* TypeAndDataPathFinder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TypeAndDataPathFinder.cpp; path = core/TypeAndDataPathFinder.cpp; sourceTree = "<group>"; };
 		443536321CFF4979002BA5DB /* 2HelloWorlds.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 2HelloWorlds.via; path = "../test-it/2HelloWorlds.via"; sourceTree = "<group>"; };
 		443536331CFF4979002BA5DB /* AllocatedDataValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AllocatedDataValues.via; path = "../test-it/AllocatedDataValues.via"; sourceTree = "<group>"; };
 		443536341CFF4979002BA5DB /* ArrayComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayComparison.via; path = "../test-it/ArrayComparison.via"; sourceTree = "<group>"; };
@@ -871,6 +874,7 @@
 				47D84DE417C2A271009053DB /* Timestamp.cpp */,
 				47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */,
 				47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */,
+				441441EC2089A08900C97FC0 /* TypeAndDataPathFinder.cpp */,
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
@@ -895,6 +899,7 @@
 				4797A38E1862265B00E643D7 /* CEntryPoints.h */,
 				446506DA206ACB3400B0CD8E /* ControlRef.h */,
 				47D84DC417C2A258009053DB /* BuildConfig.h */,
+				441441EB2089A07600C97FC0 /* DataReflectionVisitor.h */,
 				47D84DC917C2A258009053DB /* DataTypes.h */,
 				470F626A1886F522003146BF /* EventLog.h */,
 				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
@@ -1153,6 +1158,7 @@
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
 				44C2350E20428CD50064583B /* Events.cpp in Sources */,
 				444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */,
+				441441ED2089A08900C97FC0 /* TypeAndDataPathFinder.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
