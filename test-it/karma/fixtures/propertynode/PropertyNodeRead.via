@@ -1,4 +1,4 @@
-define (MyVI dv(.VirtualInstrument (
+define (%3AWeb%20Server%3AInteractive%3AWebApp%3AMain%2Egviweb dv(.VirtualInstrument (
     Locals: c(
         e(.Boolean booleanLocal)
         e(.String stringLocal)
@@ -7,7 +7,13 @@ define (MyVI dv(.VirtualInstrument (
         e(.UInt32 uint32Local)
         e(.ComplexDouble complexDoubleLocal)
         e(.Timestamp timestampLocal)
-
+        e(.Double numberLocal)
+        e(dv(c(
+            e(.Double %3Anumeric%3A)
+            e(c(
+                e(.Boolean Boolean%20Space%20Part)
+            ) nestedClusterLocal )
+        ) (0 (false ) )) clusterLocal)
         e(c(
             e(.Boolean status)
             e(.Int32 code)
@@ -20,6 +26,7 @@ define (MyVI dv(.VirtualInstrument (
         e(dv(ControlRefNum ControlReference("dataItem_UInt32")) uInt32Ref)
         e(dv(ControlRefNum ControlReference("dataItem_ComplexDouble")) complexDoubleRef)
         e(dv(ControlRefNum ControlReference("dataItem_Timestamp")) timestampRef)
+        e(dv(ControlRefNum ControlReference("dataItem_MíNúmero")) numberRef)
     )
         clump(1
 
@@ -30,6 +37,9 @@ define (MyVI dv(.VirtualInstrument (
             PropertyNodeRead(uInt32Ref "value" uint32Local error)
             PropertyNodeRead(complexDoubleRef "value" complexDoubleLocal error)
             PropertyNodeRead(timestampRef "value" timestampLocal error)
+            PropertyNodeRead(numberRef "Value" numberLocal error)
+            PropertyNodeRead(numberRef "Value" clusterLocal.%3Anumeric%3A error)
+            PropertyNodeRead(booleanRef "Value" clusterLocal.nestedClusterLocal.Boolean%20Space%20Part error)
         )
 )))
-enqueue(MyVI)
+enqueue(%3AWeb%20Server%3AInteractive%3AWebApp%3AMain%2Egviweb)

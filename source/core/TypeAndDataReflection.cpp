@@ -11,57 +11,11 @@ SDG
  */
 
 #include "TypeAndDataManager.h"
+#include "DataReflectionVisitor.h"
 
 namespace Vireo
 {
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-
-//------------------------------------------------------------
-/* Create a visitor with a needle being looked for and a TypeRef
-* that describes what the needle is a pointer to. The visitor will visit
-* all types in the type manger and thus ultimate all values owned by that type manager
-* and if necessary parent type managers as well.
-* initiall the hay stack is null, but when a type is visited that owns a value ( constant or var)
-* it will establish a haystack then as the type is visited the stack is narrowed.
-*/
-
-class DataReflectionVisitor : public TypeVisitor
-{
- public:
-    DataReflectionVisitor(TypeRef tNeedle, DataPointer pHaystack, StringRef path);
-    void Accept(TypeRef tHaystack, DataPointer pHaystack);
-    void Accept(TypeManagerRef tm);
-    Boolean Found() {return _found;}
-
- private:
-    // What is being searched through
-    void*           _pHayStack;
-
-    // What is being looked for
-    TypeRef         _tNeedle;
-    void*           _pNeedle;
-
-    // Used as frames are unwound
-    Boolean         _found;
-    StringRef       _path;
-
- private:
-    virtual void VisitBad(TypeRef type);
-    virtual void VisitBitBlock(BitBlockType* type);
-    virtual void VisitBitCluster(BitClusterType* type);
-    virtual void VisitCluster(ClusterType* type);
-    virtual void VisitParamBlock(ParamBlockType* type);
-    virtual void VisitEquivalence(EquivalenceType* type);
-    virtual void VisitArray(ArrayType* type);
-    virtual void VisitElement(ElementType* type);
-    virtual void VisitNamed(NamedType* type);
-    virtual void VisitPointer(PointerType* type);
-    virtual void VisitEnum(EnumType* type);
-    virtual void VisitRefNumVal(RefNumValType* type);
-    virtual void VisitDefaultValue(DefaultValueType* type);
-    virtual void VisitDefaultPointer(DefaultPointerType* type);
-    virtual void VisitCustomDataProc(CustomDataProcType* type);
-};
 //------------------------------------------------------------
 TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
 {
@@ -161,18 +115,6 @@ void DataReflectionVisitor::Accept(TypeRef tHayStack, DataPointer pHayStack)
     }
 }
 //------------------------------------------------------------
-void DataReflectionVisitor::VisitBad(TypeRef type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitBitBlock(BitBlockType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitBitCluster(BitClusterType* type)
-{
-}
-//------------------------------------------------------------
 void DataReflectionVisitor::VisitCluster(ClusterType* type)
 {
     if (_pHayStack == null)
@@ -191,15 +133,6 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
             break;
         }
     }
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitParamBlock(ParamBlockType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitEquivalence(EquivalenceType* type)
-{
-    Accept(type->GetSubElement(0), _pHayStack);
 }
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitArray(ArrayType* type)
@@ -236,43 +169,6 @@ void DataReflectionVisitor::VisitArray(ArrayType* type)
         }
     }
 #endif
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitElement(ElementType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitNamed(NamedType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitPointer(PointerType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitEnum(EnumType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitRefNumVal(RefNumValType *type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitDefaultValue(DefaultValueType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitDefaultPointer(DefaultPointerType* type)
-{
-}
-//------------------------------------------------------------
-void DataReflectionVisitor::VisitCustomDataProc(CustomDataProcType* type)
-{
-    Accept(type->BaseType(), _pHayStack);
 }
 #endif
 }  // namespace Vireo

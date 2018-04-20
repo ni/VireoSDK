@@ -37,6 +37,7 @@
     <ClCompile Include="..\source\core\TimeFunctions.cpp" />
     <ClCompile Include="..\source\core\Timestamp.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataManager.cpp" />
+    <ClCompile Include="..\source\core\TypeAndDataPathFinder.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
@@ -66,6 +67,7 @@
     <ClInclude Include="..\source\include\BuildConfig.h" />
     <ClInclude Include="..\source\include\CEntryPoints.h" />
     <ClInclude Include="..\source\include\ControlRef.h" />
+    <ClInclude Include="..\source\include\DataReflectionVisitor.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
     <ClInclude Include="..\source\include\Date.h" />
     <ClInclude Include="..\source\include\EventLog.h" />

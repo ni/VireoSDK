@@ -289,6 +289,7 @@ class TypeManager
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData,
                                             Boolean allowDynamic);
+    void GetPathFromPointer(TypeRef t, DataPointer p, StringRef path);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type,
                                              PointerTypeEnum pointerType, ConstCStr cName);

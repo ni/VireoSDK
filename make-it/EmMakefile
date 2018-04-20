@@ -180,6 +180,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Timestamp.bc\
 	$(OBJS)/TimeFunctions.bc\
 	$(OBJS)/TypeAndDataManager.bc\
+	$(OBJS)/TypeAndDataPathFinder.bc\
 	$(OBJS)/TypeAndDataReflection.bc\
 	$(OBJS)/TypeDefiner.bc\
 	$(OBJS)/TypeTemplates.bc\
