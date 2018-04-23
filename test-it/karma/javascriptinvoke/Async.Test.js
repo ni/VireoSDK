@@ -1,4 +1,4 @@
-describe('A JavaScript function invoke', function () {
+fdescribe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -62,7 +62,7 @@ describe('A JavaScript function invoke', function () {
                 completionCallback(inputInteger * inputInteger);
             };
             expect(testCompletion).not.toThrowError();
-            expect(testCompletion).toThrowError(/invoked more than once/);
+            expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnce/);
         };
 
         window.NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval = function (inputInteger) {
@@ -71,9 +71,9 @@ describe('A JavaScript function invoke', function () {
                 completionCallback(inputInteger * inputInteger);
             };
             expect(testCompletion).not.toThrowError();
-            expect(testCompletion).toThrowError(/invoked more than once/);
+            expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
             expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
-            expect(testCompletion).toThrowError(/invoked more than once/);
+            expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
         };
 
         window.NI_CompletionCallbackReturnsUndefined = function () {

@@ -324,7 +324,7 @@
             var completionCallbackInvoked = false;
             return function (returnValue) {
                 if (completionCallbackInvoked === true) {
-                    throw new Error('The completion callback was invoked more than once.');
+                    throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
                 }
                 if (!(returnValue instanceof Error)) {
                     updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
