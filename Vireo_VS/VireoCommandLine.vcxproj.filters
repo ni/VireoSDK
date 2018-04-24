@@ -133,9 +133,6 @@
     <ClCompile Include="..\source\io\PropertyNode.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\TypeAndDataPathFinder.cpp">
-      <Filter>VireoSource\Core</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">

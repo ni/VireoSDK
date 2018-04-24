@@ -37,7 +37,6 @@
     <ClCompile Include="..\source\core\TimeFunctions.cpp" />
     <ClCompile Include="..\source\core\Timestamp.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataManager.cpp" />
-    <ClCompile Include="..\source\core\TypeAndDataPathFinder.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
