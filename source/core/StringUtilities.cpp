@@ -1177,8 +1177,7 @@ void EncodedSubString::Init(const SubString &s, bool encode, bool alwaysAlloc) {
                 *pDest++ = '%';
                 *pDest++ = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
                 *pDest++ = (Utf8Char)(HEX_VALUES[0xF & c]);
-            }
-            else {
+            } else {
                 *pDest++ = c;
             }
         }
