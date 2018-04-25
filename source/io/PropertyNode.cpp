@@ -123,7 +123,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     STACK_VAR(String, propertyPathVar);
     StringRef propertyVarVIName = propertyVINameVar.Value;
     StringRef propertyVarPath = propertyPathVar.Value;
-    if(!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeWriteName))
+    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeWriteName))
         return _NextInstruction();
 
     STACK_VAR(String, typeVar);
@@ -182,7 +182,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     STACK_VAR(String, propertyPathVar);
     StringRef propertyVarVIName = propertyVINameVar.Value;
     StringRef propertyVarPath = propertyPathVar.Value;
-    if(!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeReadName))
+    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeReadName))
         return _NextInstruction();
 
     STACK_VAR(String, typeVar);
