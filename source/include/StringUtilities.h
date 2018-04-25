@@ -430,36 +430,37 @@ class DecodedSubString {
 //------------------------------------------------------------
 //! A class for making temporary %-code encoded SubStrings
 class EncodedSubString {
-    public:
-        EncodedSubString() : _encodedStr(null) { }
-        explicit EncodedSubString(const SubString &s, bool encode = true, bool alwaysAlloc = false);
+ public:
+    EncodedSubString() : _encodedStr(null) { }
+    explicit EncodedSubString(const SubString &s, bool encode = true, bool alwaysAlloc = false);
 
-        void Init(const SubString &s, bool encode, bool alwaysAlloc = false);
-        SubString GetSubString() {
-            SubString s;
-            s.AliasAssignLen(_encodedStr, IntIndex(strlen(ConstCStr(_encodedStr))));
-            return s;
+    void Init(const SubString &s, bool encode, bool alwaysAlloc = false);
+    SubString GetSubString() {
+        SubString s;
+        s.AliasAssignLen(_encodedStr, IntIndex(strlen(ConstCStr(_encodedStr))));
+        return s;
+    }
+    Boolean NeedsEncoding(Utf8Char c) {
+        return !SubString::IsNumberChar(c) && !SubString::IsLetterChar(c) && (c != '+' || c != '*' || c != '_' || c != '-' || c != '$');
+    }
+    Utf8Char *DetachValue() {
+        if (_encodedStr != _buffer) {
+            Utf8Char *ret = _encodedStr;
+            _encodedStr = null;
+            return ret;
         }
-        Boolean NeedsEncoding(Utf8Char c) {
-            return !SubString::IsNumberChar(c) && !SubString::IsLetterChar(c) && (c != '+' || c != '*' || c != '_' || c != '-' || c != '$');
-        }
-        Utf8Char *DetachValue() {
-            if (_encodedStr != _buffer) {
-                Utf8Char *ret = _encodedStr;
-                _encodedStr = null;
-                return ret;
-            }
-            return null;
-        }
-        ~EncodedSubString() {
-            if (_encodedStr && _encodedStr != _buffer)
-                delete[] _encodedStr;
-        }
-    private:
-        enum { kMaxInlineEncodedSize = 1024 } ;
+        return null;
+    }
+    ~EncodedSubString() {
+        if (_encodedStr && _encodedStr != _buffer)
+            delete[] _encodedStr;
+    }
 
-        Utf8Char _buffer[kMaxInlineEncodedSize];
-        Utf8Char *_encodedStr;
+ private:
+    enum { kMaxInlineEncodedSize = 1024 };
+
+    Utf8Char _buffer[kMaxInlineEncodedSize];
+    Utf8Char *_encodedStr;
 };
 
 }  // namespace Vireo

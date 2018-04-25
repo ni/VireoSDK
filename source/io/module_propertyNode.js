@@ -57,6 +57,7 @@
             dataItemIdPointer,
             propertyNamePointer,
             propertyTypePointer,
+            propertyVINamePointer,
             propertyPathPointer,
             errorStatusPointer,
             errorCodePointer,
@@ -70,9 +71,10 @@
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
+            var propertyVIName = Module.eggShell.dataReadString(propertyVINamePointer);
 
             try {
-                writeProperty(viName, dataItemId, propertyName, propertyType, propertyPath);
+                writeProperty(viName, dataItemId, propertyName, propertyType, propertyVIName, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
@@ -88,6 +90,7 @@
             dataItemIdPointer,
             propertyNamePointer,
             propertyTypePointer,
+            propertyVINamePointer,
             propertyPathPointer,
             errorStatusPointer,
             errorCodePointer,
@@ -101,8 +104,10 @@
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyType = Module.eggShell.dataReadString(propertyTypePointer);
             var propertyPath = Module.eggShell.dataReadString(propertyPathPointer);
+            var propertyVIName = Module.eggShell.dataReadString(propertyVINamePointer);
+
             try {
-                readProperty(viName, dataItemId, propertyName, propertyType, propertyPath);
+                readProperty(viName, dataItemId, propertyName, propertyType, propertyVIName, propertyPath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
