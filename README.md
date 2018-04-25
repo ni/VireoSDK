@@ -42,11 +42,11 @@ On all platforms run the following in the VireoSDK folder to install JavaScript-
 - emsdk toolchain (see following)
 
 ### Installing the emsdk toolchain
-emscripten (emsdk) is used to cross-compile Vireo to Vireo.js to run in Node.js and web browser environments.
+The emsdk toolchain is used to cross-compile Vireo to Vireo.js to run in Node.js and web browser environments.
 
 1. Create a directory outside of the VireoSDK folder to store the emsdk toolchain binaries.
 
-2. Do one of the following:
+2. Do **ONE** of the following:
    - download and extract the [latest emsdk](https://github.com/juj/emsdk#downloads) zip distribution
    - clone the [juj/emsdk](https://github.com/juj/emsdk) GitHub repository
 
