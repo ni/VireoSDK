@@ -31,7 +31,8 @@ class DataReflectionVisitor : public TypeVisitor
     DataReflectionVisitor(TypeRef tNeedle, DataPointer pHaystack, StringRef path);
     void Accept(TypeRef tHaystack, DataPointer pHaystack);
     void Accept(TypeManagerRef tm);
-    Boolean Found() {return _found;}
+    Boolean Found()         { return _found; }
+    Boolean FoundInVI()     { return _foundInVI; }
 
  private:
     // What is being searched through
@@ -43,6 +44,7 @@ class DataReflectionVisitor : public TypeVisitor
 
     // Used as frames are unwound
     Boolean         _found;
+    Boolean         _foundInVI;
     StringRef       _path;
 
  private:
@@ -63,7 +65,7 @@ class DataReflectionVisitor : public TypeVisitor
     virtual void VisitCustomDataProc(CustomDataProcType* type);
 };
 //------------------------------------------------------------
-TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
+TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path, Boolean *foundInVI)
 {
     // TODO(PaulAustin): needs scope output (local, global, type constant)
 
@@ -76,7 +78,14 @@ TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, S
     if (!drv.Found()) {
         path->AppendCStr("*pointer-not-found*");
     }
+    *foundInVI = drv.FoundInVI();
     return null;
+}
+//------------------------------------------------------------
+TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
+{
+    Boolean foundInVI = false;
+    return PointerToSymbolPath(tNeedle, pNeedle, path, &foundInVI);
 }
 //------------------------------------------------------------
 Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name)
@@ -100,6 +109,7 @@ DataReflectionVisitor::DataReflectionVisitor(TypeRef tHaystack, DataPointer pNee
     _pNeedle = pNeedle;
     _pHayStack = null;
     _found = false;
+    _foundInVI = false;
     _path = path;
 }
 //------------------------------------------------------------
@@ -131,7 +141,14 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
     }
 
     if (_found) {
-        _path->InsertSubString(0, &rootName);
+        if (type->IsA("VirtualInstrument")) {
+            EncodedSubString encStr(rootName, true, true);
+            SubString encSubStr = encStr.GetSubString();
+            _path->InsertSubString(0, &encSubStr);
+            _foundInVI = true;
+        } else {
+            _path->InsertSubString(0, &rootName);
+        }
         if (isTypeRefConstant) {
             _path->InsertCStr(0, ".");
         }
