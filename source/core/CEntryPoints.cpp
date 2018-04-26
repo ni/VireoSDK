@@ -17,7 +17,6 @@ SDG
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
-#include <emscripten.h>
 
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
@@ -165,11 +164,6 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
     Int32 error = parser.ParseData(actualType, pData);
-	if (error != 0) {
-		EM_ASM_({
-			console.log('error:' + $0);
-			}, error);
-	}
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.

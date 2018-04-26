@@ -23,7 +23,6 @@ SDG
 #include "TDCodecVia.h"
 #include "ControlRef.h"
 #include <vector>
-#include <emscripten.h>
 #include <string>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
@@ -1068,37 +1067,13 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 _string.EatWhiteSpaces();
 				Boolean isRead = false;
 				if (_options._bQuote64BitNumbers && is64Bit) {
-					std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-					/*EM_ASM_({
-						console.log('about to trim this string:' + UTF8ToString($0));
-						}, cPPString.c_str());*/
-					//_string.TrimQuotedString(TokenTraits_String);
 				    _string.EatChar('"');
 
-					/*cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-					EM_ASM_({
-						console.log('after trim:' + UTF8ToString($0));
-						}, cPPString.c_str());*/
 					isRead = true;
 				}
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
-				//if (isRead) {
-				//	if (readSuccess) {
-				//		EM_ASM({
-				//			console.log('read this:');
-				//			});
-
-				//		/*EM_ASM_({
-				//			console.log('overflow?:' + $0);
-				//			}, overflow);*/
-				//	}
-				//	else {
-				//		EM_ASM({
-				//			console.log('failed to read int');
-				//			});
-				//	}
-				//}
+				
                 if (Fmt().UseFieldNames()) {  // JSON
                     if (readSuccess) {
                         if (overflow) {  // this checks for only UInt64 overflow
@@ -1138,11 +1113,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
-					if (Fmt().UseFieldNames()) {
-						EM_ASM_({
-							console.log('1132:');
-							});
-					}
+					
                     return Fmt().UseFieldNames() ? kLVError_JSONInvalidString : kLVError_ArgError;
                 }
 
@@ -1308,12 +1279,6 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             if (handledElems[elmIndex]) {  // already seen, ignore
                                 subErr = ParseData(elementType, null);
                             } else {
-								std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-								std::string typeString = std::string((const char *)elementType->Name().Begin(), elementType->Name().StringLength());
-								/*EM_ASM_({
-									console.log('about to parse a subtype for string:' + UTF8ToString($0) + 'for type: ' + UTF8ToString($1));
-									}, cPPString.c_str(), typeString.c_str());*/
-
                                 handledElems[elmIndex] = found;
                                 subErr = ParseData(elementType, elementData);
                             }
@@ -1326,13 +1291,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             }
                             _string.EatWhiteSpaces();
 							std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-							EM_ASM_({
-								console.log('right before eating JSON:' + UTF8ToString($0));
-								}, cPPString.c_str());
 							if (!EatJSONItem(&_string)) {
-								EM_ASM_({
-									console.log('1310:');
-									});
 								error = kLVError_JSONInvalidString;
 							}
                         }
