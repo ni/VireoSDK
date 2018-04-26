@@ -70,8 +70,8 @@ struct ViaFormatOptions
 {
     // Once formatter digs below top level this will be on. Constructor controls initial value
     Boolean         _bQuoteStrings;
+    Boolean         _bQuote64BitNumbers;
     Boolean         _bEscapeStrings;
-	Boolean			_bQuote64BitNumbers;
     Boolean         _exponentialNotation;
     Boolean         _allowNulls;
     Int32           _fieldWidth;

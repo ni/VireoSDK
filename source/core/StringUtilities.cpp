@@ -18,7 +18,6 @@ SDG
 #include <stdlib.h>
 #include <math.h>
 #include <limits>
-#include <string>
 
 namespace Vireo
 {
