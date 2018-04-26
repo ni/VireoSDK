@@ -23,7 +23,6 @@ SDG
 #include "TDCodecVia.h"
 #include "ControlRef.h"
 #include <vector>
-#include <string>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 
@@ -1065,11 +1064,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 Boolean overflow = false;
                 Utf8Char sign = 0;
                 _string.EatWhiteSpaces();
-                Boolean isRead = false;
                 if (_options._bQuote64BitNumbers && is64Bit) {
                     _string.EatChar('"');
-
-                    isRead = true;
                 }
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
@@ -1285,10 +1281,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                                 error = kLVError_JSONStrictFieldNotFound;
                             }
                             _string.EatWhiteSpaces();
-                            std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-                            if (!EatJSONItem(&_string)) {
+                            if (!EatJSONItem(&_string))
                                 error = kLVError_JSONInvalidString;
-                            }
                         }
                         if (error && error != kLVError_JSONStrictFieldNotFound)
                             break;
@@ -2284,7 +2278,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_DimInt:
             {
                 IntMax intValue = ReadIntFromMemory(type, pData);
-                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64) || type->IsA(&TypeCommon::TypeTimestamp);
+                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
                 FormatInt(type->BitEncoding(), intValue, is64Bit);
             }
             break;
