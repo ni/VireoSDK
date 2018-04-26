@@ -23,6 +23,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             }
             return value;
         });
+
         vireo.eggShell.writeJSON(viName, path, newValToWriteJSON);
 
         var newValJSON = vireo.eggShell.readJSON(viName, path);
@@ -84,8 +85,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         it('Int64', function () {
             // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             writeTest('dataItem_Numeric64',
-                -1152921504606847000, // '-1152921504606846976'
-                -36028797018963970 // '-36028797018963968'
+                '-1152921504606846976',
+                '-36028797018963968'
             );
         });
 
@@ -105,12 +106,12 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             writeTest('dataItem_Timestamp',
                 {
-                    seconds: 3564057536, // '3564057536'
-                    fraction: 7811758927381449000 // '7811758927381448193'
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
                 },
                 {
-                    seconds: 3564057542, // '3564057542'
-                    fraction: 16691056759750170000 // '16691056759750171331'
+                    seconds: '3564057542',
+                    fraction: '16691056759750171331'
                 });
         });
     });
@@ -171,25 +172,25 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         it('Int64', function () {
             // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
-                -8989,
-                9090,
-                36028797018963970, // 36028797018963968
-                -72057594037927940 // -72057594037927936
+                '-8989',
+                '9090',
+                '36028797018963968',
+                '-72057594037927936'
             ];
-            var sameSize = [1, 2, 3, 4];
+            var sameSize = ['1', '2', '3', '4'];
             var moreVals = [
-                18014398509481984,
-                36028797018963970, // '36028797018963968',
-                72057594037927940, // '72057594037927936',
-                144115188075855870, // '144115188075855872',
-                288230376151711740, // '288230376151711744',
-                -18014398509481984,
-                -36028797018963970, // '-36028797018963968',
-                -72057594037927940, // '-72057594037927936',
-                -144115188075855870, // '-144115188075855872',
-                -288230376151711740 // '-288230376151711744'
+                '18014398509481984',
+                '36028797018963968',
+                '72057594037927936',
+                '144115188075855872',
+                '288230376151711744',
+                '-18014398509481984',
+                '-36028797018963968',
+                '-72057594037927936',
+                '-144115188075855872',
+                '-288230376151711744'
             ];
-            var lessVals = [-1, 0, 1];
+            var lessVals = ['-1', '0', '1'];
             writeTest('dataItem_ArrayOfInt64', original, sameSize);
             writeTest('dataItem_ArrayOfInt64', original, moreVals);
             writeTest('dataItem_ArrayOfInt64', original, lessVals);
@@ -263,41 +264,41 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
                 {
-                    seconds: 3564057536,
-                    fraction: 7811758927381449000 // 7811758927381448193
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
                 }, {
-                    seconds: 3564057542,
-                    fraction: 16691056759750170000 // 16691056759750171331
+                    seconds: '3564057542',
+                    fraction: '16691056759750171331'
                 }
             ];
             var sameSize = [
                 {
-                    seconds: 123,
-                    fraction: 456
+                    seconds: '123',
+                    fraction: '456'
                 }, {
-                    seconds: 789,
-                    fraction: 135
+                    seconds: '789',
+                    fraction: '135'
                 }
             ];
             var moreVals = [
                 {
-                    seconds: 3564057536,
-                    fraction: 7811758927381449000 // '7811758927381448193',
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
                 }, {
-                    seconds: 3564057542,
-                    fraction: 16691056759750170000 // '16691056759750171331'
+                    seconds: '3564057542',
+                    fraction: '16691056759750171331'
                 }, {
-                    seconds: 3564059871,
-                    fraction: 7811758927381449000 // '7811758927381448217'
+                    seconds: '3564059871',
+                    fraction: '7811758927381448217'
                 }, {
-                    seconds: 3566659871,
-                    fraction: 7811758927381447000 // '7811758927381446667'];
+                    seconds: '3566659871',
+                    fraction: '7811758927381446667'
                 }
             ];
             var lessVals = [
                 {
-                    seconds: 5,
-                    fraction: 5
+                    seconds: '5',
+                    fraction: '5'
                 }
             ];
 
@@ -317,14 +318,14 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'first',
                     double: 3.14159,
                     int32: 42,
-                    int64: 72057594037927940, // 72057594037927936
+                    int64: '72057594037927936',
                     complex: {
                         real: 3.4,
                         imaginary: -5.9
                     },
                     time: {
-                        seconds: 3564057536,
-                        fraction: 7811758927381449000 // 7811758927381448193
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
                     }
                 },
                 {
@@ -332,14 +333,14 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'second',
                     double: 6.2831,
                     int32: 84,
-                    int64: 72057594037927940, // 72057594037927939
+                    int64: '72057594037927939',
                     complex: {
                         real: 4.567,
                         imaginary: 0.5
                     },
                     time: {
-                        seconds: 3564059871,
-                        fraction: 7811758927381449000 // 7811758927381448217
+                        seconds: '3564059871',
+                        fraction: '7811758927381448217'
                     }
                 },
                 {
@@ -347,14 +348,14 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'third',
                     double: 2.71828,
                     int32: 144,
-                    int64: -72057594037927940, // -72057594037927942
+                    int64: '-72057594037927942',
                     complex: {
                         real: 1.4142,
                         imaginary: 0.7071
                     },
                     time: {
-                        seconds: 3566659871,
-                        fraction: 7811758927381447000 // 7811758927381446667
+                        seconds: '3566659871',
+                        fraction: '7811758927381446667'
                     }
                 }
             ];
@@ -364,42 +365,42 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'Hello',
                     double: 3.14159,
                     int32: 42,
-                    int64: 987,
+                    int64: '987',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 1,
-                        fraction: 1
+                        seconds: '1',
+                        fraction: '1'
                     }
                 }, {
                     bool: true,
                     string: 'World',
                     double: 6.02e23,
                     int32: 43,
-                    int64: 654,
+                    int64: '654',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 0,
-                        fraction: 0
+                        seconds: '0',
+                        fraction: '0'
                     }
                 }, {
                     bool: false,
                     string: 'Iñtërnâtiônàlizætiøn☃💩',
                     double: 8675309,
                     int32: 44,
-                    int64: 321,
+                    int64: '321',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 3,
-                        fraction: 3
+                        seconds: '3',
+                        fraction: '3'
                     }
                 }
             ];
@@ -410,56 +411,56 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'Hello',
                     double: 3.14159,
                     int32: 42,
-                    int64: 987,
+                    int64: '987',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 1,
-                        fraction: 1
+                        seconds: '1',
+                        fraction: '1'
                     }
                 }, {
                     bool: true,
                     string: 'World',
                     double: 6.02e23,
                     int32: 43,
-                    int64: 654,
+                    int64: '654',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 0,
-                        fraction: 0
+                        seconds: '0',
+                        fraction: '0'
                     }
                 }, {
                     bool: false,
                     string: 'Iñtërnâtiônàlizætiøn☃💩',
                     double: 8675309,
                     int32: 44,
-                    int64: 321,
+                    int64: '321',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 3,
-                        fraction: 3
+                        seconds: '3',
+                        fraction: '3'
                     }
                 }, {
                     bool: false,
                     string: 'NaNNaNNaNNaNNaNNaNNaNNan Batman!',
                     double: 404.404,
                     int32: 404,
-                    int64: 4040404,
+                    int64: '4040404',
                     complex: {
                         real: 40,
                         imaginary: 4
                     },
                     time: {
-                        seconds: 4040404,
-                        fraction: 4040404
+                        seconds: '4040404',
+                        fraction: '4040404'
                     }
                 }
             ];
@@ -469,28 +470,28 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     string: 'Iñtërnâtiônàlizætiøn☃💩',
                     double: 8675309,
                     int32: 44,
-                    int64: 321,
+                    int64: '321',
                     complex: {
                         real: 3.41,
                         imaginary: -5.91
                     },
                     time: {
-                        seconds: 3,
-                        fraction: 3
+                        seconds: '3',
+                        fraction: '3'
                     }
                 }, {
                     bool: false,
                     string: 'NaNNaNNaNNaNNaNNaNNaNNan Batman!',
                     double: 404.404,
                     int32: 404,
-                    int64: 4040404,
+                    int64: '4040404',
                     complex: {
                         real: 40,
                         imaginary: 4
                     },
                     time: {
-                        seconds: 4040404,
-                        fraction: 4040404
+                        seconds: '4040404',
+                        fraction: '4040404'
                     }
                 }
             ];
@@ -583,22 +584,22 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         it('Int64', function () {
             // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
-                [9090],
-                [36028797018963970], // 36028797018963968
-                [-72057594037927940] // -72057594037927936
+                ['9090'],
+                ['36028797018963968'],
+                ['-72057594037927936']
             ];
             var sameSize = [
-                [9090],
-                [8080],
-                [7070]
+                ['9090'],
+                ['8080'],
+                ['7070']
             ];
             var moreVals = [
-                [1, 2, 3],
-                [-4, -5, -6],
-                [7, 8, 9]
+                ['1', '2', '3'],
+                ['-4', '-5', '-6'],
+                ['7', '8', '9']
             ];
             var lessVals = [
-                [7]
+                ['7']
             ];
 
             writeTest('dataItem_2DArrayOfInt64', original, sameSize);
@@ -698,104 +699,104 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             var original = [
                 [
                     {
-                        seconds: 3564057536,
-                        fraction: 7811758927381449000 // 7811758927381448193
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
                     }, {
-                        seconds: 3564057542,
-                        fraction: 16691056759750170000 // 16691056759750171331
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
                     }
                 ],
                 [
                     {
-                        seconds: 3564059871,
-                        fraction: 7811758927381449000 // 7811758927381448217
+                        seconds: '3564059871',
+                        fraction: '7811758927381448217'
                     }, {
-                        seconds: 3564057536,
-                        fraction: 7811758927381449000 // 7811758927381448193
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
                     }
                 ],
                 [
                     {
-                        seconds: 3566659871,
-                        fraction: 7811758927381447000 // 7811758927381446667
+                        seconds: '3566659871',
+                        fraction: '7811758927381446667'
                     }, {
-                        seconds: 3566659871,
-                        fraction: 7811758927381447000 // 7811758927381446667
+                        seconds: '3566659871',
+                        fraction: '7811758927381446667'
                     }
                 ]
             ];
             var sameSize = [
                 [
                     {
-                        seconds: 1,
-                        fraction: 2
+                        seconds: '1',
+                        fraction: '2'
                     }, {
-                        seconds: 3,
-                        fraction: 4
+                        seconds: '3',
+                        fraction: '4'
                     }
                 ],
                 [
                     {
-                        seconds: 5,
-                        fraction: 6
+                        seconds: '5',
+                        fraction: '6'
                     }, {
-                        seconds: 7,
-                        fraction: 8
+                        seconds: '7',
+                        fraction: '8'
                     }
                 ],
                 [
                     {
-                        seconds: 9,
-                        fraction: 10
+                        seconds: '9',
+                        fraction: '10'
                     }, {
-                        seconds: 11,
-                        fraction: 12
+                        seconds: '11',
+                        fraction: '12'
                     }
                 ]
             ];
             var moreVals = [
                 [
                     {
-                        seconds: 1,
-                        fraction: 2
+                        seconds: '1',
+                        fraction: '2'
                     }, {
-                        seconds: 3,
-                        fraction: 4
+                        seconds: '3',
+                        fraction: '4'
                     }
                 ],
                 [
                     {
-                        seconds: 5,
-                        fraction: 6
+                        seconds: '5',
+                        fraction: '6'
                     }, {
-                        seconds: 7,
-                        fraction: 8
+                        seconds: '7',
+                        fraction: '8'
                     }
                 ],
                 [
                     {
-                        seconds: 9,
-                        fraction: 10
+                        seconds: '9',
+                        fraction: '10'
                     }, {
-                        seconds: 11,
-                        fraction: 12
+                        seconds: '11',
+                        fraction: '12'
                     }
                 ],
                 [
                     {
-                        seconds: 13,
-                        fraction: 14
+                        seconds: '13',
+                        fraction: '14'
                     }, {
-                        seconds: 15,
-                        fraction: 16
+                        seconds: '15',
+                        fraction: '16'
                     }
                 ]
             ];
             var lessVals = [
                 [
                     {
-                        seconds: 1,
-                        fraction: 2
+                        seconds: '1',
+                        fraction: '2'
                     }
                 ]
             ];
@@ -859,15 +860,15 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 string: 'first',
                 double: 3.14159,
                 int32: 42,
-                int64: -72057594037927940, // -72057594037927936
-                uint64: 9223372041149743000, // 9223372041149743104
+                int64: '-72057594037927936',
+                uint64: '9223372041149743104',
                 complex: {
                     real: 3.4,
                     imaginary: -5.9
                 },
                 time: {
-                    seconds: 3564057536,
-                    fraction: 7811758927381449000 // 7811758927381448193
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
                 }
             };
             var newValue = {
@@ -875,15 +876,15 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 string: 'last',
                 double: 9.8696,
                 int32: 2147418112,
-                int64: -1152921504606847000, // -1152921504606846976,
-                uint64: 10376293541461623000, // 10376293541461622784
+                int64: '-1152921504606846976',
+                uint64: '10376293541461622784',
                 complex: {
                     real: 123.456,
                     imaginary: -789.012
                 },
                 time: {
-                    seconds: 3566659871,
-                    fraction: 7811758927381447000 // 7811758927381446667
+                    seconds: '3566659871',
+                    fraction: '7811758927381446667'
                 }
             };
             writeTest('dataItem_ClusterOfScalars', original, newValue);
@@ -896,15 +897,15 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 doubles: [1.2, 3.4, 5.6, 7.89, 1234.5678],
                 int32s: [-1000, -10, 42, 9876543, 123],
                 int64s: [
-                    -8989,
-                    9090,
-                    36028797018963970, // 36028797018963968
-                    -72057594037927940 // -72057594037927936
+                    '-8989',
+                    '9090',
+                    '36028797018963968',
+                    '-72057594037927936',
                 ],
                 uint64s: [
-                    9223372041149743000, // 9223372041149743104
-                    0,
-                    9223376434901287000 // 9223376434901286912
+                    '9223372041149743104',
+                    '0',
+                    '9223376434901286912'
                 ],
                 complexes: [
                     {
@@ -920,11 +921,11 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 ],
                 times: [
                     {
-                        seconds: 3564057536,
-                        fraction: 7811758927381449000 // 7811758927381448193
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
                     }, {
-                        seconds: 3564057542,
-                        fraction: 16691056759750170000 // 16691056759750171331
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
                     }
                 ]
             };
@@ -934,8 +935,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 strings: 'And this bird you cannot change'.split(' '),
                 doubles: [21.2, 23.4, 25.6, 27.89, 21234.5678],
                 int32s: [552139, -396256, -292658, -795576, 248411, 873904, 994612, 724317, 79111, -849221],
-                int64s: [-8989, 9090, 36028, -7205],
-                uint64s: [922337, 0, 9223],
+                int64s: ['-8989', '9090', '36028', '-7205'],
+                uint64s: ['922337', '0', '9223'],
                 complexes: [
                     {
                         real: 'Infinity',
@@ -950,11 +951,11 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 ],
                 times: [
                     {
-                        seconds: 3564057536,
-                        fraction: 7811
+                        seconds: '3564057536',
+                        fraction: '7811'
                     }, {
-                        seconds: 3564057542,
-                        fraction: 1669
+                        seconds: '3564057542',
+                        fraction: '1669'
                     }
                 ]
             };
@@ -964,17 +965,17 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 doubles: [1.2, 3.4, 5.6, 7.89, 1234.5678, -0],
                 int32s: [-1000, -10, 42, 9876543, 123, 42],
                 int64s: [
-                    -8989,
-                    9090,
-                    36028797018963970, // 36028797018963968
-                    -72057594037927940, // -72057594037927936
-                    404
+                    '-8989',
+                    '9090',
+                    '36028797018963968',
+                    '-72057594037927936',
+                    '404'
                 ],
                 uint64s: [
-                    9223372041149743000, // 9223372041149743104
-                    0,
-                    9223376434901287000, // 9223376434901286912
-                    404
+                    '9223372041149743104',
+                    '0',
+                    '9223376434901286912',
+                    '404'
                 ],
                 complexes: [
                     {
@@ -993,14 +994,14 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 ],
                 times: [
                     {
-                        seconds: 3564057536,
-                        fraction: 7811758927381449000 // 7811758927381448193
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
                     }, {
-                        seconds: 3564057542,
-                        fraction: 16691056759750170000 // 16691056759750171331
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
                     }, {
-                        seconds: 4,
-                        fraction: 5
+                        seconds: '4',
+                        fraction: '5'
                     }
                 ]
             };
@@ -1010,8 +1011,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 strings: ['Lorem'],
                 doubles: [1.2],
                 int32s: [-1000],
-                int64s: [-8989],
-                uint64s: [92233720411],
+                int64s: ['-8989'],
+                uint64s: ['92233720411'],
                 complexes: [
                     {
                         real: 0,
@@ -1020,8 +1021,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 ],
                 times: [
                     {
-                        seconds: 8,
-                        fraction: 67
+                        seconds: '8',
+                        fraction: '67'
                     }
                 ]
             };
@@ -1034,32 +1035,32 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         it('analog waveform of double', function () {
             var original = {
                 t0: {
-                    seconds: 300,
-                    fraction: 123
+                    seconds: '300',
+                    fraction: '123'
                 },
                 dt: 8.8,
                 Y: [5.5, 6.6, 7.7, 8.8] // eslint-disable-line id-length
             };
             var sameSize = {
                 t0: {
-                    seconds: 3456789,
-                    fraction: 0
+                    seconds: '3456789',
+                    fraction: '0'
                 },
                 dt: 1234.5678,
                 Y: ['NaN', 'Infinity', '-Infinity', -0] // eslint-disable-line id-length
             };
             var moreVals = {
                 t0: {
-                    seconds: 3001,
-                    fraction: 1231
+                    seconds: '3001',
+                    fraction: '1231'
                 },
                 dt: 8.89,
                 Y: [5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11] // eslint-disable-line id-length
             };
             var lessVals = {
                 t0: {
-                    seconds: 1,
-                    fraction: 2
+                    seconds: '1',
+                    fraction: '2'
                 },
                 dt: 3,
                 Y: [4] // eslint-disable-line id-length

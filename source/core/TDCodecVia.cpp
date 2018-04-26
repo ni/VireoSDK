@@ -23,6 +23,8 @@ SDG
 #include "TDCodecVia.h"
 #include "ControlRef.h"
 #include <vector>
+#include <emscripten.h>
+#include <string>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 
@@ -58,6 +60,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
         _options._bEscapeStrings = true;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? TDViaFormatter::formatJSONEggShell : TDViaFormatter::formatJSONLVExt) : TDViaFormatter::formatJSON;
+		_options._bQuote64BitNumbers = jsonLVExt;
         if (strictJSON)
            _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
     } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
@@ -1058,12 +1061,44 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_UInt:
         case kEncoding_S2CInt:
             {
+			    Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
                 IntMax value = 0;
                 Boolean overflow = false;
                 Utf8Char sign = 0;
                 _string.EatWhiteSpaces();
+				Boolean isRead = false;
+				if (_options._bQuote64BitNumbers && is64Bit) {
+					std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
+					/*EM_ASM_({
+						console.log('about to trim this string:' + UTF8ToString($0));
+						}, cPPString.c_str());*/
+					//_string.TrimQuotedString(TokenTraits_String);
+				    _string.EatChar('"');
+
+					/*cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
+					EM_ASM_({
+						console.log('after trim:' + UTF8ToString($0));
+						}, cPPString.c_str());*/
+					isRead = true;
+				}
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
+				//if (isRead) {
+				//	if (readSuccess) {
+				//		EM_ASM({
+				//			console.log('read this:');
+				//			});
+
+				//		/*EM_ASM_({
+				//			console.log('overflow?:' + $0);
+				//			}, overflow);*/
+				//	}
+				//	else {
+				//		EM_ASM({
+				//			console.log('failed to read int');
+				//			});
+				//	}
+				//}
                 if (Fmt().UseFieldNames()) {  // JSON
                     if (readSuccess) {
                         if (overflow) {  // this checks for only UInt64 overflow
@@ -1087,6 +1122,9 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         }
                         if (error)
                             return error;
+
+						if (is64Bit)
+							_string.EatChar('"');
                     }
                 }
                 if (!readSuccess) {
@@ -1100,6 +1138,11 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
+					if (Fmt().UseFieldNames()) {
+						EM_ASM_({
+							console.log('1132:');
+							});
+					}
                     return Fmt().UseFieldNames() ? kLVError_JSONInvalidString : kLVError_ArgError;
                 }
 
@@ -1245,6 +1288,11 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         Boolean found = false;
                         TypeRef elementType = null;
                         for (elmIndex = 0; !found && elmIndex < elemCount; elmIndex++) {
+							// here I should eat the quotes if we are quoting 64bit numbers and the type is 64 bit
+							Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
+							if (is64Bit) {
+								//baseOffset++;
+							}
                             elementType = type->GetSubElement(elmIndex);
                             SubString name = elementType->ElementName();
                             elementData = baseOffset + elementType->ElementOffset();
@@ -1260,6 +1308,12 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             if (handledElems[elmIndex]) {  // already seen, ignore
                                 subErr = ParseData(elementType, null);
                             } else {
+								std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
+								std::string typeString = std::string((const char *)elementType->Name().Begin(), elementType->Name().StringLength());
+								/*EM_ASM_({
+									console.log('about to parse a subtype for string:' + UTF8ToString($0) + 'for type: ' + UTF8ToString($1));
+									}, cPPString.c_str(), typeString.c_str());*/
+
                                 handledElems[elmIndex] = found;
                                 subErr = ParseData(elementType, elementData);
                             }
@@ -1271,8 +1325,16 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                                 error = kLVError_JSONStrictFieldNotFound;
                             }
                             _string.EatWhiteSpaces();
-                            if (!EatJSONItem(&_string))
-                                error = kLVError_JSONInvalidString;
+							std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
+							EM_ASM_({
+								console.log('right before eating JSON:' + UTF8ToString($0));
+								}, cPPString.c_str());
+							if (!EatJSONItem(&_string)) {
+								EM_ASM_({
+									console.log('1310:');
+									});
+								error = kLVError_JSONInvalidString;
+							}
                         }
                         if (error && error != kLVError_JSONStrictFieldNotFound)
                             break;
@@ -1982,6 +2044,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
     _options._exponentialNotation = false;
+    _options._bQuote64BitNumbers = false;
     _errorCode = kLVError_NoError;
 
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
@@ -1990,6 +2053,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
+		_options._bQuote64BitNumbers = jsonLVExt;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._fmt = formatC;
@@ -2029,15 +2093,23 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
     _string->AppendCStr(str);
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value)
+void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit /*= false*/)
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = null;
 
     if (encoding == kEncoding_S2CInt) {
-        format = "%*lld";
+        if (is64Bit && _options._bQuote64BitNumbers) {
+            format = "\"%*lld\"";  // json should encode i64s as strings
+        } else {
+            format = "%*lld";
+        }
     } else if (encoding == kEncoding_UInt || encoding == kEncoding_Enum) {
-        format = "%*llu";
+        if (is64Bit && _options._bQuote64BitNumbers) {
+            format = "\"%*llu\"";  // json should encode u64s as strings
+        } else {
+            format = "%*llu";
+        }
     } else if (encoding == kEncoding_RefNum) {
         format = "0x%*llx";
     } else if (encoding == kEncoding_DimInt) {
@@ -2258,7 +2330,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_DimInt:
             {
                 IntMax intValue = ReadIntFromMemory(type, pData);
-                FormatInt(type->BitEncoding(), intValue);
+                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64) || type->IsA(&TypeCommon::TypeTimestamp);
+                FormatInt(type->BitEncoding(), intValue, is64Bit);
             }
             break;
         case kEncoding_Enum:
