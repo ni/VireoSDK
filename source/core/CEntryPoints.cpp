@@ -163,7 +163,7 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
-    Int32 error = parser.ParseData(actualType, pData);
+    parser.ParseData(actualType, pData);
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.

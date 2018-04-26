@@ -83,7 +83,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Int64', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             writeTest('dataItem_Numeric64',
                 '-1152921504606846976',
                 '-36028797018963968'
@@ -103,7 +102,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Timestamp', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             writeTest('dataItem_Timestamp',
                 {
                     seconds: '3564057536',
@@ -170,7 +168,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Int64', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
                 '-8989',
                 '9090',
@@ -261,7 +258,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Timestamp', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
                 {
                     seconds: '3564057536',
@@ -311,7 +307,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Cluster', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
                 {
                     bool: true,
@@ -582,7 +577,6 @@ describe('The Vireo EggShell writeJSON api can write', function () {
         });
 
         it('Int64', function () {
-            // TODO mraj when writing 64-bit values as strings is fixed the following can be corrected
             var original = [
                 ['9090'],
                 ['36028797018963968'],
@@ -900,7 +894,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     '-8989',
                     '9090',
                     '36028797018963968',
-                    '-72057594037927936',
+                    '-72057594037927936'
                 ],
                 uint64s: [
                     '9223372041149743104',

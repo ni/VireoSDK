@@ -59,7 +59,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     } else if (format->ComparePrefixCStr(TDViaFormatter::formatJSON._name)) {
         _options._bEscapeStrings = true;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? TDViaFormatter::formatJSONEggShell : TDViaFormatter::formatJSONLVExt) : TDViaFormatter::formatJSON;
-		_options._bQuote64BitNumbers = jsonLVExt;
+        _options._bQuote64BitNumbers = jsonLVExt;
         if (strictJSON)
            _options._fmt._fieldNameFormat = ViaFormat(_options._fmt._fieldNameFormat | kViaFormat_JSONStrictValidation);
     } else if (format->ComparePrefixCStr(TDViaFormatter::formatC._name)) {
@@ -1060,20 +1060,20 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_UInt:
         case kEncoding_S2CInt:
             {
-			    Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
+                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
                 IntMax value = 0;
                 Boolean overflow = false;
                 Utf8Char sign = 0;
                 _string.EatWhiteSpaces();
-				Boolean isRead = false;
-				if (_options._bQuote64BitNumbers && is64Bit) {
-				    _string.EatChar('"');
+                Boolean isRead = false;
+                if (_options._bQuote64BitNumbers && is64Bit) {
+                    _string.EatChar('"');
 
-					isRead = true;
-				}
+                    isRead = true;
+                }
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
-				
+
                 if (Fmt().UseFieldNames()) {  // JSON
                     if (readSuccess) {
                         if (overflow) {  // this checks for only UInt64 overflow
@@ -1098,8 +1098,8 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         if (error)
                             return error;
 
-						if (is64Bit)
-							_string.EatChar('"');
+                        if (is64Bit)
+                            _string.EatChar('"');
                     }
                 }
                 if (!readSuccess) {
@@ -1113,7 +1113,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     } else {
                         LOG_EVENT(kSoftDataError, "Data encoding not formatted correctly");
                     }
-					
+
                     return Fmt().UseFieldNames() ? kLVError_JSONInvalidString : kLVError_ArgError;
                 }
 
@@ -1259,11 +1259,6 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         Boolean found = false;
                         TypeRef elementType = null;
                         for (elmIndex = 0; !found && elmIndex < elemCount; elmIndex++) {
-							// here I should eat the quotes if we are quoting 64bit numbers and the type is 64 bit
-							Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
-							if (is64Bit) {
-								//baseOffset++;
-							}
                             elementType = type->GetSubElement(elmIndex);
                             SubString name = elementType->ElementName();
                             elementData = baseOffset + elementType->ElementOffset();
@@ -1290,10 +1285,10 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                                 error = kLVError_JSONStrictFieldNotFound;
                             }
                             _string.EatWhiteSpaces();
-							std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
-							if (!EatJSONItem(&_string)) {
-								error = kLVError_JSONInvalidString;
-							}
+                            std::string cPPString = std::string((const char *)_string.Begin(), _string.StringLength());
+                            if (!EatJSONItem(&_string)) {
+                                error = kLVError_JSONInvalidString;
+                            }
                         }
                         if (error && error != kLVError_JSONStrictFieldNotFound)
                             break;
@@ -2000,10 +1995,10 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     // Might move all options to format string.
     _string = str;
     _options._bQuoteStrings = quoteOnTopString;
+    _options._bQuote64BitNumbers = false;
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
     _options._exponentialNotation = false;
-    _options._bQuote64BitNumbers = false;
     _errorCode = kLVError_NoError;
 
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
@@ -2012,7 +2007,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
-		_options._bQuote64BitNumbers = jsonLVExt;
+        _options._bQuote64BitNumbers = jsonLVExt;
         _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._fmt = formatC;
