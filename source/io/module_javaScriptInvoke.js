@@ -320,10 +320,21 @@
             typeConfig.writer(returnValuePointer, returnUserValue);
         };
 
-        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var completionCallbackInvoked = false;
-            return function (returnValue) {
-                if (completionCallbackInvoked === true) {
+        var generateContext = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState) {
+            var context = {};
+            context.getCompletionCallback = function () {
+                if (currentInvocationState.completionCallbackRetrieved === true) {
+                    throw new Error('The completion callback was retrieved more than once.');
+                }
+                currentInvocationState.completionCallbackRetrieved = true;
+                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState);
+            };
+            return context;
+        };
+
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState) {
+            var completionCallback =  function (returnValue) {
+                if (currentInvocationState.completionCallbackResolved === true) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
                 }
                 if (!(returnValue instanceof Error)) {
@@ -334,9 +345,10 @@
                     var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
                     Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
-                completionCallbackInvoked = true;
+                currentInvocationState.completionCallbackResolved = true;
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
+            return completionCallback;
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
@@ -386,23 +398,13 @@
                 returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
 
-            var asyncFlag = false;
-            var generateContext = function () {
-                var completionCallbackRetrieved = false;
-                var context = {};
-                context.getCompletionCallback = function () {
-                    if (completionCallbackRetrieved === true) {
-                        throw new Error('The completion callback was retrieved more than once.');
-                    }
-                    asyncFlag = true;
-                    completionCallbackRetrieved = true;
-                    return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                };
-                return context;
-            };
-
+            var currentInvocationState = {
+                completionCallbackRetrieved: false,
+                completionCallbackResolved: false
+             };
+            
             var returnValue = undefined;
-            var context = generateContext();
+            var context = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState);
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
@@ -414,7 +416,7 @@
                 return;
             }
 
-            if (!asyncFlag) {
+            if (!currentInvocationState.completionCallbackRetrieved) {
                 updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             }

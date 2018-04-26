@@ -1,4 +1,4 @@
-describe('A JavaScript function invoke', function () {
+fdescribe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -8,64 +8,48 @@ describe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsAsyncFunctionsUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/AsyncFunctions.via');
-
-    beforeAll(function (done) {
-        fixtures.preloadAbsoluteUrls([
-            jsAsyncFunctionsUrl
-        ], done);
-    });
-
-    beforeEach(function () {
-        vireo = new Vireo();
-
-        window.NI_AsyncSquareFunction = function (inputInteger) {
+    var javaScriptInvokeFixtures = {
+        NI_AsyncSquareFunction: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             setTimeout(function () {
                 completionCallback(inputInteger * inputInteger);
             }, 4);
-        };
-
-        window.NI_CallCompletionCallbackSynchronously = function (inputInteger) {
+        },
+        NI_CallCompletionCallbackSynchronously: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
-        };
-
-        var createTimerPromise = function (input) {
-            var myPromise = new Promise(function (resolve) {
-                setTimeout(function () {
-                    resolve(input * input);
-                }, 4);
-            });
-            return myPromise;
-        };
-
-        window.NI_PromiseBasedAsyncSquareFunction = function (inputInteger) {
+        },
+        NI_PromiseBasedAsyncSquareFunction: function (inputInteger) {
+            var createTimerPromise = function (input) {
+                var myPromise = new Promise(function (resolve) {
+                    setTimeout(function () {
+                        resolve(input * input);
+                    }, 4);
+                });
+                return myPromise;
+            };
             var completionCallback = this.getCompletionCallback();
             createTimerPromise(inputInteger).then(completionCallback);
-        };
-
-        window.NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback = function (inputInteger) {
+        },
+        NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
             completionCallback(inputInteger * inputInteger);
-        };
-
-        window.NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback = function (inputInteger) {
+        },
+        NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
             expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
-        };
-
-        window.NI_CallCompletionCallbackMoreThanOnce = function (inputInteger) {
+        },
+        NI_CallCompletionCallbackMoreThanOnce: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(inputInteger * inputInteger);
             };
             expect(testCompletion).not.toThrowError();
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnce/);
-        };
-
-        window.NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval = function (inputInteger) {
+        },
+        NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(inputInteger * inputInteger);
@@ -74,26 +58,29 @@ describe('A JavaScript function invoke', function () {
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
             expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-        };
-
-        window.NI_CompletionCallbackReturnsUndefined = function () {
+        },
+        NI_CompletionCallbackReturnsUndefined: function () {
             var completionCallback = this.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(undefined);
             };
             expect(testCompletion).not.toThrowError();
-        };
+        }
+      };
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            jsAsyncFunctionsUrl
+        ], done);
+        Object.assign(window, javaScriptInvokeFixtures);
     });
 
-    afterEach(function () {
-        window.NI_AsyncSquareFunction = undefined;
-        window.NI_CallCompletionCallbackSynchronously = undefined;
-        window.NI_PromiseBasedAsyncSquareFunction = undefined;
-        window.NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback = undefined;
-        window.NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback = undefined;
-        window.NI_CallCompletionCallbackMoreThanOnce = undefined;
-        window.NI_CompletionCallbackReturnsUndefined = undefined;
-        window.NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval = undefined;
+    beforeEach(function () {
+        vireo = new Vireo();
+    });
+
+    afterAll(function () {
+        Object.keys(javaScriptInvokeFixtures).forEach((functionName) => window[functionName] = undefined);
     });
 
     it('with async callback successfully works', function (done) {
