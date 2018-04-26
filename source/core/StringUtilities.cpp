@@ -18,6 +18,8 @@ SDG
 #include <stdlib.h>
 #include <math.h>
 #include <limits>
+#include <string>
+#include <emscripten.h>
 
 namespace Vireo
 {
@@ -758,6 +760,11 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
     Utf8Char decodedC;
     IntIndex length = 0;
     SubString ss(encodedString);
+	std::string cPPString = std::string((const char *)ss.Begin(), ss.StringLength());
+	/*EM_ASM_({
+		console.log('encoded string:' + UTF8ToString($0));
+		}, cPPString.c_str());*/
+
     while (ss.ReadRawChar(&c)) {
         if (c == '+') {
             decodedC = ' ';

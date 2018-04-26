@@ -71,6 +71,7 @@ struct ViaFormatOptions
     // Once formatter digs below top level this will be on. Constructor controls initial value
     Boolean         _bQuoteStrings;
     Boolean         _bEscapeStrings;
+	Boolean			_bQuote64BitNumbers;
     Boolean         _exponentialNotation;
     Boolean         _allowNulls;
     Int32           _fieldWidth;
@@ -188,7 +189,7 @@ class TDViaFormatter
     void    FormatPointerData(TypeRef pointerType, void* pData);
     void    FormatEncoding(EncodingEnum value);
     void    FormatElementUsageType(UsageTypeEnum value);
-    void    FormatInt(EncodingEnum encoding, IntMax value);
+    void    FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit = false);
     void    FormatIEEE754(TypeRef type, void* pData);
     Int32   GetError() const { return _errorCode; }
 
