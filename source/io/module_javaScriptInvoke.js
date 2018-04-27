@@ -418,7 +418,7 @@
 
             if (!currentInvocationState.completionCallbackRetrieved) {
                 updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
         };

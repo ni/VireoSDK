@@ -677,6 +677,8 @@
                 Module.eggShell.executeSlicesWakeUpCallback.call(undefined);
             }, 0);
         };
+
+        Module.eggShell.setOccurrence = Occurrence_Set;
     };
 
     return assignEggShell;

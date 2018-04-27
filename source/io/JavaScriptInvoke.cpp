@@ -134,6 +134,8 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
         StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
 
         if (!errorClusterPtr->status) {
+            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
+            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             jsJavaScriptInvoke(
                 _Param(occurrence),
                 functionName,
@@ -145,9 +147,8 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
                 &errorClusterPtr->code,
                 errorClusterPtr->source);
             AddCallChainToSourceIfErrorPresent(errorClusterPtr, "JavaScriptInvoke");
-            pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
-            pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
-            return  clump->WaitOnObservableObject(_this);
+            InstructionCore* instructionCorePtr = clump->WaitOnObservableObject(_this);
+            return instructionCorePtr;
         }
     } else {
         // re-entering the instruction and the operation is done or it timed out.
