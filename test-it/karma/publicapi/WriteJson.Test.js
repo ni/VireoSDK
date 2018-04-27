@@ -28,7 +28,12 @@ describe('The Vireo EggShell writeJSON api can write', function () {
 
         var newValJSON = vireo.eggShell.readJSON(viName, path);
         var newValActual = JSON.parse(newValJSON);
-        expect(newValActual).toMatchIEEE754Number(newVal);
+        if (typeof newValActual === 'string' && typeof newVal === 'number') {
+            // we're writing as a JS number, but reading always returns a string.
+            expect(newValActual).toMatchIEEE754Number(JSON.stringify(newVal));
+        } else {
+            expect(newValActual).toMatchIEEE754Number(newVal);
+        }
 
         vireo.eggShell.writeJSON(viName, path, oldValJSON);
         var oldValRewriteJSON = vireo.eggShell.readJSON(viName, path);
@@ -86,6 +91,13 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             writeTest('dataItem_Numeric64',
                 '-1152921504606846976',
                 '-36028797018963968'
+            );
+        });
+
+        it('Int64NonString', function () {
+            writeTest('dataItem_Numeric64',
+                '-1152921504606846976',
+                36028797018963968
             );
         });
 

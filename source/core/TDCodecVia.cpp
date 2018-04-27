@@ -1059,13 +1059,14 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_UInt:
         case kEncoding_S2CInt:
             {
-                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
+                Boolean is64Bit = type->IsInteger64();
                 IntMax value = 0;
                 Boolean overflow = false;
                 Utf8Char sign = 0;
                 _string.EatWhiteSpaces();
+                Boolean ateBeginningQuote = false;
                 if (_options._bQuote64BitNumbers && is64Bit) {
-                    _string.EatChar('"');
+                    ateBeginningQuote = _string.EatChar('"');
                 }
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
@@ -1094,7 +1095,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         if (error)
                             return error;
 
-                        if (is64Bit)
+                        if (ateBeginningQuote)
                             _string.EatChar('"');
                     }
                 }
@@ -2278,8 +2279,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
         case kEncoding_DimInt:
             {
                 IntMax intValue = ReadIntFromMemory(type, pData);
-                Boolean is64Bit = type->IsA(&TypeCommon::TypeInt64) || type->IsA(&TypeCommon::TypeUInt64);
-                FormatInt(type->BitEncoding(), intValue, is64Bit);
+                FormatInt(type->BitEncoding(), intValue, type->IsInteger64());
             }
             break;
         case kEncoding_Enum:
