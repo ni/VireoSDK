@@ -881,7 +881,18 @@ Boolean TypeCommon::IsNumeric()
     }
     return false;
 }
-
+//------------------------------------------------------------
+Boolean TypeCommon::IsInteger64()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeInt64) || t->Name().Compare(&TypeUInt64)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
 //------------------------------------------------------------
 Boolean TypeCommon::IsFloat()
 {

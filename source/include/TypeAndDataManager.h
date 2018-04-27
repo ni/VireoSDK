@@ -601,6 +601,7 @@ class TypeCommon
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     Boolean IsNumeric();
+    Boolean IsInteger64();
     Boolean IsFloat();
     Boolean IsBoolean();
     Boolean IsString();
