@@ -1064,9 +1064,9 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 Boolean overflow = false;
                 Utf8Char sign = 0;
                 _string.EatWhiteSpaces();
-                Boolean ateBeginningQuote = false;
+                Boolean isNumericString = false;
                 if (_options._bQuote64BitNumbers && is64Bit) {
-                    ateBeginningQuote = _string.EatChar('"');
+                    isNumericString = _string.EatChar('"');
                 }
                 _string.PeekRawChar(&sign);
                 Boolean readSuccess = _string.ReadInt(&value, &overflow);
@@ -1095,7 +1095,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         if (error)
                             return error;
 
-                        if (ateBeginningQuote)
+                        if (isNumericString)
                             _string.EatChar('"');
                     }
                 }
