@@ -89,7 +89,7 @@ Then make a branch from the current branch named `awesome_branch`:
 Switched to a new branch 'awesome_branch'
 ```
 
-And push the branch to your fork (**first-time**):
+To push the new branch and any local changes to your fork the **first-time**:
 
 ```console
 > git push -u origin awesome_branch
@@ -97,6 +97,12 @@ Total 0 (delta 0), reused 0 (delta 0)
 To https://github.com/YOUR_USER_NAME/VireoSDK.git
  * [new branch]      awesome_branch -> awesome_branch
 Branch 'awesome_branch' set up to track remote branch 'awesome_branch' from 'origin'.
+```
+
+To push local changes in subsequent updates:
+
+```console
+git push
 ```
 
 You are encouraged to push changes frequently (at least once a day if not more often) to your fork. This allows other developers to see your code as well as backs up the code on the GitHub servers. In addition, pushing code to a fork allows the CI servers to run tests on your code potentially helping find breaking changes sooner.
@@ -149,11 +155,3 @@ git push --force-with-lease
 The `--force-with-lease` option will make sure that your clone's branch does not have any changes that are missing locally. This can happen if for instance you perform development on a different machine, pushed them to your clone, and have not synced those changes locally.
 
 **DO NOT REWRITE HISTORY IN SHARED BRANCHES**: Your fork is your playground for development and as long as you are the only developer contributing to a branch it is safe to rewrite the history of the branch. It is encouraged before submission to rebase your changes on top of master and to remove extraneous commits to improve the commit history. However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
-
-## Adding a Feature or Fixing a Bug
-1. Make your changes
-* Run the tests (see the README for more information about testing)
-* Add any additional tests if needed to test your fix or feature
-* Submit a pull request to the proper branch (see below)
-* The [TravisCI Build](https://travis-ci.org/ni/VireoSDK/pull_requests) will pull your changes and validate that all of the tests pass before allowing the pull request to be merged.
-* If the CI build passes, your pull request can now be merged. If not, the request will not be merged until the CI passes.
