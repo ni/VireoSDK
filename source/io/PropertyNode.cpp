@@ -60,7 +60,7 @@ static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
         return false;
     }
-    EncodedSubString encodedStr(vi->VIName(), true, false);
+    PercentEncodedSubString encodedStr(vi->VIName(), true, false);
     SubString encodedSubstr = encodedStr.GetSubString();
     viName->AppendSubString(&encodedSubstr);
     dataItemId->AppendSubString(&dataItemIdSubString);

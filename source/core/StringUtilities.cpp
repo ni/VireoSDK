@@ -1092,103 +1092,118 @@ IntIndex SubString::FindFirstMatch(SubString* searchString, IntIndex offset, Boo
     }
     return -1;
 }
+//------------------------------------------------------------
+void PercentCodecSubString::Init(const SubString &s, bool convert, bool alwaysAlloc) {
+    if (_convertedStr && _convertedStr != _buffer)
+        delete[] _convertedStr;
 
-// Helper class for storing a temporary copy of a %-code decoded copy of a SubString
-void DecodedSubString::Init(const SubString &s, bool decode, bool alwaysAlloc) {
-    const Utf8Char *cp = s.Begin();
-    IntIndex len = s.Length();
-    if (_decodedStr && _decodedStr != _buffer)
-        delete[] _decodedStr;
-    if (decode) {
-        while (cp != s.End()) {
-            if (*cp == '%' && cp+2 < s.End())
-                len -= 2;
-            ++cp;
-        }
-    }
+    IntIndex len = convert ? ComputeConvertedLength(s): s.Length();
+
     if (alwaysAlloc || len >= kMaxInlineDecodedSize)
-        _decodedStr = new Utf8Char[len+1];
+        _convertedStr = new Utf8Char[len+1];
     else
-        _decodedStr = _buffer;
-    if (decode) {
-        SubString ss = s;
-        Utf8Char c;
-        Int32 value;
-        Utf8Char *pDest = _decodedStr;
-        while (ss.ReadRawChar(&c)) {
-            if (c == '%' && ss.ReadHex2(&value))
-                *pDest++ = (Utf8Char)value;
-            else if (c == '+')
-                *pDest++ = ' ';
-            else
-                *pDest++ = c;
-        }
+        _convertedStr = _buffer;
+
+    if (convert) {
+        Convert(s);
     } else {
-        memcpy(_decodedStr, s.Begin(), len);
+        memcpy(_convertedStr, s.Begin(), len);
     }
-    _decodedStr[len] = 0;
+
+    _convertedStr[len] = 0;
 }
-
-DecodedSubString::DecodedSubString(const SubString &s, bool decode, bool alwaysAlloc) : _decodedStr(null) {
-    Init(s, decode, alwaysAlloc);
+//------------------------------------------------------------
+PercentCodecSubString::PercentCodecSubString(const SubString &s, bool convert, bool alwaysAlloc) : _convertedStr(null) {
 }
-
-const char* HEX_VALUES = "0123456789ABCDEF";
-
-void EncodedSubString::Init(const SubString &s, bool encode, bool alwaysAlloc) {
+//------------------------------------------------------------
+Boolean PercentEncodedSubString::NeedsEncoding(Utf8Char c) {
+    return !SubString::IsNumberChar(c) && !SubString::IsLetterChar(c) && !IsReservedChar(c);
+}
+//------------------------------------------------------------
+Boolean PercentEncodedSubString::IsReservedChar(Utf8Char c) {
+    // We are using a custom encoding mechanism based on percent-encoding
+    // which does not encode the following characters: + * _ - $
+    // if this ever changes make sure to also update LabVIEW editor (C# side)
+    // and Vireo.encodeVireoIdentifier in vireo.loader.js
+    return (c == '+' || c == '*' || c == '_' || c == '-' || c == '$');
+}
+//------------------------------------------------------------
+Int32 PercentEncodedSubString::GetEncodedLength(const SubString &s) {
     const Utf8Char *cp = s.Begin();
     IntIndex len = s.Length();
-    if (_encodedStr && _encodedStr != _buffer)
-        delete[] _encodedStr;
-    if (encode) {
-        while (cp != s.End()) {
-            if (cp == s.Begin() && !SubString::IsLetterChar(*cp)) {
-                len += 2;
-                 ++cp;
-                continue;
-            }
-            if (NeedsEncoding(*cp))
-                len += 2;
+    while (cp != s.End()) {
+        if (cp == s.Begin() && !SubString::IsLetterChar(*cp)) {
+            len += 2;
             ++cp;
+            continue;
         }
+        if (NeedsEncoding(*cp))
+            len += 2;
+        ++cp;
     }
-    if (alwaysAlloc || len >= kMaxInlineEncodedSize)
-        _encodedStr = new Utf8Char[len+1];
-    else
-        _encodedStr = _buffer;
-    if (encode) {
-        SubString ss = s;
-        Utf8Char c;
-        Int32 value;
-        Utf8Char *pDest = _encodedStr;
-
-        if (ss.ReadRawChar(&c)) {
-            if (SubString::IsLetterChar(c)) {
-                *pDest++ = c;
-            } else {
-                *pDest++ = '%';
-                *pDest++ = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
-                *pDest++ = (Utf8Char)(HEX_VALUES[0xF & c]);
-            }
-        }
-
-        while (ss.ReadRawChar(&c)) {
-            if (NeedsEncoding(c)) {
-                *pDest++ = '%';
-                *pDest++ = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
-                *pDest++ = (Utf8Char)(HEX_VALUES[0xF & c]);
-            } else {
-                *pDest++ = c;
-            }
-        }
-    } else {
-        memcpy(_encodedStr, s.Begin(), len);
-    }
-    _encodedStr[len] = 0;
+    return len;
 }
+//------------------------------------------------------------
+void PercentEncodedSubString::Encode(const SubString &s) {
+    SubString ss = s;
+    Utf8Char c;
+    Int32 value;
+    Utf8Char *pDest = _convertedStr;
 
-EncodedSubString::EncodedSubString(const SubString &s, bool encode, bool alwaysAlloc) : _encodedStr(null) {
-    Init(s, encode, alwaysAlloc);
+    // Custom encoder percent-encodes if first char
+    // is not a letter [A-Za-z]
+    if (ss.ReadRawChar(&c)) {
+        if (SubString::IsLetterChar(c)) {
+            *pDest++ = c;
+        } else {
+            PercentEncodeUtf8Char(c, &pDest);
+        }
+    }
+
+    // Encode the rest of the string
+    while (ss.ReadRawChar(&c)) {
+        if (NeedsEncoding(c)) {
+            PercentEncodeUtf8Char(c, &pDest);
+        } else {
+            *pDest++ = c;
+        }
+    }
+}
+const char* HEX_VALUES = "0123456789ABCDEF";
+//------------------------------------------------------------
+void PercentEncodedSubString::PercentEncodeUtf8Char(Utf8Char c, Utf8Char **pDest) {
+    **pDest = '%';
+    (*pDest)++;
+    **pDest = (Utf8Char)(HEX_VALUES[(0xF0 & c) >> 4]);
+    (*pDest)++;
+    **pDest = (Utf8Char)(HEX_VALUES[0xF & c]);
+    (*pDest)++;
+}
+//------------------------------------------------------------
+Int32 PercentDecodedSubString::GetDecodedLength(const SubString &s) {
+    const Utf8Char *cp = s.Begin();
+    IntIndex len = s.Length();
+    while (cp != s.End()) {
+        if (*cp == '%' && cp + 2 < s.End())
+            len -= 2;
+        ++cp;
+    }
+    return len;
+}
+//------------------------------------------------------------
+void PercentDecodedSubString::Decode(const SubString &s) {
+    SubString ss = s;
+    Utf8Char c;
+    Int32 value;
+    Utf8Char *pDest = _convertedStr;
+    while (ss.ReadRawChar(&c)) {
+        if (c == '%' && ss.ReadHex2(&value))
+            *pDest++ = (Utf8Char)value;
+        else if (c == '+')
+            *pDest++ = ' ';
+        else
+            *pDest++ = c;
+    }
 }
 
 #if 0
