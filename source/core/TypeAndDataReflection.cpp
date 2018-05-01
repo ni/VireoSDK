@@ -30,14 +30,12 @@ TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, S
     if (!drv.Found()) {
         path->AppendCStr("*pointer-not-found*");
     }
-    *foundInVI = drv.FoundInVI();
+
+    if (foundInVI) {
+        *foundInVI = drv.FoundInVI();
+    }
+
     return null;
-}
-//------------------------------------------------------------
-TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, StringRef path)
-{
-    Boolean foundInVI = false;
-    return PointerToSymbolPath(tNeedle, pNeedle, path, &foundInVI);
 }
 //------------------------------------------------------------
 Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name)
@@ -94,7 +92,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
 
     if (_found) {
         if (type->IsA("VirtualInstrument")) {
-            EncodedSubString encStr(rootName, true, true);
+            PercentEncodedSubString encStr(rootName, true, true);
             SubString encSubStr = encStr.GetSubString();
             _path->InsertSubString(0, &encSubStr);
             _foundInVI = true;

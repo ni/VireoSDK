@@ -462,7 +462,7 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name, Boolean decode /*=
     // to the entry is returned. The Symbol cannot be deleted until instructions (VIs) are cleared.
     // Since a referenced type must exist before the instruction can reference it,
     // this works out fine.
-    DecodedSubString decodedStr;
+    PercentDecodedSubString decodedStr;
     SubString decodedSubStr;
     if (decode) {
         decodedStr.Init(*name, true, false);
