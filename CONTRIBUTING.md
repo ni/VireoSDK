@@ -27,16 +27,104 @@ By default when you create a new fork the Travis and AppVeyor services are not e
 3. On the page that appears, select your fork.
 
 ## Clone fork
-With the above completed you have now taken the ni/VireoSDK repository (the upstream repository) and made a fork on GitHub as YOUR_USER_NAME/VireoSDK (the origin repository).
+With the above completed you have now taken the ni/VireoSDK repository (the **upstream** repository) and made a fork on GitHub as YOUR_USER_NAME/VireoSDK (the **origin** repository).
 
 In order to do development in your fork you need to make a [clone of the fork](https://help.github.com/articles/fork-a-repo/#step-2-create-a-local-clone-of-your-fork) on your development machine.
 
+An example would be to navigate to a folder on disk and run:
+
+```console
+git clone https://github.com/YOUR_USER_NAME/VireoSDK.git
+```
+
+This will create a folder named VireoSDK with the associated Vireo source code.
+
+## Verifying the clone
+Once the source has been cloned into the VireoSDK folder you can navigate into the folder and run:
+
+```console
+> git remote -v
+origin  https://github.com/YOUR_USER_NAME/VireoSDK.git (fetch)
+origin  https://github.com/YOUR_USER_NAME/VireoSDK.git (push)
+upstream https://github.com/ni/VireoSDK.git (fetch)
+upstream https://github.com/ni/VireoSDK.git (push)
+```
+
+If you used GitHub Desktop to clone the fork you should see both the remotes listed above.
+
+If you used the git commandline tool to clone the fork you may need to [add the upstream remote](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository) to your local clone:
+
+```console
+git remote add upstream https://github.com/ni/VireoSDK.git
+```
+
 # Development workflow
-In the fork-pull workflow new development is performed in small short-lived branches in your fork and a pull request is submitted to have those changes pulled in upstream.
+In the fork-pull workflow new development is performed in small short-lived branches in your fork and a pull request is submitted to have those changes pulled in upstream. Generally you should not work directly in master of your fork but instead create a branch from master for development.
 
-When changes are pulled in they can be either merged directly or modified (squashed or rebased) when they are pulled into the mainline. This makes long-lived branches undesireable as there is maintenance required to keep them in sync with master.
+When changes are pulled in to upstream from your branch they can be either merged directly or modified (squashed or rebased). The ability for pull request merges to modify commits is one reason for long-lived branches to be undesireable as maintenance is required to avoid diverging from master.
 
-### Verifying your cloned fork configuration
+## Creating a branch
+To create a branch first check the branch you are currently on by running:
+
+```console
+> git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+```
+
+It is recommended that new work be performed by branching from master. To change branches to the master branch run:
+
+```console
+> git checkout master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+```
+
+Then make a branch from the current branch named `awesome_branch`:
+```console
+> git checkout -b awesome_branch
+Switched to a new branch 'awesome_branch'
+```
+
+And push the branch to your fork:
+```console
+> git push -u origin awesome_branch
+Total 0 (delta 0), reused 0 (delta 0)
+To https://github.com/YOUR_USER_NAME/VireoSDK.git
+ * [new branch]      awesome_branch -> awesome_branch
+Branch 'awesome_branch' set up to track remote branch 'awesome_branch' from 'origin'.
+```
+
+You are encouraged to push changes frequently (at least once a day if not more often) to your fork. This allows other developers to see your code as well as backs up the code on the GitHub servers. In addition, pushing code to a fork allows the CI servers to run tests on your code potentially helping find breaking changes sooner.
+
+Feel free to create branches for new features, fixing issues, experiments, etc and have them in your fork. Your fork is your workspace to develop freely and experiment. Just make sure to use **descriptive and concise** names for your branches so others can identify them.
+
+## Bringing branches up to date
+Changes that happen upstream are not automatically pulled into your fork or your local clone.
+
+One concept to be aware of is that git stores a pool of all the changes (git objects) from the remotes that you are connected to. This pool of objects are not kept up to date automatically. To fetch all the latest objects from all of your remotes (while also deleting branches that are deleted in remotes) run:
+
+```console
+git remote update -p
+```
+
+### Bringing master up to date
+Based on the recommended workflow the master branch of your local clone should not have any commits that diverge from upstream. Because there are not commits that diverge from upstream it is possible to fast forward merge your local master.
+
+To do this first verify you are on master with `git status` or change to master with `git checkout master`.
+
+Then bring your local master up to date by running:
+```console
+git merge --ff-only upstream/master
+```
+
+If you get an error that means you have unexpected commits on your master branch that should be removed.
+
+### Rebasing your changes on master
+
+Now that our local object pull
 
 ## Adding a Feature or Fixing a Bug
 1. Make your changes
