@@ -159,6 +159,12 @@ class TDViaParser
 #if defined (VIREO_VIA_FORMATTER)
 class TDViaFormatterTypeVisitor;
 
+enum JSONEncodingEnum {
+    kJSONEncodingRegular,
+    kJSONEncodingLVExtensions,
+    kJSONEncodingEggShell
+};
+
 //! The VIA encoder.
 class TDViaFormatter
 {
@@ -172,7 +178,7 @@ class TDViaFormatter
     static const Int32 kTempFormattingBufferSize = 100;
  public:
     TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null,
-                   Boolean jsonLVExt = false, Boolean quoteInfNaN = false);
+                   JSONEncodingEnum encoding = kJSONEncodingRegular);
     // Type formatters
     void    FormatType(TypeRef type);
     // Options
